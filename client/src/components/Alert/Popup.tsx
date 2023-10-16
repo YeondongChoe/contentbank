@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Table from '../table/Table';
 
 type Alert = {
-  description: string;
+  description?: string;
   title: string;
 };
 
@@ -35,7 +36,8 @@ const PopupModal = (prop: Alert) => {
               <S.cancelIcon onClick={closeAlert}>X</S.cancelIcon>
             </S.alertHead>
             <S.description>
-              <div> {prop.description}</div>
+              {/* {prop.description} */}
+              <Table />
             </S.description>
             <S.button onClick={submit}>등록</S.button>
           </S.container>
@@ -59,7 +61,7 @@ const S = {
     z-index: 99;
   `,
   container: styled.div`
-    width: 600px;
+    width: 500px;
     border: 1px solid gray;
   `,
   alertHead: styled.div`
@@ -71,23 +73,25 @@ const S = {
     background-color: #e5e5e5;
     padding: 10px;
   `,
-  alertTitle: styled.div``,
+  alertTitle: styled.div`
+    font-size: 25px;
+  `,
   cancelIcon: styled.div`
     cursor: pointer;
   `,
   description: styled.div`
     width: 100%;
-    height: 250px;
+    height: 450px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 20px;
+    font-size: 22px;
   `,
   button: styled.button`
     width: 50px;
     margin-bottom: 10px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 15px;
     background-color: black;
     color: white;
   `,

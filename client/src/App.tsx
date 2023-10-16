@@ -4,6 +4,7 @@ import CommonDate from './components/DatePicker/Datepicker';
 import SelectAlert from './components/Alert/SelectAlert';
 import NoticeAlert from './components/Alert/NoticeAlert';
 import PopupModal from './components/Alert/Popup';
+import Table from './components/table/Table';
 
 function App() {
   return (
@@ -14,10 +15,7 @@ function App() {
         title={'문자 내용을 확인하여 주시기 바랍니다.'}
         description={'담당자 OR에게 문자가 발송 되었습니다.'}
       ></NoticeAlert>
-      <PopupModal
-        description="등록하시겠습니까?"
-        title="중복 확인"
-      ></PopupModal>
+      <PopupModal title="출제 완료" description="하이"></PopupModal>
     </div>
   );
 }
