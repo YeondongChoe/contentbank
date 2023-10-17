@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Styled_Alert } from './Alert.style';
+import { useRecoilState } from 'recoil';
+import { alertState } from '../../recoil/alert';
 
 type Alert = {
-  description: string;
+  description?: string;
   title: string;
+  onClose?: () => void;
 };
 
 const NoticeAlert = (prop: Alert) => {
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
 
   const openAlert = () => {
     setIsAlertOpen(true);
-    console.log('open');
   };
 
   const closeAlert = () => {
@@ -20,8 +22,7 @@ const NoticeAlert = (prop: Alert) => {
   };
 
   return (
-    <>
-      <button onClick={openAlert}>Notice Alert</button>
+    <div>
       {isAlertOpen && (
         <Styled_Alert.alertOverlay>
           <Styled_Alert.container>
@@ -42,7 +43,7 @@ const NoticeAlert = (prop: Alert) => {
           </Styled_Alert.container>
         </Styled_Alert.alertOverlay>
       )}
-    </>
+    </div>
   );
 };
 
