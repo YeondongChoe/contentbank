@@ -10,8 +10,6 @@ interface PasswordData {
 }
 
 const ChangePassword = () => {
-  const [isSuccess, setIsSuccess] = useState(false);
-
   const {
     control,
     watch,
@@ -182,7 +180,7 @@ const S = {
     justify-content: center;
     align-items: center;
   `,
-  unconfirmlBtn: styled.button`
+  unconfirmlBtn: styled.p`
     width: 200px;
     height: 50px;
     margin-top: 30px;
@@ -192,6 +190,9 @@ const S = {
     border: none;
     font-size: 17px;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   `,
   confirmlBtn: styled.button`
     width: 200px;
