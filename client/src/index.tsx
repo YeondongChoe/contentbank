@@ -3,13 +3,30 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import Login from './pages/members/Login';
+import FirstLogin from './pages/members/FirstLogin';
+import Relogin from './pages/members/Relogin';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     errorElement: 'Notfound',
-    children: [{ index: true, element: <App /> }],
+    children: [
+      { index: true, element: <App /> },
+      {
+        path: '/login',
+        element: <Login />,
+      },
+      {
+        path: '/firstlogin',
+        element: <FirstLogin />,
+      },
+      {
+        path: '/relogin',
+        element: <Relogin />,
+      },
+    ],
   },
 ]);
 

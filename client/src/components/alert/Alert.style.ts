@@ -5,8 +5,8 @@ export const Styled_Alert = {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 1280px;
+    height: 30%;
     background-color: rgba(255, 255, 255, 0.5);
     display: flex;
     justify-content: center;
@@ -18,7 +18,7 @@ export const Styled_Alert = {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    width: 250px;
+    width: 300px;
     height: 130px;
     border: 1px solid gray;
   `,
@@ -47,16 +47,17 @@ export const Styled_Alert = {
     border-top: 1px solid gray;
     display: flex;
     justify-content: space-evenly;
-    color: gray;
   `,
   cancel: styled.div`
     margin: auto 0;
     cursor: pointer;
     font-size: 12px;
+    color: gray;
   `,
   confirm: styled.div`
     margin: auto 0;
     cursor: pointer;
+    color: #4990d3;
     font-size: 12px;
   `,
 };
