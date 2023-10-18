@@ -12,6 +12,7 @@ import NoticeAlert from '../../components/alert/NoticeAlert';
 import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/alert';
 import { ConfirmBtn } from '../../components/button/CommonBtn';
+import { passwordRegExp } from '../../utils/RegExp';
 
 interface SigninData {
   id: string;
@@ -115,6 +116,10 @@ const Login = () => {
               defaultValue=""
               rules={{
                 required: '비밀번호를 입력해주세요.',
+                pattern: {
+                  value: passwordRegExp,
+                  message: '영문, 숫자, 특수문자 혼용 8자리 이상',
+                },
               }}
               render={({ field }) => (
                 <S.input

@@ -10,6 +10,7 @@ import { getCookie, removeCookie } from '../../utils/ReactCookie';
 interface PasswordData {
   password: string;
   password_confirm: string;
+  test: string;
 }
 
 const ChangePassword = () => {
@@ -20,8 +21,8 @@ const ChangePassword = () => {
     formState: { errors, isValid },
   } = useForm<PasswordData>();
 
-  const Password = watch('password');
-  const PasswordConfirm = watch('password_confirm');
+  const Password = watch('password', '');
+  const PasswordConfirm = watch('password_confirm', '');
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<PasswordData> = () => {
@@ -41,7 +42,6 @@ const ChangePassword = () => {
           console.log(response);
         }
       })
-
       .catch((error) => {
         alert(`${error}`);
       });
