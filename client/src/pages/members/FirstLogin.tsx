@@ -1,33 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import {
-  MdRadioButtonUnchecked,
-  MdOutlineCheckCircleOutline,
-} from 'react-icons/md';
-import axios from 'axios';
-import { setCookie, getCookie, removeCookie } from '../../utils/ReactCookie';
-import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { alertState } from '../../recoil/alert';
 import ChangePassword from '../../components/password/ChangePassword';
 
-interface SigninData {
-  id: string;
-  password: string;
-}
-
 const FirstLogin = () => {
-  const {
-    control,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SigninData>();
-
-  const Id = watch('id', '');
-  const navigate = useNavigate();
-
   return (
     <>
       <S.main>
@@ -77,38 +52,6 @@ const S = {
     display: flex;
     text-align: left;
     justify-content: center;
-  `,
-  form: styled.form``,
-  inputcontainer: styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  `,
-  input: styled.input`
-    width: 400px;
-    height: 40px;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #a1a1a1;
-  `,
-  errorMessage: styled.div`
-    width: 400px;
-    font-size: 12px;
-    color: red;
-    display: flex;
-    justify-content: flex-start;
-  `,
-  button: styled.button`
-    width: 500px;
-    height: 50px;
-    margin-top: 30px;
-    border-radius: 10px;
-    color: white;
-    background-color: #4990d3;
-    border: none;
-    font-size: 17px;
-    cursor: pointer;
   `,
 };
 

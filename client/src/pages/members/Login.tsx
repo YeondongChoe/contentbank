@@ -66,7 +66,7 @@ const Login = () => {
             secure: true,
           });
           // alert('[로그인 성공] 메인 페이지로 이동합니다');
-          // navigate('/');
+          navigate('/firstlogin');
           // window.location.reload();
           console.log(getCookie('accessToken'));
         }

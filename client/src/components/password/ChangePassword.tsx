@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { passwordRegExp } from '../../utils/RegExp';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface PasswordData {
   password: string;
@@ -16,6 +17,8 @@ const ChangePassword = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<PasswordData>();
+
+  const navigate = useNavigate();
 
   const Password = watch('password');
   const PasswordConfirm = watch('password_confirm');
@@ -101,7 +104,9 @@ const ChangePassword = () => {
         )}
       </S.inputcontainer>
       <S.btnContainer>
-        <S.cancelBtn>취소</S.cancelBtn>
+        <Link to="/login" style={{ textDecoration: 'none' }}>
+          <S.cancelBtn>취소</S.cancelBtn>
+        </Link>
         {PasswordConfirm && isValid ? (
           <S.confirmlBtn>확인</S.confirmlBtn>
         ) : (
