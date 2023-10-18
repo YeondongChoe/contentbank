@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/alert';
+import { ConfirmBtn } from '../../components/button/CommonBtn';
 
 interface SigninData {
   id: string;
@@ -46,7 +47,6 @@ const Login = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         if (response.status === 200) {
           setCookie(
             'userInfo',
@@ -68,7 +68,7 @@ const Login = () => {
           // alert('[로그인 성공] 메인 페이지로 이동합니다');
           navigate('/firstlogin');
           // window.location.reload();
-          console.log(getCookie('accessToken'));
+          // console.log(getCookie('accessToken'));
         }
         if (isClicked === true) {
           setCookie('userId', Id, { path: '/' });

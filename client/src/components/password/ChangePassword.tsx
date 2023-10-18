@@ -3,7 +3,9 @@ import styled from 'styled-components';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { passwordRegExp } from '../../utils/RegExp';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { ConfirmBtn, CancelBtn, NomalBtn } from '../button/CommonBtn';
+import { getCookie, removeCookie } from '../../utils/ReactCookie';
 
 interface PasswordData {
   password: string;
@@ -18,12 +20,15 @@ const ChangePassword = () => {
     formState: { errors, isValid },
   } = useForm<PasswordData>();
 
-  const navigate = useNavigate();
-
   const Password = watch('password');
   const PasswordConfirm = watch('password_confirm');
+  const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<PasswordData> = (data) => {
+  const onSubmit: SubmitHandler<PasswordData> = () => {
+    const data = {
+      Id: getCookie('userId'),
+      password: 'password',
+    };
     return axios
       .post('/auth-service/api/v1/auth/login', data, {
         headers: {
@@ -40,6 +45,13 @@ const ChangePassword = () => {
       .catch((error) => {
         alert(`${error}`);
       });
+  };
+
+  const logout = () => {
+    removeCookie('userInfo', { path: '/' });
+    removeCookie('accessToken', { path: '/' });
+    removeCookie('refreshToken', { path: '/' });
+    navigate('/login');
   };
 
   return (
@@ -64,7 +76,7 @@ const ChangePassword = () => {
                 placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                 onChange={field.onChange}
                 value={field.value}
-                success={isValid}
+                className={isValid ? 'success' : ''}
               />
             )}
           />
@@ -92,7 +104,11 @@ const ChangePassword = () => {
                 placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                 onChange={field.onChange}
                 value={field.value}
-                passwordMatch={PasswordConfirm && Password === PasswordConfirm}
+                className={
+                  PasswordConfirm && Password === PasswordConfirm
+                    ? 'passwordMatch'
+                    : ''
+                }
               />
             )}
           />
@@ -104,13 +120,15 @@ const ChangePassword = () => {
         )}
       </S.inputcontainer>
       <S.btnContainer>
-        <Link to="/login" style={{ textDecoration: 'none' }}>
-          <S.cancelBtn>취소</S.cancelBtn>
-        </Link>
+        <div onClick={logout}>
+          <CancelBtn text="취소" />
+        </div>
         {PasswordConfirm && isValid ? (
-          <S.confirmlBtn>확인</S.confirmlBtn>
+          <Link to="/relogin" style={{ textDecoration: 'none' }}>
+            <ConfirmBtn text="확인" />
+          </Link>
         ) : (
-          <S.unconfirmlBtn>확인</S.unconfirmlBtn>
+          <NomalBtn text="확인" />
         )}
       </S.btnContainer>
     </form>
@@ -132,7 +150,7 @@ const S = {
     align-items: center;
   `,
   label: styled.label``,
-  input: styled.input<{ success?: boolean; passwordMatch?: string | boolean }>`
+  input: styled.input`
     width: 550px;
     height: 40px;
     padding: 10px;
@@ -140,15 +158,12 @@ const S = {
     border: none;
     border-bottom: 1px solid red;
     outline: none;
-    border-color: ${(props) => {
-      if (props.success) {
-        return 'green';
-      }
-      if (props.passwordMatch) {
-        return 'green';
-      }
-      return 'red';
-    }};
+    &.success {
+      border-color: green;
+    }
+    &.passwordMatch {
+      border-color: green;
+    }
   `,
   successMessage: styled.div`
     width: 550px;

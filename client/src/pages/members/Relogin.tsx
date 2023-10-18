@@ -1,9 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { NomalBtn } from '../../components/button/CommonBtn';
+import { removeCookie } from '../../utils/ReactCookie';
 
 const Relogin = () => {
   const navigate = useNavigate();
+
+  const logout = () => {
+    removeCookie('userInfo', { path: '/' });
+    removeCookie('accessToken', { path: '/' });
+    removeCookie('refreshToken', { path: '/' });
+    navigate('/login');
+  };
 
   return (
     <>
@@ -13,6 +22,9 @@ const Relogin = () => {
             새로운 비밀번호로 변경이 완료되었습니다.
           </S.discriptionTitle>
         </S.discriptionContainer>
+        <div onClick={logout}>
+          <NomalBtn text="로그인 하러 가기" />
+        </div>
       </S.main>
     </>
   );
@@ -35,6 +47,7 @@ const S = {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-bottom: 150px;
   `,
   discriptionTitle: styled.p`
     font-size: 16px;
