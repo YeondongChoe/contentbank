@@ -52,7 +52,7 @@ const Login = () => {
           setCookie('accessToken', response.data.access_token, {
             path: '/',
             sameSite: 'strict',
-            secure: true,
+            secure: false,
           });
           if (response.data.initPassword === true) {
             navigate('/firstlogin');
