@@ -72,6 +72,7 @@ const Mypage = () => {
   //   }
   // }, []);
 
+
   useEffect(() => {
     axios
       .get('/auth-service/api/v1/auth/my-info', {
