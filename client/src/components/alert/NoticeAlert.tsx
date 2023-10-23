@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Styled_Alert } from './Alert.style';
 import { useRecoilState } from 'recoil';
-import { alertState } from '../../recoil/alert';
+import { alertState } from '../../recoil/State';
 
 type Alert = {
   description?: string;
