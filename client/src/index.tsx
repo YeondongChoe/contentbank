@@ -6,6 +6,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Login from './pages/members/Login';
 import FirstLogin from './pages/members/FirstLogin';
 import Relogin from './pages/members/Relogin';
+import Mypage from './pages/mypage/Mypage';
 
 const router = createBrowserRouter([
   {
@@ -13,7 +14,7 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: 'Notfound',
     children: [
-      { index: true, element: <App /> },
+      { index: true, element: <Login /> },
       {
         path: '/login',
         element: <Login />,
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: '/relogin',
         element: <Relogin />,
+      },
+      {
+        path: '/mypage',
+        element: <Mypage />,
       },
     ],
   },

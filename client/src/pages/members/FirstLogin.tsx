@@ -1,8 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import ChangePassword from '../../components/password/ChangePassword';
+import { useNavigate } from 'react-router-dom';
+import { removeCookie } from '../../utils/ReactCookie';
 
 const FirstLogin = () => {
+  const navigate = useNavigate();
+
+  const logout = () => {
+    removeCookie('userInfo', { path: '/' });
+    removeCookie('accessToken', { path: '/' });
+    removeCookie('refreshToken', { path: '/' });
+    navigate('/login');
+  };
+
   return (
     <>
       <S.main>
@@ -16,7 +27,15 @@ const FirstLogin = () => {
             가능) <br />를 조합하여 8 ~ 20자 이내로 설정해야 합니다.
           </S.discription>
         </S.discriptionContainer>
-        <ChangePassword />
+        <ChangePassword
+          onCancel={logout}
+          btnWidth={250}
+          height={60}
+          radius={10}
+          fontSize={16}
+          text="확인"
+          display="space-evenly"
+        />
       </S.main>
     </>
   );
