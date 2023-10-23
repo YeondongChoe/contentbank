@@ -10,7 +10,7 @@ import { setCookie, getCookie, removeCookie } from '../../utils/ReactCookie';
 import { useNavigate } from 'react-router-dom';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import { useRecoilState } from 'recoil';
-import { alertState } from '../../recoil/alert';
+import { alertState } from '../../recoil/State';
 import { ConfirmBtn } from '../../components/button/CommonBtn';
 import { passwordRegExp } from '../../utils/RegExp';
 
