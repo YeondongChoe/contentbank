@@ -7,10 +7,8 @@ import { removeCookie } from '../../utils/ReactCookie';
 const Relogin = () => {
   const navigate = useNavigate();
 
-  const logout = () => {
-    removeCookie('userInfo', { path: '/' });
+  const onConfirm = () => {
     removeCookie('accessToken', { path: '/' });
-    removeCookie('refreshToken', { path: '/' });
     navigate('/login');
   };
 
@@ -22,9 +20,15 @@ const Relogin = () => {
             새로운 비밀번호로 변경이 완료되었습니다.
           </S.discriptionTitle>
         </S.discriptionContainer>
-        <div onClick={logout}>
-          <NomalBtn text="로그인 하러 가기" />
-        </div>
+        <NomalBtn
+          text="로그인 하러 가기"
+          color="nomal"
+          onClick={onConfirm}
+          width={250}
+          height={60}
+          radius={10}
+          fontSize={18}
+        />
       </S.main>
     </>
   );

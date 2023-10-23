@@ -18,7 +18,6 @@ const NoticeAlert = (prop: Alert) => {
 
   const closeAlert = () => {
     setIsAlertOpen(false);
-    console.log('close');
   };
 
   return (

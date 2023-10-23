@@ -3,17 +3,41 @@ import styled from 'styled-components';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { passwordRegExp } from '../../utils/RegExp';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ConfirmBtn, CancelBtn, NomalBtn } from '../button/CommonBtn';
-import { getCookie, removeCookie } from '../../utils/ReactCookie';
+import { getCookie, setCookie, removeCookie } from '../../utils/ReactCookie';
 
 interface PasswordData {
   password: string;
   password_confirm: string;
-  test: string;
 }
 
-const ChangePassword = () => {
+interface Props {
+  onCancel?: () => void;
+  onClick?: () => void;
+  width?: number;
+  inputWidth?: number;
+  right?: number;
+  btnWidth?: number;
+  height?: number;
+  fontSize?: number;
+  radius?: number;
+  text?: string;
+  display?: string;
+}
+
+const ChangePassword: React.FC<Props> = ({
+  onClick,
+  width,
+  inputWidth,
+  right,
+  btnWidth,
+  height,
+  fontSize,
+  radius,
+  text,
+  display,
+}) => {
   const {
     control,
     watch,
@@ -27,131 +51,158 @@ const ChangePassword = () => {
 
   const onSubmit: SubmitHandler<PasswordData> = () => {
     const data = {
-      Id: getCookie('userId'),
-      password: 'password',
+      password: Password,
+      confirmPassword: PasswordConfirm,
     };
     return axios
-      .post('/auth-service/api/v1/auth/login', data, {
+      .put('/auth-service/api/v1/auth/changed-password', data, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${getCookie('accessToken')}`,
         },
       })
       .then((response) => {
-        console.log(response);
         if (response.status === 200) {
-          console.log(response);
+          if (response.headers['authorization'] !== getCookie('accessToken')) {
+            setCookie('accessToken', response.headers['authorization'], {
+              path: '/',
+              sameSite: 'strict',
+              secure: true,
+            });
+          }
+          console.log(getCookie('accessToken'));
+          console.log(response.headers['authorization']);
         }
+        navigate('/relogin');
       })
       .catch((error) => {
-        alert(`${error}`);
+        alert(error.response.data.message);
       });
   };
 
-  const logout = () => {
-    removeCookie('userInfo', { path: '/' });
-    removeCookie('accessToken', { path: '/' });
-    removeCookie('refreshToken', { path: '/' });
-    navigate('/login');
-  };
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <S.inputcontainer>
-        <S.inputWapper>
-          <S.label>새 비밀번호</S.label>
-          <Controller
-            control={control}
-            name="password"
-            defaultValue=""
-            rules={{
-              required: '비밀번호를 입력해주세요.',
-              pattern: {
-                value: passwordRegExp,
-                message: '사용불가능',
-              },
-            }}
-            render={({ field }) => (
-              <S.input
-                type="password"
-                placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
-                onChange={field.onChange}
-                value={field.value}
-                className={isValid ? 'success' : ''}
-              />
-            )}
+    <S.main right={right as number}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <S.inputcontainer width={width as number}>
+          <S.inputWapper width={width as number}>
+            <S.label>새 비밀번호</S.label>
+            <Controller
+              control={control}
+              name="password"
+              defaultValue=""
+              rules={{
+                required: '비밀번호를 입력해주세요.',
+                pattern: {
+                  value: passwordRegExp,
+                  message: '사용불가능',
+                },
+              }}
+              render={({ field }) => (
+                <S.input
+                  width={inputWidth as number}
+                  type="password"
+                  placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
+                  onChange={field.onChange}
+                  value={field.value}
+                  className={isValid ? 'success' : ''}
+                />
+              )}
+            />
+          </S.inputWapper>
+          {Password && (
+            <S.errorMessage>{errors?.password?.message}</S.errorMessage>
+          )}
+          {isValid && <S.successMessage>사용가능</S.successMessage>}
+          <S.inputWapper width={width as number}>
+            <S.label>새 비밀번호 재확인</S.label>
+            <Controller
+              control={control}
+              name="password_confirm"
+              defaultValue=""
+              rules={{
+                required: false,
+                pattern: {
+                  value: passwordRegExp,
+                  message: '비밀번호 불일치',
+                },
+              }}
+              render={({ field }) => (
+                <S.input
+                  width={inputWidth as number}
+                  type="password"
+                  placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
+                  onChange={field.onChange}
+                  value={field.value}
+                  className={
+                    PasswordConfirm && Password === PasswordConfirm
+                      ? 'passwordMatch'
+                      : ''
+                  }
+                />
+              )}
+            />
+          </S.inputWapper>
+          {PasswordConfirm && Password === PasswordConfirm ? (
+            <S.successMessage>비밀번호 일치</S.successMessage>
+          ) : (
+            <S.errorMessage>{errors?.password_confirm?.message}</S.errorMessage>
+          )}
+        </S.inputcontainer>
+        <S.btnContainer display={display as string}>
+          <CancelBtn
+            text="취소"
+            color={'cancel'}
+            onClick={onClick}
+            width={btnWidth as number}
+            height={height as number}
+            fontSize={fontSize as number}
+            radius={radius as number}
           />
-        </S.inputWapper>
-        {Password && (
-          <S.errorMessage>{errors?.password?.message}</S.errorMessage>
-        )}
-        {isValid && <S.successMessage>사용가능</S.successMessage>}
-        <S.inputWapper>
-          <S.label>새 비밀번호 재확인</S.label>
-          <Controller
-            control={control}
-            name="password_confirm"
-            defaultValue=""
-            rules={{
-              required: false,
-              pattern: {
-                value: passwordRegExp,
-                message: '비밀번호 불일치',
-              },
-            }}
-            render={({ field }) => (
-              <S.input
-                type="password"
-                placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
-                onChange={field.onChange}
-                value={field.value}
-                className={
-                  PasswordConfirm && Password === PasswordConfirm
-                    ? 'passwordMatch'
-                    : ''
-                }
-              />
-            )}
-          />
-        </S.inputWapper>
-        {PasswordConfirm && Password === PasswordConfirm ? (
-          <S.successMessage>비밀번호 일치</S.successMessage>
-        ) : (
-          <S.errorMessage>{errors?.password_confirm?.message}</S.errorMessage>
-        )}
-      </S.inputcontainer>
-      <S.btnContainer>
-        <div onClick={logout}>
-          <CancelBtn text="취소" />
-        </div>
-        {PasswordConfirm && isValid ? (
-          <Link to="/relogin" style={{ textDecoration: 'none' }}>
-            <ConfirmBtn text="확인" />
-          </Link>
-        ) : (
-          <NomalBtn text="확인" />
-        )}
-      </S.btnContainer>
-    </form>
+          {PasswordConfirm && isValid ? (
+            <ConfirmBtn
+              color={'confirm'}
+              text={text as string}
+              width={btnWidth as number}
+              height={height as number}
+              fontSize={fontSize as number}
+              radius={radius as number}
+            />
+          ) : (
+            <NomalBtn
+              color={'nomal'}
+              text={text as string}
+              width={btnWidth as number}
+              height={height as number}
+              fontSize={fontSize as number}
+              radius={radius as number}
+            />
+          )}
+        </S.btnContainer>
+      </form>
+    </S.main>
   );
 };
 
 const S = {
-  main: styled.main``,
-  inputcontainer: styled.div`
+  main: styled.main<{ right: number }>`
+    margin-right: ${(props) => props.right}px;
+  `,
+  inputcontainer: styled.div<{ width: number }>`
+    width: ${(props) => props.width || 750}px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 10px;
   `,
-  inputWapper: styled.div`
-    width: 750px;
+  inputWapper: styled.div<{ width: number }>`
+    width: ${(props) => props.width || 750}px;
     display: flex;
     justify-content: space-between;
     align-items: center;
   `,
   label: styled.label``,
-  input: styled.input`
-    width: 550px;
+  input: styled.input<{ width: number }>`
+    width: ${(props) => props.width || 550}px;
     height: 40px;
     padding: 10px;
     font-size: 14px;
@@ -181,49 +232,11 @@ const S = {
     font-weight: bold;
     justify-content: flex-end;
   `,
-  btnContainer: styled.div`
+  btnContainer: styled.div<{ display: string }>`
     display: flex;
-    justify-content: space-evenly;
-    margin-top: 70px;
-  `,
-  cancelBtn: styled.p`
-    width: 200px;
-    height: 50px;
-    margin-top: 30px;
-    border-radius: 10px;
-    color: white;
-    background-color: #bfbfbf;
-    border: none;
-    font-size: 17px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  `,
-  unconfirmlBtn: styled.p`
-    width: 200px;
-    height: 50px;
-    margin-top: 30px;
-    border-radius: 10px;
-    color: white;
-    background-color: #bfbfbf;
-    border: none;
-    font-size: 17px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  `,
-  confirmlBtn: styled.button`
-    width: 200px;
-    height: 50px;
-    margin-top: 30px;
-    border-radius: 10px;
-    color: white;
-    background-color: #4990d3;
-    border: none;
-    font-size: 17px;
-    cursor: pointer;
+    justify-content: ${(props) => props.display};
+    gap: 20px;
+    margin-top: 50px;
   `,
 };
 export default ChangePassword;

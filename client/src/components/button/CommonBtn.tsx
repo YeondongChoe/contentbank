@@ -1,101 +1,146 @@
-import { NONAME } from 'dns';
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 interface Styleprop {
-  type?: 'nomal' | 'confirm' | 'cancel';
-  fontSize?: '16px' | '12px';
+  width?: number;
+  color?: string;
+  height?: number;
+  fontSize?: number;
+  radius?: number;
+  btnWidth?: number;
+  text?: string;
+  onClick?: () => void;
 }
 
-type Btn = {
-  text: string;
-};
-
-export const NomalBtn = (props: Btn) => {
+export const NomalBtn: React.FC<Styleprop> = (props) => {
+  const { width, height, fontSize, radius, onClick, color } = props;
   return (
-    <S.btnContainer type="nomal">
-      <S.nomalBtn fontSize="16px">{props.text}</S.nomalBtn>
+    <S.btnContainer
+      color={color}
+      radius={radius}
+      width={width}
+      height={height}
+      onClick={onClick}
+    >
+      <S.nomalBtn fontSize={fontSize}>{props.text}</S.nomalBtn>
     </S.btnContainer>
   );
 };
 
-export const ConfirmBtn = (props: Btn) => {
+export const ConfirmBtn: React.FC<Styleprop> = (props) => {
+  const { width, height, fontSize, radius, onClick, color } = props;
+
   return (
-    <S.btnContainer type="confirm">
-      <S.confirmBtn fontSize="16px">{props.text}</S.confirmBtn>
+    <S.btnContainer
+      color={color}
+      radius={radius}
+      width={width}
+      height={height}
+      onClick={onClick}
+    >
+      <S.confirmBtn fontSize={fontSize}>{props.text}</S.confirmBtn>
     </S.btnContainer>
   );
 };
 
-export const CancelBtn = (props: Btn) => {
+export const CancelBtn: React.FC<Styleprop> = (props) => {
+  const { width, height, fontSize, radius, onClick, color } = props;
+
   return (
-    <S.btnContainer type="cancel">
-      <S.cancelBtn fontSize="16px">{props.text}</S.cancelBtn>
+    <S.btnContainer
+      color={color}
+      radius={radius}
+      width={width}
+      height={height}
+      onClick={onClick}
+    >
+      <S.cancelBtn fontSize={fontSize}>{props.text}</S.cancelBtn>
+    </S.btnContainer>
+  );
+};
+
+export const EditBtn: React.FC<Styleprop> = (props) => {
+  const { btnWidth, height, fontSize, radius, color, onClick } = props;
+
+  return (
+    <S.btnContainer
+      color={color}
+      radius={radius}
+      width={btnWidth}
+      height={height}
+      onClick={onClick}
+    >
+      <S.editBtn fontSize={fontSize}>{props.text}</S.editBtn>
+    </S.btnContainer>
+  );
+};
+
+export const SaveBtn: React.FC<Styleprop> = (props) => {
+  const { btnWidth, height, fontSize, radius, color } = props;
+
+  return (
+    <S.btnContainer
+      color={color}
+      radius={radius}
+      width={btnWidth}
+      height={height}
+    >
+      <S.saveBtn fontSize={fontSize}>{props.text}</S.saveBtn>
     </S.btnContainer>
   );
 };
 
 const S = {
-  btnContainer: styled.div<Styleprop>`
-    width: 250px;
-    height: 60px;
-    border: ${(props) => {
-      if (props.type === 'nomal') {
-        return '1px solid #4990d3';
-      }
-    }};
+  btnContainer: styled.button<Styleprop>`
+    width: ${(props) => props.width}px;
+    height: ${(props) => props.height}px;
+    border: ${(props) =>
+      props.color === 'nomal' ? '1px solid #4990d3' : 'none'};
     background-color: ${(props) => {
-      if (props.type === 'nomal') {
+      if (props.color === 'nomal') {
         return 'white';
       }
-      if (props.type === 'confirm') {
+      if (props.color === 'confirm') {
         return '#4990d3';
       }
-      if (props.type === 'cancel') {
-        return '#bfbfbf';
+      if (props.color === 'cancel') {
+        return '#cfcfcf';
       }
     }};
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: ${(props) => props.radius}px;
     font-weight: bold;
   `,
-  nomalBtn: styled.p<Styleprop>`
+  nomalBtn: styled.button<Styleprop>`
     color: #4990d3;
-    font-size: ${(props) => {
-      if (props.fontSize === '12px') {
-        return '12px';
-      }
-      if (props.fontSize === '16px') {
-        return '16px';
-      }
-    }};
+    outline: none;
+    border: none;
+    background: none;
+    font-size: ${(props) => props.fontSize}px;
+    cursor: pointer;
   `,
   confirmBtn: styled.button<Styleprop>`
     color: white;
     border: none;
     background: none;
     outline: none;
-    font-size: ${(props) => {
-      if (props.fontSize === '12px') {
-        return '12px';
-      }
-      if (props.fontSize === '16px') {
-        return '16px';
-      }
-    }};
+    font-size: ${(props) => props.fontSize}px;
+    cursor: pointer;
   `,
   cancelBtn: styled.p<Styleprop>`
     color: white;
-    font-size: ${(props) => {
-      if (props.fontSize === '12px') {
-        return '12px';
-      }
-      if (props.fontSize === '16px') {
-        return '16px';
-      }
-    }};
+    font-size: ${(props) => props.fontSize}px;
+  `,
+  editBtn: styled.p<Styleprop>`
+    color: #797979;
+    font-size: ${(props) => props.fontSize}px;
+  `,
+  saveBtn: styled.p<Styleprop>`
+    color: white;
+    font-size: ${(props) => props.fontSize}px;
   `,
 };

@@ -6,7 +6,7 @@ export const Styled_Alert = {
     top: 0;
     left: 0;
     width: 1280px;
-    height: 30%;
+    height: 100%;
     background-color: rgba(255, 255, 255, 0.5);
     display: flex;
     justify-content: center;
@@ -21,6 +21,7 @@ export const Styled_Alert = {
     width: 300px;
     height: 130px;
     border: 1px solid gray;
+    background-color: white;
   `,
   alertdiv: styled.div`
     width: 100%;
@@ -43,8 +44,8 @@ export const Styled_Alert = {
   selectDiv: styled.div`
     width: 100%;
     height: 40px;
-    background-color: #e5e5e5;
-    border-top: 1px solid gray;
+    //background-color: #e5e5e5;
+    //border-top: 1px solid gray;
     display: flex;
     justify-content: space-evenly;
   `,
@@ -59,5 +60,6 @@ export const Styled_Alert = {
     cursor: pointer;
     color: #4990d3;
     font-size: 12px;
+    font-weight: bold;
   `,
 };

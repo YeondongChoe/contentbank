@@ -24,10 +24,10 @@ const Login = () => {
     getCookie('userId') ? true : false,
   );
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+  const [isErrorMsg, setIsErrorMsg] = useState('');
 
   const openAlert = () => {
     setIsAlertOpen(true);
-    console.log('open');
   };
 
   const {
@@ -49,27 +49,16 @@ const Login = () => {
       })
       .then((response) => {
         if (response.status === 200) {
-          setCookie(
-            'userInfo',
-            JSON.stringify({
-              email: response.data.email,
-            }),
-            { path: '/' },
-          );
           setCookie('accessToken', response.data.access_token, {
             path: '/',
             sameSite: 'strict',
             secure: true,
           });
-          setCookie('refreshToken', response.data.refresh_token, {
-            path: '/',
-            sameSite: 'strict',
-            secure: true,
-          });
-          // alert('[로그인 성공] 메인 페이지로 이동합니다');
-          navigate('/firstlogin');
-          // window.location.reload();
-          // console.log(getCookie('accessToken'));
+          if (response.data.initPassword === true) {
+            navigate('/firstlogin');
+          } else {
+            navigate('/mypage');
+          }
         }
         if (isClicked === true) {
           setCookie('userId', Id, { path: '/' });
@@ -77,7 +66,8 @@ const Login = () => {
           removeCookie('userId', { path: '/' });
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        setIsErrorMsg(error.response.data.message);
         openAlert();
       });
   };
@@ -147,12 +137,7 @@ const Login = () => {
         <S.message>
           * 아이디/ 비밀번호를 모르실 경우, 관리자에게 문의해주세요.
         </S.message>
-        {isAlertOpen && (
-          <NoticeAlert
-            title="아이디 또는 비밀번호를 잘못 입력했습니다."
-            description="입력하신 내용을 다시 확인해주세요."
-          />
-        )}
+        {isAlertOpen && <NoticeAlert title={isErrorMsg} />}
       </S.main>
     </>
   );
