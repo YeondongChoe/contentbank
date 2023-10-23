@@ -48,7 +48,7 @@ const Mypage = () => {
             setCookie('accessToken', response.headers['authorization'], {
               path: '/',
               sameSite: 'strict',
-              secure: true,
+              secure: false,
             });
           }
         }
@@ -86,7 +86,7 @@ const Mypage = () => {
             setCookie('accessToken', response.headers['authorization'], {
               path: '/',
               sameSite: 'strict',
-              secure: true,
+              secure: false,
             });
           }
         }
