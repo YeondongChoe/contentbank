@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import { Styled_Mypage } from './Mypage.style';
 import { EditBtn, SaveBtn } from '../../components/button/CommonBtn';
 import { useRecoilState } from 'recoil';
-import { alertState } from '../../recoil/alert';
+import { alertState } from '../../recoil/State';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import ChangePassword from '../../components/password/ChangePassword';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { getCookie, setCookie } from '../../utils/ReactCookie';
 
 const Mypage = () => {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+  const [isName, setIsName] = useState('');
+  const [member, setMember] = useState({
+    id: null,
+    name: null,
+    key: null,
+    authority: null,
+    comment: null,
+    enabled: null,
+  });
   const navigate = useNavigate();
 
   const handleNameEdit = () => {
@@ -18,11 +29,35 @@ const Mypage = () => {
   };
 
   const handleNameSave = () => {
-    setIsNameEdit(!isNameEdit);
-    //api연결하기
-    //성공적으로 작동하면 alert 띄우기
-    //실패하면 실패메시지로 alert 띄우기
-    setIsAlertOpen(true);
+    const data = {
+      authority: member.authority,
+      name: isName,
+      comment: member.comment,
+      enabled: member.enabled,
+    };
+    return axios
+      .put(`/auth-service/api/v1/auth/${member.key}`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getCookie('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.headers['authorization'] !== getCookie('accessToken')) {
+            setCookie('accessToken', response.headers['authorization'], {
+              path: '/',
+              sameSite: 'strict',
+              secure: true,
+            });
+          }
+        }
+        setIsNameEdit(!isNameEdit);
+        setIsAlertOpen(true);
+      })
+      .catch((error) => {
+        alert(error.response.data.message);
+      });
   };
 
   const handlePasswordEdit = () => {
@@ -30,23 +65,72 @@ const Mypage = () => {
     setIsNameEdit(false);
   };
 
+  useEffect(() => {
+    if (!getCookie('accessToken')) {
+      alert('잘못된 접근입니다.');
+      navigate('/', { replace: true });
+    }
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get('/auth-service/api/v1/auth/my-info', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getCookie('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.headers['authorization'] !== getCookie('accessToken')) {
+            setCookie('accessToken', response.headers['authorization'], {
+              path: '/',
+              sameSite: 'strict',
+              secure: true,
+            });
+          }
+        }
+        setMember({
+          id: response?.data?.data?.id,
+          name: response?.data?.data?.name,
+          key: response?.data?.data?.key,
+          authority: response?.data?.data?.authority.code,
+          comment: response?.data?.data?.comment,
+          enabled: response?.data?.data?.enabled,
+        });
+      })
+      .catch((error) => {
+        alert(error.response?.data?.message);
+      });
+  }, [setMember, isNameEdit]);
+
   return (
     <>
-      <S.main>
-        <S.title>마이페이지</S.title>
-        <S.titleContainer>
-          <S.subTitle>내 정보</S.subTitle>
-        </S.titleContainer>
-        <S.inputcontainer>
-          <S.inputWapper>
-            <S.label>아이디</S.label>
-            <S.information>test1</S.information>
-          </S.inputWapper>
-          <S.inputWapper>
-            <S.label>이름</S.label>
-            {!isNameEdit && <S.information>홍길동</S.information>}
+      <Styled_Mypage.main>
+        <Styled_Mypage.title>마이페이지</Styled_Mypage.title>
+        <Styled_Mypage.titleContainer>
+          <Styled_Mypage.subTitle>내 정보</Styled_Mypage.subTitle>
+        </Styled_Mypage.titleContainer>
+        <Styled_Mypage.inputcontainer>
+          <Styled_Mypage.inputWapper>
+            <Styled_Mypage.label>아이디</Styled_Mypage.label>
+            <Styled_Mypage.information>{member.id}</Styled_Mypage.information>
+          </Styled_Mypage.inputWapper>
+          <Styled_Mypage.inputWapper>
+            <Styled_Mypage.label>이름</Styled_Mypage.label>
+            {!isNameEdit && (
+              <Styled_Mypage.information>
+                {member.name}
+              </Styled_Mypage.information>
+            )}
             {isNameEdit && (
-              <S.input type="type" placeholder="수정할 이름을 입력하세요." />
+              <Styled_Mypage.input
+                type="type"
+                placeholder="수정할 이름을 입력하세요."
+                onChange={(e) => {
+                  setIsName(e.target.value);
+                }}
+              />
             )}
             {!isNameEdit && !isPasswordEdit && (
               <div onClick={handleNameEdit}>
@@ -71,15 +155,17 @@ const Mypage = () => {
                 />
               </div>
             )}
-          </S.inputWapper>
-          <S.inputWapper>
-            <S.label>권한</S.label>
-            <S.information>권한1</S.information>
-          </S.inputWapper>
+          </Styled_Mypage.inputWapper>
+          <Styled_Mypage.inputWapper>
+            <Styled_Mypage.label>권한</Styled_Mypage.label>
+            <Styled_Mypage.information>
+              {member.authority}
+            </Styled_Mypage.information>
+          </Styled_Mypage.inputWapper>
           {!isPasswordEdit && (
-            <S.inputWapper>
-              <S.label>비밀번호</S.label>
-              <S.btnWrapper>
+            <Styled_Mypage.inputWapper>
+              <Styled_Mypage.label>비밀번호</Styled_Mypage.label>
+              <Styled_Mypage.btnWrapper>
                 <EditBtn
                   text="재설정"
                   btnWidth={60}
@@ -88,17 +174,17 @@ const Mypage = () => {
                   fontSize={13}
                   onClick={handlePasswordEdit}
                 />
-              </S.btnWrapper>
-            </S.inputWapper>
+              </Styled_Mypage.btnWrapper>
+            </Styled_Mypage.inputWapper>
           )}
-        </S.inputcontainer>
+        </Styled_Mypage.inputcontainer>
 
         {isAlertOpen && <NoticeAlert title="이름이 수정되었습니다.." />}
         {isPasswordEdit && (
           <>
-            <S.titleContainer>
-              <S.subTitle>비밀번호 변경</S.subTitle>
-            </S.titleContainer>
+            <Styled_Mypage.titleContainer>
+              <Styled_Mypage.subTitle>비밀번호 변경</Styled_Mypage.subTitle>
+            </Styled_Mypage.titleContainer>
             <ChangePassword
               right={-110}
               width={500}
@@ -113,73 +199,9 @@ const Mypage = () => {
             />
           </>
         )}
-      </S.main>
+      </Styled_Mypage.main>
     </>
   );
-};
-
-const S = {
-  main: styled.main`
-    width: 1280px;
-    //height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 100px;
-  `,
-  title: styled.div`
-    font-size: 25px;
-  `,
-  titleContainer: styled.div`
-    width: 400px;
-    margin-top: 60px;
-    margin-bottom: 40px;
-  `,
-  subTitle: styled.div`
-    width: 200px;
-    height: 25px;
-    background-color: #ebebeb;
-    color: #665f5f;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  `,
-  inputcontainer: styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-  `,
-  inputWapper: styled.div`
-    width: 400px;
-    display: flex;
-    align-items: center;
-    //justify-content: center;
-  `,
-  label: styled.label`
-    width: 100px;
-    display: flex;
-    font-size: 14px;
-  `,
-  input: styled.input`
-    width: 200px;
-    padding: 5px;
-    border: none;
-    border-bottom: 1px solid #c5c5c5;
-    outline: none;
-    font-size: 12px;
-    margin: 0 auto;
-  `,
-  information: styled.p`
-    width: 200px;
-    font-size: 14px;
-  `,
-  btnWrapper: styled.div`
-    width: 200px;
-    display: flex;
-    justify-content: center;
-  `,
 };
 
 export default Mypage;

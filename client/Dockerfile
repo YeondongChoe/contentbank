@@ -1,5 +1,6 @@
 # 노드 이미지를 최신 버전으로 가져옴
 FROM node:latest as build
+# 1. nginx 설치
 
 # Node.js 앱을 위한 app 폴더 생성
 RUN mkdir -p /app
@@ -19,7 +20,20 @@ RUN npm install
 # 앱이 3000번 포트에 바인딩 되어있기 때문에 컨테이너의 3000번 포트를 열어줌
 # EXPOSE 3000
 # 인자값을 지정하지 않을시 node app.js를 실행
-ENTRYPOINT [ "npm", "start" ]
+CMD [ "npm", "start" ]
+# 2. build
+
+
+# 3. ./client/build -> nginx root directory에 복사
+
+
+
+
+
+
+
+
+
 
 # working directory 지정
 # WORKDIR /app
