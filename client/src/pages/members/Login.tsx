@@ -80,7 +80,7 @@ const Login = () => {
   return (
     <>
       <S.main>
-        <S.title>로그인별</S.title>
+        <S.title>로그인별별</S.title>
         <form onSubmit={handleSubmit(onSubmit)}>
           <S.inputcontainer>
             <Controller
