@@ -7,6 +7,7 @@ import Login from './pages/members/Login';
 import FirstLogin from './pages/members/FirstLogin';
 import Relogin from './pages/members/Relogin';
 import Mypage from './pages/mypage/Mypage';
+import Contentpage from './pages/content/Content';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: '/mypage',
         element: <Mypage />,
+      },
+      {
+        path: '/contentpage',
+        element: <Contentpage />,
       },
     ],
   },
