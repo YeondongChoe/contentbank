@@ -5,6 +5,7 @@ export const alertState = atom({
   default: false,
 });
 
+/*
 export const memberState = atom({
   key: 'memberState',
   default: {
@@ -16,3 +17,4 @@ export const memberState = atom({
     enabled: null,
   },
 });
+*/
