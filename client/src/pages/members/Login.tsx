@@ -80,7 +80,7 @@ const Login = () => {
   return (
     <>
       <S.main>
-        <S.title>로그인</S.title>
+        <S.title>로그인별</S.title>
         <form onSubmit={handleSubmit(onSubmit)}>
           <S.inputcontainer>
             <Controller
@@ -145,7 +145,7 @@ const Login = () => {
 
 const S = {
   main: styled.main`
-    width: 1280px;
+    width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
