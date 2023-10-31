@@ -1,6 +1,7 @@
 import styled from 'styled-components';
+import { Button } from '@mui/material';
 
-export const Styled_Mypage = {
+export const Styled = {
   main: styled.main`
     width: 1280px;
     //height: 100vh;
@@ -27,7 +28,7 @@ export const Styled_Mypage = {
     align-items: center;
     justify-content: center;
   `,
-  inputcontainer: styled.div`
+  inputContainer: styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -57,9 +58,35 @@ export const Styled_Mypage = {
     width: 200px;
     font-size: 14px;
   `,
-  btnWrapper: styled.div`
+  btnContainer: styled.div`
     width: 200px;
     display: flex;
     justify-content: center;
   `,
+  btnWrapper: styled.button`
+    border: none;
+    background-color: transparent;
+  `,
 };
+
+export const StyledEditBtn = styled(Button)`
+  && {
+    width: 80px;
+    height: 25px;
+    border-radius: 15px;
+    font-size: 13px;
+    line-height: normal;
+  }
+`;
+
+export const StyledSaveBtn = styled(Button)`
+  && {
+    width: 80px;
+    height: 25px;
+    border-radius: 15px;
+    font-size: 13px;
+    color: white;
+    font-weight: bolder;
+    line-height: normal;
+  }
+`;

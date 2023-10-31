@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
-export const Styled_Alert = {
+export const Styled = {
   alertOverlay: styled.div`
     position: fixed;
     top: 0;
     left: 0;
-    width: 1280px;
+    width: 100%;
     height: 100%;
     background-color: rgba(255, 255, 255, 0.5);
     display: flex;
@@ -23,7 +23,7 @@ export const Styled_Alert = {
     border: 1px solid gray;
     background-color: white;
   `,
-  alertdiv: styled.div`
+  alertContainer: styled.div`
     width: 100%;
   `,
   cancelIcon: styled.div`
@@ -44,8 +44,6 @@ export const Styled_Alert = {
   selectDiv: styled.div`
     width: 100%;
     height: 40px;
-    //background-color: #e5e5e5;
-    //border-top: 1px solid gray;
     display: flex;
     justify-content: space-evenly;
   `,

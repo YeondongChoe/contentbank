@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import {
-  MdRadioButtonUnchecked,
-  MdOutlineCheckCircleOutline,
-} from 'react-icons/md';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import axios from 'axios';
 import { setCookie, getCookie, removeCookie } from '../../utils/ReactCookie';
 import { useNavigate } from 'react-router-dom';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/State';
-import { ConfirmBtn } from '../../components/button/CommonBtn';
 import { passwordRegExp } from '../../utils/RegExp';
+import { Button } from '@mui/material';
 
 interface SigninData {
   id: string;
@@ -24,7 +22,7 @@ const Login = () => {
     getCookie('userId') ? true : false,
   );
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
-  const [isErrorMsg, setIsErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const openAlert = () => {
     setIsAlertOpen(true);
@@ -57,7 +55,7 @@ const Login = () => {
           if (response.data.initPassword === true) {
             navigate('/firstlogin');
           } else {
-            navigate('/mypage');
+            navigate('/contentpage');
           }
         }
         if (isClicked === true) {
@@ -67,22 +65,21 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        setIsErrorMsg(error.response.data.message);
+        setErrorMsg(error.response.data.message);
         openAlert();
       });
   };
 
   const clickHandler = () => {
     setIsClicked(!isClicked);
-    console.log('clicked');
   };
 
   return (
     <>
       <S.main>
-        <S.title>로그인별</S.title>
+        <S.title>로그인</S.title>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <S.inputcontainer>
+          <S.inputContainer>
             <Controller
               control={control}
               name="id"
@@ -124,20 +121,24 @@ const Login = () => {
             <S.saveWarraper>
               <S.saveIcon onClick={clickHandler}>
                 {isClicked ? (
-                  <MdOutlineCheckCircleOutline />
+                  <CheckCircleOutlineIcon fontSize="small" />
                 ) : (
-                  <MdRadioButtonUnchecked />
+                  <RadioButtonUncheckedIcon fontSize="small" />
                 )}
+                <S.saveId>아이디 저장</S.saveId>
               </S.saveIcon>
-              <S.saveId>아이디 저장</S.saveId>
             </S.saveWarraper>
-          </S.inputcontainer>
-          <S.button>로그인</S.button>
+          </S.inputContainer>
+          <S.btnWrapper>
+            <StyledBtn variant="contained" size="large">
+              로그인
+            </StyledBtn>
+          </S.btnWrapper>
         </form>
         <S.message>
           * 아이디/ 비밀번호를 모르실 경우, 관리자에게 문의해주세요.
         </S.message>
-        {isAlertOpen && <NoticeAlert title={isErrorMsg} />}
+        {isAlertOpen && <NoticeAlert title={errorMsg} />}
       </S.main>
     </>
   );
@@ -157,7 +158,7 @@ const S = {
     margin-bottom: 40px;
   `,
   form: styled.form``,
-  inputcontainer: styled.div`
+  inputContainer: styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -192,19 +193,12 @@ const S = {
   `,
   saveId: styled.p`
     font-size: 14px;
-    display: flex;
-    align-items: center;
+    margin-left: 5px;
   `,
-  button: styled.button`
-    width: 500px;
-    height: 50px;
+  btnWrapper: styled.button`
     margin-top: 30px;
-    border-radius: 10px;
-    color: white;
-    background-color: #4990d3;
+    background-color: transparent;
     border: none;
-    font-size: 17px;
-    cursor: pointer;
   `,
   message: styled.p`
     font-size: 12px;
@@ -212,4 +206,13 @@ const S = {
   `,
 };
 
+const StyledBtn = styled(Button)`
+  && {
+    width: 500px;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 17px;
+    line-height: normal;
+  }
+`;
 export default Login;

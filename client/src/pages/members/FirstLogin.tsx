@@ -28,13 +28,10 @@ const FirstLogin = () => {
           </S.discription>
         </S.discriptionContainer>
         <ChangePassword
-          onCancel={logout}
+          onClick={logout}
+          display="space-evenly"
           btnWidth={250}
           height={60}
-          radius={10}
-          fontSize={16}
-          text="확인"
-          display="space-evenly"
         />
       </S.main>
     </>
@@ -43,7 +40,7 @@ const FirstLogin = () => {
 
 const S = {
   main: styled.main`
-    width: 1280px;
+    width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;

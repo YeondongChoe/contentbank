@@ -1,81 +1,200 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { PiPiggyBankLight } from 'react-icons/pi';
+import { useSetRecoilState } from 'recoil';
+import { contentCreateState } from '../recoil/State';
+import axios from 'axios';
+import { getCookie, setCookie } from '../utils/ReactCookie';
+
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
+
+type MenuListType = {
+  seq: number;
+  code: string;
+  depth: number;
+  method: string;
+  name: string;
+  sort: number;
+  type: string;
+  url: null;
+  enabled: boolean;
+  children: [
+    {
+      seq: number;
+      code: string;
+      depth: number;
+      method: string;
+      name: string;
+      sort: number;
+      type: string;
+      url: null;
+      enabled: boolean;
+      children: null;
+    },
+    {
+      seq: number;
+      code: string;
+      depth: number;
+      method: string;
+      name: string;
+      sort: number;
+      type: string;
+      url: null;
+      enabled: boolean;
+      children: null;
+    },
+  ];
+};
 
 const Header = () => {
-  const [ischoice, setIsChoice] = useState(0);
+  const [value, setValue] = useState('');
+  const setClickValue = useSetRecoilState(contentCreateState);
+  const [activeTab, setActiveTab] = useState(0);
+  const [menuValue, setMenuValue] = useState<MenuListType[]>();
 
-  const handleChoice1 = () => {
-    if (ischoice === 1) {
-      setIsChoice(0);
-    } else setIsChoice(1);
+  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+    setActiveTab(0);
   };
 
-  const handleChoice2 = () => {
-    if (ischoice === 2) {
-      setIsChoice(0);
-    } else setIsChoice(2);
+  const handleClickSidebar = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {};
+
+  const clickTabPanel = (code: string) => {
+    if (code === 'CNC_Q') {
+      setActiveTab(1);
+      setClickValue(1);
+    } else if (code === 'CNC_W') {
+      setActiveTab(2);
+      setClickValue(2);
+    } else if (code === 'CNM_Q') {
+      setActiveTab(1);
+      setClickValue(3);
+    } else if (code === 'CNM_T') {
+      setActiveTab(2);
+      setClickValue(4);
+    } else if (code === 'OPM_M') {
+      setActiveTab(1);
+      setClickValue(5);
+    } else if (code === 'OPM_R') {
+      setActiveTab(2);
+      setClickValue(6);
+    }
   };
 
-  const handleChoice3 = () => {
-    if (ischoice === 3) {
-      setIsChoice(0);
-    } else setIsChoice(3);
+  const getMenuList = async () => {
+    await axios
+      .get('/auth-service/api/v1/menu', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getCookie('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.headers['authorization'] !== getCookie('accessToken')) {
+            setCookie('accessToken', response.headers['authorization'], {
+              path: '/',
+              sameSite: 'strict',
+              secure: false,
+            });
+          }
+        }
+        setMenuValue(response.data);
+      });
   };
+
+  useEffect(() => {
+    getMenuList();
+  }, []);
 
   return (
     <S.main>
       <S.head>
-        <S.tophead>
-          <S.iconcontainer>
-            <PiPiggyBankLight style={{ fontSize: '50px' }} />
-          </S.iconcontainer>
-          <S.navcontainer>
-            <S.navbar ischoice={ischoice} onClick={handleChoice1}>
-              콘텐츠 제작
-            </S.navbar>
-            <S.navbar ischoice={ischoice} onClick={handleChoice2}>
-              콘텐츠 관리
-            </S.navbar>
-            <S.navbar ischoice={ischoice} onClick={handleChoice3}>
-              운영관리
-            </S.navbar>
-          </S.navcontainer>
-          <S.sidecontainer>
-            <S.sidebar>
-              <S.sidebarmenu>가이드</S.sidebarmenu>
-            </S.sidebar>
-            <S.sidebar>
-              <S.sidebarmenu>고객센터</S.sidebarmenu>
-            </S.sidebar>
-            <S.sidebar>
-              <S.sidebarmenu>마이페이지</S.sidebarmenu>
-            </S.sidebar>
-            <S.sidebar>
-              <S.sidebarmenunoborder>로그아웃</S.sidebarmenunoborder>
-            </S.sidebar>
-          </S.sidecontainer>
-        </S.tophead>
-        <S.bottomhead>
-          {ischoice === 1 && (
-            <S.choicecontainer1>
-              <S.choicebar>문항</S.choicebar>
-              <S.choicebar>학습지</S.choicebar>
-            </S.choicecontainer1>
-          )}
-          {ischoice === 2 && (
-            <S.choicecontainer2>
-              <S.choicebar>문항</S.choicebar>
-              <S.choicebar>문항 정보 트리 구조</S.choicebar>
-            </S.choicecontainer2>
-          )}
-          {ischoice === 3 && (
-            <S.choicecontainer3>
-              <S.choicebar>회원관리</S.choicebar>
-              <S.choicebar>권한관리</S.choicebar>
-            </S.choicecontainer3>
-          )}
-        </S.bottomhead>
+        <S.topHead>
+          <S.iconContainer>
+            <AccountBalanceIcon style={{ fontSize: '70px' }} />
+          </S.iconContainer>
+          <S.navContainer>
+            <Box sx={{ typography: 'body1' }}>
+              <TabContext value={value}>
+                <Box sx={{ borderColor: 'divider' }}>
+                  <TabList onChange={handleChangeTab}>
+                    {menuValue?.map((el, i) => (
+                      <Tab
+                        key={i}
+                        label={el.name}
+                        value={el.seq}
+                        style={{ fontSize: '20px' }}
+                      />
+                    ))}
+                  </TabList>
+                </Box>
+                <S.navBar>
+                  {menuValue?.map((el, i) => (
+                    <>
+                      <TabPanel
+                        value={el.seq}
+                        onClick={(e) => {
+                          clickTabPanel(el?.children?.[0]?.code);
+                        }}
+                        style={{
+                          marginTop: '20px',
+                          marginBottom: '20px',
+                          padding: '0',
+                          borderBottom:
+                            activeTab === 1 ? '2px solid #58a9ffda' : 'initial',
+                        }}
+                      >
+                        {el?.children?.[0]?.name}
+                      </TabPanel>
+                      <TabPanel
+                        value={el.seq}
+                        onClick={(e) => {
+                          clickTabPanel(el?.children?.[1]?.code);
+                        }}
+                        style={{
+                          marginTop: '20px',
+                          marginBottom: '20px',
+                          padding: '0',
+                          borderBottom:
+                            activeTab === 2 ? '2px solid #58a9ffda' : 'initial',
+                        }}
+                      >
+                        {el?.children?.[1]?.name}
+                      </TabPanel>
+                    </>
+                  ))}
+                </S.navBar>
+              </TabContext>
+            </Box>
+          </S.navContainer>
+          <S.sideContainer>
+            <div role="presentation" onClick={handleClickSidebar}>
+              <Breadcrumbs separator="|">
+                <Link underline="hover" color="inherit" href="/">
+                  가이드
+                </Link>
+                <Link underline="hover" color="inherit" href="/mypage">
+                  고객센터
+                </Link>
+                <Link underline="hover" color="inherit" href="/mypage">
+                  마이페이지
+                </Link>
+                <Link underline="hover" color="inherit" href="/">
+                  로그아웃
+                </Link>
+              </Breadcrumbs>
+            </div>
+          </S.sideContainer>
+        </S.topHead>
       </S.head>
     </S.main>
   );
@@ -84,9 +203,7 @@ const Header = () => {
 const S = {
   main: styled.main`
     width: 1280px;
-    height: 80px;
-    //margin-top: 50px;
-    //margin-left: 50px;
+    //margin-bottom: 50px;
     display: flex;
   `,
   head: styled.div`
@@ -94,95 +211,31 @@ const S = {
     display: flex;
     flex-direction: column;
   `,
-  tophead: styled.div`
+  topHead: styled.div`
     display: flex;
     border-bottom: 1px solid gray;
   `,
-  iconcontainer: styled.div`
+  iconContainer: styled.div`
     width: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
   `,
-  navcontainer: styled.nav`
+  navContainer: styled.nav`
     width: 500px;
-    display: flex;
   `,
-  navbar: styled.div<{ ischoice: number }>`
-    width: 200px;
+  navBar: styled.div`
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
+    align-items: flex-end;
+    gap: 50px;
     cursor: pointer;
-    &:first-child {
-      background-color: ${(props) =>
-        props.ischoice === 1 ? '#c9e3ffda' : 'initial'};
-    }
-    &:nth-child(2) {
-      background-color: ${(props) =>
-        props.ischoice === 2 ? '#c9e3ffda' : 'initial'};
-    }
-    &:nth-child(3) {
-      background-color: ${(props) =>
-        props.ischoice === 3 ? '#c9e3ffda' : 'initial'};
-    }
   `,
-  sidecontainer: styled.div`
+  sideContainer: styled.div`
     width: 600px;
     display: flex;
     justify-content: flex-end;
-  `,
-  sidebar: styled.div`
-    width: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  `,
-  sidebarmenu: styled.div`
-    width: 100px;
-    font-size: 14px;
-    border-right: 1px solid gray;
-    cursor: pointer;
-    color: gray;
-  `,
-  sidebarmenunoborder: styled.div`
-    width: 100px;
-    font-size: 14px;
-    cursor: pointer;
-    color: gray;
-  `,
-  bottomhead: styled.div`
-    width: 100%;
-    display: flex;
-    font-size: 18px;
-  `,
-  choicecontainer1: styled.div`
-    display: flex;
-    align-items: center;
-    height: 50px;
-    gap: 60px;
-    margin-left: 225px;
-  `,
-  choicecontainer2: styled.div`
-    display: flex;
-    align-items: center;
-    height: 50px;
-    gap: 60px;
-    margin-left: 390px;
-  `,
-  choicecontainer3: styled.div`
-    display: flex;
-    align-items: center;
-    height: 50px;
-    gap: 60px;
-    margin-left: 575px;
-  `,
-  choicebar: styled.div`
-    cursor: pointer;
-    &:hover {
-      border-bottom: 3px solid skyblue;
-    }
+    align-items: flex-end;
+    margin-bottom: 10px;
   `,
 };
 

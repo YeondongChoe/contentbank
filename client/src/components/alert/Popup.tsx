@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Table from '../table/Table';
+import Table from '../table/StudentTable';
 
 type Alert = {
   description?: string;
@@ -12,17 +12,17 @@ const PopupModal = (prop: Alert) => {
 
   const openAlert = () => {
     setIsAlertOpen(true);
-    console.log('open');
+    //console.log('open');
   };
 
   const closeAlert = () => {
     setIsAlertOpen(false);
-    console.log('close');
+    //console.log('close');
   };
 
   const submit = () => {
     setIsAlertOpen(false);
-    console.log('submit');
+    //console.log('submit');
   };
 
   return (
@@ -63,6 +63,7 @@ const S = {
   container: styled.div`
     width: 500px;
     border: 1px solid gray;
+    background-color: white;
   `,
   alertHead: styled.div`
     width: 100%;

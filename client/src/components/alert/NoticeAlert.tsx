@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Styled_Alert } from './Alert.style';
+import React from 'react';
+import { Styled } from './Alert.style';
 import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/State';
 
@@ -12,10 +12,6 @@ type Alert = {
 const NoticeAlert = (prop: Alert) => {
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
 
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-
   const closeAlert = () => {
     setIsAlertOpen(false);
   };
@@ -23,24 +19,20 @@ const NoticeAlert = (prop: Alert) => {
   return (
     <div>
       {isAlertOpen && (
-        <Styled_Alert.alertOverlay>
-          <Styled_Alert.container>
-            <Styled_Alert.alertdiv>
-              <Styled_Alert.cancelIcon onClick={closeAlert}>
-                X
-              </Styled_Alert.cancelIcon>
-              <Styled_Alert.description>
+        <Styled.alertOverlay>
+          <Styled.container>
+            <Styled.alertContainer>
+              <Styled.cancelIcon onClick={closeAlert}>X</Styled.cancelIcon>
+              <Styled.description>
                 <div>{prop.title}</div>
                 <div> {prop.description}</div>
-              </Styled_Alert.description>
-            </Styled_Alert.alertdiv>
-            <Styled_Alert.selectDiv>
-              <Styled_Alert.confirm onClick={closeAlert}>
-                확인
-              </Styled_Alert.confirm>
-            </Styled_Alert.selectDiv>
-          </Styled_Alert.container>
-        </Styled_Alert.alertOverlay>
+              </Styled.description>
+            </Styled.alertContainer>
+            <Styled.selectDiv>
+              <Styled.confirm onClick={closeAlert}>확인</Styled.confirm>
+            </Styled.selectDiv>
+          </Styled.container>
+        </Styled.alertOverlay>
       )}
     </div>
   );

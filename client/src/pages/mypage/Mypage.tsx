@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Styled_Mypage } from './Mypage.style';
-import { EditBtn, SaveBtn } from '../../components/button/CommonBtn';
+import { Styled } from './Mypage.style';
 import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/State';
 import NoticeAlert from '../../components/alert/NoticeAlert';
@@ -8,12 +7,13 @@ import ChangePassword from '../../components/password/ChangePassword';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
+import { StyledEditBtn, StyledSaveBtn } from './Mypage.style';
 
 const Mypage = () => {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
-  const [isName, setIsName] = useState('');
+  const [nameValue, setNameValue] = useState('');
   const [member, setMember] = useState({
     id: null,
     name: null,
@@ -31,7 +31,7 @@ const Mypage = () => {
   const handleNameSave = () => {
     const data = {
       authority: member.authority,
-      name: isName,
+      name: nameValue,
       comment: member.comment,
       enabled: member.enabled,
     };
@@ -64,14 +64,6 @@ const Mypage = () => {
     setIsPasswordEdit(!isPasswordEdit);
     setIsNameEdit(false);
   };
-
-  // useEffect(() => {
-  //   if (!getCookie('accessToken')) {
-  //     alert('잘못된 접근입니다.');
-  //     navigate('/', { replace: true });
-  //   }
-  // }, []);
-
 
   useEffect(() => {
     axios
@@ -107,85 +99,72 @@ const Mypage = () => {
 
   return (
     <>
-      <Styled_Mypage.main>
-        <Styled_Mypage.title>마이페이지</Styled_Mypage.title>
-        <Styled_Mypage.titleContainer>
-          <Styled_Mypage.subTitle>내 정보</Styled_Mypage.subTitle>
-        </Styled_Mypage.titleContainer>
-        <Styled_Mypage.inputcontainer>
-          <Styled_Mypage.inputWapper>
-            <Styled_Mypage.label>아이디</Styled_Mypage.label>
-            <Styled_Mypage.information>{member.id}</Styled_Mypage.information>
-          </Styled_Mypage.inputWapper>
-          <Styled_Mypage.inputWapper>
-            <Styled_Mypage.label>이름</Styled_Mypage.label>
+      <Styled.main>
+        <Styled.title>마이페이지</Styled.title>
+        <Styled.titleContainer>
+          <Styled.subTitle>내 정보</Styled.subTitle>
+        </Styled.titleContainer>
+        <Styled.inputContainer>
+          <Styled.inputWapper>
+            <Styled.label>아이디</Styled.label>
+            <Styled.information>{member.id}</Styled.information>
+          </Styled.inputWapper>
+          <Styled.inputWapper>
+            <Styled.label>이름</Styled.label>
             {!isNameEdit && (
-              <Styled_Mypage.information>
-                {member.name}
-              </Styled_Mypage.information>
+              <Styled.information>{member.name}</Styled.information>
             )}
             {isNameEdit && (
-              <Styled_Mypage.input
+              <Styled.input
                 type="type"
                 placeholder="수정할 이름을 입력하세요."
                 onChange={(e) => {
-                  setIsName(e.target.value);
+                  setNameValue(e.target.value);
                 }}
               />
             )}
             {!isNameEdit && !isPasswordEdit && (
-              <div onClick={handleNameEdit}>
-                <EditBtn
-                  text="수정"
-                  btnWidth={60}
-                  height={25}
-                  radius={15}
-                  fontSize={13}
-                />
-              </div>
+              <Styled.btnWrapper>
+                <StyledEditBtn variant="outlined" onClick={handleNameEdit}>
+                  수정
+                </StyledEditBtn>
+              </Styled.btnWrapper>
             )}
             {isNameEdit && !isPasswordEdit && (
-              <div onClick={handleNameSave}>
-                <SaveBtn
-                  text="저장"
-                  color="confirm"
-                  btnWidth={60}
-                  height={25}
-                  radius={15}
-                  fontSize={13}
-                />
-              </div>
+              <Styled.btnWrapper>
+                <StyledSaveBtn variant="contained" onClick={handleNameSave}>
+                  저장
+                </StyledSaveBtn>
+              </Styled.btnWrapper>
             )}
-          </Styled_Mypage.inputWapper>
-          <Styled_Mypage.inputWapper>
-            <Styled_Mypage.label>권한</Styled_Mypage.label>
-            <Styled_Mypage.information>
-              {member.authority}
-            </Styled_Mypage.information>
-          </Styled_Mypage.inputWapper>
+          </Styled.inputWapper>
+          <Styled.inputWapper>
+            <Styled.label>권한</Styled.label>
+            <Styled.information>{member.authority}</Styled.information>
+          </Styled.inputWapper>
           {!isPasswordEdit && (
-            <Styled_Mypage.inputWapper>
-              <Styled_Mypage.label>비밀번호</Styled_Mypage.label>
-              <Styled_Mypage.btnWrapper>
-                <EditBtn
-                  text="재설정"
-                  btnWidth={60}
-                  height={25}
-                  radius={15}
-                  fontSize={13}
-                  onClick={handlePasswordEdit}
-                />
-              </Styled_Mypage.btnWrapper>
-            </Styled_Mypage.inputWapper>
+            <Styled.inputWapper>
+              <Styled.label>비밀번호</Styled.label>
+              <Styled.btnContainer>
+                <Styled.btnWrapper>
+                  <StyledEditBtn
+                    variant="outlined"
+                    onClick={handlePasswordEdit}
+                  >
+                    재설정
+                  </StyledEditBtn>
+                </Styled.btnWrapper>
+              </Styled.btnContainer>
+            </Styled.inputWapper>
           )}
-        </Styled_Mypage.inputcontainer>
+        </Styled.inputContainer>
 
         {isAlertOpen && <NoticeAlert title="이름이 수정되었습니다.." />}
         {isPasswordEdit && (
           <>
-            <Styled_Mypage.titleContainer>
-              <Styled_Mypage.subTitle>비밀번호 변경</Styled_Mypage.subTitle>
-            </Styled_Mypage.titleContainer>
+            <Styled.titleContainer>
+              <Styled.subTitle>비밀번호 변경</Styled.subTitle>
+            </Styled.titleContainer>
             <ChangePassword
               right={-110}
               width={500}
@@ -193,14 +172,11 @@ const Mypage = () => {
               onClick={handlePasswordEdit}
               btnWidth={100}
               height={35}
-              radius={10}
-              fontSize={15}
-              text="저장"
               display="flex-start"
             />
           </>
         )}
-      </Styled_Mypage.main>
+      </Styled.main>
     </>
   );
 };

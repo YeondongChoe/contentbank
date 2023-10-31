@@ -7,7 +7,7 @@ import Login from './pages/members/Login';
 import FirstLogin from './pages/members/FirstLogin';
 import Relogin from './pages/members/Relogin';
 import Mypage from './pages/mypage/Mypage';
-import Contentpage from './pages/content/Content';
+import Contentpage from './pages/content/Contentpage';
 
 const router = createBrowserRouter([
   {

@@ -1,43 +1,37 @@
-import React, { useState } from 'react';
-import { Styled_Alert } from './Alert.style';
+import React from 'react';
+import { Styled } from './Alert.style';
+import { alertState } from '../../recoil/State';
+import { useRecoilState } from 'recoil';
 
 type Alert = {
   title: string;
+  description?: string;
+  onClick?: () => void;
 };
 
 const SelectAlert = (prop: Alert) => {
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-
-  const openAlert = () => {
-    setIsAlertOpen(true);
-    console.log('open');
-  };
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
 
   const closeAlert = () => {
     setIsAlertOpen(false);
-    console.log('close');
   };
 
   return (
     <>
-      <button onClick={openAlert}>Select Alert</button>
       {isAlertOpen && (
-        <Styled_Alert.alertOverlay>
-          <Styled_Alert.container>
-            <Styled_Alert.alertdiv>
-              <Styled_Alert.cancelIcon onClick={closeAlert}>
-                X
-              </Styled_Alert.cancelIcon>
-              <Styled_Alert.description>{prop.title}</Styled_Alert.description>
-            </Styled_Alert.alertdiv>
-            <Styled_Alert.selectDiv>
-              <Styled_Alert.cancel onClick={closeAlert}>
-                취소
-              </Styled_Alert.cancel>
-              <Styled_Alert.confirm>선택</Styled_Alert.confirm>
-            </Styled_Alert.selectDiv>
-          </Styled_Alert.container>
-        </Styled_Alert.alertOverlay>
+        <Styled.alertOverlay>
+          <Styled.container>
+            <Styled.alertContainer>
+              <Styled.cancelIcon onClick={closeAlert}>X</Styled.cancelIcon>
+              <Styled.description>{prop.title}</Styled.description>
+              <Styled.description>{prop.description}</Styled.description>
+            </Styled.alertContainer>
+            <Styled.selectDiv>
+              <Styled.cancel onClick={closeAlert}>취소</Styled.cancel>
+              <Styled.confirm onClick={prop.onClick}>선택</Styled.confirm>
+            </Styled.selectDiv>
+          </Styled.container>
+        </Styled.alertOverlay>
       )}
     </>
   );

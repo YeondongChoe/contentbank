@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { passwordRegExp } from '../../utils/RegExp';
 import { useNavigate } from 'react-router-dom';
-import { ConfirmBtn, CancelBtn, NomalBtn } from '../button/CommonBtn';
-import { getCookie, setCookie, removeCookie } from '../../utils/ReactCookie';
+import { getCookie, setCookie } from '../../utils/ReactCookie';
+import {
+  Styled,
+  StyledCancelBtn,
+  StyledConfirmBtn,
+  StyledNomalBtn,
+} from './ChangePassword.style';
 
 interface PasswordData {
   password: string;
@@ -13,16 +17,12 @@ interface PasswordData {
 }
 
 interface Props {
-  onCancel?: () => void;
   onClick?: () => void;
   width?: number;
   inputWidth?: number;
-  right?: number;
   btnWidth?: number;
   height?: number;
-  fontSize?: number;
-  radius?: number;
-  text?: string;
+  right?: number;
   display?: string;
 }
 
@@ -30,12 +30,9 @@ const ChangePassword: React.FC<Props> = ({
   onClick,
   width,
   inputWidth,
-  right,
   btnWidth,
   height,
-  fontSize,
-  radius,
-  text,
+  right,
   display,
 }) => {
   const {
@@ -70,22 +67,20 @@ const ChangePassword: React.FC<Props> = ({
               secure: true,
             });
           }
-          console.log(getCookie('accessToken'));
-          console.log(response.headers['authorization']);
         }
         navigate('/relogin');
       })
-      .catch((error) => {
-        alert(error.response.data.message);
+      .catch(() => {
+        alert('비밀번호 재확인을 입력해주세요.');
       });
   };
 
   return (
-    <S.main right={right as number}>
+    <Styled.main right={right as number}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <S.inputcontainer width={width as number}>
-          <S.inputWapper width={width as number}>
-            <S.label>새 비밀번호</S.label>
+        <Styled.inputContainer width={width as number}>
+          <Styled.inputWapper width={width as number}>
+            <Styled.label>새 비밀번호</Styled.label>
             <Controller
               control={control}
               name="password"
@@ -98,7 +93,7 @@ const ChangePassword: React.FC<Props> = ({
                 },
               }}
               render={({ field }) => (
-                <S.input
+                <Styled.input
                   width={inputWidth as number}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
@@ -108,13 +103,15 @@ const ChangePassword: React.FC<Props> = ({
                 />
               )}
             />
-          </S.inputWapper>
+          </Styled.inputWapper>
           {Password && (
-            <S.errorMessage>{errors?.password?.message}</S.errorMessage>
+            <Styled.errorMessage>
+              {errors?.password?.message}
+            </Styled.errorMessage>
           )}
-          {isValid && <S.successMessage>사용가능</S.successMessage>}
-          <S.inputWapper width={width as number}>
-            <S.label>새 비밀번호 재확인</S.label>
+          {isValid && <Styled.successMessage>사용가능</Styled.successMessage>}
+          <Styled.inputWapper width={width as number}>
+            <Styled.label>새 비밀번호 재확인</Styled.label>
             <Controller
               control={control}
               name="password_confirm"
@@ -127,7 +124,7 @@ const ChangePassword: React.FC<Props> = ({
                 },
               }}
               render={({ field }) => (
-                <S.input
+                <Styled.input
                   width={inputWidth as number}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
@@ -141,102 +138,51 @@ const ChangePassword: React.FC<Props> = ({
                 />
               )}
             />
-          </S.inputWapper>
+          </Styled.inputWapper>
           {PasswordConfirm && Password === PasswordConfirm ? (
-            <S.successMessage>비밀번호 일치</S.successMessage>
+            <Styled.successMessage>비밀번호 일치</Styled.successMessage>
           ) : (
-            <S.errorMessage>{errors?.password_confirm?.message}</S.errorMessage>
+            <Styled.errorMessage>
+              {errors?.password_confirm?.message}
+            </Styled.errorMessage>
           )}
-        </S.inputcontainer>
-        <S.btnContainer display={display as string}>
-          <CancelBtn
-            text="취소"
-            color={'cancel'}
-            onClick={onClick}
-            width={btnWidth as number}
-            height={height as number}
-            fontSize={fontSize as number}
-            radius={radius as number}
-          />
+        </Styled.inputContainer>
+        <Styled.btnGroupContainer display={display as string}>
+          <Styled.btnWapper>
+            <StyledCancelBtn
+              width={btnWidth}
+              height={height}
+              variant="outlined"
+              onClick={onClick}
+            >
+              취소
+            </StyledCancelBtn>
+          </Styled.btnWapper>
           {PasswordConfirm && isValid ? (
-            <ConfirmBtn
-              color={'confirm'}
-              text={text as string}
-              width={btnWidth as number}
-              height={height as number}
-              fontSize={fontSize as number}
-              radius={radius as number}
-            />
+            <Styled.btnWapper>
+              <StyledConfirmBtn
+                width={btnWidth}
+                height={height}
+                variant="contained"
+              >
+                확인
+              </StyledConfirmBtn>
+            </Styled.btnWapper>
           ) : (
-            <NomalBtn
-              color={'nomal'}
-              text={text as string}
-              width={btnWidth as number}
-              height={height as number}
-              fontSize={fontSize as number}
-              radius={radius as number}
-            />
+            <Styled.btnWapper>
+              <StyledNomalBtn
+                width={btnWidth}
+                height={height}
+                variant="outlined"
+              >
+                확인
+              </StyledNomalBtn>
+            </Styled.btnWapper>
           )}
-        </S.btnContainer>
+        </Styled.btnGroupContainer>
       </form>
-    </S.main>
+    </Styled.main>
   );
 };
 
-const S = {
-  main: styled.main<{ right: number }>`
-    margin-right: ${(props) => props.right}px;
-  `,
-  inputcontainer: styled.div<{ width: number }>`
-    width: ${(props) => props.width || 750}px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-  `,
-  inputWapper: styled.div<{ width: number }>`
-    width: ${(props) => props.width || 750}px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  `,
-  label: styled.label``,
-  input: styled.input<{ width: number }>`
-    width: ${(props) => props.width || 550}px;
-    height: 40px;
-    padding: 10px;
-    font-size: 14px;
-    border: none;
-    border-bottom: 1px solid red;
-    outline: none;
-    &.success {
-      border-color: green;
-    }
-    &.passwordMatch {
-      border-color: green;
-    }
-  `,
-  successMessage: styled.div`
-    width: 550px;
-    font-size: 12px;
-    color: green;
-    display: flex;
-    font-weight: bold;
-    justify-content: flex-end;
-  `,
-  errorMessage: styled.div`
-    width: 550px;
-    font-size: 12px;
-    color: red;
-    display: flex;
-    font-weight: bold;
-    justify-content: flex-end;
-  `,
-  btnContainer: styled.div<{ display: string }>`
-    display: flex;
-    justify-content: ${(props) => props.display};
-    gap: 20px;
-    margin-top: 50px;
-  `,
-};
 export default ChangePassword;

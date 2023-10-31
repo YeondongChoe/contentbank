@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { NomalBtn } from '../../components/button/CommonBtn';
 import { removeCookie } from '../../utils/ReactCookie';
+import { Button } from '@mui/material';
 
 const Relogin = () => {
   const navigate = useNavigate();
@@ -20,15 +20,11 @@ const Relogin = () => {
             새로운 비밀번호로 변경이 완료되었습니다.
           </S.discriptionTitle>
         </S.discriptionContainer>
-        <NomalBtn
-          text="로그인 하러 가기"
-          color="nomal"
-          onClick={onConfirm}
-          width={250}
-          height={60}
-          radius={10}
-          fontSize={18}
-        />
+        <S.btnWrapper>
+          <StyledLoginBtn variant="outlined" onClick={onConfirm}>
+            로그인 하러 가기
+          </StyledLoginBtn>
+        </S.btnWrapper>
       </S.main>
     </>
   );
@@ -36,7 +32,7 @@ const Relogin = () => {
 
 const S = {
   main: styled.main`
-    width: 1280px;
+    width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -56,6 +52,20 @@ const S = {
   discriptionTitle: styled.p`
     font-size: 16px;
   `,
+  btnWrapper: styled.button`
+    border: none;
+    background-color: transparent;
+  `,
 };
+
+const StyledLoginBtn = styled(Button)`
+  && {
+    width: 250px;
+    height: 60px;
+    border-radius: 10px;
+    font-size: 18px;
+    line-height: normal;
+  }
+`;
 
 export default Relogin;

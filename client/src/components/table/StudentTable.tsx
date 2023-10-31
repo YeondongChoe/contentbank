@@ -1,5 +1,5 @@
 import React from 'react';
-import dummy from '../table/data.json';
+import dummy from './data.json';
 import styled from 'styled-components';
 
 const Table = () => {
