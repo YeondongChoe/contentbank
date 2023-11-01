@@ -6,6 +6,7 @@ import Worksheet from '../../components/contents/Worksheet';
 import { useRecoilValue } from 'recoil';
 import { contentCreateState } from '../../recoil/State';
 import Member from '../../components/operation/Member';
+import Authority from '../../components/operation/Authority';
 
 const Contentpage = () => {
   const pageMenu = useRecoilValue(contentCreateState);
@@ -19,7 +20,7 @@ const Contentpage = () => {
       {pageMenu === 3 && '문항'}
       {pageMenu === 4 && '트리구조'}
       {pageMenu === 5 && <Member />}
-      {pageMenu === 6 && '권한관리'}
+      {pageMenu === 6 && <Authority />}
     </S.main>
   );
 };

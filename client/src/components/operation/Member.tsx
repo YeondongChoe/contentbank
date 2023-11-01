@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import MemberTable from '../table/MemberTable';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -19,9 +19,9 @@ const Member = () => {
   return (
     <S.main>
       <S.contentHead>
-        <S.inputContainer>
+        <S.inputWrapper>
           <S.input type="text" placeholder="이름, 권한 검색"></S.input>
-        </S.inputContainer>
+        </S.inputWrapper>
         <S.btnWrapper>
           <StyledUplodeBtn variant="contained" onClick={handleClickRegisterBtn}>
             + 아이디 만들기
@@ -50,7 +50,7 @@ const S = {
     display: flex;
     justify-content: flex-end;
   `,
-  inputContainer: styled.div`
+  inputWrapper: styled.div`
     margin-right: 20px;
     display: flex;
     align-items: center;

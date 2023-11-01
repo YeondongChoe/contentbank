@@ -82,6 +82,7 @@ const MemberTable = () => {
         },
       })
       .then((response) => {
+        console.log(response.headers['authorization']);
         if (response.status === 200) {
           if (response.headers['authorization'] !== getCookie('accessToken')) {
             setCookie('accessToken', response.headers['authorization'], {
@@ -92,6 +93,9 @@ const MemberTable = () => {
           }
         }
         setMemberList(response.data.data.content);
+      })
+      .catch((err) => {
+        alert(err);
       });
   };
 
@@ -259,8 +263,6 @@ const S = {
   tablecontainer: styled.div`
     display: flex;
     justify-content: center;
-    //min-height: 400px;
-    //height: 400px;
     overflow: auto;
   `,
   table: styled.table`
@@ -271,7 +273,6 @@ const S = {
   `,
   tbody: styled.tbody`
     font-size: small;
-    //height: 100px;
   `,
   tr: styled.tr`
     height: 50px;

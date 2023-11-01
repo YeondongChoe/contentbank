@@ -108,6 +108,9 @@ const Header = () => {
           }
         }
         setMenuValue(response.data);
+      })
+      .catch((err) => {
+        alert(err);
       });
   };
 

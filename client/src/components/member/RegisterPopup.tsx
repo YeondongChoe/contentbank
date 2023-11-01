@@ -346,7 +346,7 @@ const RegisterPopup = () => {
                 />
               </Box>
               <S.noticeWarpper>
-                <S.notice>*초기 비밀번호는 dmmath@369입니다.</S.notice>
+                <S.notice>*초기 비밀번호는 drmath@369입니다.</S.notice>
                 <S.notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</S.notice>
               </S.noticeWarpper>
               <S.finalBtnContainer>
