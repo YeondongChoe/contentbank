@@ -101,72 +101,73 @@ const Mypage = () => {
     <>
       <Styled.main>
         <Styled.title>마이페이지</Styled.title>
-        <Styled.titleContainer>
-          <Styled.subTitle>내 정보</Styled.subTitle>
-        </Styled.titleContainer>
-        <Styled.inputContainer>
-          <Styled.inputWapper>
-            <Styled.label>아이디</Styled.label>
-            <Styled.information>{member.id}</Styled.information>
-          </Styled.inputWapper>
-          <Styled.inputWapper>
-            <Styled.label>이름</Styled.label>
-            {!isNameEdit && (
-              <Styled.information>{member.name}</Styled.information>
-            )}
-            {isNameEdit && (
-              <Styled.input
-                type="type"
-                placeholder="수정할 이름을 입력하세요."
-                onChange={(e) => {
-                  setNameValue(e.target.value);
-                }}
-              />
-            )}
-            {!isNameEdit && !isPasswordEdit && (
-              <Styled.btnWrapper>
-                <StyledEditBtn variant="outlined" onClick={handleNameEdit}>
-                  수정
-                </StyledEditBtn>
-              </Styled.btnWrapper>
-            )}
-            {isNameEdit && !isPasswordEdit && (
-              <Styled.btnWrapper>
-                <StyledSaveBtn variant="contained" onClick={handleNameSave}>
-                  저장
-                </StyledSaveBtn>
-              </Styled.btnWrapper>
-            )}
-          </Styled.inputWapper>
-          <Styled.inputWapper>
-            <Styled.label>권한</Styled.label>
-            <Styled.information>{member.authority}</Styled.information>
-          </Styled.inputWapper>
-          {!isPasswordEdit && (
+        <Styled.formContainer>
+          <Styled.titleContainer>
+            <Styled.subTitle>내 정보</Styled.subTitle>
+          </Styled.titleContainer>
+          <Styled.inputContainer>
             <Styled.inputWapper>
-              <Styled.label>비밀번호</Styled.label>
-              <Styled.btnContainer>
+              <Styled.label>아이디</Styled.label>
+              <Styled.information>{member.id}</Styled.information>
+            </Styled.inputWapper>
+            <Styled.inputWapper>
+              <Styled.label>이름</Styled.label>
+              {!isNameEdit && (
+                <Styled.information>{member.name}</Styled.information>
+              )}
+              {isNameEdit && (
+                <Styled.input
+                  type="type"
+                  placeholder="수정할 이름을 입력하세요."
+                  onChange={(e) => {
+                    setNameValue(e.target.value);
+                  }}
+                />
+              )}
+              {!isNameEdit && !isPasswordEdit && (
                 <Styled.btnWrapper>
-                  <StyledEditBtn
-                    variant="outlined"
-                    onClick={handlePasswordEdit}
-                  >
-                    재설정
+                  <StyledEditBtn variant="outlined" onClick={handleNameEdit}>
+                    수정
                   </StyledEditBtn>
                 </Styled.btnWrapper>
-              </Styled.btnContainer>
+              )}
+              {isNameEdit && !isPasswordEdit && (
+                <Styled.btnWrapper>
+                  <StyledSaveBtn variant="contained" onClick={handleNameSave}>
+                    저장
+                  </StyledSaveBtn>
+                </Styled.btnWrapper>
+              )}
             </Styled.inputWapper>
-          )}
-        </Styled.inputContainer>
-
+            <Styled.inputWapper>
+              <Styled.label>권한</Styled.label>
+              <Styled.information>{member.authority}</Styled.information>
+            </Styled.inputWapper>
+            {!isPasswordEdit && (
+              <Styled.inputWapper>
+                <Styled.label>비밀번호</Styled.label>
+                <Styled.btnContainer>
+                  <Styled.btnWrapper>
+                    <StyledEditBtn
+                      variant="outlined"
+                      onClick={handlePasswordEdit}
+                    >
+                      재설정
+                    </StyledEditBtn>
+                  </Styled.btnWrapper>
+                </Styled.btnContainer>
+              </Styled.inputWapper>
+            )}
+          </Styled.inputContainer>
+        </Styled.formContainer>
         {isAlertOpen && <NoticeAlert title="이름이 수정되었습니다.." />}
         {isPasswordEdit && (
-          <>
+          <Styled.formContainer>
             <Styled.titleContainer>
               <Styled.subTitle>비밀번호 변경</Styled.subTitle>
             </Styled.titleContainer>
             <ChangePassword
-              right={-110}
+              marginLeft={10}
               width={500}
               inputWidth={300}
               onClick={handlePasswordEdit}
@@ -174,7 +175,7 @@ const Mypage = () => {
               height={35}
               display="flex-start"
             />
-          </>
+          </Styled.formContainer>
         )}
       </Styled.main>
     </>

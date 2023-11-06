@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSetRecoilState } from 'recoil';
 import { contentCreateState } from '../recoil/State';
 import axios from 'axios';
-import { getCookie, setCookie } from '../utils/ReactCookie';
+import { getCookie, setCookie, removeCookie } from '../utils/ReactCookie';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Box from '@mui/material/Box';
@@ -57,10 +57,17 @@ const Header = () => {
   const setClickValue = useSetRecoilState(contentCreateState);
   const [activeTab, setActiveTab] = useState(0);
   const [menuValue, setMenuValue] = useState<MenuListType[]>();
+  const [didMount, setDidMount] = useState(false);
+
+  let mountCount = 1;
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     setActiveTab(0);
+  };
+
+  const handleRemoveCookie = () => {
+    removeCookie('accessToken');
   };
 
   const handleClickSidebar = (
@@ -90,6 +97,8 @@ const Header = () => {
   };
 
   const getMenuList = async () => {
+    //const controller = new AbortController();
+    //console.count('마운트');
     await axios
       .get('/auth-service/api/v1/menu', {
         headers: {
@@ -108,6 +117,8 @@ const Header = () => {
           }
         }
         setMenuValue(response.data);
+        //console.count('마운트 해제 및 axios 요청 취소');
+        //controller.abort();
       })
       .catch((err) => {
         alert(err);
@@ -115,8 +126,19 @@ const Header = () => {
   };
 
   useEffect(() => {
-    getMenuList();
+    console.log('mount: ', mountCount);
+    mountCount++;
+    setDidMount(true);
+    return () => {
+      console.log('unmount');
+    };
   }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      getMenuList();
+    }
+  }, [didMount]);
 
   return (
     <S.main>
@@ -135,7 +157,7 @@ const Header = () => {
                         key={i}
                         label={el.name}
                         value={el.seq}
-                        style={{ fontSize: '20px' }}
+                        style={{ fontSize: '20px', fontWeight: 'bold' }}
                       />
                     ))}
                   </TabList>
@@ -191,7 +213,12 @@ const Header = () => {
                 <Link underline="hover" color="inherit" href="/mypage">
                   마이페이지
                 </Link>
-                <Link underline="hover" color="inherit" href="/">
+                <Link
+                  underline="hover"
+                  color="inherit"
+                  href="/"
+                  onClick={handleRemoveCookie}
+                >
                   로그아웃
                 </Link>
               </Breadcrumbs>
@@ -206,7 +233,6 @@ const Header = () => {
 const S = {
   main: styled.main`
     width: 1280px;
-    //margin-bottom: 50px;
     display: flex;
   `,
   head: styled.div`
@@ -216,7 +242,7 @@ const S = {
   `,
   topHead: styled.div`
     display: flex;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid #a3aed0;
   `,
   iconContainer: styled.div`
     width: 200px;

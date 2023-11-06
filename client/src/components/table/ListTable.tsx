@@ -140,6 +140,7 @@ const S = {
   `,
   table: styled.table`
     border-collapse: collapse;
+    background-color: white;
   `,
   thead: styled.thead`
     font-size: medium;
@@ -151,11 +152,11 @@ const S = {
     height: 30px;
   `,
   th: styled.th`
-    background-color: #efefef;
-    border: 1px solid #a1a1a1;
+    border: 1px solid #a3aed0;
+    color: #a3aed0;
   `,
   td: styled.td`
-    border: 1px solid #a1a1a1;
+    border: 1px solid #a3aed0;
   `,
 };
 

@@ -64,21 +64,19 @@ const S = {
     height: 40px;
     background-color: gray;
     color: white;
-    border: 1px solid gray;
+    border: 1px solid #a3aed0;
     border-bottom: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     &:first-child {
-      background-color: ${(props) =>
-        props.choiced === 1 ? 'gray' : 'initial'};
+      background-color: ${(props) => (props.choiced === 1 ? 'gray' : 'white')};
       color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
       border-right: none;
     }
     &:nth-child(2) {
-      background-color: ${(props) =>
-        props.choiced === 2 ? 'gray' : 'initial'};
+      background-color: ${(props) => (props.choiced === 2 ? 'gray' : 'white')};
       color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
     }
   `,
@@ -94,6 +92,9 @@ const S = {
     height: 30px;
     outline: none;
     padding: 5px;
+    border-radius: 5px;
+    border: 1px solid white;
+    box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
     &::placeholder {
       font-size: 12px;
     }
@@ -101,7 +102,7 @@ const S = {
   contentBox: styled.div`
     width: 1280px;
     height: 600px;
-    border: 1px solid black;
+    border: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
     margin-right: -40px;

@@ -61,6 +61,9 @@ const S = {
     height: 30px;
     outline: none;
     padding: 5px;
+    border-radius: 5px;
+    border: 1px solid white;
+    box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
     &::placeholder {
       font-size: 12px;
     }
@@ -68,7 +71,7 @@ const S = {
   contentBox: styled.div`
     width: 1280px;
     height: 600px;
-    border: 1px solid black;
+    border: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
     display: flex;

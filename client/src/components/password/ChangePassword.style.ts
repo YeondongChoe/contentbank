@@ -7,9 +7,7 @@ interface Styleprop {
 }
 
 export const Styled = {
-  main: styled.main<{ right: number }>`
-    margin-right: ${(props) => props.right}px;
-  `,
+  main: styled.main``,
   inputContainer: styled.div<{ width: number }>`
     width: ${(props) => props.width || 750}px;
     display: flex;
@@ -23,7 +21,10 @@ export const Styled = {
     justify-content: space-between;
     align-items: center;
   `,
-  label: styled.label``,
+  label: styled.label`
+    margin-left: 10px;
+    color: #a3aed0;
+  `,
   input: styled.input<{ width: number }>`
     width: ${(props) => props.width || 550}px;
     height: 40px;
@@ -32,6 +33,7 @@ export const Styled = {
     border: none;
     border-bottom: 1px solid red;
     outline: none;
+    margin-right: 10px;
     &.success {
       border-color: green;
     }
@@ -46,6 +48,7 @@ export const Styled = {
     display: flex;
     font-weight: bold;
     justify-content: flex-end;
+    margin-right: 10px;
   `,
   errorMessage: styled.div`
     width: 550px;
@@ -54,12 +57,15 @@ export const Styled = {
     display: flex;
     font-weight: bold;
     justify-content: flex-end;
+    margin-right: 10px;
   `,
-  btnGroupContainer: styled.div<{ display: string }>`
+  btnGroupContainer: styled.div<{ display: string; marginLeft: number }>`
     display: flex;
     justify-content: ${(props) => props.display};
     gap: 20px;
     margin-top: 50px;
+    margin-bottom: 20px;
+    margin-left: ${(props) => props.marginLeft || 0}px;
   `,
   btnWapper: styled.button`
     border: none;

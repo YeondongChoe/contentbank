@@ -33,10 +33,14 @@ const SelectBar = () => {
       </S.selectContainer>
       <S.btncontainer>
         <S.btnWrapper>
-          <StyledEditBtn variant="outlined">수정</StyledEditBtn>
+          <StyledEditBtn variant="outlined" sx={{ backgroundColor: 'white' }}>
+            수정
+          </StyledEditBtn>
         </S.btnWrapper>
         <S.btnWrapper>
-          <StyledActionBtn variant="outlined">활성화/비활성화</StyledActionBtn>
+          <StyledActionBtn variant="outlined" sx={{ backgroundColor: 'white' }}>
+            활성화/비활성화
+          </StyledActionBtn>
         </S.btnWrapper>
       </S.btncontainer>
     </S.mainContainer>

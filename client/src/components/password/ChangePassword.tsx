@@ -22,8 +22,8 @@ interface Props {
   inputWidth?: number;
   btnWidth?: number;
   height?: number;
-  right?: number;
   display?: string;
+  marginLeft?: number;
 }
 
 const ChangePassword: React.FC<Props> = ({
@@ -32,8 +32,8 @@ const ChangePassword: React.FC<Props> = ({
   inputWidth,
   btnWidth,
   height,
-  right,
   display,
+  marginLeft,
 }) => {
   const {
     control,
@@ -76,7 +76,7 @@ const ChangePassword: React.FC<Props> = ({
   };
 
   return (
-    <Styled.main right={right as number}>
+    <Styled.main>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Styled.inputContainer width={width as number}>
           <Styled.inputWapper width={width as number}>
@@ -147,13 +147,17 @@ const ChangePassword: React.FC<Props> = ({
             </Styled.errorMessage>
           )}
         </Styled.inputContainer>
-        <Styled.btnGroupContainer display={display as string}>
+        <Styled.btnGroupContainer
+          display={display as string}
+          marginLeft={marginLeft as number}
+        >
           <Styled.btnWapper>
             <StyledCancelBtn
               width={btnWidth}
               height={height}
               variant="outlined"
               onClick={onClick}
+              sx={{ backgroundColor: 'white' }}
             >
               취소
             </StyledCancelBtn>
@@ -174,6 +178,7 @@ const ChangePassword: React.FC<Props> = ({
                 width={btnWidth}
                 height={height}
                 variant="outlined"
+                sx={{ backgroundColor: 'white' }}
               >
                 확인
               </StyledNomalBtn>

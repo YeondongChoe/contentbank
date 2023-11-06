@@ -44,6 +44,9 @@ const MemberTable = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const setIsAlertOpen = useSetRecoilState(alertState);
   const [selectedId, setSelectedId] = useState('');
+  const [didMount, setDidMount] = useState(false);
+
+  let mountCount = 1;
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -133,8 +136,19 @@ const MemberTable = () => {
   };
 
   useEffect(() => {
-    getMemberList();
-  }, [relode, isEdit, isEnabled]);
+    console.log('mount: ', mountCount);
+    mountCount++;
+    setDidMount(true);
+    return () => {
+      console.log('unmount');
+    };
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      getMemberList();
+    }
+  }, [relode, isEdit, isEnabled, didMount]);
 
   const handleDetailInfo = (key: string) => {
     setKeyValue(key);
@@ -169,7 +183,11 @@ const MemberTable = () => {
         </Box>
         <S.btncontainer>
           <S.ableBtnWrapper>
-            <StyledAbledBtn variant="outlined" onClick={enableSubmit}>
+            <StyledAbledBtn
+              variant="outlined"
+              onClick={enableSubmit}
+              sx={{ backgroundColor: 'white' }}
+            >
               비활성화
             </StyledAbledBtn>
           </S.ableBtnWrapper>
@@ -267,6 +285,7 @@ const S = {
   `,
   table: styled.table`
     border-collapse: collapse;
+    background-color: white;
   `,
   thead: styled.thead`
     font-size: medium;
@@ -278,11 +297,11 @@ const S = {
     height: 50px;
   `,
   th: styled.th`
-    background-color: #efefef;
-    border: 1px solid #a1a1a1;
+    border: 1px solid #a3aed0;
+    color: #a3aed0;
   `,
   td: styled.td`
-    border: 1px solid #a1a1a1;
+    border: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
     display: flex;

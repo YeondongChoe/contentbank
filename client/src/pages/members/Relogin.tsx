@@ -21,7 +21,11 @@ const Relogin = () => {
           </S.discriptionTitle>
         </S.discriptionContainer>
         <S.btnWrapper>
-          <StyledLoginBtn variant="outlined" onClick={onConfirm}>
+          <StyledLoginBtn
+            variant="outlined"
+            onClick={onConfirm}
+            sx={{ backgroundColor: 'white' }}
+          >
             로그인 하러 가기
           </StyledLoginBtn>
         </S.btnWrapper>
@@ -41,7 +45,8 @@ const S = {
   `,
   discriptionContainer: styled.div`
     width: 550px;
-    background-color: #e9e9e9;
+    background-color: white;
+    box-shadow: 1px 1px 5px 1px rgba(112, 144, 176, 0.4);
     padding: 20px 0;
     margin-bottom: 40px;
     display: flex;
