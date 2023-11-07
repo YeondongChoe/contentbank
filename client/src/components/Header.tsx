@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useSetRecoilState } from 'recoil';
-import { contentCreateState } from '../recoil/State';
 import axios from 'axios';
 import { getCookie, setCookie, removeCookie } from '../utils/ReactCookie';
+import { useNavigate } from 'react-router-dom';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Box from '@mui/material/Box';
@@ -54,10 +53,11 @@ type MenuListType = {
 
 const Header = () => {
   const [value, setValue] = useState('');
-  const setClickValue = useSetRecoilState(contentCreateState);
   const [activeTab, setActiveTab] = useState(0);
   const [menuValue, setMenuValue] = useState<MenuListType[]>();
   const [didMount, setDidMount] = useState(false);
+
+  const navigate = useNavigate();
 
   let mountCount = 1;
 
@@ -74,31 +74,37 @@ const Header = () => {
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {};
 
+  const clickIcon = () => {
+    if (getCookie('accessToken')) {
+      navigate('/contentlist');
+    } else {
+      navigate('/');
+    }
+  };
+
   const clickTabPanel = (code: string) => {
     if (code === 'CNC_Q') {
       setActiveTab(1);
-      setClickValue(1);
+      navigate('/contentlist');
     } else if (code === 'CNC_W') {
       setActiveTab(2);
-      setClickValue(2);
+      navigate('/contentworksheet');
     } else if (code === 'CNM_Q') {
       setActiveTab(1);
-      setClickValue(3);
+      navigate('/managementlist');
     } else if (code === 'CNM_T') {
       setActiveTab(2);
-      setClickValue(4);
+      navigate('/managementtree');
     } else if (code === 'OPM_M') {
       setActiveTab(1);
-      setClickValue(5);
+      navigate('/operationmember');
     } else if (code === 'OPM_R') {
       setActiveTab(2);
-      setClickValue(6);
+      navigate('/operationauthority');
     }
   };
 
   const getMenuList = async () => {
-    //const controller = new AbortController();
-    //console.count('마운트');
     await axios
       .get('/auth-service/api/v1/menu', {
         headers: {
@@ -117,20 +123,19 @@ const Header = () => {
           }
         }
         setMenuValue(response.data);
-        //console.count('마운트 해제 및 axios 요청 취소');
-        //controller.abort();
       })
-      .catch((err) => {
-        alert(err);
+      .catch(() => {
+        alert('로그인이 필요합니다');
+        navigate('/login');
       });
   };
 
   useEffect(() => {
-    console.log('mount: ', mountCount);
+    //console.log('mount: ', mountCount);
     mountCount++;
     setDidMount(true);
     return () => {
-      console.log('unmount');
+      //console.log('unmount');
     };
   }, []);
 
@@ -144,7 +149,7 @@ const Header = () => {
     <S.main>
       <S.head>
         <S.topHead>
-          <S.iconContainer>
+          <S.iconContainer onClick={clickIcon}>
             <AccountBalanceIcon style={{ fontSize: '70px' }} />
           </S.iconContainer>
           <S.navContainer>
@@ -204,10 +209,10 @@ const Header = () => {
           <S.sideContainer>
             <div role="presentation" onClick={handleClickSidebar}>
               <Breadcrumbs separator="|">
-                <Link underline="hover" color="inherit" href="/">
+                <Link underline="hover" color="inherit" href="/preparing">
                   가이드
                 </Link>
-                <Link underline="hover" color="inherit" href="/mypage">
+                <Link underline="hover" color="inherit" href="/preparing">
                   고객센터
                 </Link>
                 <Link underline="hover" color="inherit" href="/mypage">
@@ -216,7 +221,7 @@ const Header = () => {
                 <Link
                   underline="hover"
                   color="inherit"
-                  href="/"
+                  href="/login"
                   onClick={handleRemoveCookie}
                 >
                   로그아웃
@@ -233,7 +238,7 @@ const Header = () => {
 const S = {
   main: styled.main`
     width: 1280px;
-    display: flex;
+    margin-top: 20px;
   `,
   head: styled.div`
     width: 100%;
@@ -249,6 +254,7 @@ const S = {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
   `,
   navContainer: styled.nav`
     width: 500px;

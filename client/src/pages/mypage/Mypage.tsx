@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
 import { StyledEditBtn, StyledSaveBtn } from './Mypage.style';
+import Header from '../../components/Header';
 
 const Mypage = () => {
   const [isNameEdit, setIsNameEdit] = useState(false);
@@ -23,6 +24,10 @@ const Mypage = () => {
     enabled: null,
   });
   const navigate = useNavigate();
+
+  const [didMount, setDidMount] = useState(false);
+
+  let mountCount = 1;
 
   const handleNameEdit = () => {
     setIsNameEdit(!isNameEdit);
@@ -65,8 +70,8 @@ const Mypage = () => {
     setIsNameEdit(false);
   };
 
-  useEffect(() => {
-    axios
+  const getMemberInfo = async () => {
+    await axios
       .get('/auth-service/api/v1/auth/my-info', {
         headers: {
           'Content-Type': 'application/json',
@@ -95,11 +100,26 @@ const Mypage = () => {
       .catch((error) => {
         alert(error.response?.data?.message);
       });
-  }, [setMember, isNameEdit]);
+  };
+
+  useEffect(() => {
+    //console.log('mount: ', mountCount);
+    mountCount++;
+    setDidMount(true);
+    return () => {
+      //console.log('unmount');
+    };
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      getMemberInfo();
+    }
+  }, [setMember, isNameEdit, didMount]);
 
   return (
-    <>
-      <Styled.main>
+    <Styled.main>
+      <Styled.mainContainer>
         <Styled.title>마이페이지</Styled.title>
         <Styled.formContainer>
           <Styled.titleContainer>
@@ -177,8 +197,8 @@ const Mypage = () => {
             />
           </Styled.formContainer>
         )}
-      </Styled.main>
-    </>
+      </Styled.mainContainer>
+    </Styled.main>
   );
 };
 

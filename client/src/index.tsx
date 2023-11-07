@@ -7,15 +7,26 @@ import Login from './pages/members/Login';
 import FirstLogin from './pages/members/FirstLogin';
 import Relogin from './pages/members/Relogin';
 import Mypage from './pages/mypage/Mypage';
-import Contentpage from './pages/content/Contentpage';
+import ContentList from './pages/content/ContentList';
+import ContentWorksheet from './pages/content/ContentWorksheet';
+import ManagementList from './pages/management/ManagementList';
+import ManagementTree from './pages/management/ManagementTree';
+import OperationMember from './pages/operate/OperationMember';
+import OperationAuthority from './pages/operate/OperationAuthority';
+import Notfound from './pages/Notfound';
+import Preparing from './pages/Preparing';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: 'Notfound',
+    errorElement: <Notfound />,
     children: [
-      { index: true, element: <Login /> },
+      { index: true, element: <ContentList /> },
+      {
+        path: '/preparing',
+        element: <Preparing />,
+      },
       {
         path: '/login',
         element: <Login />,
@@ -33,8 +44,28 @@ const router = createBrowserRouter([
         element: <Mypage />,
       },
       {
-        path: '/contentpage',
-        element: <Contentpage />,
+        path: '/contentlist',
+        element: <ContentList />,
+      },
+      {
+        path: '/contentworksheet',
+        element: <ContentWorksheet />,
+      },
+      {
+        path: '/managementlist',
+        element: <ManagementList />,
+      },
+      {
+        path: '/managementtree',
+        element: <ManagementTree />,
+      },
+      {
+        path: '/operationmember',
+        element: <OperationMember />,
+      },
+      {
+        path: '/operationauthority',
+        element: <OperationAuthority />,
       },
     ],
   },

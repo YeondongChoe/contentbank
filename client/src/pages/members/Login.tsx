@@ -55,7 +55,7 @@ const Login = () => {
           if (response.data.initPassword === true) {
             navigate('/firstlogin');
           } else {
-            navigate('/contentpage');
+            navigate('/contentlist');
           }
         }
         if (isClicked === true) {

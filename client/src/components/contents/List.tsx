@@ -79,10 +79,12 @@ const S = {
       background-color: ${(props) => (props.choiced === 1 ? 'gray' : 'white')};
       color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
       border-right: none;
+      border-top-left-radius: 15px;
     }
     &:nth-child(2) {
       background-color: ${(props) => (props.choiced === 2 ? 'gray' : 'white')};
       color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
+      border-top-right-radius: 15px;
     }
   `,
   inputContainer: styled.div`
@@ -107,8 +109,8 @@ const S = {
   contentBox: styled.div`
     width: 1280px;
     height: 600px;
-    border: 1px solid #a3aed0;
-    background-color: white;
+    border-top: 1px solid #a3aed0;
+    //background-color: white;
   `,
   btnWrapper: styled.div`
     margin-right: -40px;

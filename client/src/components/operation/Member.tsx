@@ -71,7 +71,7 @@ const S = {
   contentBox: styled.div`
     width: 1280px;
     height: 600px;
-    border: 1px solid #a3aed0;
+    border-top: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
     display: flex;

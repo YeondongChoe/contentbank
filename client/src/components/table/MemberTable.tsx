@@ -136,11 +136,11 @@ const MemberTable = () => {
   };
 
   useEffect(() => {
-    console.log('mount: ', mountCount);
+    //console.log('mount: ', mountCount);
     mountCount++;
     setDidMount(true);
     return () => {
-      console.log('unmount');
+      //  console.log('unmount');
     };
   }, []);
 
@@ -228,20 +228,21 @@ const MemberTable = () => {
           <S.tbody>
             {memberList?.map((member, i) => (
               <S.tr key={i}>
-                <S.td>
+                <S.td align="center">
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(member.id)}
                     onChange={() => handleRowSelect(member.id)}
-                    //onClick={() => setSelectedId(member.id)}
                   ></input>
                 </S.td>
-                <S.td>{member.name}</S.td>
-                <S.td>{member.id}</S.td>
-                <S.td>{member.authority.name}</S.td>
-                <S.td>{member.createdDate}</S.td>
-                <S.td>{member.enabled === true ? '활성' : '비활성'}</S.td>
-                <S.td>
+                <S.td align="center">{member.name}</S.td>
+                <S.td align="center">{member.id}</S.td>
+                <S.td align="center">{member.authority.name}</S.td>
+                <S.td align="center">{member.createdDate}</S.td>
+                <S.td align="center">
+                  {member.enabled === true ? '활성' : '비활성'}
+                </S.td>
+                <S.td align="center">
                   <S.btnWrapper onClick={() => handleDetailInfo(member.key)}>
                     <StyledDisabledBtn variant="outlined">
                       보기
@@ -308,6 +309,10 @@ const S = {
     justify-content: center;
   `,
 };
+
+const StyledTd = styled.td`
+  border: 1px solid #a3aed0;
+`;
 
 const StyledDisabledBtn = styled(Button)`
   && {

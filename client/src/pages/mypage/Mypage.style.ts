@@ -3,11 +3,19 @@ import { Button } from '@mui/material';
 
 export const Styled = {
   main: styled.main`
-    width: 1280px;
+    width: 100vw;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 100px;
+    justify-content: center;
+  `,
+  mainContainer: styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
   `,
   title: styled.div`
     font-size: 25px;

@@ -43,41 +43,58 @@ const ListTable = () => {
       <S.table>
         <S.thead>
           <S.tr>
-            <S.th rowSpan={2}>
+            <S.th rowSpan={2} style={{ width: '40px' }}>
               <input
                 type="checkbox"
                 onChange={handleSelectAll}
                 checked={isAllSelected}
               ></input>
             </S.th>
-            <S.th rowSpan={2}></S.th>
-            <S.th rowSpan={2}> 문항코드</S.th>
-            <S.th rowSpan={2}>개정과정</S.th>
-            <S.th rowSpan={2}>학교</S.th>
-            <S.th rowSpan={2}>학년</S.th>
-            <S.th rowSpan={2}>학기</S.th>
-            <S.th rowSpan={2}>대분류</S.th>
-            <S.th rowSpan={2}>중분류</S.th>
-            <S.th rowSpan={2}>문항타입</S.th>
+            <S.th rowSpan={2} style={{ width: '40px' }}></S.th>
+            <S.th rowSpan={2} style={{ width: '350px' }}>
+              {' '}
+              문항코드
+            </S.th>
+            <S.th rowSpan={2} style={{ width: '40px' }}>
+              개정과정
+            </S.th>
+            <S.th rowSpan={2} style={{ width: '40px' }}>
+              학교
+            </S.th>
+            <S.th rowSpan={2} style={{ width: '40px' }}>
+              학년
+            </S.th>
+            <S.th rowSpan={2} style={{ width: '40px' }}>
+              학기
+            </S.th>
+            <S.th rowSpan={2} style={{ width: '200px' }}>
+              대분류
+            </S.th>
+            <S.th rowSpan={2} style={{ width: '250px' }}>
+              중분류
+            </S.th>
+            <S.th rowSpan={2} style={{ width: '40px' }}>
+              문항타입
+            </S.th>
             <S.th colSpan={3}>업로드</S.th>
           </S.tr>
           <S.tr>
-            <S.th>작성자</S.th>
-            <S.th>일자</S.th>
-            <S.th>오픈여부</S.th>
+            <S.th style={{ width: '50px' }}>작성자</S.th>
+            <S.th style={{ width: '40px' }}>일자</S.th>
+            <S.th style={{ width: '40px' }}>오픈여부</S.th>
           </S.tr>
         </S.thead>
         <S.tbody>
           {ContentList.map((content, i) => (
             <S.tr key={i}>
-              <S.td style={{ width: '40px' }}>
+              <S.td align="center">
                 <input
                   type="checkbox"
                   checked={selectedRows.includes(content.id)}
                   onChange={() => handleRowSelect(content.id)}
                 ></input>
               </S.td>
-              <S.td style={{ width: '40px' }}>
+              <S.td align="center">
                 {isBookMark ? (
                   <div onClick={handleClickBookmark}>
                     <BookmarkTwoToneIcon fontSize="small" />
@@ -88,41 +105,39 @@ const ListTable = () => {
                   </div>
                 )}
               </S.td>
-              <S.td style={{ width: '350px' }}>{content.code}</S.td>
-              <S.td style={{ width: '40px' }}>{content.revision}</S.td>
-              <S.td style={{ width: '40px' }}>{content.level}</S.td>
-              <S.td style={{ width: '40px' }}>{content.grade}</S.td>
-              <S.td style={{ width: '40px' }}>{content.semester}</S.td>
-              <S.td>
+              <S.td align="center">{content.code}</S.td>
+              <S.td align="center">{content.revision}</S.td>
+              <S.td align="center">{content.level}</S.td>
+              <S.td align="center">{content.grade}</S.td>
+              <S.td align="center">{content.semester}</S.td>
+              <S.td align="center">
                 <div
                   style={{
                     maxWidth: '200px',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    textAlign: 'center',
                   }}
                 >
                   {content.mainCategory}
                 </div>
               </S.td>
-              <S.td>
+              <S.td align="center">
                 <div
                   style={{
                     maxWidth: '250px',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    textAlign: 'center',
                   }}
                 >
                   {content.middleCategory}
                 </div>
               </S.td>
-              <S.td style={{ width: '40px' }}>{content.type}</S.td>
-              <S.td style={{ width: '50px' }}>{content.writer}</S.td>
-              <S.td style={{ width: '40px' }}>{content.date}</S.td>
-              <S.td style={{ width: '40px' }}>{content.isOpen}</S.td>
+              <S.td align="center">{content.type}</S.td>
+              <S.td align="center">{content.writer}</S.td>
+              <S.td align="center">{content.date}</S.td>
+              <S.td align="center">{content.isOpen}</S.td>
             </S.tr>
           ))}
         </S.tbody>
