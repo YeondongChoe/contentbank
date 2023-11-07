@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Styled } from './Mypage.style';
 import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/State';
@@ -7,13 +7,14 @@ import ChangePassword from '../../components/password/ChangePassword';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
-import { StyledEditBtn, StyledSaveBtn } from './Mypage.style';
-import Header from '../../components/Header';
+import { StyledEditBtn, StyledSaveBtn, StyledCancelBtn } from './Mypage.style';
 
 const Mypage = () => {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isError, setIsError] = useState(false);
   const [nameValue, setNameValue] = useState('');
   const [member, setMember] = useState({
     id: null,
@@ -24,6 +25,7 @@ const Mypage = () => {
     enabled: null,
   });
   const navigate = useNavigate();
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   const [didMount, setDidMount] = useState(false);
 
@@ -34,6 +36,7 @@ const Mypage = () => {
   };
 
   const handleNameSave = () => {
+    console.log(nameValue);
     const data = {
       authority: member.authority,
       name: nameValue,
@@ -58,10 +61,15 @@ const Mypage = () => {
           }
         }
         setIsNameEdit(!isNameEdit);
+        setIsError(false);
         setIsAlertOpen(true);
+        setNameValue('');
       })
       .catch((error) => {
-        alert(error.response.data.message);
+        //alert(error.response.data.message);
+        setErrorMsg('수정할 이름을 확인해주세요');
+        setIsError(true);
+        setIsAlertOpen(true);
       });
   };
 
@@ -103,12 +111,8 @@ const Mypage = () => {
   };
 
   useEffect(() => {
-    //console.log('mount: ', mountCount);
     mountCount++;
     setDidMount(true);
-    return () => {
-      //console.log('unmount');
-    };
   }, []);
 
   useEffect(() => {
@@ -116,6 +120,12 @@ const Mypage = () => {
       getMemberInfo();
     }
   }, [setMember, isNameEdit, didMount]);
+
+  useEffect(() => {
+    if (isNameEdit && nameInputRef.current) {
+      nameInputRef.current.focus();
+    }
+  }, [isNameEdit]);
 
   return (
     <Styled.main>
@@ -142,6 +152,7 @@ const Mypage = () => {
                   onChange={(e) => {
                     setNameValue(e.target.value);
                   }}
+                  ref={nameInputRef}
                 />
               )}
               {!isNameEdit && !isPasswordEdit && (
@@ -153,6 +164,9 @@ const Mypage = () => {
               )}
               {isNameEdit && !isPasswordEdit && (
                 <Styled.btnWrapper>
+                  <StyledCancelBtn variant="outlined" onClick={handleNameEdit}>
+                    취소
+                  </StyledCancelBtn>
                   <StyledSaveBtn variant="contained" onClick={handleNameSave}>
                     저장
                   </StyledSaveBtn>
@@ -180,7 +194,8 @@ const Mypage = () => {
             )}
           </Styled.inputContainer>
         </Styled.formContainer>
-        {isAlertOpen && <NoticeAlert title="이름이 수정되었습니다.." />}
+        {isAlertOpen && <NoticeAlert title="이름이 수정되었습니다." />}
+        {isError === true && <NoticeAlert title={errorMsg} />}
         {isPasswordEdit && (
           <Styled.formContainer>
             <Styled.titleContainer>

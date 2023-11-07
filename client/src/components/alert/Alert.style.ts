@@ -34,6 +34,9 @@ export const Styled = {
     cursor: pointer;
   `,
   description: styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-top: 5px;
     font-size: 13px;
     > div:nth-child(2) {

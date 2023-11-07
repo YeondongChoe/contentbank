@@ -74,13 +74,13 @@ export const Styled = {
     color: #a3aed0;
   `,
   input: styled.input`
-    width: 200px;
+    width: 150px;
     padding: 5px;
     border: none;
     border-bottom: 1px solid #c5c5c5;
     outline: none;
-    font-size: 12px;
-    margin: 0 auto;
+    font-size: 11px;
+    //margin: 0 auto;
     color: #1b254b;
   `,
   information: styled.p`
@@ -96,6 +96,8 @@ export const Styled = {
     border: none;
     background-color: transparent;
     margin-right: 10px;
+    display: flex;
+    gap: 5px;
   `,
 };
 
@@ -109,9 +111,17 @@ export const StyledEditBtn = styled(Button)`
   }
 `;
 
+export const StyledCancelBtn = styled(Button)`
+  && {
+    height: 25px;
+    border-radius: 15px;
+    font-size: 13px;
+    line-height: normal;
+  }
+`;
+
 export const StyledSaveBtn = styled(Button)`
   && {
-    width: 80px;
     height: 25px;
     border-radius: 15px;
     font-size: 13px;
