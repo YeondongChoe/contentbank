@@ -56,12 +56,13 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [menuValue, setMenuValue] = useState<MenuListType[]>();
   const [didMount, setDidMount] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const navigate = useNavigate();
 
   let mountCount = 1;
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChangeTab = (newValue: string) => {
     setValue(newValue);
     setActiveTab(0);
   };
@@ -85,6 +86,7 @@ const Header = () => {
   const clickTabPanel = (code: string) => {
     if (code === 'CNC_Q') {
       setActiveTab(1);
+
       navigate('/contentlist');
     } else if (code === 'CNC_W') {
       setActiveTab(2);
@@ -131,12 +133,8 @@ const Header = () => {
   };
 
   useEffect(() => {
-    //console.log('mount: ', mountCount);
     mountCount++;
     setDidMount(true);
-    return () => {
-      //console.log('unmount');
-    };
   }, []);
 
   useEffect(() => {
@@ -152,55 +150,80 @@ const Header = () => {
           <S.iconContainer onClick={clickIcon}>
             <AccountBalanceIcon style={{ fontSize: '70px' }} />
           </S.iconContainer>
-          <S.navContainer>
+          <S.navContainer
+            onMouseEnter={() => {
+              setValue('');
+            }}
+            onMouseLeave={() => {
+              setValue('');
+            }}
+          >
             <Box sx={{ typography: 'body1' }}>
               <TabContext value={value}>
                 <Box sx={{ borderColor: 'divider' }}>
-                  <TabList onChange={handleChangeTab}>
+                  <TabList>
                     {menuValue?.map((el, i) => (
                       <Tab
                         key={i}
                         label={el.name}
                         value={el.seq}
                         style={{ fontSize: '20px', fontWeight: 'bold' }}
+                        onMouseEnter={() => {
+                          handleChangeTab(el.seq.toString());
+                          setIsMenuVisible(true);
+                        }}
                       />
                     ))}
                   </TabList>
                 </Box>
-                <S.navBar>
+                <S.navBar className="111">
                   {menuValue?.map((el, i) => (
-                    <>
-                      <TabPanel
-                        value={el.seq}
-                        onClick={(e) => {
-                          clickTabPanel(el?.children?.[0]?.code);
-                        }}
-                        style={{
-                          marginTop: '20px',
-                          marginBottom: '20px',
-                          padding: '0',
-                          borderBottom:
-                            activeTab === 1 ? '2px solid #58a9ffda' : 'initial',
-                        }}
-                      >
-                        {el?.children?.[0]?.name}
-                      </TabPanel>
-                      <TabPanel
-                        value={el.seq}
-                        onClick={(e) => {
-                          clickTabPanel(el?.children?.[1]?.code);
-                        }}
-                        style={{
-                          marginTop: '20px',
-                          marginBottom: '20px',
-                          padding: '0',
-                          borderBottom:
-                            activeTab === 2 ? '2px solid #58a9ffda' : 'initial',
-                        }}
-                      >
-                        {el?.children?.[1]?.name}
-                      </TabPanel>
-                    </>
+                    <S.panelContainer key={i}>
+                      {isMenuVisible && (
+                        <S.panelWarpper
+                          onMouseLeave={() => {
+                            setValue('');
+                          }}
+                        >
+                          <TabPanel
+                            value={el.seq.toString()}
+                            onClick={(e) => {
+                              clickTabPanel(el?.children?.[0]?.code);
+                            }}
+                            style={{
+                              marginTop: '10px',
+                              marginBottom: '10px',
+                              padding: '0',
+                              borderBottom:
+                                activeTab === 1
+                                  ? '2px solid #58a9ffda'
+                                  : 'initial',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {el?.children?.[0]?.name}
+                          </TabPanel>
+                          <TabPanel
+                            value={el.seq.toString()}
+                            onClick={(e) => {
+                              clickTabPanel(el?.children?.[1]?.code);
+                            }}
+                            style={{
+                              marginTop: '10px',
+                              marginBottom: '10px',
+                              padding: '0',
+                              borderBottom:
+                                activeTab === 2
+                                  ? '2px solid #58a9ffda'
+                                  : 'initial',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {el?.children?.[1]?.name}
+                          </TabPanel>
+                        </S.panelWarpper>
+                      )}
+                    </S.panelContainer>
                   ))}
                 </S.navBar>
               </TabContext>
@@ -247,6 +270,7 @@ const S = {
   `,
   topHead: styled.div`
     display: flex;
+    height: 113px;
     border-bottom: 1px solid #a3aed0;
   `,
   iconContainer: styled.div`
@@ -257,16 +281,32 @@ const S = {
     cursor: pointer;
   `,
   navContainer: styled.nav`
-    width: 500px;
+    display: flex;
+    align-items: center;
+    z-index: 1;
   `,
   navBar: styled.div`
     display: flex;
-    align-items: flex-end;
-    gap: 50px;
-    cursor: pointer;
+    position: absolute;
+  `,
+  panelContainer: styled.div`
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  `,
+  panelWarpper: styled.div`
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
   `,
   sideContainer: styled.div`
-    width: 600px;
+    width: 650px;
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;

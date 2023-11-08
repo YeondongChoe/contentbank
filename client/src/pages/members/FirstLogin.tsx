@@ -76,6 +76,8 @@ const S = {
   `,
   discriptionTitle: styled.p`
     font-size: 16px;
+    display: flex;
+    justify-content: center;
   `,
   discription: styled.p`
     font-size: 14px;

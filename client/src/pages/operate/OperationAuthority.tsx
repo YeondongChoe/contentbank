@@ -5,8 +5,6 @@ import { contentCreateState } from '../../recoil/State';
 import Authority from '../../components/operation/Authority';
 
 const OperationAuthority = () => {
-  const pageMenu = useRecoilValue(contentCreateState);
-
   return (
     <S.main>
       <Authority />

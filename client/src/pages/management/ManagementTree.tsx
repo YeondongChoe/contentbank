@@ -4,8 +4,6 @@ import { useRecoilValue } from 'recoil';
 import { contentCreateState } from '../../recoil/State';
 
 const ManagementTree = () => {
-  const pageMenu = useRecoilValue(contentCreateState);
-
   return (
     <S.main>
       <div>콘텐츠 관리 트리구조</div>

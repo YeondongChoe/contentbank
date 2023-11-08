@@ -11,8 +11,9 @@ function App() {
   return (
     <div className="App">
       <RecoilRoot>
-        {/* <Header /> */}
-        {location.pathname !== '/login' && <Header />}
+        {location.pathname !== '/login' &&
+          location.pathname !== '/firstlogin' &&
+          location.pathname !== '/relogin' && <Header />}
         <Outlet />
       </RecoilRoot>
     </div>

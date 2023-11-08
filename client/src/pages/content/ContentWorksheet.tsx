@@ -5,8 +5,6 @@ import { useRecoilValue } from 'recoil';
 import { contentCreateState } from '../../recoil/State';
 
 const ContentWorksheet = () => {
-  const pageMenu = useRecoilValue(contentCreateState);
-
   return (
     <S.main>
       <Worksheet />

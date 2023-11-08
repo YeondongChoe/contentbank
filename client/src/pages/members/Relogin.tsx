@@ -55,6 +55,8 @@ const S = {
     margin-bottom: 150px;
   `,
   discriptionTitle: styled.p`
+    display: flex;
+    justify-content: center;
     font-size: 16px;
   `,
   btnWrapper: styled.button`

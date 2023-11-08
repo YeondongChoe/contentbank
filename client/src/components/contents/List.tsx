@@ -5,7 +5,7 @@ import ListTable from '../table/ListTable';
 import { Button } from '@mui/material';
 
 const List = () => {
-  const [choiceValue, setChoiceValue] = useState(0);
+  const [choiceValue, setChoiceValue] = useState(1);
 
   const handleClickList = () => {
     if (choiceValue === 1) {
@@ -62,13 +62,15 @@ const S = {
   `,
   tapContainer: styled.div`
     display: flex;
-    justify-self: flex-start;
+    width: 500px;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
+    //justify-self: flex-start;
   `,
   tapManu: styled.div<{ choiced: number }>`
-    width: 250px;
+    width: 200px;
     height: 40px;
-    background-color: gray;
-    color: white;
     border: 1px solid #a3aed0;
     border-bottom: none;
     display: flex;
@@ -78,13 +80,18 @@ const S = {
     &:first-child {
       background-color: ${(props) => (props.choiced === 1 ? 'gray' : 'white')};
       color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
-      border-right: none;
+      width: ${(props) => (props.choiced === 1 ? '250px' : '150px')};
+      height: ${(props) => (props.choiced === 2 ? '30px' : '40px')};
+      border-top-right-radius: 15px;
       border-top-left-radius: 15px;
     }
     &:nth-child(2) {
       background-color: ${(props) => (props.choiced === 2 ? 'gray' : 'white')};
       color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
+      width: ${(props) => (props.choiced === 2 ? '250px' : '150px')};
+      height: ${(props) => (props.choiced === 1 ? '30px' : '40px')};
       border-top-right-radius: 15px;
+      border-top-left-radius: 15px;
     }
   `,
   inputContainer: styled.div`

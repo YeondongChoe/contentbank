@@ -197,7 +197,7 @@ const Mypage = () => {
         {isAlertOpen && <NoticeAlert title="이름이 수정되었습니다." />}
         {isError === true && <NoticeAlert title={errorMsg} />}
         {isPasswordEdit && (
-          <Styled.formContainer>
+          <Styled.passwordFormContainer>
             <Styled.titleContainer>
               <Styled.subTitle>비밀번호 변경</Styled.subTitle>
             </Styled.titleContainer>
@@ -210,7 +210,7 @@ const Mypage = () => {
               height={35}
               display="flex-start"
             />
-          </Styled.formContainer>
+          </Styled.passwordFormContainer>
         )}
       </Styled.mainContainer>
     </Styled.main>

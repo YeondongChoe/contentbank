@@ -11,34 +11,45 @@ export const Styled = {
     justify-content: center;
   `,
   mainContainer: styled.div`
-    width: 100%;
+    width: 400px;
+    height: 500px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     margin-top: 40px;
   `,
   title: styled.div`
     font-size: 25px;
     margin-bottom: 60px;
+    display: flex;
+    justify-content: center;
     color: #1b254b;
   `,
   formContainer: styled.div`
+    width: 400px;
+    height: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: white;
     border-radius: 20px;
     box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-    &:last-of-type {
-      margin-top: 40px;
-      margin-left: 90px;
-    }
+  `,
+  passwordFormContainer: styled.div`
+    width: 500px;
+    height: 300px;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
   `,
   titleContainer: styled.div`
     width: 400px;
-    margin-top: 10px;
+    margin-top: 15px;
     margin-bottom: 40px;
-    margin-left: 10px;
+    margin-left: 20px;
     &:last-of-type {
       width: 500px;
     }
@@ -72,6 +83,7 @@ export const Styled = {
     display: flex;
     font-size: 14px;
     color: #a3aed0;
+    margin-left: 5px;
   `,
   input: styled.input`
     width: 150px;

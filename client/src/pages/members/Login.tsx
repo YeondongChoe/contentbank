@@ -86,9 +86,6 @@ const Login = () => {
                 control={control}
                 name="id"
                 defaultValue={getCookie('userId') || ''}
-                rules={{
-                  required: '아이디를 입력해주세요.',
-                }}
                 render={({ field }) => (
                   <S.input
                     type="text"
@@ -104,13 +101,6 @@ const Login = () => {
                 control={control}
                 name="password"
                 defaultValue=""
-                rules={{
-                  required: '비밀번호를 입력해주세요.',
-                  pattern: {
-                    value: passwordRegExp,
-                    message: '영문, 숫자, 특수문자 혼용 8자리 이상',
-                  },
-                }}
                 render={({ field }) => (
                   <S.input
                     type="password"
@@ -229,15 +219,17 @@ const S = {
     margin-left: 0.375rem;
   `,
   btnWrapper: styled.button`
+    width: 100%;
     margin-top: 30px;
     background-color: transparent;
     border: none;
+    display: flex;
+    justify-content: center;
   `,
   message: styled.p`
-    width: 400px;
     display: flex;
     color: #1b254b;
-    margin-left: 20px;
+    margin-left: 25px;
     font-size: 13px;
     margin-top: 20px;
     margin-bottom: 20px;

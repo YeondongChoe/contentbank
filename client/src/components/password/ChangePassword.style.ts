@@ -63,7 +63,7 @@ export const Styled = {
     display: flex;
     justify-content: ${(props) => props.display};
     gap: 20px;
-    margin-top: 50px;
+    margin-top: 40px;
     margin-bottom: 20px;
     margin-left: ${(props) => props.marginLeft || 0}px;
   `,

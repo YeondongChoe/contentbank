@@ -5,8 +5,6 @@ import { contentCreateState } from '../../recoil/State';
 import Member from '../../components/operation/Member';
 
 const OperationMember = () => {
-  const pageMenu = useRecoilValue(contentCreateState);
-
   return (
     <S.main>
       <Member />
