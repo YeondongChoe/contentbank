@@ -35,15 +35,14 @@ const Mypage = () => {
     setIsNameEdit(!isNameEdit);
   };
 
-  const handleNameSave = () => {
-    console.log(nameValue);
+  const handleNameSave = async () => {
     const data = {
       authority: member.authority,
       name: nameValue,
       comment: member.comment,
       enabled: member.enabled,
     };
-    return axios
+    return await axios
       .put(`/auth-service/api/v1/auth/${member.key}`, data, {
         headers: {
           'Content-Type': 'application/json',

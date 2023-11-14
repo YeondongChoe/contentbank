@@ -86,7 +86,6 @@ const Header = () => {
   const clickTabPanel = (code: string) => {
     if (code === 'CNC_Q') {
       setActiveTab(1);
-
       navigate('/contentlist');
     } else if (code === 'CNC_W') {
       setActiveTab(2);
@@ -176,7 +175,7 @@ const Header = () => {
                     ))}
                   </TabList>
                 </Box>
-                <S.navBar className="111">
+                <S.navBar>
                   {menuValue?.map((el, i) => (
                     <S.panelContainer key={i}>
                       {isMenuVisible && (

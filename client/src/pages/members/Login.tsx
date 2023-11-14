@@ -43,6 +43,7 @@ const Login = () => {
       .post('/auth-service/api/v1/auth/login', data, {
         headers: {
           'Content-Type': 'application/json',
+          'Accept-Language': 'ko',
         },
       })
       .then((response) => {

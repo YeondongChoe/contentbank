@@ -7,6 +7,7 @@ type Alert = {
   title: string;
   description?: string;
   onClick?: () => void;
+  action?: string;
 };
 
 const SelectAlert = (prop: Alert) => {
@@ -28,7 +29,9 @@ const SelectAlert = (prop: Alert) => {
             </Styled.alertContainer>
             <Styled.selectDiv>
               <Styled.cancel onClick={closeAlert}>취소</Styled.cancel>
-              <Styled.confirm onClick={prop.onClick}>선택</Styled.confirm>
+              <Styled.confirm onClick={prop.onClick}>
+                {prop.action}
+              </Styled.confirm>
             </Styled.selectDiv>
           </Styled.container>
         </Styled.alertOverlay>

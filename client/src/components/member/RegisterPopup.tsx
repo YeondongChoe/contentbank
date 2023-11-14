@@ -169,8 +169,8 @@ const RegisterPopup = () => {
         setIsRequiredDuplicate(false);
         setIsNameError(true);
         setNameErrorMsg(response.response.data.errors.name);
-        //        console.log(response.response.data.errors.name);
-        //      alert(response.errors.name);
+        //console.log(response.response.data.errors.name);
+        //alert(response.errors.name);
       });
   };
 

@@ -136,12 +136,9 @@ const MemberTable = () => {
   };
 
   useEffect(() => {
-    //console.log('mount: ', mountCount);
     mountCount++;
     setDidMount(true);
-    return () => {
-      //  console.log('unmount');
-    };
+    return () => {};
   }, []);
 
   useEffect(() => {

@@ -2,14 +2,34 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
+import AuthorityTree from './AuthorityTree';
+import NoticeAlert from '../../components/alert/NoticeAlert';
+import SelectAlert from '../../components/alert/SelectAlert';
+import { useRecoilState } from 'recoil';
+import {
+  editCreateContent,
+  editCreateList,
+  editCreateContentWorksheet,
+  editManagementContent,
+  editManagementList,
+  editManagementTree,
+  editOperation,
+  editMember,
+  editAuthority,
+  manageCreateContent,
+  manageCreateList,
+  manageCreateContentWorksheet,
+  manageManagementContent,
+  manageManagementList,
+  manageManagementTree,
+  manageOperation,
+  manageMember,
+  manageAuthority,
+  alertState,
+} from '../../recoil/State';
 
 import { Button } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import { TreeView } from '@mui/x-tree-view/TreeView';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import Checkbox from '@mui/material/Checkbox';
 
 type AuthorityListType = {
   seq: number;
@@ -18,49 +38,57 @@ type AuthorityListType = {
   sort: number;
 };
 
-type CheckedItems = { [key: string]: boolean };
-
 const Authority = () => {
   const [authorityList, setAuthorityList] = useState<AuthorityListType[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [codeValue, setCodeValue] = useState('');
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+  const [isPutAuthority, setIsPutAuthority] = useState(false);
+  const [isCreateAuthority, setIsCreateAuthority] = useState(false);
+  const [isCreateNameError, setIsCreateNameError] = useState(false);
+  const [isPutNameError, setIsPutNameError] = useState(false);
+  const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
+
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
-  const [checkedItems, setCheckedItems] = useState<CheckedItems>({});
 
-  const handleParentItemChange = (nodeId: string) => {
-    // 현재 선택 상태를 가져옴
-    const isChecked = checkedItems[nodeId];
-
-    // 하위 항목의 체크 상태를 모두 업데이트
-    const updatedItems = { ...checkedItems };
-    updatedItems[nodeId] = !isChecked;
-
-    // 상위 항목의 하위 항목도 업데이트
-    // 이 예제에서는 간단하게 하위 항목들의 체크 상태를 업데이트함
-    if (nodeId === '1') {
-      // '전체' 항목의 하위 항목
-      updatedItems['2'] = !isChecked;
-      updatedItems['5'] = !isChecked;
-      updatedItems['6'] = !isChecked;
-      updatedItems['8'] = !isChecked;
-    } else if (nodeId === '2') {
-      // '콘텐츠 제작' 항목의 하위 항목
-      updatedItems['3'] = !isChecked;
-      updatedItems['4'] = !isChecked;
-    }
-    // 이렇게 계속 반복
-    else if (nodeId === '5') {
-      // '콘텐츠 제작' 항목의 하위 항목
-      updatedItems['6'] = !isChecked;
-      updatedItems['7'] = !isChecked;
-    } else if (nodeId === '8') {
-      // '콘텐츠 제작' 항목의 하위 항목
-      updatedItems['9'] = !isChecked;
-      updatedItems['10'] = !isChecked;
-    }
-
-    // 상태 업데이트
-    setCheckedItems(updatedItems);
-  };
+  /** 콘텐츠 제작 편집 체크 상태여부*/
+  const [isEditCreateChecked, setIsEditCreateChecked] =
+    useRecoilState<boolean>(editCreateContent);
+  const [isEditCreateListChecked, setIsEditCreateListChecked] =
+    useRecoilState<boolean>(editCreateList);
+  const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
+    useRecoilState<boolean>(editCreateContentWorksheet);
+  const [isEditManagementChecked, setIsEditManagementChecked] =
+    useRecoilState<boolean>(editManagementContent);
+  const [isEditManagementListChecked, setIsEditManagementListChecked] =
+    useRecoilState<boolean>(editManagementList);
+  const [isEditTreeChecked, setIsEditTreeChecked] =
+    useRecoilState<boolean>(editManagementTree);
+  const [isEditOperationChecked, setIsEditOperationChecked] =
+    useRecoilState<boolean>(editOperation);
+  const [isEditMemberChecked, setIsEditMemberChecked] =
+    useRecoilState<boolean>(editMember);
+  const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
+    useRecoilState<boolean>(editAuthority);
+  const [isManageCreateChecked, setIsManageCreateChecked] =
+    useRecoilState<boolean>(manageCreateContent);
+  const [isManageCreateListChecked, setIsManageCreateListChecked] =
+    useRecoilState<boolean>(manageCreateList);
+  const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
+    useRecoilState<boolean>(manageCreateContentWorksheet);
+  const [isManageManagementChecked, setIsManageManagementChecked] =
+    useRecoilState<boolean>(manageManagementContent);
+  const [isManageManagementListChecked, setIsManageManagementListChecked] =
+    useRecoilState<boolean>(manageManagementList);
+  const [isManageTreeChecked, setIsManageTreeChecked] =
+    useRecoilState<boolean>(manageManagementTree);
+  const [isManageOperationChecked, setIsManageOperationChecked] =
+    useRecoilState<boolean>(manageOperation);
+  const [isManageMemberChecked, setIsManageMemberChecked] =
+    useRecoilState<boolean>(manageMember);
+  const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
+    useRecoilState<boolean>(manageAuthority);
 
   const getAuthorityList = async () => {
     await axios
@@ -87,6 +115,248 @@ const Authority = () => {
       });
   };
 
+  const CreateAuthority = async () => {
+    const data = {
+      name: inputValue,
+      permissions: [
+        {
+          code: 'CNC',
+          edited: isEditCreateChecked,
+          managed: isManageCreateChecked,
+        },
+        {
+          code: 'CNC_Q',
+          edited: isEditCreateListChecked,
+          managed: isManageCreateListChecked,
+        },
+        {
+          code: 'CNC_W',
+          edited: isEditWorksheetChecked,
+          managed: isManageWorksheetChecked,
+        },
+        {
+          code: 'CNM',
+          edited: isEditManagementChecked,
+          managed: isManageManagementChecked,
+        },
+        {
+          code: 'CNM_Q',
+          edited: isEditManagementListChecked,
+          managed: isManageManagementListChecked,
+        },
+        {
+          code: 'CNM_T',
+          edited: isEditTreeChecked,
+          managed: isManageTreeChecked,
+        },
+        {
+          code: 'OPM',
+          edited: isEditOperationChecked,
+          managed: isManageOperationChecked,
+        },
+        {
+          code: 'OPM_M',
+          edited: isEditMemberChecked,
+          managed: isManageMemberChecked,
+        },
+        {
+          code: 'OPM_R',
+          edited: isEditAuthorityChecked,
+          managed: isManageAuthorityChecked,
+        },
+      ],
+    };
+    try {
+      const response = await axios.post(
+        '/auth-service/api/v1/authority',
+        data,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('accessToken')}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        if (response.headers['authorization'] !== getCookie('accessToken')) {
+          setCookie('accessToken', response.headers['authorization'], {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
+        }
+        setIsAlertOpen(true);
+        setIsCreateAuthority(true);
+        setIsPutNameError(false);
+        window.location.reload();
+      }
+    } catch (error) {
+      setIsPutNameError(false);
+      setIsCreateNameError(true);
+      setIsAlertOpen(true);
+    }
+  };
+
+  const getMemberAuthority = async (code: string) => {
+    await axios
+      .get(`/auth-service/api/v1/authority/${code}/permissions`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getCookie('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.headers['authorization'] !== getCookie('accessToken')) {
+            setCookie('accessToken', response.headers['authorization'], {
+              path: '/',
+              sameSite: 'strict',
+              secure: false,
+            });
+          }
+        }
+        setIsEditCreateChecked(response.data.data.permissions[0].edited);
+        setIsManageCreateChecked(response.data.data.permissions[0].managed);
+        setIsEditCreateListChecked(response.data.data.permissions[1].edited);
+        setIsManageCreateListChecked(response.data.data.permissions[1].managed);
+        setIsEditWorksheetChecked(response.data.data.permissions[2].edited);
+        setIsManageWorksheetChecked(response.data.data.permissions[2].managed);
+        setIsEditManagementChecked(response.data.data.permissions[3].edited);
+        setIsManageManagementChecked(response.data.data.permissions[3].managed);
+        setIsEditManagementListChecked(
+          response.data.data.permissions[4].edited,
+        );
+        setIsManageManagementListChecked(
+          response.data.data.permissions[4].managed,
+        );
+        setIsEditTreeChecked(response.data.data.permissions[5].edited);
+        setIsManageTreeChecked(response.data.data.permissions[5].managed);
+        setIsEditOperationChecked(response.data.data.permissions[6].edited);
+        setIsManageOperationChecked(response.data.data.permissions[6].managed);
+        setIsEditMemberChecked(response.data.data.permissions[7].edited);
+        setIsManageMemberChecked(response.data.data.permissions[7].managed);
+        setIsEditAuthorityChecked(response.data.data.permissions[8].edited);
+        setIsManageAuthorityChecked(response.data.data.permissions[8].managed);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
+  const putAuthority = async (code: string) => {
+    const data = {
+      name: inputValue,
+      permissions: [
+        {
+          code: 'CNC',
+          edited: isEditCreateChecked,
+          managed: isManageCreateChecked,
+        },
+        {
+          code: 'CNC_Q',
+          edited: isEditCreateListChecked,
+          managed: isManageCreateListChecked,
+        },
+        {
+          code: 'CNC_W',
+          edited: isEditWorksheetChecked,
+          managed: isManageWorksheetChecked,
+        },
+        {
+          code: 'CNM',
+          edited: isEditManagementChecked,
+          managed: isManageManagementChecked,
+        },
+        {
+          code: 'CNM_Q',
+          edited: isEditManagementListChecked,
+          managed: isManageManagementListChecked,
+        },
+        {
+          code: 'CNM_T',
+          edited: isEditTreeChecked,
+          managed: isManageTreeChecked,
+        },
+        {
+          code: 'OPM',
+          edited: isEditOperationChecked,
+          managed: isManageOperationChecked,
+        },
+        {
+          code: 'OPM_M',
+          edited: isEditMemberChecked,
+          managed: isManageMemberChecked,
+        },
+        {
+          code: 'OPM_R',
+          edited: isEditAuthorityChecked,
+          managed: isManageAuthorityChecked,
+        },
+      ],
+    };
+    return await axios
+      .put(`/auth-service/api/v1/authority/${code}`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getCookie('accessToken')}`,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.headers['authorization'] !== getCookie('accessToken')) {
+            setCookie('accessToken', response.headers['authorization'], {
+              path: '/',
+              sameSite: 'strict',
+              secure: false,
+            });
+          }
+        }
+        setIsCreateNameError(false);
+        setIsPutNameError(false);
+        setIsAlertOpen(true);
+        setIsPutAuthority(true);
+      })
+      .catch((error) => {
+        setIsAlertOpen(true);
+        setIsCreateNameError(false);
+        setIsPutNameError(true);
+      });
+  };
+
+  const handleDeleteClick = (code: string) => {
+    setCodeValue(code);
+    setIsCreateNameError(false);
+    setIsPutAuthority(false);
+    setIsAlertOpen(true);
+    setIsDeleteAuthority(true);
+  };
+
+  const DeleteAuthority = async (code: string) => {
+    try {
+      const response = await axios.delete(
+        `/auth-service/api/v1/authority/${code}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('accessToken')}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        if (response.headers['authorization'] !== getCookie('accessToken')) {
+          setCookie('accessToken', response.headers['authorization'], {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
+        }
+        setIsAlertOpen(false);
+        window.location.reload();
+      }
+    } catch (error: unknown) {
+      alert(error);
+    }
+  };
+
   useEffect(() => {
     mountCount++;
     setDidMount(true);
@@ -96,9 +366,7 @@ const Authority = () => {
     if (didMount) {
       getAuthorityList();
     }
-  }, [didMount]);
-
-  const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+  }, [didMount, setAuthorityList]);
 
   return (
     <S.main>
@@ -108,309 +376,7 @@ const Authority = () => {
             <S.manual>편집</S.manual>
             <S.manual>관리</S.manual>
           </S.leftTopBar>
-          <TreeView
-            defaultCollapseIcon={<ArrowDropDownIcon />}
-            defaultExpandIcon={<ArrowRightIcon />}
-            sx={{
-              width: 600,
-              flexGrow: 1,
-              maxWidth: 600,
-              overflowY: 'auto',
-              '&  .MuiTreeItem-content': {
-                width: '200px',
-                height: '30px',
-              },
-            }}
-          >
-            <S.treeDiv>
-              <TreeItem
-                nodeId="1"
-                label="전체"
-                sx={{
-                  flexGrow: 1,
-                  maxWidth: 600,
-                  overflowY: 'auto',
-                  '&  .MuiTreeItem-content': {
-                    width: '200px',
-                  },
-                }}
-              >
-                <S.treeDiv>
-                  <TreeItem
-                    nodeId="2"
-                    label="콘텐츠 제작"
-                    sx={{
-                      flexGrow: 1,
-                      maxWidth: 500,
-                      overflowY: 'auto',
-                      '&  .MuiTreeItem-content': {
-                        width: '200px',
-                      },
-                    }}
-                  >
-                    <S.treeDiv>
-                      <TreeItem
-                        nodeId="3"
-                        label="문항"
-                        sx={{
-                          flexGrow: 1,
-                          maxWidth: 500,
-                          overflowY: 'auto',
-                          '&  .MuiTreeItem-content': {
-                            width: '200px',
-                          },
-                        }}
-                      />
-                      <S.CheckboxDiv>
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['3']}
-                          onClick={() => handleParentItemChange('3')}
-                        />
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['3']}
-                          onClick={() => handleParentItemChange('3')}
-                        />
-                      </S.CheckboxDiv>
-                    </S.treeDiv>
-                    <S.treeDiv>
-                      <TreeItem
-                        nodeId="4"
-                        label="학습지"
-                        sx={{
-                          flexGrow: 1,
-                          maxWidth: 500,
-                          overflowY: 'auto',
-                          '&  .MuiTreeItem-content': {
-                            width: '200px',
-                          },
-                        }}
-                      />
-                      <S.CheckboxDiv>
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['4']}
-                          onClick={() => handleParentItemChange('4')}
-                        />
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['4']}
-                          onClick={() => handleParentItemChange('4')}
-                        />
-                      </S.CheckboxDiv>
-                    </S.treeDiv>
-                  </TreeItem>
-                  <S.CheckboxDiv style={{ marginLeft: '-85px' }}>
-                    <Checkbox
-                      {...label}
-                      sx={{ height: '24px' }}
-                      checked={checkedItems['2']}
-                      onClick={() => handleParentItemChange('2')}
-                    />
-                    <Checkbox
-                      {...label}
-                      sx={{ height: '24px' }}
-                      checked={checkedItems['2']}
-                      onClick={() => handleParentItemChange('2')}
-                    />
-                  </S.CheckboxDiv>
-                </S.treeDiv>
-
-                <S.treeDiv>
-                  <TreeItem
-                    nodeId="5"
-                    label="콘텐츠 관리"
-                    sx={{
-                      flexGrow: 1,
-                      maxWidth: 500,
-                      overflowY: 'auto',
-                      '&  .MuiTreeItem-content': {
-                        width: '200px',
-                      },
-                    }}
-                  >
-                    <S.treeDiv>
-                      <TreeItem
-                        nodeId="6"
-                        label="문항"
-                        sx={{
-                          flexGrow: 1,
-                          maxWidth: 500,
-                          overflowY: 'auto',
-                          '&  .MuiTreeItem-content': {
-                            width: '200px',
-                          },
-                        }}
-                      />
-                      <S.CheckboxDiv>
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['6']}
-                          onClick={() => handleParentItemChange('6')}
-                        />
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['6']}
-                          onClick={() => handleParentItemChange('6')}
-                        />
-                      </S.CheckboxDiv>
-                    </S.treeDiv>
-
-                    <S.treeDiv>
-                      <TreeItem
-                        nodeId="7"
-                        label="문항정보 트리구조"
-                        sx={{
-                          flexGrow: 1,
-                          maxWidth: 500,
-                          overflowY: 'auto',
-                          '&  .MuiTreeItem-content': {
-                            width: '200px',
-                          },
-                        }}
-                      />
-                      <S.CheckboxDiv>
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['7']}
-                          onClick={() => handleParentItemChange('7')}
-                        />
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['7']}
-                          onClick={() => handleParentItemChange('7')}
-                        />
-                      </S.CheckboxDiv>
-                    </S.treeDiv>
-                  </TreeItem>
-                  <S.CheckboxDiv style={{ marginLeft: '-85px' }}>
-                    <Checkbox
-                      {...label}
-                      sx={{ height: '24px' }}
-                      checked={checkedItems['5']}
-                      onClick={() => handleParentItemChange('5')}
-                    />
-                    <Checkbox
-                      {...label}
-                      sx={{ height: '24px' }}
-                      checked={checkedItems['5']}
-                      onClick={() => handleParentItemChange('5')}
-                    />
-                  </S.CheckboxDiv>
-                </S.treeDiv>
-
-                <S.treeDiv>
-                  <TreeItem
-                    nodeId="8"
-                    label="운영 관리"
-                    sx={{
-                      flexGrow: 1,
-                      maxWidth: 500,
-                      overflowY: 'auto',
-                      '&  .MuiTreeItem-content': {
-                        width: '200px',
-                      },
-                    }}
-                  >
-                    <S.treeDiv>
-                      <TreeItem
-                        nodeId="9"
-                        label="회원 관리"
-                        sx={{
-                          flexGrow: 1,
-                          maxWidth: 500,
-                          overflowY: 'auto',
-                          '&  .MuiTreeItem-content': {
-                            width: '200px',
-                          },
-                        }}
-                      />
-                      <S.CheckboxDiv>
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['9']}
-                          onClick={() => handleParentItemChange('9')}
-                        />
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['9']}
-                          onClick={() => handleParentItemChange('9')}
-                        />
-                      </S.CheckboxDiv>
-                    </S.treeDiv>
-
-                    <S.treeDiv>
-                      <TreeItem
-                        nodeId="10"
-                        label="권한 관리"
-                        sx={{
-                          flexGrow: 1,
-                          maxWidth: 500,
-                          overflowY: 'auto',
-                          '&  .MuiTreeItem-content': {
-                            width: '200px',
-                          },
-                        }}
-                      />
-                      <S.CheckboxDiv>
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['10']}
-                          onClick={() => handleParentItemChange('10')}
-                        />
-                        <Checkbox
-                          {...label}
-                          sx={{ height: '24px' }}
-                          checked={checkedItems['10']}
-                          onClick={() => handleParentItemChange('10')}
-                        />
-                      </S.CheckboxDiv>
-                    </S.treeDiv>
-                  </TreeItem>
-                  <S.CheckboxDiv style={{ marginLeft: '-85px' }}>
-                    <Checkbox
-                      {...label}
-                      sx={{ height: '24px' }}
-                      checked={checkedItems['8']}
-                      onClick={() => handleParentItemChange('8')}
-                    />
-                    <Checkbox
-                      {...label}
-                      sx={{ height: '24px' }}
-                      checked={checkedItems['8']}
-                      onClick={() => handleParentItemChange('8')}
-                    />
-                  </S.CheckboxDiv>
-                </S.treeDiv>
-              </TreeItem>
-              <S.CheckboxDiv style={{ marginLeft: '-168px' }}>
-                <Checkbox
-                  {...label}
-                  sx={{ height: '24px' }}
-                  checked={checkedItems['1']}
-                  onClick={() => handleParentItemChange('1')}
-                />
-                <Checkbox
-                  {...label}
-                  sx={{ height: '24px' }}
-                  checked={checkedItems['1']}
-                  onClick={() => handleParentItemChange('1')}
-                />
-              </S.CheckboxDiv>
-            </S.treeDiv>
-          </TreeView>
+          <AuthorityTree />
         </S.leftContainer>
         <S.rightContainer>
           <S.searchbarWarrper>
@@ -418,24 +384,62 @@ const Authority = () => {
               <S.input
                 type="text"
                 placeholder="권한명을 작성해주세요."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
               ></S.input>
             </S.inputWrapper>
             <S.btnWrapper>
-              <StyledUplodeBtn variant="contained">저장</StyledUplodeBtn>
+              <StyledSaveBtn variant="contained" onClick={CreateAuthority}>
+                저장
+              </StyledSaveBtn>
             </S.btnWrapper>
           </S.searchbarWarrper>
           <S.authorityMenuContainer>
             {authorityList?.map((el, i) => (
-              <S.authorityMenuWrapper key={i}>
-                <S.authorityMenu>{el.name}</S.authorityMenu>
-                <S.iconWrapper>
-                  <DeleteForeverIcon />
-                </S.iconWrapper>
-              </S.authorityMenuWrapper>
+              <S.authorityWrapper key={i}>
+                <S.authorityMenuWrapper>
+                  <S.authorityMenu
+                    onClick={() => {
+                      getMemberAuthority(el.code);
+                      setInputValue(el.name);
+                    }}
+                  >
+                    {el.name}
+                  </S.authorityMenu>
+                  <S.iconWrapper>
+                    <DeleteForeverIcon
+                      onClick={() => {
+                        handleDeleteClick(el.code);
+                        //DeleteAuthority(el.code);
+                      }}
+                    />
+                  </S.iconWrapper>
+                </S.authorityMenuWrapper>
+                <S.Btnwrapper>
+                  <StyledEditBtn
+                    variant="outlined"
+                    onClick={() => putAuthority(el.code)}
+                  >
+                    수정
+                  </StyledEditBtn>
+                </S.Btnwrapper>
+              </S.authorityWrapper>
             ))}
           </S.authorityMenuContainer>
         </S.rightContainer>
       </S.WholeContainer>
+      {isDeleteAuthority && (
+        <SelectAlert
+          title="권한을 삭제할 경우, "
+          description="해당 권한의 아이디는 접속이 불가합니다."
+          action="삭제"
+          onClick={() => DeleteAuthority(codeValue)}
+        />
+      )}
+      {isCreateAuthority && <NoticeAlert title="권한이 생성되었습니다." />}
+      {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />}
+      {isCreateNameError && <NoticeAlert title="권한명을 작성해주세요." />}
+      {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />}
     </S.main>
   );
 };
@@ -465,24 +469,15 @@ const S = {
     border-right: 1px solid #a3aed0;
   `,
   leftTopBar: styled.div`
-    width: 400px;
+    width: 395px;
     display: flex;
     margin-top: 30px;
     margin-bottom: 20px;
-    margin-left: 23px;
+    margin-left: 22px;
     gap: 10px;
     justify-content: flex-end;
   `,
   manual: styled.div``,
-  treeDiv: styled.div`
-    display: flex;
-  `,
-  CheckboxDiv: styled.div`
-    height: 24px;
-    //display: flex;
-    //justify-content: flex-end;
-    //gap: 40px;
-  `,
   editCheckbox: styled.input``,
   manageCheckbox: styled.input``,
   rightContainer: styled.div`
@@ -531,10 +526,20 @@ const S = {
     padding-top: 20px;
     padding-bottom: 20px;
   `,
+  authorityWrapper: styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 20px;
+  `,
   authorityMenuWrapper: styled.div`
     width: 100%;
     display: flex;
-    padding: 0px 30px;
+  `,
+  authorityMenu: styled.div`
+    display: flex;
+    width: 80%;
+    cursor: default;
     &:hover {
       background-color: #422afb;
       border-top: 1px solid #a3aed0;
@@ -542,24 +547,27 @@ const S = {
       color: white;
     }
   `,
-  authorityMenu: styled.div`
-    width: 100%;
-    display: flex;
-    cursor: default;
-  `,
   iconWrapper: styled.div`
     display: flex;
     justify-content: flex-end;
     cursor: pointer;
   `,
+  Btnwrapper: styled.div``,
 };
 
-const StyledUplodeBtn = styled(Button)`
+const StyledSaveBtn = styled(Button)`
   && {
     height: 30px;
     width: 80px;
     border-radius: 5px;
     font-size: 12px;
+    line-height: normal;
+  }
+`;
+const StyledEditBtn = styled(Button)`
+  && {
+    border-radius: 5px;
+    font-size: 11px;
     line-height: normal;
   }
 `;
