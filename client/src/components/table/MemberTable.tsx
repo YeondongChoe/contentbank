@@ -76,14 +76,19 @@ const MemberTable = () => {
     }
   };
 
-  const getMemberList = async () => {
+  const getMemberList = async (enabled: string) => {
     await axios
-      .get('/auth-service/api/v1/auth?keyword=&page=1&size=8', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
+      .get(
+        `/auth-service/api/v1/auth?keyword=&page=1&size=8&enabledType=${
+          enabled || ''
+        }`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('accessToken')}`,
+          },
         },
-      })
+      )
       .then((response) => {
         console.log(response.headers['authorization']);
         if (response.status === 200) {
@@ -143,7 +148,7 @@ const MemberTable = () => {
 
   useEffect(() => {
     if (didMount) {
-      getMemberList();
+      getMemberList('');
     }
   }, [relode, isEdit, isEnabled, didMount]);
 
@@ -163,16 +168,19 @@ const MemberTable = () => {
                   label="전체"
                   value="1"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
+                  onClick={() => getMemberList('')}
                 />
                 <Tab
                   label="활성화"
                   value="2"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
+                  onClick={() => getMemberList('Y')}
                 />
                 <Tab
                   label="비활성화"
                   value="3"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
+                  onClick={() => getMemberList('N')}
                 />
               </TabList>
             </Box>
