@@ -25,8 +25,8 @@ import {
   manageOperation,
   manageMember,
   manageAuthority,
-  alertState,
-} from '../../recoil/State';
+} from '../../recoil/AuthorityState';
+import { alertState } from '../../recoil/UtilState';
 
 import { Button } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -410,7 +410,6 @@ const Authority = () => {
                     <DeleteForeverIcon
                       onClick={() => {
                         handleDeleteClick(el.code);
-                        //DeleteAuthority(el.code);
                       }}
                     />
                   </S.iconWrapper>

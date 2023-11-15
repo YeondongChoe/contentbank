@@ -7,29 +7,5 @@
     {"id": "5", "name": "강길동", "grade": "초등2", "phone": "010-5555-5555"},
     {"id": "6", "name": "강길동", "grade": "초등2", "phone": "010-5555-5555"},
     {"id": "7", "name": "강길동", "grade": "초등2", "phone": "010-5555-5555"}
-  ] ,
-  "List" : [
-    {"id": "1", "bookmark": "I", "code": "asdf-qwefasdf-qweasdf-qwef", "revision": "2015개정", "level": "초등", "grade": "1학년", "semester": "1학기", "mainCategory": "각 자리의 숫자가 있다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까1 aaabb baaaaaaa aaaaaaasdfasdfasdfaaaa123123123123 ", "type": "객관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "Y"},
-    {"id": "2", "bookmark": "I", "code": "asdfqwe-asdcqwe-asdfer-eqwe", "revision": "2015개정", "level": "초등", "grade": "2학년", "semester": "2학기", "mainCategory": "각 자리의 숫자가 없다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까2", "type": "객관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "Y"},
-    {"id": "3", "bookmark": "I", "code": "xacas-qweasd-qweas-dqw-dfq", "revision": "2015개정", "level": "초등", "grade": "3학년", "semester": "1학기", "mainCategory": "각 자리의 숫자가 있었다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까3", "type": "객관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "N"},
-    {"id": "4", "bookmark": "I", "code": "xacas-qweasd-qweas-dqwe-fq", "revision": "2015개정", "level": "초등", "grade": "4학년", "semester": "2학기", "mainCategory": "각 자리의 숫자가 없었다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까4", "type": "주관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "Y"},
-    {"id": "5", "bookmark": "I", "code": "xacas-qweasd-qwea-dqwe-dfq", "revision": "2016개정", "level": "초등", "grade": "5학년", "semester": "1학기", "mainCategory": "각 자리의 숫자가 있다말다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까5", "type": "객관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "N"},
-    {"id": "6", "bookmark": "I", "code": "xacas-qweasd-qwas-dqwe-dfq", "revision": "2016개정", "level": "초등", "grade": "6학년", "semester": "2학기", "mainCategory": "각 자리의 숫자가 없다말다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까6", "type": "주관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "Y"},
-    {"id": "7", "bookmark": "I", "code": "xacas-qweas-qweas-dqwe-dfq", "revision": "2016개정", "level": "중등", "grade": "1학년", "semester": "1학기", "mainCategory": "각 자리의 숫자가 그냥있다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까7", "type": "객관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "Y"},
-    {"id": "8", "bookmark": "I", "code": "xacas-qwesd-qweas-dqwe-dfq", "revision": "2016개정", "level": "중등", "grade": "2학년", "semester": "2학기", "mainCategory": "각 자리의 숫자가 그냥없다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까8", "type": "주관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "N"},
-    {"id": "9", "bookmark": "I", "code": "xacs-qweasd-qweas-dqwe-dfq", "revision": "2017개정", "level": "중등", "grade": "3학년", "semester": "1학기", "mainCategory": "각 자리의 숫자가 정말있다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까9", "type": "객관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "N"},
-    {"id": "10", "bookmark": "I", "code": "xaca-qwasd-qweas-dqwe-dfq", "revision": "2017개정", "level": "고등", "grade": "1학년", "semester": "2학기", "mainCategory": "각 자리의 숫자가 정말없다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까10", "type": "주관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "Y"},
-    {"id": "11", "bookmark": "I", "code": "xacas-qweasd-qeas-dq-dfq", "revision": "2017개정", "level": "고등", "grade": "2학년", "semester": "1학기", "mainCategory": "각 자리의 숫자가 많이있다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까11", "type": "객관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "N"},
-    {"id": "12", "bookmark": "I", "code": "xacas-qweasd-qweas-dwe-d", "revision": "2018개정", "level": "고등", "grade": "3학년", "semester": "2학기", "mainCategory": "각 자리의 숫자가 많이없다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까12", "type": "주관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "Y"},
-    {"id": "13", "bookmark": "I", "code": "xacs-qwasd-as-dqwe-dfq", "revision": "2018개정", "level": "고등", "grade": "1학년", "semester": "1학기", "mainCategory": "각 자리의 숫자가 마지막이다.", "middleCategory": "겹쳐진 종이테이프는 몇개일까13", "type": "주관식",  "writer": "홍길동", "date": "2023.06.28", "isOpen": "N"}    ]
-    ,
-    "Member" : [
-      {"id": "Test아이디1", "name": "홍길동", "authority": "Admin", "createDate": "2020.01.01", "state": "활성", "note": ""},
-      {"id": "Test아이디2", "name": "최길동", "authority": "권한1", "createDate": "2021.01.01", "state": "비활성", "note": ""},
-      {"id": "Test아이디3", "name": "김길동", "authority": "권한2", "createDate": "2022.01.01", "state": "비활성", "note": ""},
-      {"id": "Test아이디4", "name": "박길동", "authority": "권한3", "createDate": "2023.01.01", "state": "활성", "note": ""},
-      {"id": "Test아이디5", "name": "강길동", "authority": "권한4", "createDate": "2023.03.01", "state": "활성", "note": ""},
-      {"id": "Test아이디6", "name": "강길동", "authority": "권한5", "createDate": "2023.05.01", "state": "비활성", "note": ""},
-      {"id": "Test아이디7", "name": "강길동", "authority": "권한6", "createDate": "2023.08.01", "state": "활성", "note": ""}
-    ]
+  ]
 }

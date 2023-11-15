@@ -1,8 +1,77 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import { getCookie, setCookie } from '../../utils/ReactCookie';
+import { CheckBoxValue, IsChangedServicedValue } from '../../recoil/ValueState';
+import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
+
 import { Button } from '@mui/material';
+import Popover from '@mui/material/Popover';
 
 const SelectBar = () => {
+  const [didMount, setDidMount] = useState(false);
+  let mountCount = 1;
+
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [contentSeq, setContentSeq] = useRecoilState(CheckBoxValue);
+  const setIsChangedServiced = useSetRecoilState(IsChangedServicedValue);
+  const formattedArray = contentSeq.map((value) => ({ contentSeq: value }));
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  const changeServiced = async () => {
+    await axios
+      .put(
+        `/question-service/api/v1/questions/change-serviced`,
+        { changeServiceds: formattedArray },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('accessToken')}`,
+          },
+        },
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.headers['authorization'] !== getCookie('accessToken')) {
+            setCookie('accessToken', response.headers['authorization'], {
+              path: '/',
+              sameSite: 'strict',
+              secure: false,
+            });
+          }
+        }
+        setIsChangedServiced(true);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  };
+
+  const changeServicedSubmit = () => {
+    changeServiced();
+    setContentSeq([]);
+  };
+
+  useEffect(() => {
+    mountCount++;
+    setDidMount(true);
+  }, []);
+
+  // useEffect(() => {
+  //   if (didMount) {
+  //   }
+  // }, [didMount]);
+
   return (
     <S.mainContainer>
       <S.selectContainer>
@@ -33,12 +102,35 @@ const SelectBar = () => {
       </S.selectContainer>
       <S.btncontainer>
         <S.btnWrapper>
-          <StyledEditBtn variant="outlined" sx={{ backgroundColor: 'white' }}>
+          <StyledEditBtn
+            aria-describedby={id}
+            variant="outlined"
+            sx={{ backgroundColor: 'white' }}
+            onClick={handleClick}
+          >
             수정
           </StyledEditBtn>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            sx={{ marginTop: '5px' }}
+          >
+            <S.popoverMenu>수정</S.popoverMenu>
+            <S.popoverMenu>복제 후 수정</S.popoverMenu>
+          </Popover>
         </S.btnWrapper>
         <S.btnWrapper>
-          <StyledActionBtn variant="outlined" sx={{ backgroundColor: 'white' }}>
+          <StyledActionBtn
+            variant="outlined"
+            sx={{ backgroundColor: 'white' }}
+            onClick={changeServicedSubmit}
+          >
             활성화/비활성화
           </StyledActionBtn>
         </S.btnWrapper>
@@ -49,7 +141,7 @@ const SelectBar = () => {
 
 const S = {
   mainContainer: styled.div`
-    margin: 40px 45px 20px 28px;
+    margin: 40px 10px 20px 50px;
     display: flex;
     justify-content: space-between;
   `,
@@ -69,6 +161,22 @@ const S = {
     background-color: transparent;
     border: none;
     cursor: pointer;
+  `,
+  popoverMenu: styled.div`
+    width: 100px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    cursor: pointer;
+    &:nth-child(2) {
+      border-top: 2px solid #dde1e9;
+    }
+    &:hover {
+      background-color: #422afb;
+      color: white;
+    }
   `,
 };
 

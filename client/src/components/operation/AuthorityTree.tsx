@@ -24,7 +24,7 @@ import {
   manageOperation,
   manageMember,
   manageAuthority,
-} from '../../recoil/State';
+} from '../../recoil/AuthorityState';
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -333,37 +333,88 @@ const AuthorityTree: React.FC = () => {
       setIsManageAuthorityChecked(newAllChecked);
       return newAllChecked;
     });
+    setIsEditAllChecked((prevAllChecked) => {
+      const newAllChecked = !prevAllChecked;
+      setIsEditCreateChecked(newAllChecked);
+      setIsEditCreateListChecked(newAllChecked);
+      setIsEditWorksheetChecked(newAllChecked);
+      setIsEditManagementChecked(newAllChecked);
+      setIsEditManagementListChecked(newAllChecked);
+      setIsEditTreeChecked(newAllChecked);
+      setIsEditOperationChecked(newAllChecked);
+      setIsEditMemberChecked(newAllChecked);
+      setIsEditAuthorityChecked(newAllChecked);
+      return newAllChecked;
+    });
   };
 
   /** 콘텐츠 제작 관리 클릭*/
   const handleClickCreateManage = () => {
-    const newCreateChecked = isManageCreateChecked;
-    const newCreateListChecked = isManageCreateListChecked;
-    const newWorksheetChecked = isManageWorksheetChecked;
+    const newManageCreateChecked = isManageCreateChecked;
+    const newManageCreateListChecked = isManageCreateListChecked;
+    const newManageWorksheetChecked = isManageWorksheetChecked;
 
-    if (newCreateListChecked === false && newWorksheetChecked === false) {
+    if (
+      newManageCreateListChecked === false &&
+      newManageWorksheetChecked === false
+    ) {
       setIsManageCreateChecked(true);
       setIsManageCreateListChecked(true);
       setIsManageWorksheetChecked(true);
     }
     if (
-      newCreateChecked === true &&
-      newCreateListChecked === true &&
-      newWorksheetChecked === true
+      newManageCreateChecked === true &&
+      newManageCreateListChecked === true &&
+      newManageWorksheetChecked === true
     ) {
       setIsManageCreateChecked(false);
       setIsManageCreateListChecked(false);
       setIsManageWorksheetChecked(false);
-    } else if (newCreateListChecked === true || newWorksheetChecked === true) {
+    } else if (
+      newManageCreateListChecked === true ||
+      newManageWorksheetChecked === true
+    ) {
       setIsManageCreateChecked(true);
       setIsManageCreateListChecked(true);
       setIsManageWorksheetChecked(true);
+    }
+    const newEditCreateChecked = isEditCreateChecked;
+    const newEditCreateListChecked = isEditCreateListChecked;
+    const newEditWorksheetChecked = isEditWorksheetChecked;
+
+    if (
+      newEditCreateListChecked === false &&
+      newEditWorksheetChecked === false
+    ) {
+      setIsEditCreateChecked(true);
+      setIsEditCreateListChecked(true);
+      setIsEditWorksheetChecked(true);
+    }
+    if (
+      newEditCreateChecked === true &&
+      newEditCreateListChecked === true &&
+      newEditWorksheetChecked === true
+    ) {
+      setIsEditCreateChecked(false);
+      setIsEditCreateListChecked(false);
+      setIsEditWorksheetChecked(false);
+    } else if (
+      newEditCreateListChecked === true ||
+      newEditWorksheetChecked === true
+    ) {
+      setIsEditCreateChecked(true);
+      setIsEditCreateListChecked(true);
+      setIsEditWorksheetChecked(true);
     }
   };
 
   /** 콘텐츠 제작/문항 관리 클릭*/
   const handleClickListManage = () => {
     setIsManageCreateListChecked((prevCreateListChecked) => {
+      const newCreateListChecked = !prevCreateListChecked;
+      return newCreateListChecked;
+    });
+    setIsEditCreateListChecked((prevCreateListChecked) => {
       const newCreateListChecked = !prevCreateListChecked;
       return newCreateListChecked;
     });
@@ -374,36 +425,77 @@ const AuthorityTree: React.FC = () => {
       const newCreateListChecked = !prevCreateListChecked;
       return newCreateListChecked;
     });
+    setIsEditWorksheetChecked((prevCreateListChecked) => {
+      const newCreateListChecked = !prevCreateListChecked;
+      return newCreateListChecked;
+    });
   };
 
   /** 콘텐츠 관리 관리 클릭*/
   const handleClickManagemantManage = () => {
-    const newManagementChecked = isManageManagementChecked;
-    const newManagementListChecked = isManageManagementListChecked;
-    const newTreeChecked = isManageTreeChecked;
+    const newManageManagementChecked = isManageManagementChecked;
+    const newManageManagementListChecked = isManageManagementListChecked;
+    const newManageTreeChecked = isManageTreeChecked;
 
-    if (newManagementListChecked === false && newTreeChecked === false) {
+    if (
+      newManageManagementListChecked === false &&
+      newManageTreeChecked === false
+    ) {
       setIsManageManagementChecked(true);
       setIsManageManagementListChecked(true);
       setIsManageTreeChecked(true);
     }
     if (
-      newManagementChecked === true &&
-      newManagementListChecked === true &&
-      newTreeChecked === true
+      newManageManagementChecked === true &&
+      newManageManagementListChecked === true &&
+      newManageTreeChecked === true
     ) {
       setIsManageManagementChecked(false);
       setIsManageManagementListChecked(false);
       setIsManageTreeChecked(false);
-    } else if (newManagementListChecked === true || newTreeChecked === true) {
+    } else if (
+      newManageManagementListChecked === true ||
+      newManageTreeChecked === true
+    ) {
       setIsManageManagementChecked(true);
       setIsManageManagementListChecked(true);
       setIsManageTreeChecked(true);
+    }
+    const newEditManagementChecked = isEditManagementChecked;
+    const newEditManagementListChecked = isEditManagementListChecked;
+    const newEditTreeChecked = isEditTreeChecked;
+    if (
+      newEditManagementListChecked === false &&
+      newEditTreeChecked === false
+    ) {
+      setIsEditManagementChecked(true);
+      setIsEditManagementListChecked(true);
+      setIsEditTreeChecked(true);
+    }
+    if (
+      newEditManagementChecked === true &&
+      newEditManagementListChecked === true &&
+      newEditTreeChecked === true
+    ) {
+      setIsEditManagementChecked(false);
+      setIsEditManagementListChecked(false);
+      setIsEditTreeChecked(false);
+    } else if (
+      newEditManagementListChecked === true ||
+      newEditTreeChecked === true
+    ) {
+      setIsEditManagementChecked(true);
+      setIsEditManagementListChecked(true);
+      setIsEditTreeChecked(true);
     }
   };
   /** 콘텐츠 관리/문항 관리 클릭*/
   const handleClickManagemantListManage = () => {
     setIsManageManagementListChecked((prevCreateListChecked) => {
+      const newCreateListChecked = !prevCreateListChecked;
+      return newCreateListChecked;
+    });
+    setIsEditManagementListChecked((prevCreateListChecked) => {
       const newCreateListChecked = !prevCreateListChecked;
       return newCreateListChecked;
     });
@@ -415,31 +507,65 @@ const AuthorityTree: React.FC = () => {
       const newCreateListChecked = !prevCreateListChecked;
       return newCreateListChecked;
     });
+    setIsEditTreeChecked((prevCreateListChecked) => {
+      const newCreateListChecked = !prevCreateListChecked;
+      return newCreateListChecked;
+    });
   };
 
   /** 운영 관리 관리 클릭*/
   const handleClickOperationManage = () => {
-    const newOperationChecked = isManageOperationChecked;
-    const newMemberChecked = isManageMemberChecked;
-    const newAuthorityChecked = isManageAuthorityChecked;
+    const newManageOperationChecked = isManageOperationChecked;
+    const newManageMemberChecked = isManageMemberChecked;
+    const newManageAuthorityChecked = isManageAuthorityChecked;
 
-    if (newMemberChecked === false && newAuthorityChecked === false) {
+    if (
+      newManageMemberChecked === false &&
+      newManageAuthorityChecked === false
+    ) {
       setIsManageOperationChecked(true);
       setIsManageMemberChecked(true);
       setIsManageAuthorityChecked(true);
     }
     if (
-      newOperationChecked === true &&
-      newMemberChecked === true &&
-      newAuthorityChecked === true
+      newManageOperationChecked === true &&
+      newManageMemberChecked === true &&
+      newManageAuthorityChecked === true
     ) {
       setIsManageOperationChecked(false);
       setIsManageMemberChecked(false);
       setIsManageAuthorityChecked(false);
-    } else if (newMemberChecked === true || newAuthorityChecked === true) {
+    } else if (
+      newManageMemberChecked === true ||
+      newManageAuthorityChecked === true
+    ) {
       setIsManageOperationChecked(true);
       setIsManageMemberChecked(true);
       setIsManageAuthorityChecked(true);
+    }
+    const newEditOperationChecked = isEditOperationChecked;
+    const newEditMemberChecked = isEditMemberChecked;
+    const newEditAuthorityChecked = isEditAuthorityChecked;
+    if (newEditMemberChecked === false && newEditAuthorityChecked === false) {
+      setIsEditOperationChecked(true);
+      setIsEditMemberChecked(true);
+      setIsEditAuthorityChecked(true);
+    }
+    if (
+      newEditOperationChecked === true &&
+      newEditMemberChecked === true &&
+      newEditAuthorityChecked === true
+    ) {
+      setIsEditOperationChecked(false);
+      setIsEditMemberChecked(false);
+      setIsEditAuthorityChecked(false);
+    } else if (
+      newEditMemberChecked === true ||
+      newEditAuthorityChecked === true
+    ) {
+      setIsEditOperationChecked(true);
+      setIsEditMemberChecked(true);
+      setIsEditAuthorityChecked(true);
     }
   };
 
@@ -449,11 +575,19 @@ const AuthorityTree: React.FC = () => {
       const newCreateListChecked = !prevCreateListChecked;
       return newCreateListChecked;
     });
+    setIsEditMemberChecked((prevCreateListChecked) => {
+      const newCreateListChecked = !prevCreateListChecked;
+      return newCreateListChecked;
+    });
   };
 
   /** 운영 관리/권한 관리 클릭*/
   const handleClickAuthorityManage = () => {
     setIsManageAuthorityChecked((prevCreateListChecked) => {
+      const newCreateListChecked = !prevCreateListChecked;
+      return newCreateListChecked;
+    });
+    setIsEditAuthorityChecked((prevCreateListChecked) => {
       const newCreateListChecked = !prevCreateListChecked;
       return newCreateListChecked;
     });

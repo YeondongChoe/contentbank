@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { editer } from '../../recoil/State';
+import { editer, memberKeyValue } from '../../recoil/MemberState';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
 import NoticeAlert from '../alert/NoticeAlert';
-import { alertState, memberKeyValue } from '../../recoil/State';
+import { alertState } from '../../recoil/UtilState';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Box from '@mui/material/Box';
@@ -187,6 +187,7 @@ const EditPopup = () => {
         //성공메시지 서버쪽에서 넘겨주면 띄우기
         SetIsEditer(false);
         setIsNameError(false);
+        window.location.reload();
       })
       .catch((response) => {
         setIsNameError(true);
@@ -442,7 +443,12 @@ const EditPopup = () => {
                   >
                     취소
                   </StyleCancelBtn>
-                  <StyleSaveBtn variant="contained" onClick={onSubmit}>
+                  <StyleSaveBtn
+                    variant="contained"
+                    onClick={() => {
+                      onSubmit();
+                    }}
+                  >
                     수정
                   </StyleSaveBtn>
                 </S.finalBtnContainer>
@@ -482,15 +488,15 @@ const S = {
     height: 50px;
     margin-top: 10px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 10px;
   `,
   popupTitle: styled.div`
     width: 100%;
     font-size: 22px;
+    display: flex;
+    justify-content: center;
     margin-right: -30px;
-    justify-self: center;
   `,
   cancelIcon: styled.div`
     cursor: pointer;

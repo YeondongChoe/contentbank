@@ -1,6 +1,6 @@
 import React from 'react';
 import { Styled } from './Alert.style';
-import { alertState } from '../../recoil/State';
+import { alertState } from '../../recoil/UtilState';
 import { useRecoilState } from 'recoil';
 
 type Alert = {

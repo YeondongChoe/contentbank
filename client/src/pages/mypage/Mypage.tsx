@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Styled } from './Mypage.style';
 import { useRecoilState } from 'recoil';
-import { alertState } from '../../recoil/State';
+import { alertState } from '../../recoil/UtilState';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import ChangePassword from '../../components/password/ChangePassword';
 import { useNavigate } from 'react-router-dom';

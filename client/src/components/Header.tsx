@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { getCookie, setCookie, removeCookie } from '../utils/ReactCookie';
 import { useNavigate } from 'react-router-dom';
+import { useSetRecoilState, useRecoilState } from 'recoil';
+import { CreateListCodeValue } from '../recoil/ValueState';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Box from '@mui/material/Box';
@@ -57,6 +59,7 @@ const Header = () => {
   const [menuValue, setMenuValue] = useState<MenuListType[]>();
   const [didMount, setDidMount] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const setCreateListCodeValue = useSetRecoilState(CreateListCodeValue);
 
   const navigate = useNavigate();
 
@@ -80,28 +83,6 @@ const Header = () => {
       navigate('/contentlist');
     } else {
       navigate('/');
-    }
-  };
-
-  const clickTabPanel = (code: string) => {
-    if (code === 'CNC_Q') {
-      setActiveTab(1);
-      navigate('/contentlist');
-    } else if (code === 'CNC_W') {
-      setActiveTab(2);
-      navigate('/contentworksheet');
-    } else if (code === 'CNM_Q') {
-      setActiveTab(1);
-      navigate('/managementlist');
-    } else if (code === 'CNM_T') {
-      setActiveTab(2);
-      navigate('/managementtree');
-    } else if (code === 'OPM_M') {
-      setActiveTab(1);
-      navigate('/operationmember');
-    } else if (code === 'OPM_R') {
-      setActiveTab(2);
-      navigate('/operationauthority');
     }
   };
 
@@ -131,6 +112,29 @@ const Header = () => {
       });
   };
 
+  const clickTabPanel = (code: string) => {
+    if (code === 'CNC_Q') {
+      setActiveTab(1);
+      setCreateListCodeValue(code);
+      navigate('/contentlist');
+    } else if (code === 'CNC_W') {
+      setActiveTab(2);
+      navigate('/contentworksheet');
+    } else if (code === 'CNM_Q') {
+      setActiveTab(1);
+      navigate('/managementlist');
+    } else if (code === 'CNM_T') {
+      setActiveTab(2);
+      navigate('/managementtree');
+    } else if (code === 'OPM_M') {
+      setActiveTab(1);
+      navigate('/operationmember');
+    } else if (code === 'OPM_R') {
+      setActiveTab(2);
+      navigate('/operationauthority');
+    }
+  };
+
   useEffect(() => {
     mountCount++;
     setDidMount(true);
@@ -140,7 +144,7 @@ const Header = () => {
     if (didMount) {
       getMenuList();
     }
-  }, [didMount]);
+  }, [didMount, setCreateListCodeValue]);
 
   return (
     <S.main>
@@ -184,42 +188,49 @@ const Header = () => {
                             setValue('');
                           }}
                         >
-                          <TabPanel
-                            value={el.seq.toString()}
-                            onClick={(e) => {
-                              clickTabPanel(el?.children?.[0]?.code);
-                            }}
-                            style={{
-                              marginTop: '10px',
-                              marginBottom: '10px',
-                              padding: '0',
-                              borderBottom:
-                                activeTab === 1
-                                  ? '2px solid #58a9ffda'
-                                  : 'initial',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            {el?.children?.[0]?.name}
-                          </TabPanel>
-                          <TabPanel
-                            value={el.seq.toString()}
-                            onClick={(e) => {
-                              clickTabPanel(el?.children?.[1]?.code);
-                            }}
-                            style={{
-                              marginTop: '10px',
-                              marginBottom: '10px',
-                              padding: '0',
-                              borderBottom:
-                                activeTab === 2
-                                  ? '2px solid #58a9ffda'
-                                  : 'initial',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            {el?.children?.[1]?.name}
-                          </TabPanel>
+                          <S.tabPanelWarpper>
+                            <TabPanel
+                              className="hover-effect"
+                              value={el.seq.toString()}
+                              onClick={(e) => {
+                                clickTabPanel(el?.children?.[0]?.code);
+                              }}
+                              style={{
+                                marginTop: '10px',
+                                marginBottom: '10px',
+                                padding: '0',
+                                borderBottom:
+                                  activeTab === 1
+                                    ? '2px solid #58a9ffda'
+                                    : 'initial',
+                                cursor: 'pointer',
+                                transition: 'border-bottom 0.3s',
+                              }}
+                            >
+                              {el?.children?.[0]?.name}
+                            </TabPanel>
+                          </S.tabPanelWarpper>
+                          <S.tabPanelWarpper>
+                            <TabPanel
+                              value={el.seq.toString()}
+                              onClick={(e) => {
+                                clickTabPanel(el?.children?.[1]?.code);
+                              }}
+                              style={{
+                                marginTop: '10px',
+                                marginBottom: '10px',
+                                padding: '0',
+                                borderBottom:
+                                  activeTab === 2
+                                    ? '2px solid #58a9ffda'
+                                    : 'initial',
+                                cursor: 'pointer',
+                                transition: 'border-bottom 0.3s',
+                              }}
+                            >
+                              {el?.children?.[1]?.name}
+                            </TabPanel>
+                          </S.tabPanelWarpper>
                         </S.panelWarpper>
                       )}
                     </S.panelContainer>
@@ -296,13 +307,18 @@ const S = {
     justify-content: center;
   `,
   panelWarpper: styled.div`
-    width: 160px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     background-color: white;
     border-radius: 5px;
     box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
+  `,
+  tabPanelWarpper: styled.div`
+    width: 160px;
+    display: flex;
+    justify-content: center;
+    &:hover {
+      background-color: #422afb;
+      color: white;
+    }
   `,
   sideContainer: styled.div`
     width: 650px;

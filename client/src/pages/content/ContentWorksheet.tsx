@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Worksheet from '../../components/contents/Worksheet';
 import { useRecoilValue } from 'recoil';
-import { contentCreateState } from '../../recoil/State';
 
 const ContentWorksheet = () => {
   return (

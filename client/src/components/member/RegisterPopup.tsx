@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { register } from '../../recoil/State';
+import { register } from '../../recoil/MemberState';
 import axios, { AxiosError } from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
 import NoticeAlert from '../alert/NoticeAlert';
-import { alertState } from '../../recoil/State';
+import { alertState } from '../../recoil/UtilState';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Box from '@mui/material/Box';
@@ -400,15 +400,16 @@ const S = {
     height: 50px;
     margin-top: 10px;
     display: flex;
-    justify-content: space-between;
+    //justify-content: space-between;
     align-items: center;
     padding: 10px;
   `,
   popupTitle: styled.div`
     width: 100%;
     font-size: 22px;
+    display: flex;
+    justify-content: center;
     margin-right: -30px;
-    justify-self: center;
   `,
   cancelIcon: styled.div`
     cursor: pointer;

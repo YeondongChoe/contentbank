@@ -3,11 +3,10 @@ import dummy from './data.json';
 import styled from 'styled-components';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
-import { register } from '../../recoil/State';
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
-import { editer, memberKeyValue } from '../../recoil/State';
+import { editer, register, memberKeyValue } from '../../recoil/MemberState';
 import SelectAlert from '../alert/SelectAlert';
-import { alertState } from '../../recoil/State';
+import { alertState } from '../../recoil/UtilState';
 
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -90,7 +89,6 @@ const MemberTable = () => {
         },
       )
       .then((response) => {
-        console.log(response.headers['authorization']);
         if (response.status === 200) {
           if (response.headers['authorization'] !== getCookie('accessToken')) {
             setCookie('accessToken', response.headers['authorization'], {
@@ -128,6 +126,7 @@ const MemberTable = () => {
             });
           }
           setIsEnabled(false);
+          window.location.reload();
         }
       })
       .catch((error) => {
@@ -150,7 +149,7 @@ const MemberTable = () => {
     if (didMount) {
       getMemberList('');
     }
-  }, [relode, isEdit, isEnabled, didMount]);
+  }, [didMount, relode, setMemberList]);
 
   const handleDetailInfo = (key: string) => {
     setKeyValue(key);
@@ -263,6 +262,7 @@ const MemberTable = () => {
         <SelectAlert
           title="비활성화 처리시 로그인이 불가합니다."
           description="비활성화 처리 하시겠습니까?"
+          action="확인"
           onClick={disabled}
         ></SelectAlert>
       )}

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import MemberTable from '../table/MemberTable';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { register, editer } from '../../recoil/State';
+import { register, editer } from '../../recoil/MemberState';
 import RegisterPopup from '../member/RegisterPopup';
 import EditPopup from '../member/EditPopup';
 
