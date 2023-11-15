@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import SelectBar from './Selectbar';
 import ListTable from '../table/ListTable';
 import { SearchValue } from '../../recoil/ValueState';
-import { useSetRecoilState } from 'recoil';
+import { CreatePopupState } from '../../recoil/UtilState';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -18,15 +19,11 @@ const List = () => {
   };
 
   const handleClickList = () => {
-    if (choiceValue === 1) {
-      setChoiceValue(0);
-    } else setChoiceValue(1);
+    setChoiceValue(1);
   };
 
   const handleClickBookmark = () => {
-    if (choiceValue === 2) {
-      setChoiceValue(0);
-    } else setChoiceValue(2);
+    setChoiceValue(2);
   };
 
   return (
@@ -56,10 +53,17 @@ const List = () => {
           <StyledUplodeBtn variant="contained">+ 문항 업로드</StyledUplodeBtn>
         </S.btnWrapper>
       </S.contentHead>
-      <S.contentBox>
-        <SelectBar />
-        <ListTable />
-      </S.contentBox>
+      {choiceValue === 1 && (
+        <S.contentBox>
+          <SelectBar />
+          <ListTable />
+        </S.contentBox>
+      )}
+      {choiceValue === 2 && (
+        <S.contentBox>
+          <div>즐겨찾기</div>
+        </S.contentBox>
+      )}
     </S.main>
   );
 };
