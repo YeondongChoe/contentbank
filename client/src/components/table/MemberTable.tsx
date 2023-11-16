@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import dummy from './data.json';
 import styled from 'styled-components';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
@@ -37,21 +36,22 @@ const MemberTable = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [memberList, setMemberList] = useState<MemberListType[]>([]);
   const setKeyValue = useSetRecoilState(memberKeyValue);
-  const [isEdit, setIsEdit] = useRecoilState(editer);
+  const setIsEdit = useSetRecoilState(editer);
   const relode = useRecoilValue(register);
   const [value, setValue] = React.useState('1');
   const [isEnabled, setIsEnabled] = useState(false);
   const setIsAlertOpen = useSetRecoilState(alertState);
-  const [selectedId, setSelectedId] = useState('');
   const [didMount, setDidMount] = useState(false);
 
   let mountCount = 1;
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
+    setSelectedRows([]);
   };
 
-  const isAllSelected = selectedRows.length === memberList?.length;
+  const isAllSelected =
+    memberList?.length > 0 && selectedRows.length === memberList.length;
 
   const handleRowSelect = (checkbox: string) => {
     const updatedSelectedRows = [...selectedRows];

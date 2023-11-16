@@ -202,11 +202,14 @@ const Mypage = () => {
             </Styled.titleContainer>
             <ChangePassword
               marginLeft={10}
-              width={500}
-              inputWidth={300}
+              width={400}
+              inputWidth={230}
               onClick={handlePasswordEdit}
-              btnWidth={100}
-              height={35}
+              btnWidth={80}
+              height={25}
+              fontSize={13}
+              labelSize={14}
+              placeholderSize={12}
               display="flex-start"
             />
           </Styled.passwordFormContainer>

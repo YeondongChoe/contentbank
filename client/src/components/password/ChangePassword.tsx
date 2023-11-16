@@ -24,6 +24,9 @@ interface Props {
   height?: number;
   display?: string;
   marginLeft?: number;
+  fontSize?: number;
+  labelSize?: number;
+  placeholderSize?: number;
 }
 
 const ChangePassword: React.FC<Props> = ({
@@ -31,9 +34,12 @@ const ChangePassword: React.FC<Props> = ({
   width,
   inputWidth,
   btnWidth,
+  fontSize,
   height,
   display,
   marginLeft,
+  labelSize,
+  placeholderSize,
 }) => {
   const {
     control,
@@ -80,7 +86,9 @@ const ChangePassword: React.FC<Props> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Styled.inputContainer width={width as number}>
           <Styled.inputWapper width={width as number}>
-            <Styled.label>새 비밀번호</Styled.label>
+            <Styled.label labelSize={labelSize as number}>
+              새 비밀번호
+            </Styled.label>
             <Controller
               control={control}
               name="password"
@@ -95,6 +103,7 @@ const ChangePassword: React.FC<Props> = ({
               render={({ field }) => (
                 <Styled.input
                   width={inputWidth as number}
+                  placeholderSize={placeholderSize as number}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                   onChange={field.onChange}
@@ -111,7 +120,9 @@ const ChangePassword: React.FC<Props> = ({
           )}
           {isValid && <Styled.successMessage>사용가능</Styled.successMessage>}
           <Styled.inputWapper width={width as number}>
-            <Styled.label>새 비밀번호 재확인</Styled.label>
+            <Styled.label labelSize={labelSize as number}>
+              새 비밀번호 재확인
+            </Styled.label>
             <Controller
               control={control}
               name="password_confirm"
@@ -126,6 +137,7 @@ const ChangePassword: React.FC<Props> = ({
               render={({ field }) => (
                 <Styled.input
                   width={inputWidth as number}
+                  placeholderSize={placeholderSize as number}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                   onChange={field.onChange}
@@ -155,6 +167,7 @@ const ChangePassword: React.FC<Props> = ({
             <StyledCancelBtn
               width={btnWidth}
               height={height}
+              fontSize={fontSize}
               variant="outlined"
               onClick={onClick}
               sx={{ backgroundColor: 'white' }}
@@ -167,6 +180,7 @@ const ChangePassword: React.FC<Props> = ({
               <StyledConfirmBtn
                 width={btnWidth}
                 height={height}
+                fontSize={fontSize}
                 variant="contained"
               >
                 확인
@@ -178,6 +192,7 @@ const ChangePassword: React.FC<Props> = ({
                 width={btnWidth}
                 height={height}
                 variant="outlined"
+                fontSize={fontSize}
                 sx={{ backgroundColor: 'white' }}
               >
                 확인

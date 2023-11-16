@@ -5,6 +5,7 @@ import ListTable from '../table/ListTable';
 import { SearchValue } from '../../recoil/ValueState';
 import { CreatePopupState } from '../../recoil/UtilState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import MainPopup from '../../pages/createPopup/CreateMainPopup';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -13,6 +14,7 @@ const List = () => {
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const setSearchValue = useSetRecoilState(SearchValue);
+  const [isCreate, setIsCreate] = useRecoilState(CreatePopupState);
 
   const handleClickSearch = () => {
     setSearchValue(inputValue);
@@ -50,7 +52,12 @@ const List = () => {
           </S.iconWrapper>
         </S.inputContainer>
         <S.btnWrapper>
-          <StyledUplodeBtn variant="contained">+ 문항 업로드</StyledUplodeBtn>
+          <StyledUplodeBtn
+            variant="contained"
+            onClick={() => setIsCreate(true)}
+          >
+            + 문항 업로드
+          </StyledUplodeBtn>
         </S.btnWrapper>
       </S.contentHead>
       {choiceValue === 1 && (
@@ -64,6 +71,7 @@ const List = () => {
           <div>즐겨찾기</div>
         </S.contentBox>
       )}
+      {isCreate && <MainPopup />}
     </S.main>
   );
 };

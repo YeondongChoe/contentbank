@@ -199,10 +199,10 @@ const Header = () => {
                                 marginTop: '10px',
                                 marginBottom: '10px',
                                 padding: '0',
-                                borderBottom:
-                                  activeTab === 1
-                                    ? '2px solid #58a9ffda'
-                                    : 'initial',
+                                // borderBottom:
+                                //   activeTab === 1
+                                //     ? '2px solid #58a9ffda'
+                                //     : 'initial',
                                 cursor: 'pointer',
                                 transition: 'border-bottom 0.3s',
                               }}
@@ -220,10 +220,10 @@ const Header = () => {
                                 marginTop: '10px',
                                 marginBottom: '10px',
                                 padding: '0',
-                                borderBottom:
-                                  activeTab === 2
-                                    ? '2px solid #58a9ffda'
-                                    : 'initial',
+                                // borderBottom:
+                                //   activeTab === 2
+                                //     ? '2px solid #58a9ffda'
+                                //     : 'initial',
                                 cursor: 'pointer',
                                 transition: 'border-bottom 0.3s',
                               }}

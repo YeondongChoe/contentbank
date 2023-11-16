@@ -5,6 +5,8 @@ import { getCookie, setCookie } from '../../utils/ReactCookie';
 import AuthorityTree from './AuthorityTree';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import SelectAlert from '../../components/alert/SelectAlert';
+import { Controller, useForm } from 'react-hook-form';
+
 import { useRecoilState } from 'recoil';
 import {
   editCreateContent,
@@ -39,12 +41,14 @@ type AuthorityListType = {
 };
 
 const Authority = () => {
+  const { control, watch } = useForm();
   const [authorityList, setAuthorityList] = useState<AuthorityListType[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
   const [isPutAuthority, setIsPutAuthority] = useState(false);
-  const [isCreateAuthority, setIsCreateAuthority] = useState(false);
+  const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
   const [isPutNameError, setIsPutNameError] = useState(false);
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
@@ -185,15 +189,22 @@ const Authority = () => {
             secure: false,
           });
         }
-        setIsAlertOpen(true);
-        setIsCreateAuthority(true);
-        setIsPutNameError(false);
         window.location.reload();
       }
     } catch (error) {
-      setIsPutNameError(false);
-      setIsCreateNameError(true);
+      alert(error);
+    }
+  };
+
+  const handleUpdateClick = () => {
+    if (inputValue === '') {
       setIsAlertOpen(true);
+      setIsCreateNameError(true);
+      setIsUpdateAuthority(false);
+    } else if (inputValue) {
+      setIsAlertOpen(true);
+      setIsCreateNameError(false);
+      setIsUpdateAuthority(true);
     }
   };
 
@@ -231,99 +242,100 @@ const Authority = () => {
         );
         setIsEditTreeChecked(response.data.data.permissions[5].edited);
         setIsManageTreeChecked(response.data.data.permissions[5].managed);
-        setIsEditOperationChecked(response.data.data.permissions[6].edited);
+        setIsEditOperationChecked(response.data.data.permissions[6].edited); //운영관리 편집
         setIsManageOperationChecked(response.data.data.permissions[6].managed);
-        setIsEditMemberChecked(response.data.data.permissions[7].edited);
+        setIsEditMemberChecked(response.data.data.permissions[7].edited); //운영관리 회원 관리 편집
         setIsManageMemberChecked(response.data.data.permissions[7].managed);
-        setIsEditAuthorityChecked(response.data.data.permissions[8].edited);
+        setIsEditAuthorityChecked(response.data.data.permissions[8].edited); //운영관리 권환 관리 편집
         setIsManageAuthorityChecked(response.data.data.permissions[8].managed);
       })
       .catch((err) => {
         alert(err);
       });
   };
-  const putAuthority = async (code: string) => {
-    const data = {
-      name: inputValue,
-      permissions: [
-        {
-          code: 'CNC',
-          edited: isEditCreateChecked,
-          managed: isManageCreateChecked,
-        },
-        {
-          code: 'CNC_Q',
-          edited: isEditCreateListChecked,
-          managed: isManageCreateListChecked,
-        },
-        {
-          code: 'CNC_W',
-          edited: isEditWorksheetChecked,
-          managed: isManageWorksheetChecked,
-        },
-        {
-          code: 'CNM',
-          edited: isEditManagementChecked,
-          managed: isManageManagementChecked,
-        },
-        {
-          code: 'CNM_Q',
-          edited: isEditManagementListChecked,
-          managed: isManageManagementListChecked,
-        },
-        {
-          code: 'CNM_T',
-          edited: isEditTreeChecked,
-          managed: isManageTreeChecked,
-        },
-        {
-          code: 'OPM',
-          edited: isEditOperationChecked,
-          managed: isManageOperationChecked,
-        },
-        {
-          code: 'OPM_M',
-          edited: isEditMemberChecked,
-          managed: isManageMemberChecked,
-        },
-        {
-          code: 'OPM_R',
-          edited: isEditAuthorityChecked,
-          managed: isManageAuthorityChecked,
-        },
-      ],
-    };
-    return await axios
-      .put(`/auth-service/api/v1/authority/${code}`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setIsCreateNameError(false);
-        setIsPutNameError(false);
-        setIsAlertOpen(true);
-        setIsPutAuthority(true);
-      })
-      .catch((error) => {
-        setIsAlertOpen(true);
-        setIsCreateNameError(false);
-        setIsPutNameError(true);
-      });
-  };
+  // const putAuthority = async (code: string) => {
+  //   const data = {
+  //     name: inputValue,
+  //     permissions: [
+  //       {
+  //         code: 'CNC',
+  //         edited: isEditCreateChecked,
+  //         managed: isManageCreateChecked,
+  //       },
+  //       {
+  //         code: 'CNC_Q',
+  //         edited: isEditCreateListChecked,
+  //         managed: isManageCreateListChecked,
+  //       },
+  //       {
+  //         code: 'CNC_W',
+  //         edited: isEditWorksheetChecked,
+  //         managed: isManageWorksheetChecked,
+  //       },
+  //       {
+  //         code: 'CNM',
+  //         edited: isEditManagementChecked,
+  //         managed: isManageManagementChecked,
+  //       },
+  //       {
+  //         code: 'CNM_Q',
+  //         edited: isEditManagementListChecked,
+  //         managed: isManageManagementListChecked,
+  //       },
+  //       {
+  //         code: 'CNM_T',
+  //         edited: isEditTreeChecked,
+  //         managed: isManageTreeChecked,
+  //       },
+  //       {
+  //         code: 'OPM',
+  //         edited: isEditOperationChecked,
+  //         managed: isManageOperationChecked,
+  //       },
+  //       {
+  //         code: 'OPM_M',
+  //         edited: isEditMemberChecked,
+  //         managed: isManageMemberChecked,
+  //       },
+  //       {
+  //         code: 'OPM_R',
+  //         edited: isEditAuthorityChecked,
+  //         managed: isManageAuthorityChecked,
+  //       },
+  //     ],
+  //   };
+  //   return await axios
+  //     .put(`/auth-service/api/v1/authority/${code}`, data, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${getCookie('accessToken')}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       if (response.status === 200) {
+  //         if (response.headers['authorization'] !== getCookie('accessToken')) {
+  //           setCookie('accessToken', response.headers['authorization'], {
+  //             path: '/',
+  //             sameSite: 'strict',
+  //             secure: false,
+  //           });
+  //         }
+  //       }
+  //       setIsCreateNameError(false);
+  //       setIsPutNameError(false);
+  //       setIsAlertOpen(true);
+  //       setIsPutAuthority(true);
+  //     })
+  //     .catch((error) => {
+  //       setIsAlertOpen(true);
+  //       setIsCreateNameError(false);
+  //       setIsPutNameError(true);
+  //     });
+  // };
 
   const handleDeleteClick = (code: string) => {
     setCodeValue(code);
+    setIsUpdateAuthority(false);
     setIsCreateNameError(false);
     setIsPutAuthority(false);
     setIsAlertOpen(true);
@@ -381,16 +393,27 @@ const Authority = () => {
         <S.rightContainer>
           <S.searchbarWarrper>
             <S.inputWrapper>
-              <S.input
-                type="text"
-                placeholder="권한명을 작성해주세요."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-              ></S.input>
+              <Controller
+                control={control}
+                name="input"
+                defaultValue=""
+                render={({ field }) => (
+                  <S.input
+                    type="text"
+                    placeholder="권한명을 작성해주세요."
+                    value={field.value || inputValue}
+                    onChange={(e) => {
+                      //field.onChange;
+                      setInputValue(e.target.value);
+                      setIsClickedName(false);
+                    }}
+                  ></S.input>
+                )}
+              />
             </S.inputWrapper>
             <S.btnWrapper>
-              <StyledSaveBtn variant="contained" onClick={CreateAuthority}>
-                저장
+              <StyledSaveBtn variant="contained" onClick={handleUpdateClick}>
+                {isClickedName ? '수정' : '저장'}
               </StyledSaveBtn>
             </S.btnWrapper>
           </S.searchbarWarrper>
@@ -402,6 +425,7 @@ const Authority = () => {
                     onClick={() => {
                       getMemberAuthority(el.code);
                       setInputValue(el.name);
+                      setIsClickedName(true);
                     }}
                   >
                     {el.name}
@@ -414,14 +438,6 @@ const Authority = () => {
                     />
                   </S.iconWrapper>
                 </S.authorityMenuWrapper>
-                <S.Btnwrapper>
-                  <StyledEditBtn
-                    variant="outlined"
-                    onClick={() => putAuthority(el.code)}
-                  >
-                    수정
-                  </StyledEditBtn>
-                </S.Btnwrapper>
               </S.authorityWrapper>
             ))}
           </S.authorityMenuContainer>
@@ -435,8 +451,18 @@ const Authority = () => {
           onClick={() => DeleteAuthority(codeValue)}
         />
       )}
-      {isCreateAuthority && <NoticeAlert title="권한이 생성되었습니다." />}
-      {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />}
+      {isUpdateAuthority && (
+        <SelectAlert
+          title={
+            isClickedName
+              ? '권한을 수정 하시겠습니까?'
+              : '권한을 생성 하시겠습니까?'
+          }
+          action={isClickedName ? '수정' : '생성'}
+          onClick={() => CreateAuthority()}
+        />
+      )}
+      {/* {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />} */}
       {isCreateNameError && <NoticeAlert title="권한명을 작성해주세요." />}
       {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />}
     </S.main>
@@ -504,6 +530,7 @@ const S = {
     padding: 5px;
     border-radius: 5px;
     border: 1px solid white;
+    font-size: 14px;
     box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
     &::placeholder {
       font-size: 14px;
@@ -534,11 +561,6 @@ const S = {
   authorityMenuWrapper: styled.div`
     width: 100%;
     display: flex;
-  `,
-  authorityMenu: styled.div`
-    display: flex;
-    width: 80%;
-    cursor: default;
     &:hover {
       background-color: #422afb;
       border-top: 1px solid #a3aed0;
@@ -546,12 +568,15 @@ const S = {
       color: white;
     }
   `,
+  authorityMenu: styled.div`
+    width: 100%;
+    cursor: pointer;
+  `,
   iconWrapper: styled.div`
     display: flex;
     justify-content: flex-end;
     cursor: pointer;
   `,
-  Btnwrapper: styled.div``,
 };
 
 const StyledSaveBtn = styled(Button)`
@@ -560,13 +585,6 @@ const StyledSaveBtn = styled(Button)`
     width: 80px;
     border-radius: 5px;
     font-size: 12px;
-    line-height: normal;
-  }
-`;
-const StyledEditBtn = styled(Button)`
-  && {
-    border-radius: 5px;
-    font-size: 11px;
     line-height: normal;
   }
 `;

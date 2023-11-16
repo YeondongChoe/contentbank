@@ -35,7 +35,7 @@ export const Styled = {
     box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
   `,
   passwordFormContainer: styled.div`
-    width: 500px;
+    width: 400px;
     height: 300px;
     margin-top: 40px;
     display: flex;
@@ -51,17 +51,13 @@ export const Styled = {
     margin-bottom: 40px;
     margin-left: 20px;
     &:last-of-type {
-      width: 500px;
+      width: 400px;
     }
   `,
   subTitle: styled.div`
-    width: 200px;
     color: #1b254b;
     font-size: 16px;
     font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
   `,
   inputContainer: styled.div`
     display: flex;
@@ -91,9 +87,11 @@ export const Styled = {
     border: none;
     border-bottom: 1px solid #c5c5c5;
     outline: none;
-    font-size: 11px;
-    //margin: 0 auto;
+    font-size: 14px;
     color: #1b254b;
+    &::placeholder {
+      font-size: 12px;
+    }
   `,
   information: styled.p`
     width: 200px;

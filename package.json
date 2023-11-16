@@ -1,6 +1,1 @@
-{
-  "dependencies": {
-    "@mui/x-data-grid-pro": "^6.18.0",
-    "cp-react-tree-table": "^1.1.1"
-  }
-}
+{}
