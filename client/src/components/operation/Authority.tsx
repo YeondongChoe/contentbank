@@ -403,7 +403,6 @@ const Authority = () => {
                     placeholder="권한명을 작성해주세요."
                     value={field.value || inputValue}
                     onChange={(e) => {
-                      //field.onChange;
                       setInputValue(e.target.value);
                       setIsClickedName(false);
                     }}

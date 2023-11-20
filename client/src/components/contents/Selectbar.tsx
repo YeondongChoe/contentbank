@@ -7,6 +7,11 @@ import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
 
 import { Button } from '@mui/material';
 import Popover from '@mui/material/Popover';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const SelectBar = () => {
   const [didMount, setDidMount] = useState(false);
@@ -62,43 +67,145 @@ const SelectBar = () => {
     setContentSeq([]);
   };
 
+  const [age, setAge] = React.useState('');
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value as string);
+  };
+
   useEffect(() => {
     mountCount++;
     setDidMount(true);
   }, []);
 
-  // useEffect(() => {
-  //   if (didMount) {
-  //   }
-  // }, [didMount]);
+  useEffect(() => {
+    if (didMount) {
+      console.log('select bar list 불러오는 함수');
+    }
+  }, [didMount]);
 
   return (
     <S.mainContainer>
       <S.selectContainer>
-        <S.select>
-          <S.option>개정과정</S.option>
-        </S.select>
-        <S.select>
-          <S.option>학교</S.option>
-        </S.select>
-        <S.select>
-          <S.option>학년</S.option>
-        </S.select>
-        <S.select>
-          <S.option>학기</S.option>
-        </S.select>
-        <S.select>
-          <S.option>대분류</S.option>
-        </S.select>
-        <S.select>
-          <S.option>중분류</S.option>
-        </S.select>
-        <S.select>
-          <S.option>문항타입</S.option>
-        </S.select>
-        <S.select>
-          <S.option>오픈여부</S.option>
-        </S.select>
+        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+          <InputLabel size="small" id="개정과정">
+            개정과정
+          </InputLabel>
+          <Select
+            labelId="개정과정"
+            id="select"
+            value={age}
+            label="개정과정"
+            onChange={handleChange}
+            sx={{ minWidth: 120, height: 40 }}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+          <InputLabel size="small" id="학교">
+            학교
+          </InputLabel>
+          <Select
+            labelId="학교"
+            id="select"
+            value={age}
+            label="학교"
+            onChange={handleChange}
+            sx={{ minWidth: 120, height: 40 }}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+          <InputLabel size="small" id="학년">
+            학년
+          </InputLabel>
+          <Select
+            labelId="학년"
+            id="select"
+            value={age}
+            label="학년"
+            onChange={handleChange}
+            sx={{ minWidth: 120, height: 40 }}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+          <InputLabel size="small" id="대분류">
+            대분류
+          </InputLabel>
+          <Select
+            labelId="대분류"
+            id="select"
+            value={age}
+            label="대분류"
+            onChange={handleChange}
+            sx={{ minWidth: 120, height: 40 }}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+          <InputLabel size="small" id="중분류">
+            중분류
+          </InputLabel>
+          <Select
+            labelId="중분류"
+            id="select"
+            value={age}
+            label="중분류"
+            onChange={handleChange}
+            sx={{ minWidth: 120, height: 40 }}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+          <InputLabel size="small" id="문항타입">
+            문항타입
+          </InputLabel>
+          <Select
+            labelId="문항타입"
+            id="select"
+            value={age}
+            label="문항타입"
+            onChange={handleChange}
+            sx={{ minWidth: 120, height: 40 }}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+          <InputLabel size="small" id="오픈여부">
+            오픈여부
+          </InputLabel>
+          <Select
+            labelId="오픈여부"
+            id="select"
+            value={age}
+            label="오픈여부"
+            onChange={handleChange}
+            sx={{ minWidth: 120, height: 40 }}
+          >
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Select>
+        </FormControl>
       </S.selectContainer>
       <S.btncontainer>
         <S.btnWrapper>
@@ -147,8 +254,6 @@ const S = {
   `,
   selectContainer: styled.div`
     display: flex;
-    justify-content: center;
-    align-items: center;
     gap: 10px;
   `,
   select: styled.select``,

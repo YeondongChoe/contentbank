@@ -821,7 +821,7 @@ const AuthorityTree: React.FC = () => {
     <TreeView
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
-      defaultExpanded={['Authority']}
+      defaultExpanded={['Authority', 'CNC', 'CNM', 'OPM']}
       sx={{
         width: 600,
         flexGrow: 1,
@@ -848,7 +848,7 @@ const AuthorityTree: React.FC = () => {
         >
           <S.treeDiv>
             <TreeItem
-              nodeId={CreateContent?.code as string}
+              nodeId="CNC"
               label={CreateContent?.name as string}
               sx={{
                 flexGrow: 1,
@@ -946,7 +946,7 @@ const AuthorityTree: React.FC = () => {
 
           <S.treeDiv>
             <TreeItem
-              nodeId={ManagementContent?.code as string}
+              nodeId="CNM"
               label={ManagementContent?.name as string}
               sx={{
                 flexGrow: 1,
@@ -1045,7 +1045,7 @@ const AuthorityTree: React.FC = () => {
 
           <S.treeDiv>
             <TreeItem
-              nodeId={Operation?.code as string}
+              nodeId="OPM"
               label={Operation?.name as string}
               sx={{
                 flexGrow: 1,
