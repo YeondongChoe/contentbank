@@ -67,6 +67,7 @@ export const Styled = {
   `,
   inputWapper: styled.div`
     width: 400px;
+    height: 20px;
     display: flex;
     align-items: center;
     margin-left: 10px;
