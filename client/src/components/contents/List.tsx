@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import SelectBar from './Selectbar';
 import ListTable from '../table/ListTable';
 import { SearchValue } from '../../recoil/ValueState';
-import { CreatePopupState } from '../../recoil/UtilState';
+import { CreatePopupState } from '../../recoil/CreatingContentState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import MainPopup from '../../pages/createPopup/CreateMainPopup';
 

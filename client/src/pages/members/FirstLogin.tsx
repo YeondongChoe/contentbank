@@ -31,7 +31,7 @@ const FirstLogin = () => {
           <ChangePassword
             onClick={logout}
             display="space-evenly"
-            btnWidth={250}
+            btnwidth={250}
             height={60}
           />
         </S.formContainer>

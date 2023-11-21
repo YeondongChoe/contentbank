@@ -201,15 +201,15 @@ const Mypage = () => {
               <Styled.subTitle>비밀번호 변경</Styled.subTitle>
             </Styled.titleContainer>
             <ChangePassword
-              marginLeft={10}
+              marginleft={10}
               width={400}
-              inputWidth={230}
+              inputwidth={230}
               onClick={handlePasswordEdit}
-              btnWidth={80}
+              btnwidth={80}
               height={25}
-              fontSize={13}
-              labelSize={14}
-              placeholderSize={12}
+              fontsize={13}
+              labelsize={14}
+              placeholdersize={12}
               display="flex-start"
             />
           </Styled.passwordFormContainer>

@@ -5,11 +5,6 @@ export const alertState = atom({
   default: false,
 });
 
-export const CreatePopupState = atom({
-  key: 'CreatePopupState',
-  default: false,
-});
-
 export const PageAtom = atom({
   key: 'PageAtom',
   default: 1,

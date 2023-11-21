@@ -211,14 +211,14 @@ const ListTable = () => {
           <S.tbody>
             {questionList.map((content, i) => (
               <S.tr key={i}>
-                <S.td align="center" style={{ height: '10px' }}>
+                <S.td style={{ height: '10px', textAlign: 'center' }}>
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(content.contentSeq)}
                     onChange={() => handleRowSelect(content.contentSeq)}
                   ></input>
                 </S.td>
-                <S.td align="center">
+                <S.td style={{ textAlign: 'center' }}>
                   <div
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleFavoriteQuestion(content.questionSeq)}
@@ -230,12 +230,20 @@ const ListTable = () => {
                     )}
                   </div>
                 </S.td>
-                <S.td align="center">{content.questionCode}</S.td>
-                <S.td align="center">{content.curriculum}</S.td>
-                <S.td align="center">{content.schoolLevel}</S.td>
-                <S.td align="center">{content.schoolYear}</S.td>
-                <S.td align="center">{content.semester}</S.td>
-                <S.td align="center">
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.questionCode}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.curriculum}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.schoolLevel}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.schoolYear}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>{content.semester}</S.td>
+                <S.td style={{ textAlign: 'center' }}>
                   <div
                     style={{
                       maxWidth: '200px',
@@ -247,7 +255,7 @@ const ListTable = () => {
                     {content.unitMajor}
                   </div>
                 </S.td>
-                <S.td align="center">
+                <S.td style={{ textAlign: 'center' }}>
                   <div
                     style={{
                       maxWidth: '250px',
@@ -259,10 +267,18 @@ const ListTable = () => {
                     {content.unitMiddle}
                   </div>
                 </S.td>
-                <S.td align="center">{content.questionType}</S.td>
-                <S.td align="center">{content.questionCreatedByName}</S.td>
-                <S.td align="center">{content.questionCreatedDate}</S.td>
-                <S.td align="center">{content.serviced ? 'Y' : 'N'}</S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.questionType}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.questionCreatedByName}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.questionCreatedDate}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {content.serviced ? 'Y' : 'N'}
+                </S.td>
               </S.tr>
             ))}
           </S.tbody>

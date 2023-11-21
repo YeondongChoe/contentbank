@@ -12,17 +12,14 @@ const PopupModal = (prop: Alert) => {
 
   const openAlert = () => {
     setIsAlertOpen(true);
-    //console.log('open');
   };
 
   const closeAlert = () => {
     setIsAlertOpen(false);
-    //console.log('close');
   };
 
   const submit = () => {
     setIsAlertOpen(false);
-    //console.log('submit');
   };
 
   return (
@@ -36,7 +33,6 @@ const PopupModal = (prop: Alert) => {
               <S.cancelIcon onClick={closeAlert}>X</S.cancelIcon>
             </S.alertHead>
             <S.description>
-              {/* {prop.description} */}
               <Table />
             </S.description>
             <S.button onClick={submit}>등록</S.button>

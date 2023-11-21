@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { getCookie, setCookie } from '../../utils/ReactCookie';
-import AuthorityTree from './AuthorityTree';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import SelectAlert from '../../components/alert/SelectAlert';
 import { Controller, useForm } from 'react-hook-form';
@@ -28,6 +27,7 @@ import {
   manageMember,
   manageAuthority,
 } from '../../recoil/AuthorityState';
+import AuthorityTree from './AuthorityTree';
 import { alertState } from '../../recoil/UtilState';
 
 import { Button } from '@mui/material';

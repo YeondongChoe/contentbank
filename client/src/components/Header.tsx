@@ -316,8 +316,9 @@ const S = {
     display: flex;
     justify-content: center;
     &:hover {
-      background-color: #422afb;
+      background-color: rgba(0, 0, 0, 0.3);
       color: white;
+      border-radius: 5px;
     }
   `,
   sideContainer: styled.div`
