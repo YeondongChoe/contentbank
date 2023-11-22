@@ -7,6 +7,7 @@ import { getCookie, setCookie } from '../../utils/ReactCookie';
 import NoticeAlert from '../alert/NoticeAlert';
 import { alertState } from '../../recoil/UtilState';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
@@ -226,7 +227,7 @@ const EditPopup = () => {
                 <ClearTwoToneIcon />
               </S.cancelIcon>
             </S.popupHead>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form>
               <S.popupBody>
                 <Box
                   className="sss"
@@ -418,7 +419,6 @@ const EditPopup = () => {
                         sx={{ mb: 1, fontSize: '14px' }}
                         placeholder=""
                         size="md"
-                        name="Size"
                         minRows={3}
                         maxRows={3}
                         onChange={field.onChange}
@@ -562,7 +562,6 @@ const StyleCancelBtn = styled(Button)`
   && {
     width: 170px;
     height: 50px;
-    border-radius: 0px;
     font-size: 14px;
     line-height: normal;
   }
@@ -572,7 +571,6 @@ const StyleSaveBtn = styled(Button)`
   && {
     width: 170px;
     height: 50px;
-    border-radius: 0px;
     font-size: 14px;
     line-height: normal;
   }

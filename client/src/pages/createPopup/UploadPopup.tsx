@@ -108,11 +108,11 @@ const S = {
     justify-content: space-between;
   `,
   tapContainer: styled.div`
-    display: flex;
     width: 100%;
+    display: flex;
   `,
   tapManu: styled.div<{ choiced: number }>`
-    width: 200px;
+    width: 20%;
     height: 40px;
     border: 1px solid #a3aed0;
     border-bottom: none;
@@ -145,9 +145,9 @@ const S = {
     margin-right: 30px;
     cursor: pointer;
     display: flex;
-    justify-self: flex-end;
   `,
   contentBox: styled.div`
+    //width: 100%;
     height: 750px;
     margin-left: 64px;
     border-top: 1px solid #a3aed0;

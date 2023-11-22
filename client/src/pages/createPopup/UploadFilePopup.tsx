@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const UploadFilePopup = () => {
   return (
     <S.main>
-      <div>아이텍솔루션</div>
+      <div>문항 파일 등록 아이텍솔루션</div>
     </S.main>
   );
 };
