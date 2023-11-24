@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { editer, memberKeyValue } from '../../recoil/MemberState';
-import axios from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import NoticeAlert from '../alert/NoticeAlert';
 import { alertState } from '../../recoil/UtilState';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { getIndividualMemberInfo, getAuthorityList } from '../../api/GetAxios';
+import { putChangeMemberInfo, putInitPassword } from '../../api/PutAxios';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Box from '@mui/material/Box';
@@ -29,31 +29,29 @@ type Authority = {
 };
 
 const EditPopup = () => {
+  const [member, setMember] = useState({
+    id: null,
+    name: null,
+    key: null,
+    authority: null,
+    comment: null,
+    enabled: null,
+    authCode: null,
+  });
   const keyValue = useRecoilValue(memberKeyValue);
   const [isEditer, SetIsEditer] = useRecoilState(editer);
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMsg, setNameErrorMsg] = useState('');
-  const [isAuthorityList, setIsAuthorityList] = useState<Authority[]>();
-  const [nameValue, setNameValue] = useState('');
-  const [idValue, setIdValue] = useState('');
-  const [authorityValue, setAuthorityValue] = useState('');
-  const [authorityDefaultValue, setAuthorityDefaultValue] = useState('');
+  const [authorityList, setAuthorityList] = useState<Authority[]>([]);
   const [authorityCode, setAuthorityCode] = useState('');
-  const [isEnabled, setIsEnabled] = useState(true);
-  const [commentValue, setCommentValue] = useState('');
+  const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
   const [selectedAuthorityValue, setSelectedAuthorityValue] = useState<
     string[]
   >([]);
   const setIsAlertOpen = useSetRecoilState(alertState);
   const [isInit, setIsInit] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const { control, setValue, watch } = useForm();
 
   const handleAuthorityChange = (
     event: SelectChangeEvent<typeof selectedAuthorityValue>,
@@ -66,7 +64,7 @@ const EditPopup = () => {
     );
   };
 
-  const Authority = authorityCode;
+  const Authority = authorityCode; //건들지말기
   const Name = watch('name');
   const Comment = watch('comment');
   const CheckBox = isEnabled;
@@ -75,146 +73,61 @@ const EditPopup = () => {
     SetIsEditer(false);
   };
 
-  const getMemberInfo = async () => {
-    await axios
-      .get(`/auth-service/api/v1/auth/${keyValue}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-          setNameValue(response.data.data.name);
-          setIdValue(response.data.data.id);
-          setCommentValue(response.data.data.comment);
-          setAuthorityValue(response.data.data.authority.name);
-          setAuthorityDefaultValue(response.data.data.authority.code);
-          setIsEnabled(response.data.data.enabled);
-        }
-      })
-      .catch((error) => {
-        alert(error);
-      });
-  };
-
-  const initPassword = async () => {
-    await axios
-      .put(
-        `/auth-service/api/v1/auth/${keyValue}/init-password`,
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-          setIsInit(true);
-        }
-      })
-      .catch((error) => {
-        alert(error);
-      });
+  const handleEnabled = () => {
+    setIsEnabled(!isEnabled);
   };
 
   const initPasswordSubmit = () => {
     setIsAlertOpen(true);
-    initPassword();
-  };
-
-  const getAuthorityList = async () => {
-    await axios
-      .get('/auth-service/api/v1/authority', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setIsAuthorityList(response.data.data);
-      });
+    putInitPassword({ keyValue, setIsInit });
   };
 
   const onSubmit = async () => {
-    const data = {
-      authority: Authority || authorityDefaultValue,
-      name: Name,
-      comment: Comment,
-      enabled: CheckBox,
-    };
-    await axios
-      .put(`/auth-service/api/v1/auth/${keyValue}`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        //성공메시지 서버쪽에서 넘겨주면 띄우기
-        SetIsEditer(false);
-        setIsNameError(false);
-        window.location.reload();
-      })
-      .catch((response) => {
-        setIsNameError(true);
-        setNameErrorMsg(response.response.data.errors.name);
-      });
+    putChangeMemberInfo({
+      Authority,
+      member,
+      Name,
+      Comment,
+      CheckBox,
+      keyValue,
+      SetIsEditer,
+      setIsNameError,
+      setNameErrorMsg,
+    });
   };
 
   useEffect(() => {
-    getMemberInfo();
-    getAuthorityList();
+    getIndividualMemberInfo({
+      keyValue,
+      setMember,
+    });
+    getAuthorityList({
+      setAuthorityList,
+    });
   }, []);
 
   useEffect(() => {
-    if (nameValue) {
-      setValue('name', nameValue);
+    if (member.name) {
+      setValue('name', member.name);
     }
-    if (idValue) {
-      setValue('id', idValue);
+    if (member.id) {
+      setValue('id', member.id);
     }
-    if (authorityValue) {
-      setValue('authority', authorityValue);
+    if (member.authority) {
+      setValue('authority', member.authority);
     }
-    if (commentValue) {
-      setValue('comment', commentValue);
+    if (member.comment) {
+      setValue('comment', member.comment);
     }
-  }, [nameValue, idValue, authorityValue, commentValue, setValue]);
+    setIsEnabled(member.enabled);
+  }, [
+    member.name,
+    member.id,
+    member.authority,
+    member.comment,
+    member.enabled,
+    setValue,
+  ]);
 
   return (
     <>
@@ -348,16 +261,12 @@ const EditPopup = () => {
                     <InputLabel htmlFor="component-simple">권한</InputLabel>
                     {isEnabled ? (
                       <S.checkBox>
-                        <CheckBoxOutlineBlankIcon
-                          onClick={() => setIsEnabled(!isEnabled)}
-                        />
+                        <CheckBoxOutlineBlankIcon onClick={handleEnabled} />
                         <span>비활성화</span>
                       </S.checkBox>
                     ) : (
                       <S.checkBox>
-                        <IndeterminateCheckBoxIcon
-                          onClick={() => setIsEnabled(!isEnabled)}
-                        />
+                        <IndeterminateCheckBoxIcon onClick={handleEnabled} />
                         <span>비활성화</span>
                       </S.checkBox>
                     )}
@@ -369,15 +278,15 @@ const EditPopup = () => {
                       <Select
                         sx={{ m: 1, width: '350px' }}
                         displayEmpty
-                        value={selectedAuthorityValue || authorityValue}
+                        value={selectedAuthorityValue || member.authority} //name
                         onChange={handleAuthorityChange}
                         renderValue={(selected) => {
                           if (selected.length === 0) {
-                            return <em>{authorityValue}</em>;
+                            return <em>{member.authority}</em>;
                           }
                           return selected
                             .map((value) => {
-                              const selectedAuthority = isAuthorityList?.find(
+                              const selectedAuthority = authorityList?.find(
                                 (el) => el.code === value,
                               );
                               setAuthorityCode(
@@ -390,7 +299,7 @@ const EditPopup = () => {
                             .join(', ');
                         }}
                       >
-                        {isAuthorityList?.map((el, i) => (
+                        {authorityList?.map((el, i) => (
                           <MenuItem key={i} value={el.code}>
                             {el.name}
                           </MenuItem>

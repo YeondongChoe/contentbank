@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import List from '../../components/contents/List';
-import { useRecoilValue } from 'recoil';
 
 const ContentList = () => {
   return (

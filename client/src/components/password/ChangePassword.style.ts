@@ -63,11 +63,15 @@ export const Styled = {
     justify-content: flex-end;
     margin-right: 10px;
   `,
-  btnGroupContainer: styled.div<{ display: string; marginLeft: number }>`
+  btnGroupContainer: styled.div<{
+    display: string;
+    marginLeft: number;
+    marginTop: number;
+  }>`
     display: flex;
     justify-content: ${(props) => props.display};
     gap: 20px;
-    margin-top: 40px;
+    margin-top: ${(props) => props.marginTop || 40}px;
     margin-bottom: 20px;
     margin-left: ${(props) => props.marginLeft || 0}px;
   `,

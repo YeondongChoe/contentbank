@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import { getCookie, setCookie, removeCookie } from '../utils/ReactCookie';
+import { getCookie, removeCookie } from '../utils/ReactCookie';
 import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState, useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { CreateListCodeValue } from '../recoil/ValueState';
+import { getAuthorityMenu } from '../api/GetAxios';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Box from '@mui/material/Box';
@@ -56,7 +56,7 @@ type MenuListType = {
 const Header = () => {
   const [value, setValue] = useState('');
   const [activeTab, setActiveTab] = useState(0);
-  const [menuValue, setMenuValue] = useState<MenuListType[]>();
+  const [menuValue, setMenuValue] = useState<MenuListType[]>([]);
   const [didMount, setDidMount] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const setCreateListCodeValue = useSetRecoilState(CreateListCodeValue);
@@ -79,37 +79,7 @@ const Header = () => {
   ) => {};
 
   const clickIcon = () => {
-    if (getCookie('accessToken')) {
-      navigate('/contentlist');
-    } else {
-      navigate('/');
-    }
-  };
-
-  const getMenuList = async () => {
-    await axios
-      .get('/auth-service/api/v1/menu', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setMenuValue(response.data);
-      })
-      .catch(() => {
-        alert('로그인이 필요합니다');
-        navigate('/login');
-      });
+    navigate('/contentlist');
   };
 
   const clickTabPanel = (code: string) => {
@@ -136,13 +106,20 @@ const Header = () => {
   };
 
   useEffect(() => {
+    if (!getCookie('accessToken')) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+    }
+  }, []);
+
+  useEffect(() => {
     mountCount++;
     setDidMount(true);
   }, []);
 
   useEffect(() => {
     if (didMount) {
-      getMenuList();
+      getAuthorityMenu({ setMenuValue });
     }
   }, [didMount, setCreateListCodeValue]);
 
@@ -188,43 +165,35 @@ const Header = () => {
                             setValue('');
                           }}
                         >
-                          <S.tabPanelWarpper>
+                          <S.tabPanelWarpper
+                            onClick={(e) => {
+                              clickTabPanel(el?.children?.[0]?.code);
+                            }}
+                          >
                             <TabPanel
                               className="hover-effect"
                               value={el.seq.toString()}
-                              onClick={(e) => {
-                                clickTabPanel(el?.children?.[0]?.code);
-                              }}
                               style={{
                                 marginTop: '10px',
                                 marginBottom: '10px',
                                 padding: '0',
-                                // borderBottom:
-                                //   activeTab === 1
-                                //     ? '2px solid #58a9ffda'
-                                //     : 'initial',
-                                cursor: 'pointer',
                                 transition: 'border-bottom 0.3s',
                               }}
                             >
                               {el?.children?.[0]?.name}
                             </TabPanel>
                           </S.tabPanelWarpper>
-                          <S.tabPanelWarpper>
+                          <S.tabPanelWarpper
+                            onClick={(e) => {
+                              clickTabPanel(el?.children?.[1]?.code);
+                            }}
+                          >
                             <TabPanel
                               value={el.seq.toString()}
-                              onClick={(e) => {
-                                clickTabPanel(el?.children?.[1]?.code);
-                              }}
                               style={{
                                 marginTop: '10px',
                                 marginBottom: '10px',
                                 padding: '0',
-                                // borderBottom:
-                                //   activeTab === 2
-                                //     ? '2px solid #58a9ffda'
-                                //     : 'initial',
-                                cursor: 'pointer',
                                 transition: 'border-bottom 0.3s',
                               }}
                             >
@@ -315,6 +284,7 @@ const S = {
     width: 160px;
     display: flex;
     justify-content: center;
+    cursor: pointer;
     &:hover {
       background-color: rgba(0, 0, 0, 0.3);
       color: white;

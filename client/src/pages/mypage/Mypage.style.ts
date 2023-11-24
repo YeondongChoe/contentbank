@@ -26,7 +26,7 @@ export const Styled = {
   `,
   formContainer: styled.div`
     width: 400px;
-    height: 200px;
+    padding-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -48,7 +48,7 @@ export const Styled = {
   titleContainer: styled.div`
     width: 400px;
     margin-top: 15px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     margin-left: 20px;
     &:last-of-type {
       width: 400px;

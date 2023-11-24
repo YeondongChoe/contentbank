@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
 import Authority from '../../components/operation/Authority';
 
 const OperationAuthority = () => {

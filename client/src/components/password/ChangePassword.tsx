@@ -1,15 +1,14 @@
 import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import axios from 'axios';
 import { passwordRegExp } from '../../utils/RegExp';
 import { useNavigate } from 'react-router-dom';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import {
   Styled,
   StyledCancelBtn,
   StyledConfirmBtn,
   StyledNomalBtn,
 } from './ChangePassword.style';
+import { putChangePassword } from '../../api/PutAxios';
 
 interface PasswordData {
   password: string;
@@ -24,6 +23,7 @@ interface Props {
   height?: number;
   display?: string;
   marginleft?: number;
+  margintop?: number;
   fontsize?: number;
   labelsize?: number;
   placeholdersize?: number;
@@ -38,6 +38,7 @@ const ChangePassword: React.FC<Props> = ({
   height,
   display,
   marginleft,
+  margintop,
   labelsize,
   placeholdersize,
 }) => {
@@ -53,32 +54,11 @@ const ChangePassword: React.FC<Props> = ({
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<PasswordData> = () => {
-    const data = {
-      password: Password,
-      confirmPassword: PasswordConfirm,
-    };
-    return axios
-      .put('/auth-service/api/v1/auth/changed-password', data, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: true,
-            });
-          }
-        }
-        navigate('/relogin');
-      })
-      .catch(() => {
-        alert('비밀번호 재확인을 입력해주세요.');
-      });
+    putChangePassword({
+      Password,
+      PasswordConfirm,
+      navigate,
+    });
   };
 
   return (
@@ -162,6 +142,7 @@ const ChangePassword: React.FC<Props> = ({
         <Styled.btnGroupContainer
           display={display as string}
           marginLeft={marginleft as number}
+          marginTop={margintop as number}
         >
           <Styled.btnWapper>
             <StyledCancelBtn

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { register } from '../../recoil/MemberState';
-import axios, { AxiosError } from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import NoticeAlert from '../alert/NoticeAlert';
 import { alertState } from '../../recoil/UtilState';
+import { getAuthorityList } from '../../api/GetAxios';
+import { postRegister, duplicateCheck } from '../../api/PostAxios';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Box from '@mui/material/Box';
@@ -19,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Input from '@mui/material/Input';
 import Textarea from '@mui/joy/Textarea';
 
-type Authority = {
+type AuthorityListType = {
   seq: number;
   code: string;
   name: string;
@@ -33,7 +33,7 @@ const RegisterPopup = () => {
   const [nameErrorMsg, setNameErrorMsg] = useState('');
   const [idErrorMsg, setIdErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [isAuthorityList, setIsAuthorityList] = useState<Authority[]>();
+  const [authorityList, setAuthorityList] = useState<AuthorityListType[]>([]);
   const [nameValue, setNameValue] = useState('');
   const [idValue, setIdValue] = useState('');
   const [duplicatedId, setduplicatedId] = useState('');
@@ -60,121 +60,18 @@ const RegisterPopup = () => {
     SetIsRegister(false);
   };
 
-  const duplicateCheck = async () => {
-    try {
-      const response = await axios.post(
-        '/auth-service/api/v1/auth/checked-id',
-        { id: Id },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      );
-
-      if (response.status === 200) {
-        if (response.headers['authorization'] !== getCookie('accessToken')) {
-          setCookie('accessToken', response.headers['authorization'], {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-        }
-        setduplicatedId(Id);
-        setIsDuplicate(true);
-        setIsIdError(false);
-        setSuccessMsg(response.data.message);
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response) {
-          const responseData = axiosError.response.data as {
-            [x: string]: any;
-            message: string;
-          };
-          setIdErrorMsg(responseData.message);
-          if (responseData.errors && responseData.errors.id) {
-            // 'response.data.errors.id' 경로의 데이터가 있을 때에만 setIdErrorMsg를 호출
-            setIdErrorMsg(responseData.errors.id);
-          }
-        }
-      }
-      setIsDuplicate(false);
-      setIsIdError(true);
-    }
-  };
-
   const duplicateSubmit = () => {
-    duplicateCheck();
+    duplicateCheck({
+      Id,
+      setduplicatedId,
+      setIsDuplicate,
+      setIsIdError,
+      setSuccessMsg,
+      setIdErrorMsg,
+    });
   };
 
-  const getAuthorityList = async () => {
-    await axios
-      .get('/auth-service/api/v1/authority', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setIsAuthorityList(response.data.data);
-      })
-      .catch((response) => {
-        alert(response.message);
-      });
-  };
-
-  const onSubmit = async () => {
-    await axios
-      .post(
-        '/auth-service/api/v1/auth/register',
-        { id: Id, name: Name, authority: Authority, comment: Comment },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        //성공메시지 서버쪽에서 넘겨주면 띄우기
-        SetIsRegister(false);
-        setIsNameError(false);
-        alert('회원 생성 성공');
-        //window.location.reload();
-      })
-      .catch((response) => {
-        setIsDuplicate(false);
-        setIsRequired(false);
-        setIsRequiredDuplicate(false);
-        setIsNameError(true);
-        setNameErrorMsg(response.response.data.errors.name);
-        //console.log(response.response.data.errors.name);
-        //alert(response.errors.name);
-      });
-  };
-
-  const handleOnSubmit = () => {
+  const onSubmit = () => {
     if (nameValue === '' || idValue === '' || Authority === '') {
       setIsRequired(true);
       setIsAlertOpen(true);
@@ -182,12 +79,25 @@ const RegisterPopup = () => {
       setIsRequiredDuplicate(true);
       setIsAlertOpen(true);
     } else {
-      onSubmit();
+      postRegister({
+        Id,
+        Name,
+        Authority,
+        Comment,
+        SetIsRegister,
+        setIsNameError,
+        setIsDuplicate,
+        setIsRequired,
+        setIsRequiredDuplicate,
+        setNameErrorMsg,
+      });
     }
   };
 
   useEffect(() => {
-    getAuthorityList();
+    getAuthorityList({
+      setAuthorityList,
+    });
   }, []);
 
   return (
@@ -316,7 +226,7 @@ const RegisterPopup = () => {
                   label="권한"
                   helperText="(필수)권한을 선택하세요"
                 >
-                  {isAuthorityList?.map((el, i) => (
+                  {authorityList?.map((el, i) => (
                     <MenuItem key={i} value={el.code}>
                       {el.name}
                     </MenuItem>
@@ -359,7 +269,7 @@ const RegisterPopup = () => {
                 >
                   취소
                 </StyleCancelBtn>
-                <StyleSaveBtn variant="contained" onClick={handleOnSubmit}>
+                <StyleSaveBtn variant="contained" onClick={onSubmit}>
                   등록
                 </StyleSaveBtn>
               </S.finalBtnContainer>
@@ -400,7 +310,6 @@ const S = {
     height: 50px;
     margin-top: 10px;
     display: flex;
-    //justify-content: space-between;
     align-items: center;
     padding: 10px;
   `,

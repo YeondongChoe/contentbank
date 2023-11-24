@@ -5,6 +5,11 @@ export const alertState = atom({
   default: false,
 });
 
+export const totalPageState = atom({
+  key: 'totalPageState',
+  default: 1,
+});
+
 export const PageAtom = atom({
   key: 'PageAtom',
   default: 1,

@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import SelectAlert from '../../components/alert/SelectAlert';
 import { Controller, useForm } from 'react-hook-form';
-
 import { useRecoilState } from 'recoil';
 import {
   editCreateContent,
@@ -29,6 +26,9 @@ import {
 } from '../../recoil/AuthorityState';
 import AuthorityTree from './AuthorityTree';
 import { alertState } from '../../recoil/UtilState';
+import { getAuthorityList, getMemberAuthority } from '../../api/GetAxios';
+import { postCreateAuthority } from '../../api/PostAxios';
+import { DeleteAuthority } from '../../api/DeleteAxios';
 
 import { Button } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -41,7 +41,7 @@ type AuthorityListType = {
 };
 
 const Authority = () => {
-  const { control, watch } = useForm();
+  const { control } = useForm();
   const [authorityList, setAuthorityList] = useState<AuthorityListType[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isClickedName, setIsClickedName] = useState(false);
@@ -94,106 +94,28 @@ const Authority = () => {
   const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
     useRecoilState<boolean>(manageAuthority);
 
-  const getAuthorityList = async () => {
-    await axios
-      .get('/auth-service/api/v1/authority', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setAuthorityList(response.data.data);
-      })
-      .catch((err) => {
-        alert(err);
-      });
-  };
-
-  const CreateAuthority = async () => {
-    const data = {
-      name: inputValue,
-      permissions: [
-        {
-          code: 'CNC',
-          edited: isEditCreateChecked,
-          managed: isManageCreateChecked,
-        },
-        {
-          code: 'CNC_Q',
-          edited: isEditCreateListChecked,
-          managed: isManageCreateListChecked,
-        },
-        {
-          code: 'CNC_W',
-          edited: isEditWorksheetChecked,
-          managed: isManageWorksheetChecked,
-        },
-        {
-          code: 'CNM',
-          edited: isEditManagementChecked,
-          managed: isManageManagementChecked,
-        },
-        {
-          code: 'CNM_Q',
-          edited: isEditManagementListChecked,
-          managed: isManageManagementListChecked,
-        },
-        {
-          code: 'CNM_T',
-          edited: isEditTreeChecked,
-          managed: isManageTreeChecked,
-        },
-        {
-          code: 'OPM',
-          edited: isEditOperationChecked,
-          managed: isManageOperationChecked,
-        },
-        {
-          code: 'OPM_M',
-          edited: isEditMemberChecked,
-          managed: isManageMemberChecked,
-        },
-        {
-          code: 'OPM_R',
-          edited: isEditAuthorityChecked,
-          managed: isManageAuthorityChecked,
-        },
-      ],
-    };
-    try {
-      const response = await axios.post(
-        '/auth-service/api/v1/authority',
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      );
-      if (response.status === 200) {
-        if (response.headers['authorization'] !== getCookie('accessToken')) {
-          setCookie('accessToken', response.headers['authorization'], {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-        }
-        window.location.reload();
-      }
-    } catch (error) {
-      alert(error);
-    }
+  const handleCreateAuthority = () => {
+    postCreateAuthority({
+      inputValue,
+      isEditCreateChecked,
+      isManageCreateChecked,
+      isEditCreateListChecked,
+      isManageCreateListChecked,
+      isEditWorksheetChecked,
+      isManageWorksheetChecked,
+      isEditManagementChecked,
+      isManageManagementChecked,
+      isEditManagementListChecked,
+      isManageManagementListChecked,
+      isEditTreeChecked,
+      isManageTreeChecked,
+      isEditOperationChecked,
+      isManageOperationChecked,
+      isEditMemberChecked,
+      isManageMemberChecked,
+      isEditAuthorityChecked,
+      isManageAuthorityChecked,
+    });
   };
 
   const handleUpdateClick = () => {
@@ -208,130 +130,31 @@ const Authority = () => {
     }
   };
 
-  const getMemberAuthority = async (code: string) => {
-    await axios
-      .get(`/auth-service/api/v1/authority/${code}/permissions`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setIsEditCreateChecked(response.data.data.permissions[0].edited);
-        setIsManageCreateChecked(response.data.data.permissions[0].managed);
-        setIsEditCreateListChecked(response.data.data.permissions[1].edited);
-        setIsManageCreateListChecked(response.data.data.permissions[1].managed);
-        setIsEditWorksheetChecked(response.data.data.permissions[2].edited);
-        setIsManageWorksheetChecked(response.data.data.permissions[2].managed);
-        setIsEditManagementChecked(response.data.data.permissions[3].edited);
-        setIsManageManagementChecked(response.data.data.permissions[3].managed);
-        setIsEditManagementListChecked(
-          response.data.data.permissions[4].edited,
-        );
-        setIsManageManagementListChecked(
-          response.data.data.permissions[4].managed,
-        );
-        setIsEditTreeChecked(response.data.data.permissions[5].edited);
-        setIsManageTreeChecked(response.data.data.permissions[5].managed);
-        setIsEditOperationChecked(response.data.data.permissions[6].edited); //운영관리 편집
-        setIsManageOperationChecked(response.data.data.permissions[6].managed);
-        setIsEditMemberChecked(response.data.data.permissions[7].edited); //운영관리 회원 관리 편집
-        setIsManageMemberChecked(response.data.data.permissions[7].managed);
-        setIsEditAuthorityChecked(response.data.data.permissions[8].edited); //운영관리 권환 관리 편집
-        setIsManageAuthorityChecked(response.data.data.permissions[8].managed);
-      })
-      .catch((err) => {
-        alert(err);
-      });
+  const handleMemberAuthInfo = (code: string) => {
+    getMemberAuthority(
+      {
+        setIsEditCreateChecked,
+        setIsManageCreateChecked,
+        setIsEditCreateListChecked,
+        setIsManageCreateListChecked,
+        setIsEditWorksheetChecked,
+        setIsManageWorksheetChecked,
+        setIsEditManagementChecked,
+        setIsManageManagementChecked,
+        setIsEditManagementListChecked,
+        setIsManageManagementListChecked,
+        setIsEditTreeChecked,
+        setIsManageTreeChecked,
+        setIsEditOperationChecked,
+        setIsManageOperationChecked,
+        setIsEditMemberChecked,
+        setIsManageMemberChecked,
+        setIsEditAuthorityChecked,
+        setIsManageAuthorityChecked,
+      },
+      code,
+    );
   };
-  // const putAuthority = async (code: string) => {
-  //   const data = {
-  //     name: inputValue,
-  //     permissions: [
-  //       {
-  //         code: 'CNC',
-  //         edited: isEditCreateChecked,
-  //         managed: isManageCreateChecked,
-  //       },
-  //       {
-  //         code: 'CNC_Q',
-  //         edited: isEditCreateListChecked,
-  //         managed: isManageCreateListChecked,
-  //       },
-  //       {
-  //         code: 'CNC_W',
-  //         edited: isEditWorksheetChecked,
-  //         managed: isManageWorksheetChecked,
-  //       },
-  //       {
-  //         code: 'CNM',
-  //         edited: isEditManagementChecked,
-  //         managed: isManageManagementChecked,
-  //       },
-  //       {
-  //         code: 'CNM_Q',
-  //         edited: isEditManagementListChecked,
-  //         managed: isManageManagementListChecked,
-  //       },
-  //       {
-  //         code: 'CNM_T',
-  //         edited: isEditTreeChecked,
-  //         managed: isManageTreeChecked,
-  //       },
-  //       {
-  //         code: 'OPM',
-  //         edited: isEditOperationChecked,
-  //         managed: isManageOperationChecked,
-  //       },
-  //       {
-  //         code: 'OPM_M',
-  //         edited: isEditMemberChecked,
-  //         managed: isManageMemberChecked,
-  //       },
-  //       {
-  //         code: 'OPM_R',
-  //         edited: isEditAuthorityChecked,
-  //         managed: isManageAuthorityChecked,
-  //       },
-  //     ],
-  //   };
-  //   return await axios
-  //     .put(`/auth-service/api/v1/authority/${code}`, data, {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${getCookie('accessToken')}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       if (response.status === 200) {
-  //         if (response.headers['authorization'] !== getCookie('accessToken')) {
-  //           setCookie('accessToken', response.headers['authorization'], {
-  //             path: '/',
-  //             sameSite: 'strict',
-  //             secure: false,
-  //           });
-  //         }
-  //       }
-  //       setIsCreateNameError(false);
-  //       setIsPutNameError(false);
-  //       setIsAlertOpen(true);
-  //       setIsPutAuthority(true);
-  //     })
-  //     .catch((error) => {
-  //       setIsAlertOpen(true);
-  //       setIsCreateNameError(false);
-  //       setIsPutNameError(true);
-  //     });
-  // };
 
   const handleDeleteClick = (code: string) => {
     setCodeValue(code);
@@ -342,31 +165,8 @@ const Authority = () => {
     setIsDeleteAuthority(true);
   };
 
-  const DeleteAuthority = async (code: string) => {
-    try {
-      const response = await axios.delete(
-        `/auth-service/api/v1/authority/${code}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      );
-      if (response.status === 200) {
-        if (response.headers['authorization'] !== getCookie('accessToken')) {
-          setCookie('accessToken', response.headers['authorization'], {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-        }
-        setIsAlertOpen(false);
-        window.location.reload();
-      }
-    } catch (error: unknown) {
-      alert(error);
-    }
+  const submitDelete = (code: string) => {
+    DeleteAuthority({ setIsAlertOpen }, code);
   };
 
   useEffect(() => {
@@ -376,7 +176,9 @@ const Authority = () => {
 
   useEffect(() => {
     if (didMount) {
-      getAuthorityList();
+      getAuthorityList({
+        setAuthorityList,
+      });
     }
   }, [didMount, setAuthorityList]);
 
@@ -422,7 +224,7 @@ const Authority = () => {
                 <S.authorityMenuWrapper>
                   <S.authorityMenu
                     onClick={() => {
-                      getMemberAuthority(el.code);
+                      handleMemberAuthInfo(el.code);
                       setInputValue(el.name);
                       setIsClickedName(true);
                     }}
@@ -447,7 +249,7 @@ const Authority = () => {
           title="권한을 삭제할 경우, "
           description="해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"
-          onClick={() => DeleteAuthority(codeValue)}
+          onClick={() => submitDelete(codeValue)}
         />
       )}
       {isUpdateAuthority && (
@@ -458,7 +260,7 @@ const Authority = () => {
               : '권한을 생성 하시겠습니까?'
           }
           action={isClickedName ? '수정' : '생성'}
-          onClick={() => CreateAuthority()}
+          onClick={() => handleCreateAuthority()}
         />
       )}
       {/* {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />} */}

@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
-import { useRecoilState, useRecoilCallback } from 'recoil';
-
+import { useRecoilState } from 'recoil';
+import { getAuthorityMenu } from '../../api/GetAxios';
 import {
   editCreateContent,
   editCreateList,
@@ -25,6 +22,25 @@ import {
   manageMember,
   manageAuthority,
 } from '../../recoil/AuthorityState';
+import {
+  handleClickAllEdit,
+  handleClickCreateEdit,
+  handleClickListEdit,
+  handleClickWorksheetEdit,
+  handleClickManagemantEdit,
+  handleClickManagemantListEdit,
+  handleClickTreeEdit,
+  handleClickAllManage,
+  handleClickCreateManage,
+  handleClickListManage,
+  handleClickWorksheetManage,
+  handleClickManagemantManage,
+  handleClickManagemantListManage,
+  handleClickTreeManage,
+  handleClickOperationManage,
+  handleClickMemberManage,
+  handleClickAuthorityManage,
+} from './AuthorityTreeHandler';
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -32,7 +48,7 @@ import { TreeView } from '@mui/x-tree-view/TreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import Checkbox from '@mui/material/Checkbox';
 
-type MenuListType = {
+type MenuType = {
   seq: number;
   code: string;
   depth: number;
@@ -72,15 +88,12 @@ type MenuListType = {
 
 const AuthorityTree: React.FC = () => {
   const [didMount, setDidMount] = useState(false);
-  const [menuValue, setMenuValue] = useState<MenuListType[]>();
+  const [menuValue, setMenuValue] = useState<MenuType[]>([]);
   const CreateContent = menuValue?.[0];
   const ManagementContent = menuValue?.[1];
   const Operation = menuValue?.[2];
 
-  const navigate = useNavigate();
-
   let mountCount = 1;
-  // const label = { inputProps: { 'aria-label': 'Checkbox demo' } };/
 
   /** 전체 편집, 하위 항목 체크 상태여부*/
   const [isEditAllChecked, setIsEditAllChecked] = useState<boolean>(false);
@@ -136,170 +149,6 @@ const AuthorityTree: React.FC = () => {
   const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
     useRecoilState<boolean>(manageAuthority);
 
-  /** 전체 편집 클릭*/
-  const handleClickAllEdit = () => {
-    setIsEditAllChecked((prevAllChecked) => {
-      const newAllChecked = !prevAllChecked;
-      setIsEditCreateChecked(newAllChecked);
-      setIsEditCreateListChecked(newAllChecked);
-      setIsEditWorksheetChecked(newAllChecked);
-      setIsEditManagementChecked(newAllChecked);
-      setIsEditManagementListChecked(newAllChecked);
-      setIsEditTreeChecked(newAllChecked);
-      setIsEditOperationChecked(newAllChecked);
-      setIsEditMemberChecked(newAllChecked);
-      setIsEditAuthorityChecked(newAllChecked);
-      return newAllChecked;
-    });
-    setIsManageAllChecked(false);
-    setIsManageCreateChecked(false);
-    setIsManageCreateListChecked(false);
-    setIsManageWorksheetChecked(false);
-    setIsManageManagementChecked(false);
-    setIsManageManagementListChecked(false);
-    setIsManageTreeChecked(false);
-    setIsManageOperationChecked(false);
-    setIsManageMemberChecked(false);
-    setIsManageAuthorityChecked(false);
-  };
-
-  /** 콘텐츠 제작 편집 클릭*/
-  const handleClickCreateEdit = () => {
-    const newCreateChecked = isEditCreateChecked;
-    const newCreateListChecked = isEditCreateListChecked;
-    const newWorksheetChecked = isEditWorksheetChecked;
-
-    if (newCreateListChecked === false && newWorksheetChecked === false) {
-      setIsEditCreateChecked(true);
-      setIsEditCreateListChecked(true);
-      setIsEditWorksheetChecked(true);
-    }
-    if (
-      newCreateChecked === true &&
-      newCreateListChecked === true &&
-      newWorksheetChecked === true
-    ) {
-      setIsEditCreateChecked(false);
-      setIsEditCreateListChecked(false);
-      setIsEditWorksheetChecked(false);
-    } else if (newCreateListChecked === true || newWorksheetChecked === true) {
-      setIsEditCreateChecked(true);
-      setIsEditCreateListChecked(true);
-      setIsEditWorksheetChecked(true);
-    }
-    setIsManageCreateChecked(false);
-    setIsManageCreateListChecked(false);
-    setIsManageWorksheetChecked(false);
-  };
-  /** 콘텐츠 제작/문항 편집 클릭*/
-  const handleClickListEdit = () => {
-    setIsEditCreateListChecked((prevCreateListChecked) => {
-      const newCreateListChecked = !prevCreateListChecked;
-      return newCreateListChecked;
-    });
-    setIsManageCreateListChecked(false);
-  };
-
-  /** 콘텐츠 제작/학습지 편집 클릭*/
-  const handleClickWorksheetEdit = () => {
-    setIsEditWorksheetChecked((prevCreateListChecked) => {
-      const newCreateListChecked = !prevCreateListChecked;
-      return newCreateListChecked;
-    });
-    setIsManageWorksheetChecked(false);
-  };
-
-  /** 콘텐츠 관리 편집 클릭*/
-  const handleClickManagemantEdit = () => {
-    const newManagementChecked = isEditManagementChecked;
-    const newManagementListChecked = isEditManagementListChecked;
-    const newTreeChecked = isEditTreeChecked;
-    if (newManagementListChecked === false && newTreeChecked === false) {
-      setIsEditManagementChecked(true);
-      setIsEditManagementListChecked(true);
-      setIsEditTreeChecked(true);
-    }
-    if (
-      newManagementChecked === true &&
-      newManagementListChecked === true &&
-      newTreeChecked === true
-    ) {
-      setIsEditManagementChecked(false);
-      setIsEditManagementListChecked(false);
-      setIsEditTreeChecked(false);
-    } else if (newManagementListChecked === true || newTreeChecked === true) {
-      setIsEditManagementChecked(true);
-      setIsEditManagementListChecked(true);
-      setIsEditTreeChecked(true);
-    }
-    setIsManageManagementChecked(false);
-    setIsManageManagementListChecked(false);
-    setIsManageTreeChecked(false);
-  };
-  /** 콘텐츠 관리/문항 편집 클릭*/
-  const handleClickManagemantListEdit = () => {
-    setIsEditManagementListChecked((prevCreateListChecked) => {
-      const newCreateListChecked = !prevCreateListChecked;
-      return newCreateListChecked;
-    });
-    setIsManageManagementListChecked(false);
-  };
-
-  /** 콘텐츠 관리/트리 편집 클릭*/
-  const handleClickTreeEdit = () => {
-    setIsEditTreeChecked((prevCreateListChecked) => {
-      const newCreateListChecked = !prevCreateListChecked;
-      return newCreateListChecked;
-    });
-    setIsManageTreeChecked(false);
-  };
-
-  /** 운영 관리 편집 클릭*/
-  const handleClickOperationEdit = () => {
-    const newOperationChecked = isEditOperationChecked;
-    const newMemberChecked = isEditMemberChecked;
-    const newAuthorityChecked = isEditAuthorityChecked;
-    if (newMemberChecked === false && newAuthorityChecked === false) {
-      setIsEditOperationChecked(true);
-      setIsEditMemberChecked(true);
-      setIsEditAuthorityChecked(true);
-    }
-    if (
-      newOperationChecked === true &&
-      newMemberChecked === true &&
-      newAuthorityChecked === true
-    ) {
-      setIsEditOperationChecked(false);
-      setIsEditMemberChecked(false);
-      setIsEditAuthorityChecked(false);
-    } else if (newMemberChecked === true || newAuthorityChecked === true) {
-      setIsEditOperationChecked(true);
-      setIsEditMemberChecked(true);
-      setIsEditAuthorityChecked(true);
-    }
-    setIsManageOperationChecked(false);
-    setIsManageMemberChecked(false);
-    setIsManageAuthorityChecked(false);
-  };
-
-  /** 운영 관리/회원 편집 클릭*/
-  const handleClickMemberEdit = () => {
-    setIsEditMemberChecked((prevCreateListChecked) => {
-      const newCreateListChecked = !prevCreateListChecked;
-      return newCreateListChecked;
-    });
-    setIsManageMemberChecked(false);
-  };
-
-  /** 운영 관리/권한 편집 클릭*/
-  const handleClickAuthorityEdit = () => {
-    setIsEditAuthorityChecked((prevCreateListChecked) => {
-      const newCreateListChecked = !prevCreateListChecked;
-      return newCreateListChecked;
-    });
-    setIsManageAuthorityChecked(false);
-  };
-
   /** 전체 편집 선택 상태 업데이트 */
   useEffect(() => {
     if (
@@ -340,395 +189,6 @@ const AuthorityTree: React.FC = () => {
     }
   }, [isEditMemberChecked, isEditAuthorityChecked]);
 
-  ////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////
-
-  /** 전체 관리 클릭*/
-  const handleClickAllManage = () => {
-    if (isEditAllChecked && isManageAllChecked) {
-      setIsEditAllChecked(true);
-      setIsEditCreateChecked(true);
-      setIsEditCreateListChecked(true);
-      setIsEditWorksheetChecked(true);
-      setIsEditManagementChecked(true);
-      setIsEditManagementListChecked(true);
-      setIsEditTreeChecked(true);
-      setIsEditOperationChecked(true);
-      setIsEditMemberChecked(true);
-      setIsEditAuthorityChecked(true);
-      setIsManageAllChecked(false);
-      setIsManageCreateChecked(false);
-      setIsManageCreateListChecked(false);
-      setIsManageWorksheetChecked(false);
-      setIsManageManagementChecked(false);
-      setIsManageManagementListChecked(false);
-      setIsManageTreeChecked(false);
-      setIsManageOperationChecked(false);
-      setIsManageMemberChecked(false);
-      setIsManageAuthorityChecked(false);
-      console.log('dddd');
-    } else if (isEditAllChecked) {
-      setIsEditAllChecked(true);
-      setIsEditCreateChecked(true);
-      setIsEditCreateListChecked(true);
-      setIsEditWorksheetChecked(true);
-      setIsEditManagementChecked(true);
-      setIsEditManagementListChecked(true);
-      setIsEditTreeChecked(true);
-      setIsEditOperationChecked(true);
-      setIsEditMemberChecked(true);
-      setIsEditAuthorityChecked(true);
-      setIsManageAllChecked(true);
-      setIsManageCreateChecked(true);
-      setIsManageCreateListChecked(true);
-      setIsManageWorksheetChecked(true);
-      setIsManageManagementChecked(true);
-      setIsManageManagementListChecked(true);
-      setIsManageTreeChecked(true);
-      setIsManageOperationChecked(true);
-      setIsManageMemberChecked(true);
-      setIsManageAuthorityChecked(true);
-    } else {
-      setIsManageAllChecked((prevAllChecked) => {
-        const newAllChecked = !prevAllChecked;
-        setIsManageCreateChecked(newAllChecked);
-        setIsManageCreateListChecked(newAllChecked);
-        setIsManageWorksheetChecked(newAllChecked);
-        setIsManageManagementChecked(newAllChecked);
-        setIsManageManagementListChecked(newAllChecked);
-        setIsManageTreeChecked(newAllChecked);
-        setIsManageOperationChecked(newAllChecked);
-        setIsManageMemberChecked(newAllChecked);
-        setIsManageAuthorityChecked(newAllChecked);
-        return newAllChecked;
-      });
-      setIsEditAllChecked((prevAllChecked) => {
-        const newAllChecked = !prevAllChecked;
-        setIsEditCreateChecked(newAllChecked);
-        setIsEditCreateListChecked(newAllChecked);
-        setIsEditWorksheetChecked(newAllChecked);
-        setIsEditManagementChecked(newAllChecked);
-        setIsEditManagementListChecked(newAllChecked);
-        setIsEditTreeChecked(newAllChecked);
-        setIsEditOperationChecked(newAllChecked);
-        setIsEditMemberChecked(newAllChecked);
-        setIsEditAuthorityChecked(newAllChecked);
-        return newAllChecked;
-      });
-    }
-  };
-
-  /** 콘텐츠 제작 관리 클릭*/
-  const handleClickCreateManage = () => {
-    const newManageCreateChecked = isManageCreateChecked;
-    const newManageCreateListChecked = isManageCreateListChecked;
-    const newManageWorksheetChecked = isManageWorksheetChecked;
-    if (
-      newManageCreateListChecked === false &&
-      newManageWorksheetChecked === false
-    ) {
-      setIsManageCreateChecked(true);
-      setIsManageCreateListChecked(true);
-      setIsManageWorksheetChecked(true);
-    } else {
-      setIsManageCreateChecked(false);
-      setIsManageCreateListChecked(false);
-      setIsManageWorksheetChecked(false);
-      setIsEditCreateChecked(false);
-      setIsEditCreateListChecked(false);
-      setIsEditWorksheetChecked(false);
-    }
-    if (
-      newManageCreateChecked === true &&
-      newManageCreateListChecked === true &&
-      newManageWorksheetChecked === true
-    ) {
-      setIsManageCreateChecked(false);
-      setIsManageCreateListChecked(false);
-      setIsManageWorksheetChecked(false);
-    } else if (
-      newManageCreateListChecked === true ||
-      newManageWorksheetChecked === true
-    ) {
-      setIsManageCreateChecked(true);
-      setIsManageCreateListChecked(true);
-      setIsManageWorksheetChecked(true);
-    }
-    const newEditCreateChecked = isEditCreateChecked;
-    const newEditCreateListChecked = isEditCreateListChecked;
-    const newEditWorksheetChecked = isEditWorksheetChecked;
-
-    if (
-      newEditCreateListChecked === false &&
-      newEditWorksheetChecked === false
-    ) {
-      setIsEditCreateChecked(true);
-      setIsEditCreateListChecked(true);
-      setIsEditWorksheetChecked(true);
-    }
-    if (
-      newEditCreateChecked === true &&
-      newEditCreateListChecked === true &&
-      newEditWorksheetChecked === true
-    ) {
-      setIsEditCreateChecked(true);
-      setIsEditCreateListChecked(true);
-      setIsEditWorksheetChecked(true);
-    } else if (
-      newEditCreateListChecked === true ||
-      newEditWorksheetChecked === true
-    ) {
-      setIsEditCreateChecked(true);
-      setIsEditCreateListChecked(true);
-      setIsEditWorksheetChecked(true);
-    }
-  };
-
-  /** 콘텐츠 제작/문항 관리 클릭*/
-  const handleClickListManage = () => {
-    if (isManageCreateListChecked && isEditCreateListChecked) {
-      setIsManageCreateListChecked(false);
-      setIsEditCreateListChecked(true);
-    } else if (isEditCreateListChecked) {
-      setIsManageCreateListChecked(true);
-      setIsEditCreateListChecked(true);
-    } else {
-      setIsManageCreateListChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-      setIsEditCreateListChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-    }
-  };
-  /** 콘텐츠 제작/학습지 관리 클릭*/
-  const handleClickWorksheetManage = () => {
-    if (isManageWorksheetChecked && isEditWorksheetChecked) {
-      setIsManageWorksheetChecked(false);
-      setIsEditWorksheetChecked(true);
-    } else if (isEditWorksheetChecked) {
-      setIsManageWorksheetChecked(true);
-      setIsEditWorksheetChecked(true);
-    } else {
-      setIsManageWorksheetChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-      setIsEditWorksheetChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-    }
-  };
-
-  /** 콘텐츠 관리 관리 클릭*/
-  const handleClickManagemantManage = () => {
-    const newManageManagementChecked = isManageManagementChecked;
-    const newManageManagementListChecked = isManageManagementListChecked;
-    const newManageTreeChecked = isManageTreeChecked;
-    if (
-      newManageManagementListChecked === false &&
-      newManageTreeChecked === false
-    ) {
-      setIsManageManagementChecked(true);
-      setIsManageManagementListChecked(true);
-      setIsManageTreeChecked(true);
-    } else {
-      setIsManageManagementChecked(false);
-      setIsManageManagementListChecked(false);
-      setIsManageTreeChecked(false);
-      setIsEditManagementChecked(false);
-      setIsEditManagementListChecked(false);
-      setIsEditTreeChecked(false);
-    }
-    if (
-      newManageManagementChecked === true &&
-      newManageManagementListChecked === true &&
-      newManageTreeChecked === true
-    ) {
-      setIsManageManagementChecked(false);
-      setIsManageManagementListChecked(false);
-      setIsManageTreeChecked(false);
-    } else if (
-      newManageManagementListChecked === true ||
-      newManageTreeChecked === true
-    ) {
-      setIsManageManagementChecked(true);
-      setIsManageManagementListChecked(true);
-      setIsManageTreeChecked(true);
-    }
-    const newEditManagementChecked = isEditManagementChecked;
-    const newEditManagementListChecked = isEditManagementListChecked;
-    const newEditTreeChecked = isEditTreeChecked;
-    if (
-      newEditManagementListChecked === false &&
-      newEditTreeChecked === false
-    ) {
-      setIsEditManagementChecked(true);
-      setIsEditManagementListChecked(true);
-      setIsEditTreeChecked(true);
-    }
-    if (
-      newEditManagementChecked === true &&
-      newEditManagementListChecked === true &&
-      newEditTreeChecked === true
-    ) {
-      setIsEditManagementChecked(true);
-      setIsEditManagementListChecked(true);
-      setIsEditTreeChecked(true);
-    } else if (
-      newEditManagementListChecked === true ||
-      newEditTreeChecked === true
-    ) {
-      setIsEditManagementChecked(true);
-      setIsEditManagementListChecked(true);
-      setIsEditTreeChecked(true);
-    }
-  };
-  /** 콘텐츠 관리/문항 관리 클릭*/
-  const handleClickManagemantListManage = () => {
-    if (isManageManagementListChecked && isEditManagementListChecked) {
-      setIsManageManagementListChecked(false);
-      setIsEditManagementListChecked(true);
-    } else if (isEditManagementListChecked) {
-      setIsManageManagementListChecked(true);
-      setIsEditManagementListChecked(true);
-    } else {
-      setIsManageManagementListChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-      setIsEditManagementListChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-    }
-  };
-
-  /** 콘텐츠 관리/트리 관리 클릭*/
-  const handleClickTreeManage = () => {
-    if (isManageTreeChecked && isEditTreeChecked) {
-      setIsManageTreeChecked(false);
-      setIsEditTreeChecked(true);
-    } else if (isEditTreeChecked) {
-      setIsManageTreeChecked(true);
-      setIsEditTreeChecked(true);
-    } else {
-      setIsManageTreeChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-      setIsEditTreeChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-    }
-  };
-
-  /** 운영 관리 관리 클릭*/
-  const handleClickOperationManage = () => {
-    const newManageOperationChecked = isManageOperationChecked;
-    const newManageMemberChecked = isManageMemberChecked;
-    const newManageAuthorityChecked = isManageAuthorityChecked;
-
-    if (
-      newManageMemberChecked === false &&
-      newManageAuthorityChecked === false
-    ) {
-      setIsManageOperationChecked(true);
-      setIsManageMemberChecked(true);
-      setIsManageAuthorityChecked(true);
-    } else {
-      setIsManageOperationChecked(false);
-      setIsManageMemberChecked(false);
-      setIsManageAuthorityChecked(false);
-      setIsEditOperationChecked(false);
-      setIsEditMemberChecked(false);
-      setIsEditAuthorityChecked(false);
-    }
-    if (
-      newManageOperationChecked === true &&
-      newManageMemberChecked === true &&
-      newManageAuthorityChecked === true
-    ) {
-      setIsManageOperationChecked(false);
-      setIsManageMemberChecked(false);
-      setIsManageAuthorityChecked(false);
-    } else if (
-      newManageMemberChecked === true ||
-      newManageAuthorityChecked === true
-    ) {
-      setIsManageOperationChecked(true);
-      setIsManageMemberChecked(true);
-      setIsManageAuthorityChecked(true);
-    }
-    const newEditOperationChecked = isEditOperationChecked;
-    const newEditMemberChecked = isEditMemberChecked;
-    const newEditAuthorityChecked = isEditAuthorityChecked;
-    if (newEditMemberChecked === false && newEditAuthorityChecked === false) {
-      setIsEditOperationChecked(true);
-      setIsEditMemberChecked(true);
-      setIsEditAuthorityChecked(true);
-    }
-    if (
-      newEditOperationChecked === true &&
-      newEditMemberChecked === true &&
-      newEditAuthorityChecked === true
-    ) {
-      setIsEditOperationChecked(true);
-      setIsEditMemberChecked(true);
-      setIsEditAuthorityChecked(true);
-    } else if (
-      newEditMemberChecked === true ||
-      newEditAuthorityChecked === true
-    ) {
-      setIsEditOperationChecked(true);
-      setIsEditMemberChecked(true);
-      setIsEditAuthorityChecked(true);
-    }
-  };
-
-  /** 운영 관리/회원 관리 클릭*/
-  const handleClickMemberManage = () => {
-    if (isManageMemberChecked && isEditMemberChecked) {
-      setIsManageMemberChecked(false);
-      setIsEditMemberChecked(true);
-    } else if (isEditMemberChecked) {
-      setIsManageMemberChecked(true);
-      setIsEditMemberChecked(true);
-    } else {
-      setIsManageMemberChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-      setIsEditMemberChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-    }
-  };
-
-  /** 운영 관리/권한 관리 클릭*/
-  const handleClickAuthorityManage = () => {
-    if (isManageAuthorityChecked && isEditAuthorityChecked) {
-      setIsManageAuthorityChecked(false);
-      setIsEditAuthorityChecked(true);
-    } else if (isEditAuthorityChecked) {
-      setIsManageAuthorityChecked(true);
-      setIsEditAuthorityChecked(true);
-    } else {
-      setIsManageAuthorityChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-      setIsEditAuthorityChecked((prevCreateListChecked) => {
-        const newCreateListChecked = !prevCreateListChecked;
-        return newCreateListChecked;
-      });
-    }
-  };
   /** 전체 관리 선택 상태 업데이트 */
   useEffect(() => {
     if (
@@ -779,33 +239,6 @@ const AuthorityTree: React.FC = () => {
     }
   }, [isManageMemberChecked, isManageAuthorityChecked]);
 
-  /** 권한 리스트 가져오기 */
-  const getAuthorityList = async () => {
-    await axios
-      .get('/auth-service/api/v1/menu', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setMenuValue(response.data);
-      })
-      .catch(() => {
-        alert('로그인이 필요합니다');
-        navigate('/login');
-      });
-  };
-
   useEffect(() => {
     mountCount++;
     setDidMount(true);
@@ -813,7 +246,7 @@ const AuthorityTree: React.FC = () => {
 
   useEffect(() => {
     if (didMount) {
-      getAuthorityList();
+      getAuthorityMenu({ setMenuValue });
     }
   }, [didMount]);
 
@@ -874,19 +307,25 @@ const AuthorityTree: React.FC = () => {
                 />
                 <S.CheckboxDiv>
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isEditCreateListChecked}
                     onClick={() => {
-                      handleClickListEdit();
+                      handleClickListEdit({
+                        setIsEditCreateListChecked,
+                        setIsManageCreateListChecked,
+                      });
                     }}
                   />
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isManageCreateListChecked}
                     onClick={() => {
-                      handleClickListManage();
+                      handleClickListManage({
+                        isManageCreateListChecked,
+                        isEditCreateListChecked,
+                        setIsManageCreateListChecked,
+                        setIsEditCreateListChecked,
+                      });
                     }}
                   />
                 </S.CheckboxDiv>
@@ -906,19 +345,25 @@ const AuthorityTree: React.FC = () => {
                 />
                 <S.CheckboxDiv>
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isEditWorksheetChecked}
                     onClick={() => {
-                      handleClickWorksheetEdit();
+                      handleClickWorksheetEdit({
+                        setIsEditWorksheetChecked,
+                        setIsManageWorksheetChecked,
+                      });
                     }}
                   />
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isManageWorksheetChecked}
                     onClick={() => {
-                      handleClickWorksheetManage();
+                      handleClickWorksheetManage({
+                        isManageWorksheetChecked,
+                        isEditWorksheetChecked,
+                        setIsManageWorksheetChecked,
+                        setIsEditWorksheetChecked,
+                      });
                     }}
                   />
                 </S.CheckboxDiv>
@@ -926,19 +371,40 @@ const AuthorityTree: React.FC = () => {
             </TreeItem>
             <S.CheckboxDiv style={{ marginLeft: '-85px' }}>
               <Checkbox
-                // {...label}
                 sx={{ height: '24px' }}
                 checked={isEditCreateChecked}
                 onClick={() => {
-                  handleClickCreateEdit();
+                  handleClickCreateEdit({
+                    isEditCreateChecked,
+                    isEditCreateListChecked,
+                    isEditWorksheetChecked,
+                    setIsEditCreateListChecked,
+                    setIsEditWorksheetChecked,
+                    setIsEditCreateChecked,
+                    setIsManageCreateChecked,
+                    setIsManageCreateListChecked,
+                    setIsManageWorksheetChecked,
+                  });
                 }}
               />
               <Checkbox
-                // {...label}
                 sx={{ height: '24px' }}
                 checked={isManageCreateChecked}
                 onClick={() => {
-                  handleClickCreateManage();
+                  handleClickCreateManage({
+                    isManageCreateChecked,
+                    isManageCreateListChecked,
+                    isManageWorksheetChecked,
+                    setIsManageCreateChecked,
+                    setIsManageCreateListChecked,
+                    setIsManageWorksheetChecked,
+                    isEditCreateChecked,
+                    isEditCreateListChecked,
+                    isEditWorksheetChecked,
+                    setIsEditCreateChecked,
+                    setIsEditCreateListChecked,
+                    setIsEditWorksheetChecked,
+                  });
                 }}
               />
             </S.CheckboxDiv>
@@ -972,19 +438,25 @@ const AuthorityTree: React.FC = () => {
                 />
                 <S.CheckboxDiv>
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isEditManagementListChecked}
                     onClick={() => {
-                      handleClickManagemantListEdit();
+                      handleClickManagemantListEdit({
+                        setIsEditManagementListChecked,
+                        setIsManageManagementListChecked,
+                      });
                     }}
                   />
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isManageManagementListChecked}
                     onClick={() => {
-                      handleClickManagemantListManage();
+                      handleClickManagemantListManage({
+                        isManageManagementListChecked,
+                        isEditManagementListChecked,
+                        setIsManageManagementListChecked,
+                        setIsEditManagementListChecked,
+                      });
                     }}
                   />
                 </S.CheckboxDiv>
@@ -1005,19 +477,25 @@ const AuthorityTree: React.FC = () => {
                 />
                 <S.CheckboxDiv>
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isEditTreeChecked}
                     onClick={() => {
-                      handleClickTreeEdit();
+                      handleClickTreeEdit({
+                        setIsEditTreeChecked,
+                        setIsManageTreeChecked,
+                      });
                     }}
                   />
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isManageTreeChecked}
                     onClick={() => {
-                      handleClickTreeManage();
+                      handleClickTreeManage({
+                        isManageTreeChecked,
+                        isEditTreeChecked,
+                        setIsManageTreeChecked,
+                        setIsEditTreeChecked,
+                      });
                     }}
                   />
                 </S.CheckboxDiv>
@@ -1025,19 +503,40 @@ const AuthorityTree: React.FC = () => {
             </TreeItem>
             <S.CheckboxDiv style={{ marginLeft: '-85px' }}>
               <Checkbox
-                // {...label}
                 sx={{ height: '24px' }}
                 checked={isEditManagementChecked}
                 onClick={() => {
-                  handleClickManagemantEdit();
+                  handleClickManagemantEdit({
+                    isEditManagementChecked,
+                    isEditManagementListChecked,
+                    isEditTreeChecked,
+                    setIsEditManagementChecked,
+                    setIsEditManagementListChecked,
+                    setIsEditTreeChecked,
+                    setIsManageManagementChecked,
+                    setIsManageManagementListChecked,
+                    setIsManageTreeChecked,
+                  });
                 }}
               />
               <Checkbox
-                // {...label}
                 sx={{ height: '24px' }}
                 checked={isManageManagementChecked}
                 onClick={() => {
-                  handleClickManagemantManage();
+                  handleClickManagemantManage({
+                    isManageManagementChecked,
+                    isManageManagementListChecked,
+                    isManageTreeChecked,
+                    setIsManageManagementChecked,
+                    setIsManageManagementListChecked,
+                    setIsManageTreeChecked,
+                    isEditManagementChecked,
+                    isEditManagementListChecked,
+                    isEditTreeChecked,
+                    setIsEditManagementChecked,
+                    setIsEditManagementListChecked,
+                    setIsEditTreeChecked,
+                  });
                 }}
               />
             </S.CheckboxDiv>
@@ -1071,7 +570,6 @@ const AuthorityTree: React.FC = () => {
                 />
                 <S.CheckboxDiv>
                   {/* <Checkbox
-                    {...label}
                     sx={{ height: '24px' }}
                     checked={isEditMemberChecked}
                     onClick={() => {
@@ -1079,11 +577,15 @@ const AuthorityTree: React.FC = () => {
                     }}
                   /> */}
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isManageMemberChecked}
                     onClick={() => {
-                      handleClickMemberManage();
+                      handleClickMemberManage({
+                        isManageMemberChecked,
+                        isEditMemberChecked,
+                        setIsManageMemberChecked,
+                        setIsEditMemberChecked,
+                      });
                     }}
                   />
                 </S.CheckboxDiv>
@@ -1104,7 +606,6 @@ const AuthorityTree: React.FC = () => {
                 />
                 <S.CheckboxDiv>
                   {/* <Checkbox
-                    {...label}
                     sx={{ height: '24px' }}
                     checked={isEditAuthorityChecked}
                     onClick={() => {
@@ -1112,11 +613,15 @@ const AuthorityTree: React.FC = () => {
                     }}
                   /> */}
                   <Checkbox
-                    // {...label}
                     sx={{ height: '24px' }}
                     checked={isManageAuthorityChecked}
                     onClick={() => {
-                      handleClickAuthorityManage();
+                      handleClickAuthorityManage({
+                        isManageAuthorityChecked,
+                        isEditAuthorityChecked,
+                        setIsManageAuthorityChecked,
+                        setIsEditAuthorityChecked,
+                      });
                     }}
                   />
                 </S.CheckboxDiv>
@@ -1124,7 +629,7 @@ const AuthorityTree: React.FC = () => {
             </TreeItem>
             <S.CheckboxDiv style={{ marginLeft: '-43px' }}>
               {/* <Checkbox
-                {...label}
+  
                 sx={{ height: '24px' }}
                 checked={isEditOperationChecked}
                 onClick={() => {
@@ -1132,11 +637,23 @@ const AuthorityTree: React.FC = () => {
                 }}
               /> */}
               <Checkbox
-                // {...label}
                 sx={{ height: '24px' }}
                 checked={isManageOperationChecked}
                 onClick={() => {
-                  handleClickOperationManage();
+                  handleClickOperationManage({
+                    isManageOperationChecked,
+                    isManageMemberChecked,
+                    isManageAuthorityChecked,
+                    setIsManageOperationChecked,
+                    setIsManageMemberChecked,
+                    setIsManageAuthorityChecked,
+                    isEditOperationChecked,
+                    isEditMemberChecked,
+                    isEditAuthorityChecked,
+                    setIsEditOperationChecked,
+                    setIsEditMemberChecked,
+                    setIsEditAuthorityChecked,
+                  });
                 }}
               />
             </S.CheckboxDiv>
@@ -1144,19 +661,61 @@ const AuthorityTree: React.FC = () => {
         </TreeItem>
         <S.CheckboxDiv style={{ marginLeft: '-168px' }}>
           <Checkbox
-            // {...label}
             sx={{ height: '24px' }}
             checked={isEditAllChecked}
             onClick={() => {
-              handleClickAllEdit();
+              handleClickAllEdit({
+                setIsEditAllChecked,
+                setIsEditCreateChecked,
+                setIsEditCreateListChecked,
+                setIsEditWorksheetChecked,
+                setIsEditManagementChecked,
+                setIsEditManagementListChecked,
+                setIsEditTreeChecked,
+                setIsEditOperationChecked,
+                setIsEditMemberChecked,
+                setIsEditAuthorityChecked,
+                setIsManageAllChecked,
+                setIsManageCreateChecked,
+                setIsManageCreateListChecked,
+                setIsManageWorksheetChecked,
+                setIsManageManagementChecked,
+                setIsManageManagementListChecked,
+                setIsManageTreeChecked,
+                setIsManageOperationChecked,
+                setIsManageMemberChecked,
+                setIsManageAuthorityChecked,
+              });
             }}
           />
           <Checkbox
-            // {...label}
             sx={{ height: '24px' }}
             checked={isManageAllChecked}
             onClick={() => {
-              handleClickAllManage();
+              handleClickAllManage({
+                isEditAllChecked,
+                isManageAllChecked,
+                setIsEditAllChecked,
+                setIsEditCreateChecked,
+                setIsEditCreateListChecked,
+                setIsEditWorksheetChecked,
+                setIsEditManagementChecked,
+                setIsEditManagementListChecked,
+                setIsEditTreeChecked,
+                setIsEditOperationChecked,
+                setIsEditMemberChecked,
+                setIsEditAuthorityChecked,
+                setIsManageAllChecked,
+                setIsManageCreateChecked,
+                setIsManageCreateListChecked,
+                setIsManageWorksheetChecked,
+                setIsManageManagementChecked,
+                setIsManageManagementListChecked,
+                setIsManageTreeChecked,
+                setIsManageOperationChecked,
+                setIsManageMemberChecked,
+                setIsManageAuthorityChecked,
+              });
             }}
           />
         </S.CheckboxDiv>

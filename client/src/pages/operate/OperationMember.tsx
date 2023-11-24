@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
 import Member from '../../components/operation/Member';
 
 const OperationMember = () => {

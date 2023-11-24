@@ -4,10 +4,9 @@ import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/UtilState';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import ChangePassword from '../../components/password/ChangePassword';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import { StyledEditBtn, StyledSaveBtn, StyledCancelBtn } from './Mypage.style';
+import { getMemberInfo } from '../../api/GetAxios';
+import { putNameSave } from '../../api/PutAxios';
 
 const Mypage = () => {
   const [isNameEdit, setIsNameEdit] = useState(false);
@@ -23,8 +22,8 @@ const Mypage = () => {
     authority: null,
     comment: null,
     enabled: null,
+    authCode: null,
   });
-  const navigate = useNavigate();
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   const [didMount, setDidMount] = useState(false);
@@ -36,77 +35,21 @@ const Mypage = () => {
   };
 
   const handleNameSave = async () => {
-    const data = {
-      authority: member.authority,
-      name: nameValue,
-      comment: member.comment,
-      enabled: member.enabled,
-    };
-    return await axios
-      .put(`/auth-service/api/v1/auth/${member.key}`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setIsNameEdit(!isNameEdit);
-        setIsError(false);
-        setIsAlertOpen(true);
-        setNameValue('');
-      })
-      .catch((error) => {
-        //alert(error.response.data.message);
-        setErrorMsg('수정할 이름을 확인해주세요');
-        setIsError(true);
-        setIsAlertOpen(true);
-      });
+    putNameSave({
+      member,
+      nameValue,
+      isNameEdit,
+      setIsNameEdit,
+      setIsError,
+      setIsAlertOpen,
+      setNameValue,
+      setErrorMsg,
+    });
   };
 
   const handlePasswordEdit = () => {
     setIsPasswordEdit(!isPasswordEdit);
     setIsNameEdit(false);
-  };
-
-  const getMemberInfo = async () => {
-    await axios
-      .get('/auth-service/api/v1/auth/my-info', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setMember({
-          id: response?.data?.data?.id,
-          name: response?.data?.data?.name,
-          key: response?.data?.data?.key,
-          authority: response?.data?.data?.authority.code,
-          comment: response?.data?.data?.comment,
-          enabled: response?.data?.data?.enabled,
-        });
-      })
-      .catch((error) => {
-        alert(error.response?.data?.message);
-      });
   };
 
   useEffect(() => {
@@ -116,7 +59,7 @@ const Mypage = () => {
 
   useEffect(() => {
     if (didMount) {
-      getMemberInfo();
+      getMemberInfo({ setMember });
     }
   }, [setMember, isNameEdit, didMount]);
 
@@ -202,6 +145,7 @@ const Mypage = () => {
             </Styled.titleContainer>
             <ChangePassword
               marginleft={10}
+              margintop={20}
               width={400}
               inputwidth={230}
               onClick={handlePasswordEdit}

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import { CheckBoxValue, IsChangedServicedValue } from '../../recoil/ValueState';
-import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil';
+import { useSetRecoilState, useRecoilState } from 'recoil';
+import { changeServiced } from '../../api/PutAxios';
 
 import { Button } from '@mui/material';
 import Popover from '@mui/material/Popover';
@@ -32,37 +31,8 @@ const SelectBar = () => {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-  const changeServiced = async () => {
-    await axios
-      .put(
-        `/question-service/api/v1/questions/change-serviced`,
-        { changeServiceds: formattedArray },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setIsChangedServiced(true);
-      })
-      .catch((error) => {
-        alert(error);
-      });
-  };
-
   const changeServicedSubmit = () => {
-    changeServiced();
+    changeServiced({ formattedArray, setIsChangedServiced });
     setContentSeq([]);
   };
 

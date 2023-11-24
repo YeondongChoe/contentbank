@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
 import { editer, register, memberKeyValue } from '../../recoil/MemberState';
 import SelectAlert from '../alert/SelectAlert';
 import { alertState } from '../../recoil/UtilState';
+import { getMemberList } from '../../api/GetAxios';
+import { memberDisabled } from '../../api/PutAxios';
 
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -75,66 +75,18 @@ const MemberTable = () => {
     }
   };
 
-  const getMemberList = async (enabled: string) => {
-    await axios
-      .get(
-        `/auth-service/api/v1/auth?keyword=&page=1&size=8&enabledType=${
-          enabled || ''
-        }`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setMemberList(response.data.data.content);
-      })
-      .catch((err) => {
-        alert(err);
-      });
+  const handleMemberList = (enabled: string) => {
+    getMemberList({ setMemberList }, enabled);
   };
 
-  const disabled = async () => {
-    const updatedRows = selectedRows.map((selectedId) => {
-      return { id: selectedId, enabled: false };
+  const submitDisabled = () => {
+    memberDisabled({
+      selectedRows,
+      setIsEnabled,
     });
-    await axios
-      .put('/auth-service/api/v1/auth/enabled', updatedRows, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getCookie('accessToken')}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-          setIsEnabled(false);
-          window.location.reload();
-        }
-      })
-      .catch((error) => {
-        alert(error);
-      });
   };
 
-  const enableSubmit = () => {
+  const handleDisnabled = () => {
     setIsEnabled(true);
     setIsAlertOpen(true);
   };
@@ -147,7 +99,7 @@ const MemberTable = () => {
 
   useEffect(() => {
     if (didMount) {
-      getMemberList('');
+      getMemberList({ setMemberList }, '');
     }
   }, [didMount, relode, setMemberList]);
 
@@ -167,19 +119,19 @@ const MemberTable = () => {
                   label="전체"
                   value="1"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => getMemberList('')}
+                  onClick={() => handleMemberList('')}
                 />
                 <Tab
                   label="활성화"
                   value="2"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => getMemberList('Y')}
+                  onClick={() => handleMemberList('Y')}
                 />
                 <Tab
                   label="비활성화"
                   value="3"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => getMemberList('N')}
+                  onClick={() => handleMemberList('N')}
                 />
               </TabList>
             </Box>
@@ -189,7 +141,7 @@ const MemberTable = () => {
           <S.ableBtnWrapper>
             <StyledAbledBtn
               variant="outlined"
-              onClick={enableSubmit}
+              onClick={handleDisnabled}
               sx={{ backgroundColor: 'white' }}
             >
               비활성화
@@ -232,21 +184,25 @@ const MemberTable = () => {
           <S.tbody>
             {memberList?.map((member, i) => (
               <S.tr key={i}>
-                <S.td align="center">
+                <S.td style={{ textAlign: 'center' }}>
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(member.id)}
                     onChange={() => handleRowSelect(member.id)}
                   ></input>
                 </S.td>
-                <S.td align="center">{member.name}</S.td>
-                <S.td align="center">{member.id}</S.td>
-                <S.td align="center">{member.authority.name}</S.td>
-                <S.td align="center">{member.createdDate}</S.td>
-                <S.td align="center">
+                <S.td style={{ textAlign: 'center' }}>{member.name}</S.td>
+                <S.td style={{ textAlign: 'center' }}>{member.id}</S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {member.authority.name}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
+                  {member.createdDate}
+                </S.td>
+                <S.td style={{ textAlign: 'center' }}>
                   {member.enabled === true ? '활성' : '비활성'}
                 </S.td>
-                <S.td align="center">
+                <S.td style={{ textAlign: 'center' }}>
                   <S.btnWrapper onClick={() => handleDetailInfo(member.key)}>
                     <StyledDisabledBtn variant="outlined">
                       보기
@@ -263,7 +219,7 @@ const MemberTable = () => {
           title="비활성화 처리시 로그인이 불가합니다."
           description="비활성화 처리 하시겠습니까?"
           action="확인"
-          onClick={disabled}
+          onClick={submitDisabled}
         ></SelectAlert>
       )}
     </>

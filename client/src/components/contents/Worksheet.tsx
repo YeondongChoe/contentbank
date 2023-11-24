@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { SearchValue } from '../../recoil/ValueState';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+
 import { Button } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Worksheet = () => {
-  const [choiceValue, setIsChoice] = useState(0);
+  const [choiceValue, setChoiceValue] = useState(1);
+  const [inputValue, setInputValue] = useState('');
+  const setSearchValue = useSetRecoilState(SearchValue);
+
+  const handleClickSearch = () => {
+    setSearchValue(inputValue);
+  };
 
   const handleClickList = () => {
-    if (choiceValue === 1) {
-      setIsChoice(0);
-    } else setIsChoice(1);
+    setChoiceValue(1);
   };
 
   const handleClickBookmark = () => {
-    if (choiceValue === 2) {
-      setIsChoice(0);
-    } else setIsChoice(2);
+    setChoiceValue(2);
   };
 
   return (
@@ -32,7 +38,13 @@ const Worksheet = () => {
           <S.input
             type="text"
             placeholder="문항코드, 중분류, 담당자 검색"
+            onChange={(e) => {
+              setInputValue(e.target.value);
+            }}
           ></S.input>
+          <S.iconWrapper>
+            <SearchIcon onClick={handleClickSearch} />
+          </S.iconWrapper>
         </S.inputContainer>
         <S.btnWrapper>
           <StyledUplodeBtn variant="contained">+ 문항 업로드</StyledUplodeBtn>
@@ -53,17 +65,19 @@ const S = {
     width: 1280px;
     margin-top: 40px;
     display: flex;
+    align-items: center;
     justify-content: space-evenly;
   `,
   tapContainer: styled.div`
     display: flex;
-    justify-self: flex-start;
+    width: 500px;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
   `,
   tapManu: styled.div<{ choiced: number }>`
-    width: 250px;
+    width: 200px;
     height: 40px;
-    background-color: gray;
-    color: white;
     border: 1px solid #a3aed0;
     border-bottom: none;
     display: flex;
@@ -71,46 +85,61 @@ const S = {
     justify-content: center;
     cursor: pointer;
     &:first-child {
-      background-color: ${(props) => (props.choiced === 1 ? 'gray' : 'white')};
+      background-color: ${(props) =>
+        props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
       color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
-      border-right: none;
+      width: ${(props) => (props.choiced === 1 ? '250px' : '150px')};
+      height: ${(props) => (props.choiced === 2 ? '30px' : '40px')};
+      border-top-right-radius: 15px;
       border-top-left-radius: 15px;
     }
     &:nth-child(2) {
-      background-color: ${(props) => (props.choiced === 2 ? 'gray' : 'white')};
+      background-color: ${(props) =>
+        props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
       color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
+      width: ${(props) => (props.choiced === 2 ? '250px' : '150px')};
+      height: ${(props) => (props.choiced === 1 ? '30px' : '40px')};
       border-top-right-radius: 15px;
+      border-top-left-radius: 15px;
+    }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
     }
   `,
   inputContainer: styled.div`
-    margin-right: -30px;
+    margin-right: -20px;
     margin-left: 300px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-  `,
-  input: styled.input`
-    width: 250px;
-    height: 30px;
-    outline: none;
-    padding: 5px;
+    background-color: white;
     border-radius: 5px;
     border: 1px solid white;
     box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
+  `,
+  input: styled.input`
+    width: 245px;
+    outline: none;
+    padding: 5px;
+    border: 1px solid white;
     &::placeholder {
       font-size: 12px;
     }
   `,
+  iconWrapper: styled.div`
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    cursor: pointer;
+  `,
   contentBox: styled.div`
     width: 1280px;
-    height: 600px;
     border-top: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
-    margin-right: -40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-right: -30px;
     background-color: transparent;
     border: none;
   `,

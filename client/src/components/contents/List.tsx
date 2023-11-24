@@ -68,7 +68,8 @@ const List = () => {
       )}
       {choiceValue === 2 && (
         <S.contentBox>
-          <div>즐겨찾기</div>
+          <SelectBar />
+          <ListTable />
         </S.contentBox>
       )}
       {isCreate && <MainPopup />}

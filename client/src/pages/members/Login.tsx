@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import axios from 'axios';
-import { setCookie, getCookie, removeCookie } from '../../utils/ReactCookie';
+import { getCookie } from '../../utils/ReactCookie';
 import { useNavigate } from 'react-router-dom';
 import NoticeAlert from '../../components/alert/NoticeAlert';
 import { useRecoilState } from 'recoil';
 import { alertState } from '../../recoil/UtilState';
-import { passwordRegExp } from '../../utils/RegExp';
+import { postLogin } from '../../api/PostAxios';
+
 import { Button } from '@mui/material';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 interface SigninData {
   id: string;
@@ -23,11 +23,6 @@ const Login = () => {
   );
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
   const [errorMsg, setErrorMsg] = useState('');
-
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-
   const {
     control,
     watch,
@@ -38,41 +33,16 @@ const Login = () => {
   const Id = watch('id', '');
   const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<SigninData> = (data) => {
-    return axios
-      .post('/auth-service/api/v1/auth/login', data, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept-Language': 'ko',
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          setCookie('accessToken', response.data.access_token, {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-          if (response.data.initPassword === true) {
-            navigate('/firstlogin');
-          } else {
-            navigate('/contentlist');
-          }
-        }
-        if (isClicked === true) {
-          setCookie('userId', Id, { path: '/' });
-        } else {
-          removeCookie('userId', { path: '/' });
-        }
-      })
-      .catch((error) => {
-        setErrorMsg(error.response.data.message);
-        openAlert();
-      });
+  const onSubmit: SubmitHandler<SigninData> = async (data) => {
+    postLogin({ navigate, isClicked, Id, setErrorMsg, openAlert }, data);
   };
 
   const clickHandler = () => {
     setIsClicked(!isClicked);
+  };
+
+  const openAlert = () => {
+    setIsAlertOpen(true);
   };
 
   return (

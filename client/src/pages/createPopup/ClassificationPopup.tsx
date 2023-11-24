@@ -15,13 +15,7 @@ const ClassificationPopup = () => {
   const ContentList = dummy.ContentInfo;
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const { control } = useForm();
   const [selectedCode, setSelectedCode] = useState(null);
   const [code, setCode] = useState('');
   const [classificatecode, setClassificatecode] = useState('');

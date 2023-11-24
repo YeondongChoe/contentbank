@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import { getCookie, setCookie } from '../../utils/ReactCookie';
 import PaginationBox from '../../components/pagination/Pagination';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { PageAtom } from '../../recoil/UtilState';
+import { PageAtom, totalPageState } from '../../recoil/UtilState';
 import {
   CreateListCodeValue,
   SearchValue,
   CheckBoxValue,
   IsChangedServicedValue,
 } from '../../recoil/ValueState';
+import { getQuestionList } from '../../api/GetAxios';
+import { postFavoriteQuestion } from '../../api/PostAxios';
 
 import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
@@ -39,14 +39,8 @@ const ListTable = () => {
   );
   const [isFavorited, setIsFavorited] = useState(false);
   const [questionList, setQuestionList] = useState<QuestionListType[]>([]);
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}.${month}.${day}`;
-  };
-  const [totalPage, setTotalPage] = useState(1);
+
+  const [totalPage, setTotalPage] = useRecoilState(totalPageState);
   const page = useRecoilValue(PageAtom);
   const size = 10;
   const MenuCode = useRecoilValue(CreateListCodeValue);
@@ -80,75 +74,8 @@ const ListTable = () => {
     }
   };
 
-  const getQuestionList = async () => {
-    await axios
-      .get(
-        `/question-service/api/v1/questions?keyword=${
-          searchValue || ''
-        }&page=${page}&size=${size}&menuCode=${MenuCode}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setTotalPage(response.data.data.totalElements);
-        const formattedQuestionList = response.data.data.content.map(
-          (content: any) => ({
-            ...content,
-            questionCreatedDate: formatDate(content.questionCreatedDate),
-          }),
-        );
-        setQuestionList(formattedQuestionList);
-        setIsChangedServiced(false);
-      })
-      .catch((err) => {
-        alert(err);
-      });
-  };
-
-  const postFavoriteQuestion = async (questionSeq: number) => {
-    await axios
-      .post(
-        `/question-service/api/v1/questions/${questionSeq}/favorite`,
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('accessToken')}`,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.headers['authorization'] !== getCookie('accessToken')) {
-            setCookie('accessToken', response.headers['authorization'], {
-              path: '/',
-              sameSite: 'strict',
-              secure: false,
-            });
-          }
-        }
-        setIsFavorited(!isFavorited);
-      })
-      .catch((err) => {
-        alert(err);
-      });
-  };
-
   const handleFavoriteQuestion = (questionSeq: number) => {
-    postFavoriteQuestion(questionSeq);
+    postFavoriteQuestion({ isFavorited, setIsFavorited }, questionSeq);
   };
 
   useEffect(() => {
@@ -158,7 +85,18 @@ const ListTable = () => {
 
   useEffect(() => {
     if (didMount) {
-      getQuestionList();
+      getQuestionList({
+        //즐겨찾기 문항 리스트 불러올 경우
+        //전역상태 관리로 즐겨찾기 관리 후 상황에 맞게 해당 상태값을 전달해서
+        //API 파라미터에 추가해주기
+        setQuestionList,
+        setIsChangedServiced,
+        setTotalPage,
+        searchValue,
+        MenuCode,
+        page,
+        size,
+      });
     }
   }, [didMount, page, MenuCode, searchValue, isChangedServiced, isFavorited]);
 
