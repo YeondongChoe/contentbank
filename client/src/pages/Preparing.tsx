@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const Preparing = () => {
   return (
     <S.main>
-      <div>준비중인 페이지입니다...</div>
+      <div>준비중인 페이지입니다....</div>
     </S.main>
   );
 };
