@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import dummy from './data.json';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import MathJaxComponent from '../../components/mathViewer/MathViewer';
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -127,7 +128,9 @@ const ClassificationPopup = () => {
         </S.contentListContainer>
         <S.contentViewerContainer>
           <S.containerTitle>문항 뷰어</S.containerTitle>
-          <S.contentViewer>아이텍솔루션</S.contentViewer>
+          <S.contentViewer>
+            <MathJaxComponent />
+          </S.contentViewer>
         </S.contentViewerContainer>
 
         <S.contentClassificateContainer>
@@ -496,10 +499,10 @@ const S = {
     flex: 1 0 30%;
   `,
   contentViewer: styled.div`
+    width: 100%;
     padding: 10px;
   `,
   contentClassificateContainer: styled.div`
-    width: 0px;
     flex: 1 0 40%;
   `,
   contentClassificate: styled.div`

@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { SearchValue } from '../../recoil/ValueState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import SelectBar from './Selectbar';
+import ListTable from '../../components/table/ListTable';
+import Filterbar from './Filterbar';
+import WorksheetTable from '../../components/table/WorksheetTable';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -50,7 +54,18 @@ const Worksheet = () => {
           <StyledUplodeBtn variant="contained">+ 문항 업로드</StyledUplodeBtn>
         </S.btnWrapper>
       </S.contentHead>
-      <S.contentBox></S.contentBox>
+      {choiceValue === 1 && (
+        <S.contentBox>
+          <Filterbar />
+          <WorksheetTable />
+        </S.contentBox>
+      )}
+      {choiceValue === 2 && (
+        <S.contentBox>
+          <Filterbar />
+          <WorksheetTable />
+        </S.contentBox>
+      )}
     </S.main>
   );
 };

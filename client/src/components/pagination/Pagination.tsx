@@ -1,12 +1,14 @@
 import React from 'react';
 import Pagination from 'react-js-pagination';
 import { Styled_Pagination } from './Pagination.style';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { PageAtom } from '../../recoil/UtilState';
+import { CheckBoxValue } from '../../recoil/ValueState';
 
 interface PaginationBox {
   itemsCountPerPage: number;
   totalItemsCount: number;
+  onClick?: () => void;
 }
 
 const PaginationBox = ({
@@ -14,6 +16,7 @@ const PaginationBox = ({
   totalItemsCount,
 }: PaginationBox) => {
   const [page, setPage] = useRecoilState(PageAtom);
+  const setSelectedRows = useSetRecoilState<number[]>(CheckBoxValue);
 
   return (
     <Styled_Pagination.Div>
@@ -26,6 +29,7 @@ const PaginationBox = ({
         nextPageText={'>'}
         onChange={(page) => {
           setPage(page);
+          setSelectedRows([]);
         }}
       />
     </Styled_Pagination.Div>
