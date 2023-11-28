@@ -1,12 +1,42 @@
-import React, { useState } from 'react';
-import MathJax from 'react-mathjax-preview';
-import Contents from './test1.json';
+import React from 'react';
+import { MathJaxProvider, MathJaxHtml } from 'mathjax3-react';
+import Contents from '../../components/mathViewer/test2.json';
 
-const MathJaxComponent: React.FC = () => {
-  const mathExpression = Contents.it_quest; // it_quest 필드를 가져옴
-  const [math, setMath] = useState(mathExpression);
-
-  return <MathJax math={math} />;
+const MathInterleavedWithText = () => {
+  const mathml =
+    '<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mi>x</mi><mn>2</mn></msup></math>';
+  const html = `
+<p style="text-align:center;">
+  <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+    <msup>
+      <mrow>
+        <mi>r</mi>
+      </mrow>
+      <mrow>
+        <mn>2</mn>
+      </mrow>
+    </msup>
+    <mo>+</mo>
+    <msup>
+      <mrow>
+        <mi>z</mi>
+      </mrow>
+      <mrow>
+        <mn>2</mn>
+      </mrow>
+    </msup>
+    <mo>=</mo>
+    <mn>4</mn>
+  </math>
+</p>
+`;
+  return (
+    <div>
+      <MathJaxProvider>
+        <MathJaxHtml html={html} />
+      </MathJaxProvider>
+    </div>
+  );
 };
 
-export default MathJaxComponent;
+export default MathInterleavedWithText;

@@ -6,13 +6,3 @@ declare global {
     };
   }
 }
-
-declare module 'mathjax3-react' {
-  const MathJax: any;
-  export default MathJax;
-}
-
-declare module 'react-mathjax-preview' {
-  const MathJax: React.ComponentType<{ math: string }>;
-  export default MathJax;
-}

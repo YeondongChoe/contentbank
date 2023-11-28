@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import dummy from './data.json';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import MathJaxComponent from '../../components/mathViewer/MathViewer';
+import Contents from '../../components/mathViewer/test1.json';
+import MathInterleavedWithText from '../../components/mathViewer/MathViewer';
+import { MathJaxProvider, MathJaxHtml } from 'mathjax3-react';
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -13,6 +15,7 @@ import Textarea from '@mui/joy/Textarea';
 import Button from '@mui/material/Button';
 
 const ClassificationPopup = () => {
+  const mathExpression = Contents.it_quest; // it_quest 필드를 가져옴
   const ContentList = dummy.ContentInfo;
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
@@ -109,7 +112,7 @@ const ClassificationPopup = () => {
     <S.main>
       <S.wholeContainer>
         <S.contentListContainer>
-          <S.containerTitle>문항 선택</S.containerTitle>
+          {/* <S.containerTitle>문항 선택</S.containerTitle>
           <S.contentList>
             {ContentList.map((el, i) => (
               <S.contentCode
@@ -124,12 +127,19 @@ const ClassificationPopup = () => {
                 {el.code}
               </S.contentCode>
             ))}
-          </S.contentList>
+          </S.contentList> */}
+          <S.containerTitle>문항 뷰어</S.containerTitle>
+          <S.contentViewer>
+            <MathJaxProvider>
+              <MathJaxHtml html={Contents.it_quest} />
+            </MathJaxProvider>
+          </S.contentViewer>
         </S.contentListContainer>
+
         <S.contentViewerContainer>
           <S.containerTitle>문항 뷰어</S.containerTitle>
           <S.contentViewer>
-            <MathJaxComponent />
+            <MathInterleavedWithText />
           </S.contentViewer>
         </S.contentViewerContainer>
 
