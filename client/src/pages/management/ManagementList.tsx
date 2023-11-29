@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
+import ManagementsList from '../../components/managements/ManagementsList';
 
 const ManagementList = () => {
   return (
     <S.main>
-      <div>콘텐츠 관리 문항</div>
+      <ManagementsList />
     </S.main>
   );
 };

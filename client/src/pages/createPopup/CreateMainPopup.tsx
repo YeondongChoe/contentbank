@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
-  CreatePopupState,
+  CreateContentPopupState,
   UploadState,
   CreatingNewContentState,
   UploadFileState,
@@ -19,8 +19,8 @@ const styleIcon = {
   height: '150px',
 };
 
-const MainPopup = () => {
-  const [isCreate, setIsCreate] = useRecoilState(CreatePopupState);
+const CreateMainPopup = () => {
+  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
   const [isUpload, setIsUpload] = useRecoilState(UploadState);
   const setIsCreateNewContent = useSetRecoilState(CreatingNewContentState);
   const setIsUploadFile = useSetRecoilState(UploadFileState);
@@ -54,8 +54,8 @@ const MainPopup = () => {
           <UploadPopup />
         ) : (
           <>
-            <S.btnWrapper onClick={closePopup}>
-              <CloseIcon />
+            <S.btnWrapper>
+              <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
             </S.btnWrapper>
             <S.tapContainer>
               <S.tapWrapper onClick={newContentCreating}>
@@ -115,7 +115,6 @@ const S = {
     margin: 40px 30px;
     display: flex;
     justify-content: flex-end;
-    cursor: pointer;
   `,
   tapContainer: styled.div`
     margin-top: 180px;
@@ -146,4 +145,4 @@ const S = {
   tapDiscription: styled.div``,
 };
 
-export default MainPopup;
+export default CreateMainPopup;

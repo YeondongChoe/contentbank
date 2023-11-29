@@ -1,7 +1,7 @@
 import { atom } from 'recoil';
 
-export const CreatePopupState = atom({
-  key: 'CreatePopupState',
+export const CreateContentPopupState = atom({
+  key: 'CreateContentPopupState',
   default: false,
 });
 

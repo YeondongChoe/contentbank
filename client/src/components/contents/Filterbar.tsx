@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -9,7 +8,7 @@ import TabList from '@mui/lab/TabList';
 
 const Filterbar = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = useState('1');
   const [didMount, setDidMount] = useState(false);
 
   let mountCount = 1;

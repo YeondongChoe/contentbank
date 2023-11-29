@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import dummy from './data.json';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import Contents from '../../components/mathViewer/test1.json';
-import MathInterleavedWithText from '../../components/mathViewer/MathViewer';
-import { MathJaxProvider, MathJaxHtml } from 'mathjax3-react';
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -108,11 +106,37 @@ const ClassificationPopup = () => {
     }
   }, [didMount, code, classificatecode]);
 
+  const html = `
+  <p style="text-align:center;">
+  <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+    <msup>
+      <mrow>
+        <mi>r</mi>
+      </mrow>
+      <mrow>
+        <mn>2</mn>
+      </mrow>
+    </msup>
+    <mo>+</mo>
+    <msup>
+      <mrow>
+        <mi>z</mi>
+      </mrow>
+      <mrow>
+        <mn>2</mn>
+      </mrow>
+    </msup>
+    <mo>=</mo>
+    <mn>4</mn>
+  </math>
+</p>
+`;
+
   return (
     <S.main>
       <S.wholeContainer>
         <S.contentListContainer>
-          {/* <S.containerTitle>문항 선택</S.containerTitle>
+          <S.containerTitle>문항 선택</S.containerTitle>
           <S.contentList>
             {ContentList.map((el, i) => (
               <S.contentCode
@@ -127,19 +151,13 @@ const ClassificationPopup = () => {
                 {el.code}
               </S.contentCode>
             ))}
-          </S.contentList> */}
-          <S.containerTitle>문항 뷰어</S.containerTitle>
-          <S.contentViewer>
-            <MathJaxProvider>
-              <MathJaxHtml html={Contents.it_quest} />
-            </MathJaxProvider>
-          </S.contentViewer>
+          </S.contentList>
         </S.contentListContainer>
 
         <S.contentViewerContainer>
           <S.containerTitle>문항 뷰어</S.containerTitle>
           <S.contentViewer>
-            <MathInterleavedWithText />
+            <div dangerouslySetInnerHTML={{ __html: html }}></div>
           </S.contentViewer>
         </S.contentViewerContainer>
 

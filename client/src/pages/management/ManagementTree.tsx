@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
+import ManagementsTree from '../../components/managements/ManagementsTree';
 
 const ManagementTree = () => {
   return (
     <S.main>
-      <div>콘텐츠 관리 트리구조</div>
+      <ManagementsTree />
     </S.main>
   );
 };

@@ -15,12 +15,26 @@ import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Popover from '@mui/material/Popover';
 
 const WorksheetTable = () => {
   const worksheetList = dummy.Worksheet;
 
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
+
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
   const [totalPage, setTotalPage] = useRecoilState(totalPageState);
   const page = useRecoilValue(PageAtom);
   const size = 10;
@@ -153,10 +167,47 @@ const WorksheetTable = () => {
                   </div>
                 </S.td>
                 <S.td style={{ textAlign: 'center' }}>
-                  <div style={{ cursor: 'pointer' }}>
+                  <div
+                    style={{ cursor: 'pointer' }}
+                    aria-describedby={id}
+                    onClick={handleClick}
+                  >
                     <MoreVertIcon />
                   </div>
                 </S.td>
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  sx={{ marginTop: '5px' }}
+                >
+                  <S.popoverMenu
+                    onClick={() => {
+                      handleClose();
+                    }}
+                  >
+                    수정
+                  </S.popoverMenu>
+                  <S.popoverMenu
+                    onClick={() => {
+                      handleClose();
+                    }}
+                  >
+                    복제 후 수정
+                  </S.popoverMenu>
+                  <S.popoverMenu
+                    onClick={() => {
+                      handleClose();
+                    }}
+                  >
+                    삭제
+                  </S.popoverMenu>
+                </Popover>
               </S.tr>
             ))}
           </S.tbody>
@@ -194,6 +245,25 @@ const S = {
   `,
   td: styled.td`
     border: 1px solid #a3aed0;
+  `,
+  popoverMenu: styled.div`
+    width: 100px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    cursor: pointer;
+    &:nth-child(2) {
+      border-top: 2px solid #dde1e9;
+    }
+    &:nth-child(3) {
+      border-top: 2px solid #dde1e9;
+    }
+    &:hover {
+      background-color: #422afb;
+      color: white;
+    }
   `,
 };
 

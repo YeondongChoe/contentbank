@@ -38,7 +38,7 @@ const MemberTable = () => {
   const setKeyValue = useSetRecoilState(memberKeyValue);
   const setIsEdit = useSetRecoilState(editer);
   const relode = useRecoilValue(register);
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = useState('1');
   const [isEnabled, setIsEnabled] = useState(false);
   const setIsAlertOpen = useSetRecoilState(alertState);
   const [didMount, setDidMount] = useState(false);

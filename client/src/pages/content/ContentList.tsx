@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import List from '../../components/contents/List';
+import ContentsList from '../../components/contents/ContentsList';
 
 const ContentList = () => {
   return (
     <S.main>
-      <List />
+      <ContentsList />
     </S.main>
   );
 };

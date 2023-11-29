@@ -3,6 +3,12 @@ import styled from 'styled-components';
 import { CheckBoxValue, IsChangedServicedValue } from '../../recoil/ValueState';
 import { useSetRecoilState, useRecoilState } from 'recoil';
 import { changeServiced } from '../../api/PutAxios';
+import {
+  CreateContentPopupState,
+  UploadState,
+  CreatingNewContentState,
+  UploadFileState,
+} from '../../recoil/CreatingContentState';
 
 import { Button } from '@mui/material';
 import Popover from '@mui/material/Popover';
@@ -16,10 +22,6 @@ const SelectBar = () => {
   let mountCount = 1;
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [contentSeq, setContentSeq] = useRecoilState(CheckBoxValue);
-  const setIsChangedServiced = useSetRecoilState(IsChangedServicedValue);
-  const formattedArray = contentSeq.map((value) => ({ contentSeq: value }));
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -30,6 +32,10 @@ const SelectBar = () => {
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
+
+  const [contentSeq, setContentSeq] = useRecoilState(CheckBoxValue);
+  const setIsChangedServiced = useSetRecoilState(IsChangedServicedValue);
+  const formattedArray = contentSeq.map((value) => ({ contentSeq: value }));
 
   const changeServicedSubmit = () => {
     changeServiced({ formattedArray, setIsChangedServiced });
@@ -70,6 +76,17 @@ const SelectBar = () => {
 
   const handleServicedChange = (event: SelectChangeEvent) => {
     setServiced(event.target.value as string);
+  };
+
+  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
+  const [isUpload, setIsUpload] = useRecoilState(UploadState);
+  const setIsCreateNewContent = useSetRecoilState(CreatingNewContentState);
+  const setIsUploadFile = useSetRecoilState(UploadFileState);
+
+  const handleEditFile = () => {
+    setIsUpload(true);
+    setIsUploadFile(true);
+    setIsCreateNewContent(false);
   };
 
   useEffect(() => {
@@ -225,8 +242,24 @@ const SelectBar = () => {
             }}
             sx={{ marginTop: '5px' }}
           >
-            <S.popoverMenu>수정</S.popoverMenu>
-            <S.popoverMenu>복제 후 수정</S.popoverMenu>
+            <S.popoverMenu
+              onClick={() => {
+                setIsCreate(true);
+                handleClose();
+                handleEditFile();
+              }}
+            >
+              수정
+            </S.popoverMenu>
+            <S.popoverMenu
+              onClick={() => {
+                setIsCreate(true);
+                handleClose();
+                handleEditFile();
+              }}
+            >
+              복제 후 수정
+            </S.popoverMenu>
           </Popover>
         </S.btnWrapper>
         <S.btnWrapper>

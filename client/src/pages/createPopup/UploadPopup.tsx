@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
-  CreatePopupState,
+  CreateContentPopupState,
   UploadState,
   CreatingNewContentState,
   UploadFileState,
@@ -16,7 +16,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseIcon from '@mui/icons-material/Close';
 
 const UploadPopup = () => {
-  const [isCreate, setIsCreate] = useRecoilState(CreatePopupState);
+  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
   const [isUpload, setIsUpload] = useRecoilState(UploadState);
   const isCreateNewContent = useRecoilValue(CreatingNewContentState);
   const isUploadFile = useRecoilValue(UploadFileState);

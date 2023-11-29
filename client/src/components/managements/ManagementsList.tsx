@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import SelectBar from './Selectbar';
 import ListTable from '../table/ListTable';
 import { SearchValue } from '../../recoil/ValueState';
-import { CreatePopupState } from '../../recoil/CreatingContentState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import MainPopup from '../../pages/createPopup/CreateMainPopup';
+import SelectBar from '../contents/Selectbar';
+import { ManagementContentPopupState } from '../../recoil/ManagementContentState';
+import ManagemantMainPopup from '../../pages/managementPopup/ManagementMainPopup';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-const List = () => {
+const ManagementsList = () => {
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const setSearchValue = useSetRecoilState(SearchValue);
-  const [isCreate, setIsCreate] = useRecoilState(CreatePopupState);
+  const [isCreate, setIsCreate] = useRecoilState(ManagementContentPopupState);
 
   const handleClickSearch = () => {
     setSearchValue(inputValue);
@@ -24,7 +24,7 @@ const List = () => {
     setChoiceValue(1);
   };
 
-  const handleClickBookmark = () => {
+  const handleClickDeclar = () => {
     setChoiceValue(2);
   };
 
@@ -35,8 +35,8 @@ const List = () => {
           <S.tapManu choiced={choiceValue} onClick={handleClickList}>
             문항 리스트
           </S.tapManu>
-          <S.tapManu choiced={choiceValue} onClick={handleClickBookmark}>
-            즐겨찾는 문항
+          <S.tapManu choiced={choiceValue} onClick={handleClickDeclar}>
+            신고문항
           </S.tapManu>
         </S.tapContainer>
         <S.inputContainer>
@@ -56,7 +56,7 @@ const List = () => {
             variant="contained"
             onClick={() => setIsCreate(true)}
           >
-            + 문항 업로드
+            상세 검색
           </StyledUplodeBtn>
         </S.btnWrapper>
       </S.contentHead>
@@ -72,7 +72,7 @@ const List = () => {
           <ListTable />
         </S.contentBox>
       )}
-      {isCreate && <MainPopup />}
+      {isCreate && <ManagemantMainPopup />}
     </S.main>
   );
 };
@@ -176,4 +176,4 @@ const StyledUplodeBtn = styled(Button)`
   }
 `;
 
-export default List;
+export default ManagementsList;

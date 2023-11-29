@@ -1,29 +1,20 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import SelectBar from './Selectbar';
+import ListTable from '../table/ListTable';
 import { SearchValue } from '../../recoil/ValueState';
+import { CreateContentPopupState } from '../../recoil/CreatingContentState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import {
-  CreateWorksheetStep1,
-  CreateWorksheetStep2,
-} from '../../recoil/CreatingWorksheet';
-import Filterbar from './Filterbar';
-import WorksheetTable from '../../components/table/WorksheetTable';
-import Step1 from '../../pages/worksheetPopup/Step1';
+import CreateMainPopup from '../../pages/createPopup/CreateMainPopup';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-const Worksheet = () => {
-  const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
-  const setIsStep2 = useSetRecoilState(CreateWorksheetStep2);
+const ContentsList = () => {
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const setSearchValue = useSetRecoilState(SearchValue);
-
-  const handleClickStep1 = () => {
-    setIsStep1(true);
-    setIsStep2(false);
-  };
+  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
 
   const handleClickSearch = () => {
     setSearchValue(inputValue);
@@ -42,10 +33,10 @@ const Worksheet = () => {
       <S.contentHead>
         <S.tapContainer>
           <S.tapManu choiced={choiceValue} onClick={handleClickList}>
-            학습지
+            문항 리스트
           </S.tapManu>
           <S.tapManu choiced={choiceValue} onClick={handleClickBookmark}>
-            즐겨찾는 학습지
+            즐겨찾는 문항
           </S.tapManu>
         </S.tapContainer>
         <S.inputContainer>
@@ -63,25 +54,25 @@ const Worksheet = () => {
         <S.btnWrapper>
           <StyledUplodeBtn
             variant="contained"
-            onClick={() => handleClickStep1()}
+            onClick={() => setIsCreate(true)}
           >
-            + 학습지 만들기
+            + 문항 업로드
           </StyledUplodeBtn>
         </S.btnWrapper>
       </S.contentHead>
       {choiceValue === 1 && (
         <S.contentBox>
-          <Filterbar />
-          <WorksheetTable />
+          <SelectBar />
+          <ListTable />
         </S.contentBox>
       )}
       {choiceValue === 2 && (
         <S.contentBox>
-          <Filterbar />
-          <WorksheetTable />
+          <SelectBar />
+          <ListTable />
         </S.contentBox>
       )}
-      {isStep1 && <Step1 />}
+      {isCreate && <CreateMainPopup />}
     </S.main>
   );
 };
@@ -184,4 +175,5 @@ const StyledUplodeBtn = styled(Button)`
     line-height: normal;
   }
 `;
-export default Worksheet;
+
+export default ContentsList;
