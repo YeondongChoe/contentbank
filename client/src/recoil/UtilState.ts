@@ -14,3 +14,8 @@ export const PageAtom = atom({
   key: 'PageAtom',
   default: 1,
 });
+
+export const editState = atom({
+  key: 'editState',
+  default: false,
+});

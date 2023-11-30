@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import { Button } from '@mui/material';
+import Popover from '@mui/material/Popover';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-const SelectBar = () => {
+const ContentInfoChange = () => {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
 
@@ -58,7 +60,7 @@ const SelectBar = () => {
   }, [didMount]);
 
   return (
-    <S.mainContainer>
+    <S.main>
       <S.selectContainer>
         <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
           <InputLabel size="small" id="개정과정">
@@ -178,31 +180,25 @@ const SelectBar = () => {
           </Select>
         </FormControl>
       </S.selectContainer>
-    </S.mainContainer>
+      <S.wholeContainer>
+        <div>선택된 항목이 있으면 보여주기</div>
+        <div>선택된 항목이 없으면 보여주지 않기</div>
+        <div>선택된 항목이 있더라도 찾기했을때는 찾은 항목으로 보여주지</div>
+        <div>항목을 눌렀을 때 정보를 가져오는 API 연결해서 우측에 보여주기</div>
+      </S.wholeContainer>
+    </S.main>
   );
 };
 
 const S = {
-  mainContainer: styled.div`
-    margin: 40px 10px 20px 50px;
-    display: flex;
-    justify-content: space-between;
-  `,
+  main: styled.div``,
   selectContainer: styled.div`
     display: flex;
+    justify-content: center;
+    margin-top: 40px;
     gap: 10px;
   `,
-  select: styled.select``,
-  btncontainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  option: styled.option``,
-  btnWrapper: styled.button`
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-  `,
+  wholeContainer: styled.div``,
 };
 
-export default SelectBar;
+export default ContentInfoChange;

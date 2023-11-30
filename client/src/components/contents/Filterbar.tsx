@@ -18,7 +18,7 @@ const Filterbar = () => {
     setSelectedRows([]);
   };
 
-  const handleMemberList = (enabled: string) => {
+  const handleFilterdList = (enabled: string) => {
     // getMemberList({ setMemberList }, enabled);
   };
 
@@ -30,7 +30,7 @@ const Filterbar = () => {
 
   useEffect(() => {
     if (didMount) {
-      //   getMemberList({ setMemberList }, '');
+      console.log('학습지 리스트 불러오는 API 함수');
     }
   }, [didMount]);
 
@@ -44,25 +44,25 @@ const Filterbar = () => {
                 label="전체"
                 value="1"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleMemberList('')}
+                onClick={() => handleFilterdList('')}
               />
               <Tab
                 label="초등"
                 value="2"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleMemberList('Y')}
+                onClick={() => handleFilterdList('elemental')}
               />
               <Tab
                 label="중등"
                 value="3"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleMemberList('N')}
+                onClick={() => handleFilterdList('middle')}
               />
               <Tab
                 label="고등"
                 value="4"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleMemberList('N')}
+                onClick={() => handleFilterdList('high')}
               />
             </TabList>
           </Box>

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { getCookie, removeCookie } from '../utils/ReactCookie';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-import { CreateListCodeValue } from '../recoil/ValueState';
+import { CreateListCodeValue, CheckBoxValue } from '../recoil/ValueState';
 import { getAuthorityMenu } from '../api/GetAxios';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
@@ -59,6 +59,8 @@ const Header = () => {
   const [menuValue, setMenuValue] = useState<MenuListType[]>([]);
   const [didMount, setDidMount] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const setContentSeq = useSetRecoilState(CheckBoxValue);
+
   const setCreateListCodeValue = useSetRecoilState(CreateListCodeValue);
 
   const navigate = useNavigate();
@@ -86,21 +88,29 @@ const Header = () => {
     if (code === 'CNC_Q') {
       setActiveTab(1);
       setCreateListCodeValue(code);
+      setContentSeq([]);
       navigate('/contentlist');
     } else if (code === 'CNC_W') {
       setActiveTab(2);
+      setCreateListCodeValue(code);
       navigate('/contentworksheet');
     } else if (code === 'CNM_Q') {
       setActiveTab(1);
+      setCreateListCodeValue(code);
+      setContentSeq([]);
+
       navigate('/managementlist');
     } else if (code === 'CNM_T') {
       setActiveTab(2);
+      setCreateListCodeValue(code);
       navigate('/managementtree');
     } else if (code === 'OPM_M') {
       setActiveTab(1);
+      setCreateListCodeValue(code);
       navigate('/operationmember');
     } else if (code === 'OPM_R') {
       setActiveTab(2);
+      setCreateListCodeValue(code);
       navigate('/operationauthority');
     }
   };

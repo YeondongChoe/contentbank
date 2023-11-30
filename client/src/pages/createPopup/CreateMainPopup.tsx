@@ -33,6 +33,7 @@ const CreateMainPopup = () => {
     setIsUpload(true);
     setIsCreateNewContent(true);
     setIsUploadFile(false);
+    console.log('가져올 데이터 없음');
   };
 
   const newUploadFile = () => {

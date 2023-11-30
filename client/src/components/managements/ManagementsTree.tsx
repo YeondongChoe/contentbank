@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import ListTable from '../table/ListTable';
-import { SearchValue } from '../../recoil/ValueState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import SelectBar from '../contents/Selectbar';
 import { ManagementTreePopupState } from '../../recoil/ManagementContentState';
 import ManagemantTreePopup from '../../pages/managementPopup/ManagementTreePopup';
 
 import { Button } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
 
 const ManagementsTree = () => {
   const [choiceValue, setChoiceValue] = useState(1);
@@ -57,15 +54,16 @@ const S = {
     justify-content: space-between;
   `,
   tapContainer: styled.div`
+    width: 359px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
     gap: 10px;
   `,
   tapManu: styled.div<{ choiced: number }>`
-    width: 200px;
     height: 40px;
     border: 1px solid #a3aed0;
+    margin-left: 20px;
     border-bottom: none;
     display: flex;
     align-items: center;
@@ -85,19 +83,22 @@ const S = {
       color: white;
     }
   `,
+  btnWrapper: styled.div`
+    width: 170px;
+    background-color: transparent;
+    border: none;
+
+    margin-right: 20px;
+  `,
   contentBox: styled.div`
     width: 1280px;
     border-top: 1px solid #a3aed0;
-    padding-top: 20px;
-  `,
-  btnWrapper: styled.div`
-    background-color: transparent;
-    border: none;
   `,
 };
 
 const StyledUplodeBtn = styled(Button)`
   && {
+    width: 170px;
     height: 25px;
     border-radius: 5px;
     font-size: 12px;

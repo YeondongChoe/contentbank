@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { SearchValue } from '../../recoil/ValueState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   CreateWorksheetStep1,
   CreateWorksheetStep2,
+  EditWorksheet,
 } from '../../recoil/CreatingWorksheet';
-import Filterbar from './Filterbar';
 import WorksheetTable from '../../components/table/WorksheetTable';
 import Step1 from '../../pages/worksheetPopup/Step1';
 
@@ -14,8 +14,13 @@ import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 const Worksheet = () => {
+  const [didMount, setDidMount] = useState(false);
+  let mountCount = 1;
+
   const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
   const setIsStep2 = useSetRecoilState(CreateWorksheetStep2);
+  const setEditWorksheet = useSetRecoilState(EditWorksheet);
+
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const setSearchValue = useSetRecoilState(SearchValue);
@@ -23,6 +28,7 @@ const Worksheet = () => {
   const handleClickStep1 = () => {
     setIsStep1(true);
     setIsStep2(false);
+    setEditWorksheet(false);
   };
 
   const handleClickSearch = () => {
@@ -36,6 +42,17 @@ const Worksheet = () => {
   const handleClickBookmark = () => {
     setChoiceValue(2);
   };
+
+  useEffect(() => {
+    mountCount++;
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      console.log();
+    }
+  }, [didMount]);
 
   return (
     <S.main>
@@ -71,13 +88,11 @@ const Worksheet = () => {
       </S.contentHead>
       {choiceValue === 1 && (
         <S.contentBox>
-          <Filterbar />
           <WorksheetTable />
         </S.contentBox>
       )}
       {choiceValue === 2 && (
         <S.contentBox>
-          <Filterbar />
           <WorksheetTable />
         </S.contentBox>
       )}
@@ -107,7 +122,6 @@ const S = {
     gap: 10px;
   `,
   tapManu: styled.div<{ choiced: number }>`
-    width: 200px;
     height: 40px;
     border: 1px solid #a3aed0;
     border-bottom: none;
@@ -139,7 +153,7 @@ const S = {
     }
   `,
   inputContainer: styled.div`
-    margin-right: -20px;
+    margin-right: -10px;
     margin-left: 300px;
     height: 30px;
     display: flex;
@@ -170,7 +184,7 @@ const S = {
     border-top: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
-    margin-right: -30px;
+    width: 130px;
     background-color: transparent;
     border: none;
   `,
@@ -178,6 +192,7 @@ const S = {
 
 const StyledUplodeBtn = styled(Button)`
   && {
+    width: 130px;
     height: 25px;
     border-radius: 5px;
     font-size: 12px;

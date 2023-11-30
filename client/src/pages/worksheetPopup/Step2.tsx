@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   CreateWorksheetStep1,
   CreateWorksheetStep2,
   CreateWorksheetStep3,
+  EditWorksheet,
 } from '../../recoil/CreatingWorksheet';
 import Step3 from './Step3';
 
@@ -21,6 +22,7 @@ const Step2 = () => {
   const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
   const [isStep2, setIsStep2] = useRecoilState(CreateWorksheetStep2);
   const [isStep3, setIsStep3] = useRecoilState(CreateWorksheetStep3);
+  const editWorksheet = useRecoilValue(EditWorksheet);
   const [isSimilar, setIsSimilar] = useState(false);
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
@@ -29,6 +31,7 @@ const Step2 = () => {
 
   const closePopup = () => {
     setIsStep1(false);
+    setIsStep2(false);
   };
   const goBackMainPopup = () => {
     setIsStep2(false);
@@ -36,10 +39,12 @@ const Step2 = () => {
 
   const handleClickStep3 = () => {
     setIsStep3(true);
+    console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
 
   const handleClickSimilar = () => {
     setIsSimilar(true);
+    console.log('어떤 데이터 값으로 호출?');
   };
 
   return (
@@ -47,11 +52,14 @@ const Step2 = () => {
       <S.popupContainer>
         <S.topContainer>
           <S.title>
-            <S.iconWrapper>
-              <ArrowBackIosNewIcon onClick={goBackMainPopup} />
-            </S.iconWrapper>
+            {!editWorksheet && (
+              <S.iconWrapper>
+                <ArrowBackIosNewIcon onClick={goBackMainPopup} />
+              </S.iconWrapper>
+            )}
             <S.span>
-              <S.frontSpan>STEP 1 -</S.frontSpan> STEP 2
+              {!editWorksheet && <S.frontSpan>STEP 1 -</S.frontSpan>}
+              STEP 2
             </S.span>
             학습지 상세 편집
           </S.title>
@@ -62,7 +70,10 @@ const Step2 = () => {
             {isSimilar ? (
               <S.similarContainer>
                 <S.similarBtnContainer>
-                  <CloseIcon onClick={() => setIsSimilar(false)} />
+                  <CloseIcon
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => setIsSimilar(false)}
+                  />
                 </S.similarBtnContainer>
                 <div>
                   1번 유사 문항
@@ -70,7 +81,14 @@ const Step2 = () => {
                     문항을 교체하거나, 추가할 수 있습니다.
                   </S.frontSpan>
                 </div>
-                <S.similarViewContainer></S.similarViewContainer>
+                <S.similarViewContainer>
+                  <div>새로 불러오기(유사문항과 같은 API 함수 호출)</div>
+                  <div>문항 뷰어</div>
+                  <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
+                  <div>데이터값으로 받아온 문항 뷰어로 보여주기</div>
+                  <div>교체</div>
+                  <div>+추가</div>
+                </S.similarViewContainer>
               </S.similarContainer>
             ) : (
               <>
@@ -107,14 +125,18 @@ const Step2 = () => {
                 <S.discriptionContainer>
                   <div className="학습지 요약">
                     <div>문항 통계</div>
-                    <div>총 45 문항</div>
+                    <div>총 45 문항(리스트 length로 계산하기)</div>
                     <div>객관식 20 주관식 10 서술형 15</div>
+                    <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
+                    <div>전 단계로부터 전달받은 데이터 보여주기</div>
                     <div>문항 상세 내용 및 순서 변경</div>
                     <div>번호 문항타입 난이도 유형명 순서변경</div>
                     <div>1 객관식 중 1000이 10인 수 알아보기</div>
                     <div>2 객관식 중 1000이 10인 수 알아보기</div>
                     <div>44 객관식 중 1000이 10인 수 알아보기</div>
                     <div>45 객관식 중 1000이 10인 수 알아보기</div>
+                    <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
+                    <div>전 단계로부터 전달받은 데이터 보여주기</div>
                   </div>
                 </S.discriptionContainer>
               </>
@@ -122,6 +144,8 @@ const Step2 = () => {
           </S.leftTapWrapper>
           <S.rightTapWrapper>
             <div>문항 뷰어</div>
+            <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
+            <div>전 단계로부터 전달받은 데이터 뷰어로 보여주기</div>
             <StyledBtn variant="outlined" onClick={() => handleClickSimilar()}>
               유사문항
             </StyledBtn>
@@ -158,7 +182,8 @@ const S = {
     background-color: white;
   `,
   topContainer: styled.div`
-    margin: 40px 30px 20px 0px;
+    //상황에 맞게 변화
+    margin: 40px 30px 20px 30px;
     display: flex;
     justify-content: space-between;
   `,

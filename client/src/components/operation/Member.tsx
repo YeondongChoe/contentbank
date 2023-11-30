@@ -7,6 +7,7 @@ import RegisterPopup from '../member/RegisterPopup';
 import EditPopup from '../member/EditPopup';
 
 import { Button } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Member = () => {
   const [isRegister, SetIsRegister] = useRecoilState(register);
@@ -19,9 +20,12 @@ const Member = () => {
   return (
     <S.main>
       <S.contentHead>
-        <S.inputWrapper>
+        <S.inputContainer>
           <S.input type="text" placeholder="이름, 권한 검색"></S.input>
-        </S.inputWrapper>
+          <S.iconWrapper>
+            <SearchIcon />
+          </S.iconWrapper>
+        </S.inputContainer>
         <S.btnWrapper>
           <StyledUplodeBtn variant="contained" onClick={handleClickRegisterBtn}>
             + 아이디 만들기
@@ -45,28 +49,39 @@ const S = {
   `,
   contentHead: styled.div`
     width: 1280px;
+    height: 40px;
     margin-top: 40px;
-    margin-bottom: 10px;
     display: flex;
+    align-items: center;
     justify-content: flex-end;
+    margin-right: 40px;
+    gap: 10px;
   `,
-  inputWrapper: styled.div`
-    margin-right: 20px;
+  inputContainer: styled.div`
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-  `,
-  input: styled.input`
-    width: 250px;
-    height: 30px;
-    outline: none;
-    padding: 5px;
+    background-color: white;
     border-radius: 5px;
     border: 1px solid white;
     box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
+  `,
+
+  input: styled.input`
+    width: 245px;
+    outline: none;
+    padding: 5px;
+    border: 1px solid white;
     &::placeholder {
       font-size: 12px;
     }
+  `,
+  iconWrapper: styled.div`
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    cursor: pointer;
   `,
   contentBox: styled.div`
     width: 1280px;
@@ -74,13 +89,15 @@ const S = {
     border-top: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
-    display: flex;
-    align-items: center;
+    width: 130px;
+    background-color: transparent;
+    border: none;
   `,
 };
 
 const StyledUplodeBtn = styled(Button)`
   && {
+    width: 130px;
     height: 25px;
     border-radius: 5px;
     font-size: 12px;

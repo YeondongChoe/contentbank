@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import dummy from './data.json';
 import PaginationBox from '../../components/pagination/Pagination';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import { PageAtom, totalPageState } from '../../recoil/UtilState';
 import {
   CreateListCodeValue,
@@ -10,7 +10,17 @@ import {
   CheckBoxValue,
   IsChangedServicedValue,
 } from '../../recoil/ValueState';
+import {
+  CreateWorksheetStep1,
+  CreateWorksheetStep2,
+  EditWorksheet,
+} from '../../recoil/CreatingWorksheet';
+import Step2 from '../../pages/worksheetPopup/Step2';
 
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
 import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
@@ -18,6 +28,22 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
 
 const WorksheetTable = () => {
+  const [value, setValue] = useState('1');
+  const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
+  const [isStep2, setIsStep2] = useRecoilState(CreateWorksheetStep2);
+  const setEditWorksheet = useSetRecoilState(EditWorksheet);
+
+  const handleEditFile = () => {
+    setIsStep1(false);
+    setIsStep2(true);
+    setEditWorksheet(true);
+  };
+
+  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+    setSelectedRows([]);
+  };
+
   const worksheetList = dummy.Worksheet;
 
   const [didMount, setDidMount] = useState(false);
@@ -69,6 +95,8 @@ const WorksheetTable = () => {
     // postFavoriteQuestion({ isFavorited, setIsFavorited }, questionSeq);
   };
 
+  const handleFilterdList = (enabled: string) => {};
+
   useEffect(() => {
     mountCount++;
     setDidMount(true);
@@ -82,6 +110,40 @@ const WorksheetTable = () => {
 
   return (
     <>
+      <S.mainContainer>
+        <Box sx={{ typography: 'body1' }}>
+          <TabContext value={value}>
+            <Box sx={{ borderColor: 'divider' }}>
+              <TabList onChange={handleChangeTab}>
+                <Tab
+                  label="전체"
+                  value="1"
+                  style={{ fontSize: '16px', fontWeight: 'bold' }}
+                  onClick={() => handleFilterdList('')}
+                />
+                <Tab
+                  label="초등"
+                  value="2"
+                  style={{ fontSize: '16px', fontWeight: 'bold' }}
+                  onClick={() => handleFilterdList('elemental')}
+                />
+                <Tab
+                  label="중등"
+                  value="3"
+                  style={{ fontSize: '16px', fontWeight: 'bold' }}
+                  onClick={() => handleFilterdList('middle')}
+                />
+                <Tab
+                  label="고등"
+                  value="4"
+                  style={{ fontSize: '16px', fontWeight: 'bold' }}
+                  onClick={() => handleFilterdList('high')}
+                />
+              </TabList>
+            </Box>
+          </TabContext>
+        </Box>
+      </S.mainContainer>
       <S.tablecontainer>
         <S.table>
           <S.thead>
@@ -174,51 +236,59 @@ const WorksheetTable = () => {
                   >
                     <MoreVertIcon />
                   </div>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    sx={{ marginTop: '5px' }}
+                  >
+                    <S.popoverMenu
+                      onClick={() => {
+                        handleEditFile();
+                        handleClose();
+                      }}
+                    >
+                      수정
+                    </S.popoverMenu>
+                    <S.popoverMenu
+                      onClick={() => {
+                        handleEditFile();
+                        handleClose();
+                      }}
+                    >
+                      복제 후 수정
+                    </S.popoverMenu>
+                    <S.popoverMenu
+                      onClick={() => {
+                        handleClose();
+                      }}
+                    >
+                      삭제
+                    </S.popoverMenu>
+                  </Popover>
                 </S.td>
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  sx={{ marginTop: '5px' }}
-                >
-                  <S.popoverMenu
-                    onClick={() => {
-                      handleClose();
-                    }}
-                  >
-                    수정
-                  </S.popoverMenu>
-                  <S.popoverMenu
-                    onClick={() => {
-                      handleClose();
-                    }}
-                  >
-                    복제 후 수정
-                  </S.popoverMenu>
-                  <S.popoverMenu
-                    onClick={() => {
-                      handleClose();
-                    }}
-                  >
-                    삭제
-                  </S.popoverMenu>
-                </Popover>
               </S.tr>
             ))}
           </S.tbody>
         </S.table>
       </S.tablecontainer>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+      {isStep2 && <Step2 />}
     </>
   );
 };
 
 const S = {
+  mainContainer: styled.div`
+    margin: 20px 10px 20px 70px;
+    display: flex;
+    justify-content: space-between;
+  `,
   tablecontainer: styled.div`
     display: flex;
     justify-content: center;

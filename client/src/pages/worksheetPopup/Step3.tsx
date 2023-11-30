@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   CreateWorksheetStep1,
   CreateWorksheetStep2,
   CreateWorksheetStep3,
+  EditWorksheet,
 } from '../../recoil/CreatingWorksheet';
 
 import { Button } from '@mui/material';
@@ -15,9 +16,11 @@ const Step3 = () => {
   const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
   const [isStep2, setIsStep2] = useRecoilState(CreateWorksheetStep2);
   const [isStep3, setIsStep3] = useRecoilState(CreateWorksheetStep3);
+  const editWorksheet = useRecoilValue(EditWorksheet);
 
   const closePopup = () => {
     setIsStep1(false);
+    setIsStep2(false);
     setIsStep3(false);
   };
   const goBackMainPopup = () => {
@@ -27,7 +30,9 @@ const Step3 = () => {
 
   const handleClickSubmit = () => {
     setIsStep1(false);
+    setIsStep2(false);
     setIsStep3(false);
+    console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 
   return (
@@ -39,7 +44,9 @@ const Step3 = () => {
               <ArrowBackIosNewIcon onClick={goBackMainPopup} />
             </S.iconWrapper>
             <S.span>
-              <S.frontSpan>STEP 1 - STEP 2 -</S.frontSpan> STEP 3
+              {!editWorksheet && <S.frontSpan>STEP 1 -</S.frontSpan>}
+              <S.frontSpan>STEP 2 -</S.frontSpan>
+              STEP 3
             </S.span>
             학습지 상세 편집
           </S.title>
@@ -73,7 +80,14 @@ const Step3 = () => {
               <div>각종 색</div>
             </S.templateWrapper>
           </S.leftTapWrapper>
-          <S.rightTapWrapper></S.rightTapWrapper>
+          <S.rightTapWrapper>
+            <div>학습지 템플릿 보여주기</div>
+            <div>미리보기</div>
+            <div>분할선택</div>
+            <div>기본</div>
+            <div>2분할</div>
+            <div>전단계에서 받은 데이타를 리스트로 보여주기</div>
+          </S.rightTapWrapper>
         </S.mainContainer>
         <S.bottomContainer>
           <StyledNextBtn

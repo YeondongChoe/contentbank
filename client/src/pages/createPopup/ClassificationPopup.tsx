@@ -91,8 +91,20 @@ const ClassificationPopup = () => {
     setActionType2(event.target.value as string);
   };
 
+  const handleClickContentCode = (
+    sort: number,
+    code: string,
+    classificatecode: string,
+  ) => {
+    handleCodeClick(sort);
+    setCode(code);
+    setClassificatecode(classificatecode);
+    console.log('가지고 있는 Info 뿌려주기');
+  };
+
   const onSubmit = async () => {
-    console.log('저장 API ');
+    console.log('항목의 변화가 없으면 버튼 비활성화');
+    console.log('변경된 문항Info Put 요청 APi');
   };
 
   useEffect(() => {
@@ -102,9 +114,15 @@ const ClassificationPopup = () => {
 
   useEffect(() => {
     if (didMount) {
-      console.log('contentListInfo 불러오는 함수');
+      console.log('Info를 포함한 contentList gey 요청 API');
     }
-  }, [didMount, code, classificatecode]);
+  }, [didMount]);
+
+  useEffect(() => {
+    if (didMount) {
+      // console.log('contentListInfo 불러오는 함수');
+    }
+  }, [code, classificatecode]);
 
   const html = `
   <p style="text-align:center;">
@@ -142,9 +160,7 @@ const ClassificationPopup = () => {
               <S.contentCode
                 key={i}
                 onClick={() => {
-                  handleCodeClick(el.sort);
-                  setCode(el.code);
-                  setClassificatecode(el.classificatecode);
+                  handleClickContentCode(el.sort, el.code, el.classificatecode);
                 }}
                 choiced={el.sort === selectedCode}
               >

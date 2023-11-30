@@ -14,3 +14,8 @@ export const CreateWorksheetStep3 = atom({
   key: 'CreateWorksheetStep3',
   default: false,
 });
+
+export const EditWorksheet = atom({
+  key: 'EditWorksheet',
+  default: false,
+});

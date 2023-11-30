@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import ListTable from '../table/ListTable';
-import { SearchValue } from '../../recoil/ValueState';
+import { SearchValue, CheckBoxValue } from '../../recoil/ValueState';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import SelectBar from '../contents/Selectbar';
 import { ManagementContentPopupState } from '../../recoil/ManagementContentState';
@@ -13,8 +13,11 @@ import SearchIcon from '@mui/icons-material/Search';
 const ManagementsList = () => {
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
+  const setContentSeq = useSetRecoilState(CheckBoxValue);
   const setSearchValue = useSetRecoilState(SearchValue);
-  const [isCreate, setIsCreate] = useRecoilState(ManagementContentPopupState);
+  const [isManagement, setIsManagement] = useRecoilState(
+    ManagementContentPopupState,
+  );
 
   const handleClickSearch = () => {
     setSearchValue(inputValue);
@@ -22,10 +25,16 @@ const ManagementsList = () => {
 
   const handleClickList = () => {
     setChoiceValue(1);
+    setContentSeq([]);
   };
 
   const handleClickDeclar = () => {
     setChoiceValue(2);
+    setContentSeq([]);
+  };
+
+  const handleClickInfo = () => {
+    setIsManagement(true);
   };
 
   return (
@@ -52,27 +61,22 @@ const ManagementsList = () => {
           </S.iconWrapper>
         </S.inputContainer>
         <S.btnWrapper>
-          <StyledUplodeBtn
-            variant="contained"
-            onClick={() => setIsCreate(true)}
-          >
+          <StyledUplodeBtn variant="contained" onClick={handleClickInfo}>
             상세 검색
           </StyledUplodeBtn>
         </S.btnWrapper>
       </S.contentHead>
       {choiceValue === 1 && (
         <S.contentBox>
-          <SelectBar />
           <ListTable />
         </S.contentBox>
       )}
       {choiceValue === 2 && (
         <S.contentBox>
-          <SelectBar />
           <ListTable />
         </S.contentBox>
       )}
-      {isCreate && <ManagemantMainPopup />}
+      {isManagement && <ManagemantMainPopup />}
     </S.main>
   );
 };
@@ -130,7 +134,7 @@ const S = {
     }
   `,
   inputContainer: styled.div`
-    margin-right: -20px;
+    margin-right: -10px;
     margin-left: 300px;
     height: 30px;
     display: flex;
@@ -161,7 +165,7 @@ const S = {
     border-top: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
-    margin-right: -30px;
+    width: 130px;
     background-color: transparent;
     border: none;
   `,
@@ -169,6 +173,7 @@ const S = {
 
 const StyledUplodeBtn = styled(Button)`
   && {
+    width: 130px;
     height: 25px;
     border-radius: 5px;
     font-size: 12px;

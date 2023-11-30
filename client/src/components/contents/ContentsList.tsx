@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import SelectBar from './Selectbar';
 import ListTable from '../table/ListTable';
-import { SearchValue } from '../../recoil/ValueState';
+import { SearchValue, CheckBoxValue } from '../../recoil/ValueState';
 import { CreateContentPopupState } from '../../recoil/CreatingContentState';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import CreateMainPopup from '../../pages/createPopup/CreateMainPopup';
+import { editState } from '../../recoil/UtilState';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,7 +14,9 @@ const ContentsList = () => {
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const setSearchValue = useSetRecoilState(SearchValue);
+  const setContentSeq = useSetRecoilState(CheckBoxValue);
   const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
+  const setIsEdit = useSetRecoilState(editState);
 
   const handleClickSearch = () => {
     setSearchValue(inputValue);
@@ -22,10 +24,17 @@ const ContentsList = () => {
 
   const handleClickList = () => {
     setChoiceValue(1);
+    setContentSeq([]);
   };
 
   const handleClickBookmark = () => {
     setChoiceValue(2);
+    setContentSeq([]);
+  };
+
+  const handleClickCreate = () => {
+    setIsCreate(true);
+    setIsEdit(false);
   };
 
   return (
@@ -52,23 +61,18 @@ const ContentsList = () => {
           </S.iconWrapper>
         </S.inputContainer>
         <S.btnWrapper>
-          <StyledUplodeBtn
-            variant="contained"
-            onClick={() => setIsCreate(true)}
-          >
+          <StyledUplodeBtn variant="contained" onClick={handleClickCreate}>
             + 문항 업로드
           </StyledUplodeBtn>
         </S.btnWrapper>
       </S.contentHead>
       {choiceValue === 1 && (
         <S.contentBox>
-          <SelectBar />
           <ListTable />
         </S.contentBox>
       )}
       {choiceValue === 2 && (
         <S.contentBox>
-          <SelectBar />
           <ListTable />
         </S.contentBox>
       )}
@@ -98,7 +102,6 @@ const S = {
     gap: 10px;
   `,
   tapManu: styled.div<{ choiced: number }>`
-    width: 200px;
     height: 40px;
     border: 1px solid #a3aed0;
     border-bottom: none;
@@ -130,7 +133,7 @@ const S = {
     }
   `,
   inputContainer: styled.div`
-    margin-right: -20px;
+    margin-right: -10px;
     margin-left: 300px;
     height: 30px;
     display: flex;
@@ -161,7 +164,7 @@ const S = {
     border-top: 1px solid #a3aed0;
   `,
   btnWrapper: styled.div`
-    margin-right: -30px;
+    width: 130px;
     background-color: transparent;
     border: none;
   `,
@@ -169,6 +172,7 @@ const S = {
 
 const StyledUplodeBtn = styled(Button)`
   && {
+    width: 130px;
     height: 25px;
     border-radius: 5px;
     font-size: 12px;

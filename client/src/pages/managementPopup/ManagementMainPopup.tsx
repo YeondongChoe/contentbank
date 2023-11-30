@@ -1,23 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { ManagementContentPopupState } from '../../recoil/ManagementContentState';
+import SelectBar from '../../components/contents/Selectbar';
+import ContentInfoChange from './ContentInfoChange';
+import ContentCategoryChange from './ContentCategoryChange';
 
 import CloseIcon from '@mui/icons-material/Close';
 
 const ManagemantMainPopup = () => {
   const [isCreate, setIsCreate] = useRecoilState(ManagementContentPopupState);
+  const [choiceValue, setChoiceValue] = useState(1);
 
   const closePopup = () => {
     setIsCreate(false);
   };
+
+  const handleClickList = () => {
+    setChoiceValue(1);
+  };
+
+  const handleClickDeclar = () => {
+    setChoiceValue(2);
+  };
   return (
     <S.popupOverlay>
       <S.popupcontainer>
-        <S.btnWrapper>
-          <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
-        </S.btnWrapper>
-        <S.tapContainer>문항 바꾸기</S.tapContainer>
+        <S.topContainer>
+          <S.tapWapper>
+            <S.tapManu choiced={choiceValue} onClick={handleClickList}>
+              바꾸기
+            </S.tapManu>
+            <S.tapManu choiced={choiceValue} onClick={handleClickDeclar}>
+              문항 분류 바꾸기
+            </S.tapManu>
+          </S.tapWapper>
+          <S.btnWrapper>
+            <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+          </S.btnWrapper>
+        </S.topContainer>
+        {choiceValue === 1 && (
+          <S.contentBox>
+            <ContentInfoChange />
+          </S.contentBox>
+        )}
+        {choiceValue === 2 && (
+          <S.contentBox>
+            <ContentCategoryChange />
+          </S.contentBox>
+        )}
       </S.popupcontainer>
     </S.popupOverlay>
   );
@@ -42,38 +73,52 @@ const S = {
     border: 1px solid #a3aed0;
     background-color: white;
   `,
-  btnWrapper: styled.div`
-    margin: 40px 30px;
+  topContainer: styled.div`
+    width: 100%;
+    padding: 20px 30px;
     display: flex;
-    justify-content: flex-end;
+    align-items: flex-end;
+    justify-content: space-between;
   `,
-  tapContainer: styled.div`
-    margin-top: 180px;
+  tapWapper: styled.div`
     display: flex;
-    justify-content: center;
-    gap: 100px;
   `,
-  tapWrapper: styled.div`
-    width: 230px;
-    height: 350px;
+  tapManu: styled.div<{ choiced: number }>`
+    width: 200px;
+    height: 40px;
+    border: 1px solid #a3aed0;
+    border-bottom: none;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    border: 1px solid #5f86fc;
-    border-radius: 25px;
+    justify-content: center;
     cursor: pointer;
+    &:first-child {
+      background-color: ${(props) =>
+        props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+      color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
+      border-top-right-radius: 15px;
+      border-top-left-radius: 15px;
+    }
+    &:nth-child(2) {
+      background-color: ${(props) =>
+        props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+      color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
+      border-top-right-radius: 15px;
+      border-top-left-radius: 15px;
+    }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+    }
   `,
-  iconWrapper: styled.div`
-    margin-bottom: 30px;
-  `,
-  tapTextWrapper: styled.div`
+  btnWrapper: styled.div`
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
   `,
-  tapName: styled.div``,
-  tapDiscription: styled.div``,
+  contentBox: styled.div`
+    width: 100%;
+    height: 700px;
+  `,
 };
 
 export default ManagemantMainPopup;
