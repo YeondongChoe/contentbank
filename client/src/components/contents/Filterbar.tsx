@@ -35,7 +35,7 @@ const Filterbar = () => {
   }, [didMount]);
 
   return (
-    <Style.mainContainer>
+    <Container>
       <Box sx={{ typography: 'body1' }}>
         <TabContext value={value}>
           <Box sx={{ borderColor: 'divider' }}>
@@ -68,16 +68,14 @@ const Filterbar = () => {
           </Box>
         </TabContext>
       </Box>
-    </Style.mainContainer>
+    </Container>
   );
 };
 
-const Style = {
-  mainContainer: styled.div`
-    margin: 20px 10px 20px 70px;
-    display: flex;
-    justify-content: space-between;
-  `,
-};
+const Container = styled.div`
+  margin: 20px 10px 20px 70px;
+  display: flex;
+  justify-content: space-between;
+`;
 
 export { Filterbar };

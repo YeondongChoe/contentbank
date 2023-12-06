@@ -138,14 +138,14 @@ const EditPopup = () => {
   return (
     <>
       {isEditer && (
-        <S.popupOverlay>
-          <S.main>
-            <S.popupHead>
-              <S.popupTitle>회원 정보 상세보기</S.popupTitle>
-              <S.cancelIcon onClick={closePopup}>
+        <Container>
+          <PopupWrapper>
+            <HeadWrapper>
+              <Title>회원 정보 상세보기</Title>
+              <CnacelIconWrapper onClick={closePopup}>
                 <ClearTwoToneIcon />
-              </S.cancelIcon>
-            </S.popupHead>
+              </CnacelIconWrapper>
+            </HeadWrapper>
             <form>
               <S.popupBody>
                 <Box
@@ -372,52 +372,57 @@ const EditPopup = () => {
                 )}
               </S.popupBody>
             </form>
-          </S.main>
-        </S.popupOverlay>
+          </PopupWrapper>
+        </Container>
       )}
     </>
   );
 };
 
+const Container = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+`;
+
+const PopupWrapper = styled.div`
+  width: 550px;
+  height: 650px;
+  border: 1px solid gray;
+  background-color: white;
+`;
+
+const HeadWrapper = styled.div`
+  width: 100%;
+  height: 50px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+`;
+
+const Title = styled.div`
+  width: 100%;
+  font-size: 22px;
+  display: flex;
+  justify-content: center;
+  margin-right: -30px;
+`;
+
+const CnacelIconWrapper = styled.div`
+  cursor: pointer;
+  margin-right: 10px;
+  display: flex;
+`;
+
 const S = {
-  popupOverlay: styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99;
-  `,
-  main: styled.div`
-    width: 550px;
-    height: 650px;
-    border: 1px solid gray;
-    background-color: white;
-  `,
-  popupHead: styled.div`
-    width: 100%;
-    height: 50px;
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-  `,
-  popupTitle: styled.div`
-    width: 100%;
-    font-size: 22px;
-    display: flex;
-    justify-content: center;
-    margin-right: -30px;
-  `,
-  cancelIcon: styled.div`
-    cursor: pointer;
-    margin-right: 10px;
-    display: flex;
-  `,
   popupBody: styled.div`
     width: 100%;
     height: 600px;

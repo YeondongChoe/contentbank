@@ -243,22 +243,21 @@ const Header = () => {
 };
 
 const S = {
-  main: styled.main`
-    width: 1280px;
+  main: styled.div`
+    //width: 100%;
     margin-top: 20px;
   `,
   head: styled.div`
-    width: 1280px;
-    display: flex;
-    flex-direction: column;
+    //display: flex;
+    //flex-direction: column;
   `,
   topHead: styled.div`
     display: flex;
-    height: 113px;
+    height: 110px;
     border-bottom: 1px solid #a3aed0;
   `,
   iconWarpper: styled.div`
-    width: 200px;
+    padding: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -268,6 +267,7 @@ const S = {
     display: flex;
     align-items: center;
     z-index: 1;
+    flex: 1 0 0;
   `,
   navBar: styled.div`
     display: flex;
@@ -297,11 +297,11 @@ const S = {
     }
   `,
   sideContainer: styled.div`
-    width: 650px;
     display: flex;
-    justify-content: flex-end;
     align-items: flex-end;
-    margin-bottom: 10px;
+    justify-self: flex-end;
+    //margin-bottom: 10px;
+    padding: 0px 10px 10px 0;
   `,
 };
 
