@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import ManagementsTree from '../../components/managements/ManagementsTree';
+import { ManagementsTree } from '../../components/managements/ManagementsTree';
 
 const ManagementTree = () => {
   return (

@@ -181,6 +181,7 @@ const ContentInfoChange = () => {
         </FormControl>
       </S.selectContainer>
       <S.wholeContainer>
+        <div>아이텍에서 만들어야할거같은 느낌</div>
         <div>선택된 항목이 있으면 보여주기</div>
         <div>선택된 항목이 없으면 보여주지 않기</div>
         <div>선택된 항목이 있더라도 찾기했을때는 찾은 항목으로 보여주지</div>
@@ -198,7 +199,9 @@ const S = {
     margin-top: 40px;
     gap: 10px;
   `,
-  wholeContainer: styled.div``,
+  wholeContainer: styled.div`
+    margin-top: 40px;
+  `,
 };
 
 export default ContentInfoChange;

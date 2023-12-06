@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { SearchValue } from '../../recoil/ValueState';
+import { searchValueAtom } from '../../recoil/valueAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
-  CreateWorksheetStep1,
-  CreateWorksheetStep2,
-  EditWorksheet,
-} from '../../recoil/CreatingWorksheet';
-import WorksheetTable from '../../components/table/WorksheetTable';
+  createWorksheetStep1BoolAtom,
+  createWorksheetStep2BoolAtom,
+  editWorksheetBoolAtom,
+} from '../../recoil/creatingWorksheetAtom';
+import { WorksheetTable } from '../../components/table/WorksheetTable';
 import Step1 from '../../pages/worksheetPopup/Step1';
 
 import { Button } from '@mui/material';
@@ -17,29 +17,29 @@ const Worksheet = () => {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
 
-  const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
-  const setIsStep2 = useSetRecoilState(CreateWorksheetStep2);
-  const setEditWorksheet = useSetRecoilState(EditWorksheet);
+  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
+  const setIsStep2 = useSetRecoilState(createWorksheetStep2BoolAtom);
+  const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
 
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
-  const setSearchValue = useSetRecoilState(SearchValue);
+  const setsearchValueAtom = useSetRecoilState(searchValueAtom);
 
-  const handleClickStep1 = () => {
+  const openStep1 = () => {
     setIsStep1(true);
     setIsStep2(false);
-    setEditWorksheet(false);
+    setIsEditWorksheet(false);
   };
 
-  const handleClickSearch = () => {
-    setSearchValue(inputValue);
+  const searchList = () => {
+    setsearchValueAtom(inputValue);
   };
 
-  const handleClickList = () => {
+  const clickList = () => {
     setChoiceValue(1);
   };
 
-  const handleClickBookmark = () => {
+  const clickBookmark = () => {
     setChoiceValue(2);
   };
 
@@ -55,52 +55,49 @@ const Worksheet = () => {
   }, [didMount]);
 
   return (
-    <S.main>
-      <S.contentHead>
-        <S.tapContainer>
-          <S.tapManu choiced={choiceValue} onClick={handleClickList}>
+    <Style.main>
+      <Style.contentHead>
+        <Style.tapContainer>
+          <Style.tapManu choiced={choiceValue} onClick={clickList}>
             학습지
-          </S.tapManu>
-          <S.tapManu choiced={choiceValue} onClick={handleClickBookmark}>
+          </Style.tapManu>
+          <Style.tapManu choiced={choiceValue} onClick={clickBookmark}>
             즐겨찾는 학습지
-          </S.tapManu>
-        </S.tapContainer>
-        <S.inputContainer>
-          <S.input
+          </Style.tapManu>
+        </Style.tapContainer>
+        <Style.inputContainer>
+          <Style.input
             type="text"
             placeholder="문항코드, 중분류, 담당자 검색"
             onChange={(e) => {
               setInputValue(e.target.value);
             }}
-          ></S.input>
-          <S.iconWrapper>
-            <SearchIcon onClick={handleClickSearch} />
-          </S.iconWrapper>
-        </S.inputContainer>
-        <S.btnWrapper>
-          <StyledUplodeBtn
-            variant="contained"
-            onClick={() => handleClickStep1()}
-          >
+          ></Style.input>
+          <Style.iconWrapper>
+            <SearchIcon onClick={searchList} />
+          </Style.iconWrapper>
+        </Style.inputContainer>
+        <Style.btnWrapper>
+          <StyledUplodeBtn variant="contained" onClick={() => openStep1()}>
             + 학습지 만들기
           </StyledUplodeBtn>
-        </S.btnWrapper>
-      </S.contentHead>
+        </Style.btnWrapper>
+      </Style.contentHead>
       {choiceValue === 1 && (
-        <S.contentBox>
+        <Style.contentBox>
           <WorksheetTable />
-        </S.contentBox>
+        </Style.contentBox>
       )}
       {choiceValue === 2 && (
-        <S.contentBox>
+        <Style.contentBox>
           <WorksheetTable />
-        </S.contentBox>
+        </Style.contentBox>
       )}
       {isStep1 && <Step1 />}
-    </S.main>
+    </Style.main>
   );
 };
-const S = {
+const Style = {
   main: styled.main`
     width: 100vw;
     display: flex;
@@ -193,10 +190,10 @@ const S = {
 const StyledUplodeBtn = styled(Button)`
   && {
     width: 130px;
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
   }
 `;
-export default Worksheet;
+export { Worksheet };

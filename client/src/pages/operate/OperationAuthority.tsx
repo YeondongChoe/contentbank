@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Authority from '../../components/operation/Authority';
+import { Authority } from '../../components/operation/Authority';
 
 const OperationAuthority = () => {
   return (

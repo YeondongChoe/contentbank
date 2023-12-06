@@ -2,21 +2,21 @@ import React from 'react';
 import Pagination from 'react-js-pagination';
 import { Styled_Pagination } from './Pagination.style';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { PageAtom } from '../../recoil/UtilState';
-import { CheckBoxValue } from '../../recoil/ValueState';
+import { pageAtom } from '../../recoil/utilAtom';
+import { checkBoxValueAtom } from '../../recoil/valueAtom';
 
-interface PaginationBox {
+type PaginationBoxProps = {
   itemsCountPerPage: number;
   totalItemsCount: number;
   onClick?: () => void;
-}
+};
 
 const PaginationBox = ({
   itemsCountPerPage,
   totalItemsCount,
-}: PaginationBox) => {
-  const [page, setPage] = useRecoilState(PageAtom);
-  const setSelectedRows = useSetRecoilState<number[]>(CheckBoxValue);
+}: PaginationBoxProps) => {
+  const [page, setPage] = useRecoilState(pageAtom);
+  const setSelectedRows = useSetRecoilState<number[]>(checkBoxValueAtom);
 
   return (
     <Styled_Pagination.Div>
@@ -36,4 +36,4 @@ const PaginationBox = ({
   );
 };
 
-export default PaginationBox;
+export { PaginationBox };

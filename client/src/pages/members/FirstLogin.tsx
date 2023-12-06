@@ -1,16 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import ChangePassword from '../../components/password/ChangePassword';
+import { ChangePassword } from '../../components/password/ChangePassword';
 import { useNavigate } from 'react-router-dom';
-import { removeCookie } from '../../utils/ReactCookie';
+import { removeAuthorityCookie } from '../../utils/cookies';
 
 const FirstLogin = () => {
   const navigate = useNavigate();
 
   const logout = () => {
-    removeCookie('userInfo', { path: '/' });
-    removeCookie('accessToken', { path: '/' });
-    removeCookie('refreshToken', { path: '/' });
+    removeAuthorityCookie('userInfo', { path: '/' });
+    removeAuthorityCookie('accessToken', { path: '/' });
+    removeAuthorityCookie('refreshToken', { path: '/' });
     navigate('/login');
   };
 

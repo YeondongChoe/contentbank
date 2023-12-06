@@ -1,16 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import ContentsList from '../../components/contents/ContentsList';
+import { ContentsList } from '../../components/contents/ContentsList';
 
 const ContentList = () => {
   return (
-    <S.main>
+    <Style.main>
       <ContentsList />
-    </S.main>
+    </Style.main>
   );
 };
 
-const S = {
+const Style = {
   main: styled.main`
     width: 100vw;
     margin-top: 20px;

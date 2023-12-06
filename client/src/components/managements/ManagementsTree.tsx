@@ -1,45 +1,45 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import ListTable from '../table/ListTable';
+import { ListTable } from '../table/ListTable';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { ManagementTreePopupState } from '../../recoil/ManagementContentState';
+import { managementTreePopupBoolAtom } from '../../recoil/managementContentAtom';
 import ManagemantTreePopup from '../../pages/managementPopup/ManagementTreePopup';
 
 import { Button } from '@mui/material';
 
 const ManagementsTree = () => {
   const [choiceValue, setChoiceValue] = useState(1);
-  const [isCreate, setIsCreate] = useRecoilState(ManagementTreePopupState);
+  const [isCreate, setIsCreate] = useRecoilState(managementTreePopupBoolAtom);
 
-  const handleClickList = () => {
+  const clickHistory = () => {
     setChoiceValue(1);
   };
 
   return (
-    <S.main>
-      <S.contentHead>
-        <S.tapContainer>
-          <S.tapManu choiced={choiceValue} onClick={handleClickList}>
+    <Style.main>
+      <Style.contentHead>
+        <Style.tapContainer>
+          <Style.tapManu choiced={choiceValue} onClick={clickHistory}>
             히스토리
-          </S.tapManu>
-        </S.tapContainer>
-        <S.btnWrapper>
+          </Style.tapManu>
+        </Style.tapContainer>
+        <Style.btnWrapper>
           <StyledUplodeBtn
             variant="contained"
             onClick={() => setIsCreate(true)}
           >
             문항 정보 트리구조 변경
           </StyledUplodeBtn>
-        </S.btnWrapper>
-      </S.contentHead>
-      <S.contentBox>
+        </Style.btnWrapper>
+      </Style.contentHead>
+      <Style.contentBox>
         <ListTable />
-      </S.contentBox>
+      </Style.contentBox>
       {isCreate && <ManagemantTreePopup />}
-    </S.main>
+    </Style.main>
   );
 };
-const S = {
+const Style = {
   main: styled.main`
     width: 100vw;
     display: flex;
@@ -99,11 +99,11 @@ const S = {
 const StyledUplodeBtn = styled(Button)`
   && {
     width: 170px;
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
   }
 `;
 
-export default ManagementsTree;
+export { ManagementsTree };

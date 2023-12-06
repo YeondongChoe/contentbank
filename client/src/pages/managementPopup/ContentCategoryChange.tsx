@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import dummy from '../createPopup/data.json';
+import { useRecoilState } from 'recoil';
+import { checkListValueAtom } from '../../recoil/valueAtom';
 
 import { Button } from '@mui/material';
-import Popover from '@mui/material/Popover';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -11,42 +13,230 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 const ContentCategoryChange = () => {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
+  const ContentList = dummy.ContentInfo;
 
-  const [curriculum, setCurriculum] = useState('');
-  const [schoolLevel, setSchoolLevel] = useState('');
-  const [schoolYear, setSchoolYear] = useState('');
-  const [semester, setSemester] = useState('');
-  const [unitMajor, setUnitMajor] = useState('');
-  const [unitType, setUnitType] = useState('');
-  const [serviced, setServiced] = useState('');
+  const [selectedRows, setSelectedRows] =
+    useRecoilState<number[]>(checkListValueAtom);
+  const isAllSelected = selectedRows.length === ContentList.length;
 
-  const handleCurriculumChange = (event: SelectChangeEvent) => {
-    setCurriculum(event.target.value as string);
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      // 전체 선택 상태에서 전체 선택 체크박스를 클릭하면 모두 선택 해제
+      setSelectedRows([]);
+    } else {
+      // 그렇지 않으면 모두 선택
+      setSelectedRows(ContentList.map((content) => content.sort));
+    }
   };
 
-  const handleSchoolLevelChange = (event: SelectChangeEvent) => {
-    setSchoolLevel(event.target.value as string);
+  const [classificatecode, setClassificatecode] = useState('');
+  const [selectedCode, setSelectedCode] = useState<number | null>(null);
+
+  const handleCodeClick = (sort: any) => {
+    setSelectedCode(sort === selectedCode ? null : sort);
   };
 
-  const handleSchoolYearChange = (event: SelectChangeEvent) => {
-    setSchoolYear(event.target.value as string);
+  const [content, setContent] = useState({
+    curriculum: '',
+    schoolLevel: '',
+    schoolYear: '',
+    semester: '',
+    unitMajor: '',
+    unitType: '',
+    serviced: '',
+  });
+
+  const handleCurriculum = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      curriculum: event.target.value as string,
+    }));
   };
 
-  const handleSemesterChange = (event: SelectChangeEvent) => {
-    setSemester(event.target.value as string);
+  const handleSchoolLevel = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      schoolLevel: event.target.value as string,
+    }));
   };
 
-  const handleUnitMajorChange = (event: SelectChangeEvent) => {
-    setUnitMajor(event.target.value as string);
+  const handleSchoolYear = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      schoolYear: event.target.value as string,
+    }));
   };
 
-  const handleUnitTypeChange = (event: SelectChangeEvent) => {
-    setUnitType(event.target.value as string);
+  const handleSemester = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      semester: event.target.value as string,
+    }));
   };
 
-  const handleServicedChange = (event: SelectChangeEvent) => {
-    setServiced(event.target.value as string);
+  const handleUnitMajor = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      unitMajor: event.target.value as string,
+    }));
   };
+
+  const handleUnitType = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      unitType: event.target.value as string,
+    }));
+  };
+
+  const handleServiced = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      serviced: event.target.value as string,
+    }));
+  };
+
+  const [changeContent, setChangeContent] = useState({
+    changeCurriculum: '',
+    changeSchoolLevel: '',
+    changeSchoolYear: '',
+    changeSemester: '',
+    changeUnitMajor: '',
+    changeUnitType: '',
+    putChangeServiced: '',
+  });
+
+  const handleChangeCurriculum = (event: SelectChangeEvent) => {
+    setChangeContent((prevContent) => ({
+      ...prevContent,
+      changeCurriculum: event.target.value as string,
+    }));
+  };
+
+  const handleChangeSchoolLevel = (event: SelectChangeEvent) => {
+    setChangeContent((prevContent) => ({
+      ...prevContent,
+      changeSchoolLevel: event.target.value as string,
+    }));
+  };
+
+  const handleChangeSchoolYear = (event: SelectChangeEvent) => {
+    setChangeContent((prevContent) => ({
+      ...prevContent,
+      changeSchoolYear: event.target.value as string,
+    }));
+  };
+
+  const handleChangeSemester = (event: SelectChangeEvent) => {
+    setChangeContent((prevContent) => ({
+      ...prevContent,
+      changeSemester: event.target.value as string,
+    }));
+  };
+
+  const handleChangeUnitMajor = (event: SelectChangeEvent) => {
+    setChangeContent((prevContent) => ({
+      ...prevContent,
+      changeUnitMajor: event.target.value as string,
+    }));
+  };
+
+  const handleChangeUnitType = (event: SelectChangeEvent) => {
+    setChangeContent((prevContent) => ({
+      ...prevContent,
+      changeUnitType: event.target.value as string,
+    }));
+  };
+
+  const handleputChangeServiced = (event: SelectChangeEvent) => {
+    setChangeContent((prevContent) => ({
+      ...prevContent,
+      putChangeServiced: event.target.value as string,
+    }));
+  };
+
+  const handleClickSearch = () => {
+    console.log('콘텐츠리스트 get API');
+  };
+
+  const handleClickChange = () => {
+    console.log('가지고 온 리스트의 배열을 변경 사항에 맞게 변경');
+  };
+
+  const handleClickSave = () => {
+    console.log('변경된 콘텐츠 문항 put API');
+  };
+
+  /** 다중선택 기능 */
+  const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false);
+  const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
+
+  const handleClickContentCode = (
+    sort: number,
+    classificatecode: string,
+    curriculum: string,
+    schoolLevel: string,
+    schoolYear: string,
+    semester: string,
+    unitMajor: string,
+    unitType: string,
+    serviced: string,
+  ) => {
+    if (lastClickedIndex !== null && isShiftKeyPressed) {
+      // Shift 키가 눌려 있고 이전 클릭된 항목이 있다면
+      const start = Math.min(lastClickedIndex, sort);
+      const end = Math.max(lastClickedIndex, sort);
+      const selectedRange = ContentList.slice(start, end + 1).map(
+        (el) => el.sort,
+      );
+      setSelectedRows((prevSelectedRows) => {
+        // 중복된 항목을 방지하기 위해 Set을 사용
+        const newSelectedRows = new Set([
+          ...prevSelectedRows,
+          ...selectedRange,
+        ]);
+        return Array.from(newSelectedRows);
+      });
+    } else {
+      // Shift 키가 눌리지 않았거나 이전 클릭된 항목이 없으면 단일 선택
+      setSelectedCode(sort === selectedCode ? null : sort);
+      setSelectedRows([sort]);
+    }
+    setLastClickedIndex(sort);
+    handleCodeClick(sort);
+    setClassificatecode(classificatecode);
+    setContent((prevContent) => ({
+      ...prevContent,
+      curriculum: curriculum,
+      schoolLevel: schoolLevel,
+      schoolYear: schoolYear,
+      semester: semester,
+      unitMajor: unitMajor,
+      unitType: unitType,
+      serviced: serviced,
+    }));
+    console.log('가지고 있는 Info와 뷰어에 들어갈 정보 뿌려주기');
+    console.log('다중선택 바꾸기할 때 필요 값을 배열로 받아야 함');
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') {
+        setIsShiftKeyPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') {
+        setIsShiftKeyPressed(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     mountCount++;
@@ -55,271 +245,433 @@ const ContentCategoryChange = () => {
 
   useEffect(() => {
     if (didMount) {
-      //console.log('select bar list 불러오는 함수');
+      console.log('메인 페이지에서 체크해서 가져온 콘텐츠 list 불러오기');
     }
   }, [didMount]);
 
   return (
     <S.main>
-      <S.selectContainer>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="개정과정">
-            개정과정
-          </InputLabel>
-          <Select
-            labelId="개정과정"
-            id="select"
-            value={curriculum}
-            label="개정과정"
-            onChange={handleCurriculumChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>2015</MenuItem>
-            <MenuItem value={20}>2017</MenuItem>
-            <MenuItem value={30}>2020</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="학교">
-            학교
-          </InputLabel>
-          <Select
-            labelId="학교"
-            id="select"
-            value={schoolLevel}
-            label="학교"
-            onChange={handleSchoolLevelChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>01 중등</MenuItem>
-            <MenuItem value={20}>02 중등</MenuItem>
-            <MenuItem value={30}>03 중등</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="학년">
-            학년
-          </InputLabel>
-          <Select
-            labelId="학년"
-            id="select"
-            value={schoolYear}
-            label="학년"
-            onChange={handleSchoolYearChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>중등 1</MenuItem>
-            <MenuItem value={20}>중등 2</MenuItem>
-            <MenuItem value={30}>중등 3</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="학기">
-            학기
-          </InputLabel>
-          <Select
-            labelId="학기"
-            id="select"
-            value={semester}
-            label="학기"
-            onChange={handleSemesterChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>1학기</MenuItem>
-            <MenuItem value={20}>2학기</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="대분류">
-            대분류
-          </InputLabel>
-          <Select
-            labelId="대분류"
-            id="select"
-            value={unitMajor}
-            label="대분류"
-            onChange={handleUnitMajorChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>일차부등식 소분류</MenuItem>
-            <MenuItem value={20}>일차부등식 중분류</MenuItem>
-            <MenuItem value={30}>일차부등식 대분류</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="문항타입">
-            문항타입
-          </InputLabel>
-          <Select
-            labelId="문항타입"
-            id="select"
-            value={unitType}
-            label="문항타입"
-            onChange={handleUnitTypeChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>객관식</MenuItem>
-            <MenuItem value={20}>주관식</MenuItem>
-            <MenuItem value={30}>서술형</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="오픈여부">
-            오픈여부
-          </InputLabel>
-          <Select
-            labelId="오픈여부"
-            id="select"
-            value={serviced}
-            label="오픈여부"
-            onChange={handleServicedChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>활성화</MenuItem>
-            <MenuItem value={20}>비활성화</MenuItem>
-          </Select>
-        </FormControl>
-      </S.selectContainer>
-      <S.selectContainer>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="개정과정">
-            개정과정
-          </InputLabel>
-          <Select
-            labelId="개정과정"
-            id="select"
-            value={curriculum}
-            label="개정과정"
-            onChange={handleCurriculumChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>2015</MenuItem>
-            <MenuItem value={20}>2017</MenuItem>
-            <MenuItem value={30}>2020</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="학교">
-            학교
-          </InputLabel>
-          <Select
-            labelId="학교"
-            id="select"
-            value={schoolLevel}
-            label="학교"
-            onChange={handleSchoolLevelChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>01 중등</MenuItem>
-            <MenuItem value={20}>02 중등</MenuItem>
-            <MenuItem value={30}>03 중등</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="학년">
-            학년
-          </InputLabel>
-          <Select
-            labelId="학년"
-            id="select"
-            value={schoolYear}
-            label="학년"
-            onChange={handleSchoolYearChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>중등 1</MenuItem>
-            <MenuItem value={20}>중등 2</MenuItem>
-            <MenuItem value={30}>중등 3</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="학기">
-            학기
-          </InputLabel>
-          <Select
-            labelId="학기"
-            id="select"
-            value={semester}
-            label="학기"
-            onChange={handleSemesterChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>1학기</MenuItem>
-            <MenuItem value={20}>2학기</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="대분류">
-            대분류
-          </InputLabel>
-          <Select
-            labelId="대분류"
-            id="select"
-            value={unitMajor}
-            label="대분류"
-            onChange={handleUnitMajorChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>일차부등식 소분류</MenuItem>
-            <MenuItem value={20}>일차부등식 중분류</MenuItem>
-            <MenuItem value={30}>일차부등식 대분류</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="문항타입">
-            문항타입
-          </InputLabel>
-          <Select
-            labelId="문항타입"
-            id="select"
-            value={unitType}
-            label="문항타입"
-            onChange={handleUnitTypeChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>객관식</MenuItem>
-            <MenuItem value={20}>주관식</MenuItem>
-            <MenuItem value={30}>서술형</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-          <InputLabel size="small" id="오픈여부">
-            오픈여부
-          </InputLabel>
-          <Select
-            labelId="오픈여부"
-            id="select"
-            value={serviced}
-            label="오픈여부"
-            onChange={handleServicedChange}
-            sx={{ minWidth: 120, height: 40 }}
-          >
-            <MenuItem value={10}>활성화</MenuItem>
-            <MenuItem value={20}>비활성화</MenuItem>
-          </Select>
-        </FormControl>
-      </S.selectContainer>
+      <S.topContainer>
+        <S.selectContainer>
+          <S.selectWapper>
+            <S.subTitle>찾을 문항 분류</S.subTitle>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="개정과정">
+                개정과정
+              </InputLabel>
+              <Select
+                labelId="개정과정"
+                id="select"
+                value={content.curriculum}
+                label={'개정과정'}
+                onChange={handleCurriculum}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={2015}>2015</MenuItem>
+                <MenuItem value={2016}>2016</MenuItem>
+                <MenuItem value={2017}>2017</MenuItem>
+                <MenuItem value={2020}>2020</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학교">
+                학교
+              </InputLabel>
+              <Select
+                labelId="학교"
+                id="select"
+                value={content.schoolLevel}
+                label="학교"
+                onChange={handleSchoolLevel}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등'}>초등</MenuItem>
+                <MenuItem value={'중등'}>중등</MenuItem>
+                <MenuItem value={'고등'}>고등</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학년">
+                학년
+              </InputLabel>
+              <Select
+                labelId="학년"
+                id="select"
+                value={content.schoolYear}
+                label="학년"
+                onChange={handleSchoolYear}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등1'}>초등 1</MenuItem>
+                <MenuItem value={'초등2'}>초등 2</MenuItem>
+                <MenuItem value={'중등1'}>중등 1</MenuItem>
+                <MenuItem value={'중등2'}>중등 2</MenuItem>
+                <MenuItem value={'고등1'}>고등 1</MenuItem>
+                <MenuItem value={'고등2'}>고등 2</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학기">
+                학기
+              </InputLabel>
+              <Select
+                labelId="학기"
+                id="select"
+                value={content.semester}
+                label="학기"
+                onChange={handleSemester}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'1학기'}>1학기</MenuItem>
+                <MenuItem value={'2학기'}>2학기</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="대분류">
+                대분류
+              </InputLabel>
+              <Select
+                labelId="대분류"
+                id="select"
+                value={content.unitMajor}
+                label="대분류"
+                onChange={handleUnitMajor}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'일차부등식 소분류'}>
+                  일차부등식 소분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 중분류'}>
+                  일차부등식 중분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 대분류'}>
+                  일차부등식 대분류
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="문항타입">
+                문항타입
+              </InputLabel>
+              <Select
+                labelId="문항타입"
+                id="select"
+                value={content.unitType}
+                label="문항타입"
+                onChange={handleUnitType}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'객관식'}>객관식</MenuItem>
+                <MenuItem value={'주관식'}>주관식</MenuItem>
+                <MenuItem value={'서술형'}>서술형</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="오픈여부">
+                오픈여부
+              </InputLabel>
+              <Select
+                labelId="오픈여부"
+                id="select"
+                value={content.serviced}
+                label="오픈여부"
+                onChange={handleServiced}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'활성화'}>활성화</MenuItem>
+                <MenuItem value={'비활성화'}>비활성화</MenuItem>
+              </Select>
+            </FormControl>
+          </S.selectWapper>
+          <S.selectWapper>
+            <S.subTitle>바꿀 문항 분류</S.subTitle>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="개정과정">
+                개정과정
+              </InputLabel>
+              <Select
+                labelId="개정과정"
+                id="select"
+                value={changeContent.changeCurriculum}
+                label="개정과정"
+                onChange={handleChangeCurriculum}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={2015}>2015</MenuItem>
+                <MenuItem value={2016}>2016</MenuItem>
+                <MenuItem value={2017}>2017</MenuItem>
+                <MenuItem value={2020}>2020</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학교">
+                학교
+              </InputLabel>
+              <Select
+                labelId="학교"
+                id="select"
+                value={changeContent.changeSchoolLevel}
+                label="학교"
+                onChange={handleChangeSchoolLevel}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등'}>초등</MenuItem>
+                <MenuItem value={'중등'}>중등</MenuItem>
+                <MenuItem value={'고등'}>고등</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학년">
+                학년
+              </InputLabel>
+              <Select
+                labelId="학년"
+                id="select"
+                value={changeContent.changeSchoolYear}
+                label="학년"
+                onChange={handleChangeSchoolYear}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등1'}>초등 1</MenuItem>
+                <MenuItem value={'초등2'}>초등 2</MenuItem>
+                <MenuItem value={'중등1'}>중등 1</MenuItem>
+                <MenuItem value={'중등2'}>중등 2</MenuItem>
+                <MenuItem value={'고등1'}>고등 1</MenuItem>
+                <MenuItem value={'고등2'}>고등 2</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학기">
+                학기
+              </InputLabel>
+              <Select
+                labelId="학기"
+                id="select"
+                value={changeContent.changeSemester}
+                label="학기"
+                onChange={handleChangeSemester}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'1학기'}>1학기</MenuItem>
+                <MenuItem value={'2학기'}>2학기</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="대분류">
+                대분류
+              </InputLabel>
+              <Select
+                labelId="대분류"
+                id="select"
+                value={changeContent.changeUnitMajor}
+                label="대분류"
+                onChange={handleChangeUnitMajor}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'일차부등식 소분류'}>
+                  일차부등식 소분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 중분류'}>
+                  일차부등식 중분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 대분류'}>
+                  일차부등식 대분류
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="문항타입">
+                문항타입
+              </InputLabel>
+              <Select
+                labelId="문항타입"
+                id="select"
+                value={changeContent.changeUnitType}
+                label="문항타입"
+                onChange={handleChangeUnitType}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'객관식'}>객관식</MenuItem>
+                <MenuItem value={'주관식'}>주관식</MenuItem>
+                <MenuItem value={'서술형'}>서술형</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="오픈여부">
+                오픈여부
+              </InputLabel>
+              <Select
+                labelId="오픈여부"
+                id="select"
+                value={changeContent.putChangeServiced}
+                label="오픈여부"
+                onChange={handleputChangeServiced}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'활성화'}>활성화</MenuItem>
+                <MenuItem value={'비활성화'}>비활성화</MenuItem>
+              </Select>
+            </FormControl>
+          </S.selectWapper>
+        </S.selectContainer>
+        <S.topBtnContainer>
+          <StyledActionBtn variant="outlined" onClick={handleClickSearch}>
+            찾기
+          </StyledActionBtn>
+          <StyledActionBtn variant="contained" onClick={handleClickChange}>
+            선택 바꾸기
+          </StyledActionBtn>
+        </S.topBtnContainer>
+      </S.topContainer>
       <S.wholeContainer>
-        <div>선택 바꾸기를 클릭했을 때 문항 분류가 바뀜</div>
-        <div>변경 내용 저장을 눌렀을 때 서버에 Post API</div>
-        <div>이전 단계 되돌리기 하면 이전에 바뀐 문항 분류가 원상복구됨</div>
-        <div>초기에 보여지는 화면 없음</div>
-        <div>찾기했을 때 문항리스트 보여주기</div>
-        <div>가지고온 리스트의 문항을 뷰어로 보여주기</div>
+        <S.leftContainer>
+          <S.divTitle>문항선택</S.divTitle>
+          <S.listContainer>
+            <S.checkboxWapper>
+              <input
+                type="checkbox"
+                onChange={handleSelectAll}
+                checked={isAllSelected}
+              ></input>
+              <S.listTitle>전체선택</S.listTitle>
+            </S.checkboxWapper>
+            {ContentList.map((el, i) => (
+              <S.contentCode
+                key={i}
+                onClick={() => {
+                  {
+                    handleClickContentCode(
+                      el.sort,
+                      el.classificatecode,
+                      el.curriculum,
+                      el.schoolLevel,
+                      el.schoolYear,
+                      el.semester,
+                      el.unitMajor,
+                      el.unitType,
+                      el.serviced,
+                    );
+                  }
+                }}
+                choiced={
+                  el.sort === selectedCode || selectedRows.includes(el.sort)
+                }
+              >
+                {el.code}
+              </S.contentCode>
+            ))}
+          </S.listContainer>
+        </S.leftContainer>
+        <S.rightContainer>
+          <S.divTitle>문항 뷰어 {classificatecode}</S.divTitle>
+          <S.viewerContainer>
+            <div>가지고온 리스트의 문항을 뷰어로 보여주기</div>
+            <div>변경 내용 저장을 눌렀을 때 서버에 Post API</div>
+          </S.viewerContainer>
+        </S.rightContainer>
       </S.wholeContainer>
+      <S.btnContainer>
+        <StyledSaveBtn variant="outlined" onClick={handleClickSave}>
+          변경 내용 저장
+        </StyledSaveBtn>
+      </S.btnContainer>
     </S.main>
   );
 };
 
 const S = {
-  main: styled.div``,
+  main: styled.main``,
+  topContainer: styled.div`
+    display: flex;
+    margin-top: 40px;
+    justify-content: center;
+  `,
   selectContainer: styled.div`
     display: flex;
-    justify-content: center;
-    margin-top: 40px;
+    flex-direction: column;
     gap: 10px;
   `,
-  wholeContainer: styled.div``,
+  selectWapper: styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  `,
+  subTitle: styled.div`
+    margin-right: 10px;
+  `,
+  topBtnContainer: styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    margin-left: 20px;
+  `,
+  wholeContainer: styled.div`
+    height: 560px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+  `,
+  divTitle: styled.div`
+    font-size: 16px;
+    margin-bottom: 5px;
+  `,
+  leftContainer: styled.div`
+    width: 300px;
+  `,
+  listContainer: styled.div`
+    border: 1px solid #a3aed0;
+    height: 535px;
+  `,
+  checkboxWapper: styled.div`
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid #a3aed0;
+    padding: 5px;
+  `,
+
+  listTitle: styled.div`
+    font-size: 14px;
+  `,
+  contentCode: styled.div<{ choiced: boolean }>`
+    padding-left: 10px;
+    font-size: 13px;
+    background-color: ${(props) => (props.choiced ? '#a3aed0' : 'white')};
+    color: ${(props) => (props.choiced ? 'white' : 'initial')};
+    cursor: pointer;
+  `,
+  rightContainer: styled.div`
+    width: 500px;
+  `,
+  viewerContainer: styled.div`
+    border: 1px solid #a3aed0;
+    height: 535px;
+  `,
+  btnContainer: styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 30px;
+  `,
 };
 
-export default ContentCategoryChange;
+const StyledActionBtn = styled(Button)`
+  && {
+    width: 100px;
+    height: 40px;
+    border-radius: 5px;
+    font-size: 12px;
+    line-height: normal;
+  }
+`;
+const StyledSaveBtn = styled(Button)`
+  && {
+    width: 120px;
+    height: 40px;
+    border-radius: 5px;
+    font-size: 12px;
+    line-height: normal;
+  }
+`;
+
+export { ContentCategoryChange };

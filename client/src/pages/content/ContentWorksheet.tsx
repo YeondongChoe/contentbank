@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Worksheet from '../../components/contents/Worksheet';
+import { Worksheet } from '../../components/contents/Worksheet';
 
 const ContentWorksheet = () => {
   return (

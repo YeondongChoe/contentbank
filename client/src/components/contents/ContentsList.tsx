@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import ListTable from '../table/ListTable';
-import { SearchValue, CheckBoxValue } from '../../recoil/ValueState';
-import { CreateContentPopupState } from '../../recoil/CreatingContentState';
+import { ListTable } from '../table/ListTable';
+import { searchValueAtom, checkBoxValueAtom } from '../../recoil/valueAtom';
+import { createContentPopupBoolAtom } from '../../recoil/creatingContentAtom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import CreateMainPopup from '../../pages/createPopup/CreateMainPopup';
-import { editState } from '../../recoil/UtilState';
+import { updateBoolAtom } from '../../recoil/utilAtom';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -13,13 +13,13 @@ import SearchIcon from '@mui/icons-material/Search';
 const ContentsList = () => {
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
-  const setSearchValue = useSetRecoilState(SearchValue);
-  const setContentSeq = useSetRecoilState(CheckBoxValue);
-  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
-  const setIsEdit = useSetRecoilState(editState);
+  const setsearchValueAtom = useSetRecoilState(searchValueAtom);
+  const setContentSeq = useSetRecoilState(checkBoxValueAtom);
+  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
+  const setIsUpdate = useSetRecoilState(updateBoolAtom);
 
   const handleClickSearch = () => {
-    setSearchValue(inputValue);
+    setsearchValueAtom(inputValue);
   };
 
   const handleClickList = () => {
@@ -34,53 +34,53 @@ const ContentsList = () => {
 
   const handleClickCreate = () => {
     setIsCreate(true);
-    setIsEdit(false);
+    setIsUpdate(false);
   };
 
   return (
-    <S.main>
-      <S.contentHead>
-        <S.tapContainer>
-          <S.tapManu choiced={choiceValue} onClick={handleClickList}>
+    <Style.main>
+      <Style.contentHead>
+        <Style.tapContainer>
+          <Style.tapManu choiced={choiceValue} onClick={handleClickList}>
             문항 리스트
-          </S.tapManu>
-          <S.tapManu choiced={choiceValue} onClick={handleClickBookmark}>
+          </Style.tapManu>
+          <Style.tapManu choiced={choiceValue} onClick={handleClickBookmark}>
             즐겨찾는 문항
-          </S.tapManu>
-        </S.tapContainer>
-        <S.inputContainer>
-          <S.input
+          </Style.tapManu>
+        </Style.tapContainer>
+        <Style.inputContainer>
+          <Style.input
             type="text"
             placeholder="문항코드, 중분류, 담당자 검색"
             onChange={(e) => {
               setInputValue(e.target.value);
             }}
-          ></S.input>
-          <S.iconWrapper>
+          ></Style.input>
+          <Style.iconWrapper>
             <SearchIcon onClick={handleClickSearch} />
-          </S.iconWrapper>
-        </S.inputContainer>
-        <S.btnWrapper>
+          </Style.iconWrapper>
+        </Style.inputContainer>
+        <Style.btnWrapper>
           <StyledUplodeBtn variant="contained" onClick={handleClickCreate}>
             + 문항 업로드
           </StyledUplodeBtn>
-        </S.btnWrapper>
-      </S.contentHead>
+        </Style.btnWrapper>
+      </Style.contentHead>
       {choiceValue === 1 && (
-        <S.contentBox>
+        <Style.contentBox>
           <ListTable />
-        </S.contentBox>
+        </Style.contentBox>
       )}
       {choiceValue === 2 && (
-        <S.contentBox>
+        <Style.contentBox>
           <ListTable />
-        </S.contentBox>
+        </Style.contentBox>
       )}
       {isCreate && <CreateMainPopup />}
-    </S.main>
+    </Style.main>
   );
 };
-const S = {
+const Style = {
   main: styled.main`
     width: 100vw;
     display: flex;
@@ -173,11 +173,11 @@ const S = {
 const StyledUplodeBtn = styled(Button)`
   && {
     width: 130px;
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
   }
 `;
 
-export default ContentsList;
+export { ContentsList };

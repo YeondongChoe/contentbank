@@ -1,7 +1,7 @@
 import React from 'react';
 
 /** 전체 편집 클릭*/
-export const handleClickAllEdit = ({
+export const clickAllEdit = ({
   setIsEditAllChecked,
   setIsEditCreateChecked,
   setIsEditCreateListChecked,
@@ -49,7 +49,7 @@ export const handleClickAllEdit = ({
 };
 
 /** 콘텐츠 제작 편집 클릭*/
-export const handleClickCreateEdit = ({
+export const clickCreateEdit = ({
   isEditCreateChecked,
   isEditCreateListChecked,
   isEditWorksheetChecked,
@@ -86,7 +86,7 @@ export const handleClickCreateEdit = ({
   setIsManageWorksheetChecked(false);
 };
 /** 콘텐츠 제작/문항 편집 클릭*/
-export const handleClickListEdit = ({
+export const clickListEdit = ({
   setIsEditCreateListChecked,
   setIsManageCreateListChecked,
 }: any) => {
@@ -98,7 +98,7 @@ export const handleClickListEdit = ({
 };
 
 /** 콘텐츠 제작/학습지 편집 클릭*/
-export const handleClickWorksheetEdit = ({
+export const clickWorksheetEdit = ({
   setIsEditWorksheetChecked,
   setIsManageWorksheetChecked,
 }: any) => {
@@ -110,7 +110,7 @@ export const handleClickWorksheetEdit = ({
 };
 
 /** 콘텐츠 관리 편집 클릭*/
-export const handleClickManagemantEdit = ({
+export const clickManagemantEdit = ({
   isEditManagementChecked,
   isEditManagementListChecked,
   isEditTreeChecked,
@@ -147,7 +147,7 @@ export const handleClickManagemantEdit = ({
   setIsManageTreeChecked(false);
 };
 /** 콘텐츠 관리/문항 편집 클릭*/
-export const handleClickManagemantListEdit = ({
+export const clickManagemantListEdit = ({
   setIsEditManagementListChecked,
   setIsManageManagementListChecked,
 }: any) => {
@@ -159,7 +159,7 @@ export const handleClickManagemantListEdit = ({
 };
 
 /** 콘텐츠 관리/트리 편집 클릭*/
-export const handleClickTreeEdit = ({
+export const clickTreeEdit = ({
   setIsEditTreeChecked,
   setIsManageTreeChecked,
 }: any) => {
@@ -171,7 +171,7 @@ export const handleClickTreeEdit = ({
 };
 
 /** 운영 관리 편집 클릭*/
-// export const handleClickOperationEdit = ({
+// export const clickOperationEdit = ({
 //   isEditOperationChecked,
 //   isEditMemberChecked,
 //   isEditAuthorityChecked,
@@ -209,7 +209,7 @@ export const handleClickTreeEdit = ({
 // };
 
 /** 운영 관리/회원 편집 클릭*/
-// export const handleClickMemberEdit = ({
+// export const clickMemberEdit = ({
 //   setIsEditMemberChecked,
 //   setIsManageMemberChecked,
 // }: any) => {
@@ -221,7 +221,7 @@ export const handleClickTreeEdit = ({
 // };
 
 /** 운영 관리/권한 편집 클릭*/
-// export const handleClickAuthorityEdit = ({
+// export const clickAuthorityEdit = ({
 //   setIsEditAuthorityChecked,
 //   setIsManageAuthorityChecked,
 // }: any) => {
@@ -233,7 +233,7 @@ export const handleClickTreeEdit = ({
 // };
 
 /** 전체 관리 클릭*/
-export const handleClickAllManage = ({
+export const clickAllManage = ({
   isEditAllChecked,
   isManageAllChecked,
   setIsEditAllChecked,
@@ -330,7 +330,7 @@ export const handleClickAllManage = ({
 };
 
 /** 콘텐츠 제작 관리 클릭*/
-export const handleClickCreateManage = ({
+export const clickCreateManage = ({
   isManageCreateChecked,
   isManageCreateListChecked,
   isManageWorksheetChecked,
@@ -405,7 +405,7 @@ export const handleClickCreateManage = ({
 };
 
 /** 콘텐츠 제작/문항 관리 클릭*/
-export const handleClickListManage = ({
+export const clickListManage = ({
   isManageCreateListChecked,
   isEditCreateListChecked,
   setIsManageCreateListChecked,
@@ -429,7 +429,7 @@ export const handleClickListManage = ({
   }
 };
 /** 콘텐츠 제작/학습지 관리 클릭*/
-export const handleClickWorksheetManage = ({
+export const clickWorksheetManage = ({
   isManageWorksheetChecked,
   isEditWorksheetChecked,
   setIsManageWorksheetChecked,
@@ -454,7 +454,7 @@ export const handleClickWorksheetManage = ({
 };
 
 /** 콘텐츠 관리 관리 클릭*/
-export const handleClickManagemantManage = ({
+export const clickManagemantManage = ({
   isManageManagementChecked,
   isManageManagementListChecked,
   isManageTreeChecked,
@@ -528,7 +528,7 @@ export const handleClickManagemantManage = ({
   }
 };
 /** 콘텐츠 관리/문항 관리 클릭*/
-export const handleClickManagemantListManage = ({
+export const clickManagemantListManage = ({
   isManageManagementListChecked,
   isEditManagementListChecked,
   setIsManageManagementListChecked,
@@ -553,7 +553,7 @@ export const handleClickManagemantListManage = ({
 };
 
 /** 콘텐츠 관리/트리 관리 클릭*/
-export const handleClickTreeManage = ({
+export const clickTreeManage = ({
   isManageTreeChecked,
   isEditTreeChecked,
   setIsManageTreeChecked,
@@ -578,7 +578,7 @@ export const handleClickTreeManage = ({
 };
 
 /** 운영 관리 관리 클릭*/
-export const handleClickOperationManage = ({
+export const clickOperationManage = ({
   isManageOperationChecked,
   isManageMemberChecked,
   isManageAuthorityChecked,
@@ -650,7 +650,7 @@ export const handleClickOperationManage = ({
 };
 
 /** 운영 관리/회원 관리 클릭*/
-export const handleClickMemberManage = ({
+export const clickMemberManage = ({
   isManageMemberChecked,
   isEditMemberChecked,
   setIsManageMemberChecked,
@@ -675,7 +675,7 @@ export const handleClickMemberManage = ({
 };
 
 /** 운영 관리/권한 관리 클릭*/
-export const handleClickAuthorityManage = ({
+export const clickAuthorityManage = ({
   isManageAuthorityChecked,
   isEditAuthorityChecked,
   setIsManageAuthorityChecked,

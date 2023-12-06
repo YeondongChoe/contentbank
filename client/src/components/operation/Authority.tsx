@@ -1,39 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import NoticeAlert from '../../components/alert/NoticeAlert';
-import SelectAlert from '../../components/alert/SelectAlert';
+import { NoticeAlert } from '../../components/alert/NoticeAlert';
+import { SelectAlert } from '../../components/alert/SelectAlert';
 import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState } from 'recoil';
 import {
-  editCreateContent,
-  editCreateList,
-  editCreateContentWorksheet,
-  editManagementContent,
-  editManagementList,
-  editManagementTree,
-  editOperation,
-  editMember,
-  editAuthority,
-  manageCreateContent,
-  manageCreateList,
-  manageCreateContentWorksheet,
-  manageManagementContent,
-  manageManagementList,
-  manageManagementTree,
-  manageOperation,
-  manageMember,
-  manageAuthority,
-} from '../../recoil/AuthorityState';
-import AuthorityTree from './AuthorityTree';
-import { alertState } from '../../recoil/UtilState';
-import { getAuthorityList, getMemberAuthority } from '../../api/GetAxios';
-import { postCreateAuthority } from '../../api/PostAxios';
-import { DeleteAuthority } from '../../api/DeleteAxios';
+  editCreateContentBool,
+  editCreateListBool,
+  editCreateContentWorksheetBool,
+  editManagementContentBool,
+  editManagementListBool,
+  editManagementTreeBool,
+  editOperationBoolAtom,
+  editMemberBoolAtom,
+  editAuthorityBoolAtom,
+  manageCreateContentBoolAtom,
+  manageCreateListBoolAtom,
+  manageCreateContentWorksheetBoolAtom,
+  manageManagementContentBoolAtom,
+  manageManagementListBoolAtom,
+  manageManagementTreeBoolAtom,
+  manageOperationBoolAtom,
+  manageMemberBoolAtom,
+  manageAuthorityBoolAtom,
+} from '../../recoil/authorityAtom';
+import { AuthorityTree } from './AuthorityTree';
+import { alertBoolAtom } from '../../recoil/utilAtom';
+import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
+import { postCreateAuthority } from '../../api/postAxios';
+import { DeleteAuthority } from '../../api/deleteAxios';
 
 import { Button } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-type AuthorityListType = {
+type authorityListProps = {
   seq: number;
   code: string;
   name: string;
@@ -42,11 +42,11 @@ type AuthorityListType = {
 
 const Authority = () => {
   const { control } = useForm();
-  const [authorityList, setAuthorityList] = useState<AuthorityListType[]>([]);
+  const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
   const [isPutAuthority, setIsPutAuthority] = useState(false);
   const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
@@ -57,44 +57,47 @@ const Authority = () => {
   let mountCount = 1;
 
   /** 콘텐츠 제작 편집 체크 상태여부*/
-  const [isEditCreateChecked, setIsEditCreateChecked] =
-    useRecoilState<boolean>(editCreateContent);
+  const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
+    editCreateContentBool,
+  );
   const [isEditCreateListChecked, setIsEditCreateListChecked] =
-    useRecoilState<boolean>(editCreateList);
+    useRecoilState<boolean>(editCreateListBool);
   const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-    useRecoilState<boolean>(editCreateContentWorksheet);
+    useRecoilState<boolean>(editCreateContentWorksheetBool);
   const [isEditManagementChecked, setIsEditManagementChecked] =
-    useRecoilState<boolean>(editManagementContent);
+    useRecoilState<boolean>(editManagementContentBool);
   const [isEditManagementListChecked, setIsEditManagementListChecked] =
-    useRecoilState<boolean>(editManagementList);
-  const [isEditTreeChecked, setIsEditTreeChecked] =
-    useRecoilState<boolean>(editManagementTree);
+    useRecoilState<boolean>(editManagementListBool);
+  const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
+    editManagementTreeBool,
+  );
   const [isEditOperationChecked, setIsEditOperationChecked] =
-    useRecoilState<boolean>(editOperation);
+    useRecoilState<boolean>(editOperationBoolAtom);
   const [isEditMemberChecked, setIsEditMemberChecked] =
-    useRecoilState<boolean>(editMember);
+    useRecoilState<boolean>(editMemberBoolAtom);
   const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-    useRecoilState<boolean>(editAuthority);
+    useRecoilState<boolean>(editAuthorityBoolAtom);
   const [isManageCreateChecked, setIsManageCreateChecked] =
-    useRecoilState<boolean>(manageCreateContent);
+    useRecoilState<boolean>(manageCreateContentBoolAtom);
   const [isManageCreateListChecked, setIsManageCreateListChecked] =
-    useRecoilState<boolean>(manageCreateList);
+    useRecoilState<boolean>(manageCreateListBoolAtom);
   const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-    useRecoilState<boolean>(manageCreateContentWorksheet);
+    useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
   const [isManageManagementChecked, setIsManageManagementChecked] =
-    useRecoilState<boolean>(manageManagementContent);
+    useRecoilState<boolean>(manageManagementContentBoolAtom);
   const [isManageManagementListChecked, setIsManageManagementListChecked] =
-    useRecoilState<boolean>(manageManagementList);
-  const [isManageTreeChecked, setIsManageTreeChecked] =
-    useRecoilState<boolean>(manageManagementTree);
+    useRecoilState<boolean>(manageManagementListBoolAtom);
+  const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
+    manageManagementTreeBoolAtom,
+  );
   const [isManageOperationChecked, setIsManageOperationChecked] =
-    useRecoilState<boolean>(manageOperation);
+    useRecoilState<boolean>(manageOperationBoolAtom);
   const [isManageMemberChecked, setIsManageMemberChecked] =
-    useRecoilState<boolean>(manageMember);
+    useRecoilState<boolean>(manageMemberBoolAtom);
   const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-    useRecoilState<boolean>(manageAuthority);
+    useRecoilState<boolean>(manageAuthorityBoolAtom);
 
-  const handleCreateAuthority = () => {
+  const submitAuthority = () => {
     postCreateAuthority({
       inputValue,
       isEditCreateChecked,
@@ -118,7 +121,7 @@ const Authority = () => {
     });
   };
 
-  const handleUpdateClick = () => {
+  const openUpdateAlert = () => {
     if (inputValue === '') {
       setIsAlertOpen(true);
       setIsCreateNameError(true);
@@ -130,7 +133,7 @@ const Authority = () => {
     }
   };
 
-  const handleMemberAuthInfo = (code: string) => {
+  const clickMemberAuthority = (code: string) => {
     getMemberAuthority(
       {
         setIsEditCreateChecked,
@@ -156,7 +159,7 @@ const Authority = () => {
     );
   };
 
-  const handleDeleteClick = (code: string) => {
+  const openDeleteAlert = (code: string) => {
     setCodeValue(code);
     setIsUpdateAuthority(false);
     setIsCreateNameError(false);
@@ -213,7 +216,7 @@ const Authority = () => {
               />
             </S.inputWrapper>
             <S.btnWrapper>
-              <StyledSaveBtn variant="contained" onClick={handleUpdateClick}>
+              <StyledSaveBtn variant="contained" onClick={openUpdateAlert}>
                 {isClickedName ? '수정' : '저장'}
               </StyledSaveBtn>
             </S.btnWrapper>
@@ -224,7 +227,7 @@ const Authority = () => {
                 <S.authorityMenuWrapper>
                   <S.authorityMenu
                     onClick={() => {
-                      handleMemberAuthInfo(el.code);
+                      clickMemberAuthority(el.code);
                       setInputValue(el.name);
                       setIsClickedName(true);
                     }}
@@ -234,7 +237,7 @@ const Authority = () => {
                   <S.iconWrapper>
                     <DeleteForeverIcon
                       onClick={() => {
-                        handleDeleteClick(el.code);
+                        openDeleteAlert(el.code);
                       }}
                     />
                   </S.iconWrapper>
@@ -260,12 +263,12 @@ const Authority = () => {
               : '권한을 생성 하시겠습니까?'
           }
           action={isClickedName ? '수정' : '생성'}
-          onClick={() => handleCreateAuthority()}
+          onClick={() => submitAuthority()}
         />
       )}
       {/* {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />} */}
       {isCreateNameError && <NoticeAlert title="권한명을 작성해주세요." />}
-      {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />}
+      {/* {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />} */}
     </S.main>
   );
 };
@@ -274,7 +277,7 @@ const S = {
   main: styled.main`
     width: 100vw;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     margin-top: 50px;
   `,
@@ -282,7 +285,6 @@ const S = {
     width: 1280px;
     height: 600px;
     display: flex;
-    justify-content: space-around;
     border-top: 1px solid #a3aed0;
   `,
   leftContainer: styled.div`
@@ -382,12 +384,12 @@ const S = {
 
 const StyledSaveBtn = styled(Button)`
   && {
-    height: 30px;
     width: 80px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
   }
 `;
 
-export default Authority;
+export { Authority };

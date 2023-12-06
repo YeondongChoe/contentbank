@@ -72,4 +72,4 @@ const S = {
   `,
 };
 
-export default Table;
+export { Table };

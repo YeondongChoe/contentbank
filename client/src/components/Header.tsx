@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { getCookie, removeCookie } from '../utils/ReactCookie';
+import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-import { CreateListCodeValue, CheckBoxValue } from '../recoil/ValueState';
-import { getAuthorityMenu } from '../api/GetAxios';
+import {
+  createListCodeValueAtom,
+  checkBoxValueAtom,
+} from '../recoil/valueAtom';
+import { getAuthorityMenu } from '../api/getAxios';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Box from '@mui/material/Box';
@@ -15,7 +18,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 
-type MenuListType = {
+type menuListProps = {
   seq: number;
   code: string;
   depth: number;
@@ -56,24 +59,24 @@ type MenuListType = {
 const Header = () => {
   const [value, setValue] = useState('');
   const [activeTab, setActiveTab] = useState(0);
-  const [menuValue, setMenuValue] = useState<MenuListType[]>([]);
+  const [menuValue, setMenuValue] = useState<menuListProps[]>([]);
   const [didMount, setDidMount] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const setContentSeq = useSetRecoilState(CheckBoxValue);
+  const setContentSeq = useSetRecoilState(checkBoxValueAtom);
 
-  const setCreateListCodeValue = useSetRecoilState(CreateListCodeValue);
+  const setcreateListCodeValueAtom = useSetRecoilState(createListCodeValueAtom);
 
   const navigate = useNavigate();
 
   let mountCount = 1;
 
-  const handleChangeTab = (newValue: string) => {
+  const changeTab = (newValue: string) => {
     setValue(newValue);
     setActiveTab(0);
   };
 
-  const handleRemoveCookie = () => {
-    removeCookie('accessToken');
+  const removeCookie = () => {
+    removeAuthorityCookie('accessToken');
   };
 
   const handleClickSidebar = (
@@ -87,36 +90,36 @@ const Header = () => {
   const clickTabPanel = (code: string) => {
     if (code === 'CNC_Q') {
       setActiveTab(1);
-      setCreateListCodeValue(code);
+      setcreateListCodeValueAtom(code);
       setContentSeq([]);
       navigate('/contentlist');
     } else if (code === 'CNC_W') {
       setActiveTab(2);
-      setCreateListCodeValue(code);
+      setcreateListCodeValueAtom(code);
       navigate('/contentworksheet');
     } else if (code === 'CNM_Q') {
       setActiveTab(1);
-      setCreateListCodeValue(code);
+      setcreateListCodeValueAtom(code);
       setContentSeq([]);
 
       navigate('/managementlist');
     } else if (code === 'CNM_T') {
       setActiveTab(2);
-      setCreateListCodeValue(code);
+      setcreateListCodeValueAtom(code);
       navigate('/managementtree');
     } else if (code === 'OPM_M') {
       setActiveTab(1);
-      setCreateListCodeValue(code);
+      setcreateListCodeValueAtom(code);
       navigate('/operationmember');
     } else if (code === 'OPM_R') {
       setActiveTab(2);
-      setCreateListCodeValue(code);
+      setcreateListCodeValueAtom(code);
       navigate('/operationauthority');
     }
   };
 
   useEffect(() => {
-    if (!getCookie('accessToken')) {
+    if (!getAuthorityCookie('accessToken')) {
       alert('로그인이 필요합니다.');
       navigate('/login');
     }
@@ -131,7 +134,7 @@ const Header = () => {
     if (didMount) {
       getAuthorityMenu({ setMenuValue });
     }
-  }, [didMount, setCreateListCodeValue]);
+  }, [didMount, setcreateListCodeValueAtom]);
 
   return (
     <S.main>
@@ -159,7 +162,7 @@ const Header = () => {
                         value={el.seq}
                         style={{ fontSize: '20px', fontWeight: 'bold' }}
                         onMouseEnter={() => {
-                          handleChangeTab(el.seq.toString());
+                          changeTab(el.seq.toString());
                           setIsMenuVisible(true);
                         }}
                       />
@@ -234,7 +237,7 @@ const Header = () => {
                   underline="hover"
                   color="inherit"
                   href="/login"
-                  onClick={handleRemoveCookie}
+                  onClick={removeCookie}
                 >
                   로그아웃
                 </Link>
@@ -253,7 +256,7 @@ const S = {
     margin-top: 20px;
   `,
   head: styled.div`
-    width: 100%;
+    width: 1280px;
     display: flex;
     flex-direction: column;
   `,

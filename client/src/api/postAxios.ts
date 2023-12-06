@@ -1,22 +1,22 @@
 import React from 'react';
 import { AxiosError } from 'axios';
-import { getCookie, setCookie, removeCookie } from '../utils/ReactCookie';
+import { setAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 import {
   questionInstance,
-  AuthInstance,
+  authInstance,
   handleAuthorizationRenewal,
-} from './Axios';
+} from './axios';
 
 /** 문항 파트 */
 
-interface postFavoriteQuestion {
+type postFavoriteQuestionProps = {
   isFavorited: boolean;
   setIsFavorited: (result: boolean) => void;
-}
+};
 
 /** 즐겨찾기 API */
 export const postFavoriteQuestion = async (
-  { isFavorited, setIsFavorited }: postFavoriteQuestion,
+  { isFavorited, setIsFavorited }: postFavoriteQuestionProps,
   questionSeq: number,
 ) => {
   await questionInstance
@@ -32,28 +32,29 @@ export const postFavoriteQuestion = async (
 
 /** 회원 파트 */
 
-interface PostData {
+type dataProps = {
   id: string;
   password: string;
-}
+};
 
-interface postLogin {
+type postLoginProps = {
   isClicked: boolean;
   Id: string;
   navigate: (result: string) => void;
   openAlert: () => void;
   setErrorMsg: (result: string) => void;
-}
+};
 
 /** 로그인 API */
 export const postLogin = async (
-  { navigate, isClicked, Id, setErrorMsg, openAlert }: postLogin,
-  data: PostData,
+  { navigate, isClicked, Id, setErrorMsg, openAlert }: postLoginProps,
+  data: dataProps,
 ) => {
-  await AuthInstance.post('/auth/login', data)
+  await authInstance
+    .post('/auth/login', data)
     .then((response) => {
       if (response.status === 200) {
-        setCookie('accessToken', response.data.access_token, {
+        setAuthorityCookie('accessToken', response.data.access_token, {
           path: '/',
           sameSite: 'strict',
           secure: false,
@@ -65,9 +66,9 @@ export const postLogin = async (
         }
       }
       if (isClicked === true) {
-        setCookie('userId', Id, { path: '/' });
+        setAuthorityCookie('userId', Id, { path: '/' });
       } else {
-        removeCookie('userId', { path: '/' });
+        removeAuthorityCookie('userId', { path: '/' });
       }
     })
     .catch((error) => {
@@ -76,7 +77,7 @@ export const postLogin = async (
     });
 };
 
-interface postRegister {
+type postRegisterProps = {
   Id: string;
   Name: string;
   Authority: string;
@@ -87,7 +88,7 @@ interface postRegister {
   setIsRequired: (result: boolean) => void;
   setIsRequiredDuplicate: (result: boolean) => void;
   setNameErrorMsg: (result: string) => void;
-}
+};
 
 /** 회원등록 API */
 export const postRegister = async ({
@@ -101,13 +102,14 @@ export const postRegister = async ({
   setIsRequired,
   setIsRequiredDuplicate,
   setNameErrorMsg,
-}: postRegister) => {
-  await AuthInstance.post('/auth/register', {
-    id: Id,
-    name: Name,
-    authority: Authority,
-    comment: Comment,
-  })
+}: postRegisterProps) => {
+  await authInstance
+    .post('/auth/register', {
+      id: Id,
+      name: Name,
+      authority: Authority,
+      comment: Comment,
+    })
     .then((response) => {
       handleAuthorizationRenewal(response);
       //성공메시지 서버쪽에서 넘겨주면 띄우기
@@ -124,25 +126,26 @@ export const postRegister = async ({
     });
 };
 
-interface duplicateCheck {
+type postDuplicateProps = {
   Id: string;
   setduplicatedId: (result: string) => void;
   setIsIdError: (result: boolean) => void;
   setIsDuplicate: (result: boolean) => void;
   setSuccessMsg: (result: string) => void;
   setIdErrorMsg: (result: string) => void;
-}
+};
 
 /** 회원 아이디 중복체크 API */
-export const duplicateCheck = async ({
+export const postDuplicate = async ({
   Id,
   setduplicatedId,
   setIsDuplicate,
   setIsIdError,
   setSuccessMsg,
   setIdErrorMsg,
-}: duplicateCheck) => {
-  await AuthInstance.post('/auth/checked-id', { id: Id })
+}: postDuplicateProps) => {
+  await authInstance
+    .post('/auth/checked-id', { id: Id })
     .then((response) => {
       if (response.status === 200) {
         handleAuthorizationRenewal(response);
@@ -174,7 +177,7 @@ export const duplicateCheck = async ({
 
 /** 권한 파트 */
 
-interface postCreateAuthority {
+type postCreateAuthorityProps = {
   inputValue: string;
   isEditCreateChecked: boolean;
   isManageCreateChecked: boolean;
@@ -194,7 +197,7 @@ interface postCreateAuthority {
   isManageMemberChecked: boolean;
   isEditAuthorityChecked: boolean;
   isManageAuthorityChecked: boolean;
-}
+};
 
 /** 권한생성 API */
 export const postCreateAuthority = async ({
@@ -217,7 +220,7 @@ export const postCreateAuthority = async ({
   isManageMemberChecked,
   isEditAuthorityChecked,
   isManageAuthorityChecked,
-}: postCreateAuthority) => {
+}: postCreateAuthorityProps) => {
   const data = {
     name: inputValue,
     permissions: [
@@ -268,7 +271,8 @@ export const postCreateAuthority = async ({
       },
     ],
   };
-  await AuthInstance.post('/authority', data)
+  await authInstance
+    .post('/authority', data)
     .then((response) => {
       handleAuthorizationRenewal(response);
       window.location.reload();

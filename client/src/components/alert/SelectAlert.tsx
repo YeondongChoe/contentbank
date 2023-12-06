@@ -1,17 +1,17 @@
 import React from 'react';
 import { Styled } from './Alert.style';
-import { alertState } from '../../recoil/UtilState';
+import { alertBoolAtom } from '../../recoil/utilAtom';
 import { useRecoilState } from 'recoil';
 
-type Alert = {
+type alertProps = {
   title: string;
   description?: string;
   onClick?: () => void;
   action?: string;
 };
 
-const SelectAlert = (prop: Alert) => {
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+const SelectAlert = (prop: alertProps) => {
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
 
   const closeAlert = () => {
     setIsAlertOpen(false);
@@ -40,4 +40,4 @@ const SelectAlert = (prop: Alert) => {
   );
 };
 
-export default SelectAlert;
+export { SelectAlert };

@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
-  CreateContentPopupState,
-  UploadState,
-  CreatingNewContentState,
-  UploadFileState,
-} from '../../recoil/CreatingContentState';
+  createContentPopupBoolAtom,
+  uploadBoolAtom,
+  creatingNewContentBoolAtom,
+  uploadFileBoolAtom,
+} from '../../recoil/creatingContentAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import UploadPopup from './UploadPopup';
 
@@ -20,10 +20,10 @@ const styleIcon = {
 };
 
 const CreateMainPopup = () => {
-  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
-  const [isUpload, setIsUpload] = useRecoilState(UploadState);
-  const setIsCreateNewContent = useSetRecoilState(CreatingNewContentState);
-  const setIsUploadFile = useSetRecoilState(UploadFileState);
+  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
+  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
+  const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
 
   const closePopup = () => {
     setIsCreate(false);

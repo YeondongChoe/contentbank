@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
 
-const SDatePicker = styled(DatePicker)`
+const StyleDatePicker = styled(DatePicker)`
   width: 242px;
 `;
 
@@ -13,7 +13,7 @@ const CommonDate = () => {
   return (
     <div>
       <label>
-        <SDatePicker
+        <StyleDatePicker
           showIcon
           selected={startDate}
           onChange={(date) => setStartDate(date as Date)}
@@ -27,4 +27,4 @@ const CommonDate = () => {
   );
 };
 
-export default CommonDate;
+export { CommonDate };

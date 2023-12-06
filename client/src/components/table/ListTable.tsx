@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import PaginationBox from '../../components/pagination/Pagination';
+import { SelectAlert } from '../../components/alert/SelectAlert';
+import { PaginationBox } from '../../components/pagination/Pagination';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
-import { PageAtom, totalPageState, editState } from '../../recoil/UtilState';
-import { changeServiced } from '../../api/PutAxios';
+import { pageAtom, totalPageAtom, updateBoolAtom } from '../../recoil/utilAtom';
+import { putChangeServiced } from '../../api/putAxios';
 import {
-  CreateContentPopupState,
-  UploadState,
-  CreatingNewContentState,
-  UploadFileState,
-} from '../../recoil/CreatingContentState';
+  createContentPopupBoolAtom,
+  uploadBoolAtom,
+  creatingNewContentBoolAtom,
+  uploadFileBoolAtom,
+} from '../../recoil/creatingContentAtom';
 import {
-  CreateListCodeValue,
-  SearchValue,
-  CheckBoxValue,
-  IsChangedServicedValue,
-} from '../../recoil/ValueState';
-import { ManagementContentPopupState } from '../../recoil/ManagementContentState';
-import { getQuestionList } from '../../api/GetAxios';
-import { postFavoriteQuestion } from '../../api/PostAxios';
+  createListCodeValueAtom,
+  searchValueAtom,
+  checkBoxValueAtom,
+  servicedValueBoolAtom,
+} from '../../recoil/valueAtom';
+import { alertBoolAtom } from '../../recoil/utilAtom';
+import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
+import { getQuestionList } from '../../api/getAxios';
+import { postFavoriteQuestion } from '../../api/postAxios';
 
 import { Button } from '@mui/material';
 import Popover from '@mui/material/Popover';
@@ -30,7 +32,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 
-type QuestionListType = {
+type questionListProps = {
   contentSeq: number;
   questionSeq: number;
   favorited: boolean;
@@ -51,22 +53,22 @@ const ListTable = () => {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   /**문항 리스트 관련 코드 */
-  const [questionList, setQuestionList] = useState<QuestionListType[]>([]);
-  const searchValue = useRecoilValue(SearchValue);
+  const [questionList, setQuestionList] = useState<questionListProps[]>([]);
+  const searchValue = useRecoilValue(searchValueAtom);
   const [isChangedServiced, setIsChangedServiced] = useRecoilState(
-    IsChangedServicedValue,
+    servicedValueBoolAtom,
   );
-  const [totalPage, setTotalPage] = useRecoilState(totalPageState);
-  const page = useRecoilValue(PageAtom);
+  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
+  const page = useRecoilValue(pageAtom);
   const size = 10;
-  const MenuCode = useRecoilValue(CreateListCodeValue);
+  const MenuCode = useRecoilValue(createListCodeValueAtom);
 
   /**체크박스 관련 코드 */
   const [selectedRows, setSelectedRows] =
-    useRecoilState<number[]>(CheckBoxValue);
+    useRecoilState<number[]>(checkBoxValueAtom);
   const isAllSelected = selectedRows.length === questionList.length;
 
-  const handleRowSelect = (checkbox: number) => {
+  const selectRow = (checkbox: number) => {
     const updatedSelectedRows = [...selectedRows];
     if (updatedSelectedRows.includes(checkbox)) {
       // 이미 선택된 항목을 다시 클릭하면 선택 해제
@@ -78,7 +80,7 @@ const ListTable = () => {
     setSelectedRows(updatedSelectedRows);
   };
 
-  const handleSelectAll = () => {
+  const selectAll = () => {
     if (isAllSelected) {
       // 전체 선택 상태에서 전체 선택 체크박스를 클릭하면 모두 선택 해제
       setSelectedRows([]);
@@ -90,71 +92,105 @@ const ListTable = () => {
 
   /**팝엉 관련 코드 */
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const openPopover = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const closePopover = () => {
     setAnchorEl(null);
   };
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
   /**문항 활성화/비활성화 관련 코드 */
-  const [contentSeq, setContentSeq] = useRecoilState(CheckBoxValue);
+  const [contentSeq, setContentSeq] = useRecoilState(checkBoxValueAtom);
   const formattedArray = contentSeq.map((value) => ({ contentSeq: value }));
   /**문항 활성화/비활성화 API */
-  const changeServicedSubmit = () => {
-    changeServiced({ formattedArray, setIsChangedServiced });
+  const submitChangingService = () => {
+    putChangeServiced({ formattedArray, setIsChangedServiced });
     setContentSeq([]);
+  };
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
+
+  const openDeleteAlert = () => {
+    setIsAlertOpen(true);
+    setIsDeleteAuthority(true);
+  };
+
+  const submitDelete = () => {
+    console.log('delete API');
   };
 
   /**문항 분류 관련 코드 */
-  const [curriculum, setCurriculum] = useState('');
-  const [schoolLevel, setSchoolLevel] = useState('');
-  const [schoolYear, setSchoolYear] = useState('');
-  const [semester, setSemester] = useState('');
-  const [unitMajor, setUnitMajor] = useState('');
-  const [unitType, setUnitType] = useState('');
-  const [serviced, setServiced] = useState('');
+  const [content, setContent] = useState({
+    curriculum: '',
+    schoolLevel: '',
+    schoolYear: '',
+    semester: '',
+    unitMajor: '',
+    unitType: '',
+    serviced: '',
+  });
 
-  const handleCurriculumChange = (event: SelectChangeEvent) => {
-    setCurriculum(event.target.value as string);
+  const selectCurriculum = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      curriculum: event.target.value as string,
+    }));
   };
 
-  const handleSchoolLevelChange = (event: SelectChangeEvent) => {
-    setSchoolLevel(event.target.value as string);
+  const selectSchoolLevel = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      schoolLevel: event.target.value as string,
+    }));
   };
 
-  const handleSchoolYearChange = (event: SelectChangeEvent) => {
-    setSchoolYear(event.target.value as string);
+  const selectSchoolYear = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      schoolYear: event.target.value as string,
+    }));
   };
 
-  const handleSemesterChange = (event: SelectChangeEvent) => {
-    setSemester(event.target.value as string);
+  const selectSemester = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      semester: event.target.value as string,
+    }));
   };
 
-  const handleUnitMajorChange = (event: SelectChangeEvent) => {
-    setUnitMajor(event.target.value as string);
+  const selectUnitMajor = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      unitMajor: event.target.value as string,
+    }));
   };
 
-  const handleUnitTypeChange = (event: SelectChangeEvent) => {
-    setUnitType(event.target.value as string);
+  const selectUnitType = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      unitType: event.target.value as string,
+    }));
   };
 
-  const handleServicedChange = (event: SelectChangeEvent) => {
-    setServiced(event.target.value as string);
+  const selectServiced = (event: SelectChangeEvent) => {
+    setContent((prevContent) => ({
+      ...prevContent,
+      serviced: event.target.value as string,
+    }));
   };
 
   /**문항 업로드 팝업 관련 코드 */
-  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
-  const [isUpload, setIsUpload] = useRecoilState(UploadState);
-  const setIsCreateNewContent = useSetRecoilState(CreatingNewContentState);
-  const setIsUploadFile = useSetRecoilState(UploadFileState);
+  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
+  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
+  const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
 
-  const setIsEdit = useSetRecoilState(editState);
+  const setIsEdit = useSetRecoilState(updateBoolAtom);
 
   /**문항 업로드 수정 팝업 함수 */
-  const handleCreateEditFile = () => {
+  const openCreateEditFilePopup = () => {
     setIsCreate(true);
     setIsUpload(true);
     setIsUploadFile(true);
@@ -164,10 +200,10 @@ const ListTable = () => {
 
   /**문항 상세보기 팝업 관련 코드 */
   const [isManagement, setIsManagement] = useRecoilState(
-    ManagementContentPopupState,
+    managementContentPopupBoolAtom,
   );
   /**문항 관리 수정 팝업 함수 */
-  const handleManagementEditFile = () => {
+  const openmanagementEditFilePopup = () => {
     setIsManagement(true);
     setIsEdit(true);
     console.log('문항 선택후 선택된 항목 리스트 상태 관리');
@@ -176,7 +212,7 @@ const ListTable = () => {
   /**문항 즐겨찾기 관련 코드 */
   const [isFavorited, setIsFavorited] = useState(false);
   /**문항 즐겨찾기 API */
-  const handleFavoriteQuestion = (questionSeq: number) => {
+  const addFavoriteQuestion = (questionSeq: number) => {
     postFavoriteQuestion({ isFavorited, setIsFavorited }, questionSeq);
   };
 
@@ -193,14 +229,21 @@ const ListTable = () => {
         //API 파라미터에 추가해주기
         setQuestionList,
         setIsChangedServiced,
-        setTotalPage,
+        settotalPage,
         searchValue,
         MenuCode,
         page,
         size,
       });
     }
-  }, [didMount, page, MenuCode, searchValue, isChangedServiced, isFavorited]);
+  }, [
+    didMount,
+    page,
+    MenuCode,
+    searchValueAtom,
+    isChangedServiced,
+    isFavorited,
+  ]);
 
   return (
     <>
@@ -213,14 +256,15 @@ const ListTable = () => {
             <Select
               labelId="개정과정"
               id="select"
-              value={curriculum}
+              value={content.curriculum}
               label="개정과정"
-              onChange={handleCurriculumChange}
-              sx={{ minWidth: 120, height: 40 }}
+              onChange={selectCurriculum}
+              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
             >
-              <MenuItem value={10}>2015</MenuItem>
-              <MenuItem value={20}>2017</MenuItem>
-              <MenuItem value={30}>2020</MenuItem>
+              <MenuItem value={2015}>2015</MenuItem>
+              <MenuItem value={2016}>2016</MenuItem>
+              <MenuItem value={2017}>2017</MenuItem>
+              <MenuItem value={2020}>2020</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
@@ -230,14 +274,14 @@ const ListTable = () => {
             <Select
               labelId="학교"
               id="select"
-              value={schoolLevel}
+              value={content.schoolLevel}
               label="학교"
-              onChange={handleSchoolLevelChange}
-              sx={{ minWidth: 120, height: 40 }}
+              onChange={selectSchoolLevel}
+              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
             >
-              <MenuItem value={10}>01 중등</MenuItem>
-              <MenuItem value={20}>02 중등</MenuItem>
-              <MenuItem value={30}>03 중등</MenuItem>
+              <MenuItem value={'초등'}>초등</MenuItem>
+              <MenuItem value={'중등'}>중등</MenuItem>
+              <MenuItem value={'고등'}>고등</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
@@ -247,14 +291,17 @@ const ListTable = () => {
             <Select
               labelId="학년"
               id="select"
-              value={schoolYear}
+              value={content.schoolYear}
               label="학년"
-              onChange={handleSchoolYearChange}
-              sx={{ minWidth: 120, height: 40 }}
+              onChange={selectSchoolYear}
+              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
             >
-              <MenuItem value={10}>중등 1</MenuItem>
-              <MenuItem value={20}>중등 2</MenuItem>
-              <MenuItem value={30}>중등 3</MenuItem>
+              <MenuItem value={'초등1'}>초등 1</MenuItem>
+              <MenuItem value={'초등2'}>초등 2</MenuItem>
+              <MenuItem value={'중등1'}>중등 1</MenuItem>
+              <MenuItem value={'중등2'}>중등 2</MenuItem>
+              <MenuItem value={'고등1'}>고등 1</MenuItem>
+              <MenuItem value={'고등2'}>고등 2</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
@@ -264,13 +311,13 @@ const ListTable = () => {
             <Select
               labelId="학기"
               id="select"
-              value={semester}
+              value={content.semester}
               label="학기"
-              onChange={handleSemesterChange}
-              sx={{ minWidth: 120, height: 40 }}
+              onChange={selectSemester}
+              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
             >
-              <MenuItem value={10}>1학기</MenuItem>
-              <MenuItem value={20}>2학기</MenuItem>
+              <MenuItem value={'1학기'}>1학기</MenuItem>
+              <MenuItem value={'2학기'}>2학기</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
@@ -280,14 +327,14 @@ const ListTable = () => {
             <Select
               labelId="대분류"
               id="select"
-              value={unitMajor}
+              value={content.unitMajor}
               label="대분류"
-              onChange={handleUnitMajorChange}
-              sx={{ minWidth: 120, height: 40 }}
+              onChange={selectUnitMajor}
+              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
             >
-              <MenuItem value={10}>일차부등식 소분류</MenuItem>
-              <MenuItem value={20}>일차부등식 중분류</MenuItem>
-              <MenuItem value={30}>일차부등식 대분류</MenuItem>
+              <MenuItem value={'일차부등식 소분류'}>일차부등식 소분류</MenuItem>
+              <MenuItem value={'일차부등식 중분류'}>일차부등식 중분류</MenuItem>
+              <MenuItem value={'일차부등식 대분류'}>일차부등식 대분류</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
@@ -297,14 +344,14 @@ const ListTable = () => {
             <Select
               labelId="문항타입"
               id="select"
-              value={unitType}
+              value={content.unitType}
               label="문항타입"
-              onChange={handleUnitTypeChange}
-              sx={{ minWidth: 120, height: 40 }}
+              onChange={selectUnitType}
+              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
             >
-              <MenuItem value={10}>객관식</MenuItem>
-              <MenuItem value={20}>주관식</MenuItem>
-              <MenuItem value={30}>서술형</MenuItem>
+              <MenuItem value={'객관식'}>객관식</MenuItem>
+              <MenuItem value={'주관식'}>주관식</MenuItem>
+              <MenuItem value={'서술형'}>서술형</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
@@ -314,13 +361,13 @@ const ListTable = () => {
             <Select
               labelId="오픈여부"
               id="select"
-              value={serviced}
+              value={content.serviced}
               label="오픈여부"
-              onChange={handleServicedChange}
-              sx={{ minWidth: 120, height: 40 }}
+              onChange={selectServiced}
+              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
             >
-              <MenuItem value={10}>활성화</MenuItem>
-              <MenuItem value={20}>비활성화</MenuItem>
+              <MenuItem value={'활성화'}>활성화</MenuItem>
+              <MenuItem value={'비활성화'}>비활성화</MenuItem>
             </Select>
           </FormControl>
         </S.selectContainer>
@@ -332,6 +379,7 @@ const ListTable = () => {
                   disabled={selectedRows.length === 0}
                   variant="outlined"
                   sx={{ backgroundColor: 'white' }}
+                  onClick={openDeleteAlert}
                 >
                   삭제
                 </StyledEditBtn>
@@ -342,7 +390,7 @@ const ListTable = () => {
                   disabled={selectedRows.length === 0}
                   variant="outlined"
                   sx={{ backgroundColor: 'white' }}
-                  onClick={handleClick}
+                  onClick={openPopover}
                 >
                   수정
                 </StyledEditBtn>
@@ -350,7 +398,7 @@ const ListTable = () => {
                   id={id}
                   open={open}
                   anchorEl={anchorEl}
-                  onClose={handleClose}
+                  onClose={closePopover}
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'left',
@@ -359,16 +407,16 @@ const ListTable = () => {
                 >
                   <S.popoverMenu
                     onClick={() => {
-                      handleClose();
-                      handleManagementEditFile();
+                      closePopover();
+                      openmanagementEditFilePopup();
                     }}
                   >
                     수정
                   </S.popoverMenu>
                   <S.popoverMenu
                     onClick={() => {
-                      handleClose();
-                      handleManagementEditFile();
+                      closePopover();
+                      openmanagementEditFilePopup();
                     }}
                   >
                     복제 후 수정
@@ -383,7 +431,7 @@ const ListTable = () => {
                 disabled={selectedRows.length === 0}
                 variant="outlined"
                 sx={{ backgroundColor: 'white' }}
-                onClick={handleClick}
+                onClick={openPopover}
               >
                 수정
               </StyledEditBtn>
@@ -391,7 +439,7 @@ const ListTable = () => {
                 id={id}
                 open={open}
                 anchorEl={anchorEl}
-                onClose={handleClose}
+                onClose={closePopover}
                 anchorOrigin={{
                   vertical: 'bottom',
                   horizontal: 'left',
@@ -400,16 +448,16 @@ const ListTable = () => {
               >
                 <S.popoverMenu
                   onClick={() => {
-                    handleClose();
-                    handleCreateEditFile();
+                    closePopover();
+                    openCreateEditFilePopup();
                   }}
                 >
                   수정
                 </S.popoverMenu>
                 <S.popoverMenu
                   onClick={() => {
-                    handleClose();
-                    handleCreateEditFile();
+                    closePopover();
+                    openCreateEditFilePopup();
                   }}
                 >
                   복제 후 수정
@@ -422,7 +470,7 @@ const ListTable = () => {
               variant="outlined"
               disabled={selectedRows.length === 0}
               sx={{ backgroundColor: 'white' }}
-              onClick={changeServicedSubmit}
+              onClick={submitChangingService}
             >
               활성화/비활성화
             </StyledActionBtn>
@@ -436,7 +484,7 @@ const ListTable = () => {
               <S.th rowSpan={2} style={{ width: '40px' }}>
                 <input
                   type="checkbox"
-                  onChange={handleSelectAll}
+                  onChange={selectAll}
                   checked={isAllSelected}
                 ></input>
               </S.th>
@@ -480,13 +528,13 @@ const ListTable = () => {
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(content.contentSeq)}
-                    onChange={() => handleRowSelect(content.contentSeq)}
+                    onChange={() => selectRow(content.contentSeq)}
                   ></input>
                 </S.td>
                 <S.td style={{ textAlign: 'center' }}>
                   <div
                     style={{ cursor: 'pointer' }}
-                    onClick={() => handleFavoriteQuestion(content.questionSeq)}
+                    onClick={() => addFavoriteQuestion(content.questionSeq)}
                   >
                     {content.favorited ? (
                       <BookmarkTwoToneIcon fontSize="small" />
@@ -550,6 +598,14 @@ const ListTable = () => {
         </S.table>
       </S.tablecontainer>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+      {isDeleteAuthority && (
+        <SelectAlert
+          title="권한을 삭제할 경우, "
+          description="해당 권한의 아이디는 접속이 불가합니다."
+          action="삭제"
+          onClick={() => submitDelete()}
+        />
+      )}
     </>
   );
 };
@@ -622,7 +678,7 @@ const S = {
 const StyledEditBtn = styled(Button)`
   && {
     width: 70px;
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
@@ -632,11 +688,11 @@ const StyledEditBtn = styled(Button)`
 const StyledActionBtn = styled(Button)`
   && {
     width: 130px;
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
   }
 `;
 
-export default ListTable;
+export { ListTable };

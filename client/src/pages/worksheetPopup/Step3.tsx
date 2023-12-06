@@ -2,21 +2,21 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
-  CreateWorksheetStep1,
-  CreateWorksheetStep2,
-  CreateWorksheetStep3,
-  EditWorksheet,
-} from '../../recoil/CreatingWorksheet';
+  createWorksheetStep1BoolAtom,
+  createWorksheetStep2BoolAtom,
+  createWorksheetStep3BoolAtom,
+  editWorksheetBoolAtom,
+} from '../../recoil/creatingWorksheetAtom';
 
 import { Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const Step3 = () => {
-  const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
-  const [isStep2, setIsStep2] = useRecoilState(CreateWorksheetStep2);
-  const [isStep3, setIsStep3] = useRecoilState(CreateWorksheetStep3);
-  const editWorksheet = useRecoilValue(EditWorksheet);
+  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
+  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
+  const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
 
   const closePopup = () => {
     setIsStep1(false);
@@ -44,7 +44,7 @@ const Step3 = () => {
               <ArrowBackIosNewIcon onClick={goBackMainPopup} />
             </S.iconWrapper>
             <S.span>
-              {!editWorksheet && <S.frontSpan>STEP 1 -</S.frontSpan>}
+              {!isEditWorksheet && <S.frontSpan>STEP 1 -</S.frontSpan>}
               <S.frontSpan>STEP 2 -</S.frontSpan>
               STEP 3
             </S.span>

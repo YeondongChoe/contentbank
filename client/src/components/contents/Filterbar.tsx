@@ -13,13 +13,13 @@ const Filterbar = () => {
 
   let mountCount = 1;
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+  const changeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     setSelectedRows([]);
   };
 
-  const handleFilterdList = (enabled: string) => {
-    // getMemberList({ setMemberList }, enabled);
+  const filterList = (enabled: string) => {
+    console.log('학습지 리스트 조건에 맞게 불러오는 API 함수');
   };
 
   useEffect(() => {
@@ -35,44 +35,44 @@ const Filterbar = () => {
   }, [didMount]);
 
   return (
-    <S.mainContainer>
+    <Style.mainContainer>
       <Box sx={{ typography: 'body1' }}>
         <TabContext value={value}>
           <Box sx={{ borderColor: 'divider' }}>
-            <TabList onChange={handleChangeTab}>
+            <TabList onChange={changeTab}>
               <Tab
                 label="전체"
                 value="1"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleFilterdList('')}
+                onClick={() => filterList('')}
               />
               <Tab
                 label="초등"
                 value="2"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleFilterdList('elemental')}
+                onClick={() => filterList('elemental')}
               />
               <Tab
                 label="중등"
                 value="3"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleFilterdList('middle')}
+                onClick={() => filterList('middle')}
               />
               <Tab
                 label="고등"
                 value="4"
                 style={{ fontSize: '16px', fontWeight: 'bold' }}
-                onClick={() => handleFilterdList('high')}
+                onClick={() => filterList('high')}
               />
             </TabList>
           </Box>
         </TabContext>
       </Box>
-    </S.mainContainer>
+    </Style.mainContainer>
   );
 };
 
-const S = {
+const Style = {
   mainContainer: styled.div`
     margin: 20px 10px 20px 70px;
     display: flex;
@@ -80,4 +80,4 @@ const S = {
   `,
 };
 
-export default Filterbar;
+export { Filterbar };

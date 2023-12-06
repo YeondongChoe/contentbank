@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { editer, memberKeyValue } from '../../recoil/MemberState';
-import NoticeAlert from '../alert/NoticeAlert';
-import { alertState } from '../../recoil/UtilState';
+import { editerBoolAtom, memberKeyValueAtom } from '../../recoil/memberAtom';
+import { NoticeAlert } from '../alert/NoticeAlert';
+import { alertBoolAtom } from '../../recoil/utilAtom';
 import { Controller, useForm } from 'react-hook-form';
-import { getIndividualMemberInfo, getAuthorityList } from '../../api/GetAxios';
-import { putChangeMemberInfo, putInitPassword } from '../../api/PutAxios';
+import {
+  getIndividualMemberInformation,
+  getAuthorityList,
+} from '../../api/getAxios';
+import {
+  putChangeMemberInformation,
+  putInitPassword,
+} from '../../api/putAxios';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Box from '@mui/material/Box';
@@ -21,7 +27,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 
-type Authority = {
+type authorityProps = {
   seq: number;
   code: string;
   name: string;
@@ -38,22 +44,22 @@ const EditPopup = () => {
     enabled: null,
     authCode: null,
   });
-  const keyValue = useRecoilValue(memberKeyValue);
-  const [isEditer, SetIsEditer] = useRecoilState(editer);
+  const keyValue = useRecoilValue(memberKeyValueAtom);
+  const [isEditer, SetIsEditer] = useRecoilState(editerBoolAtom);
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMsg, setNameErrorMsg] = useState('');
-  const [authorityList, setAuthorityList] = useState<Authority[]>([]);
+  const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState('');
   const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
   const [selectedAuthorityValue, setSelectedAuthorityValue] = useState<
     string[]
   >([]);
-  const setIsAlertOpen = useSetRecoilState(alertState);
+  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [isInit, setIsInit] = useState(false);
 
   const { control, setValue, watch } = useForm();
 
-  const handleAuthorityChange = (
+  const selectAuthority = (
     event: SelectChangeEvent<typeof selectedAuthorityValue>,
   ) => {
     const {
@@ -73,17 +79,17 @@ const EditPopup = () => {
     SetIsEditer(false);
   };
 
-  const handleEnabled = () => {
+  const checkEnabled = () => {
     setIsEnabled(!isEnabled);
   };
 
-  const initPasswordSubmit = () => {
+  const clickInitPassword = () => {
     setIsAlertOpen(true);
     putInitPassword({ keyValue, setIsInit });
   };
 
-  const onSubmit = async () => {
-    putChangeMemberInfo({
+  const submitEdit = async () => {
+    putChangeMemberInformation({
       Authority,
       member,
       Name,
@@ -97,7 +103,7 @@ const EditPopup = () => {
   };
 
   useEffect(() => {
-    getIndividualMemberInfo({
+    getIndividualMemberInformation({
       keyValue,
       setMember,
     });
@@ -241,7 +247,7 @@ const EditPopup = () => {
                   >
                     <StyleDuplicateBtn
                       variant="contained"
-                      onClick={initPasswordSubmit}
+                      onClick={clickInitPassword}
                     >
                       비밀번호 초기화
                     </StyleDuplicateBtn>
@@ -261,12 +267,12 @@ const EditPopup = () => {
                     <InputLabel htmlFor="component-simple">권한</InputLabel>
                     {isEnabled ? (
                       <S.checkBox>
-                        <CheckBoxOutlineBlankIcon onClick={handleEnabled} />
+                        <CheckBoxOutlineBlankIcon onClick={checkEnabled} />
                         <span>비활성화</span>
                       </S.checkBox>
                     ) : (
                       <S.checkBox>
-                        <IndeterminateCheckBoxIcon onClick={handleEnabled} />
+                        <IndeterminateCheckBoxIcon onClick={checkEnabled} />
                         <span>비활성화</span>
                       </S.checkBox>
                     )}
@@ -279,7 +285,7 @@ const EditPopup = () => {
                         sx={{ m: 1, width: '350px' }}
                         displayEmpty
                         value={selectedAuthorityValue || member.authority} //name
-                        onChange={handleAuthorityChange}
+                        onChange={selectAuthority}
                         renderValue={(selected) => {
                           if (selected.length === 0) {
                             return <em>{member.authority}</em>;
@@ -355,7 +361,7 @@ const EditPopup = () => {
                   <StyleSaveBtn
                     variant="contained"
                     onClick={() => {
-                      onSubmit();
+                      submitEdit();
                     }}
                   >
                     수정
@@ -475,7 +481,6 @@ const StyleCancelBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
 const StyleSaveBtn = styled(Button)`
   && {
     width: 170px;
@@ -484,5 +489,4 @@ const StyleSaveBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export default EditPopup;
+export { EditPopup };

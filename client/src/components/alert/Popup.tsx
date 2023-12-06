@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Table from '../table/StudentTable';
+import { Table } from '../table/StudentTable';
 
-type Alert = {
+type alertProps = {
   description?: string;
   title: string;
 };
 
-const PopupModal = (prop: Alert) => {
+const PopupModal = (prop: alertProps) => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const openAlert = () => {
@@ -94,4 +94,4 @@ const S = {
   `,
 };
 
-export default PopupModal;
+export { PopupModal };

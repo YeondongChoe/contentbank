@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import dummy from './data.json';
-import PaginationBox from '../../components/pagination/Pagination';
+import { PaginationBox } from '../../components/pagination/Pagination';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
-import { PageAtom, totalPageState } from '../../recoil/UtilState';
+import { pageAtom, totalPageAtom } from '../../recoil/utilAtom';
 import {
-  CreateListCodeValue,
-  SearchValue,
-  CheckBoxValue,
-  IsChangedServicedValue,
-} from '../../recoil/ValueState';
+  createListCodeValueAtom,
+  searchValueAtom,
+  checkBoxValueAtom,
+  servicedValueBoolAtom,
+} from '../../recoil/valueAtom';
 import {
-  CreateWorksheetStep1,
-  CreateWorksheetStep2,
-  EditWorksheet,
-} from '../../recoil/CreatingWorksheet';
+  createWorksheetStep1BoolAtom,
+  createWorksheetStep2BoolAtom,
+  editWorksheetBoolAtom,
+} from '../../recoil/creatingWorksheetAtom';
 import Step2 from '../../pages/worksheetPopup/Step2';
 
 import Box from '@mui/material/Box';
@@ -29,17 +29,17 @@ import Popover from '@mui/material/Popover';
 
 const WorksheetTable = () => {
   const [value, setValue] = useState('1');
-  const [isStep1, setIsStep1] = useRecoilState(CreateWorksheetStep1);
-  const [isStep2, setIsStep2] = useRecoilState(CreateWorksheetStep2);
-  const setEditWorksheet = useSetRecoilState(EditWorksheet);
+  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
+  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
 
-  const handleEditFile = () => {
+  const openEditFilePopup = () => {
     setIsStep1(false);
     setIsStep2(true);
-    setEditWorksheet(true);
+    setIsEditWorksheet(true);
   };
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+  const changeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     setSelectedRows([]);
   };
@@ -50,26 +50,26 @@ const WorksheetTable = () => {
   let mountCount = 1;
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const openPopover = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const closePopover = () => {
     setAnchorEl(null);
   };
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-  const [totalPage, setTotalPage] = useRecoilState(totalPageState);
-  const page = useRecoilValue(PageAtom);
+  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
+  const page = useRecoilValue(pageAtom);
   const size = 10;
-  const MenuCode = useRecoilValue(CreateListCodeValue);
+  const MenuCode = useRecoilValue(createListCodeValueAtom);
   const [selectedRows, setSelectedRows] =
-    useRecoilState<number[]>(CheckBoxValue);
+    useRecoilState<number[]>(checkBoxValueAtom);
   const isAllSelected = selectedRows.length === worksheetList.length;
 
-  const handleRowSelect = (checkbox: number) => {
+  const selectRow = (checkbox: number) => {
     const updatedSelectedRows = [...selectedRows];
     if (updatedSelectedRows.includes(checkbox)) {
       // 이미 선택된 항목을 다시 클릭하면 선택 해제
@@ -81,7 +81,7 @@ const WorksheetTable = () => {
     setSelectedRows(updatedSelectedRows);
   };
 
-  const handleSelectAll = () => {
+  const selectAll = () => {
     if (isAllSelected) {
       // 전체 선택 상태에서 전체 선택 체크박스를 클릭하면 모두 선택 해제
       setSelectedRows([]);
@@ -91,11 +91,11 @@ const WorksheetTable = () => {
     }
   };
 
-  const handleFavoriteQuestion = (questionSeq: number) => {
-    // postFavoriteQuestion({ isFavorited, setIsFavorited }, questionSeq);
+  const addFavoriteQuestion = (questionSeq: number) => {
+    //postFavoriteQuestion({ isFavorited, setIsFavorited }, questionSeq);
   };
 
-  const handleFilterdList = (enabled: string) => {};
+  const showFilterdList = (enabled: string) => {};
 
   useEffect(() => {
     mountCount++;
@@ -114,30 +114,30 @@ const WorksheetTable = () => {
         <Box sx={{ typography: 'body1' }}>
           <TabContext value={value}>
             <Box sx={{ borderColor: 'divider' }}>
-              <TabList onChange={handleChangeTab}>
+              <TabList onChange={changeTab}>
                 <Tab
                   label="전체"
                   value="1"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => handleFilterdList('')}
+                  onClick={() => showFilterdList('')}
                 />
                 <Tab
                   label="초등"
                   value="2"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => handleFilterdList('elemental')}
+                  onClick={() => showFilterdList('elemental')}
                 />
                 <Tab
                   label="중등"
                   value="3"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => handleFilterdList('middle')}
+                  onClick={() => showFilterdList('middle')}
                 />
                 <Tab
                   label="고등"
                   value="4"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => handleFilterdList('high')}
+                  onClick={() => showFilterdList('high')}
                 />
               </TabList>
             </Box>
@@ -151,7 +151,7 @@ const WorksheetTable = () => {
               <S.th rowSpan={2} style={{ width: '60px' }}>
                 <input
                   type="checkbox"
-                  onChange={handleSelectAll}
+                  onChange={selectAll}
                   checked={isAllSelected}
                 ></input>
               </S.th>
@@ -186,13 +186,13 @@ const WorksheetTable = () => {
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(worksheet.id)}
-                    onChange={() => handleRowSelect(worksheet.id)}
+                    onChange={() => selectRow(worksheet.id)}
                   ></input>
                 </S.td>
                 <S.td style={{ textAlign: 'center' }}>
                   <div
                     style={{ cursor: 'pointer' }}
-                    onClick={() => handleFavoriteQuestion(worksheet.id)}
+                    onClick={() => addFavoriteQuestion(worksheet.id)}
                   >
                     {worksheet.favorited ? (
                       <BookmarkTwoToneIcon fontSize="small" />
@@ -232,7 +232,7 @@ const WorksheetTable = () => {
                   <div
                     style={{ cursor: 'pointer' }}
                     aria-describedby={id}
-                    onClick={handleClick}
+                    onClick={openPopover}
                   >
                     <MoreVertIcon />
                   </div>
@@ -240,7 +240,7 @@ const WorksheetTable = () => {
                     id={id}
                     open={open}
                     anchorEl={anchorEl}
-                    onClose={handleClose}
+                    onClose={closePopover}
                     anchorOrigin={{
                       vertical: 'bottom',
                       horizontal: 'left',
@@ -249,23 +249,23 @@ const WorksheetTable = () => {
                   >
                     <S.popoverMenu
                       onClick={() => {
-                        handleEditFile();
-                        handleClose();
+                        openEditFilePopup();
+                        closePopover();
                       }}
                     >
                       수정
                     </S.popoverMenu>
                     <S.popoverMenu
                       onClick={() => {
-                        handleEditFile();
-                        handleClose();
+                        openEditFilePopup();
+                        closePopover();
                       }}
                     >
                       복제 후 수정
                     </S.popoverMenu>
                     <S.popoverMenu
                       onClick={() => {
-                        handleClose();
+                        closePopover();
                       }}
                     >
                       삭제
@@ -337,4 +337,4 @@ const S = {
   `,
 };
 
-export default WorksheetTable;
+export { WorksheetTable };

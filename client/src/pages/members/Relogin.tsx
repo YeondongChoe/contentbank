@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { removeCookie } from '../../utils/ReactCookie';
+import { removeAuthorityCookie } from '../../utils/cookies';
 import { Button } from '@mui/material';
 
 const Relogin = () => {
   const navigate = useNavigate();
 
   const onConfirm = () => {
-    removeCookie('accessToken', { path: '/' });
+    removeAuthorityCookie('accessToken', { path: '/' });
     navigate('/login');
   };
 

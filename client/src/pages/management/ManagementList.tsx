@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import ManagementsList from '../../components/managements/ManagementsList';
+import { ManagementsList } from '../../components/managements/ManagementsList';
 
 const ManagementList = () => {
   return (

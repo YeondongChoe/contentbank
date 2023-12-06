@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Styled } from './Mypage.style';
 import { useRecoilState } from 'recoil';
-import { alertState } from '../../recoil/UtilState';
-import NoticeAlert from '../../components/alert/NoticeAlert';
-import ChangePassword from '../../components/password/ChangePassword';
+import { alertBoolAtom } from '../../recoil/utilAtom';
+import { NoticeAlert } from '../../components/alert/NoticeAlert';
+import { ChangePassword } from '../../components/password/ChangePassword';
 import { StyledEditBtn, StyledSaveBtn, StyledCancelBtn } from './Mypage.style';
-import { getMemberInfo } from '../../api/GetAxios';
-import { putNameSave } from '../../api/PutAxios';
+import { getMemberInformation } from '../../api/getAxios';
+import { putSaveName } from '../../api/putAxios';
 
 const Mypage = () => {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
   const [errorMsg, setErrorMsg] = useState('');
   const [isError, setIsError] = useState(false);
   const [nameValue, setNameValue] = useState('');
@@ -35,7 +35,7 @@ const Mypage = () => {
   };
 
   const handleNameSave = async () => {
-    putNameSave({
+    putSaveName({
       member,
       nameValue,
       isNameEdit,
@@ -59,7 +59,7 @@ const Mypage = () => {
 
   useEffect(() => {
     if (didMount) {
-      getMemberInfo({ setMember });
+      getMemberInformation({ setMember });
     }
   }, [setMember, isNameEdit, didMount]);
 

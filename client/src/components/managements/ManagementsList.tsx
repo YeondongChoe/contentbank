@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import ListTable from '../table/ListTable';
-import { SearchValue, CheckBoxValue } from '../../recoil/ValueState';
+import { ListTable } from '../table/ListTable';
+import { searchValueAtom, checkBoxValueAtom } from '../../recoil/valueAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import SelectBar from '../contents/Selectbar';
-import { ManagementContentPopupState } from '../../recoil/ManagementContentState';
+import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
 import ManagemantMainPopup from '../../pages/managementPopup/ManagementMainPopup';
 
 import { Button } from '@mui/material';
@@ -13,74 +12,74 @@ import SearchIcon from '@mui/icons-material/Search';
 const ManagementsList = () => {
   const [choiceValue, setChoiceValue] = useState(1);
   const [inputValue, setInputValue] = useState('');
-  const setContentSeq = useSetRecoilState(CheckBoxValue);
-  const setSearchValue = useSetRecoilState(SearchValue);
+  const setContentSeq = useSetRecoilState(checkBoxValueAtom);
+  const setsearchValueAtom = useSetRecoilState(searchValueAtom);
   const [isManagement, setIsManagement] = useRecoilState(
-    ManagementContentPopupState,
+    managementContentPopupBoolAtom,
   );
 
-  const handleClickSearch = () => {
-    setSearchValue(inputValue);
+  const searchList = () => {
+    setsearchValueAtom(inputValue);
   };
 
-  const handleClickList = () => {
+  const clickList = () => {
     setChoiceValue(1);
     setContentSeq([]);
   };
 
-  const handleClickDeclar = () => {
+  const clickDeclar = () => {
     setChoiceValue(2);
     setContentSeq([]);
   };
 
-  const handleClickInfo = () => {
+  const openInformation = () => {
     setIsManagement(true);
   };
 
   return (
-    <S.main>
-      <S.contentHead>
-        <S.tapContainer>
-          <S.tapManu choiced={choiceValue} onClick={handleClickList}>
+    <Style.main>
+      <Style.contentHead>
+        <Style.tapContainer>
+          <Style.tapManu choiced={choiceValue} onClick={clickList}>
             문항 리스트
-          </S.tapManu>
-          <S.tapManu choiced={choiceValue} onClick={handleClickDeclar}>
+          </Style.tapManu>
+          <Style.tapManu choiced={choiceValue} onClick={clickDeclar}>
             신고문항
-          </S.tapManu>
-        </S.tapContainer>
-        <S.inputContainer>
-          <S.input
+          </Style.tapManu>
+        </Style.tapContainer>
+        <Style.inputContainer>
+          <Style.input
             type="text"
             placeholder="문항코드, 중분류, 담당자 검색"
             onChange={(e) => {
               setInputValue(e.target.value);
             }}
-          ></S.input>
-          <S.iconWrapper>
-            <SearchIcon onClick={handleClickSearch} />
-          </S.iconWrapper>
-        </S.inputContainer>
-        <S.btnWrapper>
-          <StyledUplodeBtn variant="contained" onClick={handleClickInfo}>
+          ></Style.input>
+          <Style.iconWrapper>
+            <SearchIcon onClick={searchList} />
+          </Style.iconWrapper>
+        </Style.inputContainer>
+        <Style.btnWrapper>
+          <StyledUplodeBtn variant="contained" onClick={openInformation}>
             상세 검색
           </StyledUplodeBtn>
-        </S.btnWrapper>
-      </S.contentHead>
+        </Style.btnWrapper>
+      </Style.contentHead>
       {choiceValue === 1 && (
-        <S.contentBox>
+        <Style.contentBox>
           <ListTable />
-        </S.contentBox>
+        </Style.contentBox>
       )}
       {choiceValue === 2 && (
-        <S.contentBox>
+        <Style.contentBox>
           <ListTable />
-        </S.contentBox>
+        </Style.contentBox>
       )}
       {isManagement && <ManagemantMainPopup />}
-    </S.main>
+    </Style.main>
   );
 };
-const S = {
+const Style = {
   main: styled.main`
     width: 100vw;
     display: flex;
@@ -174,11 +173,11 @@ const S = {
 const StyledUplodeBtn = styled(Button)`
   && {
     width: 130px;
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
   }
 `;
 
-export default ManagementsList;
+export { ManagementsList };

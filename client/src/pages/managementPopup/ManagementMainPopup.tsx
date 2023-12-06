@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { ManagementContentPopupState } from '../../recoil/ManagementContentState';
-import SelectBar from '../../components/contents/Selectbar';
+import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
+import { SelectBar } from '../../components/contents/Selectbar';
 import ContentInfoChange from './ContentInfoChange';
-import ContentCategoryChange from './ContentCategoryChange';
+import { ContentCategoryChange } from './ContentCategoryChange';
 
 import CloseIcon from '@mui/icons-material/Close';
 
 const ManagemantMainPopup = () => {
-  const [isCreate, setIsCreate] = useRecoilState(ManagementContentPopupState);
+  const [isCreate, setIsCreate] = useRecoilState(
+    managementContentPopupBoolAtom,
+  );
   const [choiceValue, setChoiceValue] = useState(1);
 
   const closePopup = () => {
@@ -75,9 +77,10 @@ const S = {
   `,
   topContainer: styled.div`
     width: 100%;
-    padding: 20px 30px;
+    padding: 20px 30px 0px;
     display: flex;
-    align-items: flex-end;
+    //align-items: flex-end;
+    border-bottom: 1px solid #a3aed0;
     justify-content: space-between;
   `,
   tapWapper: styled.div`
@@ -113,12 +116,9 @@ const S = {
   `,
   btnWrapper: styled.div`
     display: flex;
-    align-items: flex-end;
+    align-items: center;
   `,
-  contentBox: styled.div`
-    width: 100%;
-    height: 700px;
-  `,
+  contentBox: styled.div``,
 };
 
 export default ManagemantMainPopup;

@@ -1,22 +1,22 @@
 import React from 'react';
 import {
   questionInstance,
-  AuthInstance,
+  authInstance,
   handleAuthorizationRenewal,
-} from './Axios';
+} from './axios';
 
 /** 콘텐츠 파트 */
 
-interface putChangeServiced {
+type putChangeServicedProps = {
   formattedArray: { contentSeq: number }[];
   setIsChangedServiced: (result: boolean) => void;
-}
+};
 
 /** 문항 활성화/비활성화 API */
-export const changeServiced = async ({
+export const putChangeServiced = async ({
   formattedArray,
   setIsChangedServiced,
-}: putChangeServiced) => {
+}: putChangeServicedProps) => {
   await questionInstance
     .put(`/questions/change-serviced`, { changeServiceds: formattedArray })
     .then((response) => {
@@ -30,7 +30,7 @@ export const changeServiced = async ({
 
 /** 회원 파트 */
 
-interface Member {
+type MemberProps = {
   id: null;
   name: null;
   key: null;
@@ -38,10 +38,10 @@ interface Member {
   comment: null;
   enabled: null;
   authCode: null;
-}
+};
 
-interface putNameSave {
-  member: Member;
+type putSaveNameProps = {
+  member: MemberProps;
   nameValue: string;
   isNameEdit: boolean;
   setIsNameEdit: (result: boolean) => void;
@@ -49,10 +49,10 @@ interface putNameSave {
   setIsAlertOpen: (result: boolean) => void;
   setNameValue: (result: string) => void;
   setErrorMsg: (result: string) => void;
-}
+};
 
 /** 이름 변경 API */
-export const putNameSave = async ({
+export const putSaveName = async ({
   member,
   nameValue,
   isNameEdit,
@@ -61,14 +61,15 @@ export const putNameSave = async ({
   setIsAlertOpen,
   setNameValue,
   setErrorMsg,
-}: putNameSave) => {
+}: putSaveNameProps) => {
   const data = {
     authority: member.authority,
     name: nameValue,
     comment: member.comment,
     enabled: member.enabled,
   };
-  await AuthInstance.put(`/auth/${member.key}`, data)
+  await authInstance
+    .put(`/auth/${member.key}`, data)
     .then((response) => {
       handleAuthorizationRenewal(response);
       setIsNameEdit(!isNameEdit);
@@ -83,23 +84,24 @@ export const putNameSave = async ({
     });
 };
 
-interface putChangePassword {
+type putChangePasswordProps = {
   Password: string;
   PasswordConfirm: string;
   navigate: (result: string) => void;
-}
+};
 
 /** 비밀번호 변경 API */
 export const putChangePassword = async ({
   Password,
   PasswordConfirm,
   navigate,
-}: putChangePassword) => {
+}: putChangePasswordProps) => {
   const data = {
     password: Password,
     confirmPassword: PasswordConfirm,
   };
-  await AuthInstance.put('/auth/changed-password', data)
+  await authInstance
+    .put('/auth/changed-password', data)
     .then((response) => {
       handleAuthorizationRenewal(response);
       navigate('/relogin');
@@ -109,17 +111,18 @@ export const putChangePassword = async ({
     });
 };
 
-interface putInitPassword {
+type putInitPasswordProps = {
   keyValue: string;
   setIsInit: (result: boolean) => void;
-}
+};
 
 /** 비밀번호 초기화 API */
 export const putInitPassword = async ({
   keyValue,
   setIsInit,
-}: putInitPassword) => {
-  await AuthInstance.put(`/auth/${keyValue}/init-password`, {})
+}: putInitPasswordProps) => {
+  await authInstance
+    .put(`/auth/${keyValue}/init-password`, {})
     .then((response) => {
       handleAuthorizationRenewal(response);
       setIsInit(true);
@@ -129,20 +132,21 @@ export const putInitPassword = async ({
     });
 };
 
-interface memberDisabled {
+type putDisableMemberProps = {
   selectedRows: string[];
   setIsEnabled: (result: boolean) => void;
-}
+};
 
 /** 회원 비활성화 API */
-export const memberDisabled = async ({
+export const putDisableMember = async ({
   selectedRows,
   setIsEnabled,
-}: memberDisabled) => {
+}: putDisableMemberProps) => {
   const updatedRows = selectedRows.map((selectedId: any) => {
     return { id: selectedId, enabled: false };
   });
-  await AuthInstance.put('/auth/enabled', updatedRows)
+  await authInstance
+    .put('/auth/enabled', updatedRows)
     .then((response) => {
       handleAuthorizationRenewal(response);
       setIsEnabled(false);
@@ -153,9 +157,9 @@ export const memberDisabled = async ({
     });
 };
 
-interface putChangeMemberInfo {
+type putChangeMemberInformationProps = {
   Authority: string;
-  member: Member;
+  member: MemberProps;
   Name: string;
   Comment: string;
   CheckBox: boolean | null;
@@ -163,10 +167,10 @@ interface putChangeMemberInfo {
   SetIsEditer: (result: boolean) => void;
   setIsNameError: (result: boolean) => void;
   setNameErrorMsg: (result: string) => void;
-}
+};
 
 /** 회원 정보변경 API */
-export const putChangeMemberInfo = async ({
+export const putChangeMemberInformation = async ({
   Authority,
   member,
   Name,
@@ -176,14 +180,15 @@ export const putChangeMemberInfo = async ({
   SetIsEditer,
   setIsNameError,
   setNameErrorMsg,
-}: putChangeMemberInfo) => {
+}: putChangeMemberInformationProps) => {
   const data = {
     authority: Authority || member.authCode, //code
     name: Name,
     comment: Comment,
     enabled: CheckBox,
   };
-  await AuthInstance.put(`/auth/${keyValue}`, data)
+  await authInstance
+    .put(`/auth/${keyValue}`, data)
     .then((response) => {
       handleAuthorizationRenewal(response);
       //성공메시지 서버쪽에서 넘겨주면 띄우기

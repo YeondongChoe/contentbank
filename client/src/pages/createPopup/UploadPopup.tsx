@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
-  CreateContentPopupState,
-  UploadState,
-  CreatingNewContentState,
-  UploadFileState,
-} from '../../recoil/CreatingContentState';
+  createContentPopupBoolAtom,
+  uploadBoolAtom,
+  creatingNewContentBoolAtom,
+  uploadFileBoolAtom,
+} from '../../recoil/creatingContentAtom';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import CreatinNewContentgPopup from './CreatinNewContentgPopup';
 import UploadFilePopup from './UploadFilePopup';
@@ -16,10 +16,10 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseIcon from '@mui/icons-material/Close';
 
 const UploadPopup = () => {
-  const [isCreate, setIsCreate] = useRecoilState(CreateContentPopupState);
-  const [isUpload, setIsUpload] = useRecoilState(UploadState);
-  const isCreateNewContent = useRecoilValue(CreatingNewContentState);
-  const isUploadFile = useRecoilValue(UploadFileState);
+  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
+  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const isCreateNewContent = useRecoilValue(creatingNewContentBoolAtom);
+  const isUploadFile = useRecoilValue(uploadFileBoolAtom);
 
   const [choiceValue, setChoiceValue] = useState(1);
 
@@ -47,8 +47,8 @@ const UploadPopup = () => {
   return (
     <S.main>
       <S.contentHead>
-        <S.iconWrapper onClick={goBackMainPopup}>
-          <ArrowBackIosNewIcon />
+        <S.iconWrapper>
+          <ArrowBackIosNewIcon onClick={goBackMainPopup} />
         </S.iconWrapper>
         <S.tapContainer>
           <S.tapManu choiced={choiceValue} onClick={handleClickDT}>

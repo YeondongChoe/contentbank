@@ -18,31 +18,31 @@ const SelectBar = () => {
   const [unitType, setUnitType] = useState('');
   const [serviced, setServiced] = useState('');
 
-  const handleCurriculumChange = (event: SelectChangeEvent) => {
+  const seletCurriculum = (event: SelectChangeEvent) => {
     setCurriculum(event.target.value as string);
   };
 
-  const handleSchoolLevelChange = (event: SelectChangeEvent) => {
+  const seletSchoolLevel = (event: SelectChangeEvent) => {
     setSchoolLevel(event.target.value as string);
   };
 
-  const handleSchoolYearChange = (event: SelectChangeEvent) => {
+  const seletSchoolYear = (event: SelectChangeEvent) => {
     setSchoolYear(event.target.value as string);
   };
 
-  const handleSemesterChange = (event: SelectChangeEvent) => {
+  const seletSemester = (event: SelectChangeEvent) => {
     setSemester(event.target.value as string);
   };
 
-  const handleUnitMajorChange = (event: SelectChangeEvent) => {
+  const seletUnitMajor = (event: SelectChangeEvent) => {
     setUnitMajor(event.target.value as string);
   };
 
-  const handleUnitTypeChange = (event: SelectChangeEvent) => {
+  const seletUnitType = (event: SelectChangeEvent) => {
     setUnitType(event.target.value as string);
   };
 
-  const handleServicedChange = (event: SelectChangeEvent) => {
+  const seletServiced = (event: SelectChangeEvent) => {
     setServiced(event.target.value as string);
   };
 
@@ -58,8 +58,8 @@ const SelectBar = () => {
   }, [didMount]);
 
   return (
-    <S.mainContainer>
-      <S.selectContainer>
+    <Style.mainContainer>
+      <Style.selectContainer>
         <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
           <InputLabel size="small" id="개정과정">
             개정과정
@@ -69,7 +69,7 @@ const SelectBar = () => {
             id="select"
             value={curriculum}
             label="개정과정"
-            onChange={handleCurriculumChange}
+            onChange={seletCurriculum}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>2015</MenuItem>
@@ -86,7 +86,7 @@ const SelectBar = () => {
             id="select"
             value={schoolLevel}
             label="학교"
-            onChange={handleSchoolLevelChange}
+            onChange={seletSchoolLevel}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>01 중등</MenuItem>
@@ -103,7 +103,7 @@ const SelectBar = () => {
             id="select"
             value={schoolYear}
             label="학년"
-            onChange={handleSchoolYearChange}
+            onChange={seletSchoolYear}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>중등 1</MenuItem>
@@ -120,7 +120,7 @@ const SelectBar = () => {
             id="select"
             value={semester}
             label="학기"
-            onChange={handleSemesterChange}
+            onChange={seletSemester}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>1학기</MenuItem>
@@ -136,7 +136,7 @@ const SelectBar = () => {
             id="select"
             value={unitMajor}
             label="대분류"
-            onChange={handleUnitMajorChange}
+            onChange={seletUnitMajor}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>일차부등식 소분류</MenuItem>
@@ -153,7 +153,7 @@ const SelectBar = () => {
             id="select"
             value={unitType}
             label="문항타입"
-            onChange={handleUnitTypeChange}
+            onChange={seletUnitType}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>객관식</MenuItem>
@@ -170,19 +170,19 @@ const SelectBar = () => {
             id="select"
             value={serviced}
             label="오픈여부"
-            onChange={handleServicedChange}
+            onChange={seletServiced}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>활성화</MenuItem>
             <MenuItem value={20}>비활성화</MenuItem>
           </Select>
         </FormControl>
-      </S.selectContainer>
-    </S.mainContainer>
+      </Style.selectContainer>
+    </Style.mainContainer>
   );
 };
 
-const S = {
+const Style = {
   mainContainer: styled.div`
     margin: 40px 10px 20px 50px;
     display: flex;
@@ -205,4 +205,4 @@ const S = {
   `,
 };
 
-export default SelectBar;
+export { SelectBar };

@@ -1,20 +1,20 @@
 import React from 'react';
 import {
   questionInstance,
-  AuthInstance,
+  authInstance,
   handleAuthorizationRenewal,
-} from './Axios';
+} from './axios';
 
-interface DeleteAuthority {
+type DeleteAuthorityProps = {
   setIsAlertOpen: (result: boolean) => void;
-}
+};
 
 export const DeleteAuthority = async (
-  { setIsAlertOpen }: DeleteAuthority,
+  { setIsAlertOpen }: DeleteAuthorityProps,
   code: string,
 ) => {
   try {
-    const response = await AuthInstance.delete(`/authority/${code}`);
+    const response = await authInstance.delete(`/authority/${code}`);
     if (response.status === 200) {
       handleAuthorizationRenewal(response);
       setIsAlertOpen(false);

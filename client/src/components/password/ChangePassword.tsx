@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { passwordRegExp } from '../../utils/RegExp';
+import { passwordRegExp } from '../../utils/regExp';
 import { useNavigate } from 'react-router-dom';
 import {
   Styled,
@@ -8,14 +8,14 @@ import {
   StyledConfirmBtn,
   StyledNomalBtn,
 } from './ChangePassword.style';
-import { putChangePassword } from '../../api/PutAxios';
+import { putChangePassword } from '../../api/putAxios';
 
-interface PasswordData {
+type passwordProps = {
   password: string;
   password_confirm: string;
-}
+};
 
-interface Props {
+type ChangePasswordProps = {
   onClick?: () => void;
   width?: number;
   inputwidth?: number;
@@ -27,9 +27,9 @@ interface Props {
   fontsize?: number;
   labelsize?: number;
   placeholdersize?: number;
-}
+};
 
-const ChangePassword: React.FC<Props> = ({
+const ChangePassword: React.FC<ChangePasswordProps> = ({
   onClick,
   width,
   inputwidth,
@@ -47,13 +47,13 @@ const ChangePassword: React.FC<Props> = ({
     watch,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<PasswordData>();
+  } = useForm<passwordProps>();
 
   const Password = watch('password', '');
   const PasswordConfirm = watch('password_confirm', '');
   const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<PasswordData> = () => {
+  const submitChangePassword: SubmitHandler<passwordProps> = () => {
     putChangePassword({
       Password,
       PasswordConfirm,
@@ -63,7 +63,7 @@ const ChangePassword: React.FC<Props> = ({
 
   return (
     <Styled.main>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(submitChangePassword)}>
         <Styled.inputContainer width={width as number}>
           <Styled.inputWapper width={width as number}>
             <Styled.label labelSize={labelsize as number}>
@@ -186,4 +186,4 @@ const ChangePassword: React.FC<Props> = ({
   );
 };
 
-export default ChangePassword;
+export { ChangePassword };

@@ -1,46 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState } from 'recoil';
-import { getAuthorityMenu } from '../../api/GetAxios';
+import { getAuthorityMenu } from '../../api/getAxios';
 import {
-  editCreateContent,
-  editCreateList,
-  editCreateContentWorksheet,
-  editManagementContent,
-  editManagementList,
-  editManagementTree,
-  editOperation,
-  editMember,
-  editAuthority,
-  manageCreateContent,
-  manageCreateList,
-  manageCreateContentWorksheet,
-  manageManagementContent,
-  manageManagementList,
-  manageManagementTree,
-  manageOperation,
-  manageMember,
-  manageAuthority,
-} from '../../recoil/AuthorityState';
+  editCreateContentBool,
+  editCreateListBool,
+  editCreateContentWorksheetBool,
+  editManagementContentBool,
+  editManagementListBool,
+  editManagementTreeBool,
+  editOperationBoolAtom,
+  editMemberBoolAtom,
+  editAuthorityBoolAtom,
+  manageCreateContentBoolAtom,
+  manageCreateListBoolAtom,
+  manageCreateContentWorksheetBoolAtom,
+  manageManagementContentBoolAtom,
+  manageManagementListBoolAtom,
+  manageManagementTreeBoolAtom,
+  manageOperationBoolAtom,
+  manageMemberBoolAtom,
+  manageAuthorityBoolAtom,
+} from '../../recoil/authorityAtom';
 import {
-  handleClickAllEdit,
-  handleClickCreateEdit,
-  handleClickListEdit,
-  handleClickWorksheetEdit,
-  handleClickManagemantEdit,
-  handleClickManagemantListEdit,
-  handleClickTreeEdit,
-  handleClickAllManage,
-  handleClickCreateManage,
-  handleClickListManage,
-  handleClickWorksheetManage,
-  handleClickManagemantManage,
-  handleClickManagemantListManage,
-  handleClickTreeManage,
-  handleClickOperationManage,
-  handleClickMemberManage,
-  handleClickAuthorityManage,
-} from './AuthorityTreeHandler';
+  clickAllEdit,
+  clickCreateEdit,
+  clickListEdit,
+  clickWorksheetEdit,
+  clickManagemantEdit,
+  clickManagemantListEdit,
+  clickTreeEdit,
+  clickAllManage,
+  clickCreateManage,
+  clickListManage,
+  clickWorksheetManage,
+  clickManagemantManage,
+  clickManagemantListManage,
+  clickTreeManage,
+  clickOperationManage,
+  clickMemberManage,
+  clickAuthorityManage,
+} from './authorityTreeHandler';
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -48,7 +48,7 @@ import { TreeView } from '@mui/x-tree-view/TreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import Checkbox from '@mui/material/Checkbox';
 
-type MenuType = {
+type menuProps = {
   seq: number;
   code: string;
   depth: number;
@@ -88,7 +88,7 @@ type MenuType = {
 
 const AuthorityTree: React.FC = () => {
   const [didMount, setDidMount] = useState(false);
-  const [menuValue, setMenuValue] = useState<MenuType[]>([]);
+  const [menuValue, setMenuValue] = useState<menuProps[]>([]);
   const CreateContent = menuValue?.[0];
   const ManagementContent = menuValue?.[1];
   const Operation = menuValue?.[2];
@@ -99,63 +99,62 @@ const AuthorityTree: React.FC = () => {
   const [isEditAllChecked, setIsEditAllChecked] = useState<boolean>(false);
 
   /** 콘텐츠 제작 편집, 하위 항목 체크 상태여부*/
-  const [isEditCreateChecked, setIsEditCreateChecked] =
-    useRecoilState<boolean>(editCreateContent);
+  const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
+    editCreateContentBool,
+  );
   const [isEditCreateListChecked, setIsEditCreateListChecked] =
-    useRecoilState<boolean>(editCreateList);
+    useRecoilState<boolean>(editCreateListBool);
   const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-    useRecoilState<boolean>(editCreateContentWorksheet);
+    useRecoilState<boolean>(editCreateContentWorksheetBool);
 
   /** 콘텐츠 관리 편집, 하위 항목 체크 상태여부*/
   const [isEditManagementChecked, setIsEditManagementChecked] =
-    useRecoilState<boolean>(editManagementContent);
+    useRecoilState<boolean>(editManagementContentBool);
   const [isEditManagementListChecked, setIsEditManagementListChecked] =
-    useRecoilState<boolean>(editManagementList);
-  const [isEditTreeChecked, setIsEditTreeChecked] =
-    useRecoilState<boolean>(editManagementTree);
+    useRecoilState<boolean>(editManagementListBool);
+  const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
+    editManagementTreeBool,
+  );
 
   /** 운영 관리 편집, 하위 항목 체크 상태여부*/
   const [isEditOperationChecked, setIsEditOperationChecked] =
-    useRecoilState<boolean>(editOperation);
+    useRecoilState<boolean>(editOperationBoolAtom);
   const [isEditMemberChecked, setIsEditMemberChecked] =
-    useRecoilState<boolean>(editMember);
+    useRecoilState<boolean>(editMemberBoolAtom);
   const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-    useRecoilState<boolean>(editAuthority);
+    useRecoilState<boolean>(editAuthorityBoolAtom);
 
   /** 전체 관리, 하위 항목 체크 상태여부*/
   const [isManageAllChecked, setIsManageAllChecked] = useState<boolean>(false);
 
   /** 콘텐츠 제작 관리, 하위 항목 체크 상태여부*/
   const [isManageCreateChecked, setIsManageCreateChecked] =
-    useRecoilState<boolean>(manageCreateContent);
+    useRecoilState<boolean>(manageCreateContentBoolAtom);
   const [isManageCreateListChecked, setIsManageCreateListChecked] =
-    useRecoilState<boolean>(manageCreateList);
+    useRecoilState<boolean>(manageCreateListBoolAtom);
   const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-    useRecoilState<boolean>(manageCreateContentWorksheet);
+    useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
 
   /** 콘텐츠 관리 관리, 하위 항목 체크 상태여부*/
   const [isManageManagementChecked, setIsManageManagementChecked] =
-    useRecoilState<boolean>(manageManagementContent);
+    useRecoilState<boolean>(manageManagementContentBoolAtom);
   const [isManageManagementListChecked, setIsManageManagementListChecked] =
-    useRecoilState<boolean>(manageManagementList);
-  const [isManageTreeChecked, setIsManageTreeChecked] =
-    useRecoilState<boolean>(manageManagementTree);
+    useRecoilState<boolean>(manageManagementListBoolAtom);
+  const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
+    manageManagementTreeBoolAtom,
+  );
 
   /** 운영 관리 관리, 하위 항목 체크 상태여부*/
   const [isManageOperationChecked, setIsManageOperationChecked] =
-    useRecoilState<boolean>(manageOperation);
+    useRecoilState<boolean>(manageOperationBoolAtom);
   const [isManageMemberChecked, setIsManageMemberChecked] =
-    useRecoilState<boolean>(manageMember);
+    useRecoilState<boolean>(manageMemberBoolAtom);
   const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-    useRecoilState<boolean>(manageAuthority);
+    useRecoilState<boolean>(manageAuthorityBoolAtom);
 
   /** 전체 편집 선택 상태 업데이트 */
   useEffect(() => {
-    if (
-      isEditCreateChecked === true &&
-      isEditManagementChecked === true &&
-      isEditOperationChecked === true
-    ) {
+    if (isEditCreateChecked === true && isEditManagementChecked === true) {
       setIsEditAllChecked(true);
     } else {
       setIsEditAllChecked(false);
@@ -250,6 +249,30 @@ const AuthorityTree: React.FC = () => {
     }
   }, [didMount]);
 
+  /** 페이지 접근시 체크박스 초기화 */
+  useEffect(() => {
+    setIsEditAllChecked(false);
+    setIsEditCreateChecked(false);
+    setIsEditCreateListChecked(false);
+    setIsEditWorksheetChecked(false);
+    setIsEditManagementChecked(false);
+    setIsEditManagementListChecked(false);
+    setIsEditTreeChecked(false);
+    setIsEditOperationChecked(false);
+    setIsEditMemberChecked(false);
+    setIsEditAuthorityChecked(false);
+    setIsManageAllChecked(false);
+    setIsManageCreateChecked(false);
+    setIsManageCreateListChecked(false);
+    setIsManageWorksheetChecked(false);
+    setIsManageManagementChecked(false);
+    setIsManageManagementListChecked(false);
+    setIsManageTreeChecked(false);
+    setIsManageOperationChecked(false);
+    setIsManageMemberChecked(false);
+    setIsManageAuthorityChecked(false);
+  }, []);
+
   return (
     <TreeView
       defaultCollapseIcon={<ArrowDropDownIcon />}
@@ -310,7 +333,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isEditCreateListChecked}
                     onClick={() => {
-                      handleClickListEdit({
+                      clickListEdit({
                         setIsEditCreateListChecked,
                         setIsManageCreateListChecked,
                       });
@@ -320,7 +343,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isManageCreateListChecked}
                     onClick={() => {
-                      handleClickListManage({
+                      clickListManage({
                         isManageCreateListChecked,
                         isEditCreateListChecked,
                         setIsManageCreateListChecked,
@@ -348,7 +371,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isEditWorksheetChecked}
                     onClick={() => {
-                      handleClickWorksheetEdit({
+                      clickWorksheetEdit({
                         setIsEditWorksheetChecked,
                         setIsManageWorksheetChecked,
                       });
@@ -358,7 +381,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isManageWorksheetChecked}
                     onClick={() => {
-                      handleClickWorksheetManage({
+                      clickWorksheetManage({
                         isManageWorksheetChecked,
                         isEditWorksheetChecked,
                         setIsManageWorksheetChecked,
@@ -374,7 +397,7 @@ const AuthorityTree: React.FC = () => {
                 sx={{ height: '24px' }}
                 checked={isEditCreateChecked}
                 onClick={() => {
-                  handleClickCreateEdit({
+                  clickCreateEdit({
                     isEditCreateChecked,
                     isEditCreateListChecked,
                     isEditWorksheetChecked,
@@ -391,7 +414,7 @@ const AuthorityTree: React.FC = () => {
                 sx={{ height: '24px' }}
                 checked={isManageCreateChecked}
                 onClick={() => {
-                  handleClickCreateManage({
+                  clickCreateManage({
                     isManageCreateChecked,
                     isManageCreateListChecked,
                     isManageWorksheetChecked,
@@ -441,7 +464,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isEditManagementListChecked}
                     onClick={() => {
-                      handleClickManagemantListEdit({
+                      clickManagemantListEdit({
                         setIsEditManagementListChecked,
                         setIsManageManagementListChecked,
                       });
@@ -451,7 +474,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isManageManagementListChecked}
                     onClick={() => {
-                      handleClickManagemantListManage({
+                      clickManagemantListManage({
                         isManageManagementListChecked,
                         isEditManagementListChecked,
                         setIsManageManagementListChecked,
@@ -480,7 +503,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isEditTreeChecked}
                     onClick={() => {
-                      handleClickTreeEdit({
+                      clickTreeEdit({
                         setIsEditTreeChecked,
                         setIsManageTreeChecked,
                       });
@@ -490,7 +513,7 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isManageTreeChecked}
                     onClick={() => {
-                      handleClickTreeManage({
+                      clickTreeManage({
                         isManageTreeChecked,
                         isEditTreeChecked,
                         setIsManageTreeChecked,
@@ -506,7 +529,7 @@ const AuthorityTree: React.FC = () => {
                 sx={{ height: '24px' }}
                 checked={isEditManagementChecked}
                 onClick={() => {
-                  handleClickManagemantEdit({
+                  clickManagemantEdit({
                     isEditManagementChecked,
                     isEditManagementListChecked,
                     isEditTreeChecked,
@@ -523,7 +546,7 @@ const AuthorityTree: React.FC = () => {
                 sx={{ height: '24px' }}
                 checked={isManageManagementChecked}
                 onClick={() => {
-                  handleClickManagemantManage({
+                  clickManagemantManage({
                     isManageManagementChecked,
                     isManageManagementListChecked,
                     isManageTreeChecked,
@@ -573,14 +596,14 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isEditMemberChecked}
                     onClick={() => {
-                      handleClickMemberEdit();
+                      clickMemberEdit();
                     }}
                   /> */}
                   <Checkbox
                     sx={{ height: '24px' }}
                     checked={isManageMemberChecked}
                     onClick={() => {
-                      handleClickMemberManage({
+                      clickMemberManage({
                         isManageMemberChecked,
                         isEditMemberChecked,
                         setIsManageMemberChecked,
@@ -609,14 +632,14 @@ const AuthorityTree: React.FC = () => {
                     sx={{ height: '24px' }}
                     checked={isEditAuthorityChecked}
                     onClick={() => {
-                      handleClickAuthorityEdit();
+                      clickAuthorityEdit();
                     }}
                   /> */}
                   <Checkbox
                     sx={{ height: '24px' }}
                     checked={isManageAuthorityChecked}
                     onClick={() => {
-                      handleClickAuthorityManage({
+                      clickAuthorityManage({
                         isManageAuthorityChecked,
                         isEditAuthorityChecked,
                         setIsManageAuthorityChecked,
@@ -633,14 +656,14 @@ const AuthorityTree: React.FC = () => {
                 sx={{ height: '24px' }}
                 checked={isEditOperationChecked}
                 onClick={() => {
-                  handleClickOperationEdit();
+                  clickOperationEdit();
                 }}
               /> */}
               <Checkbox
                 sx={{ height: '24px' }}
                 checked={isManageOperationChecked}
                 onClick={() => {
-                  handleClickOperationManage({
+                  clickOperationManage({
                     isManageOperationChecked,
                     isManageMemberChecked,
                     isManageAuthorityChecked,
@@ -664,7 +687,7 @@ const AuthorityTree: React.FC = () => {
             sx={{ height: '24px' }}
             checked={isEditAllChecked}
             onClick={() => {
-              handleClickAllEdit({
+              clickAllEdit({
                 setIsEditAllChecked,
                 setIsEditCreateChecked,
                 setIsEditCreateListChecked,
@@ -692,7 +715,7 @@ const AuthorityTree: React.FC = () => {
             sx={{ height: '24px' }}
             checked={isManageAllChecked}
             onClick={() => {
-              handleClickAllManage({
+              clickAllManage({
                 isEditAllChecked,
                 isManageAllChecked,
                 setIsEditAllChecked,
@@ -733,4 +756,4 @@ const S = {
   `,
 };
 
-export default AuthorityTree;
+export { AuthorityTree };

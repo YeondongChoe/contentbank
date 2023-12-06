@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
-import { editer, register, memberKeyValue } from '../../recoil/MemberState';
-import SelectAlert from '../alert/SelectAlert';
-import { alertState } from '../../recoil/UtilState';
-import { getMemberList } from '../../api/GetAxios';
-import { memberDisabled } from '../../api/PutAxios';
+import {
+  editerBoolAtom,
+  registerBoolAtom,
+  memberKeyValueAtom,
+} from '../../recoil/memberAtom';
+import { SelectAlert } from '../alert/SelectAlert';
+import { alertBoolAtom } from '../../recoil/utilAtom';
+import { getMemberList } from '../../api/getAxios';
+import { putDisableMember } from '../../api/putAxios';
 
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -13,7 +17,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 
-type MemberListType = {
+type memberListProps = {
   seq: number;
   authority: {
     seq: number;
@@ -34,18 +38,18 @@ type MemberListType = {
 
 const MemberTable = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [memberList, setMemberList] = useState<MemberListType[]>([]);
-  const setKeyValue = useSetRecoilState(memberKeyValue);
-  const setIsEdit = useSetRecoilState(editer);
-  const relode = useRecoilValue(register);
+  const [memberList, setMemberList] = useState<memberListProps[]>([]);
+  const setKeyValue = useSetRecoilState(memberKeyValueAtom);
+  const setIsEdit = useSetRecoilState(editerBoolAtom);
+  const relode = useRecoilValue(registerBoolAtom);
   const [value, setValue] = useState('1');
   const [isEnabled, setIsEnabled] = useState(false);
-  const setIsAlertOpen = useSetRecoilState(alertState);
+  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [didMount, setDidMount] = useState(false);
 
   let mountCount = 1;
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+  const changeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     setSelectedRows([]);
   };
@@ -53,7 +57,7 @@ const MemberTable = () => {
   const isAllSelected =
     memberList?.length > 0 && selectedRows.length === memberList.length;
 
-  const handleRowSelect = (checkbox: string) => {
+  const selectRow = (checkbox: string) => {
     const updatedSelectedRows = [...selectedRows];
     if (updatedSelectedRows.includes(checkbox)) {
       // 이미 선택된 항목을 다시 클릭하면 선택 해제
@@ -65,7 +69,7 @@ const MemberTable = () => {
     setSelectedRows(updatedSelectedRows);
   };
 
-  const handleSelectAll = () => {
+  const selectAll = () => {
     if (isAllSelected) {
       // 전체 선택 상태에서 전체 선택 체크박스를 클릭하면 모두 선택 해제
       setSelectedRows([]);
@@ -75,20 +79,20 @@ const MemberTable = () => {
     }
   };
 
-  const handleMemberList = (enabled: string) => {
+  const showMemberList = (enabled: string) => {
     getMemberList({ setMemberList }, enabled);
   };
 
+  const openDisableAlert = () => {
+    setIsEnabled(true);
+    setIsAlertOpen(true);
+  };
+
   const submitDisabled = () => {
-    memberDisabled({
+    putDisableMember({
       selectedRows,
       setIsEnabled,
     });
-  };
-
-  const handleDisnabled = () => {
-    setIsEnabled(true);
-    setIsAlertOpen(true);
   };
 
   useEffect(() => {
@@ -103,7 +107,7 @@ const MemberTable = () => {
     }
   }, [didMount, relode, setMemberList]);
 
-  const handleDetailInfo = (key: string) => {
+  const openDetailInformationPopup = (key: string) => {
     setKeyValue(key);
     setIsEdit(true);
   };
@@ -114,24 +118,24 @@ const MemberTable = () => {
         <Box sx={{ typography: 'body1' }}>
           <TabContext value={value}>
             <Box sx={{ borderColor: 'divider' }}>
-              <TabList onChange={handleChangeTab}>
+              <TabList onChange={changeTab}>
                 <Tab
                   label="전체"
                   value="1"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => handleMemberList('')}
+                  onClick={() => showMemberList('')}
                 />
                 <Tab
                   label="활성화"
                   value="2"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => handleMemberList('Y')}
+                  onClick={() => showMemberList('Y')}
                 />
                 <Tab
                   label="비활성화"
                   value="3"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => handleMemberList('N')}
+                  onClick={() => showMemberList('N')}
                 />
               </TabList>
             </Box>
@@ -141,7 +145,7 @@ const MemberTable = () => {
           <S.ableBtnWrapper>
             <StyledAbledBtn
               variant="outlined"
-              onClick={handleDisnabled}
+              onClick={openDisableAlert}
               sx={{ backgroundColor: 'white' }}
             >
               비활성화
@@ -157,7 +161,7 @@ const MemberTable = () => {
               <S.th rowSpan={2} style={{ width: '40px' }}>
                 <input
                   type="checkbox"
-                  onChange={handleSelectAll}
+                  onChange={selectAll}
                   checked={isAllSelected}
                 ></input>
               </S.th>
@@ -188,7 +192,7 @@ const MemberTable = () => {
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(member.id)}
-                    onChange={() => handleRowSelect(member.id)}
+                    onChange={() => selectRow(member.id)}
                   ></input>
                 </S.td>
                 <S.td style={{ textAlign: 'center' }}>{member.name}</S.td>
@@ -203,7 +207,9 @@ const MemberTable = () => {
                   {member.enabled === true ? '활성' : '비활성'}
                 </S.td>
                 <S.td style={{ textAlign: 'center' }}>
-                  <S.btnWrapper onClick={() => handleDetailInfo(member.key)}>
+                  <S.btnWrapper
+                    onClick={() => openDetailInformationPopup(member.key)}
+                  >
                     <StyledDisabledBtn variant="outlined">
                       보기
                     </StyledDisabledBtn>
@@ -291,4 +297,4 @@ const StyledAbledBtn = styled(Button)`
     line-height: normal;
   }
 `;
-export default MemberTable;
+export { MemberTable };

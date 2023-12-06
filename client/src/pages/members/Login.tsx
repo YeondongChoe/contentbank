@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { getCookie } from '../../utils/ReactCookie';
+import { getAuthorityCookie } from '../../utils/cookies';
 import { useNavigate } from 'react-router-dom';
-import NoticeAlert from '../../components/alert/NoticeAlert';
+import { NoticeAlert } from '../../components/alert/NoticeAlert';
 import { useRecoilState } from 'recoil';
-import { alertState } from '../../recoil/UtilState';
-import { postLogin } from '../../api/PostAxios';
+import { alertBoolAtom } from '../../recoil/utilAtom';
+import { postLogin } from '../../api/postAxios';
 
 import { Button } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -19,9 +19,9 @@ interface SigninData {
 
 const Login = () => {
   const [isClicked, setIsClicked] = useState(
-    getCookie('userId') ? true : false,
+    getAuthorityCookie('userId') ? true : false,
   );
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertState);
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
   const [errorMsg, setErrorMsg] = useState('');
   const {
     control,
@@ -56,7 +56,7 @@ const Login = () => {
               <Controller
                 control={control}
                 name="id"
-                defaultValue={getCookie('userId') || ''}
+                defaultValue={getAuthorityCookie('userId') || ''}
                 render={({ field }) => (
                   <S.input
                     type="text"

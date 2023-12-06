@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
-  CreateWorksheetStep1,
-  CreateWorksheetStep2,
-} from '../../recoil/CreatingWorksheet';
+  createWorksheetStep1BoolAtom,
+  createWorksheetStep2BoolAtom,
+} from '../../recoil/creatingWorksheetAtom';
 import Step2 from './Step2';
 
 import { Button } from '@mui/material';
@@ -17,8 +17,8 @@ import TabList from '@mui/lab/TabList';
 const Step1 = () => {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
-  const setIsStep1 = useSetRecoilState(CreateWorksheetStep1);
-  const [isStep2, setIsStep2] = useRecoilState(CreateWorksheetStep2);
+  const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
+  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [value, setValue] = useState('1');
   const [grade, setGrade] = useState('1');
   const [inputValue, setInputValue] = useState('');

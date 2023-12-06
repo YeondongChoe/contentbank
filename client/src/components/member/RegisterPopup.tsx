@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { register } from '../../recoil/MemberState';
-import NoticeAlert from '../alert/NoticeAlert';
-import { alertState } from '../../recoil/UtilState';
-import { getAuthorityList } from '../../api/GetAxios';
-import { postRegister, duplicateCheck } from '../../api/PostAxios';
+import { registerBoolAtom } from '../../recoil/memberAtom';
+import { NoticeAlert } from '../alert/NoticeAlert';
+import { alertBoolAtom } from '../../recoil/utilAtom';
+import { getAuthorityList } from '../../api/getAxios';
+import { postRegister, postDuplicate } from '../../api/postAxios';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Box from '@mui/material/Box';
@@ -19,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Input from '@mui/material/Input';
 import Textarea from '@mui/joy/Textarea';
 
-type AuthorityListType = {
+type authorityListProps = {
   seq: number;
   code: string;
   name: string;
@@ -27,20 +27,20 @@ type AuthorityListType = {
 };
 
 const RegisterPopup = () => {
-  const [isRegister, SetIsRegister] = useRecoilState(register);
+  const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMsg, setNameErrorMsg] = useState('');
   const [idErrorMsg, setIdErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [authorityList, setAuthorityList] = useState<AuthorityListType[]>([]);
+  const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
   const [nameValue, setNameValue] = useState('');
   const [idValue, setIdValue] = useState('');
   const [duplicatedId, setduplicatedId] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [selectedAuthorityValue, setSelectedAuthorityValue] = useState('');
   const [commentValue, setCommentValue] = useState('');
-  const setIsAlertOpen = useSetRecoilState(alertState);
+  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [isRequired, setIsRequired] = useState(false);
   const [isRequiredDuplicate, setIsRequiredDuplicate] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -60,8 +60,8 @@ const RegisterPopup = () => {
     SetIsRegister(false);
   };
 
-  const duplicateSubmit = () => {
-    duplicateCheck({
+  const checkDuplicate = () => {
+    postDuplicate({
       Id,
       setduplicatedId,
       setIsDuplicate,
@@ -71,7 +71,7 @@ const RegisterPopup = () => {
     });
   };
 
-  const onSubmit = () => {
+  const submitRegister = () => {
     if (nameValue === '' || idValue === '' || Authority === '') {
       setIsRequired(true);
       setIsAlertOpen(true);
@@ -204,7 +204,7 @@ const RegisterPopup = () => {
                 >
                   <StyleDuplicateBtn
                     variant="contained"
-                    onClick={duplicateSubmit}
+                    onClick={checkDuplicate}
                   >
                     중복확인
                   </StyleDuplicateBtn>
@@ -269,7 +269,7 @@ const RegisterPopup = () => {
                 >
                   취소
                 </StyleCancelBtn>
-                <StyleSaveBtn variant="contained" onClick={onSubmit}>
+                <StyleSaveBtn variant="contained" onClick={submitRegister}>
                   등록
                 </StyleSaveBtn>
               </S.finalBtnContainer>
@@ -389,4 +389,4 @@ const StyleSaveBtn = styled(Button)`
   }
 `;
 
-export default RegisterPopup;
+export { RegisterPopup };

@@ -1,19 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
-import MemberTable from '../table/MemberTable';
+import { MemberTable } from '../table/MemberTable';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { register, editer } from '../../recoil/MemberState';
-import RegisterPopup from '../member/RegisterPopup';
-import EditPopup from '../member/EditPopup';
+import { registerBoolAtom, editerBoolAtom } from '../../recoil/memberAtom';
+import { RegisterPopup } from '../member/RegisterPopup';
+import { EditPopup } from '../member/EditPopup';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 const Member = () => {
-  const [isRegister, SetIsRegister] = useRecoilState(register);
-  const isEditer = useRecoilValue(editer);
+  const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
+  const isEditer = useRecoilValue(editerBoolAtom);
 
-  const handleClickRegisterBtn = () => {
+  const openRegisterPopup = () => {
     SetIsRegister(true);
   };
 
@@ -27,7 +27,7 @@ const Member = () => {
           </S.iconWrapper>
         </S.inputContainer>
         <S.btnWrapper>
-          <StyledUplodeBtn variant="contained" onClick={handleClickRegisterBtn}>
+          <StyledUplodeBtn variant="contained" onClick={openRegisterPopup}>
             + 아이디 만들기
           </StyledUplodeBtn>
         </S.btnWrapper>
@@ -98,7 +98,7 @@ const S = {
 const StyledUplodeBtn = styled(Button)`
   && {
     width: 130px;
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;

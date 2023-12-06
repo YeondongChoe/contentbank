@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   questionInstance,
-  AuthInstance,
+  authInstance,
   handleAuthorizationRenewal,
-} from './Axios';
+} from './axios';
 
 /** 콘텐츠 파트 */
 
-type QuestionListType = {
+type questionListProps = {
   contentSeq: number;
   questionSeq: number;
   favorited: boolean;
@@ -24,26 +24,26 @@ type QuestionListType = {
   serviced: boolean; //오픈여부
 };
 
-interface getQuestionList {
-  setQuestionList: React.Dispatch<React.SetStateAction<QuestionListType[]>>;
+type getQuestionListProps = {
+  setQuestionList: React.Dispatch<React.SetStateAction<questionListProps[]>>;
   setIsChangedServiced: (result: boolean) => void;
-  setTotalPage: (result: number) => void;
+  settotalPage: (result: number) => void;
   searchValue: string;
   MenuCode: string;
   page?: number;
   size: number;
-}
+};
 
 /** 문항리스트 가져오는 API*/
 export const getQuestionList = async ({
   setQuestionList,
   setIsChangedServiced,
-  setTotalPage,
+  settotalPage,
   searchValue,
   MenuCode,
   page,
   size,
-}: getQuestionList) => {
+}: getQuestionListProps) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -59,7 +59,7 @@ export const getQuestionList = async ({
     )
     .then((response) => {
       handleAuthorizationRenewal(response);
-      setTotalPage(response.data.data.totalElements);
+      settotalPage(response.data.data.totalElements);
       const formattedQuestionList = response.data.data.content.map(
         (content: any) => ({
           ...content,
@@ -76,7 +76,7 @@ export const getQuestionList = async ({
 
 /** 회원 파트 */
 
-interface Member {
+type memberProps = {
   id: null;
   name: null;
   key: null;
@@ -84,16 +84,19 @@ interface Member {
   comment: null;
   enabled: null;
   authCode: null;
-}
+};
 
-interface getMemberInfo {
+type getMemberInformationProps = {
   keyValue?: string;
-  setMember: (result: Member) => void;
-}
+  setMember: (result: memberProps) => void;
+};
 
 /** 회원정보 가져오는 API*/
-export const getMemberInfo = async ({ setMember }: getMemberInfo) => {
-  await AuthInstance.get('/auth/my-info')
+export const getMemberInformation = async ({
+  setMember,
+}: getMemberInformationProps) => {
+  await authInstance
+    .get('/auth/my-info')
     .then((response) => {
       handleAuthorizationRenewal(response);
       setMember({
@@ -111,11 +114,12 @@ export const getMemberInfo = async ({ setMember }: getMemberInfo) => {
     });
 };
 
-export const getIndividualMemberInfo = async ({
+export const getIndividualMemberInformation = async ({
   keyValue,
   setMember,
-}: getMemberInfo) => {
-  await AuthInstance.get(`/auth/${keyValue}`)
+}: getMemberInformationProps) => {
+  await authInstance
+    .get(`/auth/${keyValue}`)
     .then((response) => {
       handleAuthorizationRenewal(response);
       setMember({
@@ -133,7 +137,7 @@ export const getIndividualMemberInfo = async ({
     });
 };
 
-interface MemberListType {
+type memberListProps = {
   seq: number;
   authority: {
     seq: number;
@@ -150,20 +154,19 @@ interface MemberListType {
   lastModifiedBy: null;
   lastModifiedDate: string;
   enabled: boolean;
-}
+};
 
-interface getMemberList {
-  setMemberList: React.Dispatch<React.SetStateAction<MemberListType[]>>;
-}
+type getMemberListProps = {
+  setMemberList: React.Dispatch<React.SetStateAction<memberListProps[]>>;
+};
 
 /** 회원리스트 가져오는 API*/
 export const getMemberList = async (
-  { setMemberList }: getMemberList,
+  { setMemberList }: getMemberListProps,
   enabled: string,
 ) => {
-  await AuthInstance.get(
-    `/auth?keyword=&page=1&size=8&enabledType=${enabled || ''}`,
-  )
+  await authInstance
+    .get(`/auth?keyword=&page=1&size=8&enabledType=${enabled || ''}`)
     .then((response) => {
       handleAuthorizationRenewal(response);
       setMemberList(response.data.data.content);
@@ -175,22 +178,23 @@ export const getMemberList = async (
 
 /** 권한 파트 */
 
-interface AuthorityListType {
+type AuthorityListProps = {
   seq: number;
   code: string;
   name: string;
   sort: number;
-}
+};
 
-interface getAuthorityList {
-  setAuthorityList: React.Dispatch<React.SetStateAction<AuthorityListType[]>>;
-}
+type getAuthorityListProps = {
+  setAuthorityList: React.Dispatch<React.SetStateAction<AuthorityListProps[]>>;
+};
 
 /** 권한리스트 가져오는 API*/
 export const getAuthorityList = async ({
   setAuthorityList,
-}: getAuthorityList) => {
-  await AuthInstance.get('/authority')
+}: getAuthorityListProps) => {
+  await authInstance
+    .get('/authority')
     .then((response) => {
       handleAuthorizationRenewal(response);
       setAuthorityList(response.data.data);
@@ -200,7 +204,7 @@ export const getAuthorityList = async ({
     });
 };
 
-interface getMemberAuthority {
+type getMemberAuthorityProps = {
   setIsEditCreateChecked: (result: boolean) => void;
   setIsManageCreateChecked: (result: boolean) => void;
   setIsEditCreateListChecked: (result: boolean) => void;
@@ -219,7 +223,7 @@ interface getMemberAuthority {
   setIsManageMemberChecked: (result: boolean) => void;
   setIsEditAuthorityChecked: (result: boolean) => void;
   setIsManageAuthorityChecked: (result: boolean) => void;
-}
+};
 
 /** 특정회원권한정보 가져오는 API*/
 export const getMemberAuthority = async (
@@ -242,10 +246,11 @@ export const getMemberAuthority = async (
     setIsManageMemberChecked,
     setIsEditAuthorityChecked,
     setIsManageAuthorityChecked,
-  }: getMemberAuthority,
+  }: getMemberAuthorityProps,
   code: string,
 ) => {
-  await AuthInstance.get(`/authority/${code}/permissions`)
+  await authInstance
+    .get(`/authority/${code}/permissions`)
     .then((response) => {
       handleAuthorizationRenewal(response);
       setIsEditCreateChecked(response.data.data.permissions[0].edited);
@@ -274,7 +279,7 @@ export const getMemberAuthority = async (
     });
 };
 
-interface MenuType {
+type menuProps = {
   seq: number;
   code: string;
   depth: number;
@@ -310,15 +315,18 @@ interface MenuType {
       children: null;
     },
   ];
-}
+};
 
-interface getAuthorityMenu {
-  setMenuValue: React.Dispatch<React.SetStateAction<MenuType[]>>;
-}
+type getAuthorityMenuProps = {
+  setMenuValue: React.Dispatch<React.SetStateAction<menuProps[]>>;
+};
 
 /** 권한메뉴정보 가져오는 API */
-export const getAuthorityMenu = async ({ setMenuValue }: getAuthorityMenu) => {
-  await AuthInstance.get('/menu')
+export const getAuthorityMenu = async ({
+  setMenuValue,
+}: getAuthorityMenuProps) => {
+  await authInstance
+    .get('/menu')
     .then((response) => {
       handleAuthorizationRenewal(response);
       setMenuValue(response.data);

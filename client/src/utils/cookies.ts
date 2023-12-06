@@ -3,7 +3,7 @@ import { CookieSetOptions } from 'universal-cookie';
 
 const cookies = new Cookies();
 
-export const getCookie = (name: string) => {
+export const getAuthorityCookie = (name: string) => {
   try {
     return cookies.get(name);
   } catch (error) {
@@ -11,7 +11,7 @@ export const getCookie = (name: string) => {
   }
 };
 
-export const setCookie = (
+export const setAuthorityCookie = (
   name: string,
   value: string,
   option?: CookieSetOptions,
@@ -23,7 +23,10 @@ export const setCookie = (
   }
 };
 
-export const removeCookie = (name: string, option?: CookieSetOptions) => {
+export const removeAuthorityCookie = (
+  name: string,
+  option?: CookieSetOptions,
+) => {
   try {
     cookies.remove(name, { ...option });
   } catch (error) {

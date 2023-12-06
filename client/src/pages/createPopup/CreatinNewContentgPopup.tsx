@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
-import { editState } from '../../recoil/UtilState';
+import { updateBoolAtom } from '../../recoil/utilAtom';
 
 import { Button } from '@mui/material';
 
 const CreatinNewContentgPopup = () => {
-  const isEdit = useRecoilValue(editState);
+  const isEdit = useRecoilValue(updateBoolAtom);
 
   const handleSubmit = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
