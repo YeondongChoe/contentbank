@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { registerBoolAtom } from '../../recoil/memberAtom';
+import { registerBoolAtom } from '../../state/memberAtom';
 import { NoticeAlert } from '../alert/NoticeAlert';
-import { alertBoolAtom } from '../../recoil/utilAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
 

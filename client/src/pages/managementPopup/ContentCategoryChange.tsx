@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import dummy from '../createPopup/data.json';
 import { useRecoilState } from 'recoil';
-import { checkListValueAtom } from '../../recoil/valueAtom';
+import { checkListValueAtom } from '../../state/valueAtom';
 
 import { Button } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';

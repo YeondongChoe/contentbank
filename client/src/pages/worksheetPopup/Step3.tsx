@@ -6,7 +6,7 @@ import {
   createWorksheetStep2BoolAtom,
   createWorksheetStep3BoolAtom,
   editWorksheetBoolAtom,
-} from '../../recoil/creatingWorksheetAtom';
+} from '../../state/creatingWorksheetAtom';
 
 import { Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';

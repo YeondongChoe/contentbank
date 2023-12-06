@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { managementTreePopupBoolAtom } from '../../recoil/managementContentAtom';
+import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
 
 import CloseIcon from '@mui/icons-material/Close';
 import { Button } from '@mui/material';

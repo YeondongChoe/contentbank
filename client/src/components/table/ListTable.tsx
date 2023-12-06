@@ -3,22 +3,22 @@ import styled from 'styled-components';
 import { SelectAlert } from '../../components/alert/SelectAlert';
 import { PaginationBox } from '../../components/pagination/Pagination';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
-import { pageAtom, totalPageAtom, updateBoolAtom } from '../../recoil/utilAtom';
+import { pageAtom, totalPageAtom, updateBoolAtom } from '../../state/utilAtom';
 import { putChangeServiced } from '../../api/putAxios';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
-} from '../../recoil/creatingContentAtom';
+} from '../../state/creatingContentAtom';
 import {
   createListCodeValueAtom,
   searchValueAtom,
   checkBoxValueAtom,
   servicedValueBoolAtom,
-} from '../../recoil/valueAtom';
-import { alertBoolAtom } from '../../recoil/utilAtom';
-import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
+} from '../../state/valueAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
+import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
 import { getQuestionList } from '../../api/getAxios';
 import { postFavoriteQuestion } from '../../api/postAxios';
 

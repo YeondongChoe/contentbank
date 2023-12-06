@@ -5,7 +5,7 @@ import {
   uploadBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
-} from '../../recoil/creatingContentAtom';
+} from '../../state/creatingContentAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { CreateMainPopup } from './CreateMainPopup';
 

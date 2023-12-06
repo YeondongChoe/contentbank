@@ -3,18 +3,18 @@ import styled from 'styled-components';
 import dummy from './data.json';
 import { PaginationBox } from '../../components/pagination/Pagination';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
-import { pageAtom, totalPageAtom } from '../../recoil/utilAtom';
+import { pageAtom, totalPageAtom } from '../../state/utilAtom';
 import {
   createListCodeValueAtom,
   searchValueAtom,
   checkBoxValueAtom,
   servicedValueBoolAtom,
-} from '../../recoil/valueAtom';
+} from '../../state/valueAtom';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
-} from '../../recoil/creatingWorksheetAtom';
+} from '../../state/creatingWorksheetAtom';
 import { Step2 } from '../../pages/worksheetPopup/Step2';
 
 import Box from '@mui/material/Box';

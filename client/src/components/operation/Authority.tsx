@@ -23,9 +23,9 @@ import {
   manageOperationBoolAtom,
   manageMemberBoolAtom,
   manageAuthorityBoolAtom,
-} from '../../recoil/authorityAtom';
+} from '../../state/authorityAtom';
 import { AuthorityTree } from './AuthorityTree';
-import { alertBoolAtom } from '../../recoil/utilAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { DeleteAuthority } from '../../api/deleteAxios';

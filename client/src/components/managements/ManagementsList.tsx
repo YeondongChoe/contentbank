@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ListTable } from '../table/ListTable';
-import { searchValueAtom, checkBoxValueAtom } from '../../recoil/valueAtom';
+import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
+import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 
 import { Button } from '@mui/material';

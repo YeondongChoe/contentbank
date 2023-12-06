@@ -5,7 +5,7 @@ import { getAuthorityCookie } from '../../utils/cookies';
 import { useNavigate } from 'react-router-dom';
 import { NoticeAlert } from '../../components/alert/NoticeAlert';
 import { useRecoilState } from 'recoil';
-import { alertBoolAtom } from '../../recoil/utilAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
 import { postLogin } from '../../api/postAxios';
 
 import { Button } from '@mui/material';

@@ -21,7 +21,7 @@ import {
   manageOperationBoolAtom,
   manageMemberBoolAtom,
   manageAuthorityBoolAtom,
-} from '../../recoil/authorityAtom';
+} from '../../state/authorityAtom';
 import {
   clickAllEdit,
   clickCreateEdit,

@@ -5,9 +5,9 @@ import {
   editerBoolAtom,
   registerBoolAtom,
   memberKeyValueAtom,
-} from '../../recoil/memberAtom';
+} from '../../state/memberAtom';
 import { SelectAlert } from '../alert/SelectAlert';
-import { alertBoolAtom } from '../../recoil/utilAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
 import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
 

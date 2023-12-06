@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { searchValueAtom } from '../../recoil/valueAtom';
+import { searchValueAtom } from '../../state/valueAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
-} from '../../recoil/creatingWorksheetAtom';
+} from '../../state/creatingWorksheetAtom';
 import { WorksheetTable } from '../../components/table/WorksheetTable';
 import { Step1 } from '../../pages/worksheetPopup/Step1';
 

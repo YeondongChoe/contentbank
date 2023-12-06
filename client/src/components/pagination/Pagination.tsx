@@ -2,8 +2,8 @@ import React from 'react';
 import Pagination from 'react-js-pagination';
 import { Styled_Pagination } from './Pagination.style';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { pageAtom } from '../../recoil/utilAtom';
-import { checkBoxValueAtom } from '../../recoil/valueAtom';
+import { pageAtom } from '../../state/utilAtom';
+import { checkBoxValueAtom } from '../../state/valueAtom';
 
 type PaginationBoxProps = {
   itemsCountPerPage: number;

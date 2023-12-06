@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
-import { updateBoolAtom } from '../../recoil/utilAtom';
+import { updateBoolAtom } from '../../state/utilAtom';
 
 import { Button } from '@mui/material';
 

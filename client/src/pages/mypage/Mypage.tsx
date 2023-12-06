@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Styled } from './Mypage.style';
 import { useRecoilState } from 'recoil';
-import { alertBoolAtom } from '../../recoil/utilAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../../components/alert/NoticeAlert';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { StyledEditBtn, StyledSaveBtn, StyledCancelBtn } from './Mypage.style';

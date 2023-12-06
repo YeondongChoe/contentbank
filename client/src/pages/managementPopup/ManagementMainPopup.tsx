@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
+import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
 import { SelectBar } from '../../components/contents/Selectbar';
 import { ContentInformationChange } from './ContentInformationChange';
 import { ContentCategoryChange } from './ContentCategoryChange';

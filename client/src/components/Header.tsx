@@ -3,10 +3,7 @@ import styled from 'styled-components';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-import {
-  createListCodeValueAtom,
-  checkBoxValueAtom,
-} from '../recoil/valueAtom';
+import { createListCodeValueAtom, checkBoxValueAtom } from '../state/valueAtom';
 import { getAuthorityMenu } from '../api/getAxios';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';

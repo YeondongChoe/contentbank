@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { editerBoolAtom, memberKeyValueAtom } from '../../recoil/memberAtom';
+import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
 import { NoticeAlert } from '../alert/NoticeAlert';
-import { alertBoolAtom } from '../../recoil/utilAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
 import { Controller, useForm } from 'react-hook-form';
 import {
   getIndividualMemberInformation,

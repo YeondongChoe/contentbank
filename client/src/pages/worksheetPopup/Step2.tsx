@@ -6,7 +6,7 @@ import {
   createWorksheetStep2BoolAtom,
   createWorksheetStep3BoolAtom,
   editWorksheetBoolAtom,
-} from '../../recoil/creatingWorksheetAtom';
+} from '../../state/creatingWorksheetAtom';
 import { Step3 } from './Step3';
 
 import { Button } from '@mui/material';

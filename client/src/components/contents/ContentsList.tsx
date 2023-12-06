@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ListTable } from '../table/ListTable';
-import { searchValueAtom, checkBoxValueAtom } from '../../recoil/valueAtom';
-import { createContentPopupBoolAtom } from '../../recoil/creatingContentAtom';
+import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
+import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
-import { updateBoolAtom } from '../../recoil/utilAtom';
+import { updateBoolAtom } from '../../state/utilAtom';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';

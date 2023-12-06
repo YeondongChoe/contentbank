@@ -1,6 +1,6 @@
 import React from 'react';
 import { Styled } from './Alert.style';
-import { alertBoolAtom } from '../../recoil/utilAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
 import { useRecoilState } from 'recoil';
 
 type alertProps = {

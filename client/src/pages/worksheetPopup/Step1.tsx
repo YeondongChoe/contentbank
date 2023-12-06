@@ -4,7 +4,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
-} from '../../recoil/creatingWorksheetAtom';
+} from '../../state/creatingWorksheetAtom';
 import { Step2 } from './Step2';
 
 import { Button } from '@mui/material';
