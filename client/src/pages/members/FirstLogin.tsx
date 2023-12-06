@@ -87,4 +87,4 @@ const S = {
   `,
 };
 
-export default FirstLogin;
+export { FirstLogin };

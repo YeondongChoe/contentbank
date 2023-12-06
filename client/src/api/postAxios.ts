@@ -42,12 +42,12 @@ type postLoginProps = {
   Id: string;
   navigate: (result: string) => void;
   openAlert: () => void;
-  setErrorMsg: (result: string) => void;
+  setErrorMessage: (result: string) => void;
 };
 
 /** 로그인 API */
 export const postLogin = async (
-  { navigate, isClicked, Id, setErrorMsg, openAlert }: postLoginProps,
+  { navigate, isClicked, Id, setErrorMessage, openAlert }: postLoginProps,
   data: dataProps,
 ) => {
   await authInstance
@@ -72,7 +72,7 @@ export const postLogin = async (
       }
     })
     .catch((error) => {
-      setErrorMsg(error.response.data.message);
+      setErrorMessage(error.response.data.message);
       openAlert();
     });
 };
@@ -87,7 +87,7 @@ type postRegisterProps = {
   setIsDuplicate: (result: boolean) => void;
   setIsRequired: (result: boolean) => void;
   setIsRequiredDuplicate: (result: boolean) => void;
-  setNameErrorMsg: (result: string) => void;
+  setNameErrorMessage: (result: string) => void;
 };
 
 /** 회원등록 API */
@@ -101,7 +101,7 @@ export const postRegister = async ({
   setIsDuplicate,
   setIsRequired,
   setIsRequiredDuplicate,
-  setNameErrorMsg,
+  setNameErrorMessage,
 }: postRegisterProps) => {
   await authInstance
     .post('/auth/register', {
@@ -122,7 +122,7 @@ export const postRegister = async ({
       setIsRequired(false);
       setIsRequiredDuplicate(false);
       setIsNameError(true);
-      setNameErrorMsg(response.response.data.errors.name);
+      setNameErrorMessage(response.response.data.errors.name);
     });
 };
 
@@ -131,8 +131,8 @@ type postDuplicateProps = {
   setduplicatedId: (result: string) => void;
   setIsIdError: (result: boolean) => void;
   setIsDuplicate: (result: boolean) => void;
-  setSuccessMsg: (result: string) => void;
-  setIdErrorMsg: (result: string) => void;
+  setSuccessMessage: (result: string) => void;
+  setIdErrorMessage: (result: string) => void;
 };
 
 /** 회원 아이디 중복체크 API */
@@ -141,8 +141,8 @@ export const postDuplicate = async ({
   setduplicatedId,
   setIsDuplicate,
   setIsIdError,
-  setSuccessMsg,
-  setIdErrorMsg,
+  setSuccessMessage,
+  setIdErrorMessage,
 }: postDuplicateProps) => {
   await authInstance
     .post('/auth/checked-id', { id: Id })
@@ -152,7 +152,7 @@ export const postDuplicate = async ({
         setduplicatedId(Id);
         setIsDuplicate(true);
         setIsIdError(false);
-        setSuccessMsg(response.data.message);
+        setSuccessMessage(response.data.message);
       }
     })
     .catch((error) => {
@@ -163,10 +163,10 @@ export const postDuplicate = async ({
             [x: string]: any;
             message: string;
           };
-          setIdErrorMsg(responseData.message);
+          setIdErrorMessage(responseData.message);
           if (responseData.errors && responseData.errors.id) {
-            // 'response.data.errors.id' 경로의 데이터가 있을 때에만 setIdErrorMsg를 호출
-            setIdErrorMsg(responseData.errors.id);
+            // 'response.data.errors.id' 경로의 데이터가 있을 때에만 setIdErrorMessage를 호출
+            setIdErrorMessage(responseData.errors.id);
           }
         }
       }

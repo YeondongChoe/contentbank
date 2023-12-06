@@ -28,7 +28,7 @@ const Step3 = () => {
     setIsStep3(false);
   };
 
-  const handleClickSubmit = () => {
+  const submitCreateWorksheet = () => {
     setIsStep1(false);
     setIsStep2(false);
     setIsStep3(false);
@@ -92,7 +92,7 @@ const Step3 = () => {
         <S.bottomContainer>
           <StyledNextBtn
             variant="contained"
-            onClick={() => handleClickSubmit()}
+            onClick={() => submitCreateWorksheet()}
           >
             학습지 만들기
           </StyledNextBtn>
@@ -121,7 +121,7 @@ const S = {
     background-color: white;
   `,
   topContainer: styled.div`
-    margin: 40px 30px 20px 0px;
+    margin: 40px 30px 20px 5px;
     display: flex;
     justify-content: space-between;
   `,
@@ -198,4 +198,4 @@ const StyledNextBtn = styled(Button)`
   }
 `;
 
-export default Step3;
+export { Step3 };

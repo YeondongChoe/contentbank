@@ -12,32 +12,32 @@ import { Button } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-interface SigninData {
+type loginProps = {
   id: string;
   password: string;
-}
+};
 
 const Login = () => {
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('userId') ? true : false,
   );
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const {
     control,
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<SigninData>();
+  } = useForm<loginProps>();
 
   const Id = watch('id', '');
   const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<SigninData> = async (data) => {
-    postLogin({ navigate, isClicked, Id, setErrorMsg, openAlert }, data);
+  const submitLogin: SubmitHandler<loginProps> = async (data) => {
+    postLogin({ navigate, isClicked, Id, setErrorMessage, openAlert }, data);
   };
 
-  const clickHandler = () => {
+  const checkIconselected = () => {
     setIsClicked(!isClicked);
   };
 
@@ -50,7 +50,7 @@ const Login = () => {
       <S.main>
         <S.formContainer>
           <S.title>로그인</S.title>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(submitLogin)}>
             <S.inputContainer>
               <S.label>아이디*</S.label>
               <Controller
@@ -83,7 +83,7 @@ const Login = () => {
               />
               <S.errorMessage>{errors?.password?.message}</S.errorMessage>
               <S.saveWarraper>
-                <S.saveIcon onClick={clickHandler}>
+                <S.saveIcon onClick={checkIconselected}>
                   {isClicked ? (
                     <CheckCircleOutlineIcon fontSize="small" />
                   ) : (
@@ -102,7 +102,7 @@ const Login = () => {
           <S.message>
             * 아이디/비밀번호를 모르실 경우, 관리자에게 문의해주세요.
           </S.message>
-          {isAlertOpen && <NoticeAlert title={errorMsg} />}
+          {isAlertOpen && <NoticeAlert title={errorMessage} />}
         </S.formContainer>
       </S.main>
     </>
@@ -216,4 +216,4 @@ const StyledBtn = styled(Button)`
     line-height: normal;
   }
 `;
-export default Login;
+export { Login };

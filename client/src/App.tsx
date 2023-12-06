@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
-import Header from './components/Header';
+import { Header } from './components/Header';
 import { useLocation } from 'react-router-dom';
 
 function App() {

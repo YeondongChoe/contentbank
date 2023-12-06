@@ -35,74 +35,74 @@ const ClassificationPopup = () => {
   const [actionType, setActionType] = useState('');
   const [actionType2, setActionType2] = useState('');
 
-  const handleCodeClick = (sort: any) => {
-    setSelectedCode(sort === selectedCode ? null : sort);
-  };
-
-  const handleCurriculumChange = (event: SelectChangeEvent) => {
+  const selectCurriculumChange = (event: SelectChangeEvent) => {
     setCurriculum(event.target.value as string);
   };
 
-  const handleSchoolLevelChange = (event: SelectChangeEvent) => {
+  const selectSchoolLevelChange = (event: SelectChangeEvent) => {
     setSchoolLevel(event.target.value as string);
   };
 
-  const handleSchoolYearChange = (event: SelectChangeEvent) => {
+  const selectSchoolYearChange = (event: SelectChangeEvent) => {
     setSchoolYear(event.target.value as string);
   };
 
-  const handleSemesterChange = (event: SelectChangeEvent) => {
+  const selectSemesterChange = (event: SelectChangeEvent) => {
     setSemester(event.target.value as string);
   };
 
-  const handleSubjectTitlChange = (event: SelectChangeEvent) => {
+  const selectSubjectTitlChange = (event: SelectChangeEvent) => {
     setSubjectTitle(event.target.value as string);
   };
 
-  const handleUnitSubChange = (event: SelectChangeEvent) => {
+  const selectUnitSubChange = (event: SelectChangeEvent) => {
     setUnitSub(event.target.value as string);
   };
 
-  const handleUnitMajorChange = (event: SelectChangeEvent) => {
+  const selectUnitMajorChange = (event: SelectChangeEvent) => {
     setUnitMajor(event.target.value as string);
   };
 
-  const handleUnitMiddleChange = (event: SelectChangeEvent) => {
+  const selectUnitMiddleChange = (event: SelectChangeEvent) => {
     setUnitMiddle(event.target.value as string);
   };
 
-  const handleUnitSmallChange = (event: SelectChangeEvent) => {
+  const selectUnitSmallChange = (event: SelectChangeEvent) => {
     setUnitSmall(event.target.value as string);
   };
 
-  const handleUnitTypeChange = (event: SelectChangeEvent) => {
+  const selectUnitTypeChange = (event: SelectChangeEvent) => {
     setUnitType(event.target.value as string);
   };
 
-  const handleLevelChange = (event: SelectChangeEvent) => {
+  const selectLevelChange = (event: SelectChangeEvent) => {
     setLevel(event.target.value as string);
   };
 
-  const handleActionTypeChange = (event: SelectChangeEvent) => {
+  const selectActionTypeChange = (event: SelectChangeEvent) => {
     setActionType(event.target.value as string);
   };
 
-  const handleActionType2Change = (event: SelectChangeEvent) => {
+  const selectActionType2Change = (event: SelectChangeEvent) => {
     setActionType2(event.target.value as string);
   };
 
-  const handleClickContentCode = (
+  const checkSelectedContentCode = (sort: any) => {
+    setSelectedCode(sort === selectedCode ? null : sort);
+  };
+
+  const selectContentCode = (
     sort: number,
     code: string,
     classificatecode: string,
   ) => {
-    handleCodeClick(sort);
+    checkSelectedContentCode(sort);
     setCode(code);
     setClassificatecode(classificatecode);
     console.log('가지고 있는 Info 뿌려주기');
   };
 
-  const onSubmit = async () => {
+  const submitSave = async () => {
     console.log('항목의 변화가 없으면 버튼 비활성화');
     console.log('변경된 문항Info Put 요청 APi');
   };
@@ -160,7 +160,7 @@ const ClassificationPopup = () => {
               <S.contentCode
                 key={i}
                 onClick={() => {
-                  handleClickContentCode(el.sort, el.code, el.classificatecode);
+                  selectContentCode(el.sort, el.code, el.classificatecode);
                 }}
                 choiced={el.sort === selectedCode}
               >
@@ -225,7 +225,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={curriculum}
                     label="curriculum"
-                    onChange={handleCurriculumChange}
+                    onChange={selectCurriculumChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>2015</MenuItem>
@@ -242,7 +242,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={schoolLevel}
                     label="schoolLevel"
-                    onChange={handleSchoolLevelChange}
+                    onChange={selectSchoolLevelChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>초등</MenuItem>
@@ -261,7 +261,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={schoolYear}
                     label="schoolYear"
-                    onChange={handleSchoolYearChange}
+                    onChange={selectSchoolYearChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>중등1</MenuItem>
@@ -278,7 +278,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={semester}
                     label="semester"
-                    onChange={handleSemesterChange}
+                    onChange={selectSemesterChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>1학기</MenuItem>
@@ -296,7 +296,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={subjectTitle}
                     label="subjectTitle"
-                    onChange={handleSubjectTitlChange}
+                    onChange={selectSubjectTitlChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>수학1</MenuItem>
@@ -313,7 +313,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={unitSub}
                     label="unitSub"
-                    onChange={handleUnitSubChange}
+                    onChange={selectUnitSubChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>교과수학1</MenuItem>
@@ -330,7 +330,7 @@ const ClassificationPopup = () => {
                   id="select"
                   value={unitMajor}
                   label="unitMajor"
-                  onChange={handleUnitMajorChange}
+                  onChange={selectUnitMajorChange}
                   sx={{
                     height: 40,
                     maxWidth: 550,
@@ -354,7 +354,7 @@ const ClassificationPopup = () => {
                   id="select"
                   value={unitMiddle}
                   label="unitMiddle"
-                  onChange={handleUnitMiddleChange}
+                  onChange={selectUnitMiddleChange}
                   sx={{
                     height: 40,
                     maxWidth: 550,
@@ -378,7 +378,7 @@ const ClassificationPopup = () => {
                   id="select"
                   value={unitSmall}
                   label="unitSmall"
-                  onChange={handleUnitSmallChange}
+                  onChange={selectUnitSmallChange}
                   sx={{
                     height: 40,
                     maxWidth: 550,
@@ -411,7 +411,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={unitType}
                     label="unitType"
-                    onChange={handleUnitTypeChange}
+                    onChange={selectUnitTypeChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>객관식</MenuItem>
@@ -428,7 +428,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={level}
                     label="level"
-                    onChange={handleLevelChange}
+                    onChange={selectLevelChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>초등</MenuItem>
@@ -447,7 +447,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={actionType}
                     label="actionType"
-                    onChange={handleActionTypeChange}
+                    onChange={selectActionTypeChange}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>중등1</MenuItem>
@@ -464,7 +464,7 @@ const ClassificationPopup = () => {
                     id="select"
                     value={actionType2}
                     label="actionType2"
-                    onChange={handleActionType2Change}
+                    onChange={selectActionType2Change}
                     sx={{ height: 40 }}
                   >
                     <MenuItem value={10}>1학기</MenuItem>
@@ -496,7 +496,7 @@ const ClassificationPopup = () => {
               <StyleSaveBtn
                 variant="contained"
                 onClick={() => {
-                  onSubmit();
+                  submitSave();
                 }}
               >
                 저장
@@ -581,4 +581,4 @@ const StyleSaveBtn = styled(Button)`
   }
 `;
 
-export default ClassificationPopup;
+export { ClassificationPopup };

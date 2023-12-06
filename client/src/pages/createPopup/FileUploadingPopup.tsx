@@ -5,10 +5,10 @@ import { updateBoolAtom } from '../../recoil/utilAtom';
 
 import { Button } from '@mui/material';
 
-const UploadFilePopup = () => {
+const FileUploadingPopup = () => {
   const isEdit = useRecoilValue(updateBoolAtom);
 
-  const handleSubmit = () => {
+  const submitSave = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청 API');
     console.log('신규 등록된 문항 리스트 get 요청 API');
   };
@@ -16,7 +16,7 @@ const UploadFilePopup = () => {
   return (
     <S.main>
       <div>문항 파일 등록 아이텍솔루션</div>
-      <StyledEditBtn onClick={handleSubmit}>
+      <StyledEditBtn variant="contained" onClick={submitSave}>
         {isEdit ? '수정' : '저장'}
       </StyledEditBtn>
     </S.main>
@@ -42,4 +42,4 @@ const StyledEditBtn = styled(Button)`
   }
 `;
 
-export default UploadFilePopup;
+export { FileUploadingPopup };

@@ -47,7 +47,7 @@ const EditPopup = () => {
   const keyValue = useRecoilValue(memberKeyValueAtom);
   const [isEditer, SetIsEditer] = useRecoilState(editerBoolAtom);
   const [isNameError, setIsNameError] = useState(false);
-  const [nameErrorMsg, setNameErrorMsg] = useState('');
+  const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState('');
   const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
@@ -98,7 +98,7 @@ const EditPopup = () => {
       keyValue,
       SetIsEditer,
       setIsNameError,
-      setNameErrorMsg,
+      setNameErrorMessage,
     });
   };
 
@@ -183,7 +183,7 @@ const EditPopup = () => {
                               value={field.value}
                             />
                             <FormHelperText id="component-error-text">
-                              {nameErrorMsg}
+                              {nameErrorMessage}
                             </FormHelperText>
                           </>
                         )}

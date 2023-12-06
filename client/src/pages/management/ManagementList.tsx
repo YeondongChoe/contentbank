@@ -21,4 +21,4 @@ const S = {
   `,
 };
 
-export default ManagementList;
+export { ManagementList };

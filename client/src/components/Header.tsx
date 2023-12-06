@@ -70,7 +70,7 @@ const Header = () => {
 
   let mountCount = 1;
 
-  const changeTab = (newValue: string) => {
+  const openTabMenu = (newValue: string) => {
     setValue(newValue);
     setActiveTab(0);
   };
@@ -79,15 +79,11 @@ const Header = () => {
     removeAuthorityCookie('accessToken');
   };
 
-  const handleClickSidebar = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ) => {};
-
-  const clickIcon = () => {
+  const moveMainpage = () => {
     navigate('/contentlist');
   };
 
-  const clickTabPanel = (code: string) => {
+  const moveTabPanel = (code: string) => {
     if (code === 'CNC_Q') {
       setActiveTab(1);
       setcreateListCodeValueAtom(code);
@@ -101,7 +97,6 @@ const Header = () => {
       setActiveTab(1);
       setcreateListCodeValueAtom(code);
       setContentSeq([]);
-
       navigate('/managementlist');
     } else if (code === 'CNM_T') {
       setActiveTab(2);
@@ -140,9 +135,9 @@ const Header = () => {
     <S.main>
       <S.head>
         <S.topHead>
-          <S.iconContainer onClick={clickIcon}>
+          <S.iconWarpper onClick={moveMainpage}>
             <AccountBalanceIcon style={{ fontSize: '70px' }} />
-          </S.iconContainer>
+          </S.iconWarpper>
           <S.navContainer
             onMouseEnter={() => {
               setValue('');
@@ -162,7 +157,7 @@ const Header = () => {
                         value={el.seq}
                         style={{ fontSize: '20px', fontWeight: 'bold' }}
                         onMouseEnter={() => {
-                          changeTab(el.seq.toString());
+                          openTabMenu(el.seq.toString());
                           setIsMenuVisible(true);
                         }}
                       />
@@ -180,7 +175,7 @@ const Header = () => {
                         >
                           <S.tabPanelWarpper
                             onClick={(e) => {
-                              clickTabPanel(el?.children?.[0]?.code);
+                              moveTabPanel(el?.children?.[0]?.code);
                             }}
                           >
                             <TabPanel
@@ -198,7 +193,7 @@ const Header = () => {
                           </S.tabPanelWarpper>
                           <S.tabPanelWarpper
                             onClick={(e) => {
-                              clickTabPanel(el?.children?.[1]?.code);
+                              moveTabPanel(el?.children?.[1]?.code);
                             }}
                           >
                             <TabPanel
@@ -222,7 +217,7 @@ const Header = () => {
             </Box>
           </S.navContainer>
           <S.sideContainer>
-            <div role="presentation" onClick={handleClickSidebar}>
+            <div>
               <Breadcrumbs separator="|">
                 <Link underline="hover" color="inherit" href="/preparing">
                   가이드
@@ -265,7 +260,7 @@ const S = {
     height: 113px;
     border-bottom: 1px solid #a3aed0;
   `,
-  iconContainer: styled.div`
+  iconWarpper: styled.div`
     width: 200px;
     display: flex;
     justify-content: center;
@@ -313,4 +308,4 @@ const S = {
   `,
 };
 
-export default Header;
+export { Header };

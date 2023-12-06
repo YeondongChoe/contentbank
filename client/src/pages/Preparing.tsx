@@ -20,4 +20,4 @@ const S = {
   `,
 };
 
-export default Preparing;
+export { Preparing };

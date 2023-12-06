@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   createContentPopupBoolAtom,
@@ -6,144 +6,156 @@ import {
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
 } from '../../recoil/creatingContentAtom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import UploadPopup from './UploadPopup';
+import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
+import { ContentCreatingPopup } from './ContentCreatingPopup';
+import { FileUploadingPopup } from './FileUploadingPopup';
+import { ClassificationPopup } from './ClassificationPopup';
+import { LabelingPopup } from './LabelingPopup';
 
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseIcon from '@mui/icons-material/Close';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
-
-const styleIcon = {
-  width: '150px',
-  height: '150px',
-};
 
 const CreateMainPopup = () => {
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
-  const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
-  const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
+  const isCreateNewContent = useRecoilValue(creatingNewContentBoolAtom);
+  const isUploadFile = useRecoilValue(uploadFileBoolAtom);
+
+  const [choiceValue, setChoiceValue] = useState(1);
+
+  const goBackMainPopup = () => {
+    setIsUpload(false);
+  };
+
+  const moveDT_Editing = () => {
+    setChoiceValue(1);
+  };
+
+  const moveClassification = () => {
+    setChoiceValue(2);
+  };
+
+  const moveLabeling = () => {
+    setChoiceValue(3);
+  };
 
   const closePopup = () => {
     setIsCreate(false);
-  };
-
-  const newContentCreating = () => {
-    setIsUpload(true);
-    setIsCreateNewContent(true);
-    setIsUploadFile(false);
-    console.log('가져올 데이터 없음');
-  };
-
-  const newUploadFile = () => {
-    setIsUpload(true);
-    setIsUploadFile(true);
-    setIsCreateNewContent(false);
-  };
-
-  const newUploadBigFile = () => {
-    setIsUpload(true);
-    setIsUploadFile(true);
-    setIsCreateNewContent(false);
+    setIsUpload(false);
   };
 
   return (
-    <S.popupOverlay>
-      <S.popupcontainer>
-        {isUpload ? (
-          <UploadPopup />
-        ) : (
-          <>
-            <S.btnWrapper>
-              <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
-            </S.btnWrapper>
-            <S.tapContainer>
-              <S.tapWrapper onClick={newContentCreating}>
-                <S.iconWrapper>
-                  <PostAddIcon sx={styleIcon} />
-                </S.iconWrapper>
-                <S.tapTextWrapper>
-                  <S.tapName>문항 신규 제작</S.tapName>
-                </S.tapTextWrapper>
-              </S.tapWrapper>
-              <S.tapWrapper onClick={newUploadFile}>
-                <S.iconWrapper>
-                  <UploadFileIcon sx={styleIcon} />
-                </S.iconWrapper>
-                <S.tapTextWrapper>
-                  <S.tapName>문항 파일 등록</S.tapName>
-                  <S.tapDiscription>(촬영, 이미지, PDF 등)</S.tapDiscription>
-                </S.tapTextWrapper>
-              </S.tapWrapper>
-              <S.tapWrapper onClick={newUploadBigFile}>
-                <S.iconWrapper>
-                  <DriveFolderUploadIcon sx={styleIcon} />
-                </S.iconWrapper>
-                <S.tapTextWrapper>
-                  <S.tapName>대량 문항 등록</S.tapName>
-                  <S.tapDiscription>(hwp, hml, xml)</S.tapDiscription>
-                </S.tapTextWrapper>
-              </S.tapWrapper>
-            </S.tapContainer>
-          </>
+    <S.main>
+      <S.contentHead>
+        <S.iconWrapper>
+          <ArrowBackIosNewIcon onClick={goBackMainPopup} />
+        </S.iconWrapper>
+        <S.tapContainer>
+          <S.tapManu choiced={choiceValue} onClick={moveDT_Editing}>
+            DT & Editing
+          </S.tapManu>
+          <S.tapManu choiced={choiceValue} onClick={moveClassification}>
+            문항 분류
+          </S.tapManu>
+          <S.tapManu choiced={choiceValue} onClick={moveLabeling}>
+            개체 라벨링
+          </S.tapManu>
+        </S.tapContainer>
+        <S.btnWrapper onClick={closePopup}>
+          <CloseIcon />
+        </S.btnWrapper>
+      </S.contentHead>
+      <S.contentBoxContainer>
+        {choiceValue === 1 && (
+          <S.contentBox>
+            {isCreateNewContent && <ContentCreatingPopup />}
+            {isUploadFile && <FileUploadingPopup />}
+          </S.contentBox>
         )}
-      </S.popupcontainer>
-    </S.popupOverlay>
+        {choiceValue === 2 && (
+          <S.contentBox>
+            <ClassificationPopup />
+          </S.contentBox>
+        )}
+        {choiceValue === 3 && (
+          <S.contentBox>
+            <LabelingPopup />
+          </S.contentBox>
+        )}
+      </S.contentBoxContainer>
+    </S.main>
   );
 };
 
 const S = {
-  popupOverlay: styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
+  main: styled.main`
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-  `,
-  popupcontainer: styled.div`
-    width: 80vw;
-    height: 95vh;
-    border: 1px solid #a3aed0;
-    background-color: white;
-  `,
-  btnWrapper: styled.div`
-    margin: 40px 30px;
-    display: flex;
-    justify-content: flex-end;
-  `,
-  tapContainer: styled.div`
-    margin-top: 180px;
-    display: flex;
-    justify-content: center;
-    gap: 100px;
-  `,
-  tapWrapper: styled.div`
-    width: 230px;
-    height: 350px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #5f86fc;
-    border-radius: 25px;
-    cursor: pointer;
   `,
   iconWrapper: styled.div`
-    margin-bottom: 30px;
-  `,
-  tapTextWrapper: styled.div`
     display: flex;
-    flex-direction: column;
     align-items: center;
+    margin-left: 30px;
+    margin-right: 10px;
+    cursor: pointer;
   `,
-  tapName: styled.div``,
-  tapDiscription: styled.div``,
+  contentHead: styled.div`
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  `,
+  tapContainer: styled.div`
+    width: 100%;
+    display: flex;
+  `,
+  tapManu: styled.div<{ choiced: number }>`
+    width: 20%;
+    height: 40px;
+    border: 1px solid #a3aed0;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    &:first-child {
+      background-color: ${(props) =>
+        props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+      color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
+    }
+    &:nth-child(2) {
+      background-color: ${(props) =>
+        props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+      color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
+    }
+    &:nth-child(3) {
+      background-color: ${(props) =>
+        props.choiced === 3 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+      color: ${(props) => (props.choiced === 3 ? 'white' : 'initial')};
+    }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+  `,
+  btnWrapper: styled.div`
+    margin-right: 30px;
+    cursor: pointer;
+    display: flex;
+  `,
+  contentBox: styled.div`
+    //width: 100%;
+    height: 750px;
+    margin-left: 64px;
+    border-top: 1px solid #a3aed0;
+    margin-right: 30px;
+  `,
+  contentBoxContainer: styled.div`
+    width: 100%;
+  `,
 };
 
-export default CreateMainPopup;
+export { CreateMainPopup };

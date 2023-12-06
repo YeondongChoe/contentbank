@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
 import { SelectBar } from '../../components/contents/Selectbar';
-import ContentInfoChange from './ContentInfoChange';
+import { ContentInformationChange } from './ContentInformationChange';
 import { ContentCategoryChange } from './ContentCategoryChange';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,11 +18,11 @@ const ManagemantMainPopup = () => {
     setIsCreate(false);
   };
 
-  const handleClickList = () => {
+  const moveContentInformationChange = () => {
     setChoiceValue(1);
   };
 
-  const handleClickDeclar = () => {
+  const moveContentCategoryChange = () => {
     setChoiceValue(2);
   };
   return (
@@ -30,10 +30,16 @@ const ManagemantMainPopup = () => {
       <S.popupcontainer>
         <S.topContainer>
           <S.tapWapper>
-            <S.tapManu choiced={choiceValue} onClick={handleClickList}>
+            <S.tapManu
+              choiced={choiceValue}
+              onClick={moveContentInformationChange}
+            >
               바꾸기
             </S.tapManu>
-            <S.tapManu choiced={choiceValue} onClick={handleClickDeclar}>
+            <S.tapManu
+              choiced={choiceValue}
+              onClick={moveContentCategoryChange}
+            >
               문항 분류 바꾸기
             </S.tapManu>
           </S.tapWapper>
@@ -43,7 +49,7 @@ const ManagemantMainPopup = () => {
         </S.topContainer>
         {choiceValue === 1 && (
           <S.contentBox>
-            <ContentInfoChange />
+            <ContentInformationChange />
           </S.contentBox>
         )}
         {choiceValue === 2 && (
@@ -121,4 +127,4 @@ const S = {
   contentBox: styled.div``,
 };
 
-export default ManagemantMainPopup;
+export { ManagemantMainPopup };

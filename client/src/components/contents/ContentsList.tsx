@@ -4,7 +4,7 @@ import { ListTable } from '../table/ListTable';
 import { searchValueAtom, checkBoxValueAtom } from '../../recoil/valueAtom';
 import { createContentPopupBoolAtom } from '../../recoil/creatingContentAtom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import CreateMainPopup from '../../pages/createPopup/CreateMainPopup';
+import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import { updateBoolAtom } from '../../recoil/utilAtom';
 
 import { Button } from '@mui/material';
@@ -76,7 +76,7 @@ const ContentsList = () => {
           <ListTable />
         </Style.contentBox>
       )}
-      {isCreate && <CreateMainPopup />}
+      {isCreate && <CreateIconPopup />}
     </Style.main>
   );
 };

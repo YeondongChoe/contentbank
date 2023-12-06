@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import { Button } from '@mui/material';
-import Popover from '@mui/material/Popover';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-const ContentInfoChange = () => {
+const ContentInformationChange = () => {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
 
@@ -20,31 +18,31 @@ const ContentInfoChange = () => {
   const [unitType, setUnitType] = useState('');
   const [serviced, setServiced] = useState('');
 
-  const handleCurriculumChange = (event: SelectChangeEvent) => {
+  const selectCurriculum = (event: SelectChangeEvent) => {
     setCurriculum(event.target.value as string);
   };
 
-  const handleSchoolLevelChange = (event: SelectChangeEvent) => {
+  const selectSchoolLevel = (event: SelectChangeEvent) => {
     setSchoolLevel(event.target.value as string);
   };
 
-  const handleSchoolYearChange = (event: SelectChangeEvent) => {
+  const selectSchoolYear = (event: SelectChangeEvent) => {
     setSchoolYear(event.target.value as string);
   };
 
-  const handleSemesterChange = (event: SelectChangeEvent) => {
+  const selectSemester = (event: SelectChangeEvent) => {
     setSemester(event.target.value as string);
   };
 
-  const handleUnitMajorChange = (event: SelectChangeEvent) => {
+  const selectUnitMajor = (event: SelectChangeEvent) => {
     setUnitMajor(event.target.value as string);
   };
 
-  const handleUnitTypeChange = (event: SelectChangeEvent) => {
+  const selectUnitType = (event: SelectChangeEvent) => {
     setUnitType(event.target.value as string);
   };
 
-  const handleServicedChange = (event: SelectChangeEvent) => {
+  const selectServiced = (event: SelectChangeEvent) => {
     setServiced(event.target.value as string);
   };
 
@@ -71,7 +69,7 @@ const ContentInfoChange = () => {
             id="select"
             value={curriculum}
             label="개정과정"
-            onChange={handleCurriculumChange}
+            onChange={selectCurriculum}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>2015</MenuItem>
@@ -88,7 +86,7 @@ const ContentInfoChange = () => {
             id="select"
             value={schoolLevel}
             label="학교"
-            onChange={handleSchoolLevelChange}
+            onChange={selectSchoolLevel}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>01 중등</MenuItem>
@@ -105,7 +103,7 @@ const ContentInfoChange = () => {
             id="select"
             value={schoolYear}
             label="학년"
-            onChange={handleSchoolYearChange}
+            onChange={selectSchoolYear}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>중등 1</MenuItem>
@@ -122,7 +120,7 @@ const ContentInfoChange = () => {
             id="select"
             value={semester}
             label="학기"
-            onChange={handleSemesterChange}
+            onChange={selectSemester}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>1학기</MenuItem>
@@ -138,7 +136,7 @@ const ContentInfoChange = () => {
             id="select"
             value={unitMajor}
             label="대분류"
-            onChange={handleUnitMajorChange}
+            onChange={selectUnitMajor}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>일차부등식 소분류</MenuItem>
@@ -155,7 +153,7 @@ const ContentInfoChange = () => {
             id="select"
             value={unitType}
             label="문항타입"
-            onChange={handleUnitTypeChange}
+            onChange={selectUnitType}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>객관식</MenuItem>
@@ -172,7 +170,7 @@ const ContentInfoChange = () => {
             id="select"
             value={serviced}
             label="오픈여부"
-            onChange={handleServicedChange}
+            onChange={selectServiced}
             sx={{ minWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>활성화</MenuItem>
@@ -204,4 +202,4 @@ const S = {
   `,
 };
 
-export default ContentInfoChange;
+export { ContentInformationChange };

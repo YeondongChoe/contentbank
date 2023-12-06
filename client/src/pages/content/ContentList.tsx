@@ -21,4 +21,4 @@ const Style = {
   `,
 };
 
-export default ContentList;
+export { ContentList };

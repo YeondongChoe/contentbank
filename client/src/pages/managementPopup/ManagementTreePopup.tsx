@@ -83,14 +83,4 @@ const StyledActionBtn = styled(Button)`
   }
 `;
 
-const StyledSaveBtn = styled(Button)`
-  && {
-    width: 100px;
-    height: 40px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
-`;
-
-export default ManagemantTreePopup;
+export { ManagemantTreePopup };

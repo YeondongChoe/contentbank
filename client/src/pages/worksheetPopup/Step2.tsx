@@ -7,7 +7,7 @@ import {
   createWorksheetStep3BoolAtom,
   editWorksheetBoolAtom,
 } from '../../recoil/creatingWorksheetAtom';
-import Step3 from './Step3';
+import { Step3 } from './Step3';
 
 import { Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -37,12 +37,12 @@ const Step2 = () => {
     setIsStep2(false);
   };
 
-  const handleClickStep3 = () => {
+  const moveStep3 = () => {
     setIsStep3(true);
     console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
 
-  const handleClickSimilar = () => {
+  const showSimilarContent = () => {
     setIsSimilar(true);
     console.log('어떤 데이터 값으로 호출?');
   };
@@ -146,13 +146,13 @@ const Step2 = () => {
             <div>문항 뷰어</div>
             <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
             <div>전 단계로부터 전달받은 데이터 뷰어로 보여주기</div>
-            <StyledBtn variant="outlined" onClick={() => handleClickSimilar()}>
+            <StyledBtn variant="outlined" onClick={() => showSimilarContent()}>
               유사문항
             </StyledBtn>
           </S.rightTapWrapper>
         </S.mainContainer>
         <S.bottomContainer>
-          <StyledNextBtn variant="contained" onClick={() => handleClickStep3()}>
+          <StyledNextBtn variant="contained" onClick={() => moveStep3()}>
             다음 단계
           </StyledNextBtn>
         </S.bottomContainer>
@@ -183,7 +183,7 @@ const S = {
   `,
   topContainer: styled.div`
     //상황에 맞게 변화
-    margin: 40px 30px 20px 30px;
+    margin: 40px 30px 20px 5px;
     display: flex;
     justify-content: space-between;
   `,
@@ -283,4 +283,4 @@ const StyledNextBtn = styled(Button)`
   }
 `;
 
-export default Step2;
+export { Step2 };

@@ -19,7 +19,7 @@ const ContentCategoryChange = () => {
     useRecoilState<number[]>(checkListValueAtom);
   const isAllSelected = selectedRows.length === ContentList.length;
 
-  const handleSelectAll = () => {
+  const selectAll = () => {
     if (isAllSelected) {
       // 전체 선택 상태에서 전체 선택 체크박스를 클릭하면 모두 선택 해제
       setSelectedRows([]);
@@ -32,7 +32,7 @@ const ContentCategoryChange = () => {
   const [classificatecode, setClassificatecode] = useState('');
   const [selectedCode, setSelectedCode] = useState<number | null>(null);
 
-  const handleCodeClick = (sort: any) => {
+  const checkSelectedContentCode = (sort: any) => {
     setSelectedCode(sort === selectedCode ? null : sort);
   };
 
@@ -46,49 +46,49 @@ const ContentCategoryChange = () => {
     serviced: '',
   });
 
-  const handleCurriculum = (event: SelectChangeEvent) => {
+  const selectCurriculum = (event: SelectChangeEvent) => {
     setContent((prevContent) => ({
       ...prevContent,
       curriculum: event.target.value as string,
     }));
   };
 
-  const handleSchoolLevel = (event: SelectChangeEvent) => {
+  const selectSchoolLevel = (event: SelectChangeEvent) => {
     setContent((prevContent) => ({
       ...prevContent,
       schoolLevel: event.target.value as string,
     }));
   };
 
-  const handleSchoolYear = (event: SelectChangeEvent) => {
+  const selectSchoolYear = (event: SelectChangeEvent) => {
     setContent((prevContent) => ({
       ...prevContent,
       schoolYear: event.target.value as string,
     }));
   };
 
-  const handleSemester = (event: SelectChangeEvent) => {
+  const selectSemester = (event: SelectChangeEvent) => {
     setContent((prevContent) => ({
       ...prevContent,
       semester: event.target.value as string,
     }));
   };
 
-  const handleUnitMajor = (event: SelectChangeEvent) => {
+  const selectUnitMajor = (event: SelectChangeEvent) => {
     setContent((prevContent) => ({
       ...prevContent,
       unitMajor: event.target.value as string,
     }));
   };
 
-  const handleUnitType = (event: SelectChangeEvent) => {
+  const selectUnitType = (event: SelectChangeEvent) => {
     setContent((prevContent) => ({
       ...prevContent,
       unitType: event.target.value as string,
     }));
   };
 
-  const handleServiced = (event: SelectChangeEvent) => {
+  const selectServiced = (event: SelectChangeEvent) => {
     setContent((prevContent) => ({
       ...prevContent,
       serviced: event.target.value as string,
@@ -105,64 +105,64 @@ const ContentCategoryChange = () => {
     putChangeServiced: '',
   });
 
-  const handleChangeCurriculum = (event: SelectChangeEvent) => {
+  const changeCurriculum = (event: SelectChangeEvent) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
       changeCurriculum: event.target.value as string,
     }));
   };
 
-  const handleChangeSchoolLevel = (event: SelectChangeEvent) => {
+  const changeSchoolLevel = (event: SelectChangeEvent) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
       changeSchoolLevel: event.target.value as string,
     }));
   };
 
-  const handleChangeSchoolYear = (event: SelectChangeEvent) => {
+  const changeSchoolYear = (event: SelectChangeEvent) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
       changeSchoolYear: event.target.value as string,
     }));
   };
 
-  const handleChangeSemester = (event: SelectChangeEvent) => {
+  const changeSemester = (event: SelectChangeEvent) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
       changeSemester: event.target.value as string,
     }));
   };
 
-  const handleChangeUnitMajor = (event: SelectChangeEvent) => {
+  const changeUnitMajor = (event: SelectChangeEvent) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
       changeUnitMajor: event.target.value as string,
     }));
   };
 
-  const handleChangeUnitType = (event: SelectChangeEvent) => {
+  const changeUnitType = (event: SelectChangeEvent) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
       changeUnitType: event.target.value as string,
     }));
   };
 
-  const handleputChangeServiced = (event: SelectChangeEvent) => {
+  const changeServiced = (event: SelectChangeEvent) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
       putChangeServiced: event.target.value as string,
     }));
   };
 
-  const handleClickSearch = () => {
+  const searchCategory = () => {
     console.log('콘텐츠리스트 get API');
   };
 
-  const handleClickChange = () => {
+  const changeCategory = () => {
     console.log('가지고 온 리스트의 배열을 변경 사항에 맞게 변경');
   };
 
-  const handleClickSave = () => {
+  const submitSave = () => {
     console.log('변경된 콘텐츠 문항 put API');
   };
 
@@ -170,7 +170,7 @@ const ContentCategoryChange = () => {
   const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false);
   const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
 
-  const handleClickContentCode = (
+  const selectContentCode = (
     sort: number,
     classificatecode: string,
     curriculum: string,
@@ -202,7 +202,7 @@ const ContentCategoryChange = () => {
       setSelectedRows([sort]);
     }
     setLastClickedIndex(sort);
-    handleCodeClick(sort);
+    checkSelectedContentCode(sort);
     setClassificatecode(classificatecode);
     setContent((prevContent) => ({
       ...prevContent,
@@ -264,7 +264,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={content.curriculum}
                 label={'개정과정'}
-                onChange={handleCurriculum}
+                onChange={selectCurriculum}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={2015}>2015</MenuItem>
@@ -282,7 +282,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={content.schoolLevel}
                 label="학교"
-                onChange={handleSchoolLevel}
+                onChange={selectSchoolLevel}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'초등'}>초등</MenuItem>
@@ -299,7 +299,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={content.schoolYear}
                 label="학년"
-                onChange={handleSchoolYear}
+                onChange={selectSchoolYear}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'초등1'}>초등 1</MenuItem>
@@ -319,7 +319,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={content.semester}
                 label="학기"
-                onChange={handleSemester}
+                onChange={selectSemester}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'1학기'}>1학기</MenuItem>
@@ -335,7 +335,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={content.unitMajor}
                 label="대분류"
-                onChange={handleUnitMajor}
+                onChange={selectUnitMajor}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'일차부등식 소분류'}>
@@ -358,7 +358,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={content.unitType}
                 label="문항타입"
-                onChange={handleUnitType}
+                onChange={selectUnitType}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'객관식'}>객관식</MenuItem>
@@ -375,7 +375,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={content.serviced}
                 label="오픈여부"
-                onChange={handleServiced}
+                onChange={selectServiced}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'활성화'}>활성화</MenuItem>
@@ -394,7 +394,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={changeContent.changeCurriculum}
                 label="개정과정"
-                onChange={handleChangeCurriculum}
+                onChange={changeCurriculum}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={2015}>2015</MenuItem>
@@ -412,7 +412,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={changeContent.changeSchoolLevel}
                 label="학교"
-                onChange={handleChangeSchoolLevel}
+                onChange={changeSchoolLevel}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'초등'}>초등</MenuItem>
@@ -429,7 +429,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={changeContent.changeSchoolYear}
                 label="학년"
-                onChange={handleChangeSchoolYear}
+                onChange={changeSchoolYear}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'초등1'}>초등 1</MenuItem>
@@ -449,7 +449,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={changeContent.changeSemester}
                 label="학기"
-                onChange={handleChangeSemester}
+                onChange={changeSemester}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'1학기'}>1학기</MenuItem>
@@ -465,7 +465,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={changeContent.changeUnitMajor}
                 label="대분류"
-                onChange={handleChangeUnitMajor}
+                onChange={changeUnitMajor}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'일차부등식 소분류'}>
@@ -488,7 +488,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={changeContent.changeUnitType}
                 label="문항타입"
-                onChange={handleChangeUnitType}
+                onChange={changeUnitType}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'객관식'}>객관식</MenuItem>
@@ -505,7 +505,7 @@ const ContentCategoryChange = () => {
                 id="select"
                 value={changeContent.putChangeServiced}
                 label="오픈여부"
-                onChange={handleputChangeServiced}
+                onChange={changeServiced}
                 sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
               >
                 <MenuItem value={'활성화'}>활성화</MenuItem>
@@ -515,10 +515,10 @@ const ContentCategoryChange = () => {
           </S.selectWapper>
         </S.selectContainer>
         <S.topBtnContainer>
-          <StyledActionBtn variant="outlined" onClick={handleClickSearch}>
+          <StyledActionBtn variant="outlined" onClick={searchCategory}>
             찾기
           </StyledActionBtn>
-          <StyledActionBtn variant="contained" onClick={handleClickChange}>
+          <StyledActionBtn variant="contained" onClick={changeCategory}>
             선택 바꾸기
           </StyledActionBtn>
         </S.topBtnContainer>
@@ -530,7 +530,7 @@ const ContentCategoryChange = () => {
             <S.checkboxWapper>
               <input
                 type="checkbox"
-                onChange={handleSelectAll}
+                onChange={selectAll}
                 checked={isAllSelected}
               ></input>
               <S.listTitle>전체선택</S.listTitle>
@@ -540,7 +540,7 @@ const ContentCategoryChange = () => {
                 key={i}
                 onClick={() => {
                   {
-                    handleClickContentCode(
+                    selectContentCode(
                       el.sort,
                       el.classificatecode,
                       el.curriculum,
@@ -571,7 +571,7 @@ const ContentCategoryChange = () => {
         </S.rightContainer>
       </S.wholeContainer>
       <S.btnContainer>
-        <StyledSaveBtn variant="outlined" onClick={handleClickSave}>
+        <StyledSaveBtn variant="outlined" onClick={submitSave}>
           변경 내용 저장
         </StyledSaveBtn>
       </S.btnContainer>

@@ -3,18 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import Login from './pages/members/Login';
-import FirstLogin from './pages/members/FirstLogin';
-import Relogin from './pages/members/Relogin';
-import Mypage from './pages/mypage/Mypage';
-import ContentList from './pages/content/ContentList';
-import ContentWorksheet from './pages/content/ContentWorksheet';
-import ManagementList from './pages/management/ManagementList';
-import ManagementTree from './pages/management/ManagementTree';
-import OperationMember from './pages/operate/OperationMember';
-import OperationAuthority from './pages/operate/OperationAuthority';
-import Notfound from './pages/Notfound';
-import Preparing from './pages/Preparing';
+import { Login } from './pages/members/Login';
+import { FirstLogin } from './pages/members/FirstLogin';
+import { Relogin } from './pages/members/Relogin';
+import { Mypage } from './pages/mypage/Mypage';
+import { ContentList } from './pages/content/ContentList';
+import { ContentWorksheet } from './pages/content/ContentWorksheet';
+import { ManagementList } from './pages/management/ManagementList';
+import { ManagementTree } from './pages/management/ManagementTree';
+import { OperationMember } from './pages/operate/OperationMember';
+import { OperationAuthority } from './pages/operate/OperationAuthority';
+import { Notfound } from './pages/Notfound';
+import { Preparing } from './pages/Preparing';
 
 const router = createBrowserRouter([
   {

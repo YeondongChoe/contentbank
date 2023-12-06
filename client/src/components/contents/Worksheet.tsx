@@ -8,7 +8,7 @@ import {
   editWorksheetBoolAtom,
 } from '../../recoil/creatingWorksheetAtom';
 import { WorksheetTable } from '../../components/table/WorksheetTable';
-import Step1 from '../../pages/worksheetPopup/Step1';
+import { Step1 } from '../../pages/worksheetPopup/Step1';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';

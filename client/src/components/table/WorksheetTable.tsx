@@ -15,7 +15,7 @@ import {
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
 } from '../../recoil/creatingWorksheetAtom';
-import Step2 from '../../pages/worksheetPopup/Step2';
+import { Step2 } from '../../pages/worksheetPopup/Step2';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';

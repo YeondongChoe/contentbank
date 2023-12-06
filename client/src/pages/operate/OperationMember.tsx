@@ -21,4 +21,4 @@ const S = {
   `,
 };
 
-export default OperationMember;
+export { OperationMember };

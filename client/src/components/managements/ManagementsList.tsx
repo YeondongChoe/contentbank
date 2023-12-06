@@ -4,7 +4,7 @@ import { ListTable } from '../table/ListTable';
 import { searchValueAtom, checkBoxValueAtom } from '../../recoil/valueAtom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { managementContentPopupBoolAtom } from '../../recoil/managementContentAtom';
-import ManagemantMainPopup from '../../pages/managementPopup/ManagementMainPopup';
+import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';

@@ -7,30 +7,28 @@ import { Button } from '@mui/material';
 const Relogin = () => {
   const navigate = useNavigate();
 
-  const onConfirm = () => {
+  const moveLogin = () => {
     removeAuthorityCookie('accessToken', { path: '/' });
     navigate('/login');
   };
 
   return (
-    <>
-      <S.main>
-        <S.discriptionContainer>
-          <S.discriptionTitle>
-            새로운 비밀번호로 변경이 완료되었습니다.
-          </S.discriptionTitle>
-        </S.discriptionContainer>
-        <S.btnWrapper>
-          <StyledLoginBtn
-            variant="outlined"
-            onClick={onConfirm}
-            sx={{ backgroundColor: 'white' }}
-          >
-            로그인 하러 가기
-          </StyledLoginBtn>
-        </S.btnWrapper>
-      </S.main>
-    </>
+    <S.main>
+      <S.discriptionContainer>
+        <S.discriptionTitle>
+          새로운 비밀번호로 변경이 완료되었습니다.
+        </S.discriptionTitle>
+      </S.discriptionContainer>
+      <S.btnWrapper>
+        <StyledLoginBtn
+          variant="outlined"
+          onClick={moveLogin}
+          sx={{ backgroundColor: 'white' }}
+        >
+          로그인 하러 가기
+        </StyledLoginBtn>
+      </S.btnWrapper>
+    </S.main>
   );
 };
 
@@ -75,4 +73,4 @@ const StyledLoginBtn = styled(Button)`
   }
 `;
 
-export default Relogin;
+export { Relogin };

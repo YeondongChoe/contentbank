@@ -18,4 +18,4 @@ const S = {
   `,
 };
 
-export default LabelingPopup;
+export { LabelingPopup };

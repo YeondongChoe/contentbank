@@ -20,4 +20,4 @@ const S = {
   `,
 };
 
-export default Notfound;
+export { Notfound };

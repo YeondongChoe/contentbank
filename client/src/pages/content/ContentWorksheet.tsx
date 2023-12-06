@@ -21,4 +21,4 @@ const S = {
   `,
 };
 
-export default ContentWorksheet;
+export { ContentWorksheet };

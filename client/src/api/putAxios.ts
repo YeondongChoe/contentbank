@@ -48,7 +48,7 @@ type putSaveNameProps = {
   setIsError: (result: boolean) => void;
   setIsAlertOpen: (result: boolean) => void;
   setNameValue: (result: string) => void;
-  setErrorMsg: (result: string) => void;
+  setErrorMessage: (result: string) => void;
 };
 
 /** 이름 변경 API */
@@ -60,7 +60,7 @@ export const putSaveName = async ({
   setIsError,
   setIsAlertOpen,
   setNameValue,
-  setErrorMsg,
+  setErrorMessage,
 }: putSaveNameProps) => {
   const data = {
     authority: member.authority,
@@ -78,7 +78,7 @@ export const putSaveName = async ({
       setNameValue('');
     })
     .catch((error) => {
-      setErrorMsg('수정할 이름을 확인해주세요');
+      setErrorMessage('수정할 이름을 확인해주세요');
       setIsError(true);
       setIsAlertOpen(true);
     });
@@ -166,7 +166,7 @@ type putChangeMemberInformationProps = {
   keyValue: string;
   SetIsEditer: (result: boolean) => void;
   setIsNameError: (result: boolean) => void;
-  setNameErrorMsg: (result: string) => void;
+  setNameErrorMessage: (result: string) => void;
 };
 
 /** 회원 정보변경 API */
@@ -179,7 +179,7 @@ export const putChangeMemberInformation = async ({
   keyValue,
   SetIsEditer,
   setIsNameError,
-  setNameErrorMsg,
+  setNameErrorMessage,
 }: putChangeMemberInformationProps) => {
   const data = {
     authority: Authority || member.authCode, //code
@@ -198,7 +198,7 @@ export const putChangeMemberInformation = async ({
     })
     .catch((response) => {
       setIsNameError(true);
-      setNameErrorMsg(response.response.data.errors.name);
+      setNameErrorMessage(response.response.data.errors.name);
     });
 };
 

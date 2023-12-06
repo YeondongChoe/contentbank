@@ -5,7 +5,7 @@ import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
 } from '../../recoil/creatingWorksheetAtom';
-import Step2 from './Step2';
+import { Step2 } from './Step2';
 
 import { Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -34,22 +34,22 @@ const Step1 = () => {
     setIsStep1(false);
   };
 
-  const handleClickStep2 = () => {
+  const moveStep2 = () => {
     setIsStep2(true);
     console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
     console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
   };
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+  const changeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
-  const handleChangeOption = (newValue: string) => {
+  const selectGradeOption = (newValue: string) => {
     setGrade(newValue);
     setSchoolYear(null);
   };
 
-  const handleClickSchoolLevel = (newValue: string) => {
+  const selectSchoolLevel = (newValue: string) => {
     if (schoolLevel === newValue) {
       setSchoolLevel(null);
     } else {
@@ -57,7 +57,7 @@ const Step1 = () => {
     }
   };
 
-  const handleClickSchoolYear = (newValue: string) => {
+  const selectSchoolYear = (newValue: string) => {
     if (schoolYear === newValue) {
       setSchoolYear(null);
     } else {
@@ -65,16 +65,16 @@ const Step1 = () => {
     }
   };
 
-  const handleClickQuestionNum = (newValue: string | null) => {
+  const selectQuestionNum = (newValue: string | null) => {
     setQuestionNum(newValue);
     setInputValue('');
   };
 
-  const handleClickQuestionLevel = (newValue: string | null) => {
+  const selectQuestionLevel = (newValue: string | null) => {
     setQuestionlevel(newValue);
   };
 
-  const handleClickQuestionType = (newValue: string) => {
+  const selectQuestionType = (newValue: string) => {
     setQuestionType((prev) => {
       if (prev.includes(newValue)) {
         // 이미 선택된 경우 선택 취소
@@ -90,13 +90,12 @@ const Step1 = () => {
     questionType.includes('객관식') &&
     questionType.includes('주관식') &&
     questionType.includes('서술형');
-  const isAnySelected = questionType.length > 0;
 
-  const handleClickContainMock = (newValue: string | null) => {
+  const selectContainMock = (newValue: string | null) => {
     setContainMock(newValue);
   };
 
-  const handelTree = () => {
+  const spreadTree = () => {
     console.log('선택된 Tree구조의 이름을 상태 관리');
   };
 
@@ -126,7 +125,7 @@ const Step1 = () => {
               <Box sx={{ typography: 'body1' }}>
                 <TabContext value={value}>
                   <Box sx={{ borderColor: 'divider' }}>
-                    <TabList onChange={handleChangeTab}>
+                    <TabList onChange={changeTab}>
                       <Tab
                         label="단원·유형별"
                         value="1"
@@ -152,8 +151,8 @@ const Step1 = () => {
                 <StyledMenuBtn
                   variant={schoolLevel === '1' ? 'contained' : 'outlined'}
                   onClick={() => {
-                    handleChangeOption('1');
-                    handleClickSchoolLevel('1');
+                    selectGradeOption('1');
+                    selectSchoolLevel('1');
                   }}
                 >
                   초
@@ -161,8 +160,8 @@ const Step1 = () => {
                 <StyledMenuBtn
                   variant={schoolLevel === '2' ? 'contained' : 'outlined'}
                   onClick={() => {
-                    handleChangeOption('2');
-                    handleClickSchoolLevel('2');
+                    selectGradeOption('2');
+                    selectSchoolLevel('2');
                   }}
                 >
                   중
@@ -170,8 +169,8 @@ const Step1 = () => {
                 <StyledMenuBtn
                   variant={schoolLevel === '3' ? 'contained' : 'outlined'}
                   onClick={() => {
-                    handleChangeOption('2');
-                    handleClickSchoolLevel('3');
+                    selectGradeOption('2');
+                    selectSchoolLevel('3');
                   }}
                 >
                   고
@@ -183,37 +182,37 @@ const Step1 = () => {
                   <>
                     <StyledMenuBtn
                       variant={schoolYear === '1' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('1')}
+                      onClick={() => selectSchoolYear('1')}
                     >
                       1학년
                     </StyledMenuBtn>
                     <StyledMenuBtn
                       variant={schoolYear === '2' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('2')}
+                      onClick={() => selectSchoolYear('2')}
                     >
                       2학년
                     </StyledMenuBtn>
                     <StyledMenuBtn
                       variant={schoolYear === '3' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('3')}
+                      onClick={() => selectSchoolYear('3')}
                     >
                       3학년
                     </StyledMenuBtn>
                     <StyledMenuBtn
                       variant={schoolYear === '4' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('4')}
+                      onClick={() => selectSchoolYear('4')}
                     >
                       4학년
                     </StyledMenuBtn>
                     <StyledMenuBtn
                       variant={schoolYear === '5' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('5')}
+                      onClick={() => selectSchoolYear('5')}
                     >
                       5학년
                     </StyledMenuBtn>
                     <StyledMenuBtn
                       variant={schoolYear === '6' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('6')}
+                      onClick={() => selectSchoolYear('6')}
                     >
                       6학년
                     </StyledMenuBtn>
@@ -223,19 +222,19 @@ const Step1 = () => {
                   <>
                     <StyledMenuBtn
                       variant={schoolYear === '1' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('1')}
+                      onClick={() => selectSchoolYear('1')}
                     >
                       1학년
                     </StyledMenuBtn>
                     <StyledMenuBtn
                       variant={schoolYear === '2' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('2')}
+                      onClick={() => selectSchoolYear('2')}
                     >
                       2학년
                     </StyledMenuBtn>
                     <StyledMenuBtn
                       variant={schoolYear === '3' ? 'contained' : 'outlined'}
-                      onClick={() => handleClickSchoolYear('3')}
+                      onClick={() => selectSchoolYear('3')}
                     >
                       3학년
                     </StyledMenuBtn>
@@ -252,7 +251,7 @@ const Step1 = () => {
                 선택 해제했을 때 그에 맞는 트리를 보여주며 모든 선택 해제시
                 초기화면 처럼 빈화면
               </div>
-              <button onClick={handelTree}>트리클릭</button>
+              <button onClick={spreadTree}>트리클릭</button>
             </S.treeViewContainer>
           </S.leftTapWrapper>
           <S.rightTapWrapper>
@@ -265,7 +264,7 @@ const Step1 = () => {
                   customWidth={68}
                   variant={questionNum === '25' ? 'contained' : 'outlined'}
                   onClick={() => {
-                    handleClickQuestionNum('25');
+                    selectQuestionNum('25');
                   }}
                 >
                   25
@@ -274,7 +273,7 @@ const Step1 = () => {
                   customWidth={68}
                   variant={questionNum === '50' ? 'contained' : 'outlined'}
                   onClick={() => {
-                    handleClickQuestionNum('50');
+                    selectQuestionNum('50');
                   }}
                 >
                   50
@@ -283,7 +282,7 @@ const Step1 = () => {
                   customWidth={68}
                   variant={questionNum === '100' ? 'contained' : 'outlined'}
                   onClick={() => {
-                    handleClickQuestionNum('100');
+                    selectQuestionNum('100');
                   }}
                 >
                   100
@@ -292,7 +291,7 @@ const Step1 = () => {
                 <S.numInput
                   value={inputValue}
                   maxLength={2}
-                  onClick={() => handleClickQuestionNum('')}
+                  onClick={() => selectQuestionNum('')}
                   style={{
                     color: questionNum === '' ? 'white' : '#1976d2',
                     backgroundColor: questionNum === '' ? '#1976d2' : 'white',
@@ -309,31 +308,31 @@ const Step1 = () => {
               <S.btnContainer>
                 <StyledMenuBtn
                   variant={questionlevel === '하' ? 'contained' : 'outlined'}
-                  onClick={() => handleClickQuestionLevel('하')}
+                  onClick={() => selectQuestionLevel('하')}
                 >
                   하
                 </StyledMenuBtn>
                 <StyledMenuBtn
                   variant={questionlevel === '중하' ? 'contained' : 'outlined'}
-                  onClick={() => handleClickQuestionLevel('중하')}
+                  onClick={() => selectQuestionLevel('중하')}
                 >
                   중하
                 </StyledMenuBtn>
                 <StyledMenuBtn
                   variant={questionlevel === '중' ? 'contained' : 'outlined'}
-                  onClick={() => handleClickQuestionLevel('중')}
+                  onClick={() => selectQuestionLevel('중')}
                 >
                   중
                 </StyledMenuBtn>
                 <StyledMenuBtn
                   variant={questionlevel === '상' ? 'contained' : 'outlined'}
-                  onClick={() => handleClickQuestionLevel('상')}
+                  onClick={() => selectQuestionLevel('상')}
                 >
                   상
                 </StyledMenuBtn>
                 <StyledMenuBtn
                   variant={questionlevel === '최상' ? 'contained' : 'outlined'}
-                  onClick={() => handleClickQuestionLevel('최상')}
+                  onClick={() => selectQuestionLevel('최상')}
                 >
                   최상
                 </StyledMenuBtn>
@@ -360,7 +359,7 @@ const Step1 = () => {
                   variant={
                     questionType.includes('객관식') ? 'contained' : 'outlined'
                   }
-                  onClick={() => handleClickQuestionType('객관식')}
+                  onClick={() => selectQuestionType('객관식')}
                 >
                   객관식
                 </StyledMenuBtn>
@@ -369,7 +368,7 @@ const Step1 = () => {
                   variant={
                     questionType.includes('주관식') ? 'contained' : 'outlined'
                   }
-                  onClick={() => handleClickQuestionType('주관식')}
+                  onClick={() => selectQuestionType('주관식')}
                 >
                   주관식
                 </StyledMenuBtn>
@@ -378,7 +377,7 @@ const Step1 = () => {
                   variant={
                     questionType.includes('서술형') ? 'contained' : 'outlined'
                   }
-                  onClick={() => handleClickQuestionType('서술형')}
+                  onClick={() => selectQuestionType('서술형')}
                 >
                   서술형
                 </StyledMenuBtn>
@@ -390,14 +389,14 @@ const Step1 = () => {
                 <StyledMenuBtn
                   customWidth={100}
                   variant={containMock === '포함' ? 'contained' : 'outlined'}
-                  onClick={() => handleClickContainMock('포함')}
+                  onClick={() => selectContainMock('포함')}
                 >
                   포함
                 </StyledMenuBtn>
                 <StyledMenuBtn
                   customWidth={100}
                   variant={containMock === '제외' ? 'contained' : 'outlined'}
-                  onClick={() => handleClickContainMock('제외')}
+                  onClick={() => selectContainMock('제외')}
                 >
                   제외
                 </StyledMenuBtn>
@@ -406,7 +405,7 @@ const Step1 = () => {
                   variant={
                     containMock === '모의고사만' ? 'contained' : 'outlined'
                   }
-                  onClick={() => handleClickContainMock('모의고사만')}
+                  onClick={() => selectContainMock('모의고사만')}
                 >
                   모의고사만
                 </StyledMenuBtn>
@@ -419,7 +418,7 @@ const Step1 = () => {
           </S.rightTapWrapper>
         </S.mainContainer>
         <S.bottomContainer>
-          <StyledNextBtn variant="contained" onClick={() => handleClickStep2()}>
+          <StyledNextBtn variant="contained" onClick={() => moveStep2()}>
             다음 단계
           </StyledNextBtn>
         </S.bottomContainer>
@@ -593,4 +592,4 @@ const StyledNextBtn = styled(Button)`
     line-height: normal;
   }
 `;
-export default Step1;
+export { Step1 };

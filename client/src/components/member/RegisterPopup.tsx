@@ -30,9 +30,9 @@ const RegisterPopup = () => {
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
-  const [nameErrorMsg, setNameErrorMsg] = useState('');
-  const [idErrorMsg, setIdErrorMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+  const [nameErrorMessage, setNameErrorMessage] = useState('');
+  const [idErrorMessage, setIdErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
   const [nameValue, setNameValue] = useState('');
   const [idValue, setIdValue] = useState('');
@@ -66,8 +66,8 @@ const RegisterPopup = () => {
       setduplicatedId,
       setIsDuplicate,
       setIsIdError,
-      setSuccessMsg,
-      setIdErrorMsg,
+      setSuccessMessage,
+      setIdErrorMessage,
     });
   };
 
@@ -89,7 +89,7 @@ const RegisterPopup = () => {
         setIsDuplicate,
         setIsRequired,
         setIsRequiredDuplicate,
-        setNameErrorMsg,
+        setNameErrorMessage,
       });
     }
   };
@@ -138,7 +138,7 @@ const RegisterPopup = () => {
                       }}
                     />
                     <FormHelperText id="component-error-text">
-                      {nameErrorMsg}
+                      {nameErrorMessage}
                     </FormHelperText>
                   </FormControl>
                 ) : (
@@ -173,7 +173,7 @@ const RegisterPopup = () => {
                       }}
                     />
                     <FormHelperText id="component-error-text">
-                      {idErrorMsg}
+                      {idErrorMessage}
                     </FormHelperText>
                   </FormControl>
                 ) : (
@@ -192,7 +192,7 @@ const RegisterPopup = () => {
                     />
                     {idValue && isDuplicate === true && (
                       <FormHelperText id="component-simple-text">
-                        {successMsg}
+                        {successMessage}
                       </FormHelperText>
                     )}
                   </FormControl>

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ListTable } from '../table/ListTable';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { managementTreePopupBoolAtom } from '../../recoil/managementContentAtom';
-import ManagemantTreePopup from '../../pages/managementPopup/ManagementTreePopup';
+import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
 
 import { Button } from '@mui/material';
 

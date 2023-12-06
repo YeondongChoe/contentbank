@@ -12,7 +12,7 @@ const Mypage = () => {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const [nameValue, setNameValue] = useState('');
   const [member, setMember] = useState({
@@ -30,11 +30,11 @@ const Mypage = () => {
 
   let mountCount = 1;
 
-  const handleNameEdit = () => {
+  const selectNameEdition = () => {
     setIsNameEdit(!isNameEdit);
   };
 
-  const handleNameSave = async () => {
+  const saveName = async () => {
     putSaveName({
       member,
       nameValue,
@@ -43,11 +43,11 @@ const Mypage = () => {
       setIsError,
       setIsAlertOpen,
       setNameValue,
-      setErrorMsg,
+      setErrorMessage,
     });
   };
 
-  const handlePasswordEdit = () => {
+  const selectPasswordEdit = () => {
     setIsPasswordEdit(!isPasswordEdit);
     setIsNameEdit(false);
   };
@@ -99,17 +99,20 @@ const Mypage = () => {
               )}
               {!isNameEdit && !isPasswordEdit && (
                 <Styled.btnWrapper>
-                  <StyledEditBtn variant="outlined" onClick={handleNameEdit}>
+                  <StyledEditBtn variant="outlined" onClick={selectNameEdition}>
                     수정
                   </StyledEditBtn>
                 </Styled.btnWrapper>
               )}
               {isNameEdit && !isPasswordEdit && (
                 <Styled.btnWrapper>
-                  <StyledCancelBtn variant="outlined" onClick={handleNameEdit}>
+                  <StyledCancelBtn
+                    variant="outlined"
+                    onClick={selectNameEdition}
+                  >
                     취소
                   </StyledCancelBtn>
-                  <StyledSaveBtn variant="contained" onClick={handleNameSave}>
+                  <StyledSaveBtn variant="contained" onClick={saveName}>
                     저장
                   </StyledSaveBtn>
                 </Styled.btnWrapper>
@@ -126,7 +129,7 @@ const Mypage = () => {
                   <Styled.btnWrapper>
                     <StyledEditBtn
                       variant="outlined"
-                      onClick={handlePasswordEdit}
+                      onClick={selectPasswordEdit}
                     >
                       재설정
                     </StyledEditBtn>
@@ -137,7 +140,7 @@ const Mypage = () => {
           </Styled.inputContainer>
         </Styled.formContainer>
         {isAlertOpen && <NoticeAlert title="이름이 수정되었습니다." />}
-        {isError === true && <NoticeAlert title={errorMsg} />}
+        {isError === true && <NoticeAlert title={errorMessage} />}
         {isPasswordEdit && (
           <Styled.passwordFormContainer>
             <Styled.titleContainer>
@@ -148,7 +151,7 @@ const Mypage = () => {
               margintop={20}
               width={400}
               inputwidth={230}
-              onClick={handlePasswordEdit}
+              onClick={selectPasswordEdit}
               btnwidth={80}
               height={25}
               fontsize={13}
@@ -163,4 +166,4 @@ const Mypage = () => {
   );
 };
 
-export default Mypage;
+export { Mypage };
