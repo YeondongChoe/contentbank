@@ -11,7 +11,7 @@ type AlertProps = {
   onClose?: () => void;
 };
 
-const NoticeAlert = (prop: AlertProps) => {
+export function NoticeAlert(prop: AlertProps) {
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
 
   const closeAlert = () => {
@@ -40,7 +40,7 @@ const NoticeAlert = (prop: AlertProps) => {
       )}
     </div>
   );
-};
+}
 
 const Overlay = styled.div`
   position: fixed;
@@ -104,5 +104,3 @@ const ConfirmButton = styled.div`
   font-size: 12px;
   font-weight: bold;
 `;
-
-export { NoticeAlert };

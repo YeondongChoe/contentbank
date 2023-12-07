@@ -27,7 +27,7 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
 
-const WorksheetTable = () => {
+export function WorksheetTable() {
   const [value, setValue] = useState('1');
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
@@ -110,7 +110,7 @@ const WorksheetTable = () => {
 
   return (
     <>
-      <S.mainContainer>
+      <Container>
         <Box sx={{ typography: 'body1' }}>
           <TabContext value={value}>
             <Box sx={{ borderColor: 'divider' }}>
@@ -143,53 +143,53 @@ const WorksheetTable = () => {
             </Box>
           </TabContext>
         </Box>
-      </S.mainContainer>
-      <S.tablecontainer>
-        <S.table>
-          <S.thead>
-            <S.tr>
-              <S.th rowSpan={2} style={{ width: '60px' }}>
+      </Container>
+      <TableWrapper>
+        <Table>
+          <Thead>
+            <Tr>
+              <Th rowSpan={2} style={{ width: '60px' }}>
                 <input
                   type="checkbox"
                   onChange={selectAll}
                   checked={isAllSelected}
                 ></input>
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '60px' }}></S.th>
-              <S.th rowSpan={2} style={{ width: '80px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '60px' }}></Th>
+              <Th rowSpan={2} style={{ width: '80px' }}>
                 학년
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '100px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '100px' }}>
                 태그
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '620px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '620px' }}>
                 학습지명
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '100px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '100px' }}>
                 등록일
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '80px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '80px' }}>
                 작성자
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '80px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '80px' }}>
                 미리보기
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '80px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '80px' }}>
                 설정
-              </S.th>
-            </S.tr>
-          </S.thead>
-          <S.tbody>
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
             {worksheetList.map((worksheet, i) => (
-              <S.tr key={i}>
-                <S.td style={{ height: '10px', textAlign: 'center' }}>
+              <Tr key={i}>
+                <Td style={{ height: '10px', textAlign: 'center' }}>
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(worksheet.id)}
                     onChange={() => selectRow(worksheet.id)}
                   ></input>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{ cursor: 'pointer' }}
                     onClick={() => addFavoriteQuestion(worksheet.id)}
@@ -200,18 +200,14 @@ const WorksheetTable = () => {
                       <BookmarkBorderTwoToneIcon fontSize="small" />
                     )}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {worksheet.schoolLevel}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>{worksheet.tag}</S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>{worksheet.schoolLevel}</Td>
+                <Td style={{ textAlign: 'center' }}>{worksheet.tag}</Td>
+                <Td style={{ textAlign: 'center' }}>
                   {worksheet.WorksheetName}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {worksheet.createdAt}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>{worksheet.createdAt}</Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{
                       maxWidth: '200px',
@@ -222,13 +218,13 @@ const WorksheetTable = () => {
                   >
                     {worksheet.creater}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div style={{ cursor: 'pointer' }}>
                     <PlagiarismOutlinedIcon />
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{ cursor: 'pointer' }}
                     aria-describedby={id}
@@ -247,94 +243,97 @@ const WorksheetTable = () => {
                     }}
                     sx={{ marginTop: '5px' }}
                   >
-                    <S.popoverMenu
+                    <PopoverMenu
                       onClick={() => {
                         openEditFilePopup();
                         closePopover();
                       }}
                     >
                       수정
-                    </S.popoverMenu>
-                    <S.popoverMenu
+                    </PopoverMenu>
+                    <PopoverMenu
                       onClick={() => {
                         openEditFilePopup();
                         closePopover();
                       }}
                     >
                       복제 후 수정
-                    </S.popoverMenu>
-                    <S.popoverMenu
+                    </PopoverMenu>
+                    <PopoverMenu
                       onClick={() => {
                         closePopover();
                       }}
                     >
                       삭제
-                    </S.popoverMenu>
+                    </PopoverMenu>
                   </Popover>
-                </S.td>
-              </S.tr>
+                </Td>
+              </Tr>
             ))}
-          </S.tbody>
-        </S.table>
-      </S.tablecontainer>
+          </Tbody>
+        </Table>
+      </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isStep2 && <Step2 />}
     </>
   );
-};
+}
 
-const S = {
-  mainContainer: styled.div`
-    margin: 20px 10px 20px 70px;
-    display: flex;
-    justify-content: space-between;
-  `,
-  tablecontainer: styled.div`
-    display: flex;
-    justify-content: center;
-    height: 400px;
-    overflow: auto;
-  `,
-  table: styled.table`
-    border-collapse: collapse;
-    background-color: white;
-    height: 10px;
-  `,
-  thead: styled.thead`
-    font-size: medium;
-  `,
-  tbody: styled.tbody`
-    font-size: small;
-  `,
-  tr: styled.tr`
-    height: 30px;
-  `,
-  th: styled.th`
-    border: 1px solid #a3aed0;
-    color: #a3aed0;
-  `,
-  td: styled.td`
-    border: 1px solid #a3aed0;
-  `,
-  popoverMenu: styled.div`
-    width: 100px;
-    height: 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    cursor: pointer;
-    &:nth-child(2) {
-      border-top: 2px solid #dde1e9;
-    }
-    &:nth-child(3) {
-      border-top: 2px solid #dde1e9;
-    }
-    &:hover {
-      background-color: #422afb;
-      color: white;
-    }
-  `,
-};
+const Container = styled.div`
+  padding: 20px 10px 20px 50px;
+  display: flex;
+  justify-content: space-between;
+`;
 
-export { WorksheetTable };
+const TableWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 400px;
+  overflow: auto;
+`;
+
+const Table = styled.table`
+  border-collapse: collapse;
+  background-color: white;
+  height: 10px;
+`;
+
+const Thead = styled.thead`
+  font-size: medium;
+`;
+
+const Tbody = styled.tbody`
+  font-size: small;
+`;
+
+const Tr = styled.tr`
+  height: 30px;
+`;
+
+const Th = styled.th`
+  border: 1px solid #a3aed0;
+  color: #a3aed0;
+`;
+const Td = styled.td`
+  border: 1px solid #a3aed0;
+`;
+
+const PopoverMenu = styled.div`
+  width: 100px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  &:nth-child(2) {
+    border-top: 2px solid #dde1e9;
+  }
+  &:nth-child(3) {
+    border-top: 2px solid #dde1e9;
+  }
+  &:hover {
+    background-color: #422afb;
+    color: white;
+  }
+`;

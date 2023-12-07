@@ -5,7 +5,7 @@ import { updateBoolAtom } from '../../state/utilAtom';
 
 import { Button } from '@mui/material';
 
-const ContentCreatingPopup = () => {
+export function ContentCreatingPopup() {
   const isEdit = useRecoilValue(updateBoolAtom);
 
   const submitSave = () => {
@@ -14,22 +14,22 @@ const ContentCreatingPopup = () => {
   };
 
   return (
-    <S.main>
+    <Container>
       <div>문항 신규 제작 아이텍솔루션</div>
       <StyledEditBtn variant="contained" onClick={submitSave}>
         {isEdit ? '수정' : '저장'}
       </StyledEditBtn>
-    </S.main>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.div`
-    height: 100%;
-    border: 1px solid #a3aed0;
-    border-top: none;
-  `,
-};
+const Container = styled.div`
+  max-width: 80%;
+  min-width: 800px;
+  padding: 20px;
+  border: 1px solid #a3aed0;
+  border-top: none;
+`;
 
 const StyledEditBtn = styled(Button)`
   && {
@@ -40,5 +40,3 @@ const StyledEditBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export { ContentCreatingPopup };
