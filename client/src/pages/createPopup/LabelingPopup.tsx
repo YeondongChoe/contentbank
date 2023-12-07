@@ -1,21 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const LabelingPopup = () => {
+export function LabelingPopup() {
   return (
-    <S.main>
+    <Container>
       <div>개체 라벨링</div>
-    </S.main>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.div`
-    width: 100%;
-    height: 100%;
-    border: 1px solid #a3aed0;
-    border-top: none;
-  `,
-};
-
-export { LabelingPopup };
+const Container = styled.div`
+  max-width: 80%;
+  min-width: 800px;
+  padding: 20px;
+  border: 1px solid #a3aed0;
+  border-top: none;
+`;

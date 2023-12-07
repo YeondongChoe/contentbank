@@ -12,7 +12,7 @@ import TextField from '@mui/material/TextField';
 import Textarea from '@mui/joy/Textarea';
 import Button from '@mui/material/Button';
 
-const ClassificationPopup = () => {
+export function ClassificationPopup() {
   const mathExpression = Contents.it_quest; // it_quest 필드를 가져옴
   const ContentList = dummy.ContentInfo;
   const [didMount, setDidMount] = useState(false);
@@ -151,13 +151,13 @@ const ClassificationPopup = () => {
 `;
 
   return (
-    <S.main>
-      <S.wholeContainer>
-        <S.contentListContainer>
-          <S.containerTitle>문항 선택</S.containerTitle>
-          <S.contentList>
+    <Container>
+      <Warpper>
+        <ContentListWarpper>
+          <Title>문항 선택</Title>
+          <ContentsList>
             {ContentList.map((el, i) => (
-              <S.contentCode
+              <Content
                 key={i}
                 onClick={() => {
                   selectContentCode(el.sort, el.code, el.classificatecode);
@@ -165,22 +165,22 @@ const ClassificationPopup = () => {
                 choiced={el.sort === selectedCode}
               >
                 {el.code}
-              </S.contentCode>
+              </Content>
             ))}
-          </S.contentList>
-        </S.contentListContainer>
+          </ContentsList>
+        </ContentListWarpper>
 
-        <S.contentViewerContainer>
-          <S.containerTitle>문항 뷰어</S.containerTitle>
-          <S.contentViewer>
+        <ContentViewerWarpper>
+          <Title>문항 뷰어</Title>
+          <ContentViewer>
             <div dangerouslySetInnerHTML={{ __html: html }}></div>
-          </S.contentViewer>
-        </S.contentViewerContainer>
+          </ContentViewer>
+        </ContentViewerWarpper>
 
-        <S.contentClassificateContainer>
+        <ContentClassificationWarpper>
           <form>
-            <S.containerTitle>문항 분류</S.containerTitle>
-            <S.contentClassificate>
+            <Title>문항 분류</Title>
+            <ContentClassificationForm>
               <FormControl fullWidth sx={{ backgroundColor: 'white' }}>
                 <Controller
                   control={control}
@@ -215,7 +215,7 @@ const ClassificationPopup = () => {
                   )}
                 />
               </FormControl>
-              <S.contentClassificateMiddle>
+              <ContentClassificationGroup>
                 <FormControl fullWidth sx={{ height: 40 }}>
                   <InputLabel size="small" id="curriculum">
                     교육과정
@@ -250,8 +250,8 @@ const ClassificationPopup = () => {
                     <MenuItem value={30}>고등</MenuItem>
                   </Select>
                 </FormControl>
-              </S.contentClassificateMiddle>
-              <S.contentClassificateMiddle>
+              </ContentClassificationGroup>
+              <ContentClassificationGroup>
                 <FormControl fullWidth sx={{ height: 40 }}>
                   <InputLabel size="small" id="schoolYear">
                     학년
@@ -285,8 +285,8 @@ const ClassificationPopup = () => {
                     <MenuItem value={20}>2학기</MenuItem>
                   </Select>
                 </FormControl>
-              </S.contentClassificateMiddle>
-              <S.contentClassificateMiddle>
+              </ContentClassificationGroup>
+              <ContentClassificationGroup>
                 <FormControl fullWidth sx={{ height: 40 }}>
                   <InputLabel size="small" id="subjectTitle">
                     교과
@@ -320,7 +320,7 @@ const ClassificationPopup = () => {
                     <MenuItem value={20}>교과수학2</MenuItem>
                   </Select>
                 </FormControl>
-              </S.contentClassificateMiddle>
+              </ContentClassificationGroup>
               <FormControl fullWidth sx={{ height: 40 }}>
                 <InputLabel size="small" id="unitMajor">
                   대단원
@@ -399,9 +399,9 @@ const ClassificationPopup = () => {
                   </MenuItem>
                 </Select>
               </FormControl>
-            </S.contentClassificate>
-            <S.contentClassificate>
-              <S.contentClassificateMiddle>
+            </ContentClassificationForm>
+            <ContentClassificationForm>
+              <ContentClassificationGroup>
                 <FormControl fullWidth sx={{ height: 40 }}>
                   <InputLabel size="small" id="unitType">
                     문제유형
@@ -436,8 +436,8 @@ const ClassificationPopup = () => {
                     <MenuItem value={30}>고등</MenuItem>
                   </Select>
                 </FormControl>
-              </S.contentClassificateMiddle>
-              <S.contentClassificateMiddle>
+              </ContentClassificationGroup>
+              <ContentClassificationGroup>
                 <FormControl fullWidth sx={{ height: 40 }}>
                   <InputLabel size="small" id="actionType">
                     행동영역
@@ -471,7 +471,7 @@ const ClassificationPopup = () => {
                     <MenuItem value={20}>2학기</MenuItem>
                   </Select>
                 </FormControl>
-              </S.contentClassificateMiddle>
+              </ContentClassificationGroup>
               <InputLabel htmlFor="component-simple">정답</InputLabel>
               <FormControl fullWidth>
                 <Controller
@@ -491,8 +491,8 @@ const ClassificationPopup = () => {
                   )}
                 />
               </FormControl>
-            </S.contentClassificate>
-            <S.btnWarpper>
+            </ContentClassificationForm>
+            <ButtonWarpper>
               <StyleSaveBtn
                 variant="contained"
                 onClick={() => {
@@ -501,75 +501,70 @@ const ClassificationPopup = () => {
               >
                 저장
               </StyleSaveBtn>
-            </S.btnWarpper>
+            </ButtonWarpper>
           </form>
-        </S.contentClassificateContainer>
-      </S.wholeContainer>
-    </S.main>
+        </ContentClassificationWarpper>
+      </Warpper>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.div`
-    height: 750px;
-    border: 1px solid #a3aed0;
-    border-top: none;
-  `,
-  wholeContainer: styled.div`
-    height: 750px;
-    display: flex;
-    //flex: 1 0 0;
-  `,
-  containerTitle: styled.div`
-    font-size: 14px;
-    padding: 10px;
-    border-bottom: 1px solid #a3aed0;
-  `,
-  contentListContainer: styled.div`
-    border-right: 1px solid #a3aed0;
-    flex: 1 0 30%;
-  `,
-  contentList: styled.div`
-    padding: 10px;
-  `,
-  contentCode: styled.div<{ choiced: boolean }>`
-    font-size: 13px;
-    background-color: ${(props) => (props.choiced ? '#a3aed0' : 'white')};
-    color: ${(props) => (props.choiced ? 'white' : 'initial')};
-    cursor: pointer;
-  `,
-  contentViewerContainer: styled.div`
-    border-right: 1px solid #a3aed0;
-    flex: 1 0 30%;
-  `,
-  contentViewer: styled.div`
-    width: 100%;
-    padding: 10px;
-  `,
-  contentClassificateContainer: styled.div`
-    flex: 1 0 40%;
-  `,
-  contentClassificate: styled.div`
-    padding: 15px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border-bottom: 1px solid #a3aed0;
-  `,
-  contentClassificateMiddle: styled.div`
-    display: flex;
-    flex-grow: 1;
-    gap: 10px;
-  `,
-  btnWarpper: styled.div`
-    width: 100%;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  `,
-};
-
+const Container = styled.div`
+  max-width: 80%;
+  min-width: 800px;
+  border: 1px solid #a3aed0;
+  border-top: none;
+`;
+const Warpper = styled.div`
+  display: flex;
+`;
+const Title = styled.div`
+  font-size: 14px;
+  padding: 10px;
+  border-bottom: 1px solid #a3aed0;
+`;
+const ContentListWarpper = styled.div`
+  border-right: 1px solid #a3aed0;
+  flex: 1 0 30%;
+`;
+const ContentsList = styled.div`
+  padding: 10px;
+`;
+const Content = styled.div<{ choiced: boolean }>`
+  font-size: 13px;
+  background-color: ${(props) => (props.choiced ? '#a3aed0' : 'white')};
+  color: ${(props) => (props.choiced ? 'white' : 'initial')};
+  cursor: pointer;
+`;
+const ContentViewerWarpper = styled.div`
+  border-right: 1px solid #a3aed0;
+  flex: 1 0 30%;
+`;
+const ContentViewer = styled.div`
+  padding: 10px;
+`;
+const ContentClassificationWarpper = styled.div`
+  flex: 1 0 40%;
+`;
+const ContentClassificationForm = styled.div`
+  padding: 15px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-bottom: 1px solid #a3aed0;
+`;
+const ContentClassificationGroup = styled.div`
+  display: flex;
+  flex-grow: 1;
+  gap: 10px;
+`;
+const ButtonWarpper = styled.div`
+  height: 40px;
+  padding: 15px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+`;
 const StyleSaveBtn = styled(Button)`
   && {
     width: 100px;
@@ -577,8 +572,5 @@ const StyleSaveBtn = styled(Button)`
     border-radius: 10px;
     font-size: 14px;
     line-height: normal;
-    margin-right: 10px;
   }
 `;
-
-export { ClassificationPopup };

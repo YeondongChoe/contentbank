@@ -49,7 +49,7 @@ type questionListProps = {
   serviced: boolean; //오픈여부
 };
 
-const ListTable = () => {
+export function ListTable() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   /**문항 리스트 관련 코드 */
@@ -247,8 +247,8 @@ const ListTable = () => {
 
   return (
     <>
-      <S.mainContainer>
-        <S.selectContainer>
+      <Container>
+        <SelectWrapper>
           <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
             <InputLabel size="small" id="개정과정">
               개정과정
@@ -259,7 +259,7 @@ const ListTable = () => {
               value={content.curriculum}
               label="개정과정"
               onChange={selectCurriculum}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
             >
               <MenuItem value={2015}>2015</MenuItem>
               <MenuItem value={2016}>2016</MenuItem>
@@ -277,7 +277,7 @@ const ListTable = () => {
               value={content.schoolLevel}
               label="학교"
               onChange={selectSchoolLevel}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
             >
               <MenuItem value={'초등'}>초등</MenuItem>
               <MenuItem value={'중등'}>중등</MenuItem>
@@ -294,7 +294,7 @@ const ListTable = () => {
               value={content.schoolYear}
               label="학년"
               onChange={selectSchoolYear}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
             >
               <MenuItem value={'초등1'}>초등 1</MenuItem>
               <MenuItem value={'초등2'}>초등 2</MenuItem>
@@ -314,7 +314,7 @@ const ListTable = () => {
               value={content.semester}
               label="학기"
               onChange={selectSemester}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
             >
               <MenuItem value={'1학기'}>1학기</MenuItem>
               <MenuItem value={'2학기'}>2학기</MenuItem>
@@ -330,7 +330,7 @@ const ListTable = () => {
               value={content.unitMajor}
               label="대분류"
               onChange={selectUnitMajor}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
             >
               <MenuItem value={'일차부등식 소분류'}>일차부등식 소분류</MenuItem>
               <MenuItem value={'일차부등식 중분류'}>일차부등식 중분류</MenuItem>
@@ -347,7 +347,7 @@ const ListTable = () => {
               value={content.unitType}
               label="문항타입"
               onChange={selectUnitType}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
             >
               <MenuItem value={'객관식'}>객관식</MenuItem>
               <MenuItem value={'주관식'}>주관식</MenuItem>
@@ -364,17 +364,17 @@ const ListTable = () => {
               value={content.serviced}
               label="오픈여부"
               onChange={selectServiced}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
             >
               <MenuItem value={'활성화'}>활성화</MenuItem>
               <MenuItem value={'비활성화'}>비활성화</MenuItem>
             </Select>
           </FormControl>
-        </S.selectContainer>
-        <S.btncontainer>
+        </SelectWrapper>
+        <ButtonWrapper>
           {MenuCode === 'CNM_Q' ? (
             <>
-              <S.btnWrapper>
+              <EachButtonWrapper>
                 <StyledEditBtn
                   disabled={selectedRows.length === 0}
                   variant="outlined"
@@ -383,8 +383,8 @@ const ListTable = () => {
                 >
                   삭제
                 </StyledEditBtn>
-              </S.btnWrapper>
-              <S.btnWrapper>
+              </EachButtonWrapper>
+              <EachButtonWrapper>
                 <StyledEditBtn
                   aria-describedby={id}
                   disabled={selectedRows.length === 0}
@@ -405,27 +405,27 @@ const ListTable = () => {
                   }}
                   sx={{ marginTop: '5px' }}
                 >
-                  <S.popoverMenu
+                  <PopoverMenu
                     onClick={() => {
                       closePopover();
                       openmanagementEditFilePopup();
                     }}
                   >
                     수정
-                  </S.popoverMenu>
-                  <S.popoverMenu
+                  </PopoverMenu>
+                  <PopoverMenu
                     onClick={() => {
                       closePopover();
                       openmanagementEditFilePopup();
                     }}
                   >
                     복제 후 수정
-                  </S.popoverMenu>
+                  </PopoverMenu>
                 </Popover>
-              </S.btnWrapper>
+              </EachButtonWrapper>
             </>
           ) : (
-            <S.btnWrapper>
+            <EachButtonWrapper>
               <StyledEditBtn
                 aria-describedby={id}
                 disabled={selectedRows.length === 0}
@@ -446,26 +446,26 @@ const ListTable = () => {
                 }}
                 sx={{ marginTop: '5px' }}
               >
-                <S.popoverMenu
+                <PopoverMenu
                   onClick={() => {
                     closePopover();
                     openCreateEditFilePopup();
                   }}
                 >
                   수정
-                </S.popoverMenu>
-                <S.popoverMenu
+                </PopoverMenu>
+                <PopoverMenu
                   onClick={() => {
                     closePopover();
                     openCreateEditFilePopup();
                   }}
                 >
                   복제 후 수정
-                </S.popoverMenu>
+                </PopoverMenu>
               </Popover>
-            </S.btnWrapper>
+            </EachButtonWrapper>
           )}
-          <S.btnWrapper>
+          <EachButtonWrapper>
             <StyledActionBtn
               variant="outlined"
               disabled={selectedRows.length === 0}
@@ -474,64 +474,64 @@ const ListTable = () => {
             >
               활성화/비활성화
             </StyledActionBtn>
-          </S.btnWrapper>
-        </S.btncontainer>
-      </S.mainContainer>
-      <S.tablecontainer>
-        <S.table>
-          <S.thead>
-            <S.tr>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+          </EachButtonWrapper>
+        </ButtonWrapper>
+      </Container>
+      <TableWrapper>
+        <Table>
+          <Thead>
+            <Tr>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 <input
                   type="checkbox"
                   onChange={selectAll}
                   checked={isAllSelected}
                 ></input>
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}></S.th>
-              <S.th rowSpan={2} style={{ width: '350px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}></Th>
+              <Th rowSpan={2} style={{ width: '350px' }}>
                 문항코드
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 개정과정
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 학교
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 학년
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 학기
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '200px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '200px' }}>
                 대분류
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '250px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '250px' }}>
                 중분류
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 문항타입
-              </S.th>
-              <S.th colSpan={3}>업로드</S.th>
-            </S.tr>
-            <S.tr>
-              <S.th style={{ width: '60px' }}>작성자</S.th>
-              <S.th style={{ width: '80px' }}>일자</S.th>
-              <S.th style={{ width: '40px' }}>오픈여부</S.th>
-            </S.tr>
-          </S.thead>
-          <S.tbody>
+              </Th>
+              <Th colSpan={3}>업로드</Th>
+            </Tr>
+            <Tr>
+              <Th style={{ width: '60px' }}>작성자</Th>
+              <Th style={{ width: '80px' }}>일자</Th>
+              <Th style={{ width: '40px' }}>오픈여부</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
             {questionList.map((content, i) => (
-              <S.tr key={i}>
-                <S.td style={{ height: '10px', textAlign: 'center' }}>
+              <Tr key={i}>
+                <Td style={{ height: '10px', textAlign: 'center' }}>
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(content.contentSeq)}
                     onChange={() => selectRow(content.contentSeq)}
                   ></input>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{ cursor: 'pointer' }}
                     onClick={() => addFavoriteQuestion(content.questionSeq)}
@@ -542,21 +542,13 @@ const ListTable = () => {
                       <BookmarkBorderTwoToneIcon fontSize="small" />
                     )}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.questionCode}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.curriculum}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.schoolLevel}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.schoolYear}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>{content.semester}</S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>{content.questionCode}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.curriculum}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.schoolLevel}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.schoolYear}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.semester}</Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{
                       maxWidth: '200px',
@@ -567,8 +559,8 @@ const ListTable = () => {
                   >
                     {content.unitMajor}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{
                       maxWidth: '250px',
@@ -579,24 +571,22 @@ const ListTable = () => {
                   >
                     {content.unitMiddle}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.questionType}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>{content.questionType}</Td>
+                <Td style={{ textAlign: 'center' }}>
                   {content.questionCreatedByName}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   {content.questionCreatedDate}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   {content.serviced ? 'Y' : 'N'}
-                </S.td>
-              </S.tr>
+                </Td>
+              </Tr>
             ))}
-          </S.tbody>
-        </S.table>
-      </S.tablecontainer>
+          </Tbody>
+        </Table>
+      </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isDeleteAuthority && (
         <SelectAlert
@@ -608,76 +598,85 @@ const ListTable = () => {
       )}
     </>
   );
-};
+}
 
-const S = {
-  mainContainer: styled.div`
-    margin: 40px 10px 20px 50px;
-    display: flex;
-    justify-content: space-between;
-  `,
-  selectContainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  select: styled.select``,
-  btncontainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  option: styled.option``,
-  btnWrapper: styled.button`
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-  `,
-  popoverMenu: styled.div`
-    width: 100px;
-    height: 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    cursor: pointer;
-    &:nth-child(2) {
-      border-top: 2px solid #dde1e9;
-    }
-    &:hover {
-      background-color: #422afb;
-      color: white;
-    }
-  `,
-  tablecontainer: styled.div`
-    display: flex;
-    justify-content: center;
-    height: 400px;
-    overflow: auto;
-  `,
-  table: styled.table`
-    border-collapse: collapse;
-    background-color: white;
-    height: 10px;
-  `,
-  thead: styled.thead`
-    font-size: medium;
-  `,
-  tbody: styled.tbody`
-    font-size: small;
-  `,
-  tr: styled.tr`
-    height: 30px;
-  `,
-  th: styled.th`
-    border: 1px solid #a3aed0;
-    color: #a3aed0;
-  `,
-  td: styled.td`
-    border: 1px solid #a3aed0;
-  `,
-};
+const Container = styled.div`
+  padding: 40px 5px 20px 5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+`;
+
+const SelectWrapper = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
+const EachButtonWrapper = styled.div`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+`;
+
+const PopoverMenu = styled.div`
+  width: 100px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  &:nth-child(2) {
+    border-top: 2px solid #dde1e9;
+  }
+  &:hover {
+    background-color: #422afb;
+    color: white;
+  }
+`;
+
+const TableWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 400px;
+  overflow: auto;
+`;
+
+const Table = styled.table`
+  border-collapse: collapse;
+  background-color: white;
+  height: 10px;
+`;
+
+const Thead = styled.thead`
+  font-size: medium;
+`;
+
+const Tbody = styled.tbody`
+  font-size: small;
+`;
+
+const Tr = styled.tr`
+  height: 30px;
+`;
+
+const Th = styled.th`
+  border: 1px solid #a3aed0;
+  color: #a3aed0;
+`;
+const Td = styled.td`
+  border: 1px solid #a3aed0;
+`;
+
 const StyledEditBtn = styled(Button)`
   && {
-    width: 70px;
+    width: 50px;
     height: 30px;
     border-radius: 5px;
     font-size: 12px;
@@ -694,5 +693,3 @@ const StyledActionBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export { ListTable };

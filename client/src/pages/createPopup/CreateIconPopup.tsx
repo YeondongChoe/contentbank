@@ -19,7 +19,7 @@ const styleIcon = {
   height: '150px',
 };
 
-const CreateIconPopup = () => {
+export function CreateIconPopup() {
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
   const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
@@ -49,101 +49,104 @@ const CreateIconPopup = () => {
   };
 
   return (
-    <S.popupOverlay>
-      <S.popupcontainer>
+    <Container>
+      <Wrapper>
         {isUpload ? (
           <CreateMainPopup />
         ) : (
           <>
-            <S.btnWrapper>
+            <CancelButtonWrapper>
               <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
-            </S.btnWrapper>
-            <S.tapContainer>
-              <S.tapWrapper onClick={moveContentCreating}>
-                <S.iconWrapper>
+            </CancelButtonWrapper>
+            <MenuListWrapper>
+              <MenuWrapper onClick={moveContentCreating}>
+                <IconWrapper>
                   <PostAddIcon sx={styleIcon} />
-                </S.iconWrapper>
-                <S.tapTextWrapper>
-                  <S.tapName>문항 신규 제작</S.tapName>
-                </S.tapTextWrapper>
-              </S.tapWrapper>
-              <S.tapWrapper onClick={moveFileUploading}>
-                <S.iconWrapper>
+                </IconWrapper>
+                <TextWrapper>
+                  <MenuName>문항 신규 제작</MenuName>
+                </TextWrapper>
+              </MenuWrapper>
+              <MenuWrapper onClick={moveFileUploading}>
+                <IconWrapper>
                   <UploadFileIcon sx={styleIcon} />
-                </S.iconWrapper>
-                <S.tapTextWrapper>
-                  <S.tapName>문항 파일 등록</S.tapName>
-                  <S.tapDiscription>(촬영, 이미지, PDF 등)</S.tapDiscription>
-                </S.tapTextWrapper>
-              </S.tapWrapper>
-              <S.tapWrapper onClick={moveBigFileUploading}>
-                <S.iconWrapper>
+                </IconWrapper>
+                <TextWrapper>
+                  <MenuName>문항 파일 등록</MenuName>
+                  <MenuDiscription>(촬영, 이미지, PDF 등)</MenuDiscription>
+                </TextWrapper>
+              </MenuWrapper>
+              <MenuWrapper onClick={moveBigFileUploading}>
+                <IconWrapper>
                   <DriveFolderUploadIcon sx={styleIcon} />
-                </S.iconWrapper>
-                <S.tapTextWrapper>
-                  <S.tapName>대량 문항 등록</S.tapName>
-                  <S.tapDiscription>(hwp, hml, xml)</S.tapDiscription>
-                </S.tapTextWrapper>
-              </S.tapWrapper>
-            </S.tapContainer>
+                </IconWrapper>
+                <TextWrapper>
+                  <MenuName>대량 문항 등록</MenuName>
+                  <MenuDiscription>(hwp, hml, xml)</MenuDiscription>
+                </TextWrapper>
+              </MenuWrapper>
+            </MenuListWrapper>
           </>
         )}
-      </S.popupcontainer>
-    </S.popupOverlay>
+      </Wrapper>
+    </Container>
   );
-};
+}
 
-const S = {
-  popupOverlay: styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-  `,
-  popupcontainer: styled.div`
-    width: 80vw;
-    height: 95vh;
-    border: 1px solid #a3aed0;
-    background-color: white;
-  `,
-  btnWrapper: styled.div`
-    margin: 40px 30px;
-    display: flex;
-    justify-content: flex-end;
-  `,
-  tapContainer: styled.div`
-    margin-top: 180px;
-    display: flex;
-    justify-content: center;
-    gap: 100px;
-  `,
-  tapWrapper: styled.div`
-    width: 230px;
-    height: 350px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #5f86fc;
-    border-radius: 25px;
-    cursor: pointer;
-  `,
-  iconWrapper: styled.div`
-    margin-bottom: 30px;
-  `,
-  tapTextWrapper: styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  `,
-  tapName: styled.div``,
-  tapDiscription: styled.div``,
-};
+const Container = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+`;
 
-export { CreateIconPopup };
+const Wrapper = styled.div`
+  max-width: 80%;
+  min-width: 800px;
+  padding: 20px;
+  border: 1px solid #a3aed0;
+  background-color: white;
+`;
+
+const CancelButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const MenuListWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px;
+  gap: 100px;
+`;
+
+const MenuWrapper = styled.div`
+  width: 230px;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #5f86fc;
+  border-radius: 25px;
+  cursor: pointer;
+`;
+
+const IconWrapper = styled.div`
+  margin-bottom: 30px;
+`;
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const MenuName = styled.div``;
+const MenuDiscription = styled.div``;

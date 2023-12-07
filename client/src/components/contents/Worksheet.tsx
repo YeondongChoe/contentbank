@@ -13,7 +13,7 @@ import { Step1 } from '../../pages/worksheetPopup/Step1';
 import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-const Worksheet = () => {
+export function Worksheet() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
 
@@ -96,18 +96,17 @@ const Worksheet = () => {
       {isStep1 && <Step1 />}
     </Container>
   );
-};
+}
 
 const Container = styled.div`
-  width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
 const HeadWrapper = styled.div`
-  width: 1280px;
-  margin-top: 40px;
+  width: 100%;
+  padding: 40px 10px 0px 50px;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
@@ -115,10 +114,10 @@ const HeadWrapper = styled.div`
 
 const TapWrapper = styled.div`
   display: flex;
-  width: 500px;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-end;
   gap: 10px;
+  flex: 1 0 0;
 `;
 
 const TapMenu = styled.div<{ choiced: number }>`
@@ -154,8 +153,7 @@ const TapMenu = styled.div<{ choiced: number }>`
 `;
 
 const InputWrapper = styled.div`
-  margin-right: -10px;
-  margin-left: 300px;
+  margin-right: 10px;
   height: 30px;
   display: flex;
   align-items: center;
@@ -190,7 +188,6 @@ const ButtonWrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  width: 1280px;
   border-top: 1px solid #a3aed0;
 `;
 
@@ -203,4 +200,3 @@ const StyledUplodeBtn = styled(Button)`
     line-height: normal;
   }
 `;
-export { Worksheet };
