@@ -1,18 +1,21 @@
 import React from 'react';
+import styled from 'styled-components';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { passwordRegExp } from '../../utils/regExp';
 import { useNavigate } from 'react-router-dom';
-import {
-  Styled,
-  StyledCancelBtn,
-  StyledConfirmBtn,
-  StyledNomalBtn,
-} from './ChangePassword.style';
 import { putChangePassword } from '../../api/putAxios';
+
+import { Button } from '@mui/material';
 
 type passwordProps = {
   password: string;
   password_confirm: string;
+};
+
+type styleProp = {
+  width?: number;
+  height?: number;
+  fontSize?: number;
 };
 
 type ChangePasswordProps = {
@@ -23,13 +26,13 @@ type ChangePasswordProps = {
   height?: number;
   display?: string;
   marginleft?: number;
-  margintop?: number;
+  paddingTop?: number;
   fontsize?: number;
   labelsize?: number;
   placeholdersize?: number;
 };
 
-const ChangePassword: React.FC<ChangePasswordProps> = ({
+export function ChangePassword({
   onClick,
   width,
   inputwidth,
@@ -38,10 +41,10 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
   height,
   display,
   marginleft,
-  margintop,
+  paddingTop,
   labelsize,
   placeholdersize,
-}) => {
+}: ChangePasswordProps) {
   const {
     control,
     watch,
@@ -62,13 +65,11 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
   };
 
   return (
-    <Styled.main>
+    <Container>
       <form onSubmit={handleSubmit(submitChangePassword)}>
-        <Styled.inputContainer width={width as number}>
-          <Styled.inputWapper width={width as number}>
-            <Styled.label labelSize={labelsize as number}>
-              새 비밀번호
-            </Styled.label>
+        <InputSection width={width as number}>
+          <InputWapper width={width as number}>
+            <Label labelSize={labelsize as number}>새 비밀번호</Label>
             <Controller
               control={control}
               name="password"
@@ -81,7 +82,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                 },
               }}
               render={({ field }) => (
-                <Styled.input
+                <Input
                   width={inputwidth as number}
                   placeholderSize={placeholdersize as number}
                   type="password"
@@ -92,17 +93,11 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                 />
               )}
             />
-          </Styled.inputWapper>
-          {Password && (
-            <Styled.errorMessage>
-              {errors?.password?.message}
-            </Styled.errorMessage>
-          )}
-          {isValid && <Styled.successMessage>사용가능</Styled.successMessage>}
-          <Styled.inputWapper width={width as number}>
-            <Styled.label labelSize={labelsize as number}>
-              새 비밀번호 재확인
-            </Styled.label>
+          </InputWapper>
+          {Password && <ErrorMessage>{errors?.password?.message}</ErrorMessage>}
+          {isValid && <SuccessMessage>사용가능</SuccessMessage>}
+          <InputWapper width={width as number}>
+            <Label labelSize={labelsize as number}>새 비밀번호 재확인</Label>
             <Controller
               control={control}
               name="password_confirm"
@@ -115,7 +110,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                 },
               }}
               render={({ field }) => (
-                <Styled.input
+                <Input
                   width={inputwidth as number}
                   placeholderSize={placeholdersize as number}
                   type="password"
@@ -130,21 +125,19 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
                 />
               )}
             />
-          </Styled.inputWapper>
+          </InputWapper>
           {PasswordConfirm && Password === PasswordConfirm ? (
-            <Styled.successMessage>비밀번호 일치</Styled.successMessage>
+            <SuccessMessage>비밀번호 일치</SuccessMessage>
           ) : (
-            <Styled.errorMessage>
-              {errors?.password_confirm?.message}
-            </Styled.errorMessage>
+            <ErrorMessage>{errors?.password_confirm?.message}</ErrorMessage>
           )}
-        </Styled.inputContainer>
-        <Styled.btnGroupContainer
+        </InputSection>
+        <ButtonGroup
           display={display as string}
           marginLeft={marginleft as number}
-          marginTop={margintop as number}
+          paddingTop={paddingTop as number}
         >
-          <Styled.btnWapper>
+          <ButtonWapper>
             <StyledCancelBtn
               width={btnwidth}
               height={height}
@@ -155,9 +148,9 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
             >
               취소
             </StyledCancelBtn>
-          </Styled.btnWapper>
+          </ButtonWapper>
           {PasswordConfirm && isValid ? (
-            <Styled.btnWapper>
+            <ButtonWapper>
               <StyledConfirmBtn
                 width={btnwidth}
                 height={height}
@@ -166,9 +159,9 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
               >
                 확인
               </StyledConfirmBtn>
-            </Styled.btnWapper>
+            </ButtonWapper>
           ) : (
-            <Styled.btnWapper>
+            <ButtonWapper>
               <StyledNomalBtn
                 width={btnwidth}
                 height={height}
@@ -178,12 +171,111 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
               >
                 확인
               </StyledNomalBtn>
-            </Styled.btnWapper>
+            </ButtonWapper>
           )}
-        </Styled.btnGroupContainer>
+        </ButtonGroup>
       </form>
-    </Styled.main>
+    </Container>
   );
-};
+}
 
-export { ChangePassword };
+const Container = styled.div``;
+const InputSection = styled.section<{ width: number }>`
+  width: ${(props) => props.width || 750}px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+`;
+const InputWapper = styled.div<{ width: number }>`
+  width: ${(props) => props.width || 750}px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+const Label = styled.label<{ labelSize: number }>`
+  font-size: ${(props) => props.labelSize || 16}px;
+  color: #a3aed0;
+`;
+const Input = styled.input<{ width: number; placeholderSize: number }>`
+  width: ${(props) => props.width || 550}px;
+  height: 40px;
+  padding: 10px;
+  border: none;
+  border-bottom: 1px solid red;
+  outline: none;
+  margin-right: 10px;
+  &.success {
+    border-color: green;
+  }
+  &.passwordMatch {
+    border-color: green;
+  }
+  &::placeholder {
+    font-size: ${(props) => props.placeholderSize || 16}px;
+  }
+`;
+const SuccessMessage = styled.div`
+  width: 550px;
+  font-size: 12px;
+  color: green;
+  display: flex;
+  font-weight: bold;
+  justify-content: flex-end;
+  margin-right: 10px;
+`;
+const ErrorMessage = styled.div`
+  width: 550px;
+  font-size: 12px;
+  color: red;
+  display: flex;
+  font-weight: bold;
+  justify-content: flex-end;
+  margin-right: 10px;
+`;
+
+const ButtonGroup = styled.div<{
+  display: string;
+  marginLeft: number;
+  paddingTop: number;
+}>`
+  display: flex;
+  justify-content: ${(props) => props.display};
+  gap: 20px;
+  padding-top: ${(props) => props.paddingTop || 40}px;
+`;
+
+const ButtonWapper = styled.button`
+  border: none;
+  background-color: transparent;
+`;
+
+const StyledCancelBtn = styled(Button)<styleProp>`
+  && {
+    width: ${(props) => props.width}px;
+    height: ${(props) => props.height}px;
+    border-radius: 10px;
+    font-size: ${(props) => props.fontSize || 16}px;
+    line-height: normal;
+  }
+`;
+
+const StyledConfirmBtn = styled(Button)<styleProp>`
+  && {
+    width: ${(props) => props.width}px;
+    height: ${(props) => props.height}px;
+    border-radius: 10px;
+    font-size: ${(props) => props.fontSize || 16}px;
+    line-height: normal;
+  }
+`;
+
+const StyledNomalBtn = styled(Button)<styleProp>`
+  && {
+    width: ${(props) => props.width}px;
+    height: ${(props) => props.height}px;
+    border-radius: 10px;
+    font-size: ${(props) => props.fontSize || 16}px;
+    line-height: normal;
+  }
+`;

@@ -2,23 +2,18 @@ import React from 'react';
 import styled from 'styled-components';
 import { ManagementsTree } from '../../components/managements/ManagementsTree';
 
-const ManagementTree = () => {
+export function ManagementTree() {
   return (
-    <S.main>
+    <Container>
       <ManagementsTree />
-    </S.main>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.main`
-    width: 100vw;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  `,
-};
-
-export { ManagementTree };
+const Container = styled.div`
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;

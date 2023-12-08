@@ -86,7 +86,7 @@ type menuProps = {
   ];
 };
 
-const AuthorityTree: React.FC = () => {
+export function AuthorityTree() {
   const [didMount, setDidMount] = useState(false);
   const [menuValue, setMenuValue] = useState<menuProps[]>([]);
   const CreateContent = menuValue?.[0];
@@ -279,17 +279,14 @@ const AuthorityTree: React.FC = () => {
       defaultExpandIcon={<ArrowRightIcon />}
       defaultExpanded={['Authority', 'CNC', 'CNM', 'OPM']}
       sx={{
-        width: 600,
-        flexGrow: 1,
-        maxWidth: 600,
+        minWidth: 600,
         overflowY: 'auto',
         '&  .MuiTreeItem-content': {
-          width: '200px',
           height: '30px',
         },
       }}
     >
-      <S.treeDiv>
+      <TreeWrapper>
         <TreeItem
           nodeId="Authority"
           label="전체"
@@ -302,7 +299,7 @@ const AuthorityTree: React.FC = () => {
             },
           }}
         >
-          <S.treeDiv>
+          <TreeWrapper>
             <TreeItem
               nodeId="CNC"
               label={CreateContent?.name as string}
@@ -315,7 +312,7 @@ const AuthorityTree: React.FC = () => {
                 },
               }}
             >
-              <S.treeDiv>
+              <TreeWrapper>
                 <TreeItem
                   nodeId={CreateContent?.children?.[0].code as string}
                   label={CreateContent?.children?.[0].name as string}
@@ -328,7 +325,7 @@ const AuthorityTree: React.FC = () => {
                     },
                   }}
                 />
-                <S.CheckboxDiv>
+                <CheckBoxWrapper>
                   <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditCreateListChecked}
@@ -351,9 +348,9 @@ const AuthorityTree: React.FC = () => {
                       });
                     }}
                   />
-                </S.CheckboxDiv>
-              </S.treeDiv>
-              <S.treeDiv>
+                </CheckBoxWrapper>
+              </TreeWrapper>
+              <TreeWrapper>
                 <TreeItem
                   nodeId={CreateContent?.children?.[1].code as string}
                   label={CreateContent?.children?.[1].name as string}
@@ -366,7 +363,7 @@ const AuthorityTree: React.FC = () => {
                     },
                   }}
                 />
-                <S.CheckboxDiv>
+                <CheckBoxWrapper>
                   <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditWorksheetChecked}
@@ -389,10 +386,10 @@ const AuthorityTree: React.FC = () => {
                       });
                     }}
                   />
-                </S.CheckboxDiv>
-              </S.treeDiv>
+                </CheckBoxWrapper>
+              </TreeWrapper>
             </TreeItem>
-            <S.CheckboxDiv style={{ marginLeft: '-85px' }}>
+            <CheckBoxWrapper style={{ marginLeft: '-84px' }}>
               <Checkbox
                 sx={{ height: '24px' }}
                 checked={isEditCreateChecked}
@@ -430,10 +427,10 @@ const AuthorityTree: React.FC = () => {
                   });
                 }}
               />
-            </S.CheckboxDiv>
-          </S.treeDiv>
+            </CheckBoxWrapper>
+          </TreeWrapper>
 
-          <S.treeDiv>
+          <TreeWrapper>
             <TreeItem
               nodeId="CNM"
               label={ManagementContent?.name as string}
@@ -446,7 +443,7 @@ const AuthorityTree: React.FC = () => {
                 },
               }}
             >
-              <S.treeDiv>
+              <TreeWrapper>
                 <TreeItem
                   nodeId={ManagementContent?.children?.[0].code as string}
                   label={ManagementContent?.children?.[0].name as string}
@@ -459,7 +456,7 @@ const AuthorityTree: React.FC = () => {
                     },
                   }}
                 />
-                <S.CheckboxDiv>
+                <CheckBoxWrapper>
                   <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditManagementListChecked}
@@ -482,10 +479,10 @@ const AuthorityTree: React.FC = () => {
                       });
                     }}
                   />
-                </S.CheckboxDiv>
-              </S.treeDiv>
+                </CheckBoxWrapper>
+              </TreeWrapper>
 
-              <S.treeDiv>
+              <TreeWrapper>
                 <TreeItem
                   nodeId={ManagementContent?.children?.[1].code as string}
                   label={ManagementContent?.children?.[1].name as string}
@@ -498,7 +495,7 @@ const AuthorityTree: React.FC = () => {
                     },
                   }}
                 />
-                <S.CheckboxDiv>
+                <CheckBoxWrapper>
                   <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditTreeChecked}
@@ -521,10 +518,10 @@ const AuthorityTree: React.FC = () => {
                       });
                     }}
                   />
-                </S.CheckboxDiv>
-              </S.treeDiv>
+                </CheckBoxWrapper>
+              </TreeWrapper>
             </TreeItem>
-            <S.CheckboxDiv style={{ marginLeft: '-85px' }}>
+            <CheckBoxWrapper style={{ marginLeft: '-84px' }}>
               <Checkbox
                 sx={{ height: '24px' }}
                 checked={isEditManagementChecked}
@@ -562,10 +559,10 @@ const AuthorityTree: React.FC = () => {
                   });
                 }}
               />
-            </S.CheckboxDiv>
-          </S.treeDiv>
+            </CheckBoxWrapper>
+          </TreeWrapper>
 
-          <S.treeDiv>
+          <TreeWrapper>
             <TreeItem
               nodeId="OPM"
               label={Operation?.name as string}
@@ -578,7 +575,7 @@ const AuthorityTree: React.FC = () => {
                 },
               }}
             >
-              <S.treeDiv>
+              <TreeWrapper>
                 <TreeItem
                   nodeId={Operation?.children?.[0].code as string}
                   label={Operation?.children?.[0].name as string}
@@ -591,7 +588,7 @@ const AuthorityTree: React.FC = () => {
                     },
                   }}
                 />
-                <S.CheckboxDiv>
+                <CheckBoxWrapper>
                   {/* <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditMemberChecked}
@@ -611,10 +608,10 @@ const AuthorityTree: React.FC = () => {
                       });
                     }}
                   />
-                </S.CheckboxDiv>
-              </S.treeDiv>
+                </CheckBoxWrapper>
+              </TreeWrapper>
 
-              <S.treeDiv>
+              <TreeWrapper>
                 <TreeItem
                   nodeId={Operation?.children?.[1].code as string}
                   label={Operation?.children?.[1].name as string}
@@ -627,7 +624,7 @@ const AuthorityTree: React.FC = () => {
                     },
                   }}
                 />
-                <S.CheckboxDiv>
+                <CheckBoxWrapper>
                   {/* <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditAuthorityChecked}
@@ -647,10 +644,10 @@ const AuthorityTree: React.FC = () => {
                       });
                     }}
                   />
-                </S.CheckboxDiv>
-              </S.treeDiv>
+                </CheckBoxWrapper>
+              </TreeWrapper>
             </TreeItem>
-            <S.CheckboxDiv style={{ marginLeft: '-43px' }}>
+            <CheckBoxWrapper style={{ marginLeft: '-42px' }}>
               {/* <Checkbox
   
                 sx={{ height: '24px' }}
@@ -679,10 +676,10 @@ const AuthorityTree: React.FC = () => {
                   });
                 }}
               />
-            </S.CheckboxDiv>
-          </S.treeDiv>
+            </CheckBoxWrapper>
+          </TreeWrapper>
         </TreeItem>
-        <S.CheckboxDiv style={{ marginLeft: '-168px' }}>
+        <CheckBoxWrapper style={{ marginLeft: '-168px' }}>
           <Checkbox
             sx={{ height: '24px' }}
             checked={isEditAllChecked}
@@ -741,19 +738,14 @@ const AuthorityTree: React.FC = () => {
               });
             }}
           />
-        </S.CheckboxDiv>
-      </S.treeDiv>
+        </CheckBoxWrapper>
+      </TreeWrapper>
     </TreeView>
   );
-};
-
-const S = {
-  treeDiv: styled.div`
-    display: flex;
-  `,
-  CheckboxDiv: styled.div`
-    height: 24px;
-  `,
-};
-
-export { AuthorityTree };
+}
+const TreeWrapper = styled.div`
+  display: flex;
+`;
+const CheckBoxWrapper = styled.div`
+  height: 24px;
+`;

@@ -248,142 +248,190 @@ export function ListTable() {
   return (
     <>
       <Container>
-        <SelectWrapper>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="개정과정">
-              개정과정
-            </InputLabel>
-            <Select
-              labelId="개정과정"
-              id="select"
-              value={content.curriculum}
-              label="개정과정"
-              onChange={selectCurriculum}
-              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
-            >
-              <MenuItem value={2015}>2015</MenuItem>
-              <MenuItem value={2016}>2016</MenuItem>
-              <MenuItem value={2017}>2017</MenuItem>
-              <MenuItem value={2020}>2020</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="학교">
-              학교
-            </InputLabel>
-            <Select
-              labelId="학교"
-              id="select"
-              value={content.schoolLevel}
-              label="학교"
-              onChange={selectSchoolLevel}
-              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
-            >
-              <MenuItem value={'초등'}>초등</MenuItem>
-              <MenuItem value={'중등'}>중등</MenuItem>
-              <MenuItem value={'고등'}>고등</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="학년">
-              학년
-            </InputLabel>
-            <Select
-              labelId="학년"
-              id="select"
-              value={content.schoolYear}
-              label="학년"
-              onChange={selectSchoolYear}
-              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
-            >
-              <MenuItem value={'초등1'}>초등 1</MenuItem>
-              <MenuItem value={'초등2'}>초등 2</MenuItem>
-              <MenuItem value={'중등1'}>중등 1</MenuItem>
-              <MenuItem value={'중등2'}>중등 2</MenuItem>
-              <MenuItem value={'고등1'}>고등 1</MenuItem>
-              <MenuItem value={'고등2'}>고등 2</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="학기">
-              학기
-            </InputLabel>
-            <Select
-              labelId="학기"
-              id="select"
-              value={content.semester}
-              label="학기"
-              onChange={selectSemester}
-              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
-            >
-              <MenuItem value={'1학기'}>1학기</MenuItem>
-              <MenuItem value={'2학기'}>2학기</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="대분류">
-              대분류
-            </InputLabel>
-            <Select
-              labelId="대분류"
-              id="select"
-              value={content.unitMajor}
-              label="대분류"
-              onChange={selectUnitMajor}
-              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
-            >
-              <MenuItem value={'일차부등식 소분류'}>일차부등식 소분류</MenuItem>
-              <MenuItem value={'일차부등식 중분류'}>일차부등식 중분류</MenuItem>
-              <MenuItem value={'일차부등식 대분류'}>일차부등식 대분류</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="문항타입">
-              문항타입
-            </InputLabel>
-            <Select
-              labelId="문항타입"
-              id="select"
-              value={content.unitType}
-              label="문항타입"
-              onChange={selectUnitType}
-              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
-            >
-              <MenuItem value={'객관식'}>객관식</MenuItem>
-              <MenuItem value={'주관식'}>주관식</MenuItem>
-              <MenuItem value={'서술형'}>서술형</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="오픈여부">
-              오픈여부
-            </InputLabel>
-            <Select
-              labelId="오픈여부"
-              id="select"
-              value={content.serviced}
-              label="오픈여부"
-              onChange={selectServiced}
-              sx={{ minWidth: 110, maxWidth: 110, height: 40 }}
-            >
-              <MenuItem value={'활성화'}>활성화</MenuItem>
-              <MenuItem value={'비활성화'}>비활성화</MenuItem>
-            </Select>
-          </FormControl>
-        </SelectWrapper>
-        <ButtonWrapper>
-          {MenuCode === 'CNM_Q' ? (
-            <>
-              <EachButtonWrapper>
-                <StyledEditBtn
-                  disabled={selectedRows.length === 0}
-                  variant="outlined"
-                  sx={{ backgroundColor: 'white' }}
-                  onClick={openDeleteAlert}
-                >
-                  삭제
-                </StyledEditBtn>
-              </EachButtonWrapper>
+        <Wrapper>
+          <SelectWrapper>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="개정과정">
+                개정과정
+              </InputLabel>
+              <Select
+                labelId="개정과정"
+                id="select"
+                value={content.curriculum}
+                label="개정과정"
+                onChange={selectCurriculum}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={2015}>2015</MenuItem>
+                <MenuItem value={2016}>2016</MenuItem>
+                <MenuItem value={2017}>2017</MenuItem>
+                <MenuItem value={2020}>2020</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학교">
+                학교
+              </InputLabel>
+              <Select
+                labelId="학교"
+                id="select"
+                value={content.schoolLevel}
+                label="학교"
+                onChange={selectSchoolLevel}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등'}>초등</MenuItem>
+                <MenuItem value={'중등'}>중등</MenuItem>
+                <MenuItem value={'고등'}>고등</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학년">
+                학년
+              </InputLabel>
+              <Select
+                labelId="학년"
+                id="select"
+                value={content.schoolYear}
+                label="학년"
+                onChange={selectSchoolYear}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등1'}>초등 1</MenuItem>
+                <MenuItem value={'초등2'}>초등 2</MenuItem>
+                <MenuItem value={'중등1'}>중등 1</MenuItem>
+                <MenuItem value={'중등2'}>중등 2</MenuItem>
+                <MenuItem value={'고등1'}>고등 1</MenuItem>
+                <MenuItem value={'고등2'}>고등 2</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학기">
+                학기
+              </InputLabel>
+              <Select
+                labelId="학기"
+                id="select"
+                value={content.semester}
+                label="학기"
+                onChange={selectSemester}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'1학기'}>1학기</MenuItem>
+                <MenuItem value={'2학기'}>2학기</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="대분류">
+                대분류
+              </InputLabel>
+              <Select
+                labelId="대분류"
+                id="select"
+                value={content.unitMajor}
+                label="대분류"
+                onChange={selectUnitMajor}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'일차부등식 소분류'}>
+                  일차부등식 소분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 중분류'}>
+                  일차부등식 중분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 대분류'}>
+                  일차부등식 대분류
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="문항타입">
+                문항타입
+              </InputLabel>
+              <Select
+                labelId="문항타입"
+                id="select"
+                value={content.unitType}
+                label="문항타입"
+                onChange={selectUnitType}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'객관식'}>객관식</MenuItem>
+                <MenuItem value={'주관식'}>주관식</MenuItem>
+                <MenuItem value={'서술형'}>서술형</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="오픈여부">
+                오픈여부
+              </InputLabel>
+              <Select
+                labelId="오픈여부"
+                id="select"
+                value={content.serviced}
+                label="오픈여부"
+                onChange={selectServiced}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'활성화'}>활성화</MenuItem>
+                <MenuItem value={'비활성화'}>비활성화</MenuItem>
+              </Select>
+            </FormControl>
+          </SelectWrapper>
+          <ButtonWrapper>
+            {MenuCode === 'CNM_Q' ? (
+              <>
+                <EachButtonWrapper>
+                  <StyledEditBtn
+                    disabled={selectedRows.length === 0}
+                    variant="outlined"
+                    sx={{ backgroundColor: 'white' }}
+                    onClick={openDeleteAlert}
+                  >
+                    삭제
+                  </StyledEditBtn>
+                </EachButtonWrapper>
+                <EachButtonWrapper>
+                  <StyledEditBtn
+                    aria-describedby={id}
+                    disabled={selectedRows.length === 0}
+                    variant="outlined"
+                    sx={{ backgroundColor: 'white' }}
+                    onClick={openPopover}
+                  >
+                    수정
+                  </StyledEditBtn>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={closePopover}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    sx={{ marginTop: '5px' }}
+                  >
+                    <PopoverMenu
+                      onClick={() => {
+                        closePopover();
+                        openmanagementEditFilePopup();
+                      }}
+                    >
+                      수정
+                    </PopoverMenu>
+                    <PopoverMenu
+                      onClick={() => {
+                        closePopover();
+                        openmanagementEditFilePopup();
+                      }}
+                    >
+                      복제 후 수정
+                    </PopoverMenu>
+                  </Popover>
+                </EachButtonWrapper>
+              </>
+            ) : (
               <EachButtonWrapper>
                 <StyledEditBtn
                   aria-describedby={id}
@@ -408,7 +456,7 @@ export function ListTable() {
                   <PopoverMenu
                     onClick={() => {
                       closePopover();
-                      openmanagementEditFilePopup();
+                      openCreateEditFilePopup();
                     }}
                   >
                     수정
@@ -416,66 +464,26 @@ export function ListTable() {
                   <PopoverMenu
                     onClick={() => {
                       closePopover();
-                      openmanagementEditFilePopup();
+                      openCreateEditFilePopup();
                     }}
                   >
                     복제 후 수정
                   </PopoverMenu>
                 </Popover>
               </EachButtonWrapper>
-            </>
-          ) : (
+            )}
             <EachButtonWrapper>
-              <StyledEditBtn
-                aria-describedby={id}
-                disabled={selectedRows.length === 0}
+              <StyledActionBtn
                 variant="outlined"
+                disabled={selectedRows.length === 0}
                 sx={{ backgroundColor: 'white' }}
-                onClick={openPopover}
+                onClick={submitChangingService}
               >
-                수정
-              </StyledEditBtn>
-              <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={closePopover}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                sx={{ marginTop: '5px' }}
-              >
-                <PopoverMenu
-                  onClick={() => {
-                    closePopover();
-                    openCreateEditFilePopup();
-                  }}
-                >
-                  수정
-                </PopoverMenu>
-                <PopoverMenu
-                  onClick={() => {
-                    closePopover();
-                    openCreateEditFilePopup();
-                  }}
-                >
-                  복제 후 수정
-                </PopoverMenu>
-              </Popover>
+                활성화/비활성화
+              </StyledActionBtn>
             </EachButtonWrapper>
-          )}
-          <EachButtonWrapper>
-            <StyledActionBtn
-              variant="outlined"
-              disabled={selectedRows.length === 0}
-              sx={{ backgroundColor: 'white' }}
-              onClick={submitChangingService}
-            >
-              활성화/비활성화
-            </StyledActionBtn>
-          </EachButtonWrapper>
-        </ButtonWrapper>
+          </ButtonWrapper>
+        </Wrapper>
       </Container>
       <TableWrapper>
         <Table>
@@ -601,20 +609,29 @@ export function ListTable() {
 }
 
 const Container = styled.div`
-  padding: 40px 5px 20px 5px;
+  padding: 40px 0px 10px;
   display: flex;
   justify-content: space-between;
   gap: 5px;
 `;
 
+const Wrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 const SelectWrapper = styled.div`
   display: flex;
-  gap: 5px;
+  gap: 10px;
+  padding-left: 30px;
 `;
 
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 5px;
 `;
 
@@ -676,7 +693,7 @@ const Td = styled.td`
 
 const StyledEditBtn = styled(Button)`
   && {
-    width: 50px;
+    width: 70px;
     height: 30px;
     border-radius: 5px;
     font-size: 12px;

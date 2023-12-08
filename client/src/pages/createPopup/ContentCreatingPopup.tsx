@@ -29,8 +29,8 @@ const Container = styled.div`
   padding: 20px;
   border: 1px solid #a3aed0;
   border-top: none;
+  height: 750px;
 `;
-
 const StyledEditBtn = styled(Button)`
   && {
     width: 70px;

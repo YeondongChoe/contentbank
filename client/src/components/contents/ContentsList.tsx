@@ -60,11 +60,9 @@ export function ContentsList() {
             <SearchIcon onClick={searchContentList} />
           </IconWrapper>
         </InputWrapper>
-        <ButtonWrapper>
-          <StyledUplodeBtn variant="contained" onClick={openCreatePopup}>
-            + 문항 업로드
-          </StyledUplodeBtn>
-        </ButtonWrapper>
+        <StyledUplodeBtn variant="contained" onClick={openCreatePopup}>
+          + 문항 업로드
+        </StyledUplodeBtn>
       </HeadWrapper>
       {choiceValue === 1 && (
         <TableWrapper>
@@ -161,12 +159,6 @@ const IconWrapper = styled.div`
   align-items: center;
   padding-right: 10px;
   cursor: pointer;
-`;
-
-const ButtonWrapper = styled.div`
-  width: 130px;
-  background-color: transparent;
-  border: none;
 `;
 
 const TableWrapper = styled.div`

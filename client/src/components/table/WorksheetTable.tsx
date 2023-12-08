@@ -284,32 +284,26 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-
 const TableWrapper = styled.div`
   display: flex;
   justify-content: center;
   height: 400px;
   overflow: auto;
 `;
-
 const Table = styled.table`
   border-collapse: collapse;
   background-color: white;
   height: 10px;
 `;
-
 const Thead = styled.thead`
   font-size: medium;
 `;
-
 const Tbody = styled.tbody`
   font-size: small;
 `;
-
 const Tr = styled.tr`
   height: 30px;
 `;
-
 const Th = styled.th`
   border: 1px solid #a3aed0;
   color: #a3aed0;
@@ -317,7 +311,6 @@ const Th = styled.th`
 const Td = styled.td`
   border: 1px solid #a3aed0;
 `;
-
 const PopoverMenu = styled.div`
   width: 100px;
   height: 25px;

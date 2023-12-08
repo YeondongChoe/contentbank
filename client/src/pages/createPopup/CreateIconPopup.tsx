@@ -49,8 +49,8 @@ export function CreateIconPopup() {
   };
 
   return (
-    <Container>
-      <Wrapper>
+    <Overlay>
+      <Container>
         {isUpload ? (
           <CreateMainPopup />
         ) : (
@@ -88,12 +88,12 @@ export function CreateIconPopup() {
             </MenuListWrapper>
           </>
         )}
-      </Wrapper>
-    </Container>
+      </Container>
+    </Overlay>
   );
 }
 
-const Container = styled.div`
+const Overlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -105,20 +105,17 @@ const Container = styled.div`
   align-items: center;
   z-index: 1;
 `;
-
-const Wrapper = styled.div`
+const Container = styled.div`
   max-width: 80%;
   min-width: 800px;
   padding: 20px;
   border: 1px solid #a3aed0;
   background-color: white;
 `;
-
 const CancelButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
-
 const MenuListWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -126,7 +123,6 @@ const MenuListWrapper = styled.div`
   padding: 100px;
   gap: 100px;
 `;
-
 const MenuWrapper = styled.div`
   width: 230px;
   height: 350px;
@@ -138,11 +134,9 @@ const MenuWrapper = styled.div`
   border-radius: 25px;
   cursor: pointer;
 `;
-
 const IconWrapper = styled.div`
   margin-bottom: 30px;
 `;
-
 const TextWrapper = styled.div`
   display: flex;
   flex-direction: column;

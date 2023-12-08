@@ -17,7 +17,7 @@ type loginProps = {
   password: string;
 };
 
-const Login = () => {
+export function Login() {
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('userId') ? true : false,
   );
@@ -31,6 +31,8 @@ const Login = () => {
   } = useForm<loginProps>();
 
   const Id = watch('id', '');
+  const Password = watch('password', '');
+
   const navigate = useNavigate();
 
   const submitLogin: SubmitHandler<loginProps> = async (data) => {
@@ -46,167 +48,148 @@ const Login = () => {
   };
 
   return (
-    <>
-      <S.main>
-        <S.formContainer>
-          <S.title>로그인</S.title>
-          <form onSubmit={handleSubmit(submitLogin)}>
-            <S.inputContainer>
-              <S.label>아이디*</S.label>
-              <Controller
-                control={control}
-                name="id"
-                defaultValue={getAuthorityCookie('userId') || ''}
-                render={({ field }) => (
-                  <S.input
-                    type="text"
-                    placeholder="아이디를 입력해주세요."
-                    onChange={field.onChange}
-                    value={field.value}
-                  />
-                )}
-              />
-              <S.errorMessage>{errors?.id?.message}</S.errorMessage>
-              <S.label>비밀번호*</S.label>
-              <Controller
-                control={control}
-                name="password"
-                defaultValue=""
-                render={({ field }) => (
-                  <S.input
-                    type="password"
-                    placeholder="비밀번호를 입력해주세요."
-                    onChange={field.onChange}
-                    value={field.value}
-                  />
-                )}
-              />
-              <S.errorMessage>{errors?.password?.message}</S.errorMessage>
-              <S.saveWarraper>
-                <S.saveIcon onClick={checkIconselected}>
-                  {isClicked ? (
-                    <CheckCircleOutlineIcon fontSize="small" />
-                  ) : (
-                    <RadioButtonUncheckedIcon fontSize="small" />
-                  )}
-                  <S.saveId>아이디 저장</S.saveId>
-                </S.saveIcon>
-              </S.saveWarraper>
-            </S.inputContainer>
-            <S.btnWrapper>
-              <StyledBtn variant="contained" size="large">
-                로그인
-              </StyledBtn>
-            </S.btnWrapper>
-          </form>
-          <S.message>
-            * 아이디/비밀번호를 모르실 경우, 관리자에게 문의해주세요.
-          </S.message>
-          {isAlertOpen && <NoticeAlert title={errorMessage} />}
-        </S.formContainer>
-      </S.main>
-    </>
+    <Container>
+      <Wrapper>
+        <Title>로그인</Title>
+        <Form onSubmit={handleSubmit(submitLogin)}>
+          <InputWrapper>
+            <Label>아이디*</Label>
+            <Controller
+              control={control}
+              name="id"
+              defaultValue={getAuthorityCookie('userId') || ''}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  placeholder="아이디를 입력해주세요."
+                  onChange={field.onChange}
+                  value={field.value}
+                  onClick={() => setErrorMessage('')}
+                />
+              )}
+            />
+            <ErrorMessage>{errorMessage}</ErrorMessage>
+            <Label>비밀번호*</Label>
+            <Controller
+              control={control}
+              name="password"
+              defaultValue=""
+              render={({ field }) => (
+                <Input
+                  type="password"
+                  placeholder="비밀번호를 입력해주세요."
+                  onChange={field.onChange}
+                  value={field.value}
+                  onClick={() => setErrorMessage('')}
+                />
+              )}
+            />
+            <ErrorMessage>{errorMessage}</ErrorMessage>
+
+            <SaveIdWrapper onClick={checkIconselected}>
+              {isClicked ? (
+                <CheckCircleOutlineIcon fontSize="small" />
+              ) : (
+                <RadioButtonUncheckedIcon fontSize="small" />
+              )}
+              <SaveId>아이디 저장</SaveId>
+            </SaveIdWrapper>
+          </InputWrapper>
+          <SaveButtonWrapper>
+            <StyledBtn variant="contained" size="large">
+              로그인
+            </StyledBtn>
+          </SaveButtonWrapper>
+        </Form>
+        <NoticeMessage>
+          * 아이디/비밀번호를 모르실 경우, 관리자에게 문의해주세요.
+        </NoticeMessage>
+        {isAlertOpen && <NoticeAlert title={errorMessage} />}
+      </Wrapper>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.main`
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  `,
-  formContainer: styled.div`
-    background-color: white;
-    border-radius: 20px;
-    box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-  `,
-  title: styled.div`
-    width: 400px;
-    display: flex;
-    font-size: 25px;
-    margin-top: 20px;
-    margin-bottom: 30px;
-    color: #1b254b;
-    margin-left: 20px;
-  `,
-  form: styled.form``,
-  inputContainer: styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  `,
-  label: styled.label`
-    width: 400px;
-    display: flex;
-    color: #1b254b;
-    font-weight: 500;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    margin-left: 0.375rem;
-  `,
-  input: styled.input`
-    width: 400px;
-    height: 40px;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #e9ecef;
-    border-radius: 10px;
-    ::placeholder {
-      color: red;
-    }
-    :focus {
-      outline: none;
-    }
-  `,
-  errorMessage: styled.div`
-    width: 400px;
-    font-size: 12px;
+const Container = styled.div`
+  min-width: 800px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+const Wrapper = styled.div`
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
+  padding: 20px;
+`;
+const Title = styled.div`
+  display: flex;
+  font-size: 25px;
+  padding-bottom: 20px;
+  color: #1b254b;
+`;
+const Form = styled.form``;
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+`;
+const Label = styled.label`
+  width: 400px;
+  display: flex;
+  justify-content: flex-start;
+  color: #1b254b;
+  font-size: 14px;
+`;
+const Input = styled.input`
+  width: 400px;
+  height: 40px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  ::placeholder {
     color: red;
-    display: flex;
-    justify-content: flex-start;
-  `,
-  saveWarraper: styled.div`
-    width: 400px;
-    margin-left: 40px;
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
-  `,
-  saveIcon: styled.div`
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 18px;
-  `,
-  saveId: styled.p`
-    font-size: 14px;
-    color: #1b254b;
-    font-weight: 500;
-    line-height: 1.25rem;
-    margin-left: 0.375rem;
-  `,
-  btnWrapper: styled.button`
-    width: 100%;
-    margin-top: 30px;
-    background-color: transparent;
-    border: none;
-    display: flex;
-    justify-content: center;
-  `,
-  message: styled.p`
-    display: flex;
-    color: #1b254b;
-    margin-left: 25px;
-    font-size: 13px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  `,
-};
-
+  }
+  :focus {
+    outline: none;
+  }
+`;
+const ErrorMessage = styled.div`
+  width: 400px;
+  font-size: 12px;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+`;
+const SaveIdWrapper = styled.div`
+  width: 400px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 18px;
+`;
+const SaveId = styled.p`
+  font-size: 14px;
+  color: #1b254b;
+  margin-left: 5px;
+`;
+const SaveButtonWrapper = styled.button`
+  margin-top: 30px;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  justify-content: center;
+`;
+const NoticeMessage = styled.p`
+  display: flex;
+  color: #1b254b;
+  font-size: 13px;
+  padding-top: 20px;
+`;
 const StyledBtn = styled(Button)`
   && {
     width: 400px;
@@ -216,4 +199,3 @@ const StyledBtn = styled(Button)`
     line-height: normal;
   }
 `;
-export { Login };

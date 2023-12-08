@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-const ContentCategoryChange = () => {
+export function ContentCategoryChange() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   const ContentList = dummy.ContentInfo;
@@ -250,11 +250,16 @@ const ContentCategoryChange = () => {
   }, [didMount]);
 
   return (
-    <S.main>
-      <S.topContainer>
-        <S.selectContainer>
-          <S.selectWapper>
-            <S.subTitle>찾을 문항 분류</S.subTitle>
+    <Container>
+      <SelectsWrapper>
+        <SelectWrapper>
+          <TitleWrapper>
+            <SelectTitle>찾을 문항 분류</SelectTitle>
+            <StyledActionBtn variant="outlined" onClick={searchCategory}>
+              찾기
+            </StyledActionBtn>
+          </TitleWrapper>
+          <SelectBox>
             <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
               <InputLabel size="small" id="개정과정">
                 개정과정
@@ -382,9 +387,14 @@ const ContentCategoryChange = () => {
                 <MenuItem value={'비활성화'}>비활성화</MenuItem>
               </Select>
             </FormControl>
-          </S.selectWapper>
-          <S.selectWapper>
-            <S.subTitle>바꿀 문항 분류</S.subTitle>
+          </SelectBox>
+          <TitleWrapper>
+            <SelectTitle>바꿀 문항 분류</SelectTitle>
+            <StyledActionBtn variant="contained" onClick={changeCategory}>
+              선택 바꾸기
+            </StyledActionBtn>
+          </TitleWrapper>
+          <SelectBox>
             <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
               <InputLabel size="small" id="개정과정">
                 개정과정
@@ -512,31 +522,23 @@ const ContentCategoryChange = () => {
                 <MenuItem value={'비활성화'}>비활성화</MenuItem>
               </Select>
             </FormControl>
-          </S.selectWapper>
-        </S.selectContainer>
-        <S.topBtnContainer>
-          <StyledActionBtn variant="outlined" onClick={searchCategory}>
-            찾기
-          </StyledActionBtn>
-          <StyledActionBtn variant="contained" onClick={changeCategory}>
-            선택 바꾸기
-          </StyledActionBtn>
-        </S.topBtnContainer>
-      </S.topContainer>
-      <S.wholeContainer>
-        <S.leftContainer>
-          <S.divTitle>문항선택</S.divTitle>
-          <S.listContainer>
-            <S.checkboxWapper>
+          </SelectBox>
+        </SelectWrapper>
+      </SelectsWrapper>
+      <ContentWrapper>
+        <ContentListSection>
+          <ContentTitle>문항선택</ContentTitle>
+          <ContentListWrapper>
+            <AllCheckWapper>
               <input
                 type="checkbox"
                 onChange={selectAll}
                 checked={isAllSelected}
               ></input>
-              <S.listTitle>전체선택</S.listTitle>
-            </S.checkboxWapper>
+              <AllCheckTitle>전체선택</AllCheckTitle>
+            </AllCheckWapper>
             {ContentList.map((el, i) => (
-              <S.contentCode
+              <Content
                 key={i}
                 onClick={() => {
                   {
@@ -558,107 +560,95 @@ const ContentCategoryChange = () => {
                 }
               >
                 {el.code}
-              </S.contentCode>
+              </Content>
             ))}
-          </S.listContainer>
-        </S.leftContainer>
-        <S.rightContainer>
-          <S.divTitle>문항 뷰어 {classificatecode}</S.divTitle>
-          <S.viewerContainer>
+          </ContentListWrapper>
+        </ContentListSection>
+        <ContentViewerSection>
+          <ContentTitle>문항 뷰어 {classificatecode}</ContentTitle>
+          <ViewerWrapper>
             <div>가지고온 리스트의 문항을 뷰어로 보여주기</div>
             <div>변경 내용 저장을 눌렀을 때 서버에 Post API</div>
-          </S.viewerContainer>
-        </S.rightContainer>
-      </S.wholeContainer>
-      <S.btnContainer>
-        <StyledSaveBtn variant="outlined" onClick={submitSave}>
-          변경 내용 저장
-        </StyledSaveBtn>
-      </S.btnContainer>
-    </S.main>
+          </ViewerWrapper>
+        </ContentViewerSection>
+        <SaveButtonWrapper>
+          <StyledSaveBtn variant="outlined" onClick={submitSave}>
+            변경 내용 저장
+          </StyledSaveBtn>
+        </SaveButtonWrapper>
+      </ContentWrapper>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.main``,
-  topContainer: styled.div`
-    display: flex;
-    margin-top: 40px;
-    justify-content: center;
-  `,
-  selectContainer: styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  `,
-  selectWapper: styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  `,
-  subTitle: styled.div`
-    margin-right: 10px;
-  `,
-  topBtnContainer: styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-    margin-left: 20px;
-  `,
-  wholeContainer: styled.div`
-    height: 560px;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 40px;
-  `,
-  divTitle: styled.div`
-    font-size: 16px;
-    margin-bottom: 5px;
-  `,
-  leftContainer: styled.div`
-    width: 300px;
-  `,
-  listContainer: styled.div`
-    border: 1px solid #a3aed0;
-    height: 535px;
-  `,
-  checkboxWapper: styled.div`
-    display: flex;
-    gap: 10px;
-    border-bottom: 1px solid #a3aed0;
-    padding: 5px;
-  `,
-
-  listTitle: styled.div`
-    font-size: 14px;
-  `,
-  contentCode: styled.div<{ choiced: boolean }>`
-    padding-left: 10px;
-    font-size: 13px;
-    background-color: ${(props) => (props.choiced ? '#a3aed0' : 'white')};
-    color: ${(props) => (props.choiced ? 'white' : 'initial')};
-    cursor: pointer;
-  `,
-  rightContainer: styled.div`
-    width: 500px;
-  `,
-  viewerContainer: styled.div`
-    border: 1px solid #a3aed0;
-    height: 535px;
-  `,
-  btnContainer: styled.div`
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 30px;
-  `,
-};
+const Container = styled.div``;
+const SelectsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 20px;
+`;
+const SelectTitle = styled.div``;
+const SelectBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+const ContentWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 20px;
+`;
+const ContentTitle = styled.div`
+  font-size: 16px;
+  margin-bottom: 5px;
+`;
+const ContentListSection = styled.section``;
+const ContentListWrapper = styled.div`
+  border: 1px solid #a3aed0;
+  height: 500px;
+`;
+const AllCheckWapper = styled.div`
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid #a3aed0;
+  padding: 5px;
+`;
+const AllCheckTitle = styled.div`
+  font-size: 14px;
+`;
+const Content = styled.div<{ choiced: boolean }>`
+  padding-left: 10px;
+  font-size: 13px;
+  background-color: ${(props) => (props.choiced ? '#a3aed0' : 'white')};
+  color: ${(props) => (props.choiced ? 'white' : 'initial')};
+  cursor: pointer;
+`;
+const ContentViewerSection = styled.section``;
+const ViewerWrapper = styled.div`
+  border: 1px solid #a3aed0;
+  height: 500px;
+`;
+const SaveButtonWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+`;
 
 const StyledActionBtn = styled(Button)`
   && {
     width: 100px;
-    height: 40px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
@@ -673,5 +663,3 @@ const StyledSaveBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export { ContentCategoryChange };

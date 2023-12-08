@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-const SelectBar = () => {
+export function SelectBar() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
 
@@ -180,17 +180,14 @@ const SelectBar = () => {
       </SelectWrapper>
     </Container>
   );
-};
+}
 
 const Container = styled.div`
   margin: 40px 10px 20px 50px;
   display: flex;
   justify-content: space-between;
 `;
-
 const SelectWrapper = styled.div`
   display: flex;
   gap: 10px;
 `;
-
-export { SelectBar };
