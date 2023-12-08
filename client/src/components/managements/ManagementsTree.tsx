@@ -7,7 +7,7 @@ import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreeP
 
 import { Button } from '@mui/material';
 
-const ManagementsTree = () => {
+export function ManagementsTree() {
   const [choiceValue, setChoiceValue] = useState(1);
   const [isCreate, setIsCreate] = useRecoilState(managementTreePopupBoolAtom);
 
@@ -23,14 +23,9 @@ const ManagementsTree = () => {
             히스토리
           </TapMenu>
         </TapWrapper>
-        <ButtonWrapper>
-          <StyledUplodeBtn
-            variant="contained"
-            onClick={() => setIsCreate(true)}
-          >
-            문항 정보 트리구조 변경
-          </StyledUplodeBtn>
-        </ButtonWrapper>
+        <StyledUplodeBtn variant="contained" onClick={() => setIsCreate(true)}>
+          문항 정보 트리구조 변경
+        </StyledUplodeBtn>
       </HeadWrapper>
       <TableWrapper>
         <ListTable />
@@ -38,34 +33,30 @@ const ManagementsTree = () => {
       {isCreate && <ManagemantTreePopup />}
     </Container>
   );
-};
+}
 
 const Container = styled.div`
-  width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 const HeadWrapper = styled.div`
-  width: 1280px;
-  margin-top: 40px;
+  width: 100%;
+  padding: 40px 10px 0px 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
 const TapWrapper = styled.div`
-  width: 359px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-end;
-  gap: 10px;
 `;
 
 const TapMenu = styled.div<{ choiced: number }>`
   height: 40px;
   border: 1px solid #a3aed0;
-  margin-left: 20px;
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -86,15 +77,7 @@ const TapMenu = styled.div<{ choiced: number }>`
   }
 `;
 
-const ButtonWrapper = styled.div`
-  width: 170px;
-  background-color: transparent;
-  border: none;
-  margin-right: 20px;
-`;
-
 const TableWrapper = styled.div`
-  width: 1280px;
   border-top: 1px solid #a3aed0;
 `;
 
@@ -107,5 +90,3 @@ const StyledUplodeBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export { ManagementsTree };

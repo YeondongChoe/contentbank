@@ -130,11 +130,11 @@ export function Header() {
 
   return (
     <Container>
-      <Warpper>
-        <IconWarpper onClick={moveMainpage}>
+      <Wrapper>
+        <IconWrapper onClick={moveMainpage}>
           <AccountBalanceIcon style={{ fontSize: '50px' }} />
-        </IconWarpper>
-        <NavBarWarpper
+        </IconWrapper>
+        <NavBarWrapper
           onMouseEnter={() => {
             setValue('');
           }}
@@ -160,16 +160,16 @@ export function Header() {
                   ))}
                 </TabList>
               </Box>
-              <NavMenuWarpper>
+              <NavMenuWrapper>
                 {menuValue?.map((el, i) => (
-                  <PanelWarpper key={i}>
+                  <PanelWrapper key={i}>
                     {isMenuVisible && (
-                      <EachPanelWarpper
+                      <EachPanelWrapper
                         onMouseLeave={() => {
                           setValue('');
                         }}
                       >
-                        <TabPanelWarpper
+                        <TabPanelWrapper
                           onClick={(e) => {
                             moveTabPanel(el?.children?.[0]?.code);
                           }}
@@ -186,8 +186,8 @@ export function Header() {
                           >
                             {el?.children?.[0]?.name}
                           </TabPanel>
-                        </TabPanelWarpper>
-                        <TabPanelWarpper
+                        </TabPanelWrapper>
+                        <TabPanelWrapper
                           onClick={(e) => {
                             moveTabPanel(el?.children?.[1]?.code);
                           }}
@@ -203,16 +203,16 @@ export function Header() {
                           >
                             {el?.children?.[1]?.name}
                           </TabPanel>
-                        </TabPanelWarpper>
-                      </EachPanelWarpper>
+                        </TabPanelWrapper>
+                      </EachPanelWrapper>
                     )}
-                  </PanelWarpper>
+                  </PanelWrapper>
                 ))}
-              </NavMenuWarpper>
+              </NavMenuWrapper>
             </TabContext>
           </Box>
-        </NavBarWarpper>
-        <SideMenuWarpper>
+        </NavBarWrapper>
+        <SideMenuWrapper>
           <Breadcrumbs separator="|">
             <Link underline="hover" color="inherit" href="/preparing">
               가이드
@@ -232,8 +232,8 @@ export function Header() {
               로그아웃
             </Link>
           </Breadcrumbs>
-        </SideMenuWarpper>
-      </Warpper>
+        </SideMenuWrapper>
+      </Wrapper>
     </Container>
   );
 }
@@ -242,7 +242,7 @@ const Container = styled.div`
   padding-top: 20px;
 `;
 
-const Warpper = styled.div`
+const Wrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -251,7 +251,7 @@ const Warpper = styled.div`
   padding: 0px 20px;
 `;
 
-const IconWarpper = styled.div`
+const IconWrapper = styled.div`
   width: 50px;
   display: flex;
   align-items: center;
@@ -259,7 +259,7 @@ const IconWarpper = styled.div`
   cursor: pointer;
 `;
 
-const NavBarWarpper = styled.nav`
+const NavBarWrapper = styled.nav`
   display: flex;
   align-items: center;
   flex: 1 0 0;
@@ -267,12 +267,12 @@ const NavBarWarpper = styled.nav`
   font-size: 20px;
 `;
 
-const NavMenuWarpper = styled.div`
+const NavMenuWrapper = styled.div`
   display: flex;
   position: absolute;
 `;
 
-const PanelWarpper = styled.div`
+const PanelWrapper = styled.div`
   width: 140px;
   display: flex;
   flex-direction: column;
@@ -280,13 +280,13 @@ const PanelWarpper = styled.div`
   justify-content: center;
 `;
 
-const EachPanelWarpper = styled.div`
+const EachPanelWrapper = styled.div`
   background-color: white;
   border-radius: 5px;
   box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
 `;
 
-const TabPanelWarpper = styled.div`
+const TabPanelWrapper = styled.div`
   width: 160px;
   display: flex;
   justify-content: center;
@@ -298,7 +298,7 @@ const TabPanelWarpper = styled.div`
   }
 `;
 
-const SideMenuWarpper = styled.div`
+const SideMenuWrapper = styled.div`
   display: flex;
   align-items: flex-end;
   padding-bottom: 10px;

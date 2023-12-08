@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Table } from '../table/StudentTable';
+import { TablePopup } from '../table/StudentTable';
 
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -9,7 +9,7 @@ type alertProps = {
   title: string;
 };
 
-const PopupModal = (prop: alertProps) => {
+export function PopupModal(prop: alertProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const openAlert = () => {
@@ -35,7 +35,7 @@ const PopupModal = (prop: alertProps) => {
               <CloseIcon onClick={closeAlert} sx={{ cursor: 'pointer' }} />
             </HeadWrapper>
             <Description>
-              <Table />
+              <TablePopup />
             </Description>
             <SubmitButton onClick={submit}>등록</SubmitButton>
           </Container>
@@ -43,7 +43,7 @@ const PopupModal = (prop: alertProps) => {
       )}
     </>
   );
-};
+}
 
 const Overlay = styled.div`
   position: fixed;
@@ -57,13 +57,11 @@ const Overlay = styled.div`
   align-items: center;
   z-index: 99;
 `;
-
 const Container = styled.div`
   width: 500px;
   border: 1px solid gray;
   background-color: white;
 `;
-
 const HeadWrapper = styled.div`
   width: 100%;
   height: 50px;
@@ -73,11 +71,9 @@ const HeadWrapper = styled.div`
   background-color: #e5e5e5;
   padding: 10px;
 `;
-
 const Title = styled.div`
   font-size: 25px;
 `;
-
 const Description = styled.div`
   width: 100%;
   height: 450px;
@@ -86,7 +82,6 @@ const Description = styled.div`
   align-items: center;
   font-size: 22px;
 `;
-
 const SubmitButton = styled.button`
   width: 50px;
   margin-bottom: 10px;
@@ -95,5 +90,3 @@ const SubmitButton = styled.button`
   background-color: black;
   color: white;
 `;
-
-export { PopupModal };

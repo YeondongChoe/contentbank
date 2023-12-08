@@ -12,7 +12,7 @@ type AlertProps = {
   action?: string;
 };
 
-const SelectAlert = (prop: AlertProps) => {
+export function SelectAlert(prop: AlertProps) {
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
 
   const closeAlert = () => {
@@ -25,24 +25,24 @@ const SelectAlert = (prop: AlertProps) => {
         <Overlay>
           <Container>
             <AlertWrapper>
-              <CancelIconWarpper>
+              <CancelIconWrapper>
                 <CloseIcon onClick={closeAlert} sx={{ cursor: 'pointer' }} />
-              </CancelIconWarpper>
+              </CancelIconWrapper>
               <Description>{prop.title}</Description>
               <Description>{prop.description}</Description>
             </AlertWrapper>
-            <SelectWarpper>
+            <SelectWrapper>
               <CancelButton onClick={closeAlert}>취소</CancelButton>
               <ConfirmButton onClick={prop.onClick}>
                 {prop.action}
               </ConfirmButton>
-            </SelectWarpper>
+            </SelectWrapper>
           </Container>
         </Overlay>
       )}
     </>
   );
-};
+}
 
 const Overlay = styled.div`
   position: fixed;
@@ -56,7 +56,6 @@ const Overlay = styled.div`
   align-items: center;
   z-index: 99;
 `;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -67,19 +66,16 @@ const Container = styled.div`
   border: 1px solid gray;
   background-color: white;
 `;
-
 const AlertWrapper = styled.div`
   width: 100%;
 `;
-
-const CancelIconWarpper = styled.div`
+const CancelIconWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: 5px;
   margin-right: 5px;
   cursor: pointer;
 `;
-
 const Description = styled.div`
   display: flex;
   flex-direction: column;
@@ -91,21 +87,18 @@ const Description = styled.div`
     font-size: 11px;
   }
 `;
-
-const SelectWarpper = styled.div`
+const SelectWrapper = styled.div`
   width: 100%;
   height: 40px;
   display: flex;
   justify-content: space-evenly;
 `;
-
 const CancelButton = styled.div`
   margin: auto 0;
   cursor: pointer;
   font-size: 12px;
   color: gray;
 `;
-
 const ConfirmButton = styled.div`
   margin: auto 0;
   cursor: pointer;
@@ -113,5 +106,3 @@ const ConfirmButton = styled.div`
   font-size: 12px;
   font-weight: bold;
 `;
-
-export { SelectAlert };

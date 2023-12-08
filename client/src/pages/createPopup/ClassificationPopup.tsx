@@ -152,8 +152,8 @@ export function ClassificationPopup() {
 
   return (
     <Container>
-      <Warpper>
-        <ContentListWarpper>
+      <Wrapper>
+        <ContentListWrapper>
           <Title>문항 선택</Title>
           <ContentsList>
             {ContentList.map((el, i) => (
@@ -168,16 +168,16 @@ export function ClassificationPopup() {
               </Content>
             ))}
           </ContentsList>
-        </ContentListWarpper>
+        </ContentListWrapper>
 
-        <ContentViewerWarpper>
+        <ContentViewerWrapper>
           <Title>문항 뷰어</Title>
           <ContentViewer>
             <div dangerouslySetInnerHTML={{ __html: html }}></div>
           </ContentViewer>
-        </ContentViewerWarpper>
+        </ContentViewerWrapper>
 
-        <ContentClassificationWarpper>
+        <ContentClassificationWrapper>
           <form>
             <Title>문항 분류</Title>
             <ContentClassificationForm>
@@ -492,7 +492,7 @@ export function ClassificationPopup() {
                 />
               </FormControl>
             </ContentClassificationForm>
-            <ButtonWarpper>
+            <ButtonWrapper>
               <StyleSaveBtn
                 variant="contained"
                 onClick={() => {
@@ -501,10 +501,10 @@ export function ClassificationPopup() {
               >
                 저장
               </StyleSaveBtn>
-            </ButtonWarpper>
+            </ButtonWrapper>
           </form>
-        </ContentClassificationWarpper>
-      </Warpper>
+        </ContentClassificationWrapper>
+      </Wrapper>
     </Container>
   );
 }
@@ -515,7 +515,7 @@ const Container = styled.div`
   border: 1px solid #a3aed0;
   border-top: none;
 `;
-const Warpper = styled.div`
+const Wrapper = styled.div`
   display: flex;
 `;
 const Title = styled.div`
@@ -523,7 +523,7 @@ const Title = styled.div`
   padding: 10px;
   border-bottom: 1px solid #a3aed0;
 `;
-const ContentListWarpper = styled.div`
+const ContentListWrapper = styled.div`
   border-right: 1px solid #a3aed0;
   flex: 1 0 30%;
 `;
@@ -536,14 +536,14 @@ const Content = styled.div<{ choiced: boolean }>`
   color: ${(props) => (props.choiced ? 'white' : 'initial')};
   cursor: pointer;
 `;
-const ContentViewerWarpper = styled.div`
+const ContentViewerWrapper = styled.div`
   border-right: 1px solid #a3aed0;
   flex: 1 0 30%;
 `;
 const ContentViewer = styled.div`
   padding: 10px;
 `;
-const ContentClassificationWarpper = styled.div`
+const ContentClassificationWrapper = styled.div`
   flex: 1 0 40%;
 `;
 const ContentClassificationForm = styled.div`
@@ -558,7 +558,7 @@ const ContentClassificationGroup = styled.div`
   flex-grow: 1;
   gap: 10px;
 `;
-const ButtonWarpper = styled.div`
+const ButtonWrapper = styled.div`
   height: 40px;
   padding: 15px 10px;
   display: flex;

@@ -1,24 +1,19 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Member from '../../components/operation/Member';
+import { Member } from '../../components/operation/Member';
 
-const OperationMember = () => {
+export function OperationMember() {
   return (
-    <S.main>
+    <Container>
       <Member />
-    </S.main>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.main`
-    width: 100vw;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  `,
-};
-
-export { OperationMember };
+const Container = styled.div`
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;

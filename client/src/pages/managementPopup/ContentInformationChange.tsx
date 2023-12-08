@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-const ContentInformationChange = () => {
+export function ContentInformationChange() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
 
@@ -58,8 +58,8 @@ const ContentInformationChange = () => {
   }, [didMount]);
 
   return (
-    <S.main>
-      <S.selectContainer>
+    <Container>
+      <SelectWrapper>
         <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
           <InputLabel size="small" id="개정과정">
             개정과정
@@ -70,7 +70,7 @@ const ContentInformationChange = () => {
             value={curriculum}
             label="개정과정"
             onChange={selectCurriculum}
-            sx={{ minWidth: 120, height: 40 }}
+            sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>2015</MenuItem>
             <MenuItem value={20}>2017</MenuItem>
@@ -87,7 +87,7 @@ const ContentInformationChange = () => {
             value={schoolLevel}
             label="학교"
             onChange={selectSchoolLevel}
-            sx={{ minWidth: 120, height: 40 }}
+            sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>01 중등</MenuItem>
             <MenuItem value={20}>02 중등</MenuItem>
@@ -104,7 +104,7 @@ const ContentInformationChange = () => {
             value={schoolYear}
             label="학년"
             onChange={selectSchoolYear}
-            sx={{ minWidth: 120, height: 40 }}
+            sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>중등 1</MenuItem>
             <MenuItem value={20}>중등 2</MenuItem>
@@ -121,7 +121,7 @@ const ContentInformationChange = () => {
             value={semester}
             label="학기"
             onChange={selectSemester}
-            sx={{ minWidth: 120, height: 40 }}
+            sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>1학기</MenuItem>
             <MenuItem value={20}>2학기</MenuItem>
@@ -137,7 +137,7 @@ const ContentInformationChange = () => {
             value={unitMajor}
             label="대분류"
             onChange={selectUnitMajor}
-            sx={{ minWidth: 120, height: 40 }}
+            sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>일차부등식 소분류</MenuItem>
             <MenuItem value={20}>일차부등식 중분류</MenuItem>
@@ -154,7 +154,7 @@ const ContentInformationChange = () => {
             value={unitType}
             label="문항타입"
             onChange={selectUnitType}
-            sx={{ minWidth: 120, height: 40 }}
+            sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>객관식</MenuItem>
             <MenuItem value={20}>주관식</MenuItem>
@@ -171,35 +171,30 @@ const ContentInformationChange = () => {
             value={serviced}
             label="오픈여부"
             onChange={selectServiced}
-            sx={{ minWidth: 120, height: 40 }}
+            sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
           >
             <MenuItem value={10}>활성화</MenuItem>
             <MenuItem value={20}>비활성화</MenuItem>
           </Select>
         </FormControl>
-      </S.selectContainer>
-      <S.wholeContainer>
+      </SelectWrapper>
+      <ContentBox>
         <div>아이텍에서 만들어야할거같은 느낌</div>
         <div>선택된 항목이 있으면 보여주기</div>
         <div>선택된 항목이 없으면 보여주지 않기</div>
         <div>선택된 항목이 있더라도 찾기했을때는 찾은 항목으로 보여주지</div>
         <div>항목을 눌렀을 때 정보를 가져오는 API 연결해서 우측에 보여주기</div>
-      </S.wholeContainer>
-    </S.main>
+      </ContentBox>
+    </Container>
   );
-};
-
-const S = {
-  main: styled.div``,
-  selectContainer: styled.div`
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-    gap: 10px;
-  `,
-  wholeContainer: styled.div`
-    margin-top: 40px;
-  `,
-};
-
-export { ContentInformationChange };
+}
+const Container = styled.div``;
+const SelectWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+  gap: 5px;
+`;
+const ContentBox = styled.div`
+  padding-top: 40px;
+`;

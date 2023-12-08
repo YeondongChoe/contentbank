@@ -46,11 +46,11 @@ export function CreateMainPopup() {
 
   return (
     <Container>
-      <Warpper>
+      <Wrapper>
         <IconWrapper>
           <ArrowBackIosNewIcon onClick={goBackMainPopup} />
         </IconWrapper>
-        <TapMenuWarpper>
+        <TapMenuWrapper>
           <TapManu choiced={choiceValue} onClick={moveDT_Editing}>
             DT & Editing
           </TapManu>
@@ -60,11 +60,11 @@ export function CreateMainPopup() {
           <TapManu choiced={choiceValue} onClick={moveLabeling}>
             개체 라벨링
           </TapManu>
-        </TapMenuWarpper>
-        <CloseButtonWarpper onClick={closePopup}>
-          <CloseIcon />
-        </CloseButtonWarpper>
-      </Warpper>
+        </TapMenuWrapper>
+        <CloseButtonWrapper>
+          <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+        </CloseButtonWrapper>
+      </Wrapper>
       {choiceValue === 1 && (
         <ContentBox>
           {isCreateNewContent && <ContentCreatingPopup />}
@@ -89,7 +89,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const Warpper = styled.div`
+const Wrapper = styled.div`
   padding-top: 34px;
   display: flex;
   align-items: center;
@@ -101,7 +101,7 @@ const IconWrapper = styled.div`
   margin-right: 10px;
   cursor: pointer;
 `;
-const TapMenuWarpper = styled.div`
+const TapMenuWrapper = styled.div`
   display: flex;
   flex: 1 0 0;
 `;
@@ -135,8 +135,7 @@ const TapManu = styled.div<{ choiced: number }>`
     color: white;
   }
 `;
-const CloseButtonWarpper = styled.div`
-  cursor: pointer;
+const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 const ContentBox = styled.div`

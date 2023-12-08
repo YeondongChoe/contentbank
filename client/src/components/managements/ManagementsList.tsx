@@ -59,11 +59,9 @@ export function ManagementsList() {
             <SearchIcon onClick={searchList} />
           </IconWrapper>
         </InputWrapper>
-        <ButtonWrapper>
-          <StyledUplodeBtn variant="contained" onClick={openInformation}>
-            상세 검색
-          </StyledUplodeBtn>
-        </ButtonWrapper>
+        <StyledUplodeBtn variant="contained" onClick={openInformation}>
+          상세 검색
+        </StyledUplodeBtn>
       </HeadWrapper>
       {choiceValue === 1 && (
         <TableWrapper>
@@ -160,12 +158,6 @@ const IconWrapper = styled.div`
   align-items: center;
   padding-right: 10px;
   cursor: pointer;
-`;
-
-const ButtonWrapper = styled.div`
-  width: 130px;
-  background-color: transparent;
-  border: none;
 `;
 
 const TableWrapper = styled.div`

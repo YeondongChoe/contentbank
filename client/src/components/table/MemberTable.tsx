@@ -36,7 +36,7 @@ type memberListProps = {
   enabled: boolean;
 };
 
-const MemberTable = () => {
+export function MemberTable() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [memberList, setMemberList] = useState<memberListProps[]>([]);
   const setKeyValue = useSetRecoilState(memberKeyValueAtom);
@@ -114,7 +114,7 @@ const MemberTable = () => {
 
   return (
     <>
-      <S.mainContainer>
+      <Container>
         <Box sx={{ typography: 'body1' }}>
           <TabContext value={value}>
             <Box sx={{ borderColor: 'divider' }}>
@@ -141,85 +141,75 @@ const MemberTable = () => {
             </Box>
           </TabContext>
         </Box>
-        <S.btncontainer>
-          <S.ableBtnWrapper>
-            <StyledAbledBtn
-              variant="outlined"
-              onClick={openDisableAlert}
-              sx={{ backgroundColor: 'white' }}
-            >
-              비활성화
-            </StyledAbledBtn>
-          </S.ableBtnWrapper>
-        </S.btncontainer>
-      </S.mainContainer>
-
-      <S.tablecontainer>
-        <S.table>
-          <S.thead>
-            <S.tr>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+        <StyledAbledBtn
+          variant="outlined"
+          onClick={openDisableAlert}
+          sx={{ backgroundColor: 'white' }}
+        >
+          비활성화
+        </StyledAbledBtn>
+      </Container>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th rowSpan={2} style={{ width: '40px' }}>
+              <input
+                type="checkbox"
+                onChange={selectAll}
+                checked={isAllSelected}
+              ></input>
+            </Th>
+            <Th rowSpan={2} style={{ width: '200px' }}>
+              이름
+            </Th>
+            <Th rowSpan={2} style={{ width: '200px' }}>
+              아이디
+            </Th>
+            <Th rowSpan={2} style={{ width: '200px' }}>
+              권한
+            </Th>
+            <Th rowSpan={2} style={{ width: '250px' }}>
+              등록일
+            </Th>
+            <Th rowSpan={2} style={{ width: '80px' }}>
+              상태
+            </Th>
+            <Th rowSpan={2} style={{ width: '80px' }}>
+              상세정보
+            </Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {memberList?.map((member, i) => (
+            <Tr key={i}>
+              <Td style={{ textAlign: 'center' }}>
                 <input
                   type="checkbox"
-                  onChange={selectAll}
-                  checked={isAllSelected}
+                  checked={selectedRows.includes(member.id)}
+                  onChange={() => selectRow(member.id)}
                 ></input>
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '200px' }}>
-                이름
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '200px' }}>
-                아이디
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '200px' }}>
-                권한
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '250px' }}>
-                등록일
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '80px' }}>
-                상태
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '80px' }}>
-                상세정보
-              </S.th>
-            </S.tr>
-          </S.thead>
-          <S.tbody>
-            {memberList?.map((member, i) => (
-              <S.tr key={i}>
-                <S.td style={{ textAlign: 'center' }}>
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.includes(member.id)}
-                    onChange={() => selectRow(member.id)}
-                  ></input>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>{member.name}</S.td>
-                <S.td style={{ textAlign: 'center' }}>{member.id}</S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {member.authority.name}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {member.createdDate}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {member.enabled === true ? '활성' : '비활성'}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  <S.btnWrapper
+              </Td>
+              <Td style={{ textAlign: 'center' }}>{member.name}</Td>
+              <Td style={{ textAlign: 'center' }}>{member.id}</Td>
+              <Td style={{ textAlign: 'center' }}>{member.authority.name}</Td>
+              <Td style={{ textAlign: 'center' }}>{member.createdDate}</Td>
+              <Td style={{ textAlign: 'center' }}>
+                {member.enabled === true ? '활성' : '비활성'}
+              </Td>
+              <Td style={{ textAlign: 'center' }}>
+                <ButtonWrapper>
+                  <StyledDisabledBtn
+                    variant="outlined"
                     onClick={() => openDetailInformationPopup(member.key)}
                   >
-                    <StyledDisabledBtn variant="outlined">
-                      보기
-                    </StyledDisabledBtn>
-                  </S.btnWrapper>
-                </S.td>
-              </S.tr>
-            ))}
-          </S.tbody>
-        </S.table>
-      </S.tablecontainer>
+                    보기
+                  </StyledDisabledBtn>
+                </ButtonWrapper>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
       {isEnabled && (
         <SelectAlert
           title="비활성화 처리시 로그인이 불가합니다."
@@ -230,64 +220,44 @@ const MemberTable = () => {
       )}
     </>
   );
-};
+}
 
-const S = {
-  mainContainer: styled.div`
-    margin: 20px 115px 20px 115px;
-    display: flex;
-    justify-content: space-between;
-  `,
-  btncontainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  ableBtnWrapper: styled.div`
-    display: flex;
-    align-items: flex-end;
-  `,
-  tablecontainer: styled.div`
-    display: flex;
-    justify-content: center;
-    overflow: auto;
-  `,
-  table: styled.table`
-    border-collapse: collapse;
-    background-color: white;
-  `,
-  thead: styled.thead`
-    font-size: medium;
-  `,
-  tbody: styled.tbody`
-    font-size: small;
-  `,
-  tr: styled.tr`
-    height: 50px;
-  `,
-  th: styled.th`
-    border: 1px solid #a3aed0;
-    color: #a3aed0;
-  `,
-  td: styled.td`
-    border: 1px solid #a3aed0;
-  `,
-  btnWrapper: styled.div`
-    display: flex;
-    justify-content: center;
-  `,
-};
-
-const StyledTd = styled.td`
+const Container = styled.div`
+  padding: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+`;
+const Table = styled.table`
+  border-collapse: collapse;
+  background-color: white;
+`;
+const Thead = styled.thead`
+  font-size: medium;
+`;
+const Tbody = styled.tbody`
+  font-size: small;
+`;
+const Tr = styled.tr`
+  height: 50px;
+`;
+const Th = styled.th`
+  border: 1px solid #a3aed0;
+  color: #a3aed0;
+`;
+const Td = styled.td`
   border: 1px solid #a3aed0;
 `;
-
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 const StyledDisabledBtn = styled(Button)`
   && {
     font-size: 12px;
     line-height: normal;
   }
 `;
-
 const StyledAbledBtn = styled(Button)`
   && {
     width: 100px;
@@ -297,4 +267,3 @@ const StyledAbledBtn = styled(Button)`
     line-height: normal;
   }
 `;
-export { MemberTable };
