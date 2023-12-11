@@ -3,7 +3,6 @@ import * as React from 'react';
 // eslint-disable-next-line import/order, import/default
 import ReactDOM from 'react-dom/client';
 
-import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { App } from './App';
@@ -19,6 +18,7 @@ import { Notfound } from './pages/Notfound';
 import { OperationAuthority } from './pages/operate/OperationAuthority';
 import { OperationMember } from './pages/operate/OperationMember';
 import { Preparing } from './pages/Preparing';
+import GlobalStyle from './styles/GlobalStyle';
 
 const router = createBrowserRouter([
   {
@@ -81,5 +81,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <RouterProvider router={router} />
+    <GlobalStyle />
   </React.StrictMode>,
 );

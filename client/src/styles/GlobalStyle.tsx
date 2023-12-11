@@ -1,0 +1,54 @@
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalStyle = createGlobalStyle`
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+	outline: 0;
+}
+
+ul,
+ol,
+li {
+	list-style: none;
+}
+
+a,
+img {
+	vertical-align: top;
+	text-decoration: none;
+	outline: 1;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+fieldset {
+	border: none;
+}
+
+.sr-only {
+	display: none;
+}
+
+body {
+	margin: 0 auto;
+	max-width: 1024px;
+	background-color: #F4F7FE;
+	font-family: Consolas, monaco;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	user-select: none;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+`;
+
+export default GlobalStyle;
