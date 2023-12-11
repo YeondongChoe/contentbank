@@ -27,7 +27,7 @@ import {
 } from '../../api/putAxios';
 import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
-import { NoticeAlert } from '../alert/NoticeAlert';
+import { NoticeAlert } from '../molecules/alert/NoticeAlert';
 
 type authorityProps = {
   seq: number;

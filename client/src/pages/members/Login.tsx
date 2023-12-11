@@ -10,7 +10,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
-import { NoticeAlert } from '../../components/alert/NoticeAlert';
+import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { getAuthorityCookie } from '../../utils/cookies';
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import styled from 'styled-components';
 
-import { TablePopup } from '../table/StudentTable';
+import { TablePopup } from '../../table/StudentTable';
 
 type alertProps = {
   description?: string;

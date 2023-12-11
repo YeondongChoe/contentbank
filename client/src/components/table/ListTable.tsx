@@ -15,8 +15,6 @@ import styled from 'styled-components';
 import { getQuestionList } from '../../api/getAxios';
 import { postFavoriteQuestion } from '../../api/postAxios';
 import { putChangeServiced } from '../../api/putAxios';
-import { SelectAlert } from '../../components/alert/SelectAlert';
-import { PaginationBox } from '../../components/pagination/Pagination';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
@@ -36,6 +34,8 @@ import {
   checkBoxValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
+import { SelectAlert } from '../molecules/alert/SelectAlert';
+import { PaginationBox } from '../molecules/pagination/Pagination';
 
 type questionListProps = {
   contentSeq: number;

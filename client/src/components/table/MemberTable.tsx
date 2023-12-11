@@ -17,7 +17,7 @@ import {
   memberKeyValueAtom,
 } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
-import { SelectAlert } from '../alert/SelectAlert';
+import { SelectAlert } from '../molecules/alert/SelectAlert';
 
 type memberListProps = {
   seq: number;

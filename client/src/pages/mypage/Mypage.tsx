@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
-import { NoticeAlert } from '../../components/alert/NoticeAlert';
+import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { alertBoolAtom } from '../../state/utilAtom';
 

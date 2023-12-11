@@ -13,7 +13,6 @@ import Tab from '@mui/material/Tab';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { PaginationBox } from '../../components/pagination/Pagination';
 import { Step2 } from '../../pages/worksheetPopup/Step2';
 import {
   createWorksheetStep1BoolAtom,
@@ -27,6 +26,7 @@ import {
   checkBoxValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
+import { PaginationBox } from '../molecules/pagination/Pagination';
 
 import dummy from './data.json';
 

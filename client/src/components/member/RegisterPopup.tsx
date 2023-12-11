@@ -19,7 +19,7 @@ import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
 import { registerBoolAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
-import { NoticeAlert } from '../alert/NoticeAlert';
+import { NoticeAlert } from '../molecules/alert/NoticeAlert';
 
 type authorityListProps = {
   seq: number;

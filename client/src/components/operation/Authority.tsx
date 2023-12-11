@@ -10,8 +10,6 @@ import styled from 'styled-components';
 import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
-import { NoticeAlert } from '../../components/alert/NoticeAlert';
-import { SelectAlert } from '../../components/alert/SelectAlert';
 import {
   editCreateContentBool,
   editCreateListBool,
@@ -33,6 +31,8 @@ import {
   manageAuthorityBoolAtom,
 } from '../../state/authorityAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
+import { NoticeAlert } from '../molecules/alert/NoticeAlert';
+import { SelectAlert } from '../molecules/alert/SelectAlert';
 
 import { AuthorityTree } from './AuthorityTree';
 

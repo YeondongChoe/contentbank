@@ -9,7 +9,7 @@ const StyleDatePicker = styled(DatePicker)`
   width: 242px;
 `;
 
-const CommonDate = () => {
+export const CommonDate = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
 
   return (
@@ -28,5 +28,3 @@ const CommonDate = () => {
     </div>
   );
 };
-
-export { CommonDate };
