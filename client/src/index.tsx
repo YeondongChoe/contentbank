@@ -2,12 +2,12 @@ import * as React from 'react';
 
 // eslint-disable-next-line import/order, import/default
 import ReactDOM from 'react-dom/client';
-
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { App } from './App';
 import { ContentList } from './pages/content/ContentList';
 import { ContentWorksheet } from './pages/content/ContentWorksheet';
+import { Guide } from './pages/Guide';
 import { ManagementList } from './pages/management/ManagementList';
 import { ManagementTree } from './pages/management/ManagementTree';
 import { FirstLogin } from './pages/members/FirstLogin';
@@ -27,6 +27,10 @@ const router = createBrowserRouter([
     errorElement: <Notfound />,
     children: [
       { index: true, element: <ContentList /> },
+      {
+        path: '/guide',
+        element: <Guide />,
+      },
       {
         path: '/preparing',
         element: <Preparing />,
