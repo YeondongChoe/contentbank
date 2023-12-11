@@ -49,6 +49,14 @@ code {
     monospace;
 }
 
+/* 타블릿 사이즈 */
+@media screen and (max-width:1024px) {
+	body {
+	margin: 0;
+	max-width: 1024px;
+	padding: 0 20px;
+	}
+}
 `;
 
 export default GlobalStyle;
