@@ -1,13 +1,14 @@
-import React from 'react';
-import styled from 'styled-components';
-import { MemberTable } from '../table/MemberTable';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
-import { RegisterPopup } from '../member/RegisterPopup';
-import { EditPopup } from '../member/EditPopup';
+import * as React from 'react';
 
-import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { Button } from '@mui/material';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import styled from 'styled-components';
+
+import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
+import { EditPopup } from '../member/EditPopup';
+import { RegisterPopup } from '../member/RegisterPopup';
+import { MemberTable } from '../table/MemberTable';
 
 export function Member() {
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);

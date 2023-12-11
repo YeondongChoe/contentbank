@@ -1,6 +1,8 @@
-import React from 'react';
-import dummy from './data.json';
+import * as React from 'react';
+
 import styled from 'styled-components';
+
+import dummy from './data.json';
 
 export function TablePopup() {
   const studentList = dummy.Student;

@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useState } from 'react';
+
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import CloseIcon from '@mui/icons-material/Close';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import styled from 'styled-components';
+
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   createWorksheetStep3BoolAtom,
   editWorksheetBoolAtom,
 } from '../../state/creatingWorksheetAtom';
-import { Step3 } from './Step3';
 
-import { Button } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
+import { Step3 } from './Step3';
 
 export function Step2() {
   const [value, setValue] = useState('1');

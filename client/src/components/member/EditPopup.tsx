@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
-import { NoticeAlert } from '../alert/NoticeAlert';
-import { alertBoolAtom } from '../../state/utilAtom';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+import Textarea from '@mui/joy/Textarea';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Controller, useForm } from 'react-hook-form';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+
 import {
   getIndividualMemberInformation,
   getAuthorityList,
@@ -13,19 +25,9 @@ import {
   putChangeMemberInformation,
   putInitPassword,
 } from '../../api/putAxios';
-
-import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
-import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Input from '@mui/material/Input';
-import Textarea from '@mui/joy/Textarea';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
+import { NoticeAlert } from '../alert/NoticeAlert';
 
 type authorityProps = {
   seq: number;

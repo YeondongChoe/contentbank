@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
-import { SelectBar } from '../../components/contents/Selectbar';
-import { ContentInformationChange } from './ContentInformationChange';
-import { ContentCategoryChange } from './ContentCategoryChange';
+import * as React from 'react';
+import { useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { SelectBar } from '../../components/contents/Selectbar';
+import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
+
+import { ContentCategoryChange } from './ContentCategoryChange';
+import { ContentInformationChange } from './ContentInformationChange';
 
 export function ManagemantMainPopup() {
   const [isCreate, setIsCreate] = useRecoilState(

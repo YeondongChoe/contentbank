@@ -1,11 +1,12 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { passwordRegExp } from '../../utils/regExp';
-import { useNavigate } from 'react-router-dom';
-import { putChangePassword } from '../../api/putAxios';
+import * as React from 'react';
 
 import { Button } from '@mui/material';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { putChangePassword } from '../../api/putAxios';
+import { passwordRegExp } from '../../utils/regExp';
 
 type passwordProps = {
   password: string;

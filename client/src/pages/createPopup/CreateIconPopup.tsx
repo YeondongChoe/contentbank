@@ -1,18 +1,20 @@
-import React from 'react';
+import * as React from 'react';
+
+import CloseIcon from '@mui/icons-material/Close';
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
+
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
 } from '../../state/creatingContentAtom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { CreateMainPopup } from './CreateMainPopup';
 
-import CloseIcon from '@mui/icons-material/Close';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
+import { CreateMainPopup } from './CreateMainPopup';
 
 const styleIcon = {
   width: '150px',

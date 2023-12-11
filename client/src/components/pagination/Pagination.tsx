@@ -1,7 +1,9 @@
-import React from 'react';
-import { styled } from 'styled-components';
+import * as React from 'react';
+
 import Pagination from 'react-js-pagination';
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import { styled } from 'styled-components';
+
 import { pageAtom } from '../../state/utilAtom';
 import { checkBoxValueAtom } from '../../state/valueAtom';
 

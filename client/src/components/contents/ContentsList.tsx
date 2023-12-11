@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { ListTable } from '../table/ListTable';
-import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
-import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
-import { updateBoolAtom } from '../../state/utilAtom';
+import * as React from 'react';
+import { useState } from 'react';
 
-import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { Button } from '@mui/material';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
+import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
+import { updateBoolAtom } from '../../state/utilAtom';
+import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
+import { ListTable } from '../table/ListTable';
 
 export function ContentsList() {
   const [choiceValue, setChoiceValue] = useState(1);

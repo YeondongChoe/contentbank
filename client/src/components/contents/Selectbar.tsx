@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 
+import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import styled from 'styled-components';
 
 export function SelectBar() {
   const [didMount, setDidMount] = useState(false);

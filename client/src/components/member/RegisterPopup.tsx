@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { registerBoolAtom } from '../../state/memberAtom';
-import { NoticeAlert } from '../alert/NoticeAlert';
-import { alertBoolAtom } from '../../state/utilAtom';
-import { getAuthorityList } from '../../api/getAxios';
-import { postRegister, postDuplicate } from '../../api/postAxios';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/joy/FormLabel';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Input from '@mui/material/Input';
 import Textarea from '@mui/joy/Textarea';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { getAuthorityList } from '../../api/getAxios';
+import { postRegister, postDuplicate } from '../../api/postAxios';
+import { registerBoolAtom } from '../../state/memberAtom';
+import { alertBoolAtom } from '../../state/utilAtom';
+import { NoticeAlert } from '../alert/NoticeAlert';
 
 type authorityListProps = {
   seq: number;

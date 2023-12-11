@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { ListTable } from '../table/ListTable';
-import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
-import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
+import * as React from 'react';
+import { useState } from 'react';
 
-import { Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { Button } from '@mui/material';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
+import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
+import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
+import { ListTable } from '../table/ListTable';
 
 export function ManagementsList() {
   const [choiceValue, setChoiceValue] = useState(1);

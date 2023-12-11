@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { NoticeAlert } from '../../components/alert/NoticeAlert';
-import { SelectAlert } from '../../components/alert/SelectAlert';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { Button } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { DeleteAuthority } from '../../api/deleteAxios';
+import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
+import { postCreateAuthority } from '../../api/postAxios';
+import { NoticeAlert } from '../../components/alert/NoticeAlert';
+import { SelectAlert } from '../../components/alert/SelectAlert';
 import {
   editCreateContentBool,
   editCreateListBool,
@@ -24,14 +32,9 @@ import {
   manageMemberBoolAtom,
   manageAuthorityBoolAtom,
 } from '../../state/authorityAtom';
-import { AuthorityTree } from './AuthorityTree';
 import { alertBoolAtom } from '../../state/utilAtom';
-import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
-import { postCreateAuthority } from '../../api/postAxios';
-import { DeleteAuthority } from '../../api/deleteAxios';
 
-import { Button } from '@mui/material';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { AuthorityTree } from './AuthorityTree';
 
 type authorityListProps = {
   seq: number;

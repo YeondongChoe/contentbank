@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import styled from 'styled-components';
 
 export function Filterbar() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);

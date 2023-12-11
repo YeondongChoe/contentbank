@@ -1,9 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useRecoilValue } from 'recoil';
-import { updateBoolAtom } from '../../state/utilAtom';
+import * as React from 'react';
 
 import { Button } from '@mui/material';
+import { useRecoilValue } from 'recoil';
+import styled from 'styled-components';
+
+import { updateBoolAtom } from '../../state/utilAtom';
 
 export function FileUploadingPopup() {
   const isEdit = useRecoilValue(updateBoolAtom);

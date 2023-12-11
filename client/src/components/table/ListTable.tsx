@@ -1,36 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+
+import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
+import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
+import { Button } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Popover from '@mui/material/Popover';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
+
+import { getQuestionList } from '../../api/getAxios';
+import { postFavoriteQuestion } from '../../api/postAxios';
+import { putChangeServiced } from '../../api/putAxios';
 import { SelectAlert } from '../../components/alert/SelectAlert';
 import { PaginationBox } from '../../components/pagination/Pagination';
-import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
-import { pageAtom, totalPageAtom, updateBoolAtom } from '../../state/utilAtom';
-import { putChangeServiced } from '../../api/putAxios';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
 } from '../../state/creatingContentAtom';
+import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
+import {
+  pageAtom,
+  totalPageAtom,
+  updateBoolAtom,
+  alertBoolAtom,
+} from '../../state/utilAtom';
 import {
   createListCodeValueAtom,
   searchValueAtom,
   checkBoxValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
-import { alertBoolAtom } from '../../state/utilAtom';
-import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
-import { getQuestionList } from '../../api/getAxios';
-import { postFavoriteQuestion } from '../../api/postAxios';
-
-import { Button } from '@mui/material';
-import Popover from '@mui/material/Popover';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-
-import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
-import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 
 type questionListProps = {
   contentSeq: number;

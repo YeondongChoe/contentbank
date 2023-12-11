@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+
 import styled from 'styled-components';
+
 import { Authority } from '../../components/operation/Authority';
 
 export function OperationAuthority() {

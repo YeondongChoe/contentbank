@@ -1,5 +1,7 @@
-import React from 'react';
+import * as React from 'react';
+
 import axios, { AxiosResponse } from 'axios';
+
 import { getAuthorityCookie, setAuthorityCookie } from '../utils/cookies';
 
 /** 문항서버 API Instance*/

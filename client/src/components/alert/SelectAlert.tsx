@@ -1,9 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
-import { alertBoolAtom } from '../../state/utilAtom';
-import { useRecoilState } from 'recoil';
+import * as React from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
+import { useRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { alertBoolAtom } from '../../state/utilAtom';
 
 type AlertProps = {
   title: string;

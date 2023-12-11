@@ -1,5 +1,7 @@
-import React from 'react';
+import * as React from 'react';
+
 import styled from 'styled-components';
+
 import { ContentsList } from '../../components/contents/ContentsList';
 
 export function ContentList() {

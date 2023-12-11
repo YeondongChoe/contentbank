@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
+
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import CloseIcon from '@mui/icons-material/Close';
+import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
+
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
 } from '../../state/creatingContentAtom';
-import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
+
+import { ClassificationPopup } from './ClassificationPopup';
 import { ContentCreatingPopup } from './ContentCreatingPopup';
 import { FileUploadingPopup } from './FileUploadingPopup';
-import { ClassificationPopup } from './ClassificationPopup';
 import { LabelingPopup } from './LabelingPopup';
-
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import CloseIcon from '@mui/icons-material/Close';
 
 export function CreateMainPopup() {
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);

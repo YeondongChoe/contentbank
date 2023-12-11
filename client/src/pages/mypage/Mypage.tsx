@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
-
-import { useRecoilState } from 'recoil';
-import { alertBoolAtom } from '../../state/utilAtom';
-import { NoticeAlert } from '../../components/alert/NoticeAlert';
-import { ChangePassword } from '../../components/password/ChangePassword';
-import { getMemberInformation } from '../../api/getAxios';
-import { putSaveName } from '../../api/putAxios';
+import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { Button } from '@mui/material';
+import { useRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { getMemberInformation } from '../../api/getAxios';
+import { putSaveName } from '../../api/putAxios';
+import { NoticeAlert } from '../../components/alert/NoticeAlert';
+import { ChangePassword } from '../../components/password/ChangePassword';
+import { alertBoolAtom } from '../../state/utilAtom';
 
 export function Mypage() {
   const [isNameEdit, setIsNameEdit] = useState(false);

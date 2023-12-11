@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 /** 전체 편집 클릭*/
 export const clickAllEdit = ({

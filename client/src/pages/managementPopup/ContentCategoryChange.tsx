@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import dummy from '../createPopup/data.json';
-import { useRecoilState } from 'recoil';
-import { checkListValueAtom } from '../../state/valueAtom';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 
 import { Button } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { checkListValueAtom } from '../../state/valueAtom';
+import dummy from '../createPopup/data.json';
 
 export function ContentCategoryChange() {
   const [didMount, setDidMount] = useState(false);

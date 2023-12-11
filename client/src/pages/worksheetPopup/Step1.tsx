@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+
+import CloseIcon from '@mui/icons-material/Close';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
 } from '../../state/creatingWorksheetAtom';
-import { Step2 } from './Step2';
 
-import { Button } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
+import { Step2 } from './Step2';
 
 export function Step1() {
   const [didMount, setDidMount] = useState(false);

@@ -1,4 +1,5 @@
-import React from 'react';
+import * as React from 'react';
+
 // import { MathJaxProvider, MathJaxHtml } from 'mathjax3-react';
 import Contents from '../../components/mathViewer/test2.json';
 

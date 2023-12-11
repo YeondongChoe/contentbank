@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import CloseIcon from '@mui/icons-material/Close';
+import { Button } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import styled from 'styled-components';
+
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   createWorksheetStep3BoolAtom,
   editWorksheetBoolAtom,
 } from '../../state/creatingWorksheetAtom';
-
-import { Button } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 export function Step3() {
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);

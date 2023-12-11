@@ -1,10 +1,11 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
+import * as React from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import { Button } from '@mui/material';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
 
 const ManagemantTreePopup = () => {
   const [isCreate, setIsCreate] = useRecoilState(managementTreePopupBoolAtom);

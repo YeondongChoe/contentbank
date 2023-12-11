@@ -1,8 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { removeAuthorityCookie } from '../../utils/cookies';
+import * as React from 'react';
+
 import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { removeAuthorityCookie } from '../../utils/cookies';
 
 export function Relogin() {
   const navigate = useNavigate();

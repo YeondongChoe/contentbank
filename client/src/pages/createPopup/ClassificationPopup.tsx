@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import dummy from './data.json';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import Contents from '../../components/mathViewer/test1.json';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
 import Textarea from '@mui/joy/Textarea';
 import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import styled from 'styled-components';
+
+import Contents from '../../components/mathViewer/test1.json';
+
+import dummy from './data.json';
 
 export function ClassificationPopup() {
   const mathExpression = Contents.it_quest; // it_quest 필드를 가져옴

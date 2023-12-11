@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { getAuthorityCookie } from '../../utils/cookies';
-import { useNavigate } from 'react-router-dom';
-import { NoticeAlert } from '../../components/alert/NoticeAlert';
-import { useRecoilState } from 'recoil';
-import { alertBoolAtom } from '../../state/utilAtom';
-import { postLogin } from '../../api/postAxios';
+import * as React from 'react';
+import { useState } from 'react';
 
-import { Button } from '@mui/material';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import { Button } from '@mui/material';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import styled from 'styled-components';
+
+import { postLogin } from '../../api/postAxios';
+import { NoticeAlert } from '../../components/alert/NoticeAlert';
+import { alertBoolAtom } from '../../state/utilAtom';
+import { getAuthorityCookie } from '../../utils/cookies';
 
 type loginProps = {
   id: string;

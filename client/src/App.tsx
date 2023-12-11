@@ -1,8 +1,9 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import * as React from 'react';
+
+import { Outlet, useLocation } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
+
 import { Header } from './components/Header';
-import { useLocation } from 'react-router-dom';
 
 function App() {
   const location = useLocation();

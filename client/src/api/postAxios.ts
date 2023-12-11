@@ -1,6 +1,7 @@
-import React from 'react';
 import { AxiosError } from 'axios';
+
 import { setAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
+
 import {
   questionInstance,
   authInstance,

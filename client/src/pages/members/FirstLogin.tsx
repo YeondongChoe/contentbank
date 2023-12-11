@@ -1,7 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import { ChangePassword } from '../../components/password/ChangePassword';
+import * as React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { ChangePassword } from '../../components/password/ChangePassword';
 import { removeAuthorityCookie } from '../../utils/cookies';
 
 export function FirstLogin() {
