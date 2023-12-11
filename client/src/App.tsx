@@ -5,19 +5,17 @@ import { RecoilRoot } from 'recoil';
 
 import { Header } from './components/Header';
 
-function App() {
+export function App() {
   const location = useLocation();
 
   return (
-    <div className="App">
+    <>
       <RecoilRoot>
         {location.pathname !== '/login' &&
           location.pathname !== '/firstlogin' &&
           location.pathname !== '/relogin' && <Header />}
         <Outlet />
       </RecoilRoot>
-    </div>
+    </>
   );
 }
-
-export { App };
