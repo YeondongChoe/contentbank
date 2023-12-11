@@ -14,7 +14,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 
-const Step1 = () => {
+export function Step1() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
@@ -111,17 +111,17 @@ const Step1 = () => {
   }, [didMount, schoolLevel, schoolYear]);
 
   return (
-    <S.popupOverlay>
-      <S.popupContainer>
-        <S.topContainer>
-          <S.title>
-            <S.span>STEP 1</S.span> 학습지 종류 및 번위 선택
-          </S.title>
+    <Overlay>
+      <Container>
+        <TitleWrapper>
+          <Title>
+            <Span>STEP 1</Span> 학습지 종류 및 번위 선택
+          </Title>
           <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
-        </S.topContainer>
-        <S.mainContainer>
-          <S.leftTapWrapper>
-            <S.tabContainer>
+        </TitleWrapper>
+        <Wrapper>
+          <TreeveiwSection>
+            <TabWrapper>
               <Box sx={{ typography: 'body1' }}>
                 <TabContext value={value}>
                   <Box sx={{ borderColor: 'divider' }}>
@@ -145,9 +145,9 @@ const Step1 = () => {
                   </Box>
                 </TabContext>
               </Box>
-            </S.tabContainer>
-            <S.schoolContainer>
-              <S.schoolLevel>
+            </TabWrapper>
+            <SchoolButtonGroup>
+              <SelectorGroup>
                 <StyledMenuBtn
                   variant={schoolLevel === '1' ? 'contained' : 'outlined'}
                   onClick={() => {
@@ -175,9 +175,9 @@ const Step1 = () => {
                 >
                   고
                 </StyledMenuBtn>
-              </S.schoolLevel>
+              </SelectorGroup>
               <div style={{ color: '#a3aed0', fontSize: '25px' }}>|</div>
-              <S.schoolYear>
+              <SelectorGroup>
                 {grade === '1' && (
                   <>
                     <StyledMenuBtn
@@ -240,9 +240,9 @@ const Step1 = () => {
                     </StyledMenuBtn>
                   </>
                 )}
-              </S.schoolYear>
-            </S.schoolContainer>
-            <S.treeViewContainer>
+              </SelectorGroup>
+            </SchoolButtonGroup>
+            <TreeviewWrapper>
               <div>초등을 누르면 1~6학년까지의 트리가나옴</div>
               <div>중등을 누르면 1~3한년까지의 트리가 나옴</div>
               <div>고등을 누르면 1~3한년까지의 트리가 나옴</div>
@@ -252,16 +252,15 @@ const Step1 = () => {
                 초기화면 처럼 빈화면
               </div>
               <button onClick={spreadTree}>트리클릭</button>
-            </S.treeViewContainer>
-          </S.leftTapWrapper>
-          <S.rightTapWrapper>
-            <S.questionNum>
-              <S.subTitle>
-                문항수 <span style={{ fontSize: '12px' }}>최대 100문항</span>
-              </S.subTitle>
-              <S.btnContainer>
+            </TreeviewWrapper>
+          </TreeveiwSection>
+          <SchoolSelectorSection>
+            <SubTitle>
+              문항수 <TitleSpan>최대 100문항</TitleSpan>
+            </SubTitle>
+            <SelectorGroup>
+              <SelectorWrapper>
                 <StyledMenuBtn
-                  customWidth={68}
                   variant={questionNum === '25' ? 'contained' : 'outlined'}
                   onClick={() => {
                     selectQuestionNum('25');
@@ -270,7 +269,6 @@ const Step1 = () => {
                   25
                 </StyledMenuBtn>
                 <StyledMenuBtn
-                  customWidth={68}
                   variant={questionNum === '50' ? 'contained' : 'outlined'}
                   onClick={() => {
                     selectQuestionNum('50');
@@ -279,7 +277,6 @@ const Step1 = () => {
                   50
                 </StyledMenuBtn>
                 <StyledMenuBtn
-                  customWidth={68}
                   variant={questionNum === '100' ? 'contained' : 'outlined'}
                   onClick={() => {
                     selectQuestionNum('100');
@@ -288,7 +285,7 @@ const Step1 = () => {
                   100
                 </StyledMenuBtn>
                 <div style={{ color: '#a3aed0', fontSize: '25px' }}>|</div>
-                <S.numInput
+                <NumberInput
                   value={inputValue}
                   maxLength={2}
                   onClick={() => selectQuestionNum('')}
@@ -299,297 +296,256 @@ const Step1 = () => {
                   onChange={(e) => {
                     setInputValue(e.target.value);
                   }}
-                ></S.numInput>
+                ></NumberInput>
                 문항
-              </S.btnContainer>
-            </S.questionNum>
-            <S.questionLevel>
-              <S.subTitle>난이도</S.subTitle>
-              <S.btnContainer>
-                <StyledMenuBtn
-                  variant={questionlevel === '하' ? 'contained' : 'outlined'}
-                  onClick={() => selectQuestionLevel('하')}
-                >
-                  하
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={questionlevel === '중하' ? 'contained' : 'outlined'}
-                  onClick={() => selectQuestionLevel('중하')}
-                >
-                  중하
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={questionlevel === '중' ? 'contained' : 'outlined'}
-                  onClick={() => selectQuestionLevel('중')}
-                >
-                  중
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={questionlevel === '상' ? 'contained' : 'outlined'}
-                  onClick={() => selectQuestionLevel('상')}
-                >
-                  상
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={questionlevel === '최상' ? 'contained' : 'outlined'}
-                  onClick={() => selectQuestionLevel('최상')}
-                >
-                  최상
-                </StyledMenuBtn>
-              </S.btnContainer>
-            </S.questionLevel>
-            <S.questionType>
-              <S.subTitle>문항 타입</S.subTitle>
-              <S.btnContainer>
-                <StyledMenuBtn
-                  customWidth={82}
-                  variant={isAllSelected ? 'contained' : 'outlined'}
-                  onClick={() => {
-                    if (isAllSelected) {
-                      setQuestionType([]);
-                    } else {
-                      setQuestionType(['객관식', '주관식', '서술형']);
-                    }
-                  }}
-                >
-                  전체
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  customWidth={82}
-                  variant={
-                    questionType.includes('객관식') ? 'contained' : 'outlined'
+              </SelectorWrapper>
+            </SelectorGroup>
+            <SubTitle>난이도</SubTitle>
+            <SelectorGroup>
+              <StyledMenuBtn
+                variant={questionlevel === '하' ? 'contained' : 'outlined'}
+                onClick={() => selectQuestionLevel('하')}
+              >
+                하
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                variant={questionlevel === '중하' ? 'contained' : 'outlined'}
+                onClick={() => selectQuestionLevel('중하')}
+              >
+                중하
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                variant={questionlevel === '중' ? 'contained' : 'outlined'}
+                onClick={() => selectQuestionLevel('중')}
+              >
+                중
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                variant={questionlevel === '상' ? 'contained' : 'outlined'}
+                onClick={() => selectQuestionLevel('상')}
+              >
+                상
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                variant={questionlevel === '최상' ? 'contained' : 'outlined'}
+                onClick={() => selectQuestionLevel('최상')}
+              >
+                최상
+              </StyledMenuBtn>
+            </SelectorGroup>
+            <SubTitle>문항 타입</SubTitle>
+            <SelectorGroup>
+              <StyledMenuBtn
+                customWidth={80}
+                variant={isAllSelected ? 'contained' : 'outlined'}
+                onClick={() => {
+                  if (isAllSelected) {
+                    setQuestionType([]);
+                  } else {
+                    setQuestionType(['객관식', '주관식', '서술형']);
                   }
-                  onClick={() => selectQuestionType('객관식')}
-                >
-                  객관식
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  customWidth={82}
-                  variant={
-                    questionType.includes('주관식') ? 'contained' : 'outlined'
-                  }
-                  onClick={() => selectQuestionType('주관식')}
-                >
-                  주관식
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  customWidth={82}
-                  variant={
-                    questionType.includes('서술형') ? 'contained' : 'outlined'
-                  }
-                  onClick={() => selectQuestionType('서술형')}
-                >
-                  서술형
-                </StyledMenuBtn>
-              </S.btnContainer>
-            </S.questionType>
-            <S.containMock>
-              <S.subTitle>모의고사 포함 여부</S.subTitle>
-              <S.btnContainer customGap={29}>
-                <StyledMenuBtn
-                  customWidth={100}
-                  variant={containMock === '포함' ? 'contained' : 'outlined'}
-                  onClick={() => selectContainMock('포함')}
-                >
-                  포함
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  customWidth={100}
-                  variant={containMock === '제외' ? 'contained' : 'outlined'}
-                  onClick={() => selectContainMock('제외')}
-                >
-                  제외
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  customWidth={100}
-                  variant={
-                    containMock === '모의고사만' ? 'contained' : 'outlined'
-                  }
-                  onClick={() => selectContainMock('모의고사만')}
-                >
-                  모의고사만
-                </StyledMenuBtn>
-              </S.btnContainer>
-            </S.containMock>
-            <S.tbdDiv></S.tbdDiv>
-            <S.discription>
-              학습지 문항수 {inputValue || questionNum}개
-            </S.discription>
-          </S.rightTapWrapper>
-        </S.mainContainer>
-        <S.bottomContainer>
+                }}
+              >
+                전체
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                customWidth={80}
+                variant={
+                  questionType.includes('객관식') ? 'contained' : 'outlined'
+                }
+                onClick={() => selectQuestionType('객관식')}
+              >
+                객관식
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                customWidth={80}
+                variant={
+                  questionType.includes('주관식') ? 'contained' : 'outlined'
+                }
+                onClick={() => selectQuestionType('주관식')}
+              >
+                주관식
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                customWidth={80}
+                variant={
+                  questionType.includes('서술형') ? 'contained' : 'outlined'
+                }
+                onClick={() => selectQuestionType('서술형')}
+              >
+                서술형
+              </StyledMenuBtn>
+            </SelectorGroup>
+            <SubTitle>모의고사 포함 여부</SubTitle>
+            <SelectorGroup>
+              {/* <SelectorWrapper customGap={10}> */}
+              <StyledMenuBtn
+                customWidth={110}
+                variant={containMock === '포함' ? 'contained' : 'outlined'}
+                onClick={() => selectContainMock('포함')}
+              >
+                포함
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                customWidth={110}
+                variant={containMock === '제외' ? 'contained' : 'outlined'}
+                onClick={() => selectContainMock('제외')}
+              >
+                제외
+              </StyledMenuBtn>
+              <StyledMenuBtn
+                customWidth={110}
+                variant={
+                  containMock === '모의고사만' ? 'contained' : 'outlined'
+                }
+                onClick={() => selectContainMock('모의고사만')}
+              >
+                모의고사만
+              </StyledMenuBtn>
+              {/* </SelectorWrapper> */}
+            </SelectorGroup>
+            <TBD></TBD>
+            <Summary>학습지 문항수 {inputValue || questionNum}개</Summary>
+          </SchoolSelectorSection>
+        </Wrapper>
+        <NextStepButtonWrapper>
           <StyledNextBtn variant="contained" onClick={() => moveStep2()}>
             다음 단계
           </StyledNextBtn>
-        </S.bottomContainer>
-      </S.popupContainer>
+        </NextStepButtonWrapper>
+      </Container>
       {isStep2 && <Step2 />}
-    </S.popupOverlay>
+    </Overlay>
   );
-};
+}
 
-const S = {
-  popupOverlay: styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-  `,
-  popupContainer: styled.div`
-    width: 80vw;
-    height: 95vh;
-    border: 1px solid #a3aed0;
-    background-color: white;
-  `,
-  title: styled.div``,
-  span: styled.span`
-    color: #1976d2;
-  `,
-  topContainer: styled.div`
-    margin: 40px 30px 20px;
-    display: flex;
-    justify-content: space-between;
-  `,
-  mainContainer: styled.div`
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-  `,
-  bottomContainer: styled.div`
-    margin: 10px 30px;
-    display: flex;
-    justify-content: flex-end;
-  `,
-  leftTapWrapper: styled.div`
-    width: 700px;
-    height: 700px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #5f86fc;
-    border-radius: 25px;
-  `,
-  tabContainer: styled.div`
-    width: 100%;
-    height: 90px;
-    padding-left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  `,
-  schoolContainer: styled.div`
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    gap: 10px;
-    border-top: 1px solid #a3aed0;
-    border-bottom: 1px solid #a3aed0;
-  `,
-  schoolLevel: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  schoolYear: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  treeViewContainer: styled.div`
-    width: 100%;
-    height: 560px;
-  `,
-  rightTapWrapper: styled.div`
-    width: 400px;
-    height: 700px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #5f86fc;
-    border-radius: 25px;
-    gap: 10px;
-  `,
-  questionNum: styled.div`
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  `,
-  questionLevel: styled.div`
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  `,
-  questionType: styled.div`
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  `,
-  containMock: styled.div`
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  `,
-  subTitle: styled.div`
-    padding-left: 20px;
-  `,
-  btnContainer: styled.div<{ customGap?: number }>`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: ${(props) => props.customGap || 10}px;
-    font-size: 12px;
-  `,
-  numInput: styled.input`
-    width: 68px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-    border: 1px solid rgba(25, 118, 210, 0.5);
-    color: rgb(25, 118, 210);
-    padding: 5px 15px;
-    font-size: 12px;
-    outline: none;
-    text-align: center;
-    cursor: pointer;
-  `,
-  tbdDiv: styled.div`
-    width: 400px;
-    height: 300px;
-  `,
-  discription: styled.div``,
-};
-
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+`;
+const Container = styled.div`
+  min-width: 1024px;
+  width: 1080px;
+  height: 780px;
+  padding: 20px;
+  border: 1px solid #a3aed0;
+  background-color: white;
+`;
+const TitleWrapper = styled.div`
+  padding: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+`;
+const Title = styled.div`
+  padding-left: 34px;
+`;
+const Span = styled.span`
+  color: #1976d2;
+`;
+const Wrapper = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+const TreeveiwSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #5f86fc;
+  border-radius: 25px;
+`;
+const TabWrapper = styled.div`
+  width: 100%;
+  padding: 10px 0px;
+  gap: 20px;
+`;
+const SchoolButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 5px;
+  border-top: 1px solid #a3aed0;
+  border-bottom: 1px solid #a3aed0;
+`;
+const SelectorGroup = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+`;
+const TreeviewWrapper = styled.div`
+  padding: 10px;
+`;
+const SchoolSelectorSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  border: 1px solid #5f86fc;
+  padding: 10px;
+  border-radius: 25px;
+  gap: 10px;
+`;
+const SubTitle = styled.div`
+  font-size: 14px;
+`;
+const TitleSpan = styled.span`
+  font-size: 11px;
+`;
+const SelectorWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 12px;
+`;
+const NumberInput = styled.input`
+  width: 64px;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 12px;
+  line-height: normal;
+  border: 1px solid rgba(25, 118, 210, 0.5);
+  color: rgb(25, 118, 210);
+  padding: 5px 15px;
+  font-size: 12px;
+  outline: none;
+  text-align: center;
+  cursor: pointer;
+`;
+const TBD = styled.div`
+  height: 300px;
+`;
+const Summary = styled.div`
+  font-size: 16px;
+  margin: 0 auto;
+`;
+const NextStepButtonWrapper = styled.div`
+  padding: 10px 0px;
+  display: flex;
+  justify-content: flex-end;
+`;
 const StyledMenuBtn = styled(Button)<{ customWidth: number }>`
   && {
-    width: ${(props) => props.customWidth || 50}px;
+    width: ${(props) => props.customWidth}px;
     height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
-    /* &:focus {
-      background-color: skyblue;
-    } */
   }
 `;
 const StyledNextBtn = styled(Button)`
   && {
-    height: 25px;
+    height: 30px;
     border-radius: 5px;
     font-size: 12px;
     line-height: normal;
   }
 `;
-export { Step1 };

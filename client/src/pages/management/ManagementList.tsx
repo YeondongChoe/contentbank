@@ -2,23 +2,18 @@ import React from 'react';
 import styled from 'styled-components';
 import { ManagementsList } from '../../components/managements/ManagementsList';
 
-const ManagementList = () => {
+export function ManagementList() {
   return (
-    <S.main>
+    <Container>
       <ManagementsList />
-    </S.main>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.main`
-    width: 100vw;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  `,
-};
-
-export { ManagementList };
+const Container = styled.div`
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;

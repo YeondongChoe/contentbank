@@ -40,7 +40,7 @@ type authorityListProps = {
   sort: number;
 };
 
-const Authority = () => {
+export function Authority() {
   const { control } = useForm();
   const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -186,24 +186,24 @@ const Authority = () => {
   }, [didMount, setAuthorityList]);
 
   return (
-    <S.main>
-      <S.WholeContainer>
-        <S.leftContainer>
-          <S.leftTopBar>
-            <S.manual>편집</S.manual>
-            <S.manual>관리</S.manual>
-          </S.leftTopBar>
+    <Container>
+      <Wrapper>
+        <TreeWrapper>
+          <TreeMenuWrapper>
+            <Menu>편집</Menu>
+            <Menu>관리</Menu>
+          </TreeMenuWrapper>
           <AuthorityTree />
-        </S.leftContainer>
-        <S.rightContainer>
-          <S.searchbarWarrper>
-            <S.inputWrapper>
+        </TreeWrapper>
+        <AuthorityMenuWrapper>
+          <SearchBarWrapper>
+            <InputWrapper>
               <Controller
                 control={control}
                 name="input"
                 defaultValue=""
                 render={({ field }) => (
-                  <S.input
+                  <Input
                     type="text"
                     placeholder="권한명을 작성해주세요."
                     value={field.value || inputValue}
@@ -211,42 +211,38 @@ const Authority = () => {
                       setInputValue(e.target.value);
                       setIsClickedName(false);
                     }}
-                  ></S.input>
+                  ></Input>
                 )}
               />
-            </S.inputWrapper>
-            <S.btnWrapper>
-              <StyledSaveBtn variant="contained" onClick={openUpdateAlert}>
-                {isClickedName ? '수정' : '저장'}
-              </StyledSaveBtn>
-            </S.btnWrapper>
-          </S.searchbarWarrper>
-          <S.authorityMenuContainer>
+            </InputWrapper>
+            <StyledSaveBtn variant="contained" onClick={openUpdateAlert}>
+              {isClickedName ? '수정' : '저장'}
+            </StyledSaveBtn>
+          </SearchBarWrapper>
+          <AuthorityListWrapper>
             {authorityList?.map((el, i) => (
-              <S.authorityWrapper key={i}>
-                <S.authorityMenuWrapper>
-                  <S.authorityMenu
+              <AuthorityWrapper key={i}>
+                <AuthorityName
+                  onClick={() => {
+                    clickMemberAuthority(el.code);
+                    setInputValue(el.name);
+                    setIsClickedName(true);
+                  }}
+                >
+                  {el.name}
+                </AuthorityName>
+                <DeleteIconWrapper>
+                  <DeleteForeverIcon
                     onClick={() => {
-                      clickMemberAuthority(el.code);
-                      setInputValue(el.name);
-                      setIsClickedName(true);
+                      openDeleteAlert(el.code);
                     }}
-                  >
-                    {el.name}
-                  </S.authorityMenu>
-                  <S.iconWrapper>
-                    <DeleteForeverIcon
-                      onClick={() => {
-                        openDeleteAlert(el.code);
-                      }}
-                    />
-                  </S.iconWrapper>
-                </S.authorityMenuWrapper>
-              </S.authorityWrapper>
+                  />
+                </DeleteIconWrapper>
+              </AuthorityWrapper>
             ))}
-          </S.authorityMenuContainer>
-        </S.rightContainer>
-      </S.WholeContainer>
+          </AuthorityListWrapper>
+        </AuthorityMenuWrapper>
+      </Wrapper>
       {isDeleteAuthority && (
         <SelectAlert
           title="권한을 삭제할 경우, "
@@ -269,119 +265,96 @@ const Authority = () => {
       {/* {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />} */}
       {isCreateNameError && <NoticeAlert title="권한명을 작성해주세요." />}
       {/* {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />} */}
-    </S.main>
+    </Container>
   );
-};
+}
 
-const S = {
-  main: styled.main`
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 50px;
-  `,
-  WholeContainer: styled.div`
-    width: 1280px;
-    height: 600px;
-    display: flex;
-    border-top: 1px solid #a3aed0;
-  `,
-  leftContainer: styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    border-right: 1px solid #a3aed0;
-  `,
-  leftTopBar: styled.div`
-    width: 395px;
-    display: flex;
-    margin-top: 30px;
-    margin-bottom: 20px;
-    margin-left: 22px;
-    gap: 10px;
-    justify-content: flex-end;
-  `,
-  manual: styled.div``,
-  editCheckbox: styled.input``,
-  manageCheckbox: styled.input``,
-  rightContainer: styled.div`
-    width: 80%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-  `,
-  searchbarWarrper: styled.div`
-    display: flex;
-    justify-content: space-around;
-  `,
-  inputWrapper: styled.div`
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  `,
-  input: styled.input`
-    width: 300px;
-    height: 30px;
-    outline: none;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid white;
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 80px;
+`;
+const Wrapper = styled.div`
+  height: 500px;
+  display: flex;
+  border-top: 1px solid #a3aed0;
+  gap: 40px;
+`;
+const TreeWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-right: 1px solid #a3aed0;
+  padding: 10px;
+`;
+const TreeMenuWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 90px 20px;
+  gap: 10px;
+`;
+const Menu = styled.div``;
+const AuthorityMenuWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+`;
+const SearchBarWrapper = styled.div`
+  display: flex;
+  justify-content: space-around;
+`;
+const InputWrapper = styled.div`
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const Input = styled.input`
+  width: 300px;
+  height: 30px;
+  outline: none;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid white;
+  font-size: 14px;
+  box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
+  &::placeholder {
     font-size: 14px;
-    box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-    &::placeholder {
-      font-size: 14px;
-    }
-  `,
-  btnWrapper: styled.div`
-    display: flex;
-    align-items: center;
-  `,
-  authorityMenuContainer: styled.div`
-    width: 400px;
-    height: 400px;
-    border: 1px solid #a3aed0;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  `,
-  authorityWrapper: styled.div`
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0px 20px;
-  `,
-  authorityMenuWrapper: styled.div`
-    width: 100%;
-    display: flex;
-    &:hover {
-      background-color: #422afb;
-      border-top: 1px solid #a3aed0;
-      border-bottom: 1px solid #a3aed0;
-      color: white;
-    }
-  `,
-  authorityMenu: styled.div`
-    width: 100%;
-    cursor: pointer;
-  `,
-  iconWrapper: styled.div`
-    display: flex;
-    justify-content: flex-end;
-    cursor: pointer;
-  `,
-};
-
+  }
+`;
+const AuthorityListWrapper = styled.div`
+  width: 400px;
+  height: 400px;
+  border: 1px solid #a3aed0;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+`;
+const AuthorityWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  &:hover {
+    background-color: #422afb;
+    border-top: 1px solid #a3aed0;
+    border-bottom: 1px solid #a3aed0;
+    color: white;
+  }
+`;
+const AuthorityName = styled.div`
+  cursor: pointer;
+`;
+const DeleteIconWrapper = styled.div`
+  display: flex;
+  cursor: pointer;
+`;
 const StyledSaveBtn = styled(Button)`
   && {
     width: 80px;
@@ -391,5 +364,3 @@ const StyledSaveBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export { Authority };

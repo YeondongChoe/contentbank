@@ -6,7 +6,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 
-const Filterbar = () => {
+export function Filterbar() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [value, setValue] = useState('1');
   const [didMount, setDidMount] = useState(false);
@@ -35,7 +35,7 @@ const Filterbar = () => {
   }, [didMount]);
 
   return (
-    <Style.mainContainer>
+    <Container>
       <Box sx={{ typography: 'body1' }}>
         <TabContext value={value}>
           <Box sx={{ borderColor: 'divider' }}>
@@ -68,16 +68,12 @@ const Filterbar = () => {
           </Box>
         </TabContext>
       </Box>
-    </Style.mainContainer>
+    </Container>
   );
-};
+}
 
-const Style = {
-  mainContainer: styled.div`
-    margin: 20px 10px 20px 70px;
-    display: flex;
-    justify-content: space-between;
-  `,
-};
-
-export { Filterbar };
+const Container = styled.div`
+  margin: 20px 10px 20px 70px;
+  display: flex;
+  justify-content: space-between;
+`;

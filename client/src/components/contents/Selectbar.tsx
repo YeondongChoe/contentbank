@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-const SelectBar = () => {
+export function SelectBar() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
 
@@ -58,8 +58,8 @@ const SelectBar = () => {
   }, [didMount]);
 
   return (
-    <Style.mainContainer>
-      <Style.selectContainer>
+    <Container>
+      <SelectWrapper>
         <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
           <InputLabel size="small" id="개정과정">
             개정과정
@@ -177,32 +177,17 @@ const SelectBar = () => {
             <MenuItem value={20}>비활성화</MenuItem>
           </Select>
         </FormControl>
-      </Style.selectContainer>
-    </Style.mainContainer>
+      </SelectWrapper>
+    </Container>
   );
-};
+}
 
-const Style = {
-  mainContainer: styled.div`
-    margin: 40px 10px 20px 50px;
-    display: flex;
-    justify-content: space-between;
-  `,
-  selectContainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  select: styled.select``,
-  btncontainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  option: styled.option``,
-  btnWrapper: styled.button`
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-  `,
-};
-
-export { SelectBar };
+const Container = styled.div`
+  margin: 40px 10px 20px 50px;
+  display: flex;
+  justify-content: space-between;
+`;
+const SelectWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;

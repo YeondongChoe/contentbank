@@ -8,7 +8,7 @@ import { ContentCategoryChange } from './ContentCategoryChange';
 
 import CloseIcon from '@mui/icons-material/Close';
 
-const ManagemantMainPopup = () => {
+export function ManagemantMainPopup() {
   const [isCreate, setIsCreate] = useRecoilState(
     managementContentPopupBoolAtom,
   );
@@ -26,105 +26,99 @@ const ManagemantMainPopup = () => {
     setChoiceValue(2);
   };
   return (
-    <S.popupOverlay>
-      <S.popupcontainer>
-        <S.topContainer>
-          <S.tapWapper>
-            <S.tapManu
+    <Overlay>
+      <Container>
+        <TapWrapper>
+          <TapMenuWrapper>
+            <TapManu
               choiced={choiceValue}
               onClick={moveContentInformationChange}
             >
               바꾸기
-            </S.tapManu>
-            <S.tapManu
-              choiced={choiceValue}
-              onClick={moveContentCategoryChange}
-            >
+            </TapManu>
+            <TapManu choiced={choiceValue} onClick={moveContentCategoryChange}>
               문항 분류 바꾸기
-            </S.tapManu>
-          </S.tapWapper>
-          <S.btnWrapper>
+            </TapManu>
+          </TapMenuWrapper>
+          <CloseButtonWrapper>
             <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
-          </S.btnWrapper>
-        </S.topContainer>
+          </CloseButtonWrapper>
+        </TapWrapper>
         {choiceValue === 1 && (
-          <S.contentBox>
+          <ContentBox>
             <ContentInformationChange />
-          </S.contentBox>
+          </ContentBox>
         )}
         {choiceValue === 2 && (
-          <S.contentBox>
+          <ContentBox>
             <ContentCategoryChange />
-          </S.contentBox>
+          </ContentBox>
         )}
-      </S.popupcontainer>
-    </S.popupOverlay>
+      </Container>
+    </Overlay>
   );
-};
+}
 
-const S = {
-  popupOverlay: styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-  `,
-  popupcontainer: styled.div`
-    width: 80vw;
-    height: 95vh;
-    border: 1px solid #a3aed0;
-    background-color: white;
-  `,
-  topContainer: styled.div`
-    width: 100%;
-    padding: 20px 30px 0px;
-    display: flex;
-    //align-items: flex-end;
-    border-bottom: 1px solid #a3aed0;
-    justify-content: space-between;
-  `,
-  tapWapper: styled.div`
-    display: flex;
-  `,
-  tapManu: styled.div<{ choiced: number }>`
-    width: 200px;
-    height: 40px;
-    border: 1px solid #a3aed0;
-    border-bottom: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    &:first-child {
-      background-color: ${(props) =>
-        props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
-      color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
-      border-top-right-radius: 15px;
-      border-top-left-radius: 15px;
-    }
-    &:nth-child(2) {
-      background-color: ${(props) =>
-        props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
-      color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
-      border-top-right-radius: 15px;
-      border-top-left-radius: 15px;
-    }
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.3);
-      color: white;
-    }
-  `,
-  btnWrapper: styled.div`
-    display: flex;
-    align-items: center;
-  `,
-  contentBox: styled.div``,
-};
-
-export { ManagemantMainPopup };
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+`;
+const Container = styled.div`
+  max-width: 80%;
+  min-width: 800px;
+  padding: 20px;
+  border: 1px solid #a3aed0;
+  background-color: white;
+`;
+const TapWrapper = styled.div`
+  display: flex;
+  border-bottom: 1px solid #a3aed0;
+  justify-content: space-between;
+`;
+const TapMenuWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const TapManu = styled.div<{ choiced: number }>`
+  width: 200px;
+  height: 40px;
+  border: 1px solid #a3aed0;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  &:first-child {
+    background-color: ${(props) =>
+      props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+    color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+  }
+  &:nth-child(2) {
+    background-color: ${(props) =>
+      props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+    color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+  }
+`;
+const CloseButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const ContentBox = styled.div`
+  height: 750px;
+`;

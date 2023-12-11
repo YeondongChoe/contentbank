@@ -26,7 +26,7 @@ type authorityListProps = {
   sort: number;
 };
 
-const RegisterPopup = () => {
+export function RegisterPopup() {
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
@@ -103,28 +103,24 @@ const RegisterPopup = () => {
   return (
     <>
       {isRegister && (
-        <S.popupOverlay>
-          <S.main>
-            <S.popupHead>
-              <S.popupTitle>회원 아이디 만들기</S.popupTitle>
-              <S.cancelIcon onClick={closePopup}>
-                <ClearTwoToneIcon />
-              </S.cancelIcon>
-            </S.popupHead>
-            <S.popupBody>
+        <Overlay>
+          <Container>
+            <TitleWrapper>
+              <Title>회원 아이디 만들기</Title>
+              <ClearTwoToneIcon
+                onClick={closePopup}
+                sx={{ cursor: 'pointer' }}
+              />
+            </TitleWrapper>
+            <ContentBox>
               <Box
                 component="form"
                 display="flex"
                 flexDirection="column"
-                alignItems="center"
-                sx={{
-                  '& .MuiTextField-root': { m: 1 },
-                }}
-                noValidate
                 autoComplete="off"
               >
                 {isNameError ? (
-                  <FormControl error variant="standard" sx={{ m: 1 }}>
+                  <FormControl error variant="standard" sx={{ mb: 1 }}>
                     <InputLabel htmlFor="component-error">
                       이름(필수)
                     </InputLabel>
@@ -142,7 +138,7 @@ const RegisterPopup = () => {
                     </FormHelperText>
                   </FormControl>
                 ) : (
-                  <FormControl variant="standard" sx={{ m: 1 }}>
+                  <FormControl variant="standard" sx={{ mb: 1 }}>
                     <InputLabel htmlFor="component-simple">
                       이름(필수)
                     </InputLabel>
@@ -159,7 +155,7 @@ const RegisterPopup = () => {
                 )}
 
                 {isIdError ? (
-                  <FormControl error variant="standard" sx={{ m: 1 }}>
+                  <FormControl error variant="standard" sx={{ mb: 1 }}>
                     <InputLabel htmlFor="component-error">
                       아이디(필수)
                     </InputLabel>
@@ -177,7 +173,7 @@ const RegisterPopup = () => {
                     </FormHelperText>
                   </FormControl>
                 ) : (
-                  <FormControl variant="standard" sx={{ m: 1 }}>
+                  <FormControl variant="standard" sx={{ mb: 1 }}>
                     <InputLabel htmlFor="component-simple">
                       아이디(필수)
                     </InputLabel>
@@ -197,7 +193,7 @@ const RegisterPopup = () => {
                     )}
                   </FormControl>
                 )}
-                <S.duplicateBtnWrapper
+                <DuplicationButtonWrapper
                   onClick={(e) => {
                     e.preventDefault();
                   }}
@@ -208,7 +204,7 @@ const RegisterPopup = () => {
                   >
                     중복확인
                   </StyleDuplicateBtn>
-                </S.duplicateBtnWrapper>
+                </DuplicationButtonWrapper>
               </Box>
               <Box
                 component="form"
@@ -255,11 +251,11 @@ const RegisterPopup = () => {
                   }}
                 />
               </Box>
-              <S.noticeWarpper>
-                <S.notice>*초기 비밀번호는 drmath@369입니다.</S.notice>
-                <S.notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</S.notice>
-              </S.noticeWarpper>
-              <S.finalBtnContainer>
+              <NoticeWarpper>
+                <Notice>*초기 비밀번호는 drmath@369입니다.</Notice>
+                <Notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</Notice>
+              </NoticeWarpper>
+              <ButtonGroup>
                 <StyleCancelBtn
                   variant="outlined"
                   onClick={(e) => {
@@ -272,94 +268,75 @@ const RegisterPopup = () => {
                 <StyleSaveBtn variant="contained" onClick={submitRegister}>
                   등록
                 </StyleSaveBtn>
-              </S.finalBtnContainer>
+              </ButtonGroup>
               {isRequired && <NoticeAlert title="필수 항목을 입력해주세요" />}
               {isRequiredDuplicate && (
                 <NoticeAlert title="중복확인을 해주세요" />
               )}
               {isComplete && <NoticeAlert title="회원생성 성공" />}
-            </S.popupBody>
-          </S.main>
-        </S.popupOverlay>
+            </ContentBox>
+          </Container>
+        </Overlay>
       )}
     </>
   );
-};
+}
 
-const S = {
-  popupOverlay: styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99;
-  `,
-  main: styled.div`
-    width: 550px;
-    height: 650px;
-    border: 1px solid gray;
-    background-color: white;
-  `,
-  popupHead: styled.div`
-    width: 100%;
-    height: 50px;
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-  `,
-  popupTitle: styled.div`
-    width: 100%;
-    font-size: 22px;
-    display: flex;
-    justify-content: center;
-    margin-right: -30px;
-  `,
-  cancelIcon: styled.div`
-    cursor: pointer;
-    margin-right: 10px;
-    display: flex;
-  `,
-  popupBody: styled.div`
-    width: 100%;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    margin-top: -20px;
-  `,
-  duplicateBtnWrapper: styled.div`
-    width: 350px;
-    display: flex;
-    justify-content: flex-end;
-    background-color: transparent;
-    border: none;
-  `,
-  noticeWarpper: styled.div`
-    width: 350px;
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    gap: 10px;
-  `,
-  notice: styled.p`
-    font-size: 12px;
-  `,
-  finalBtnContainer: styled.div`
-    margin-top: 30px;
-    display: flex;
-
-    gap: 10px;
-  `,
-};
-
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+`;
+const Container = styled.div`
+  min-width: 500px;
+  padding: 20px;
+  border: 1px solid gray;
+  background-color: white;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const Title = styled.div`
+  font-size: 22px;
+  display: flex;
+  justify-content: center;
+  flex: 1 0 0;
+`;
+const ContentBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+`;
+const DuplicationButtonWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+`;
+const NoticeWarpper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 60px;
+  gap: 10px;
+`;
+const Notice = styled.p`
+  font-size: 12px;
+`;
+const ButtonGroup = styled.div`
+  padding-top: 30px;
+  display: flex;
+  gap: 10px;
+`;
 const StyleDuplicateBtn = styled(Button)`
   && {
     width: 110px;
@@ -378,7 +355,6 @@ const StyleCancelBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
 const StyleSaveBtn = styled(Button)`
   && {
     width: 170px;
@@ -388,5 +364,3 @@ const StyleSaveBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export { RegisterPopup };

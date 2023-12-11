@@ -49,7 +49,7 @@ type questionListProps = {
   serviced: boolean; //오픈여부
 };
 
-const ListTable = () => {
+export function ListTable() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   /**문항 리스트 관련 코드 */
@@ -247,144 +247,192 @@ const ListTable = () => {
 
   return (
     <>
-      <S.mainContainer>
-        <S.selectContainer>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="개정과정">
-              개정과정
-            </InputLabel>
-            <Select
-              labelId="개정과정"
-              id="select"
-              value={content.curriculum}
-              label="개정과정"
-              onChange={selectCurriculum}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-            >
-              <MenuItem value={2015}>2015</MenuItem>
-              <MenuItem value={2016}>2016</MenuItem>
-              <MenuItem value={2017}>2017</MenuItem>
-              <MenuItem value={2020}>2020</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="학교">
-              학교
-            </InputLabel>
-            <Select
-              labelId="학교"
-              id="select"
-              value={content.schoolLevel}
-              label="학교"
-              onChange={selectSchoolLevel}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-            >
-              <MenuItem value={'초등'}>초등</MenuItem>
-              <MenuItem value={'중등'}>중등</MenuItem>
-              <MenuItem value={'고등'}>고등</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="학년">
-              학년
-            </InputLabel>
-            <Select
-              labelId="학년"
-              id="select"
-              value={content.schoolYear}
-              label="학년"
-              onChange={selectSchoolYear}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-            >
-              <MenuItem value={'초등1'}>초등 1</MenuItem>
-              <MenuItem value={'초등2'}>초등 2</MenuItem>
-              <MenuItem value={'중등1'}>중등 1</MenuItem>
-              <MenuItem value={'중등2'}>중등 2</MenuItem>
-              <MenuItem value={'고등1'}>고등 1</MenuItem>
-              <MenuItem value={'고등2'}>고등 2</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="학기">
-              학기
-            </InputLabel>
-            <Select
-              labelId="학기"
-              id="select"
-              value={content.semester}
-              label="학기"
-              onChange={selectSemester}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-            >
-              <MenuItem value={'1학기'}>1학기</MenuItem>
-              <MenuItem value={'2학기'}>2학기</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="대분류">
-              대분류
-            </InputLabel>
-            <Select
-              labelId="대분류"
-              id="select"
-              value={content.unitMajor}
-              label="대분류"
-              onChange={selectUnitMajor}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-            >
-              <MenuItem value={'일차부등식 소분류'}>일차부등식 소분류</MenuItem>
-              <MenuItem value={'일차부등식 중분류'}>일차부등식 중분류</MenuItem>
-              <MenuItem value={'일차부등식 대분류'}>일차부등식 대분류</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="문항타입">
-              문항타입
-            </InputLabel>
-            <Select
-              labelId="문항타입"
-              id="select"
-              value={content.unitType}
-              label="문항타입"
-              onChange={selectUnitType}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-            >
-              <MenuItem value={'객관식'}>객관식</MenuItem>
-              <MenuItem value={'주관식'}>주관식</MenuItem>
-              <MenuItem value={'서술형'}>서술형</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-            <InputLabel size="small" id="오픈여부">
-              오픈여부
-            </InputLabel>
-            <Select
-              labelId="오픈여부"
-              id="select"
-              value={content.serviced}
-              label="오픈여부"
-              onChange={selectServiced}
-              sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-            >
-              <MenuItem value={'활성화'}>활성화</MenuItem>
-              <MenuItem value={'비활성화'}>비활성화</MenuItem>
-            </Select>
-          </FormControl>
-        </S.selectContainer>
-        <S.btncontainer>
-          {MenuCode === 'CNM_Q' ? (
-            <>
-              <S.btnWrapper>
-                <StyledEditBtn
-                  disabled={selectedRows.length === 0}
-                  variant="outlined"
-                  sx={{ backgroundColor: 'white' }}
-                  onClick={openDeleteAlert}
-                >
-                  삭제
-                </StyledEditBtn>
-              </S.btnWrapper>
-              <S.btnWrapper>
+      <Container>
+        <Wrapper>
+          <SelectWrapper>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="개정과정">
+                개정과정
+              </InputLabel>
+              <Select
+                labelId="개정과정"
+                id="select"
+                value={content.curriculum}
+                label="개정과정"
+                onChange={selectCurriculum}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={2015}>2015</MenuItem>
+                <MenuItem value={2016}>2016</MenuItem>
+                <MenuItem value={2017}>2017</MenuItem>
+                <MenuItem value={2020}>2020</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학교">
+                학교
+              </InputLabel>
+              <Select
+                labelId="학교"
+                id="select"
+                value={content.schoolLevel}
+                label="학교"
+                onChange={selectSchoolLevel}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등'}>초등</MenuItem>
+                <MenuItem value={'중등'}>중등</MenuItem>
+                <MenuItem value={'고등'}>고등</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학년">
+                학년
+              </InputLabel>
+              <Select
+                labelId="학년"
+                id="select"
+                value={content.schoolYear}
+                label="학년"
+                onChange={selectSchoolYear}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'초등1'}>초등 1</MenuItem>
+                <MenuItem value={'초등2'}>초등 2</MenuItem>
+                <MenuItem value={'중등1'}>중등 1</MenuItem>
+                <MenuItem value={'중등2'}>중등 2</MenuItem>
+                <MenuItem value={'고등1'}>고등 1</MenuItem>
+                <MenuItem value={'고등2'}>고등 2</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="학기">
+                학기
+              </InputLabel>
+              <Select
+                labelId="학기"
+                id="select"
+                value={content.semester}
+                label="학기"
+                onChange={selectSemester}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'1학기'}>1학기</MenuItem>
+                <MenuItem value={'2학기'}>2학기</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="대분류">
+                대분류
+              </InputLabel>
+              <Select
+                labelId="대분류"
+                id="select"
+                value={content.unitMajor}
+                label="대분류"
+                onChange={selectUnitMajor}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'일차부등식 소분류'}>
+                  일차부등식 소분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 중분류'}>
+                  일차부등식 중분류
+                </MenuItem>
+                <MenuItem value={'일차부등식 대분류'}>
+                  일차부등식 대분류
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="문항타입">
+                문항타입
+              </InputLabel>
+              <Select
+                labelId="문항타입"
+                id="select"
+                value={content.unitType}
+                label="문항타입"
+                onChange={selectUnitType}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'객관식'}>객관식</MenuItem>
+                <MenuItem value={'주관식'}>주관식</MenuItem>
+                <MenuItem value={'서술형'}>서술형</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
+              <InputLabel size="small" id="오픈여부">
+                오픈여부
+              </InputLabel>
+              <Select
+                labelId="오픈여부"
+                id="select"
+                value={content.serviced}
+                label="오픈여부"
+                onChange={selectServiced}
+                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
+              >
+                <MenuItem value={'활성화'}>활성화</MenuItem>
+                <MenuItem value={'비활성화'}>비활성화</MenuItem>
+              </Select>
+            </FormControl>
+          </SelectWrapper>
+          <ButtonWrapper>
+            {MenuCode === 'CNM_Q' ? (
+              <>
+                <EachButtonWrapper>
+                  <StyledEditBtn
+                    disabled={selectedRows.length === 0}
+                    variant="outlined"
+                    sx={{ backgroundColor: 'white' }}
+                    onClick={openDeleteAlert}
+                  >
+                    삭제
+                  </StyledEditBtn>
+                </EachButtonWrapper>
+                <EachButtonWrapper>
+                  <StyledEditBtn
+                    aria-describedby={id}
+                    disabled={selectedRows.length === 0}
+                    variant="outlined"
+                    sx={{ backgroundColor: 'white' }}
+                    onClick={openPopover}
+                  >
+                    수정
+                  </StyledEditBtn>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={closePopover}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    sx={{ marginTop: '5px' }}
+                  >
+                    <PopoverMenu
+                      onClick={() => {
+                        closePopover();
+                        openmanagementEditFilePopup();
+                      }}
+                    >
+                      수정
+                    </PopoverMenu>
+                    <PopoverMenu
+                      onClick={() => {
+                        closePopover();
+                        openmanagementEditFilePopup();
+                      }}
+                    >
+                      복제 후 수정
+                    </PopoverMenu>
+                  </Popover>
+                </EachButtonWrapper>
+              </>
+            ) : (
+              <EachButtonWrapper>
                 <StyledEditBtn
                   aria-describedby={id}
                   disabled={selectedRows.length === 0}
@@ -405,133 +453,93 @@ const ListTable = () => {
                   }}
                   sx={{ marginTop: '5px' }}
                 >
-                  <S.popoverMenu
+                  <PopoverMenu
                     onClick={() => {
                       closePopover();
-                      openmanagementEditFilePopup();
+                      openCreateEditFilePopup();
                     }}
                   >
                     수정
-                  </S.popoverMenu>
-                  <S.popoverMenu
+                  </PopoverMenu>
+                  <PopoverMenu
                     onClick={() => {
                       closePopover();
-                      openmanagementEditFilePopup();
+                      openCreateEditFilePopup();
                     }}
                   >
                     복제 후 수정
-                  </S.popoverMenu>
+                  </PopoverMenu>
                 </Popover>
-              </S.btnWrapper>
-            </>
-          ) : (
-            <S.btnWrapper>
-              <StyledEditBtn
-                aria-describedby={id}
-                disabled={selectedRows.length === 0}
+              </EachButtonWrapper>
+            )}
+            <EachButtonWrapper>
+              <StyledActionBtn
                 variant="outlined"
+                disabled={selectedRows.length === 0}
                 sx={{ backgroundColor: 'white' }}
-                onClick={openPopover}
+                onClick={submitChangingService}
               >
-                수정
-              </StyledEditBtn>
-              <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={closePopover}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                sx={{ marginTop: '5px' }}
-              >
-                <S.popoverMenu
-                  onClick={() => {
-                    closePopover();
-                    openCreateEditFilePopup();
-                  }}
-                >
-                  수정
-                </S.popoverMenu>
-                <S.popoverMenu
-                  onClick={() => {
-                    closePopover();
-                    openCreateEditFilePopup();
-                  }}
-                >
-                  복제 후 수정
-                </S.popoverMenu>
-              </Popover>
-            </S.btnWrapper>
-          )}
-          <S.btnWrapper>
-            <StyledActionBtn
-              variant="outlined"
-              disabled={selectedRows.length === 0}
-              sx={{ backgroundColor: 'white' }}
-              onClick={submitChangingService}
-            >
-              활성화/비활성화
-            </StyledActionBtn>
-          </S.btnWrapper>
-        </S.btncontainer>
-      </S.mainContainer>
-      <S.tablecontainer>
-        <S.table>
-          <S.thead>
-            <S.tr>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+                활성화/비활성화
+              </StyledActionBtn>
+            </EachButtonWrapper>
+          </ButtonWrapper>
+        </Wrapper>
+      </Container>
+      <TableWrapper>
+        <Table>
+          <Thead>
+            <Tr>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 <input
                   type="checkbox"
                   onChange={selectAll}
                   checked={isAllSelected}
                 ></input>
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}></S.th>
-              <S.th rowSpan={2} style={{ width: '350px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}></Th>
+              <Th rowSpan={2} style={{ width: '350px' }}>
                 문항코드
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 개정과정
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 학교
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 학년
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 학기
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '200px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '200px' }}>
                 대분류
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '250px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '250px' }}>
                 중분류
-              </S.th>
-              <S.th rowSpan={2} style={{ width: '40px' }}>
+              </Th>
+              <Th rowSpan={2} style={{ width: '40px' }}>
                 문항타입
-              </S.th>
-              <S.th colSpan={3}>업로드</S.th>
-            </S.tr>
-            <S.tr>
-              <S.th style={{ width: '60px' }}>작성자</S.th>
-              <S.th style={{ width: '80px' }}>일자</S.th>
-              <S.th style={{ width: '40px' }}>오픈여부</S.th>
-            </S.tr>
-          </S.thead>
-          <S.tbody>
+              </Th>
+              <Th colSpan={3}>업로드</Th>
+            </Tr>
+            <Tr>
+              <Th style={{ width: '60px' }}>작성자</Th>
+              <Th style={{ width: '80px' }}>일자</Th>
+              <Th style={{ width: '40px' }}>오픈여부</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
             {questionList.map((content, i) => (
-              <S.tr key={i}>
-                <S.td style={{ height: '10px', textAlign: 'center' }}>
+              <Tr key={i}>
+                <Td style={{ height: '10px', textAlign: 'center' }}>
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(content.contentSeq)}
                     onChange={() => selectRow(content.contentSeq)}
                   ></input>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{ cursor: 'pointer' }}
                     onClick={() => addFavoriteQuestion(content.questionSeq)}
@@ -542,21 +550,13 @@ const ListTable = () => {
                       <BookmarkBorderTwoToneIcon fontSize="small" />
                     )}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.questionCode}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.curriculum}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.schoolLevel}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.schoolYear}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>{content.semester}</S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>{content.questionCode}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.curriculum}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.schoolLevel}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.schoolYear}</Td>
+                <Td style={{ textAlign: 'center' }}>{content.semester}</Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{
                       maxWidth: '200px',
@@ -567,8 +567,8 @@ const ListTable = () => {
                   >
                     {content.unitMajor}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   <div
                     style={{
                       maxWidth: '250px',
@@ -579,24 +579,22 @@ const ListTable = () => {
                   >
                     {content.unitMiddle}
                   </div>
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
-                  {content.questionType}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>{content.questionType}</Td>
+                <Td style={{ textAlign: 'center' }}>
                   {content.questionCreatedByName}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   {content.questionCreatedDate}
-                </S.td>
-                <S.td style={{ textAlign: 'center' }}>
+                </Td>
+                <Td style={{ textAlign: 'center' }}>
                   {content.serviced ? 'Y' : 'N'}
-                </S.td>
-              </S.tr>
+                </Td>
+              </Tr>
             ))}
-          </S.tbody>
-        </S.table>
-      </S.tablecontainer>
+          </Tbody>
+        </Table>
+      </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isDeleteAuthority && (
         <SelectAlert
@@ -608,73 +606,91 @@ const ListTable = () => {
       )}
     </>
   );
-};
+}
 
-const S = {
-  mainContainer: styled.div`
-    margin: 40px 10px 20px 50px;
-    display: flex;
-    justify-content: space-between;
-  `,
-  selectContainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  select: styled.select``,
-  btncontainer: styled.div`
-    display: flex;
-    gap: 10px;
-  `,
-  option: styled.option``,
-  btnWrapper: styled.button`
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-  `,
-  popoverMenu: styled.div`
-    width: 100px;
-    height: 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    cursor: pointer;
-    &:nth-child(2) {
-      border-top: 2px solid #dde1e9;
-    }
-    &:hover {
-      background-color: #422afb;
-      color: white;
-    }
-  `,
-  tablecontainer: styled.div`
-    display: flex;
-    justify-content: center;
-    height: 400px;
-    overflow: auto;
-  `,
-  table: styled.table`
-    border-collapse: collapse;
-    background-color: white;
-    height: 10px;
-  `,
-  thead: styled.thead`
-    font-size: medium;
-  `,
-  tbody: styled.tbody`
-    font-size: small;
-  `,
-  tr: styled.tr`
-    height: 30px;
-  `,
-  th: styled.th`
-    border: 1px solid #a3aed0;
-    color: #a3aed0;
-  `,
-  td: styled.td`
-    border: 1px solid #a3aed0;
-  `,
-};
+const Container = styled.div`
+  padding: 40px 0px 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+`;
+
+const Wrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const SelectWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  padding-left: 30px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+`;
+
+const EachButtonWrapper = styled.div`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+`;
+
+const PopoverMenu = styled.div`
+  width: 100px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  &:nth-child(2) {
+    border-top: 2px solid #dde1e9;
+  }
+  &:hover {
+    background-color: #422afb;
+    color: white;
+  }
+`;
+
+const TableWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 400px;
+  overflow: auto;
+`;
+
+const Table = styled.table`
+  border-collapse: collapse;
+  background-color: white;
+  height: 10px;
+`;
+
+const Thead = styled.thead`
+  font-size: medium;
+`;
+
+const Tbody = styled.tbody`
+  font-size: small;
+`;
+
+const Tr = styled.tr`
+  height: 30px;
+`;
+
+const Th = styled.th`
+  border: 1px solid #a3aed0;
+  color: #a3aed0;
+`;
+const Td = styled.td`
+  border: 1px solid #a3aed0;
+`;
+
 const StyledEditBtn = styled(Button)`
   && {
     width: 70px;
@@ -694,5 +710,3 @@ const StyledActionBtn = styled(Button)`
     line-height: normal;
   }
 `;
-
-export { ListTable };
