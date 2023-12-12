@@ -10,7 +10,7 @@ export function Guide() {
       <h1>dev guide</h1>
       <h2>ui guide</h2>
       <h3>button</h3>
-      <Button buttonType={'button'} onClick={() => {}} margin={'5px 0'}>
+      <Button buttonType={'button'} onClick={() => {}} $margin={'5px 0'}>
         <span>기본 버튼</span>
       </Button>
 
@@ -18,7 +18,7 @@ export function Guide() {
         buttonType={'button'}
         disabled
         onClick={() => {}}
-        margin={'5px 0'}
+        $margin={'5px 0'}
       >
         <span>disabled 버튼</span>
       </Button>
@@ -28,9 +28,9 @@ export function Guide() {
         onClick={() => {}}
         width={'150px'}
         height={'20px'}
-        padding={'10px'}
+        $padding={'10px'}
         fontSize={'12px'}
-        borderRadius={'0px'}
+        $borderRadius={'20px'}
       >
         <span>커스텀 버튼</span>
       </Button>
