@@ -10,11 +10,13 @@ type ButtonProps = {
   buttonType?: 'button' | 'submit' | 'reset';
   onClick: () => void;
   padding?: string;
+  margin?: string;
   width?: string;
   height?: string;
   fontSize?: string;
   borderRadius?: string;
   border?: boolean;
+  disabled?: boolean;
 };
 
 export function Button({
@@ -23,22 +25,26 @@ export function Button({
   buttonType = 'button',
   onClick,
   padding,
+  margin,
   width,
   height,
   fontSize,
   borderRadius,
   border,
+  disabled,
 }: ButtonProps) {
   return (
     <Component
       width={width}
       height={height}
       padding={padding}
+      margin={margin}
       type={buttonType}
       onClick={onClick}
       fontSize={fontSize}
       borderRadius={borderRadius}
       border={border}
+      disabled={disabled}
     >
       {children ? children : text}
     </Component>
@@ -47,11 +53,13 @@ export function Button({
 
 type ButtonStyleProps = {
   padding?: string;
+  margin?: string;
   width?: string;
   height?: string;
   fontSize?: string;
   borderRadius?: string;
   border?: boolean;
+  disabled?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -59,9 +67,10 @@ const Component = styled.button<ButtonStyleProps>`
   align-items: center;
   justify-content: center;
   padding: ${({ padding }) => (padding ? `${padding};` : '15px')};
+  margin: ${({ margin }) => (margin ? `${margin};` : '0')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '50px')};
-  font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '17px')};
+  font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '16px')};
   font-weight: bold;
   border-radius: ${({ borderRadius }) =>
     borderRadius ? `${borderRadius};` : '10px'};
@@ -70,4 +79,7 @@ const Component = styled.button<ButtonStyleProps>`
   background-color: ${({ border }) =>
     border ? ` transparent;` : `${COLOR.PRIMARY};`};
   color: ${({ border }) => (border ? `${COLOR.PRIMARY};` : '#fff')};
+  cursor: pointer;
+  ${({ disabled }) =>
+    disabled && ` background-color:${COLOR.GRAY}; cursor: auto;`}
 `;

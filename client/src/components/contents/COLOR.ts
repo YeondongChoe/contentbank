@@ -3,7 +3,7 @@ export const COLOR = {
   SECONDARY: '#eb7000',
   BLACK: '#262525',
   LIGHT_GRAY: '#ededed',
-  GRAY: '#ddd',
+  GRAY: '#9a9a9a',
   DARK_GRAY: '#333333',
   POINT_GRAY: '#ccc',
   TEXT_GRAY: '#999',

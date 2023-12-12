@@ -6,14 +6,18 @@ import { COLOR } from '../../../components/contents/COLOR';
 
 type IconButtonProps = {
   text?: string;
-  buttonType: 'button' | 'submit' | 'reset';
+  buttonType?: 'button' | 'submit' | 'reset';
   onClick: () => void;
-  padding: string;
-  width: string;
-  height: string;
+  padding?: string;
+  margin?: string;
+  width?: string;
+  height?: string;
+  fontSize?: string;
+  borderRadius?: string;
+  border?: boolean;
+  disabled?: boolean;
   leftIconSrc?: string;
   rightIconSrc?: string;
-  border?: boolean;
 };
 
 export function IconButton({
@@ -21,6 +25,7 @@ export function IconButton({
   buttonType = 'button',
   onClick,
   padding,
+  margin,
   width,
   height,
   leftIconSrc,
@@ -32,6 +37,7 @@ export function IconButton({
       width={width}
       height={height}
       padding={padding}
+      margin={margin}
       type={buttonType}
       onClick={onClick}
       border={border}
@@ -45,19 +51,29 @@ export function IconButton({
 
 type ButtonStyleProps = {
   padding?: string;
+  margin?: string;
   width?: string;
   height?: string;
   border?: boolean;
+  fontSize?: string;
+  borderRadius?: string;
 };
 
 const Component = styled.button<ButtonStyleProps>`
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${({ padding }) => (padding ? `${padding};` : '15px')};
+  margin: ${({ margin }) => (margin ? `${margin};` : '0')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '50px')};
+  font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '16px')};
+  font-weight: bold;
+  border-radius: ${({ borderRadius }) =>
+    borderRadius ? `${borderRadius};` : '10px'};
   ${({ border }) =>
     border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
+  ${({ border }) =>
+    border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
+  cursor: pointer;
 `;
