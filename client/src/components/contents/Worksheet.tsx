@@ -6,7 +6,6 @@ import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { WorksheetTable } from '../../components/table/WorksheetTable';
 import { Step1 } from '../../pages/worksheetPopup/Step1';
 import {
   createWorksheetStep1BoolAtom,
@@ -14,6 +13,7 @@ import {
   editWorksheetBoolAtom,
 } from '../../state/creatingWorksheetAtom';
 import { searchValueAtom } from '../../state/valueAtom';
+import { WorksheetTable } from '../table/WorksheetTable';
 
 export function Worksheet() {
   const [didMount, setDidMount] = useState(false);
