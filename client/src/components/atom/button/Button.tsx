@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../../components/contents/COLOR';
+import { COLOR } from '../../../components/contents';
 
 type ButtonProps = {
   children?: React.ReactNode;
@@ -15,7 +15,7 @@ type ButtonProps = {
   height?: string;
   fontSize?: string;
   $borderRadius?: string;
-  border?: boolean;
+  $border?: boolean;
   disabled?: boolean;
 };
 
@@ -30,7 +30,7 @@ export function Button({
   height,
   fontSize,
   $borderRadius,
-  border,
+  $border,
   disabled,
 }: ButtonProps) {
   return (
@@ -43,7 +43,7 @@ export function Button({
       onClick={onClick}
       fontSize={fontSize}
       $borderRadius={$borderRadius}
-      border={border}
+      $border={$border}
       disabled={disabled}
     >
       {children ? children : text}
@@ -58,7 +58,7 @@ type ButtonStyleProps = {
   height?: string;
   fontSize?: string;
   $borderRadius?: string;
-  border?: boolean;
+  $border?: boolean;
   disabled?: boolean;
 };
 
@@ -74,11 +74,11 @@ const Component = styled.button<ButtonStyleProps>`
   font-weight: bold;
   border-radius: ${({ $borderRadius }) =>
     $borderRadius ? `${$borderRadius};` : '10px'};
-  ${({ border }) =>
-    border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
-  background-color: ${({ border }) =>
-    border ? ` transparent;` : `${COLOR.PRIMARY};`};
-  color: ${({ border }) => (border ? `${COLOR.PRIMARY};` : '#fff')};
+  ${({ $border }) =>
+    $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
+  background-color: ${({ $border }) =>
+    $border ? ` transparent;` : `${COLOR.PRIMARY};`};
+  color: ${({ $border }) => ($border ? `${COLOR.PRIMARY};` : '#fff')};
   cursor: pointer;
   ${({ disabled }) =>
     disabled && ` background-color:${COLOR.GRAY}; cursor: auto;`}

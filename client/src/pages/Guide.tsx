@@ -31,8 +31,19 @@ export function Guide() {
         $padding={'10px'}
         fontSize={'12px'}
         $borderRadius={'20px'}
+        $margin={'5px 0'}
       >
         <span>커스텀 버튼</span>
+      </Button>
+
+      <Button
+        buttonType={'button'}
+        onClick={() => {}}
+        width={'25%'}
+        $border
+        $margin={'5px 0'}
+      >
+        <span>border 커스텀 버튼</span>
       </Button>
     </Component>
   );

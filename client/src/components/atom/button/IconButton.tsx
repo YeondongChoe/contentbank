@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../../components/contents/COLOR';
+import { COLOR } from '../../../components/contents';
 
 type IconButtonProps = {
   text?: string;
@@ -14,7 +14,7 @@ type IconButtonProps = {
   height?: string;
   fontSize?: string;
   $borderRadius?: string;
-  border?: boolean;
+  $border?: boolean;
   disabled?: boolean;
   leftIconSrc?: string;
   rightIconSrc?: string;
@@ -30,7 +30,7 @@ export function IconButton({
   height,
   leftIconSrc,
   rightIconSrc,
-  border,
+  $border,
   $borderRadius,
 }: IconButtonProps) {
   return (
@@ -41,7 +41,7 @@ export function IconButton({
       $margin={$margin}
       type={buttonType}
       onClick={onClick}
-      border={border}
+      $border={$border}
       $borderRadius={$borderRadius}
     >
       {leftIconSrc && <img src={leftIconSrc} alt="icon image" />}
@@ -56,7 +56,7 @@ type ButtonStyleProps = {
   $margin?: string;
   width?: string;
   height?: string;
-  border?: boolean;
+  $border?: boolean;
   fontSize?: string;
   $borderRadius?: string;
 };
@@ -73,9 +73,9 @@ const Component = styled.button<ButtonStyleProps>`
   font-weight: bold;
   border-radius: ${({ $borderRadius }) =>
     $borderRadius ? `${$borderRadius};` : '10px'};
-  ${({ border }) =>
-    border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
-  ${({ border }) =>
-    border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
+  ${({ $border }) =>
+    $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
+  ${({ $border }) =>
+    $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
   cursor: pointer;
 `;
