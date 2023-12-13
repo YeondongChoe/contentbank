@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-// import { MathJaxProvider, MathJaxHtml } from 'mathjax3-react';
 import { MathJax, MathJaxContext } from 'better-react-mathjax';
 import styled from 'styled-components';
 
@@ -30,9 +29,6 @@ export function MathViewer({ data }: MathViewerProps) {
       <MathJaxContext version={3} config={config}>
         {data && (
           <>
-            {/* <MathJaxProvider>
-        <MathJaxHtml html={Contents.it_quest} />
-      </MathJaxProvider> */}
             <strong>{data.it_title}</strong>
 
             <MathJax inline>

@@ -12,7 +12,8 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { MathViewer } from '../../components';
-import Contents from '../../components/mathViewer/test2.json';
+import Contents from '../../components/mathViewer/test1.json';
+import Contents2 from '../../components/mathViewer/test2.json';
 
 import dummy from './data.json';
 
@@ -177,8 +178,10 @@ export function ClassificationPopup() {
         <ContentViewerWrapper>
           <Title>문항 뷰어</Title>
           <ContentViewer>
-            {/* <div dangerouslySetInnerHTML={{ __html: html }}></div> */}
             <MathViewer data={Contents} />
+          </ContentViewer>
+          <ContentViewer>
+            <MathViewer data={Contents2} />
           </ContentViewer>
         </ContentViewerWrapper>
 
