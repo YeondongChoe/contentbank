@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
+import { Input } from '../../components/atom/input/Input';
 import {
   editCreateContentBool,
   editCreateListBool,
@@ -207,6 +208,12 @@ export function Authority() {
                 defaultValue=""
                 render={({ field }) => (
                   <Input
+                    width="300"
+                    height="30"
+                    padding="5"
+                    placeholderSize="14"
+                    fontSize="14"
+                    borderradius="5"
                     type="text"
                     placeholder="권한명을 작성해주세요."
                     value={field.value || inputValue}
@@ -214,7 +221,7 @@ export function Authority() {
                       setInputValue(e.target.value);
                       setIsClickedName(false);
                     }}
-                  ></Input>
+                  />
                 )}
               />
             </InputWrapper>
@@ -315,19 +322,7 @@ const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-const Input = styled.input`
-  width: 300px;
-  height: 30px;
-  outline: none;
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid white;
-  font-size: 14px;
   box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-  &::placeholder {
-    font-size: 14px;
-  }
 `;
 const AuthorityListWrapper = styled.div`
   width: 400px;

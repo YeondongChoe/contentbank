@@ -10,6 +10,8 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
+import { Input } from '../../components/atom/input/Input';
+import { Label } from '../../components/atom/label/Label';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { getAuthorityCookie } from '../../utils/cookies';
@@ -55,39 +57,52 @@ export function Login() {
         <Title>로그인</Title>
         <Form onSubmit={handleSubmit(submitLogin)}>
           <InputWrapper>
-            <Label>아이디*</Label>
+            <Label fontSize="14" value="아이디*" />
             <Controller
               control={control}
               name="id"
               defaultValue={getAuthorityCookie('userId') || ''}
               render={({ field }) => (
                 <Input
+                  border="normal"
+                  borderradius="10"
+                  width="400"
+                  height="40"
+                  padding="10"
+                  fontSize="14"
+                  placeholderSize="14"
                   type="text"
                   placeholder="아이디를 입력해주세요."
                   onChange={field.onChange}
                   value={field.value}
                   onClick={() => setErrorMessage('')}
+                  errorMessage={errorMessage}
                 />
               )}
             />
-            <ErrorMessage>{errorMessage}</ErrorMessage>
-            <Label>비밀번호*</Label>
+            <Label fontSize="14" value="비밀번호*" />
             <Controller
               control={control}
               name="password"
               defaultValue=""
               render={({ field }) => (
                 <Input
+                  border="normal"
+                  borderradius="10"
+                  width="400"
+                  height="40"
+                  padding="10"
+                  fontSize="14"
+                  placeholderSize="14"
                   type="password"
                   placeholder="비밀번호를 입력해주세요."
                   onChange={field.onChange}
                   value={field.value}
                   onClick={() => setErrorMessage('')}
+                  errorMessage={errorMessage}
                 />
               )}
             />
-            <ErrorMessage>{errorMessage}</ErrorMessage>
-
             <SaveIdWrapper onClick={checkIconselected}>
               {isClicked ? (
                 <CheckCircleOutlineIcon fontSize="small" />
@@ -136,29 +151,7 @@ const Form = styled.form``;
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 10px;
-`;
-const Label = styled.label`
-  width: 400px;
-  display: flex;
-  justify-content: flex-start;
-  color: #1b254b;
-  font-size: 14px;
-`;
-const Input = styled.input`
-  width: 400px;
-  height: 40px;
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #e9ecef;
-  border-radius: 10px;
-  ::placeholder {
-    color: red;
-  }
-  :focus {
-    outline: none;
-  }
 `;
 const ErrorMessage = styled.div`
   width: 400px;
