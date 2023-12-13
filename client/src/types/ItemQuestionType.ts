@@ -13,7 +13,7 @@ export type ItemQuestionType = {
   // it_id: string;
   // group_id: string | null;
   // it_season: string;
-  // it_quest: string;
+  it_quest: string;
   // it_point: string;
   // it_hint: string | null;
 };

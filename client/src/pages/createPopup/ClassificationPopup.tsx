@@ -12,7 +12,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { MathViewer } from '../../components';
-import Contents from '../../components/mathViewer/test1.json';
+import Contents from '../../components/mathViewer/test2.json';
 
 import dummy from './data.json';
 
