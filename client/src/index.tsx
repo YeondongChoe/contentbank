@@ -79,6 +79,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+// eslint-disable-next-line import/no-named-as-default-member
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );

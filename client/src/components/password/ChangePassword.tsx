@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
+import { Input } from '../../components/atom/input/Input';
+import { Label } from '../../components/atom/label/Label';
 import { passwordRegExp } from '../../utils/regExp';
 
 type passwordProps = {
@@ -13,24 +15,18 @@ type passwordProps = {
   password_confirm: string;
 };
 
-type styleProp = {
-  width?: number;
-  height?: number;
-  fontSize?: number;
-};
-
 type ChangePasswordProps = {
   onClick?: () => void;
-  width?: number;
-  inputwidth?: number;
-  btnwidth?: number;
-  height?: number;
+  width?: string;
+  inputwidth?: string;
+  btnwidth?: string;
+  height?: string;
   display?: string;
-  marginleft?: number;
-  paddingTop?: number;
-  fontsize?: number;
-  labelsize?: number;
-  placeholdersize?: number;
+  marginleft?: string;
+  paddingtop?: string;
+  buttonfontsize?: string;
+  labelfontsize?: string;
+  placeholdersize?: string;
 };
 
 export function ChangePassword({
@@ -38,12 +34,12 @@ export function ChangePassword({
   width,
   inputwidth,
   btnwidth,
-  fontsize,
   height,
   display,
   marginleft,
-  paddingTop,
-  labelsize,
+  paddingtop,
+  buttonfontsize,
+  labelfontsize,
   placeholdersize,
 }: ChangePasswordProps) {
   const {
@@ -68,9 +64,13 @@ export function ChangePassword({
   return (
     <Container>
       <form onSubmit={handleSubmit(submitChangePassword)}>
-        <InputSection width={width as number}>
-          <InputWapper width={width as number}>
-            <Label labelSize={labelsize as number}>새 비밀번호</Label>
+        <InputSection width={width as string}>
+          <InputWapper width={width as string}>
+            <Label
+              value="새 비밀번호"
+              fontSize={labelfontsize || '16'}
+              width="150"
+            />
             <Controller
               control={control}
               name="password"
@@ -84,8 +84,12 @@ export function ChangePassword({
               }}
               render={({ field }) => (
                 <Input
-                  width={inputwidth as number}
-                  placeholderSize={placeholdersize as number}
+                  borderbottom
+                  width={inputwidth as string}
+                  height="40"
+                  padding="10"
+                  fontSize="16"
+                  placeholderSize={placeholdersize as string}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                   onChange={field.onChange}
@@ -97,8 +101,12 @@ export function ChangePassword({
           </InputWapper>
           {Password && <ErrorMessage>{errors?.password?.message}</ErrorMessage>}
           {isValid && <SuccessMessage>사용가능</SuccessMessage>}
-          <InputWapper width={width as number}>
-            <Label labelSize={labelsize as number}>새 비밀번호 재확인</Label>
+          <InputWapper width={width as string}>
+            <Label
+              value="새 비밀번호 재확인"
+              fontSize={labelfontsize || '16'}
+              width="150"
+            />
             <Controller
               control={control}
               name="password_confirm"
@@ -112,8 +120,12 @@ export function ChangePassword({
               }}
               render={({ field }) => (
                 <Input
-                  width={inputwidth as number}
-                  placeholderSize={placeholdersize as number}
+                  borderbottom
+                  width={inputwidth as string}
+                  height="40"
+                  padding="10"
+                  fontSize="16"
+                  placeholderSize={placeholdersize as string}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                   onChange={field.onChange}
@@ -135,14 +147,14 @@ export function ChangePassword({
         </InputSection>
         <ButtonGroup
           display={display as string}
-          marginLeft={marginleft as number}
-          paddingTop={paddingTop as number}
+          marginLeft={marginleft as string}
+          $paddingtop={paddingtop as string}
         >
           <ButtonWapper>
             <StyledCancelBtn
               width={btnwidth}
               height={height}
-              fontSize={fontsize}
+              buttonfontsize={buttonfontsize}
               variant="outlined"
               onClick={onClick}
               sx={{ backgroundColor: 'white' }}
@@ -155,7 +167,7 @@ export function ChangePassword({
               <StyledConfirmBtn
                 width={btnwidth}
                 height={height}
-                fontSize={fontsize}
+                buttonfontsize={buttonfontsize}
                 variant="contained"
               >
                 확인
@@ -167,7 +179,7 @@ export function ChangePassword({
                 width={btnwidth}
                 height={height}
                 variant="outlined"
-                fontSize={fontsize}
+                buttonfontsize={buttonfontsize}
                 sx={{ backgroundColor: 'white' }}
               >
                 확인
@@ -181,52 +193,29 @@ export function ChangePassword({
 }
 
 const Container = styled.div``;
-const InputSection = styled.section<{ width: number }>`
-  width: ${(props) => props.width || 750}px;
+const InputSection = styled.section<{ width: string }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
+  ${({ width }) => (width ? ` width: ${width}px;` : '750px')};
 `;
-const InputWapper = styled.div<{ width: number }>`
-  width: ${(props) => props.width || 750}px;
+const InputWapper = styled.div<{ width: string }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-const Label = styled.label<{ labelSize: number }>`
-  font-size: ${(props) => props.labelSize || 16}px;
-  color: #a3aed0;
-`;
-const Input = styled.input<{ width: number; placeholderSize: number }>`
-  width: ${(props) => props.width || 550}px;
-  height: 40px;
-  padding: 10px;
-  border: none;
-  border-bottom: 1px solid red;
-  outline: none;
-  margin-right: 10px;
-  &.success {
-    border-color: green;
-  }
-  &.passwordMatch {
-    border-color: green;
-  }
-  &::placeholder {
-    font-size: ${(props) => props.placeholderSize || 16}px;
-  }
+  padding: 10px 0px;
+  ${({ width }) => (width ? ` width: ${width}px;` : '750px')};
 `;
 const SuccessMessage = styled.div`
-  width: 550px;
+  width: 750px;
   font-size: 12px;
   color: green;
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
-  margin-right: 10px;
+  padding-right: 25px;
 `;
 const ErrorMessage = styled.div`
-  width: 550px;
+  width: 750px;
   font-size: 12px;
   color: red;
   display: flex;
@@ -237,13 +226,13 @@ const ErrorMessage = styled.div`
 
 const ButtonGroup = styled.div<{
   display: string;
-  marginLeft: number;
-  paddingTop: number;
+  marginLeft: string;
+  $paddingtop: string;
 }>`
   display: flex;
-  justify-content: ${(props) => props.display};
   gap: 20px;
-  padding-top: ${(props) => props.paddingTop || 40}px;
+  justify-content: ${(props) => props.display};
+  padding-top: ${(props) => props.$paddingtop || 40}px;
 `;
 
 const ButtonWapper = styled.button`
@@ -251,12 +240,18 @@ const ButtonWapper = styled.button`
   background-color: transparent;
 `;
 
+type styleProp = {
+  width?: string;
+  height?: string;
+  buttonfontsize?: string;
+};
+
 const StyledCancelBtn = styled(Button)<styleProp>`
   && {
     width: ${(props) => props.width}px;
     height: ${(props) => props.height}px;
+    font-size: ${(props) => props.buttonfontsize || 16}px;
     border-radius: 10px;
-    font-size: ${(props) => props.fontSize || 16}px;
     line-height: normal;
   }
 `;
@@ -265,8 +260,8 @@ const StyledConfirmBtn = styled(Button)<styleProp>`
   && {
     width: ${(props) => props.width}px;
     height: ${(props) => props.height}px;
+    font-size: ${(props) => props.buttonfontsize || 16}px;
     border-radius: 10px;
-    font-size: ${(props) => props.fontSize || 16}px;
     line-height: normal;
   }
 `;
@@ -275,8 +270,8 @@ const StyledNomalBtn = styled(Button)<styleProp>`
   && {
     width: ${(props) => props.width}px;
     height: ${(props) => props.height}px;
+    font-size: ${(props) => props.buttonfontsize || 16}px;
     border-radius: 10px;
-    font-size: ${(props) => props.fontSize || 16}px;
     line-height: normal;
   }
 `;

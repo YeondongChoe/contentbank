@@ -6,6 +6,7 @@ import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Input } from '../../components/atom/input/Input';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
 import { updateBoolAtom } from '../../state/utilAtom';
@@ -52,12 +53,18 @@ export function ContentsList() {
         </TapWrapper>
         <InputWrapper>
           <Input
+            width="245"
+            height="25"
+            padding="5"
+            placeholderSize="12"
+            fontSize="12"
             type="text"
             placeholder="문항코드, 중분류, 담당자 검색"
+            value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value);
             }}
-          ></Input>
+          />
           <IconWrapper>
             <SearchIcon onClick={searchContentList} />
           </IconWrapper>
@@ -144,16 +151,6 @@ const InputWrapper = styled.div`
   border-radius: 5px;
   border: 1px solid white;
   box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-`;
-
-const Input = styled.input`
-  width: 245px;
-  outline: none;
-  padding: 5px;
-  border: 1px solid white;
-  &::placeholder {
-    font-size: 12px;
-  }
 `;
 
 const IconWrapper = styled.div`

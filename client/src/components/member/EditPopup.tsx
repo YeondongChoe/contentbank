@@ -7,10 +7,6 @@ import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox
 import Textarea from '@mui/joy/Textarea';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Controller, useForm } from 'react-hook-form';
@@ -25,6 +21,8 @@ import {
   putChangeMemberInformation,
   putInitPassword,
 } from '../../api/putAxios';
+import { Input } from '../../components/atom/input/Input';
+import { Label } from '../../components/atom/label/Label';
 import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
@@ -155,90 +153,54 @@ export function EditPopup() {
                   component="form"
                   display="flex"
                   flexDirection="column"
-                  alignItems="center"
                   noValidate
                   autoComplete="off"
                 >
                   {isNameError ? (
-                    <FormControl error variant="standard">
-                      <InputLabel
-                        htmlFor="component-error"
-                        id="component-error"
-                        sx={{
-                          display: 'flex',
-                          alignSelf: 'flex-start',
-                        }}
-                      >
-                        이름(필수)
-                      </InputLabel>
-                      <Controller
-                        control={control}
-                        name="name"
-                        defaultValue=""
-                        render={({ field }) => (
-                          <>
-                            <Input
-                              sx={{ minWidth: '350px', marginBottom: '10px' }}
-                              type="text"
-                              placeholder="이름을 입력해주세요."
-                              onChange={field.onChange}
-                              value={field.value}
-                            />
-                            <FormHelperText id="component-error-text">
-                              {nameErrorMessage}
-                            </FormHelperText>
-                          </>
-                        )}
-                      />
-                    </FormControl>
+                    <Label type="error" fontSize="16" value="이름(필수)" />
                   ) : (
-                    <>
-                      <InputLabel
-                        htmlFor="component-simple"
-                        sx={{
-                          display: 'flex',
-                          alignSelf: 'flex-start',
-                        }}
-                      >
-                        이름
-                      </InputLabel>
-                      <Controller
-                        control={control}
-                        name="name"
-                        defaultValue=""
-                        render={({ field }) => (
-                          <Input
-                            sx={{ minWidth: '350px', marginBottom: '10px' }}
-                            type="text"
-                            placeholder="이름을 입력해주세요."
-                            onChange={field.onChange}
-                            value={field.value}
-                          />
-                        )}
-                      />
-                    </>
+                    <Label fontSize="16" value="이름(필수)" />
                   )}
-                  <InputLabel
-                    htmlFor="component-simple"
-                    sx={{
-                      display: 'flex',
-                      alignSelf: 'flex-start',
-                    }}
-                  >
-                    아이디
-                  </InputLabel>
+                  <Controller
+                    control={control}
+                    name="name"
+                    defaultValue=""
+                    render={({ field }) => (
+                      <>
+                        <Input
+                          type="text"
+                          placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
+                          value={field.value}
+                          width="350"
+                          height="32"
+                          fontSize="16"
+                          placeholderSize="12"
+                          marginBottom="10"
+                          border="black"
+                          borderbottom={isNameError && true}
+                          onChange={field.onChange}
+                          onClick={() => setIsNameError(false)}
+                          errorMessage={isNameError && nameErrorMessage}
+                        />
+                      </>
+                    )}
+                  />
+                  <Label fontSize="16" value="아이디" />
                   <Controller
                     control={control}
                     name="id"
                     defaultValue=""
                     render={({ field }) => (
                       <Input
-                        sx={{ minWidth: '350px', marginBottom: '10px' }}
                         disabled
                         type="text"
-                        placeholder="이름을 입력해주세요."
-                        onChange={field.onChange}
                         value={field.value}
+                        width="350"
+                        height="32"
+                        fontSize="16"
+                        marginBottom="10"
+                        border="black"
+                        onChange={field.onChange}
                       />
                     )}
                   />
@@ -266,7 +228,7 @@ export function EditPopup() {
                   flexDirection="column"
                 >
                   <DisableWrapper>
-                    <InputLabel htmlFor="component-simple">권한</InputLabel>
+                    <Label fontSize="16" value="권한" />
                     {isEnabled ? (
                       <CheckBoxWrapper>
                         <CheckBoxOutlineBlankIcon onClick={checkEnabled} />
@@ -317,23 +279,14 @@ export function EditPopup() {
                   />
                 </Box>
                 <Box sx={{ minWidth: '350px' }}>
-                  <InputLabel
-                    htmlFor="component-simple"
-                    sx={{
-                      display: 'flex',
-                      alignSelf: 'flex-start',
-                      marginBottom: '10px',
-                    }}
-                  >
-                    비고
-                  </InputLabel>
+                  <Label fontSize="16" value="비고" />
                   <Controller
                     control={control}
                     name="comment"
                     defaultValue=""
                     render={({ field }) => (
                       <Textarea
-                        sx={{ mb: 1, fontSize: '14px' }}
+                        sx={{ mb: 1, mt: 1, fontSize: '14px' }}
                         placeholder=""
                         size="md"
                         minRows={3}
