@@ -31,9 +31,9 @@ export function MathViewer({ data }: MathViewerProps) {
           <>
             <strong>{data.it_title}</strong>
 
-            <MathJax inline>
+            {/* <MathJax inline>
               <p dangerouslySetInnerHTML={{ __html: data.it_quest }}></p>
-            </MathJax>
+            </MathJax> */}
           </>
         )}
       </MathJaxContext>
