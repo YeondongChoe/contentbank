@@ -11,6 +11,9 @@ WORKDIR /app
 # 가능한 package.json 과 package-lock.json을 모두 복사하기 위해서 와일드 카드 사용
 COPY . /app
 
+# install and cache app dependencies 
+COPY ./package*.json ./
+
 # 의존성 설치
 RUN npm install
 
