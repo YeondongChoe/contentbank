@@ -14,6 +14,8 @@ import styled from 'styled-components';
 import { MathViewer } from '../../components';
 import Contents from '../../components/mathViewer/test1.json';
 import Contents2 from '../../components/mathViewer/test2.json';
+import Contents3 from '../../components/mathViewer/test3.json';
+import Contents4 from '../../components/mathViewer/test4.json';
 
 import dummy from './data.json';
 
@@ -129,32 +131,6 @@ export function ClassificationPopup() {
     }
   }, [code, classificatecode]);
 
-  //   const html = `
-  //   <p style="text-align:center;">
-  //   <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-  //     <msup>
-  //       <mrow>
-  //         <mi>r</mi>
-  //       </mrow>
-  //       <mrow>
-  //         <mn>2</mn>
-  //       </mrow>
-  //     </msup>
-  //     <mo>+</mo>
-  //     <msup>
-  //       <mrow>
-  //         <mi>z</mi>
-  //       </mrow>
-  //       <mrow>
-  //         <mn>2</mn>
-  //       </mrow>
-  //     </msup>
-  //     <mo>=</mo>
-  //     <mn>4</mn>
-  //   </math>
-  // </p>
-  // `;
-
   return (
     <Container>
       <Wrapper>
@@ -177,11 +153,28 @@ export function ClassificationPopup() {
 
         <ContentViewerWrapper>
           <Title>문항 뷰어</Title>
-          <ContentViewer>
+          {/* <ContentViewer>
             <MathViewer data={Contents} />
-          </ContentViewer>
-          <ContentViewer>
+          </ContentViewer> */}
+          {/* <ContentViewer>
             <MathViewer data={Contents2} />
+          </ContentViewer> */}
+          {/* <ContentViewer>
+            <MathViewer data={Contents3} />
+          </ContentViewer> */}
+          <ContentViewer>
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
+            <MathViewer data={Contents4} />
           </ContentViewer>
         </ContentViewerWrapper>
 
