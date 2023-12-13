@@ -13,7 +13,8 @@ COPY . /app
 
 # 의존성 설치
 RUN npm install npm@10.2.5 
-RUN npm install && npm cache clean
+RUN npm cache clean
+RUN npm install 
 
 # 앱 소스코드 추가
 # COPY App.tsx /app/
