@@ -12,7 +12,6 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-# RUN npm install npm@10.2.5 
 # RUN npm cache clean
 RUN npm install 
 
