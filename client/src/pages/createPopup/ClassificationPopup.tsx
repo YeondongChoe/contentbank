@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
+import { MathViewer } from '../../components';
 import Contents from '../../components/mathViewer/test1.json';
 
 import dummy from './data.json';
@@ -127,31 +128,31 @@ export function ClassificationPopup() {
     }
   }, [code, classificatecode]);
 
-  const html = `
-  <p style="text-align:center;">
-  <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-    <msup>
-      <mrow>
-        <mi>r</mi>
-      </mrow>
-      <mrow>
-        <mn>2</mn>
-      </mrow>
-    </msup>
-    <mo>+</mo>
-    <msup>
-      <mrow>
-        <mi>z</mi>
-      </mrow>
-      <mrow>
-        <mn>2</mn>
-      </mrow>
-    </msup>
-    <mo>=</mo>
-    <mn>4</mn>
-  </math>
-</p>
-`;
+  //   const html = `
+  //   <p style="text-align:center;">
+  //   <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  //     <msup>
+  //       <mrow>
+  //         <mi>r</mi>
+  //       </mrow>
+  //       <mrow>
+  //         <mn>2</mn>
+  //       </mrow>
+  //     </msup>
+  //     <mo>+</mo>
+  //     <msup>
+  //       <mrow>
+  //         <mi>z</mi>
+  //       </mrow>
+  //       <mrow>
+  //         <mn>2</mn>
+  //       </mrow>
+  //     </msup>
+  //     <mo>=</mo>
+  //     <mn>4</mn>
+  //   </math>
+  // </p>
+  // `;
 
   return (
     <Container>
@@ -176,7 +177,8 @@ export function ClassificationPopup() {
         <ContentViewerWrapper>
           <Title>문항 뷰어</Title>
           <ContentViewer>
-            <div dangerouslySetInnerHTML={{ __html: html }}></div>
+            {/* <div dangerouslySetInnerHTML={{ __html: html }}></div> */}
+            <MathViewer data={Contents} />
           </ContentViewer>
         </ContentViewerWrapper>
 
