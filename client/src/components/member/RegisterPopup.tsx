@@ -2,21 +2,19 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
-import FormLabel from '@mui/joy/FormLabel';
 import Textarea from '@mui/joy/Textarea';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
+import { Input } from '../../components/atom/input/Input';
+import { Label } from '../../components/atom/label/Label';
 import { registerBoolAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
@@ -36,8 +34,6 @@ export function RegisterPopup() {
   const [idErrorMessage, setIdErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
-  const [nameValue, setNameValue] = useState('');
-  const [idValue, setIdValue] = useState('');
   const [duplicatedId, setduplicatedId] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [selectedAuthorityValue, setSelectedAuthorityValue] = useState('');
@@ -47,6 +43,8 @@ export function RegisterPopup() {
   const [isRequiredDuplicate, setIsRequiredDuplicate] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
 
+  const { control, setValue, watch } = useForm();
+
   const handleAuthorityChange = (event: {
     target: { value: React.SetStateAction<string> };
   }) => {
@@ -54,8 +52,8 @@ export function RegisterPopup() {
   };
 
   const Authority = selectedAuthorityValue;
-  const Name = nameValue;
-  const Id = idValue;
+  const Name = watch('name');
+  const Id = watch('id');
   const Comment = commentValue;
 
   const closePopup = () => {
@@ -74,10 +72,10 @@ export function RegisterPopup() {
   };
 
   const submitRegister = () => {
-    if (nameValue === '' || idValue === '' || Authority === '') {
+    if (Name === '' || Id === '' || Authority === '') {
       setIsRequired(true);
       setIsAlertOpen(true);
-    } else if (duplicatedId !== idValue || isDuplicate === false) {
+    } else if (duplicatedId !== Id || isDuplicate === false) {
       setIsRequiredDuplicate(true);
       setIsAlertOpen(true);
     } else {
@@ -122,78 +120,62 @@ export function RegisterPopup() {
                 autoComplete="off"
               >
                 {isNameError ? (
-                  <FormControl error variant="standard" sx={{ mb: 1 }}>
-                    <InputLabel htmlFor="component-error">
-                      이름(필수)
-                    </InputLabel>
-                    <Input
-                      sx={{ width: '350px' }}
-                      id="component-error"
-                      placeholder=""
-                      defaultValue=""
-                      onChange={(e) => {
-                        setNameValue(e.target.value);
-                      }}
-                    />
-                    <FormHelperText id="component-error-text">
-                      {nameErrorMessage}
-                    </FormHelperText>
-                  </FormControl>
+                  <Label type="error" fontSize="16" value="이름(필수)" />
                 ) : (
-                  <FormControl variant="standard" sx={{ mb: 1 }}>
-                    <InputLabel htmlFor="component-simple">
-                      이름(필수)
-                    </InputLabel>
-                    <Input
-                      sx={{ width: '350px' }}
-                      id="component-simple"
-                      placeholder=""
-                      defaultValue=""
-                      onChange={(e) => {
-                        setNameValue(e.target.value);
-                      }}
-                    />
-                  </FormControl>
+                  <Label fontSize="16" value="이름(필수)" />
                 )}
-
-                {isIdError ? (
-                  <FormControl error variant="standard" sx={{ mb: 1 }}>
-                    <InputLabel htmlFor="component-error">
-                      아이디(필수)
-                    </InputLabel>
-                    <Input
-                      sx={{ width: '350px' }}
-                      id="component-error"
-                      defaultValue=""
-                      placeholder=""
-                      onChange={(e) => {
-                        setIdValue(e.target.value);
-                      }}
-                    />
-                    <FormHelperText id="component-error-text">
-                      {idErrorMessage}
-                    </FormHelperText>
-                  </FormControl>
+                <Controller
+                  control={control}
+                  name="name"
+                  defaultValue=""
+                  render={({ field }) => (
+                    <>
+                      <Input
+                        type="text"
+                        placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
+                        value={field.value}
+                        width="350"
+                        height="32"
+                        fontSize="16"
+                        placeholderSize="12"
+                        marginBottom="10"
+                        border="black"
+                        borderbottom={isNameError && true}
+                        onChange={field.onChange}
+                        onClick={() => setIsNameError(false)}
+                        errorMessage={isNameError && nameErrorMessage}
+                      />
+                    </>
+                  )}
+                />
+                {isNameError ? (
+                  <Label type="error" fontSize="16" value="아이디(필수)" />
                 ) : (
-                  <FormControl variant="standard" sx={{ mb: 1 }}>
-                    <InputLabel htmlFor="component-simple">
-                      아이디(필수)
-                    </InputLabel>
+                  <Label fontSize="16" value="아이디(필수)" />
+                )}
+                <Controller
+                  control={control}
+                  name="id"
+                  defaultValue=""
+                  render={({ field }) => (
                     <Input
-                      sx={{ width: '350px' }}
-                      id="component-simple"
-                      placeholder=""
-                      defaultValue=""
-                      onChange={(e) => {
-                        setIdValue(e.target.value);
-                      }}
+                      type="text"
+                      placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
+                      value={field.value}
+                      width="350"
+                      height="32"
+                      fontSize="16"
+                      placeholderSize="12"
+                      marginBottom="10"
+                      border="black"
+                      onChange={field.onChange}
+                      onClick={() => setIsIdError(false)}
+                      errorMessage={isIdError && idErrorMessage}
                     />
-                    {idValue && isDuplicate === true && (
-                      <FormHelperText id="component-simple-text">
-                        {successMessage}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
+                  )}
+                />
+                {Id && isDuplicate === true && (
+                  <IdSuccessMessage>{successMessage}</IdSuccessMessage>
                 )}
                 <DuplicationButtonWrapper
                   onClick={(e) => {
@@ -232,17 +214,9 @@ export function RegisterPopup() {
                 </TextField>
               </Box>
               <Box sx={{ width: '350px' }}>
-                <FormLabel
-                  sx={{
-                    fontSize: '14px',
-                    marginLeft: '5px',
-                    marginBottom: '5px',
-                  }}
-                >
-                  비고
-                </FormLabel>
+                <Label fontSize="16" value="비고" />
                 <Textarea
-                  sx={{ mb: 1, fontSize: '14px' }}
+                  sx={{ mb: 1, mt: 1, fontSize: '14px' }}
                   placeholder=""
                   size="md"
                   name="Size"
@@ -317,6 +291,10 @@ const ContentBox = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 5px;
+`;
+const IdSuccessMessage = styled.p`
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
 `;
 const DuplicationButtonWrapper = styled.div`
   width: 100%;

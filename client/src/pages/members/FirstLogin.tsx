@@ -31,8 +31,10 @@ export function FirstLogin() {
         <ChangePassword
           onClick={logout}
           display="space-evenly"
-          btnwidth={250}
-          height={60}
+          width="750"
+          inputwidth="550"
+          btnwidth="250"
+          height="60"
         />
       </Wrapper>
     </Container>

@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { useState } from 'react';
 
 import SearchIcon from '@mui/icons-material/Search';
 import { Button } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { Input } from '../../components/atom/input/Input';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
@@ -13,6 +15,7 @@ import { MemberTable } from '../table/MemberTable';
 export function Member() {
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const isEditer = useRecoilValue(editerBoolAtom);
+  const [inputValue, setInputValue] = useState('');
 
   const openRegisterPopup = () => {
     SetIsRegister(true);
@@ -22,7 +25,19 @@ export function Member() {
     <Container>
       <Wrapper>
         <InputWrapper>
-          <Input type="text" placeholder="이름, 권한 검색"></Input>
+          <Input
+            width="245"
+            height="25"
+            padding="5"
+            placeholderSize="12"
+            fontSize="12"
+            type="text"
+            placeholder="이름, 권한 검색"
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+            }}
+          />
           <IconWrapper>
             <SearchIcon />
           </IconWrapper>
@@ -64,15 +79,6 @@ const InputWrapper = styled.div`
   border-radius: 5px;
   border: 1px solid white;
   box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-`;
-const Input = styled.input`
-  width: 245px;
-  outline: none;
-  padding: 5px;
-  border: 1px solid white;
-  &::placeholder {
-    font-size: 12px;
-  }
 `;
 const IconWrapper = styled.div`
   display: flex;

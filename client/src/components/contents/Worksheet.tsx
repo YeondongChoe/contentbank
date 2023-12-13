@@ -6,6 +6,8 @@ import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Input } from '../../components/atom/input/Input';
+import { WorksheetTable } from '../../components/table/WorksheetTable';
 import { Step1 } from '../../pages/worksheetPopup/Step1';
 import {
   createWorksheetStep1BoolAtom,
@@ -13,7 +15,6 @@ import {
   editWorksheetBoolAtom,
 } from '../../state/creatingWorksheetAtom';
 import { searchValueAtom } from '../../state/valueAtom';
-import { WorksheetTable } from '../table/WorksheetTable';
 
 export function Worksheet() {
   const [didMount, setDidMount] = useState(false);
@@ -69,12 +70,18 @@ export function Worksheet() {
         </TapWrapper>
         <InputWrapper>
           <Input
+            width="245"
+            height="25"
+            padding="5"
+            placeholderSize="12"
+            fontSize="12"
             type="text"
             placeholder="문항코드, 중분류, 담당자 검색"
+            value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value);
             }}
-          ></Input>
+          />
           <IconWrapper>
             <SearchIcon onClick={searchList} />
           </IconWrapper>
@@ -162,16 +169,6 @@ const InputWrapper = styled.div`
   border-radius: 5px;
   border: 1px solid white;
   box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-`;
-
-const Input = styled.input`
-  width: 245px;
-  outline: none;
-  padding: 5px;
-  border: 1px solid white;
-  &::placeholder {
-    font-size: 12px;
-  }
 `;
 
 const IconWrapper = styled.div`
