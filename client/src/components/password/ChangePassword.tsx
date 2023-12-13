@@ -6,8 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
-import { Input } from '../../components/atom/input/Input';
-import { Label } from '../../components/atom/label/Label';
+import { Input, Label } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
 
 type passwordProps = {

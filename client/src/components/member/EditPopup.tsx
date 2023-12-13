@@ -21,8 +21,7 @@ import {
   putChangeMemberInformation,
   putInitPassword,
 } from '../../api/putAxios';
-import { Input } from '../../components/atom/input/Input';
-import { Label } from '../../components/atom/label/Label';
+import { Input, Label } from '../../components';
 import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';

@@ -6,7 +6,7 @@ import { Button } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Input } from '../../components/atom/input/Input';
+import { Input } from '../../components';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';

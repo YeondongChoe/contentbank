@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
-import { Input } from '../../components/atom/input/Input';
+import { Input } from '../../components';
 import {
   editCreateContentBool,
   editCreateListBool,

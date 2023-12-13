@@ -13,8 +13,7 @@ import styled from 'styled-components';
 
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
-import { Input } from '../../components/atom/input/Input';
-import { Label } from '../../components/atom/label/Label';
+import { Input, Label } from '../../components';
 import { registerBoolAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';

@@ -6,7 +6,7 @@ import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Input } from '../../components/atom/input/Input';
+import { Input } from '../../components';
 import { WorksheetTable } from '../../components/table/WorksheetTable';
 import { Step1 } from '../../pages/worksheetPopup/Step1';
 import {
