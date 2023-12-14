@@ -1,8 +1,9 @@
 import * as React from 'react';
 
+import { LuLoader2 } from 'react-icons/lu';
 import { styled } from 'styled-components';
 
-import LoaderIcon from '../../../public/images/icon/loader.svg';
+// import LoaderIcon from '../../../public/images/icon/loader.svg';
 
 type LoaderProps = {
   width?: string;
@@ -11,7 +12,7 @@ type LoaderProps = {
 export function Loader({ width }: LoaderProps) {
   return (
     <Component width={width}>
-      <LoaderIcon />
+      <LuLoader2 />
     </Component>
   );
 }

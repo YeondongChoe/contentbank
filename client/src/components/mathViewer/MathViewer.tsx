@@ -5,7 +5,9 @@ import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import { MmlNode } from 'mathjax-full/js/core/MmlTree/MmlNode';
 import styled from 'styled-components';
 
+import { Loader } from '../../components/atom/Loader';
 import { ItemQuestionType } from '../../types';
+
 type MathViewerProps = {
   data: ItemQuestionType;
 };
@@ -52,7 +54,7 @@ export function MathViewer({ data }: MathViewerProps) {
   // useLayoutEffect(() => {}, [data]);
 
   const renders = (mathJax: MathJax3Object) => {
-    mathJax.Hub.PreProcess();
+    // mathJax.Hub.PreProcess(<Loader />);
     // mathJax.startup.defaultReady();
     // const toMML = mathJax.startup.toMML;
     // mathJax.startup.output.postFilters.add(
