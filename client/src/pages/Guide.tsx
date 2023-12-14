@@ -3,8 +3,17 @@ import * as React from 'react';
 import { styled } from 'styled-components';
 
 import { Button } from './../components/atom';
+import { Select } from './../components/atom/select';
+
+type CategoryOptionsProps = {
+  id?: string;
+  label: string;
+  value?: number | string;
+};
 
 export function Guide() {
+  const [selectedValue, setSelectedValue] = React.useState<string>();
+
   return (
     <Component>
       <h1>dev guide</h1>
@@ -45,6 +54,7 @@ export function Guide() {
       >
         <span>border 커스텀 버튼</span>
       </Button>
+      <Select />
     </Component>
   );
 }

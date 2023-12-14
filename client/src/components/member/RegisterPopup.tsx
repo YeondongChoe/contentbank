@@ -13,8 +13,7 @@ import styled from 'styled-components';
 
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
-import { Input } from '../../components/atom/input/Input';
-import { Label } from '../../components/atom/label/Label';
+import { Input, Label } from '../../components';
 import { registerBoolAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
@@ -134,11 +133,11 @@ export function RegisterPopup() {
                         type="text"
                         placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                         value={field.value}
-                        width="350"
-                        height="32"
-                        fontSize="16"
-                        placeholderSize="12"
-                        marginBottom="10"
+                        width="350px"
+                        height="32px"
+                        fontSize="16px"
+                        placeholderSize="12px"
+                        margin="0px 0px 10px 0px"
                         border="black"
                         borderbottom={isNameError && true}
                         onChange={field.onChange}
@@ -162,11 +161,11 @@ export function RegisterPopup() {
                       type="text"
                       placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
                       value={field.value}
-                      width="350"
-                      height="32"
-                      fontSize="16"
-                      placeholderSize="12"
-                      marginBottom="10"
+                      width="350px"
+                      height="32px"
+                      fontSize="16px"
+                      placeholderSize="12px"
+                      margin="0px 0px 10px 0px"
                       border="black"
                       onChange={field.onChange}
                       onClick={() => setIsIdError(false)}

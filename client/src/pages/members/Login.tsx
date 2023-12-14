@@ -10,8 +10,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
-import { Input } from '../../components/atom/input/Input';
-import { Label } from '../../components/atom/label/Label';
+import { Input, Label } from '../../components';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { getAuthorityCookie } from '../../utils/cookies';
@@ -57,7 +56,7 @@ export function Login() {
         <Title>로그인</Title>
         <Form onSubmit={handleSubmit(submitLogin)}>
           <InputWrapper>
-            <Label fontSize="14" value="아이디*" />
+            <Label fontSize="14px" value="아이디*" />
             <Controller
               control={control}
               name="id"
@@ -65,12 +64,12 @@ export function Login() {
               render={({ field }) => (
                 <Input
                   border="normal"
-                  borderradius="10"
-                  width="400"
-                  height="40"
-                  padding="10"
-                  fontSize="14"
-                  placeholderSize="14"
+                  borderradius="10px"
+                  width="400px"
+                  height="40px"
+                  padding="10px"
+                  fontSize="14px"
+                  placeholderSize="14px"
                   type="text"
                   placeholder="아이디를 입력해주세요."
                   onChange={field.onChange}
@@ -80,7 +79,7 @@ export function Login() {
                 />
               )}
             />
-            <Label fontSize="14" value="비밀번호*" />
+            <Label fontSize="14px" value="비밀번호*" />
             <Controller
               control={control}
               name="password"
@@ -88,12 +87,12 @@ export function Login() {
               render={({ field }) => (
                 <Input
                   border="normal"
-                  borderradius="10"
-                  width="400"
-                  height="40"
-                  padding="10"
-                  fontSize="14"
-                  placeholderSize="14"
+                  borderradius="10px"
+                  width="400px"
+                  height="40px"
+                  padding="10px"
+                  fontSize="14px"
+                  placeholderSize="14px"
                   type="password"
                   placeholder="비밀번호를 입력해주세요."
                   onChange={field.onChange}
