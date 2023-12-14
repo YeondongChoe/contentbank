@@ -52,7 +52,7 @@ export function MathViewer({ data }: MathViewerProps) {
   // useLayoutEffect(() => {}, [data]);
 
   const renders = (mathJax: MathJax3Object) => {
-    // mathJax.Hub.PreProcess();
+    mathJax.Hub.PreProcess();
     // mathJax.startup.defaultReady();
     // const toMML = mathJax.startup.toMML;
     // mathJax.startup.output.postFilters.add(
