@@ -163,17 +163,8 @@ export function ClassificationPopup() {
             <MathViewer data={Contents3} />
           </ContentViewer> */}
           <ContentViewer>
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
-            <MathViewer data={Contents4} />
+            <MathViewer data={Contents2} />
+            <MathViewer data={Contents3} />
             <MathViewer data={Contents4} />
           </ContentViewer>
         </ContentViewerWrapper>
@@ -473,25 +464,6 @@ export function ClassificationPopup() {
                   </Select>
                 </FormControl>
               </ContentClassificationGroup>
-              <InputLabel htmlFor="component-simple">정답</InputLabel>
-              <FormControl fullWidth>
-                <Controller
-                  control={control}
-                  name="answer"
-                  defaultValue=""
-                  render={({ field }) => (
-                    <Textarea
-                      sx={{ fontSize: '16px' }}
-                      placeholder=""
-                      size="sm"
-                      minRows={3}
-                      maxRows={3}
-                      onChange={field.onChange}
-                      value={field.value}
-                    />
-                  )}
-                />
-              </FormControl>
             </ContentClassificationForm>
             <ButtonWrapper>
               <StyleSaveBtn
