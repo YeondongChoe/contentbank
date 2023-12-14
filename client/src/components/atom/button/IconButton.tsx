@@ -55,8 +55,7 @@ export function IconButton({
       $textAlign={textAlign}
     >
       {leftIconSrc && <LeftIconWrapper>{leftIconSrc}</LeftIconWrapper>}
-      <span>{text && text}</span>
-      {children ? children : text}
+      <span> {children ? children : text}</span>
       {rightIconSrc && <RightIconWrapper>{rightIconSrc}</RightIconWrapper>}
     </Component>
   );
@@ -77,7 +76,9 @@ const Component = styled.button<ButtonStyleProps>`
   display: flex;
   align-items: center;
   background-color: white;
+  position: relative;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '15px')};
+  padding-right: 20px;
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '50px')};
@@ -90,6 +91,7 @@ const Component = styled.button<ButtonStyleProps>`
       ? `border: 1px solid ${COLOR.PRIMARY};`
       : 'border: 1px solid rgba(0, 0, 0, 0.23);'};
   cursor: pointer;
+
   &:focus {
     border: 1px solid rgba(25, 118, 210);
   }
@@ -97,18 +99,25 @@ const Component = styled.button<ButtonStyleProps>`
     border: 1px solid rgba(25, 118, 210);
   }
   span {
+    width: 100%;
     text-align: ${({ $textAlign }) =>
       $textAlign ? `${$textAlign};` : 'center'};
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 
 const RightIconWrapper = styled.span`
+  position: absolute;
+  right: 10px;
   display: flex;
-  flex: 1 0 0;
   justify-content: flex-end;
 `;
 
 const LeftIconWrapper = styled.span`
+  position: absolute;
+  left: 10px;
   display: flex;
   flex: 1 0 0;
   justify-content: flex-start;

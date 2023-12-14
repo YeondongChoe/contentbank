@@ -182,7 +182,11 @@ export function ListTable() {
       label: '대분류',
       value: '5',
       options: [
-        { id: '1', label: '일차부등식 소분류', value: '1' },
+        {
+          id: '1',
+          label: '일차부등식 소분류를 연습해봅시다 초등학교 친구들',
+          value: '1',
+        },
         { id: '2', label: '일차부등식 중분류', value: '2' },
         { id: '3', label: '일차부등식 대분류', value: '3' },
       ],
@@ -217,55 +221,6 @@ export function ListTable() {
       [fieldName]: event.target.value,
     }));
   };
-
-  // const selectCurriculum = (event: { target: { value: string } }) => {
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     curriculum: event.target.value as string,
-  //   }));
-  // };
-
-  // const selectSchoolLevel = (event: { target: { value: string } }) => {
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     schoolLevel: event.target.value as string,
-  //   }));
-  // };
-
-  // const selectSchoolYear = (event: { target: { value: string } }) => {
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     schoolYear: event.target.value as string,
-  //   }));
-  // };
-
-  // const selectSemester = (event: { target: { value: string } }) => {
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     semester: event.target.value as string,
-  //   }));
-  // };
-
-  // const selectUnitMajor = (event: { target: { value: string } }) => {
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     unitMajor: event.target.value as string,
-  //   }));
-  // };
-
-  // const selectUnitType = (event: { target: { value: string } }) => {
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     unitType: event.target.value as string,
-  //   }));
-  // };
-
-  // const selectServiced = (event: { target: { value: string } }) => {
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     serviced: event.target.value as string,
-  //   }));
-  // };
 
   /**문항 업로드 팝업 관련 코드 */
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
@@ -338,6 +293,7 @@ export function ListTable() {
           <SelectWrapper>
             {category.map((el) => (
               <Select
+                width="120px"
                 value={el.value}
                 defaultValue={el.label}
                 onChange={(e) => handleSelectChange(el.value, e)}
@@ -345,84 +301,6 @@ export function ListTable() {
                 options={el.options}
               />
             ))}
-            {/* <Select
-              value={content.curriculum}
-              defaultValue="개정과정"
-              onChange={selectCurriculum}
-              key="개정과정"
-              options={[
-                { id: '1', label: '2015학년', value: '1' },
-                { id: '2', label: '2018학년', value: '2' },
-                { id: '3', label: '2020학년', value: '3' },
-              ]}
-            />
-            <Select
-              value={content.schoolLevel}
-              defaultValue="학교"
-              onChange={selectSchoolLevel}
-              key="학교"
-              options={[
-                { id: '1', label: '초등', value: '1' },
-                { id: '2', label: '중등', value: '2' },
-                { id: '3', label: '고등', value: '3' },
-              ]}
-            />
-            <Select
-              value={content.schoolYear}
-              defaultValue="학년"
-              onChange={selectSchoolYear}
-              key="학년"
-              options={[
-                { id: '1', label: '초등1', value: '1' },
-                { id: '2', label: '초등2', value: '2' },
-                { id: '3', label: '중등1', value: '3' },
-                { id: '4', label: '중등2', value: '4' },
-                { id: '5', label: '고등1', value: '5' },
-                { id: '6', label: '고등2', value: '6' },
-              ]}
-            />
-            <Select
-              value={content.semester}
-              defaultValue="학기"
-              onChange={selectSemester}
-              key="학기"
-              options={[
-                { id: '1', label: '1학기', value: '1' },
-                { id: '2', label: '2학기', value: '2' },
-              ]}
-            />
-            <Select
-              value={content.unitMajor}
-              defaultValue="대분류"
-              onChange={selectUnitMajor}
-              key="대분류"
-              options={[
-                { id: '1', label: '일차부등식 소분류', value: '1' },
-                { id: '2', label: '일차부등식 중분류', value: '2' },
-                { id: '3', label: '일차부등식 대분류', value: '3' },
-              ]}
-            />
-            <Select
-              value={content.unitType}
-              defaultValue="문항타입"
-              onChange={selectUnitType}
-              key="문항타입"
-              options={[
-                { id: '1', label: '객관식', value: '1' },
-                { id: '2', label: '주관식', value: '2' },
-                { id: '3', label: '서술형', value: '3' },
-              ]}
-            />
-            <Select
-              value={content.serviced}
-              defaultValue="오픈여부"
-              onChange={selectServiced}
-              key="오픈여부"
-              options={[
-                { id: '1', label: '활성화', value: '1' },
-                { id: '2', label: '비활성화', value: '2' },
-              ]}
-            /> */}
           </SelectWrapper>
           <ButtonWrapper>
             {MenuCode === 'CNM_Q' ? (
