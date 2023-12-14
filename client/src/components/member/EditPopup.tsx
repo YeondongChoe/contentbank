@@ -156,9 +156,9 @@ export function EditPopup() {
                   autoComplete="off"
                 >
                   {isNameError ? (
-                    <Label type="error" fontSize="16" value="이름(필수)" />
+                    <Label type="error" fontSize="16px" value="이름(필수)" />
                   ) : (
-                    <Label fontSize="16" value="이름(필수)" />
+                    <Label fontSize="16px" value="이름(필수)" />
                   )}
                   <Controller
                     control={control}
@@ -170,11 +170,11 @@ export function EditPopup() {
                           type="text"
                           placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                           value={field.value}
-                          width="350"
-                          height="32"
-                          fontSize="16"
-                          placeholderSize="12"
-                          marginBottom="10"
+                          width="350px"
+                          height="32px"
+                          fontSize="16px"
+                          placeholderSize="12px"
+                          margin="0px 0px 10px 0px"
                           border="black"
                           borderbottom={isNameError && true}
                           onChange={field.onChange}
@@ -184,7 +184,7 @@ export function EditPopup() {
                       </>
                     )}
                   />
-                  <Label fontSize="16" value="아이디" />
+                  <Label fontSize="16px" value="아이디" />
                   <Controller
                     control={control}
                     name="id"
@@ -194,10 +194,10 @@ export function EditPopup() {
                         disabled
                         type="text"
                         value={field.value}
-                        width="350"
-                        height="32"
-                        fontSize="16"
-                        marginBottom="10"
+                        width="350px"
+                        height="32px"
+                        fontSize="16px"
+                        margin="0px 0px 10px 0px"
                         border="black"
                         onChange={field.onChange}
                       />
@@ -227,7 +227,7 @@ export function EditPopup() {
                   flexDirection="column"
                 >
                   <DisableWrapper>
-                    <Label fontSize="16" value="권한" />
+                    <Label fontSize="16px" width="200px" value="권한" />
                     {isEnabled ? (
                       <CheckBoxWrapper>
                         <CheckBoxOutlineBlankIcon onClick={checkEnabled} />
@@ -278,7 +278,7 @@ export function EditPopup() {
                   />
                 </Box>
                 <Box sx={{ minWidth: '350px' }}>
-                  <Label fontSize="16" value="비고" />
+                  <Label fontSize="16px" value="비고" />
                   <Controller
                     control={control}
                     name="comment"

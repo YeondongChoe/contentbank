@@ -208,12 +208,12 @@ export function Authority() {
                 defaultValue=""
                 render={({ field }) => (
                   <Input
-                    width="300"
-                    height="30"
-                    padding="5"
-                    placeholderSize="14"
-                    fontSize="14"
-                    borderradius="5"
+                    width="300px"
+                    height="30px"
+                    padding="5px"
+                    placeholderSize="14px"
+                    fontSize="14px"
+                    borderradius="5px"
                     type="text"
                     placeholder="권한명을 작성해주세요."
                     value={field.value || inputValue}

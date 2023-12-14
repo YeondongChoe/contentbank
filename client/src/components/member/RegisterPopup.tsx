@@ -133,11 +133,11 @@ export function RegisterPopup() {
                         type="text"
                         placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                         value={field.value}
-                        width="350"
-                        height="32"
-                        fontSize="16"
-                        placeholderSize="12"
-                        marginBottom="10"
+                        width="350px"
+                        height="32px"
+                        fontSize="16px"
+                        placeholderSize="12px"
+                        margin="0px 0px 10px 0px"
                         border="black"
                         borderbottom={isNameError && true}
                         onChange={field.onChange}
@@ -161,11 +161,11 @@ export function RegisterPopup() {
                       type="text"
                       placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
                       value={field.value}
-                      width="350"
-                      height="32"
-                      fontSize="16"
-                      placeholderSize="12"
-                      marginBottom="10"
+                      width="350px"
+                      height="32px"
+                      fontSize="16px"
+                      placeholderSize="12px"
+                      margin="0px 0px 10px 0px"
                       border="black"
                       onChange={field.onChange}
                       onClick={() => setIsIdError(false)}

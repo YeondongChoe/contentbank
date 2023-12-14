@@ -1,6 +1,10 @@
 import * as React from 'react';
+import { useState } from 'react';
 
+import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
+
+import { IconButton } from '../button';
 
 type OptionsProps = {
   id?: string;
@@ -8,16 +12,11 @@ type OptionsProps = {
   value: number | string;
 };
 
-type SelectOption = {
-  sort?: string;
-  label: string;
-  selectValue: number | string;
-};
-
 type SelectProps = {
-  options: OptionsProps[];
+  options?: OptionsProps[];
   onChange?: (x: any) => void;
-  value?: number | string;
+  value?: string;
+  defaultValue?: string;
   width?: number;
   height?: number;
   margin?: number;
@@ -28,19 +27,51 @@ type SelectProps = {
   className?: string;
 };
 
-export function Select({ options, onChange, value, ...props }: SelectProps) {
+export function Select({
+  options,
+  onChange,
+  value,
+  defaultValue,
+  ...props
+}: SelectProps) {
+  const [isOptionShow, setIsOptionShow] = useState(false);
+  const [selected, setSelected] = useState<string | null>();
+
+  const ClickButton = (e: React.MouseEvent<HTMLLIElement>) => {
+    const clickedValue = e.currentTarget.getAttribute('label');
+    console.log(clickedValue);
+    setSelected(clickedValue);
+  };
+
   return (
-    <>
-      <Component {...props}>
-        <select onChange={onChange} value={value}>
-          {options.map(({ id, value, label }) => (
-            <option key={id} value={value}>
-              {label}
-            </option>
+    <Component {...props}>
+      <IconButton
+        width="120px"
+        height="40px"
+        fontSize="14px"
+        onClick={() => setIsOptionShow(true)}
+        textAlign="left"
+        rightIconSrc={React.createElement(IoMdArrowDropdown)}
+      >
+        {selected ||
+          defaultValue ||
+          (options && options.length > 0 ? options[0].label : '')}
+      </IconButton>
+      {isOptionShow && (
+        <ul
+          onClick={() => setIsOptionShow(false)}
+          onMouseLeave={() => {
+            setIsOptionShow(false);
+          }}
+        >
+          {options?.map((el) => (
+            <li key={el.id} value={el.value} onClick={ClickButton}>
+              {el.label}
+            </li>
           ))}
-        </select>
-      </Component>
-    </>
+        </ul>
+      )}
+    </Component>
   );
 }
 
@@ -49,24 +80,44 @@ type SelectStyleProps = {
   height?: number;
   margin?: number;
   padding?: number;
-  iconName?: string;
-  iconWidth?: number;
-  iconHeight?: number;
 };
 
 const Component = styled.div<SelectStyleProps>`
-  select {
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    color: rgba(0, 0, 0, 0.54);
-    border-radius: 5px;
-    font-size: 14px;
-    height: 40px;
-    padding: 0 10px;
+  width: 120px;
+  height: 40px;
+  z-index: 99;
+  ul {
+    position: relative;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  li {
     width: 120px;
-    text-overflow: ellipsis;
-    &:focus {
-      outline: none;
-      border: 2px solid rgba(25, 118, 210);
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    font-size: 14px;
+    border-left: 1px solid rgba(0, 0, 0, 0.23);
+    border-right: 1px solid rgba(0, 0, 0, 0.23);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.23);
+    list-style-type: none;
+    &:hover {
+      background-color: #f4f7fe;
     }
+  }
+  li:first-child {
+    margin-top: 5px;
+    border-top: 1px solid rgba(0, 0, 0, 0.23);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
+  li:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
   }
 `;

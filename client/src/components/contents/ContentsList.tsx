@@ -53,11 +53,11 @@ export function ContentsList() {
         </TapWrapper>
         <InputWrapper>
           <Input
-            width="245"
-            height="25"
-            padding="5"
-            placeholderSize="12"
-            fontSize="12"
+            width="245px"
+            height="25px"
+            padding="5px"
+            placeholderSize="12px"
+            fontSize="12px"
             type="text"
             placeholder="문항코드, 중분류, 담당자 검색"
             value={inputValue}

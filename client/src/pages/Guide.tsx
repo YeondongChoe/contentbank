@@ -5,9 +5,14 @@ import { styled } from 'styled-components';
 import { Button } from './../components/atom';
 import { Select } from './../components/atom/select';
 
+type CategoryOptionsProps = {
+  id?: string;
+  label: string;
+  value?: number | string;
+};
+
 export function Guide() {
-  const [selectedValue, setSelectedValue] = React.useState<number>(0);
-  const [selectedListValue, setSelectedListValue] = React.useState<number>(0);
+  const [selectedValue, setSelectedValue] = React.useState<string>();
 
   return (
     <Component>
@@ -49,16 +54,7 @@ export function Guide() {
       >
         <span>border 커스텀 버튼</span>
       </Button>
-      <Select
-        value={selectedValue}
-        onChange={(e) => setSelectedValue(e.target.value)}
-        key="개정과정"
-        options={[
-          { id: '0', label: '개정과정', value: 0 },
-          { id: '1', label: '2015학년', value: 1 },
-          { id: '2', label: '2020학년', value: 2 },
-        ]}
-      />
+      <Select />
     </Component>
   );
 }
