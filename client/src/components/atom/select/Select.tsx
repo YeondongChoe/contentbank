@@ -17,14 +17,7 @@ type SelectProps = {
   onChange?: (x: any) => void;
   value?: string;
   defaultValue?: string;
-  width?: number;
-  height?: number;
-  margin?: number;
-  padding?: number;
-  iconName?: string;
-  iconWidth?: number;
-  iconHeight?: number;
-  className?: string;
+  width?: string;
 };
 
 export function Select({
@@ -32,30 +25,30 @@ export function Select({
   onChange,
   value,
   defaultValue,
-  ...props
+  width,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
-  const [selected, setSelected] = useState<string | null>();
+  const [selected, setSelected] = useState<string>();
 
-  const ClickButton = (e: React.MouseEvent<HTMLLIElement>) => {
-    const clickedValue = e.currentTarget.getAttribute('label');
-    console.log(clickedValue);
-    setSelected(clickedValue);
+  const ClickButton = (value: string) => {
+    setSelected(value);
   };
 
   return (
-    <Component {...props}>
+    <Component
+      onMouseLeave={() => {
+        setIsOptionShow(false);
+      }}
+    >
       <IconButton
-        width="120px"
+        width={width}
         height="40px"
         fontSize="14px"
         onClick={() => setIsOptionShow(true)}
         textAlign="left"
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
       >
-        {selected ||
-          defaultValue ||
-          (options && options.length > 0 ? options[0].label : '')}
+        {selected || defaultValue}
       </IconButton>
       {isOptionShow && (
         <ul
@@ -65,8 +58,12 @@ export function Select({
           }}
         >
           {options?.map((el) => (
-            <li key={el.id} value={el.value} onClick={ClickButton}>
-              {el.label}
+            <li
+              key={el.id}
+              value={el.value}
+              onClick={() => ClickButton(el.label)}
+            >
+              <span>{el.label}</span>
             </li>
           ))}
         </ul>
@@ -75,38 +72,35 @@ export function Select({
   );
 }
 
-type SelectStyleProps = {
-  width?: number;
-  height?: number;
-  margin?: number;
-  padding?: number;
-};
-
-const Component = styled.div<SelectStyleProps>`
-  width: 120px;
-  height: 40px;
-  z-index: 99;
+const Component = styled.div`
+  position: relative;
+  height: 50px;
   ul {
-    position: relative;
-    top: 0;
+    position: absolute;
+    top: 40px;
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: 1;
   }
   li {
-    width: 120px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background-color: white;
     font-size: 14px;
     border-left: 1px solid rgba(0, 0, 0, 0.23);
     border-right: 1px solid rgba(0, 0, 0, 0.23);
     border-bottom: 1px solid rgba(0, 0, 0, 0.23);
     list-style-type: none;
+    padding: 10px;
     &:hover {
       background-color: #f4f7fe;
+    }
+    span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.2;
+      text-align: left;
     }
   }
   li:first-child {
