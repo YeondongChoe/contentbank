@@ -6,8 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
-import { Input } from '../../components/atom/input/Input';
-import { Label } from '../../components/atom/label/Label';
+import { Input, Label } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
 
 type passwordProps = {
@@ -23,7 +22,7 @@ type ChangePasswordProps = {
   height?: string;
   display?: string;
   marginleft?: string;
-  paddingtop?: string;
+  padding?: string;
   buttonfontsize?: string;
   labelfontsize?: string;
   placeholdersize?: string;
@@ -37,7 +36,7 @@ export function ChangePassword({
   height,
   display,
   marginleft,
-  paddingtop,
+  padding,
   buttonfontsize,
   labelfontsize,
   placeholdersize,
@@ -68,8 +67,8 @@ export function ChangePassword({
           <InputWapper width={width as string}>
             <Label
               value="새 비밀번호"
-              fontSize={labelfontsize || '16'}
-              width="150"
+              fontSize={labelfontsize || '16px'}
+              width="150px"
             />
             <Controller
               control={control}
@@ -86,9 +85,9 @@ export function ChangePassword({
                 <Input
                   borderbottom
                   width={inputwidth as string}
-                  height="40"
-                  padding="10"
-                  fontSize="16"
+                  height="40px"
+                  padding="10px"
+                  fontSize="16px"
                   placeholderSize={placeholdersize as string}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
@@ -104,8 +103,8 @@ export function ChangePassword({
           <InputWapper width={width as string}>
             <Label
               value="새 비밀번호 재확인"
-              fontSize={labelfontsize || '16'}
-              width="150"
+              fontSize={labelfontsize || '16px'}
+              width="150px"
             />
             <Controller
               control={control}
@@ -122,9 +121,9 @@ export function ChangePassword({
                 <Input
                   borderbottom
                   width={inputwidth as string}
-                  height="40"
-                  padding="10"
-                  fontSize="16"
+                  height="40px"
+                  padding="10px"
+                  fontSize="16px"
                   placeholderSize={placeholdersize as string}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
@@ -148,7 +147,7 @@ export function ChangePassword({
         <ButtonGroup
           display={display as string}
           marginLeft={marginleft as string}
-          $paddingtop={paddingtop as string}
+          $padding={padding as string}
         >
           <ButtonWapper>
             <StyledCancelBtn
@@ -196,14 +195,14 @@ const Container = styled.div``;
 const InputSection = styled.section<{ width: string }>`
   display: flex;
   flex-direction: column;
-  ${({ width }) => (width ? ` width: ${width}px;` : '750px')};
+  width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
 const InputWapper = styled.div<{ width: string }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 0px;
-  ${({ width }) => (width ? ` width: ${width}px;` : '750px')};
+  width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
 const SuccessMessage = styled.div`
   width: 750px;
@@ -227,12 +226,12 @@ const ErrorMessage = styled.div`
 const ButtonGroup = styled.div<{
   display: string;
   marginLeft: string;
-  $paddingtop: string;
+  $padding: string;
 }>`
   display: flex;
   gap: 20px;
   justify-content: ${(props) => props.display};
-  padding-top: ${(props) => props.$paddingtop || 40}px;
+  padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
 
 const ButtonWapper = styled.button`
@@ -248,9 +247,10 @@ type styleProp = {
 
 const StyledCancelBtn = styled(Button)<styleProp>`
   && {
-    width: ${(props) => props.width}px;
-    height: ${(props) => props.height}px;
-    font-size: ${(props) => props.buttonfontsize || 16}px;
+    width: ${({ width }) => (width ? ` ${width};` : '100%')};
+    height: ${({ height }) => (height ? ` ${height};` : '50px')};
+    font-size: ${({ buttonfontsize }) =>
+      buttonfontsize ? ` ${buttonfontsize};` : '16px'};
     border-radius: 10px;
     line-height: normal;
   }
@@ -258,9 +258,10 @@ const StyledCancelBtn = styled(Button)<styleProp>`
 
 const StyledConfirmBtn = styled(Button)<styleProp>`
   && {
-    width: ${(props) => props.width}px;
-    height: ${(props) => props.height}px;
-    font-size: ${(props) => props.buttonfontsize || 16}px;
+    width: ${({ width }) => (width ? ` ${width};` : '100%')};
+    height: ${({ height }) => (height ? ` ${height};` : '50px')};
+    font-size: ${({ buttonfontsize }) =>
+      buttonfontsize ? ` ${buttonfontsize};` : '16px'};
     border-radius: 10px;
     line-height: normal;
   }
@@ -268,9 +269,10 @@ const StyledConfirmBtn = styled(Button)<styleProp>`
 
 const StyledNomalBtn = styled(Button)<styleProp>`
   && {
-    width: ${(props) => props.width}px;
-    height: ${(props) => props.height}px;
-    font-size: ${(props) => props.buttonfontsize || 16}px;
+    width: ${({ width }) => (width ? ` ${width};` : '100%')};
+    height: ${({ height }) => (height ? ` ${height};` : '50px')};
+    font-size: ${({ buttonfontsize }) =>
+      buttonfontsize ? ` ${buttonfontsize};` : '16px'};
     border-radius: 10px;
     line-height: normal;
   }

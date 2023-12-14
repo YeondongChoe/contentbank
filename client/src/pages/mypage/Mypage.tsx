@@ -7,8 +7,7 @@ import styled from 'styled-components';
 
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
-import { Input } from '../../components/atom/input/Input';
-import { Label } from '../../components/atom/label/Label';
+import { Input, Label } from '../../components';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { alertBoolAtom } from '../../state/utilAtom';
@@ -84,19 +83,19 @@ export function Mypage() {
           </SubTitleWrapper>
           <InformationForm>
             <InputWrapper>
-              <Label value="아이디" fontSize="14" width="100" />
+              <Label value="아이디" fontSize="14px" width="100px" />
               <Information>{member.id}</Information>
             </InputWrapper>
             <InputWrapper>
-              <Label value="이름" fontSize="14" width="100" />
+              <Label value="이름" fontSize="14px" width="100px" />
               {!isNameEdit && <Information>{member.name}</Information>}
               {isNameEdit && (
                 <Input
-                  width="150"
-                  height="17"
+                  width="150px"
+                  height="17px"
                   border="black"
-                  placeholderSize="12"
-                  fontSize="14"
+                  placeholderSize="12px"
+                  fontSize="14px"
                   type="text"
                   placeholder="수정할 이름을 입력하세요."
                   value={nameValue}
@@ -128,12 +127,12 @@ export function Mypage() {
               )}
             </InputWrapper>
             <InputWrapper>
-              <Label value="권한" fontSize="14" width="100" />
+              <Label value="권한" fontSize="14px" width="100px" />
               <Information>{member.authority}</Information>
             </InputWrapper>
             {!isPasswordEdit && (
               <InputWrapper>
-                <Label value="비밀번호" fontSize="14" width="100" />
+                <Label value="비밀번호" fontSize="14px" width="100px" />
                 <ButtonWrapper>
                   <StyledEditBtn
                     variant="outlined"
@@ -154,15 +153,15 @@ export function Mypage() {
               <SubTitle>비밀번호 변경</SubTitle>
             </SubTitleWrapper>
             <ChangePassword
-              width="400"
-              inputwidth="250"
-              paddingtop="20"
+              width="400px"
+              inputwidth="250px"
+              padding="20px 0px 0px 0px"
               onClick={selectPasswordEdit}
-              btnwidth="80"
-              height="25"
-              buttonfontsize="13"
-              labelfontsize="14"
-              placeholdersize="12"
+              btnwidth="80px"
+              height="25px"
+              buttonfontsize="13px"
+              labelfontsize="14px"
+              placeholdersize="12px"
               display="flex-start"
             />
           </PasswordWrapper>

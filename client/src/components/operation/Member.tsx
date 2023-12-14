@@ -6,7 +6,7 @@ import { Button } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Input } from '../../components/atom/input/Input';
+import { Input } from '../../components';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
@@ -26,11 +26,11 @@ export function Member() {
       <Wrapper>
         <InputWrapper>
           <Input
-            width="245"
-            height="25"
-            padding="5"
-            placeholderSize="12"
-            fontSize="12"
+            width="245px"
+            height="25px"
+            padding="5px"
+            placeholderSize="12px"
+            fontSize="12px"
             type="text"
             placeholder="이름, 권한 검색"
             value={inputValue}

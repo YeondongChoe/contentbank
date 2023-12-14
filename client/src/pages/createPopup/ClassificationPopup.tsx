@@ -20,7 +20,6 @@ import Contents4 from '../../components/mathViewer/test4.json';
 import dummy from './data.json';
 
 export function ClassificationPopup() {
-  const mathExpression = Contents.it_quest; // it_quest 필드를 가져옴
   const ContentList = dummy.ContentInfo;
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
