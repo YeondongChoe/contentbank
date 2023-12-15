@@ -7,6 +7,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Input } from '../../components';
+import { Search } from '../../components/molecules';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
 import { updateBoolAtom } from '../../state/utilAtom';
@@ -21,6 +22,10 @@ export function ContentsList() {
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const setIsUpdate = useSetRecoilState(updateBoolAtom);
 
+  const [searchValue, setSearchValue] = useState<string>('');
+  const filterSearchValue = () => {
+    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+  };
   const searchContentList = () => {
     setsearchValueAtom(inputValue);
   };
@@ -52,26 +57,17 @@ export function ContentsList() {
           </TapMenu>
         </TapWrapper>
         <InputWrapper>
-          {/* <Input
-            width="245px"
-            height="25px"
-            padding="5px"
-            placeholderSize="12px"
-            fontSize="12px"
-            type="text"
-            placeholder="문항코드, 중분류, 담당자 검색"
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
-          /> */}
-          <IconWrapper>
-            <SearchIcon onClick={searchContentList} />
-          </IconWrapper>
+          <Search
+            value={searchValue}
+            width={'250px'}
+            onClick={() => filterSearchValue()}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder="이름, 권한 검색"
+          />
+          <StyledUplodeBtn variant="contained" onClick={openCreatePopup}>
+            + 문항 업로드
+          </StyledUplodeBtn>
         </InputWrapper>
-        <StyledUplodeBtn variant="contained" onClick={openCreatePopup}>
-          + 문항 업로드
-        </StyledUplodeBtn>
       </HeadWrapper>
       {choiceValue === 1 && (
         <TableWrapper>

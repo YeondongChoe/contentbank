@@ -16,9 +16,9 @@ import { MemberTable } from '../table/MemberTable';
 export function Member() {
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const isEditer = useRecoilValue(editerBoolAtom);
-  const [inputValue, setInputValue] = useState('');
 
   const [searchValue, setSearchValue] = useState<string>('');
+
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
@@ -29,34 +29,16 @@ export function Member() {
   return (
     <Container>
       <Wrapper>
-        <InputWrapper>
-          <Input
-            width="245px"
-            height="25px"
-            padding="5px"
-            placeholderSize="12px"
-            fontSize="12px"
-            type="text"
-            placeholder="이름, 권한 검색"
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
-          />
-          <IconWrapper>
-            <SearchIcon />
-          </IconWrapper>
-        </InputWrapper>
-        <StyledUplodeBtn variant="contained" onClick={openRegisterPopup}>
-          + 아이디 만들기
-        </StyledUplodeBtn>
-
         <Search
           value={searchValue}
           width={'250px'}
           onClick={() => filterSearchValue()}
           onChange={(e) => setSearchValue(e.target.value)}
+          placeholder="이름, 권한 검색"
         />
+        <StyledUplodeBtn variant="contained" onClick={openRegisterPopup}>
+          + 아이디 만들기
+        </StyledUplodeBtn>
       </Wrapper>
       <ContentWrapper>
         <MemberTable />
