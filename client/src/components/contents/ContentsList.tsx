@@ -52,7 +52,7 @@ export function ContentsList() {
           </TapMenu>
         </TapWrapper>
         <InputWrapper>
-          <Input
+          {/* <Input
             width="245px"
             height="25px"
             padding="5px"
@@ -64,7 +64,7 @@ export function ContentsList() {
             onChange={(e) => {
               setInputValue(e.target.value);
             }}
-          />
+          /> */}
           <IconWrapper>
             <SearchIcon onClick={searchContentList} />
           </IconWrapper>

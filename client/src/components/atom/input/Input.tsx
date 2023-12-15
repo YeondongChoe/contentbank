@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ChangeEvent } from 'react';
 
 import { styled } from 'styled-components';
 
@@ -7,7 +8,7 @@ type InputProps = {
   placeholder?: string;
   placeholderSize?: string;
   value?: string;
-  onChange: (event: any) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onClick?: () => void;
   padding?: string;
   width?: string;
