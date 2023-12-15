@@ -33,7 +33,7 @@ const config = {
 export function MathViewer({ data }: MathViewerProps) {
   const [display, setDisplay] = useState('none');
 
-  const renders = (mathJax: MathJax3Object) => {};
+  const setMathJax = (mathJax: MathJax3Object) => {};
 
   const offLoader = () => {
     // console.log('off loader');
@@ -54,7 +54,7 @@ export function MathViewer({ data }: MathViewerProps) {
         <MathJaxContext
           version={3}
           config={config}
-          onStartup={(mathJax) => renders(mathJax)}
+          onStartup={(mathJax) => setMathJax(mathJax)}
         >
           <strong>{data.it_title}</strong>
 
