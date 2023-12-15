@@ -95,10 +95,11 @@ const Container = styled.div`
 `;
 const HeadWrapper = styled.div`
   width: 100%;
-  padding: 40px 10px 0px 50px;
+  padding: 20px;
+  padding-bottom: 0;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
 `;
 
 const TapWrapper = styled.div`
@@ -106,7 +107,6 @@ const TapWrapper = styled.div`
   justify-content: flex-start;
   align-items: flex-end;
   gap: 10px;
-  flex: 1 0 0;
 `;
 
 const TapMenu = styled.div<{ choiced: number }>`

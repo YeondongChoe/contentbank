@@ -533,7 +533,7 @@ export function ListTable() {
 }
 
 const Container = styled.div`
-  padding: 40px 0px 10px;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
   gap: 5px;
@@ -548,8 +548,8 @@ const Wrapper = styled.div`
 
 const SelectWrapper = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  padding-left: 30px;
 `;
 
 const ButtonWrapper = styled.div`

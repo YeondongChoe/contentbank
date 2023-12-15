@@ -21,7 +21,7 @@ export function PaginationBox({
   const setSelectedRows = useSetRecoilState<number[]>(checkBoxValueAtom);
 
   return (
-    <Container.Wrapper>
+    <Wrapper>
       <Pagination
         activePage={page}
         itemsCountPerPage={itemsCountPerPage}
@@ -34,44 +34,44 @@ export function PaginationBox({
           setSelectedRows([]);
         }}
       />
-    </Container.Wrapper>
+    </Wrapper>
   );
 }
 
-const Container = {
-  Wrapper: styled.div`
-    & > .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      list-style: none;
-      gap: 30px;
-      margin-top: 10px;
-      li {
-        // .active에 focus 안 주어도 자동 focus됨
-        &.disabled:active,
-        &.active > a {
-          color: red;
-          font-weight: bold;
-        }
+// type PaginationStyleProps = {};
 
-        &:hover > a {
-          color: red;
-        }
-        &:nth-child(1),
-        &:nth-child(2),
-        &:nth-last-child(1),
-        &:nth-last-child(2) {
-          a {
-            font-size: 14px;
-          }
-        }
+const Wrapper = styled.div`
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    gap: 30px;
+    margin-top: 10px;
+    li {
+      // .active에 focus 안 주어도 자동 focus됨
+      &.disabled:active,
+      &.active > a {
+        color: red;
+        font-weight: bold;
+      }
+
+      &:hover > a {
+        color: red;
+      }
+      &:nth-child(1),
+      &:nth-child(2),
+      &:nth-last-child(1),
+      &:nth-last-child(2) {
         a {
-          text-decoration: none;
-          color: black;
-          font-size: 16px;
+          font-size: 14px;
         }
       }
+      a {
+        text-decoration: none;
+        color: black;
+        font-size: 16px;
+      }
     }
-  `,
-};
+  }
+`;
