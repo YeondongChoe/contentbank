@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { styled } from 'styled-components';
 
-import { Button } from './../components/atom';
+import { Button, IconButton, Loader } from './../components/atom';
 import { Select } from './../components/atom/select';
 
 type CategoryOptionsProps = {
@@ -54,7 +54,13 @@ export function Guide() {
       >
         <span>border 커스텀 버튼</span>
       </Button>
+
       <Select />
+
+      <h3>loader</h3>
+      <Loader height={'80px'} />
+
+      <Loader height={'40px'} size="35px" />
     </Component>
   );
 }
