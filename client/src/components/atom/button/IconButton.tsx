@@ -21,6 +21,7 @@ type IconButtonProps = {
   leftIconSrc?: React.ReactElement;
   rightIconSrc?: React.ReactElement;
   textAlign?: 'center' | 'left' | 'right';
+  borderNone?: boolean;
 };
 
 export function IconButton({
@@ -39,6 +40,7 @@ export function IconButton({
   $border,
   $borderRadius,
   textAlign,
+  borderNone,
 }: IconButtonProps) {
   return (
     <Component
@@ -53,6 +55,7 @@ export function IconButton({
       $borderRadius={$borderRadius}
       fontSize={fontSize}
       $textAlign={textAlign}
+      borderNone={borderNone}
     >
       {leftIconSrc && <LeftIconWrapper>{leftIconSrc}</LeftIconWrapper>}
       <span> {children ? children : text}</span>
@@ -70,6 +73,7 @@ type ButtonStyleProps = {
   fontSize?: string;
   $borderRadius?: string;
   $textAlign?: 'center' | 'left' | 'right';
+  borderNone?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -89,15 +93,16 @@ const Component = styled.button<ButtonStyleProps>`
   ${({ $border }) =>
     $border
       ? `border: 1px solid ${COLOR.PRIMARY};`
-      : 'border: 1px solid rgba(0, 0, 0, 0.23);'};
+      : `border: 1px solid rgba(0, 0, 0, 0.23);   
+			 &:focus {
+				border: 1px solid ${COLOR.PRIMARY};
+			}
+			&:hover {
+				border: 1px solid ${COLOR.PRIMARY};
+			} 
+		`};
   cursor: pointer;
 
-  &:focus {
-    border: 1px solid rgba(25, 118, 210);
-  }
-  &:hover {
-    border: 1px solid rgba(25, 118, 210);
-  }
   span {
     width: 100%;
     text-align: ${({ $textAlign }) =>
@@ -106,6 +111,15 @@ const Component = styled.button<ButtonStyleProps>`
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  ${({ borderNone }) =>
+    borderNone &&
+    `border: none; !important  
+		&:focus {
+		border: none; !important 
+		}
+		&:hover {
+			border: none; !important 
+		}`}
 `;
 
 const RightIconWrapper = styled.span`

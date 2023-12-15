@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Input } from '../../components';
+import { Search } from '../../components/molecules';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
@@ -17,6 +18,10 @@ export function Member() {
   const isEditer = useRecoilValue(editerBoolAtom);
   const [inputValue, setInputValue] = useState('');
 
+  const [searchValue, setSearchValue] = useState<string>('');
+  const filterSearchValue = () => {
+    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+  };
   const openRegisterPopup = () => {
     SetIsRegister(true);
   };
@@ -45,6 +50,13 @@ export function Member() {
         <StyledUplodeBtn variant="contained" onClick={openRegisterPopup}>
           + 아이디 만들기
         </StyledUplodeBtn>
+
+        <Search
+          value={searchValue}
+          width={'250px'}
+          onClick={() => filterSearchValue()}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
       </Wrapper>
       <ContentWrapper>
         <MemberTable />
