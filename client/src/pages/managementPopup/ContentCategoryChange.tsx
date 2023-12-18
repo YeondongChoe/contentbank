@@ -2,13 +2,10 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import { Button } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Select } from '../../components/atom/select';
 import { checkListValueAtom } from '../../state/valueAtom';
 import dummy from '../createPopup/data.json';
 
@@ -48,52 +45,91 @@ export function ContentCategoryChange() {
     serviced: '',
   });
 
-  const selectCurriculum = (event: SelectChangeEvent) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      curriculum: event.target.value as string,
-    }));
-  };
+  const category = [
+    {
+      id: '1',
+      label: '개정과정',
+      value: '1',
+      options: [
+        { id: '1', label: '2015학년', value: '1' },
+        { id: '2', label: '2018학년', value: '2' },
+        { id: '3', label: '2020학년', value: '3' },
+      ],
+    },
+    {
+      id: '2',
+      label: '학교',
+      value: '2',
+      options: [
+        { id: '1', label: '초등', value: '1' },
+        { id: '2', label: '중등', value: '2' },
+        { id: '3', label: '고등', value: '3' },
+      ],
+    },
+    {
+      id: '3',
+      label: '학년',
+      value: '3',
+      options: [
+        { id: '1', label: '초등1', value: '1' },
+        { id: '2', label: '초등2', value: '2' },
+        { id: '3', label: '중등1', value: '3' },
+        { id: '4', label: '중등2', value: '4' },
+        { id: '5', label: '고등1', value: '5' },
+        { id: '6', label: '고등2', value: '6' },
+      ],
+    },
+    {
+      id: '4',
+      label: '학기',
+      value: '4',
+      options: [
+        { id: '1', label: '1학기', value: '1' },
+        { id: '2', label: '2학기', value: '2' },
+      ],
+    },
+    {
+      id: '5',
+      label: '대분류',
+      value: '5',
+      options: [
+        {
+          id: '1',
+          label: '일차부등식 소분류를 연습해봅시다 초등학교 친구들',
+          value: '1',
+        },
+        { id: '2', label: '일차부등식 중분류', value: '2' },
+        { id: '3', label: '일차부등식 대분류', value: '3' },
+      ],
+    },
+    {
+      id: '6',
+      label: '문항타입',
+      value: '6',
+      options: [
+        { id: '1', label: '객관식', value: '1' },
+        { id: '2', label: '주관식', value: '2' },
+        { id: '3', label: '서술형', value: '3' },
+      ],
+    },
+    {
+      id: '7',
+      label: '오픈여부',
+      value: '7',
+      options: [
+        { id: '1', label: '활성화', value: '1' },
+        { id: '2', label: '비활성화', value: '2' },
+      ],
+    },
+  ];
 
-  const selectSchoolLevel = (event: SelectChangeEvent) => {
+  const selectCategory = (
+    fieldName: string,
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     setContent((prevContent) => ({
       ...prevContent,
-      schoolLevel: event.target.value as string,
-    }));
-  };
-
-  const selectSchoolYear = (event: SelectChangeEvent) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      schoolYear: event.target.value as string,
-    }));
-  };
-
-  const selectSemester = (event: SelectChangeEvent) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      semester: event.target.value as string,
-    }));
-  };
-
-  const selectUnitMajor = (event: SelectChangeEvent) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      unitMajor: event.target.value as string,
-    }));
-  };
-
-  const selectUnitType = (event: SelectChangeEvent) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      unitType: event.target.value as string,
-    }));
-  };
-
-  const selectServiced = (event: SelectChangeEvent) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      serviced: event.target.value as string,
+      [fieldName]: event.target.value,
     }));
   };
 
@@ -107,52 +143,13 @@ export function ContentCategoryChange() {
     putChangeServiced: '',
   });
 
-  const changeCurriculum = (event: SelectChangeEvent) => {
+  const selectNewCategory = (
+    fieldName: string,
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     setChangeContent((prevContent) => ({
       ...prevContent,
-      changeCurriculum: event.target.value as string,
-    }));
-  };
-
-  const changeSchoolLevel = (event: SelectChangeEvent) => {
-    setChangeContent((prevContent) => ({
-      ...prevContent,
-      changeSchoolLevel: event.target.value as string,
-    }));
-  };
-
-  const changeSchoolYear = (event: SelectChangeEvent) => {
-    setChangeContent((prevContent) => ({
-      ...prevContent,
-      changeSchoolYear: event.target.value as string,
-    }));
-  };
-
-  const changeSemester = (event: SelectChangeEvent) => {
-    setChangeContent((prevContent) => ({
-      ...prevContent,
-      changeSemester: event.target.value as string,
-    }));
-  };
-
-  const changeUnitMajor = (event: SelectChangeEvent) => {
-    setChangeContent((prevContent) => ({
-      ...prevContent,
-      changeUnitMajor: event.target.value as string,
-    }));
-  };
-
-  const changeUnitType = (event: SelectChangeEvent) => {
-    setChangeContent((prevContent) => ({
-      ...prevContent,
-      changeUnitType: event.target.value as string,
-    }));
-  };
-
-  const changeServiced = (event: SelectChangeEvent) => {
-    setChangeContent((prevContent) => ({
-      ...prevContent,
-      putChangeServiced: event.target.value as string,
+      [fieldName]: event.target.value,
     }));
   };
 
@@ -262,133 +259,16 @@ export function ContentCategoryChange() {
             </StyledActionBtn>
           </TitleWrapper>
           <SelectBox>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="개정과정">
-                개정과정
-              </InputLabel>
+            {category.map((el) => (
               <Select
-                labelId="개정과정"
-                id="select"
-                value={content.curriculum}
-                label={'개정과정'}
-                onChange={selectCurriculum}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={2015}>2015</MenuItem>
-                <MenuItem value={2016}>2016</MenuItem>
-                <MenuItem value={2017}>2017</MenuItem>
-                <MenuItem value={2020}>2020</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="학교">
-                학교
-              </InputLabel>
-              <Select
-                labelId="학교"
-                id="select"
-                value={content.schoolLevel}
-                label="학교"
-                onChange={selectSchoolLevel}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'초등'}>초등</MenuItem>
-                <MenuItem value={'중등'}>중등</MenuItem>
-                <MenuItem value={'고등'}>고등</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="학년">
-                학년
-              </InputLabel>
-              <Select
-                labelId="학년"
-                id="select"
-                value={content.schoolYear}
-                label="학년"
-                onChange={selectSchoolYear}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'초등1'}>초등 1</MenuItem>
-                <MenuItem value={'초등2'}>초등 2</MenuItem>
-                <MenuItem value={'중등1'}>중등 1</MenuItem>
-                <MenuItem value={'중등2'}>중등 2</MenuItem>
-                <MenuItem value={'고등1'}>고등 1</MenuItem>
-                <MenuItem value={'고등2'}>고등 2</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="학기">
-                학기
-              </InputLabel>
-              <Select
-                labelId="학기"
-                id="select"
-                value={content.semester}
-                label="학기"
-                onChange={selectSemester}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'1학기'}>1학기</MenuItem>
-                <MenuItem value={'2학기'}>2학기</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="대분류">
-                대분류
-              </InputLabel>
-              <Select
-                labelId="대분류"
-                id="select"
-                value={content.unitMajor}
-                label="대분류"
-                onChange={selectUnitMajor}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'일차부등식 소분류'}>
-                  일차부등식 소분류
-                </MenuItem>
-                <MenuItem value={'일차부등식 중분류'}>
-                  일차부등식 중분류
-                </MenuItem>
-                <MenuItem value={'일차부등식 대분류'}>
-                  일차부등식 대분류
-                </MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="문항타입">
-                문항타입
-              </InputLabel>
-              <Select
-                labelId="문항타입"
-                id="select"
-                value={content.unitType}
-                label="문항타입"
-                onChange={selectUnitType}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'객관식'}>객관식</MenuItem>
-                <MenuItem value={'주관식'}>주관식</MenuItem>
-                <MenuItem value={'서술형'}>서술형</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="오픈여부">
-                오픈여부
-              </InputLabel>
-              <Select
-                labelId="오픈여부"
-                id="select"
-                value={content.serviced}
-                label="오픈여부"
-                onChange={selectServiced}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'활성화'}>활성화</MenuItem>
-                <MenuItem value={'비활성화'}>비활성화</MenuItem>
-              </Select>
-            </FormControl>
+                width="120px"
+                value={el.value}
+                defaultValue={el.label}
+                onChange={(e) => selectCategory(el.value, e)}
+                key={el.label}
+                options={el.options}
+              />
+            ))}
           </SelectBox>
           <TitleWrapper>
             <SelectTitle>바꿀 문항 분류</SelectTitle>
@@ -397,133 +277,17 @@ export function ContentCategoryChange() {
             </StyledActionBtn>
           </TitleWrapper>
           <SelectBox>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="개정과정">
-                개정과정
-              </InputLabel>
+            {category.map((el) => (
               <Select
-                labelId="개정과정"
-                id="select"
-                value={changeContent.changeCurriculum}
-                label="개정과정"
-                onChange={changeCurriculum}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={2015}>2015</MenuItem>
-                <MenuItem value={2016}>2016</MenuItem>
-                <MenuItem value={2017}>2017</MenuItem>
-                <MenuItem value={2020}>2020</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="학교">
-                학교
-              </InputLabel>
-              <Select
-                labelId="학교"
-                id="select"
-                value={changeContent.changeSchoolLevel}
-                label="학교"
-                onChange={changeSchoolLevel}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'초등'}>초등</MenuItem>
-                <MenuItem value={'중등'}>중등</MenuItem>
-                <MenuItem value={'고등'}>고등</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="학년">
-                학년
-              </InputLabel>
-              <Select
-                labelId="학년"
-                id="select"
-                value={changeContent.changeSchoolYear}
-                label="학년"
-                onChange={changeSchoolYear}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'초등1'}>초등 1</MenuItem>
-                <MenuItem value={'초등2'}>초등 2</MenuItem>
-                <MenuItem value={'중등1'}>중등 1</MenuItem>
-                <MenuItem value={'중등2'}>중등 2</MenuItem>
-                <MenuItem value={'고등1'}>고등 1</MenuItem>
-                <MenuItem value={'고등2'}>고등 2</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="학기">
-                학기
-              </InputLabel>
-              <Select
-                labelId="학기"
-                id="select"
-                value={changeContent.changeSemester}
-                label="학기"
-                onChange={changeSemester}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'1학기'}>1학기</MenuItem>
-                <MenuItem value={'2학기'}>2학기</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="대분류">
-                대분류
-              </InputLabel>
-              <Select
-                labelId="대분류"
-                id="select"
-                value={changeContent.changeUnitMajor}
-                label="대분류"
-                onChange={changeUnitMajor}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'일차부등식 소분류'}>
-                  일차부등식 소분류
-                </MenuItem>
-                <MenuItem value={'일차부등식 중분류'}>
-                  일차부등식 중분류
-                </MenuItem>
-                <MenuItem value={'일차부등식 대분류'}>
-                  일차부등식 대분류
-                </MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="문항타입">
-                문항타입
-              </InputLabel>
-              <Select
-                labelId="문항타입"
-                id="select"
-                value={changeContent.changeUnitType}
-                label="문항타입"
-                onChange={changeUnitType}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'객관식'}>객관식</MenuItem>
-                <MenuItem value={'주관식'}>주관식</MenuItem>
-                <MenuItem value={'서술형'}>서술형</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ backgroundColor: 'white', height: 40 }}>
-              <InputLabel size="small" id="오픈여부">
-                오픈여부
-              </InputLabel>
-              <Select
-                labelId="오픈여부"
-                id="select"
-                value={changeContent.putChangeServiced}
-                label="오픈여부"
-                onChange={changeServiced}
-                sx={{ minWidth: 120, maxWidth: 120, height: 40 }}
-              >
-                <MenuItem value={'활성화'}>활성화</MenuItem>
-                <MenuItem value={'비활성화'}>비활성화</MenuItem>
-              </Select>
-            </FormControl>
+                width="120px"
+                height="40px"
+                value={el.value}
+                defaultValue={el.label}
+                onChange={(e) => selectNewCategory(el.value, e)}
+                key={el.label}
+                options={el.options}
+              />
+            ))}
           </SelectBox>
         </SelectWrapper>
       </SelectsWrapper>
@@ -607,7 +371,6 @@ const SelectBox = styled.div`
 `;
 const ContentWrapper = styled.div`
   display: flex;
-  justify-content: center;
   gap: 20px;
   padding-top: 20px;
 `;
@@ -615,7 +378,9 @@ const ContentTitle = styled.div`
   font-size: 16px;
   margin-bottom: 5px;
 `;
-const ContentListSection = styled.section``;
+const ContentListSection = styled.section`
+  flex: 1 0 22%;
+`;
 const ContentListWrapper = styled.div`
   border: 1px solid #a3aed0;
   height: 500px;
@@ -630,18 +395,21 @@ const AllCheckTitle = styled.div`
   font-size: 14px;
 `;
 const Content = styled.div<{ choiced: boolean }>`
-  padding-left: 10px;
+  padding: 0px 10px;
   font-size: 13px;
   background-color: ${(props) => (props.choiced ? '#a3aed0' : 'white')};
   color: ${(props) => (props.choiced ? 'white' : 'initial')};
   cursor: pointer;
 `;
-const ContentViewerSection = styled.section``;
+const ContentViewerSection = styled.section`
+  flex: 1 0 40%;
+`;
 const ViewerWrapper = styled.div`
   border: 1px solid #a3aed0;
   height: 500px;
 `;
 const SaveButtonWrapper = styled.div`
+  flex: 1 0 5%;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;

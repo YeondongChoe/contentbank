@@ -9,6 +9,7 @@ type IconButtonProps = {
   text?: string;
   buttonType?: 'button' | 'submit' | 'reset';
   onClick: () => void;
+  onChange?: (x: any) => void;
   onMouseLeave?: () => void;
   $padding?: string;
   $margin?: string;
@@ -29,6 +30,7 @@ export function IconButton({
   text,
   buttonType = 'button',
   onClick,
+  onChange,
   onMouseLeave,
   $padding,
   $margin,
@@ -50,6 +52,7 @@ export function IconButton({
       $margin={$margin}
       type={buttonType}
       onClick={onClick}
+      onChange={onChange}
       onMouseLeave={onMouseLeave}
       $border={$border}
       $borderRadius={$borderRadius}

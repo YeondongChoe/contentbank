@@ -124,15 +124,13 @@ export function ListTable() {
   };
 
   /**문항 분류 관련 코드 */
-  const [content, setContent] = useState({
-    curriculum: '',
-    schoolLevel: '',
-    schoolYear: '',
-    semester: '',
-    unitMajor: '',
-    unitType: '',
-    serviced: '',
-  });
+  const [content, setContent] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string>();
+
+  const pushArray = (value: string) => {
+    setContent((prevContent) => [...prevContent, value]);
+  };
+  console.log(content);
 
   const category = [
     {
@@ -212,7 +210,7 @@ export function ListTable() {
     },
   ];
 
-  const handleSelectChange = (
+  const selectCategory = (
     fieldName: string,
     event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
@@ -294,11 +292,13 @@ export function ListTable() {
             {category.map((el) => (
               <Select
                 width="120px"
-                value={el.value}
+                height="40px"
                 defaultValue={el.label}
-                onChange={(e) => handleSelectChange(el.value, e)}
+                selected={selected}
+                setSelected={setSelected}
                 key={el.label}
                 options={el.options}
+                onClick={() => pushArray(el.label)}
               />
             ))}
           </SelectWrapper>
@@ -549,6 +549,7 @@ const Wrapper = styled.div`
 const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
 `;
 
