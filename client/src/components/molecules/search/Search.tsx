@@ -43,7 +43,7 @@ export function Search({
         leftIconSrc={React.createElement(IoSearch)}
         width="24px"
         height="24px"
-        borderNone
+        $borderNone={true}
       />
 
       <ErrorMessage>{errorMessage}</ErrorMessage>

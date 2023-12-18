@@ -21,7 +21,7 @@ type IconButtonProps = {
   leftIconSrc?: React.ReactElement;
   rightIconSrc?: React.ReactElement;
   textAlign?: 'center' | 'left' | 'right';
-  borderNone?: boolean;
+  $borderNone?: boolean;
 };
 
 export function IconButton({
@@ -40,7 +40,7 @@ export function IconButton({
   $border,
   $borderRadius,
   textAlign,
-  borderNone,
+  $borderNone,
 }: IconButtonProps) {
   return (
     <Component
@@ -55,7 +55,7 @@ export function IconButton({
       $borderRadius={$borderRadius}
       fontSize={fontSize}
       $textAlign={textAlign}
-      borderNone={borderNone}
+      $borderNone={$borderNone}
     >
       {leftIconSrc && <LeftIconWrapper>{leftIconSrc}</LeftIconWrapper>}
       <span> {children ? children : text}</span>
@@ -73,7 +73,7 @@ type ButtonStyleProps = {
   fontSize?: string;
   $borderRadius?: string;
   $textAlign?: 'center' | 'left' | 'right';
-  borderNone?: boolean;
+  $borderNone?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -111,8 +111,8 @@ const Component = styled.button<ButtonStyleProps>`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  ${({ borderNone }) =>
-    borderNone &&
+  ${({ $borderNone }) =>
+    $borderNone &&
     `border: none; !important  
 		&:focus {
 		border: none; !important 
