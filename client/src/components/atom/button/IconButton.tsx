@@ -89,19 +89,28 @@ const Component = styled.button<ButtonStyleProps>`
   font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '16px')};
   font-weight: 400;
   border-radius: ${({ $borderRadius }) =>
-    $borderRadius ? `${$borderRadius};` : '10px'};
+    $borderRadius ? `${$borderRadius};` : '5px'};
   ${({ $border }) =>
     $border
       ? `border: 1px solid ${COLOR.PRIMARY};`
       : `border: 1px solid rgba(0, 0, 0, 0.23);   
-			 &:focus {
-				border: 1px solid ${COLOR.PRIMARY};
-			}
 			&:hover {
 				border: 1px solid ${COLOR.PRIMARY};
-			} 
+			}; 
 		`};
   cursor: pointer;
+  ${({ $borderNone }) =>
+    $borderNone
+      ? `border: 0px solid transparent; !important  
+		&:focus {
+		border: 0px solid transparent; !important 
+		};
+		&:hover {
+			border: 0px solid transparent; !important 
+		};`
+      : `&:focus {
+				border: 1px solid ${COLOR.PRIMARY};
+			};`}
 
   span {
     width: 100%;
@@ -111,15 +120,6 @@ const Component = styled.button<ButtonStyleProps>`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  ${({ $borderNone }) =>
-    $borderNone &&
-    `border: none; !important  
-		&:focus {
-		border: none; !important 
-		}
-		&:hover {
-			border: none; !important 
-		}`}
 `;
 
 const RightIconWrapper = styled.span`

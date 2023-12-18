@@ -73,7 +73,7 @@ const Component = styled.button<ButtonStyleProps>`
   font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '16px')};
   font-weight: bold;
   border-radius: ${({ $borderRadius }) =>
-    $borderRadius ? `${$borderRadius};` : '10px'};
+    $borderRadius ? `${$borderRadius};` : '5px'};
   ${({ $border }) =>
     $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
   background-color: ${({ $border }) =>

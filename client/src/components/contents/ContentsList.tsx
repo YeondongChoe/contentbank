@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import SearchIcon from '@mui/icons-material/Search';
-import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Input } from '../../components';
+import { Button, Input } from '../../components';
 import { Search } from '../../components/molecules';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
@@ -56,6 +54,7 @@ export function ContentsList() {
             즐겨찾는 문항
           </TapMenu>
         </TapWrapper>
+        {/* 테이블 상단 검색창 + 문항 업로드 버튼 */}
         <InputWrapper>
           <Search
             value={searchValue}
@@ -64,9 +63,14 @@ export function ContentsList() {
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="이름, 권한 검색"
           />
-          <StyledUplodeBtn variant="contained" onClick={openCreatePopup}>
-            + 문항 업로드
-          </StyledUplodeBtn>
+          <Button
+            height={'35px'}
+            width={'150px'}
+            $margin={'0 0 0 10px'}
+            onClick={openCreatePopup}
+          >
+            문항 업로드
+          </Button>
         </InputWrapper>
       </HeadWrapper>
       {choiceValue === 1 && (
@@ -152,14 +156,4 @@ const IconWrapper = styled.div`
 
 const TableWrapper = styled.div`
   border-top: 1px solid #a3aed0;
-`;
-
-const StyledUplodeBtn = styled(Button)`
-  && {
-    width: 130px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;
