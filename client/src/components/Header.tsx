@@ -6,7 +6,6 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import Box from '@mui/material/Box';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Tab from '@mui/material/Tab';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +15,8 @@ import styled from 'styled-components';
 import { getAuthorityMenu } from '../api/getAxios';
 import { createListCodeValueAtom, checkBoxValueAtom } from '../state/valueAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
+
+import { COLOR } from './contents';
 
 type menuListProps = {
   seq: number;
@@ -132,53 +133,57 @@ export function Header() {
 
   return (
     <Container>
-      <Wrapper>
-        <IconWrapper onClick={moveMainpage}>
-          <AccountBalanceIcon style={{ fontSize: '50px' }} />
-        </IconWrapper>
-        <NavBarWrapper
-          onMouseEnter={() => {
-            setValue('');
-          }}
-          onMouseLeave={() => {
-            setValue('');
-          }}
-        >
-          <Box sx={{ typography: 'body1' }}>
-            <TabContext value={value}>
-              <Box sx={{ borderColor: 'divider' }}>
-                <TabList>
-                  {menuValue?.map((el, i) => (
-                    <Tab
-                      key={i}
-                      label={el.name}
-                      value={el.seq}
-                      style={{ fontSize: '20px', fontWeight: 'bold' }}
-                      onMouseEnter={() => {
-                        openTabMenu(el.seq.toString());
-                        setIsMenuVisible(true);
-                      }}
-                    />
-                  ))}
-                </TabList>
-              </Box>
-              <NavMenuWrapper>
+      <IconWrapper onClick={moveMainpage}>
+        <AccountBalanceIcon
+          style={{ fontSize: '50px', color: `${COLOR.PRIMARY}` }}
+        />
+      </IconWrapper>
+
+      <NavBarWrapper
+        onMouseEnter={() => {
+          setValue('');
+        }}
+        onMouseLeave={() => {
+          setValue('');
+        }}
+      >
+        <Box sx={{ typography: 'body1' }}>
+          <TabContext value={value}>
+            <Box sx={{ borderColor: 'divider' }}>
+              <TabList>
                 {menuValue?.map((el, i) => (
-                  <PanelWrapper key={i}>
-                    {isMenuVisible && (
-                      <EachPanelWrapper
-                        onMouseLeave={() => {
-                          setValue('');
-                        }}
-                      >
+                  <Tab
+                    key={i}
+                    label={el.name}
+                    value={el.seq}
+                    style={{ fontSize: '20px', fontWeight: 'bold' }}
+                    onMouseEnter={() => {
+                      openTabMenu(el.seq.toString());
+                      setIsMenuVisible(true);
+                    }}
+                  />
+                ))}
+              </TabList>
+            </Box>
+            <NavMenuWrapper>
+              {menuValue?.map((el, i) => (
+                <PanelWrapper key={i}>
+                  {isMenuVisible && (
+                    <EachPanelWrapper
+                      onMouseLeave={() => {
+                        setValue('');
+                      }}
+                    >
+                      {el?.children.map((li) => (
                         <TabPanelWrapper
+                          key={li.name}
                           onClick={(e) => {
-                            moveTabPanel(el?.children?.[0]?.code);
+                            moveTabPanel(li.code);
                           }}
                         >
                           <TabPanel
                             className="hover-effect"
-                            value={el.seq.toString()}
+                            value={li.seq.toString()}
                             style={{
                               marginTop: '10px',
                               marginBottom: '10px',
@@ -186,71 +191,48 @@ export function Header() {
                               transition: 'border-bottom 0.3s',
                             }}
                           >
-                            {el?.children?.[0]?.name}
+                            {li.name}
                           </TabPanel>
                         </TabPanelWrapper>
-                        <TabPanelWrapper
-                          onClick={(e) => {
-                            moveTabPanel(el?.children?.[1]?.code);
-                          }}
-                        >
-                          <TabPanel
-                            value={el.seq.toString()}
-                            style={{
-                              marginTop: '10px',
-                              marginBottom: '10px',
-                              padding: '0',
-                              transition: 'border-bottom 0.3s',
-                            }}
-                          >
-                            {el?.children?.[1]?.name}
-                          </TabPanel>
-                        </TabPanelWrapper>
-                      </EachPanelWrapper>
-                    )}
-                  </PanelWrapper>
-                ))}
-              </NavMenuWrapper>
-            </TabContext>
-          </Box>
-        </NavBarWrapper>
-        <SideMenuWrapper>
-          <Breadcrumbs separator="|">
-            <Link underline="hover" color="inherit" href="/preparing">
-              가이드
-            </Link>
-            <Link underline="hover" color="inherit" href="/preparing">
-              고객센터
-            </Link>
-            <Link underline="hover" color="inherit" href="/mypage">
-              마이페이지
-            </Link>
-            <Link
-              underline="hover"
-              color="inherit"
-              href="/login"
-              onClick={removeCookie}
-            >
-              로그아웃
-            </Link>
-          </Breadcrumbs>
-        </SideMenuWrapper>
-      </Wrapper>
+                      ))}
+                    </EachPanelWrapper>
+                  )}
+                </PanelWrapper>
+              ))}
+            </NavMenuWrapper>
+          </TabContext>
+        </Box>
+      </NavBarWrapper>
+
+      <SideMenuWrapper>
+        <Link color="inherit" href="/preparing">
+          가이드
+        </Link>
+        <Link color="inherit" href="/preparing">
+          고객센터
+        </Link>
+        <Link color="inherit" href="/mypage">
+          마이페이지
+        </Link>
+        <Link color="inherit" href="/login" onClick={removeCookie}>
+          로그아웃
+        </Link>
+      </SideMenuWrapper>
     </Container>
   );
 }
 
 const Container = styled.div`
   padding-top: 20px;
-`;
-
-const Wrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
   height: 110px;
-  border-bottom: 1px solid #a3aed0;
-  padding: 0px 20px;
+  border-bottom: 1px solid ${COLOR.SECONDARY};
+`;
+
+const Wrapper = styled.div`
+  /* padding: 0px 20px; */
 `;
 
 const IconWrapper = styled.div`
@@ -303,5 +285,30 @@ const TabPanelWrapper = styled.div`
 const SideMenuWrapper = styled.div`
   display: flex;
   align-items: flex-end;
-  padding-bottom: 10px;
+
+  a {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: ${COLOR.SECONDARY};
+    padding: 5px 10px;
+    text-decoration: none;
+    position: relative;
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      right: 0px;
+      width: 1px;
+      height: 10px;
+      background-color: ${COLOR.SECONDARY};
+    }
+    &:last-child {
+      &::after {
+        display: none;
+      }
+    }
+  }
 `;
