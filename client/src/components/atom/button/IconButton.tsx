@@ -9,6 +9,7 @@ type IconButtonProps = {
   text?: string;
   buttonType?: 'button' | 'submit' | 'reset';
   onClick: () => void;
+  onChange?: (x: any) => void;
   onMouseLeave?: () => void;
   $padding?: string;
   $margin?: string;
@@ -29,6 +30,7 @@ export function IconButton({
   text,
   buttonType = 'button',
   onClick,
+  onChange,
   onMouseLeave,
   $padding,
   $margin,
@@ -50,12 +52,13 @@ export function IconButton({
       $margin={$margin}
       type={buttonType}
       onClick={onClick}
+      onChange={onChange}
       onMouseLeave={onMouseLeave}
       $border={$border}
       $borderRadius={$borderRadius}
       fontSize={fontSize}
       $textAlign={textAlign}
-      borderNone={borderNone}
+      $borderNone={borderNone}
     >
       {leftIconSrc && <LeftIconWrapper>{leftIconSrc}</LeftIconWrapper>}
       <span> {children ? children : text}</span>
@@ -73,7 +76,7 @@ type ButtonStyleProps = {
   fontSize?: string;
   $borderRadius?: string;
   $textAlign?: 'center' | 'left' | 'right';
-  borderNone?: boolean;
+  $borderNone?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -111,8 +114,8 @@ const Component = styled.button<ButtonStyleProps>`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  ${({ borderNone }) =>
-    borderNone &&
+  ${({ $borderNone }) =>
+    $borderNone &&
     `border: none; !important  
 		&:focus {
 		border: none; !important 

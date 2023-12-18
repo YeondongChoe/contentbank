@@ -9,30 +9,35 @@ import { IconButton } from '../button';
 type OptionsProps = {
   id?: string;
   label: string;
-  value: number | string;
+  value?: number | string;
+  code?: string;
 };
 
 type SelectProps = {
   options?: OptionsProps[];
-  onChange?: (x: any) => void;
-  value?: string;
-  defaultValue?: string;
+  onChange?: (e: any) => void;
+  onClick?: () => void;
+  defaultValue?: null | string;
   width?: string;
+  height?: string;
+  children?: string;
+  selected?: string;
+  setSelected?: (e: any) => void;
+  setAuthorityCode?: (e: any) => void;
 };
 
 export function Select({
   options,
   onChange,
-  value,
+  onClick,
   defaultValue,
   width,
+  height,
+  selected,
+  setSelected,
+  setAuthorityCode,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
-  const [selected, setSelected] = useState<string>();
-
-  const ClickButton = (value: string) => {
-    setSelected(value);
-  };
 
   return (
     <Component
@@ -42,11 +47,13 @@ export function Select({
     >
       <IconButton
         width={width}
-        height="40px"
+        height={height}
         fontSize="14px"
         onClick={() => setIsOptionShow(true)}
+        onChange={onChange}
         textAlign="left"
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
+        $borderRadius="4px"
       >
         {selected || defaultValue}
       </IconButton>
@@ -61,7 +68,11 @@ export function Select({
             <li
               key={el.id}
               value={el.value}
-              onClick={() => ClickButton(el.label)}
+              onClick={() => {
+                onClick?.();
+                setSelected?.(el.label);
+                setAuthorityCode?.(el.code);
+              }}
             >
               <span>{el.label}</span>
             </li>

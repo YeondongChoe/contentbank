@@ -8,7 +8,7 @@ import Textarea from '@mui/joy/Textarea';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+//import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -22,6 +22,7 @@ import {
   putInitPassword,
 } from '../../api/putAxios';
 import { Input, Label } from '../../components';
+import { Select } from '../../components/atom/select';
 import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
@@ -50,26 +51,25 @@ export function EditPopup() {
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState('');
   const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
-  const [selectedAuthorityValue, setSelectedAuthorityValue] = useState<
-    string[]
-  >([]);
+  const [selected, setSelected] = useState<string>();
+
+  const AuthorityList = authorityList.map((el) => {
+    return [el.name, el.code];
+  });
+  const AuthorityOption = AuthorityList.map((item, index) => ({
+    id: `${index + 1}`,
+    label: item[0],
+    code: item[1],
+    value: index + 1,
+  }));
+  console.log(AuthorityOption);
+  console.log(AuthorityList);
   const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [isInit, setIsInit] = useState(false);
 
   const { control, setValue, watch } = useForm();
 
-  const selectAuthority = (
-    event: SelectChangeEvent<typeof selectedAuthorityValue>,
-  ) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedAuthorityValue(
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
-
-  const Authority = authorityCode; //건들지말기
+  const Authority = authorityCode;
   const Name = watch('name');
   const Comment = watch('comment');
   const CheckBox = isEnabled;
@@ -245,35 +245,14 @@ export function EditPopup() {
                     name="authority"
                     render={({ field }) => (
                       <Select
-                        sx={{ m: 1, minWidth: '350px' }}
-                        displayEmpty
-                        value={selectedAuthorityValue || member.authority} //name
-                        onChange={selectAuthority}
-                        renderValue={(selected) => {
-                          if (selected.length === 0) {
-                            return <em>{member.authority}</em>;
-                          }
-                          return selected
-                            .map((value) => {
-                              const selectedAuthority = authorityList?.find(
-                                (el) => el.code === value,
-                              );
-                              setAuthorityCode(
-                                selectedAuthority?.code as string,
-                              );
-                              return selectedAuthority
-                                ? selectedAuthority.name
-                                : value;
-                            })
-                            .join(', ');
-                        }}
-                      >
-                        {authorityList?.map((el, i) => (
-                          <MenuItem key={i} value={el.code}>
-                            {el.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                        width="350px"
+                        height="50px"
+                        defaultValue={member.authority}
+                        selected={selected}
+                        setSelected={setSelected}
+                        setAuthorityCode={setAuthorityCode}
+                        options={AuthorityOption}
+                      ></Select>
                     )}
                   />
                 </Box>
