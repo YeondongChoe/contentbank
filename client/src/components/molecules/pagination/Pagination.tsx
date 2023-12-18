@@ -4,6 +4,7 @@ import Pagination from 'react-js-pagination';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
+import { COLOR } from '../../../components/contents';
 import { pageAtom } from '../../../state/utilAtom';
 import { checkBoxValueAtom } from '../../../state/valueAtom';
 
@@ -52,12 +53,12 @@ const Wrapper = styled.div`
       // .active에 focus 안 주어도 자동 focus됨
       &.disabled:active,
       &.active > a {
-        color: red;
+        color: ${COLOR.PRIMARY};
         font-weight: bold;
       }
 
       &:hover > a {
-        color: red;
+        color: ${COLOR.PRIMARY};
       }
       &:nth-child(1),
       &:nth-child(2),
