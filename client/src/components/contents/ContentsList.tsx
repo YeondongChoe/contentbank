@@ -138,15 +138,9 @@ const TapMenu = styled.div<{ choiced: number }>`
 `;
 
 const InputWrapper = styled.div`
-  height: 30px;
-  margin-right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: white;
-  border-radius: 5px;
-  border: 1px solid white;
-  box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
 `;
 
 const IconWrapper = styled.div`
