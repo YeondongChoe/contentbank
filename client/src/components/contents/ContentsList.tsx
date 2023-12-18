@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Input } from '../../components';
-import { Search } from '../../components/molecules';
+import { Button, Search, TabMenu } from '../../components';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
 import { updateBoolAtom } from '../../state/utilAtom';
@@ -43,16 +42,29 @@ export function ContentsList() {
     setIsUpdate(false);
   };
 
+  const menuList = [
+    {
+      label: '문항 리스트',
+      value: '문항 리스트',
+    },
+    {
+      label: '즐겨찾는 문항',
+      value: '즐겨찾는 문항',
+    },
+  ];
+
   return (
     <Container>
       <HeadWrapper>
         <TapWrapper>
-          <TapMenu choiced={choiceValue} onClick={selectList}>
+          {/* <TapMenu choiced={choiceValue} onClick={selectList}>
             문항 리스트
           </TapMenu>
           <TapMenu choiced={choiceValue} onClick={selectBookmark}>
             즐겨찾는 문항
-          </TapMenu>
+          </TapMenu> */}
+
+          <TabMenu length={2} menu={menuList} />
         </TapWrapper>
         {/* 테이블 상단 검색창 + 문항 업로드 버튼 */}
         <InputWrapper>
@@ -109,37 +121,37 @@ const TapWrapper = styled.div`
   gap: 10px;
 `;
 
-const TapMenu = styled.div<{ choiced: number }>`
-  height: 40px;
-  border: 1px solid #a3aed0;
-  border-bottom: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  &:first-child {
-    background-color: ${(props) =>
-      props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
-    color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
-    width: ${(props) => (props.choiced === 1 ? '250px' : '150px')};
-    height: ${(props) => (props.choiced === 2 ? '30px' : '40px')};
-    border-top-right-radius: 15px;
-    border-top-left-radius: 15px;
-  }
-  &:nth-child(2) {
-    background-color: ${(props) =>
-      props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
-    color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
-    width: ${(props) => (props.choiced === 2 ? '250px' : '150px')};
-    height: ${(props) => (props.choiced === 1 ? '30px' : '40px')};
-    border-top-right-radius: 15px;
-    border-top-left-radius: 15px;
-  }
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: white;
-  }
-`;
+// const TapMenu = styled.div<{ choiced: number }>`
+//   height: 40px;
+//   border: 1px solid #a3aed0;
+//   border-bottom: none;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   cursor: pointer;
+//   &:first-child {
+//     background-color: ${(props) =>
+//       props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+//     color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
+//     width: ${(props) => (props.choiced === 1 ? '250px' : '150px')};
+//     height: ${(props) => (props.choiced === 2 ? '30px' : '40px')};
+//     border-top-right-radius: 15px;
+//     border-top-left-radius: 15px;
+//   }
+//   &:nth-child(2) {
+//     background-color: ${(props) =>
+//       props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
+//     color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
+//     width: ${(props) => (props.choiced === 2 ? '250px' : '150px')};
+//     height: ${(props) => (props.choiced === 1 ? '30px' : '40px')};
+//     border-top-right-radius: 15px;
+//     border-top-left-radius: 15px;
+//   }
+//   &:hover {
+//     background-color: rgba(0, 0, 0, 0.3);
+//     color: white;
+//   }
+// `;
 
 const InputWrapper = styled.div`
   display: flex;
