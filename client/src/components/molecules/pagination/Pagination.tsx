@@ -70,7 +70,7 @@ const Wrapper = styled.div`
       }
       a {
         text-decoration: none;
-        color: black;
+        color: ${COLOR.GRAY};
         font-size: 16px;
       }
     }
