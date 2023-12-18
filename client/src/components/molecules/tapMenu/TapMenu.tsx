@@ -5,13 +5,14 @@ import { styled } from 'styled-components';
 
 import { COLOR } from '../../../components/contents';
 
-type MenuProps = {
+export type MenuProps = {
   label: string;
   value: string;
 };
 
 type TabProps = {
   label: string;
+  height?: string;
   selected: string;
   value: string;
   onChange: (value: string) => void;
@@ -23,12 +24,22 @@ type TabMenuProps = {
   initialValue?: string;
   length: number;
   className?: string;
-  setTabValue?: (value: string) => void;
+  setTabVeiw?: (value: string) => void;
+  width?: string;
+  height?: string;
 };
 
-export function Tab({ label, selected, value, onChange, className }: TabProps) {
+export function Tab({
+  label,
+  height,
+  selected,
+  value,
+  onChange,
+  className,
+}: TabProps) {
   return (
     <TabButton
+      height={height}
       className={className}
       active={value === selected}
       onClick={() => onChange(value)}
@@ -43,17 +54,19 @@ export function TabMenu({
   initialValue = '',
   length,
   className,
-  setTabValue,
+  setTabVeiw,
+  width,
+  height,
 }: TabMenuProps) {
   const [selected, setSelected] = useState(initialValue);
 
   const handleChange = (value: string) => {
     setSelected(value);
-    setTabValue && setTabValue(value);
+    setTabVeiw && setTabVeiw(value);
   };
 
   return (
-    <Component length={length}>
+    <Component length={length} width={width}>
       {menu.map(({ label, value }: MenuProps) => (
         <Tab
           className={className}
@@ -62,6 +75,7 @@ export function TabMenu({
           selected={selected}
           value={value}
           onChange={handleChange}
+          height={height}
         />
       ))}
     </Component>
@@ -69,6 +83,7 @@ export function TabMenu({
 }
 
 type TabStyleProps = {
+  height?: string;
   active: boolean;
   onClick: () => void;
 };
@@ -77,25 +92,34 @@ const TabButton = styled.button<TabStyleProps>`
   align-items: center;
   border-bottom-style: solid;
   display: flex;
-  height: 35px;
+  height: ${({ height }) => (height ? ` ${height};` : '40px')};
   justify-content: center;
   width: 100%;
+  border: none;
+  cursor: pointer;
 
   ${({ active }) =>
     active
-      ? `border-bottom-color: ${COLOR.PRIMARY}; border-bottom-width: 2px; color: ${COLOR.PRIMARY};`
-      : `border-bottom-color: #ededed; border-bottom-width: 1px; color: ${COLOR.TEXT_GRAY};`}
+      ? `background-color: ${COLOR.PRIMARY}; `
+      : `background-color: ${COLOR.GRAY};`}
+
+  &:nth-of-type(1) {
+    border-radius: 8px 0 0 0;
+  }
+  &:last-child {
+    border-radius: 0 8px 0 0;
+  }
 `;
 const ButtonText = styled.span<{ active: boolean }>`
   font-size: 14px;
-
-  ${({ active }) =>
-    active
-      ? `color: ${COLOR.PRIMARY}; font-weight: 500;`
-      : `color: ${COLOR.TEXT_GRAY}; font-weight: normal`}
+  color: #fff;
+  font-weight: bold;
+  /* ${({ active }) =>
+    active ? `font-weight: bold;` : ` font-weight: normal`} */
 `;
 
-const Component = styled.div<{ length: number }>`
+const Component = styled.div<{ length: number; width?: string }>`
+  width: ${({ width }) => (width ? ` ${width};` : '100%')};
   display: grid;
   ${({ length }) =>
     `grid-template-columns: repeat(auto-fit, minmax( calc(100% / ${length}), auto));`}
