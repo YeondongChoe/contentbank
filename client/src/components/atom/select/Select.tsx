@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
 
+import { COLOR } from '../../../components/contents';
 import { IconButton } from '../button';
 
 type OptionsProps = {
@@ -15,29 +16,24 @@ type OptionsProps = {
 
 type SelectProps = {
   options?: OptionsProps[];
-  onChange?: (e: any) => void;
-  onClick?: () => void;
+  onSelect: (event: React.MouseEvent<HTMLButtonElement>) => void;
   defaultValue?: null | string;
   width?: string;
   height?: string;
   children?: string;
-  selected?: string;
-  setSelected?: (e: any) => void;
-  setAuthorityCode?: (e: any) => void;
+  // setSelected?: (e: any) => void;
+  // setAuthorityCode?: (e: any) => void;
 };
 
 export function Select({
   options,
-  onChange,
-  onClick,
+  onSelect,
   defaultValue,
   width,
-  height,
-  selected,
-  setSelected,
-  setAuthorityCode,
+  height = '40px', // setSelected, // setAuthorityCode,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
+  const [selected, setSelected] = useState<string>();
 
   return (
     <Component
@@ -50,61 +46,69 @@ export function Select({
         height={height}
         fontSize="14px"
         onClick={() => setIsOptionShow(true)}
-        onChange={onChange}
         textAlign="left"
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
-        $borderRadius="4px"
       >
         {selected || defaultValue}
       </IconButton>
       {isOptionShow && (
-        <ul
+        <SelectOptionsList
           onClick={() => setIsOptionShow(false)}
           onMouseLeave={() => {
             setIsOptionShow(false);
           }}
         >
           {options?.map((el) => (
-            <li
-              key={el.id}
-              value={el.value}
-              onClick={() => {
-                onClick?.();
-                setSelected?.(el.label);
-                setAuthorityCode?.(el.code);
-              }}
-            >
-              <span>{el.label}</span>
+            <li key={el.id}>
+              <button
+                value={el.label}
+                onClick={(event) => {
+                  onSelect(event), setSelected(event.currentTarget.value);
+                }}
+              >
+                <span>{el.label}</span>
+              </button>
             </li>
           ))}
-        </ul>
+        </SelectOptionsList>
       )}
     </Component>
   );
 }
 
-const Component = styled.div`
+const Component = styled.div<{ height?: string }>`
   position: relative;
-  height: 50px;
-  ul {
-    position: absolute;
-    top: 40px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
-  }
+`;
+const SelectOptionsList = styled.ul`
+  padding-top: 5px;
+  position: absolute;
+  top: 40px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+
   li {
-    background-color: white;
-    font-size: 14px;
-    border-left: 1px solid rgba(0, 0, 0, 0.23);
-    border-right: 1px solid rgba(0, 0, 0, 0.23);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.23);
-    list-style-type: none;
-    padding: 10px;
+    width: 100%;
+    border-left: 1px solid ${COLOR.LIGHT_GRAY};
+    border-right: 1px solid ${COLOR.LIGHT_GRAY};
+    border-bottom: 1px solid ${COLOR.LIGHT_GRAY};
+    background-color: #fff;
     &:hover {
-      background-color: #f4f7fe;
+      background-color: ${COLOR.HOVER};
     }
+  }
+
+  li > button {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+
     span {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -114,9 +118,9 @@ const Component = styled.div`
       text-align: left;
     }
   }
+
   li:first-child {
-    margin-top: 5px;
-    border-top: 1px solid rgba(0, 0, 0, 0.23);
+    border-top: 1px solid ${COLOR.LIGHT_GRAY};
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
   }

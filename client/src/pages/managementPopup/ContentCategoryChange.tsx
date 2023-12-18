@@ -258,37 +258,37 @@ export function ContentCategoryChange() {
               찾기
             </StyledActionBtn>
           </TitleWrapper>
-          <SelectBox>
+          {/* <SelectBox>
             {category.map((el) => (
               <Select
                 width="120px"
-                value={el.value}
+                // value={el.value}
                 defaultValue={el.label}
-                onChange={(e) => selectCategory(el.value, e)}
+                // onChange={(e) => selectCategory(el.value, e)}
                 key={el.label}
                 options={el.options}
               />
             ))}
-          </SelectBox>
+          </SelectBox> */}
           <TitleWrapper>
             <SelectTitle>바꿀 문항 분류</SelectTitle>
             <StyledActionBtn variant="contained" onClick={changeCategory}>
               선택 바꾸기
             </StyledActionBtn>
           </TitleWrapper>
-          <SelectBox>
+          {/* <SelectBox>
             {category.map((el) => (
               <Select
                 width="120px"
                 height="40px"
-                value={el.value}
+                // value={el.value}
                 defaultValue={el.label}
-                onChange={(e) => selectNewCategory(el.value, e)}
+                // onChange={(e) => selectNewCategory(el.value, e)}
                 key={el.label}
                 options={el.options}
               />
             ))}
-          </SelectBox>
+          </SelectBox> */}
         </SelectWrapper>
       </SelectsWrapper>
       <ContentWrapper>

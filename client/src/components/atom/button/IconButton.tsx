@@ -112,8 +112,8 @@ const Component = styled.button<ButtonStyleProps>`
 			border: 0px solid transparent; !important 
 		};`
       : `&:focus {
-				border: 1px solid ${COLOR.PRIMARY};
-			};`}
+			border: 1px solid ${COLOR.PRIMARY};
+		};`}
 
   span {
     width: 100%;

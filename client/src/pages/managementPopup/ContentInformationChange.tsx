@@ -120,19 +120,19 @@ export function ContentInformationChange() {
 
   return (
     <Container>
-      <SelectWrapper>
+      {/* <SelectWrapper>
         {category.map((el) => (
           <Select
             width="120px"
             height="40px"
-            value={el.value}
+            // value={el.value}
             defaultValue={el.label}
-            onChange={(e) => selectCategory(el.value, e)}
+            // onChange={(e) => selectCategory(el.value, e)}
             key={el.label}
             options={el.options}
           />
         ))}
-      </SelectWrapper>
+      </SelectWrapper> */}
       <ContentBox>
         <div>아이텍에서 만들어야할거같은 느낌</div>
         <div>선택된 항목이 있으면 보여주기</div>

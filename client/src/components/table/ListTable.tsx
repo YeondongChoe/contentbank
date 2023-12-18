@@ -125,12 +125,13 @@ export function ListTable() {
 
   /**문항 분류 관련 코드 */
   const [content, setContent] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string>();
 
-  const pushArray = (value: string) => {
+  const handleSelect = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // console.log(event.currentTarget.value);
+    const value = event.currentTarget.value;
+
     setContent((prevContent) => [...prevContent, value]);
   };
-  console.log(content);
 
   const category = [
     {
@@ -287,75 +288,30 @@ export function ListTable() {
   return (
     <>
       <Container>
-        <Wrapper>
-          <SelectWrapper>
-            {category.map((el) => (
-              <Select
-                width="120px"
-                height="40px"
-                defaultValue={el.label}
-                selected={selected}
-                setSelected={setSelected}
-                key={el.label}
-                options={el.options}
-                onClick={() => pushArray(el.label)}
-              />
-            ))}
-          </SelectWrapper>
-          <ButtonWrapper>
-            {MenuCode === 'CNM_Q' ? (
-              <>
-                <EachButtonWrapper>
-                  <StyledEditBtn
-                    disabled={selectedRows.length === 0}
-                    variant="outlined"
-                    sx={{ backgroundColor: 'white' }}
-                    onClick={openDeleteAlert}
-                  >
-                    삭제
-                  </StyledEditBtn>
-                </EachButtonWrapper>
-                <EachButtonWrapper>
-                  <StyledEditBtn
-                    aria-describedby={id}
-                    disabled={selectedRows.length === 0}
-                    variant="outlined"
-                    sx={{ backgroundColor: 'white' }}
-                    onClick={openPopover}
-                  >
-                    수정
-                  </StyledEditBtn>
-                  <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={closePopover}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    sx={{ marginTop: '5px' }}
-                  >
-                    <PopoverMenu
-                      onClick={() => {
-                        closePopover();
-                        openmanagementEditFilePopup();
-                      }}
-                    >
-                      수정
-                    </PopoverMenu>
-                    <PopoverMenu
-                      onClick={() => {
-                        closePopover();
-                        openmanagementEditFilePopup();
-                      }}
-                    >
-                      복제 후 수정
-                    </PopoverMenu>
-                  </Popover>
-                </EachButtonWrapper>
-              </>
-            ) : (
+        <SelectWrapper>
+          {category.map((el) => (
+            <Select
+              width={'130px'}
+              defaultValue={el.label}
+              key={el.label}
+              options={el.options}
+              onSelect={(event) => handleSelect(event)}
+            />
+          ))}
+        </SelectWrapper>
+        <ButtonWrapper>
+          {MenuCode === 'CNM_Q' ? (
+            <>
+              <EachButtonWrapper>
+                <StyledEditBtn
+                  disabled={selectedRows.length === 0}
+                  variant="outlined"
+                  sx={{ backgroundColor: 'white' }}
+                  onClick={openDeleteAlert}
+                >
+                  삭제
+                </StyledEditBtn>
+              </EachButtonWrapper>
               <EachButtonWrapper>
                 <StyledEditBtn
                   aria-describedby={id}
@@ -380,7 +336,7 @@ export function ListTable() {
                   <PopoverMenu
                     onClick={() => {
                       closePopover();
-                      openCreateEditFilePopup();
+                      openmanagementEditFilePopup();
                     }}
                   >
                     수정
@@ -388,26 +344,66 @@ export function ListTable() {
                   <PopoverMenu
                     onClick={() => {
                       closePopover();
-                      openCreateEditFilePopup();
+                      openmanagementEditFilePopup();
                     }}
                   >
                     복제 후 수정
                   </PopoverMenu>
                 </Popover>
               </EachButtonWrapper>
-            )}
+            </>
+          ) : (
             <EachButtonWrapper>
-              <StyledActionBtn
-                variant="outlined"
+              <StyledEditBtn
+                aria-describedby={id}
                 disabled={selectedRows.length === 0}
+                variant="outlined"
                 sx={{ backgroundColor: 'white' }}
-                onClick={submitChangingService}
+                onClick={openPopover}
               >
-                활성화/비활성화
-              </StyledActionBtn>
+                수정
+              </StyledEditBtn>
+              <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={closePopover}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                sx={{ marginTop: '5px' }}
+              >
+                <PopoverMenu
+                  onClick={() => {
+                    closePopover();
+                    openCreateEditFilePopup();
+                  }}
+                >
+                  수정
+                </PopoverMenu>
+                <PopoverMenu
+                  onClick={() => {
+                    closePopover();
+                    openCreateEditFilePopup();
+                  }}
+                >
+                  복제 후 수정
+                </PopoverMenu>
+              </Popover>
             </EachButtonWrapper>
-          </ButtonWrapper>
-        </Wrapper>
+          )}
+          <EachButtonWrapper>
+            <StyledActionBtn
+              variant="outlined"
+              disabled={selectedRows.length === 0}
+              sx={{ backgroundColor: 'white' }}
+              onClick={submitChangingService}
+            >
+              활성화/비활성화
+            </StyledActionBtn>
+          </EachButtonWrapper>
+        </ButtonWrapper>
       </Container>
       <TableWrapper>
         <Table>
@@ -533,24 +529,18 @@ export function ListTable() {
 }
 
 const Container = styled.div`
-  padding: 20px;
+  padding: 10px;
+  padding-top: 15px;
   display: flex;
   justify-content: space-between;
-  gap: 5px;
-`;
-
-const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
   flex-direction: column;
-  gap: 10px;
 `;
 
 const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  gap: 5px;
+  margin-bottom: 5px;
 `;
 
 const ButtonWrapper = styled.div`

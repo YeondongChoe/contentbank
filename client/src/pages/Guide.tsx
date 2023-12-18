@@ -55,7 +55,7 @@ export function Guide() {
         <span>border 커스텀 버튼</span>
       </Button>
 
-      <Select />
+      {/* <Select /> */}
 
       <h3>loader</h3>
       <Loader height={'80px'} />

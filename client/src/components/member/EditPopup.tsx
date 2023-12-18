@@ -240,7 +240,7 @@ export function EditPopup() {
                       </CheckBoxWrapper>
                     )}
                   </DisableWrapper>
-                  <Controller
+                  {/* <Controller
                     control={control}
                     name="authority"
                     render={({ field }) => (
@@ -249,12 +249,12 @@ export function EditPopup() {
                         height="50px"
                         defaultValue={member.authority}
                         selected={selected}
-                        setSelected={setSelected}
-                        setAuthorityCode={setAuthorityCode}
+                        // setSelected={setSelected}
+                        // setAuthorityCode={setAuthorityCode}
                         options={AuthorityOption}
                       ></Select>
                     )}
-                  />
+                  /> */}
                 </Box>
                 <Box sx={{ minWidth: '350px' }}>
                   <Label fontSize="16px" value="비고" />
