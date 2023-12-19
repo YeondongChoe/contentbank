@@ -23,9 +23,8 @@ export function Header() {
     } else {
       event.currentTarget.children[1].classList.remove('show');
     }
-    console.log(currentButton);
-    console.log(currentTargetUl);
-    // setShowList();
+    // console.log(currentButton);
+    // console.log(currentTargetUl);
   };
 
   // 사이드메뉴 로그아웃 시
