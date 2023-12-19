@@ -161,7 +161,7 @@ const NavBarWrapper = styled.nav`
     border: none;
     background-color: transparent;
     position: relative;
-    /* transition: all 0.5s; */
+    transition: all 0.5s;
     z-index: 1;
 
     &:hover,
@@ -207,7 +207,7 @@ const NavBarWrapper = styled.nav`
           width: 100%;
           height: 100%;
           color: ${COLOR.DARK_GRAY};
-          /* transition: all 0.1s; */
+          transition: all 0.1s;
           z-index: 2;
 
           &:hover {
