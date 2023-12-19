@@ -81,5 +81,6 @@ const Component = styled.button<ButtonStyleProps>`
   color: ${({ $border }) => ($border ? `${COLOR.PRIMARY};` : '#fff')};
   cursor: pointer;
   ${({ disabled }) =>
-    disabled && ` background-color:${COLOR.GRAY}; cursor: auto;`}
+    disabled &&
+    `border:none; color:${COLOR.GRAY} ;background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
 `;

@@ -9,7 +9,7 @@ import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
 import { updateBoolAtom } from '../../state/utilAtom';
 import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
-import { ListTable } from '../table/ListTable';
+import { ListTable } from '../tableWrap/ListTable';
 
 import { COLOR } from './COLOR';
 

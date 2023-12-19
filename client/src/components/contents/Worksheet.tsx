@@ -5,7 +5,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Button, IndexInfo, Search, TabMenu } from '../../components';
-import { WorksheetTable } from '../../components/table/WorksheetTable';
 import { Step1 } from '../../pages/worksheetPopup/Step1';
 import {
   createWorksheetStep1BoolAtom,
@@ -13,6 +12,7 @@ import {
   editWorksheetBoolAtom,
 } from '../../state/creatingWorksheetAtom';
 import { searchValueAtom } from '../../state/valueAtom';
+import { WorksheetTable } from '../tableWrap/WorksheetTable';
 
 import { COLOR } from './COLOR';
 

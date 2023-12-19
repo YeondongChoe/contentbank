@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
 import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
-import { ListTable } from '../table/ListTable';
+import { ListTable } from '../tableWrap/ListTable';
 
 export function ManagementsTree() {
   const [choiceValue, setChoiceValue] = useState(1);

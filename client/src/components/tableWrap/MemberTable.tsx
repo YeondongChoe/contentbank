@@ -11,7 +11,6 @@ import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
-import { COLOR } from '../../components/contents/COLOR';
 import {
   editerBoolAtom,
   registerBoolAtom,
@@ -19,6 +18,7 @@ import {
 } from '../../state/memberAtom';
 import { alertBoolAtom, pageAtom, totalPageAtom } from '../../state/utilAtom';
 import { createListCodeValueAtom } from '../../state/valueAtom';
+import { COLOR } from '../contents/COLOR';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
 import { PaginationBox } from '../molecules/pagination/Pagination';
 

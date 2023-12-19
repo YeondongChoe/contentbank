@@ -11,7 +11,7 @@ import { Search } from '../../components/molecules';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
-import { MemberTable } from '../table/MemberTable';
+import { MemberTable } from '../tableWrap/MemberTable';
 
 export function Member() {
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);

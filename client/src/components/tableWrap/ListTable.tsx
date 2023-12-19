@@ -3,15 +3,13 @@ import { useState, useEffect } from 'react';
 
 import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
-import { Button } from '@mui/material';
-import Popover from '@mui/material/Popover';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Select, Button } from '..';
 import { getQuestionList } from '../../api/getAxios';
 import { postFavoriteQuestion } from '../../api/postAxios';
 import { putChangeServiced } from '../../api/putAxios';
-import { Select } from '../../components/atom/select';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
@@ -31,6 +29,7 @@ import {
   checkBoxValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
+import { COLOR } from '../contents';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
 import { PaginationBox } from '../molecules/pagination/Pagination';
 
@@ -52,6 +51,7 @@ type questionListProps = {
 };
 
 export function ListTable() {
+  const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   /**문항 리스트 관련 코드 */
@@ -289,8 +289,9 @@ export function ListTable() {
             />
           ))}
         </SelectWrapper>
+
         <ButtonWrapper>
-          {MenuCode === 'CNM_Q' ? (
+          {/* {MenuCode === 'CNM_Q' ? (
             <>
               <EachButtonWrapper>
                 <StyledEditBtn
@@ -382,8 +383,8 @@ export function ListTable() {
                 </PopoverMenu>
               </Popover>
             </EachButtonWrapper>
-          )}
-          <EachButtonWrapper>
+          )} */}
+          {/* <EachButtonWrapper>
             <StyledActionBtn
               variant="outlined"
               disabled={selectedRows.length === 0}
@@ -392,9 +393,59 @@ export function ListTable() {
             >
               활성화/비활성화
             </StyledActionBtn>
-          </EachButtonWrapper>
+          </EachButtonWrapper> */}
+          <DropDown>
+            <Button
+              width="100px"
+              height="35px"
+              fontSize="14px"
+              $border
+              onClick={() => {
+                // submitChangingService;
+                setShowDropDown(!showDropDown);
+              }}
+              disabled={false}
+            >
+              수정
+            </Button>
+            {showDropDown && (
+              <DropDownList>
+                <li>
+                  <button
+                    onClick={() => {
+                      setShowDropDown(false);
+                      // openCreateEditFilePopup();
+                    }}
+                  >
+                    수정
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {
+                      setShowDropDown(false);
+                      // openCreateEditFilePopup();
+                    }}
+                  >
+                    복제 후 수정
+                  </button>
+                </li>
+              </DropDownList>
+            )}
+          </DropDown>
+          <Button
+            width="150px"
+            height="35px"
+            fontSize="14px"
+            $border
+            onClick={submitChangingService}
+            disabled={true}
+          >
+            활성화 / 비활성화
+          </Button>
         </ButtonWrapper>
       </Container>
+
       <TableWrapper>
         <Table>
           <Thead>
@@ -540,26 +591,45 @@ const ButtonWrapper = styled.div`
   gap: 5px;
 `;
 
-const EachButtonWrapper = styled.div`
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
+// 컴포넌트로 분리처리 해야할수도 있음
+const DropDown = styled.div`
+  position: relative;
 `;
+const DropDownList = styled.ul`
+  width: 120px;
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border: 1px solid ${COLOR.SECONDARY};
+  border-radius: 5px;
+  overflow: hidden;
 
-const PopoverMenu = styled.div`
-  width: 100px;
-  height: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-  &:nth-child(2) {
-    border-top: 2px solid #dde1e9;
-  }
-  &:hover {
-    background-color: #422afb;
-    color: white;
+  li {
+    width: 100%;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    button {
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: #fff;
+      color: ${COLOR.GRAY};
+      transition: all 0.1s;
+
+      &:hover {
+        background-color: ${COLOR.HOVER};
+        color: ${COLOR.PRIMARY};
+      }
+    }
   }
 `;
 
@@ -594,24 +664,4 @@ const Th = styled.th`
 `;
 const Td = styled.td`
   border: 1px solid #a3aed0;
-`;
-
-const StyledEditBtn = styled(Button)`
-  && {
-    width: 70px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
-`;
-
-const StyledActionBtn = styled(Button)`
-  && {
-    width: 130px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;

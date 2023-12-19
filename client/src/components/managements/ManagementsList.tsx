@@ -10,7 +10,7 @@ import { Input } from '../../components';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
 import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
-import { ListTable } from '../table/ListTable';
+import { ListTable } from '../tableWrap/ListTable';
 
 export function ManagementsList() {
   const [choiceValue, setChoiceValue] = useState(1);

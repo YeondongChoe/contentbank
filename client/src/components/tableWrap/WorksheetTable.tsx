@@ -13,7 +13,7 @@ import Tab from '@mui/material/Tab';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { TabMenu } from '../../components';
+import { TabMenu } from '..';
 import { Step2 } from '../../pages/worksheetPopup/Step2';
 import {
   createWorksheetStep1BoolAtom,
