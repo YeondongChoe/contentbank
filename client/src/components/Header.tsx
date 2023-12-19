@@ -13,19 +13,30 @@ export function Header() {
   const navigate = useNavigate();
 
   // 메인메뉴 버튼 이벤트
+  // 1뎁스 네비버튼 이벤트
   const handleShowList = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
+    event.preventDefault();
     const currentButton = event.currentTarget.tabIndex;
     const currentTargetUl = event.currentTarget.children[1].className;
     if (currentButton === Number(currentTargetUl)) {
       event.currentTarget.children[1].classList.add('show');
-    } else {
-      event.currentTarget.children[1].classList.remove('show');
     }
-    // console.log(currentButton);
-    // console.log(currentTargetUl);
   };
+  const handleRemoveList = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    event.currentTarget.children[1].classList.remove('show');
+  };
+  //2뎁스 네비버튼 이벤트
+  const removeClass = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
+    event.currentTarget.parentElement?.parentElement?.classList.remove('show');
+  };
+
+  useEffect(() => {}, []);
 
   // 사이드메뉴 로그아웃 시
   const removeCookie = () => {
@@ -86,16 +97,19 @@ export function Header() {
             type="button"
             key={menu.firstTItle}
             tabIndex={menu.tabIndex}
-            onClick={(event) => handleShowList(event)}
             onMouseEnter={(event) => handleShowList(event)}
-            onMouseLeave={(event) => handleShowList(event)}
+            onMouseLeave={(event) => handleRemoveList(event)}
           >
             <strong>{menu.firstTItle}</strong>
 
-            <ul className={`${menu.tabIndex}`}>
+            <ul className={`${menu.tabIndex} `}>
               {menu.menuList.map((list) => (
                 <li key={list.title}>
-                  <Link to={list.link} tabIndex={list.tabIndex}>
+                  <Link
+                    onClick={(event) => removeClass(event)}
+                    to={list.link}
+                    tabIndex={list.tabIndex}
+                  >
                     {list.title}
                   </Link>
                 </li>
@@ -149,7 +163,7 @@ const NavBarWrapper = styled.nav`
     border: none;
     background-color: transparent;
     position: relative;
-    transition: all 0.5s;
+    /* transition: all 0.5s; */
     z-index: 1;
 
     &:hover,
@@ -168,7 +182,7 @@ const NavBarWrapper = styled.nav`
     ul {
       display: none;
       position: absolute;
-      top: 55px;
+      top: 50px;
       left: 50%;
       transform: translateX(-50%);
       background-color: #fff;
@@ -195,7 +209,8 @@ const NavBarWrapper = styled.nav`
           width: 100%;
           height: 100%;
           color: ${COLOR.DARK_GRAY};
-          transition: all 0.1s;
+          /* transition: all 0.1s; */
+          z-index: 2;
 
           &:hover {
             background-color: ${COLOR.HOVER};
