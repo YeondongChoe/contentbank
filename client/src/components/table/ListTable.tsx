@@ -126,7 +126,7 @@ export function ListTable() {
   /**문항 분류 관련 코드 */
   const [content, setContent] = useState<string[]>([]);
 
-  const handleSelect = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     // console.log(event.currentTarget.value);
     const value = event.currentTarget.value;
 
@@ -211,16 +211,6 @@ export function ListTable() {
     },
   ];
 
-  const selectCategory = (
-    fieldName: string,
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      [fieldName]: event.target.value,
-    }));
-  };
-
   /**문항 업로드 팝업 관련 코드 */
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
@@ -295,7 +285,7 @@ export function ListTable() {
               defaultValue={el.label}
               key={el.label}
               options={el.options}
-              onSelect={(event) => handleSelect(event)}
+              onSelect={(event) => selectCategoryOption(event)}
             />
           ))}
         </SelectWrapper>

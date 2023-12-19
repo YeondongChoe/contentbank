@@ -11,13 +11,16 @@ import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
+import { COLOR } from '../../components/contents/COLOR';
 import {
   editerBoolAtom,
   registerBoolAtom,
   memberKeyValueAtom,
 } from '../../state/memberAtom';
-import { alertBoolAtom } from '../../state/utilAtom';
+import { alertBoolAtom, pageAtom, totalPageAtom } from '../../state/utilAtom';
+import { createListCodeValueAtom } from '../../state/valueAtom';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
+import { PaginationBox } from '../molecules/pagination/Pagination';
 
 type memberListProps = {
   seq: number;
@@ -51,9 +54,20 @@ export function MemberTable() {
 
   let mountCount = 1;
 
+  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [page, setPage] = useRecoilState(pageAtom);
+  const size = 8;
+
   const changeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     setSelectedRows([]);
+    // 현재 페이지 업데이트 후 showMemberList 호출
+    if (page !== 1) {
+      setPage(1);
+      setCurrentPage(1);
+    }
+    showMemberList(newValue === '2' ? 'Y' : newValue === '3' ? 'N' : '');
   };
 
   const isAllSelected =
@@ -80,9 +94,16 @@ export function MemberTable() {
       setSelectedRows(memberList?.map((member) => member.id));
     }
   };
-
+  const [enabled, setEnabled] = useState<string | undefined>();
   const showMemberList = (enabled: string) => {
-    getMemberList({ setMemberList }, enabled);
+    setEnabled(enabled);
+    getMemberList({
+      setMemberList,
+      settotalPage,
+      page: currentPage,
+      size,
+      enabled,
+    });
   };
 
   const openDisableAlert = () => {
@@ -100,15 +121,15 @@ export function MemberTable() {
   useEffect(() => {
     mountCount++;
     setDidMount(true);
-    return () => {};
   }, []);
 
   useEffect(() => {
     if (didMount) {
-      getMemberList({ setMemberList }, '');
+      getMemberList({ setMemberList, settotalPage, page, size, enabled });
     }
-  }, [didMount, relode, setMemberList]);
+  }, [didMount, relode, setMemberList, page]);
 
+  /** 상세정보 보기 버튼*/
   const openDetailInformationPopup = (key: string) => {
     setKeyValue(key);
     setIsEdit(true);
@@ -125,19 +146,16 @@ export function MemberTable() {
                   label="전체"
                   value="1"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => showMemberList('')}
                 />
                 <Tab
                   label="활성화"
                   value="2"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => showMemberList('Y')}
                 />
                 <Tab
                   label="비활성화"
                   value="3"
                   style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => showMemberList('N')}
                 />
               </TabList>
             </Box>
@@ -212,6 +230,7 @@ export function MemberTable() {
           ))}
         </Tbody>
       </Table>
+      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isEnabled && (
         <SelectAlert
           title="비활성화 처리시 로그인이 불가합니다."
@@ -244,11 +263,11 @@ const Tr = styled.tr`
   height: 50px;
 `;
 const Th = styled.th`
-  border: 1px solid #a3aed0;
-  color: #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
+  color: ${COLOR.BORDER_BLUE};
 `;
 const Td = styled.td`
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
 `;
 const ButtonWrapper = styled.div`
   display: flex;

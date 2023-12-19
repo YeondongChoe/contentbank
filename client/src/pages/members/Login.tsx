@@ -11,6 +11,7 @@ import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
 import { Input, Label } from '../../components';
+import { COLOR } from '../../components/contents/COLOR';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { getAuthorityCookie } from '../../utils/cookies';
@@ -144,20 +145,13 @@ const Title = styled.div`
   display: flex;
   font-size: 25px;
   padding-bottom: 20px;
-  color: #1b254b;
+  color: ${COLOR.DARK_GRAY};
 `;
 const Form = styled.form``;
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-`;
-const ErrorMessage = styled.div`
-  width: 400px;
-  font-size: 12px;
-  color: red;
-  display: flex;
-  justify-content: flex-start;
 `;
 const SaveIdWrapper = styled.div`
   width: 400px;
@@ -168,7 +162,7 @@ const SaveIdWrapper = styled.div`
 `;
 const SaveId = styled.p`
   font-size: 14px;
-  color: #1b254b;
+  color: ${COLOR.DARK_GRAY};
   margin-left: 5px;
 `;
 const SaveButtonWrapper = styled.button`
@@ -180,7 +174,7 @@ const SaveButtonWrapper = styled.button`
 `;
 const NoticeMessage = styled.p`
   display: flex;
-  color: #1b254b;
+  color: ${COLOR.DARK_GRAY};
   font-size: 13px;
   padding-top: 20px;
 `;
