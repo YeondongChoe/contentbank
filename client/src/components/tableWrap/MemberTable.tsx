@@ -41,7 +41,11 @@ type memberListProps = {
   enabled: boolean;
 };
 
-export function MemberTable() {
+export function MemberTable({
+  searchMemberList,
+}: {
+  searchMemberList: memberListProps[];
+}) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [memberList, setMemberList] = useState<memberListProps[]>([]);
   const setKeyValue = useSetRecoilState(memberKeyValueAtom);
@@ -124,8 +128,20 @@ export function MemberTable() {
   }, []);
 
   useEffect(() => {
+    if (searchMemberList) {
+      setMemberList(searchMemberList);
+    }
+  }, [searchMemberList]);
+
+  useEffect(() => {
     if (didMount) {
-      getMemberList({ setMemberList, settotalPage, page, size, enabled });
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        page,
+        size,
+        enabled,
+      });
     }
   }, [didMount, relode, setMemberList, page]);
 
