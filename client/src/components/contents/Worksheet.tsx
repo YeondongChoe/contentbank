@@ -59,6 +59,7 @@ export function Worksheet() {
 
   return (
     <Container>
+      {/* <IndexInfo list={['콘텐츠 제작', '문항', `${tabVeiw}`]} /> */}
       <HeadWrapper>
         <TapWrapper>
           <TapMenu choiced={choiceValue} onClick={clickList}>

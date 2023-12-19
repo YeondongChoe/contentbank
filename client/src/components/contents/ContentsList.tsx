@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Search, TabMenu } from '../../components';
+import { Button, IndexInfo, Search, TabMenu } from '../../components';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
 import { updateBoolAtom } from '../../state/utilAtom';
@@ -47,6 +47,7 @@ export function ContentsList() {
 
   return (
     <Container>
+      <IndexInfo list={['콘텐츠 제작', '문항', `${tabVeiw}`]} />
       <HeadWrapper>
         <TabMenu
           length={2}

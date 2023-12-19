@@ -13,7 +13,7 @@ export function ContentList() {
 }
 
 const Container = styled.div`
-  padding-top: 20px;
+  padding-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
