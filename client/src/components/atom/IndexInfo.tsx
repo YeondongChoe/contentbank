@@ -23,7 +23,7 @@ const Component = styled.p`
   height: 20px;
   font-size: 12px;
   font-weight: 500;
-  margin-bottom: 10px;
+  margin: 10px 0 15px;
   color: ${COLOR.GRAY};
   span {
     display: inline-block;

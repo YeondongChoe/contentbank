@@ -19,6 +19,7 @@ export function ContentsList() {
   const setContentSeq = useSetRecoilState(checkBoxValueAtom);
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const setIsUpdate = useSetRecoilState(updateBoolAtom);
+
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
 
   const [searchValue, setSearchValue] = useState<string>('');
@@ -77,10 +78,16 @@ export function ContentsList() {
         </InputWrapper>
       </HeadWrapper>
 
-      {/* {tabVeiw === '문항 리스트' && ( )} */}
-      <TableWrapper>
-        <ListTable />
-      </TableWrapper>
+      {tabVeiw === '문항 리스트' && (
+        <TableWrapper>
+          <ListTable />
+        </TableWrapper>
+      )}
+      {tabVeiw === '즐겨찾는 문항' && (
+        <TableWrapper>
+          <ListTable />
+        </TableWrapper>
+      )}
 
       {isCreate && <CreateIconPopup />}
     </Container>
@@ -95,7 +102,6 @@ const Container = styled.div`
 
 const HeadWrapper = styled.div`
   width: 100%;
-  /* padding: 20px; */
   padding-bottom: 0;
   display: flex;
   align-items: center;

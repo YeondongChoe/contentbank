@@ -13,6 +13,7 @@ import Tab from '@mui/material/Tab';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { TabMenu } from '../../components';
 import { Step2 } from '../../pages/worksheetPopup/Step2';
 import {
   createWorksheetStep1BoolAtom,
@@ -42,11 +43,7 @@ export function WorksheetTable() {
     setIsEditWorksheet(true);
   };
 
-  const changeTab = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-    setSelectedRows([]);
-  };
-
+  const [tabVeiw, setTabVeiw] = useState<string>('전체');
   const worksheetList = dummy.Worksheet;
 
   const [didMount, setDidMount] = useState(false);
@@ -111,42 +108,37 @@ export function WorksheetTable() {
     }
   }, [didMount, page, MenuCode]);
 
+  const menuList = [
+    {
+      label: '전체',
+      value: '전체',
+    },
+    {
+      label: '초등',
+      value: '초등',
+    },
+    {
+      label: '중등',
+      value: '중등',
+    },
+    {
+      label: '고등',
+      value: '고등',
+    },
+  ];
+
   return (
     <>
-      <Container>
-        <Box sx={{ typography: 'body1' }}>
-          <TabContext value={value}>
-            <Box sx={{ borderColor: 'divider' }}>
-              <TabList onChange={changeTab}>
-                <Tab
-                  label="전체"
-                  value="1"
-                  style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => showFilterdList('')}
-                />
-                <Tab
-                  label="초등"
-                  value="2"
-                  style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => showFilterdList('elemental')}
-                />
-                <Tab
-                  label="중등"
-                  value="3"
-                  style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => showFilterdList('middle')}
-                />
-                <Tab
-                  label="고등"
-                  value="4"
-                  style={{ fontSize: '16px', fontWeight: 'bold' }}
-                  onClick={() => showFilterdList('high')}
-                />
-              </TabList>
-            </Box>
-          </TabContext>
-        </Box>
-      </Container>
+      <TabMenu
+        length={4}
+        menu={menuList}
+        initialValue={'전체'}
+        width={'300px'}
+        setTabVeiw={setTabVeiw}
+        lineStyle
+        $margin={'10px 0'}
+      />
+
       <TableWrapper>
         <Table>
           <Thead>
@@ -282,11 +274,6 @@ export function WorksheetTable() {
   );
 }
 
-const Container = styled.div`
-  padding: 20px 10px 20px 50px;
-  display: flex;
-  justify-content: space-between;
-`;
 const TableWrapper = styled.div`
   display: flex;
   justify-content: center;

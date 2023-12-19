@@ -17,6 +17,7 @@ type TabProps = {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  lineStyle?: boolean;
 };
 
 type TabMenuProps = {
@@ -27,6 +28,8 @@ type TabMenuProps = {
   setTabVeiw?: (value: string) => void;
   width?: string;
   height?: string;
+  $margin?: string;
+  lineStyle?: boolean;
 };
 
 export function Tab({
@@ -36,15 +39,19 @@ export function Tab({
   value,
   onChange,
   className,
+  lineStyle,
 }: TabProps) {
   return (
     <TabButton
       height={height}
+      lineStyle={lineStyle}
       className={className}
       active={value === selected}
       onClick={() => onChange(value)}
     >
-      <ButtonText active={value === selected}>{label}</ButtonText>
+      <ButtonText lineStyle={lineStyle} active={value === selected}>
+        {label}
+      </ButtonText>
     </TabButton>
   );
 }
@@ -57,6 +64,8 @@ export function TabMenu({
   setTabVeiw,
   width,
   height,
+  $margin,
+  lineStyle,
 }: TabMenuProps) {
   const [selected, setSelected] = useState(initialValue);
 
@@ -66,7 +75,7 @@ export function TabMenu({
   };
 
   return (
-    <Component length={length} width={width}>
+    <Component length={length} width={width} $margin={$margin}>
       {menu.map(({ label, value }: MenuProps) => (
         <Tab
           className={className}
@@ -76,6 +85,7 @@ export function TabMenu({
           value={value}
           onChange={handleChange}
           height={height}
+          lineStyle={lineStyle}
         />
       ))}
     </Component>
@@ -86,6 +96,7 @@ type TabStyleProps = {
   height?: string;
   active: boolean;
   onClick: () => void;
+  lineStyle?: boolean;
 };
 
 const TabButton = styled.button<TabStyleProps>`
@@ -97,6 +108,7 @@ const TabButton = styled.button<TabStyleProps>`
   width: 100%;
   border: none;
   cursor: pointer;
+  transition: all 0.1s;
 
   ${({ active }) =>
     active
@@ -109,16 +121,31 @@ const TabButton = styled.button<TabStyleProps>`
   &:last-child {
     border-radius: 0 8px 0 0;
   }
+
+  ${({ lineStyle }) => lineStyle && `background: transparent; `}
+  ${({ lineStyle, active }) =>
+    lineStyle && active
+      ? `border-bottom: 2px solid ${COLOR.PRIMARY};`
+      : `border-bottom: 2px solid transparent;`}
 `;
-const ButtonText = styled.span<{ active: boolean }>`
+const ButtonText = styled.span<{ active: boolean; lineStyle?: boolean }>`
   font-size: 14px;
-  color: #fff;
   font-weight: bold;
-  /* ${({ active }) =>
-    active ? `font-weight: bold;` : ` font-weight: normal`} */
+
+  ${({ lineStyle, active }) =>
+    lineStyle
+      ? active
+        ? `color:${COLOR.PRIMARY}`
+        : `color:${COLOR.GRAY}`
+      : `color: #fff;`}
 `;
 
-const Component = styled.div<{ length: number; width?: string }>`
+const Component = styled.div<{
+  length: number;
+  width?: string;
+  $margin?: string;
+}>`
+  margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   display: grid;
   ${({ length }) =>
