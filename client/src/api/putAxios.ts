@@ -157,7 +157,7 @@ export const putDisableMember = async ({
 };
 
 type putChangeMemberInformationProps = {
-  Authority: string;
+  Authority: string | undefined;
   member: MemberProps;
   Name: string;
   Comment: string;

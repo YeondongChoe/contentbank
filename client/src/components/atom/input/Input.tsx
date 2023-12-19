@@ -3,6 +3,8 @@ import { ChangeEvent } from 'react';
 
 import { styled } from 'styled-components';
 
+import { COLOR } from '../../contents';
+
 type InputProps = {
   type: 'text' | 'password';
   placeholder?: string;
@@ -97,24 +99,24 @@ const Component = styled.input<InputStyleProps>`
   ${({ disabled }) => disabled && 'opacity: 0.5;'};
   ${(props) =>
     props.$border === 'normal'
-      ? 'border: 1px solid #e9ecef;'
+      ? `border: 1px solid ${COLOR.BORDER_GRAY};`
       : props.$border === 'black'
-      ? 'border: none; border-bottom: 1px solid black;'
+      ? `border: none; border-bottom: 1px solid ${COLOR.BLACK};`
       : 'border: none;'}
   ${({ $borderBottom }) =>
-    $borderBottom && 'border: none; border-bottom: 1px solid #d32f2f;'};
+    $borderBottom && `border: none; border-bottom: 1px solid ${COLOR.ERROR};`};
   &::placeholder {
     ${({ $placeholderSize }) =>
       $placeholderSize ? `font-size: ${$placeholderSize};` : '16px;'};
   }
   &.success {
-    border-color: green;
+    border-color: ${COLOR.SUCCESS};
   }
   &.passwordMatch {
-    border-color: green;
+    border-color: ${COLOR.SUCCESS};
   }
 `;
 const ErrorMessage = styled.p`
-  color: #d32f2f;
+  color: ${COLOR.ERROR};
   font-size: 12px;
 `;

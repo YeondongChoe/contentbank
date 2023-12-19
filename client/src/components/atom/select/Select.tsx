@@ -16,13 +16,17 @@ type OptionsProps = {
 
 type SelectProps = {
   options?: OptionsProps[];
-  onSelect: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onSelect: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    code: string | undefined,
+  ) => void;
   defaultValue?: null | string;
   width?: string;
   height?: string;
   children?: string;
-  // setSelected?: (e: any) => void;
-  // setAuthorityCode?: (e: any) => void;
+  padding?: string;
+  text?: string;
+  top?: string;
 };
 
 export function Select({
@@ -30,13 +34,16 @@ export function Select({
   onSelect,
   defaultValue,
   width,
-  height = '40px', // setSelected, // setAuthorityCode,
+  height = '40px',
+  padding,
+  text,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
 
   return (
     <Component
+      $padding={padding}
       onMouseLeave={() => {
         setIsOptionShow(false);
       }}
@@ -44,6 +51,7 @@ export function Select({
       <IconButton
         width={width}
         height={height}
+        text={text}
         fontSize="14px"
         onClick={() => setIsOptionShow(true)}
         textAlign="left"
@@ -57,13 +65,15 @@ export function Select({
           onMouseLeave={() => {
             setIsOptionShow(false);
           }}
+          $top={height}
         >
           {options?.map((el) => (
             <li key={el.id}>
               <button
                 value={el.label}
                 onClick={(event) => {
-                  onSelect(event), setSelected(event.currentTarget.value);
+                  onSelect(event, el.code),
+                    setSelected(event.currentTarget.value);
                 }}
               >
                 <span>{el.label}</span>
@@ -76,13 +86,14 @@ export function Select({
   );
 }
 
-const Component = styled.div<{ height?: string }>`
+const Component = styled.div<{ $padding?: string }>`
   position: relative;
+  padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
-const SelectOptionsList = styled.ul`
+const SelectOptionsList = styled.ul<{ $top?: string }>`
   padding-top: 5px;
   position: absolute;
-  top: 40px;
+  top: ${({ $top }) => ($top ? `${$top};` : '40px')};
   bottom: 0;
   left: 0;
   right: 0;

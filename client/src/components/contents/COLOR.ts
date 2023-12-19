@@ -11,4 +11,8 @@ export const COLOR = {
   TEXT_LIGHT_GRAY: '#bcb3c5',
   RED: '#ff0000',
   BLUEGREEN: '#15979e',
+  ERROR: '#d32f2f',
+  SUCCESS: '#008000',
+  BORDER_GRAY: '#e9ecef',
+  BORDER_BLUE: '#a3aed0',
 };
