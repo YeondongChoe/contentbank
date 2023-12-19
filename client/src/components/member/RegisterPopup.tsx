@@ -5,8 +5,6 @@ import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Textarea from '@mui/joy/Textarea';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
 import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -14,6 +12,7 @@ import styled from 'styled-components';
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
 import { Input, Label } from '../../components';
+import { Select } from '../../components/atom/select';
 import { registerBoolAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
@@ -35,22 +34,27 @@ export function RegisterPopup() {
   const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
   const [duplicatedId, setduplicatedId] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(false);
-  const [selectedAuthorityValue, setSelectedAuthorityValue] = useState('');
   const [commentValue, setCommentValue] = useState('');
   const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [isRequired, setIsRequired] = useState(false);
   const [isRequiredDuplicate, setIsRequiredDuplicate] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
 
-  const { control, setValue, watch } = useForm();
+  const { control, watch } = useForm();
 
-  const handleAuthorityChange = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setSelectedAuthorityValue(event.target.value);
-  };
+  const [authorityCode, setAuthorityCode] = useState<string>();
 
-  const Authority = selectedAuthorityValue;
+  const AuthorityList = authorityList.map((el) => {
+    return [el.name, el.code];
+  });
+  const AuthorityOption = AuthorityList.map((item, index) => ({
+    id: `${index + 1}`,
+    label: item[0],
+    code: item[1],
+    value: index + 1,
+  }));
+
+  const Authority = authorityCode;
   const Name = watch('name');
   const Id = watch('id');
   const Comment = commentValue;
@@ -71,7 +75,7 @@ export function RegisterPopup() {
   };
 
   const submitRegister = () => {
-    if (Name === '' || Id === '' || Authority === '') {
+    if (Name === '' || Id === '' || Authority === undefined) {
       setIsRequired(true);
       setIsAlertOpen(true);
     } else if (duplicatedId !== Id || isDuplicate === false) {
@@ -119,9 +123,9 @@ export function RegisterPopup() {
                 autoComplete="off"
               >
                 {isNameError ? (
-                  <Label type="error" fontSize="16" value="이름(필수)" />
+                  <Label type="error" fontSize="16px" value="이름(필수)" />
                 ) : (
-                  <Label fontSize="16" value="이름(필수)" />
+                  <Label fontSize="16px" value="이름(필수)" />
                 )}
                 <Controller
                   control={control}
@@ -148,9 +152,9 @@ export function RegisterPopup() {
                   )}
                 />
                 {isNameError ? (
-                  <Label type="error" fontSize="16" value="아이디(필수)" />
+                  <Label type="error" fontSize="16px" value="아이디(필수)" />
                 ) : (
-                  <Label fontSize="16" value="아이디(필수)" />
+                  <Label fontSize="16px" value="아이디(필수)" />
                 )}
                 <Controller
                   control={control}
@@ -189,31 +193,27 @@ export function RegisterPopup() {
                   </StyleDuplicateBtn>
                 </DuplicationButtonWrapper>
               </Box>
-              <Box
-                component="form"
-                sx={{
-                  '& .MuiTextField-root': { m: 1, width: '350px' },
-                }}
-                noValidate
-                autoComplete="off"
-              >
-                <TextField
-                  value={selectedAuthorityValue}
-                  onChange={handleAuthorityChange}
-                  id="outlined-select-currency"
-                  select
-                  label="권한"
-                  helperText="(필수)권한을 선택하세요"
-                >
-                  {authorityList?.map((el, i) => (
-                    <MenuItem key={i} value={el.code}>
-                      {el.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
+              <Box sx={{ width: '350px' }}>
+                <Label fontSize="16px" value="권한" />
+                <Controller
+                  control={control}
+                  name="authority"
+                  render={({ field }) => (
+                    <Select
+                      width="350px"
+                      height="50px"
+                      padding="5px 0px 0px 0px"
+                      onSelect={(event, code) => {
+                        setAuthorityCode(code);
+                      }}
+                      options={AuthorityOption}
+                    ></Select>
+                  )}
+                />
+                <Label fontSize="11px" value="(필수)권한을 선택하세요" />
               </Box>
               <Box sx={{ width: '350px' }}>
-                <Label fontSize="16" value="비고" />
+                <Label fontSize="16px" value="비고" />
                 <Textarea
                   sx={{ mb: 1, mt: 1, fontSize: '14px' }}
                   placeholder=""

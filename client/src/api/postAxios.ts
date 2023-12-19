@@ -81,7 +81,7 @@ export const postLogin = async (
 type postRegisterProps = {
   Id: string;
   Name: string;
-  Authority: string;
+  Authority: string | undefined;
   Comment: string;
   SetIsRegister: (result: boolean) => void;
   setIsNameError: (result: boolean) => void;

@@ -49,9 +49,8 @@ export function EditPopup() {
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
-  const [authorityCode, setAuthorityCode] = useState('');
+  const [authorityCode, setAuthorityCode] = useState<string | undefined>();
   const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
-  const [selected, setSelected] = useState<string>();
 
   const AuthorityList = authorityList.map((el) => {
     return [el.name, el.code];
@@ -240,7 +239,7 @@ export function EditPopup() {
                       </CheckBoxWrapper>
                     )}
                   </DisableWrapper>
-                  {/* <Controller
+                  <Controller
                     control={control}
                     name="authority"
                     render={({ field }) => (
@@ -248,13 +247,13 @@ export function EditPopup() {
                         width="350px"
                         height="50px"
                         defaultValue={member.authority}
-                        selected={selected}
-                        // setSelected={setSelected}
-                        // setAuthorityCode={setAuthorityCode}
+                        onSelect={(event, code) => {
+                          setAuthorityCode(code);
+                        }}
                         options={AuthorityOption}
                       ></Select>
                     )}
-                  /> */}
+                  />
                 </Box>
                 <Box sx={{ minWidth: '350px' }}>
                   <Label fontSize="16px" value="비고" />
@@ -356,7 +355,7 @@ const InitButtonWrapper = styled.div`
 const DisableWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 0px 10px;
+  padding: 0px 10px 0px 0px;
 `;
 const CheckBoxWrapper = styled.div`
   display: flex;
