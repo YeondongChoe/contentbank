@@ -2,79 +2,33 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Tab from '@mui/material/Tab';
-import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getAuthorityMenu } from '../api/getAxios';
-import { createListCodeValueAtom, checkBoxValueAtom } from '../state/valueAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
 import { COLOR } from './contents';
 
-type menuListProps = {
-  seq: number;
-  code: string;
-  depth: number;
-  method: string;
-  name: string;
-  sort: number;
-  type: string;
-  url: null;
-  enabled: boolean;
-  children: [
-    {
-      seq: number;
-      code: string;
-      depth: number;
-      method: string;
-      name: string;
-      sort: number;
-      type: string;
-      url: null;
-      enabled: boolean;
-      children: null;
-    },
-    {
-      seq: number;
-      code: string;
-      depth: number;
-      method: string;
-      name: string;
-      sort: number;
-      type: string;
-      url: null;
-      enabled: boolean;
-      children: null;
-    },
-  ];
-};
-
 export function Header() {
-  const [value, setValue] = useState('');
-  const [activeTab, setActiveTab] = useState(0);
-  const [menuValue, setMenuValue] = useState<menuListProps[]>([]);
-  const [didMount, setDidMount] = useState(false);
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const setContentSeq = useSetRecoilState(checkBoxValueAtom);
-
-  const setcreateListCodeValueAtom = useSetRecoilState(createListCodeValueAtom);
-
   const navigate = useNavigate();
 
-  let mountCount = 1;
-
-  const openTabMenu = (newValue: string) => {
-    setValue(newValue);
-    setActiveTab(0);
+  // 메인메뉴 버튼 이벤트
+  const handleShowList = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    const currentButton = event.currentTarget.tabIndex;
+    const currentTargetUl = event.currentTarget.children[1].className;
+    if (currentButton === Number(currentTargetUl)) {
+      event.currentTarget.children[1].classList.add('show');
+    } else {
+      event.currentTarget.children[1].classList.remove('show');
+    }
+    console.log(currentButton);
+    console.log(currentTargetUl);
+    // setShowList();
   };
 
+  // 사이드메뉴 로그아웃 시
   const removeCookie = () => {
     removeAuthorityCookie('accessToken');
   };
@@ -83,138 +37,81 @@ export function Header() {
     navigate('/contentlist');
   };
 
-  const moveTabPanel = (code: string) => {
-    if (code === 'CNC_Q') {
-      setActiveTab(1);
-      setcreateListCodeValueAtom(code);
-      setContentSeq([]);
-      navigate('/contentlist');
-    } else if (code === 'CNC_W') {
-      setActiveTab(2);
-      setcreateListCodeValueAtom(code);
-      navigate('/contentworksheet');
-    } else if (code === 'CNM_Q') {
-      setActiveTab(1);
-      setcreateListCodeValueAtom(code);
-      setContentSeq([]);
-      navigate('/managementlist');
-    } else if (code === 'CNM_T') {
-      setActiveTab(2);
-      setcreateListCodeValueAtom(code);
-      navigate('/managementtree');
-    } else if (code === 'OPM_M') {
-      setActiveTab(1);
-      setcreateListCodeValueAtom(code);
-      navigate('/operationmember');
-    } else if (code === 'OPM_R') {
-      setActiveTab(2);
-      setcreateListCodeValueAtom(code);
-      navigate('/operationauthority');
-    }
-  };
-
   useEffect(() => {
+    // 사이드메뉴
     if (!getAuthorityCookie('accessToken')) {
       alert('로그인이 필요합니다.');
       navigate('/login');
     }
   }, []);
 
-  useEffect(() => {
-    mountCount++;
-    setDidMount(true);
-  }, []);
-
-  useEffect(() => {
-    if (didMount) {
-      getAuthorityMenu({ setMenuValue });
-    }
-  }, [didMount, setcreateListCodeValueAtom]);
+  const mainMenuList = [
+    {
+      firstTItle: '콘텐츠 제작',
+      tabIndex: 1,
+      menuList: [
+        { title: '문항', link: '/contentlist', tabIndex: 2 },
+        { title: '학습지', link: '/contentworksheet', tabIndex: 3 },
+      ],
+    },
+    {
+      firstTItle: '콘텐츠 관리',
+      tabIndex: 4,
+      menuList: [
+        { title: '문항', link: '/managementlist', tabIndex: 5 },
+        { title: '문항 트리 구조', link: '/managementtree', tabIndex: 6 },
+      ],
+    },
+    {
+      firstTItle: '운영관리',
+      tabIndex: 7,
+      menuList: [
+        { title: '회원관리', link: '/operationmember', tabIndex: 8 },
+        { title: '권한관리', link: '/operationauthority', tabIndex: 9 },
+      ],
+    },
+  ];
 
   return (
     <Container>
-      <IconWrapper onClick={moveMainpage}>
+      <IconWrapper onClick={moveMainpage} tabIndex={0}>
         <AccountBalanceIcon
           style={{ fontSize: '50px', color: `${COLOR.PRIMARY}` }}
         />
       </IconWrapper>
 
-      <NavBarWrapper
-        onMouseEnter={() => {
-          setValue('');
-        }}
-        onMouseLeave={() => {
-          setValue('');
-        }}
-      >
-        <Box sx={{ typography: 'body1' }}>
-          <TabContext value={value}>
-            <Box sx={{ borderColor: 'divider' }}>
-              <TabList>
-                {menuValue?.map((el, i) => (
-                  <Tab
-                    key={i}
-                    label={el.name}
-                    value={el.seq}
-                    style={{ fontSize: '20px', fontWeight: 'bold' }}
-                    onMouseEnter={() => {
-                      openTabMenu(el.seq.toString());
-                      setIsMenuVisible(true);
-                    }}
-                  />
-                ))}
-              </TabList>
-            </Box>
-            <NavMenuWrapper>
-              {menuValue?.map((el, i) => (
-                <PanelWrapper key={i}>
-                  {isMenuVisible && (
-                    <EachPanelWrapper
-                      onMouseLeave={() => {
-                        setValue('');
-                      }}
-                    >
-                      {el?.children.map((li) => (
-                        <TabPanelWrapper
-                          key={li.name}
-                          onClick={(e) => {
-                            moveTabPanel(li.code);
-                          }}
-                        >
-                          <TabPanel
-                            className="hover-effect"
-                            value={li.seq.toString()}
-                            style={{
-                              marginTop: '10px',
-                              marginBottom: '10px',
-                              padding: '0',
-                              transition: 'border-bottom 0.3s',
-                            }}
-                          >
-                            {li.name}
-                          </TabPanel>
-                        </TabPanelWrapper>
-                      ))}
-                    </EachPanelWrapper>
-                  )}
-                </PanelWrapper>
+      {/* 메인 메뉴 */}
+      <NavBarWrapper>
+        {mainMenuList.map((menu) => (
+          <button
+            type="button"
+            key={menu.firstTItle}
+            tabIndex={menu.tabIndex}
+            onClick={(event) => handleShowList(event)}
+            onMouseEnter={(event) => handleShowList(event)}
+            onMouseLeave={(event) => handleShowList(event)}
+          >
+            <strong>{menu.firstTItle}</strong>
+
+            <ul className={`${menu.tabIndex}`}>
+              {menu.menuList.map((list) => (
+                <li key={list.title}>
+                  <Link to={list.link} tabIndex={list.tabIndex}>
+                    {list.title}
+                  </Link>
+                </li>
               ))}
-            </NavMenuWrapper>
-          </TabContext>
-        </Box>
+            </ul>
+          </button>
+        ))}
       </NavBarWrapper>
 
+      {/* 사이드메뉴 */}
       <SideMenuWrapper>
-        <Link color="inherit" href="/preparing">
-          가이드
-        </Link>
-        <Link color="inherit" href="/preparing">
-          고객센터
-        </Link>
-        <Link color="inherit" href="/mypage">
-          마이페이지
-        </Link>
-        <Link color="inherit" href="/login" onClick={removeCookie}>
+        <Link to="/preparing">가이드</Link>
+        <Link to="/preparing">고객센터</Link>
+        <Link to="/mypage">마이페이지</Link>
+        <Link to="/login" onClick={removeCookie}>
           로그아웃
         </Link>
       </SideMenuWrapper>
@@ -231,10 +128,6 @@ const Container = styled.div`
   border-bottom: 1px solid ${COLOR.SECONDARY};
 `;
 
-const Wrapper = styled.div`
-  /* padding: 0px 20px; */
-`;
-
 const IconWrapper = styled.div`
   width: 50px;
   display: flex;
@@ -247,38 +140,70 @@ const NavBarWrapper = styled.nav`
   display: flex;
   align-items: center;
   flex: 1 0 0;
-  z-index: 1;
   font-size: 20px;
-`;
 
-const NavMenuWrapper = styled.div`
-  display: flex;
-  position: absolute;
-`;
+  > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 20px;
+    border: none;
+    background-color: transparent;
+    position: relative;
+    transition: all 0.5s;
+    z-index: 1;
 
-const PanelWrapper = styled.div`
-  width: 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
+    &:hover,
+    :active {
+      > strong {
+        color: ${COLOR.PRIMARY};
+      }
+    }
 
-const EachPanelWrapper = styled.div`
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-`;
+    cursor: pointer;
+    > strong {
+      font-size: 20px;
+      color: ${COLOR.DARK_GRAY};
+    }
 
-const TabPanelWrapper = styled.div`
-  width: 160px;
-  display: flex;
-  justify-content: center;
-  cursor: pointer;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: white;
-    border-radius: 5px;
+    ul {
+      display: none;
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #fff;
+      border: 1px solid ${COLOR.LIGHT_GRAY};
+      border-radius: 5px;
+
+      &.show {
+        display: block;
+      }
+
+      li {
+        width: 140px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        a {
+          font-size: 14px;
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          color: ${COLOR.DARK_GRAY};
+          transition: all 0.1s;
+
+          &:hover {
+            background-color: ${COLOR.HOVER};
+          }
+        }
+      }
+    }
   }
 `;
 
