@@ -36,8 +36,6 @@ export function Header() {
     event.currentTarget.parentElement?.parentElement?.classList.remove('show');
   };
 
-  useEffect(() => {}, []);
-
   // 사이드메뉴 로그아웃 시
   const removeCookie = () => {
     removeAuthorityCookie('accessToken');
