@@ -18,7 +18,6 @@ import {
   memberKeyValueAtom,
 } from '../../state/memberAtom';
 import { alertBoolAtom, pageAtom, totalPageAtom } from '../../state/utilAtom';
-import { createListCodeValueAtom } from '../../state/valueAtom';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
 import { PaginationBox } from '../molecules/pagination/Pagination';
 
@@ -41,7 +40,11 @@ type memberListProps = {
   enabled: boolean;
 };
 
-export function MemberTable() {
+export function MemberTable({
+  searchMemberList,
+}: {
+  searchMemberList: memberListProps[];
+}) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [memberList, setMemberList] = useState<memberListProps[]>([]);
   const setKeyValue = useSetRecoilState(memberKeyValueAtom);
@@ -124,8 +127,20 @@ export function MemberTable() {
   }, []);
 
   useEffect(() => {
+    if (searchMemberList) {
+      setMemberList(searchMemberList);
+    }
+  }, [searchMemberList]);
+
+  useEffect(() => {
     if (didMount) {
-      getMemberList({ setMemberList, settotalPage, page, size, enabled });
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        page,
+        size,
+        enabled,
+      });
     }
   }, [didMount, relode, setMemberList, page]);
 

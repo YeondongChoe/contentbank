@@ -162,7 +162,8 @@ type getMemberListProps = {
   page: number;
   size: number;
   settotalPage: (result: number) => void;
-  enabled: string | undefined;
+  enabled?: string | undefined;
+  searchValue?: string | undefined;
 };
 
 /** 회원리스트 가져오는 API*/
@@ -172,10 +173,13 @@ export const getMemberList = async ({
   page,
   size,
   enabled,
+  searchValue,
 }: getMemberListProps) => {
   await authInstance
     .get(
-      `/auth?keyword=&page=${page}&size=${size}&enabledType=${enabled || ''}`,
+      `/auth?keyword=${
+        searchValue || ''
+      }&page=${page}&size=${size}&enabledType=${enabled || ''}`,
     )
     .then((response) => {
       handleAuthorizationRenewal(response);
