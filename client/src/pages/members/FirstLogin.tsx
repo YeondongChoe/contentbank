@@ -32,10 +32,11 @@ export function FirstLogin() {
           onClick={logout}
           display="space-evenly"
           width="750px"
-          inputwidth="550px"
+          inputwidth="600px"
           btnwidth="250px"
           height="60px"
           padding="40px 0px 0px 0px"
+          buttonfontsize="16px"
         />
       </Wrapper>
     </Container>

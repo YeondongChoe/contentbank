@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
-import { MmlNode } from 'mathjax-full/js/core/MmlTree/MmlNode';
 import styled from 'styled-components';
 
 import { ItemQuestionType } from '../../types';

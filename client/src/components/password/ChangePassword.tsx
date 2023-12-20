@@ -1,12 +1,11 @@
 import * as React from 'react';
 
-import { Button } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
-import { Input, Label } from '../../components';
+import { Input, Label, Button } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
 
 type passwordProps = {
@@ -150,39 +149,39 @@ export function ChangePassword({
           $padding={padding as string}
         >
           <ButtonWapper>
-            <StyledCancelBtn
+            <Button
+              onClick={onClick}
               width={btnwidth}
               height={height}
-              buttonfontsize={buttonfontsize}
-              variant="outlined"
-              onClick={onClick}
-              sx={{ backgroundColor: 'white' }}
+              fontSize={buttonfontsize}
+              $borderRadius="10px"
+              $border
             >
-              취소
-            </StyledCancelBtn>
+              <span>취소</span>
+            </Button>
           </ButtonWapper>
           {PasswordConfirm && isValid ? (
             <ButtonWapper>
-              <StyledConfirmBtn
+              <Button
                 width={btnwidth}
                 height={height}
-                buttonfontsize={buttonfontsize}
-                variant="contained"
+                fontSize={buttonfontsize}
+                $borderRadius="10px"
               >
-                확인
-              </StyledConfirmBtn>
+                <span>확인</span>
+              </Button>
             </ButtonWapper>
           ) : (
             <ButtonWapper>
-              <StyledNomalBtn
+              <Button
                 width={btnwidth}
                 height={height}
-                variant="outlined"
-                buttonfontsize={buttonfontsize}
-                sx={{ backgroundColor: 'white' }}
+                fontSize={buttonfontsize}
+                $borderRadius="10px"
+                $border
               >
-                확인
-              </StyledNomalBtn>
+                <span>확인</span>
+              </Button>
             </ButtonWapper>
           )}
         </ButtonGroup>
@@ -205,22 +204,18 @@ const InputWapper = styled.div<{ width: string }>`
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
 const SuccessMessage = styled.div`
-  width: 750px;
   font-size: 12px;
   color: green;
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
-  padding-right: 25px;
 `;
 const ErrorMessage = styled.div`
-  width: 750px;
   font-size: 12px;
   color: red;
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
-  margin-right: 10px;
 `;
 
 const ButtonGroup = styled.div<{
@@ -237,43 +232,4 @@ const ButtonGroup = styled.div<{
 const ButtonWapper = styled.button`
   border: none;
   background-color: transparent;
-`;
-
-type styleProp = {
-  width?: string;
-  height?: string;
-  buttonfontsize?: string;
-};
-
-const StyledCancelBtn = styled(Button)<styleProp>`
-  && {
-    width: ${({ width }) => (width ? ` ${width};` : '100%')};
-    height: ${({ height }) => (height ? ` ${height};` : '50px')};
-    font-size: ${({ buttonfontsize }) =>
-      buttonfontsize ? ` ${buttonfontsize};` : '16px'};
-    border-radius: 10px;
-    line-height: normal;
-  }
-`;
-
-const StyledConfirmBtn = styled(Button)<styleProp>`
-  && {
-    width: ${({ width }) => (width ? ` ${width};` : '100%')};
-    height: ${({ height }) => (height ? ` ${height};` : '50px')};
-    font-size: ${({ buttonfontsize }) =>
-      buttonfontsize ? ` ${buttonfontsize};` : '16px'};
-    border-radius: 10px;
-    line-height: normal;
-  }
-`;
-
-const StyledNomalBtn = styled(Button)<styleProp>`
-  && {
-    width: ${({ width }) => (width ? ` ${width};` : '100%')};
-    height: ${({ height }) => (height ? ` ${height};` : '50px')};
-    font-size: ${({ buttonfontsize }) =>
-      buttonfontsize ? ` ${buttonfontsize};` : '16px'};
-    border-radius: 10px;
-    line-height: normal;
-  }
 `;

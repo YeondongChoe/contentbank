@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { Button } from '@mui/material';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
-import { Input, Label } from '../../components';
+import { Input, Label, Button } from '../../components';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { alertBoolAtom } from '../../state/utilAtom';
@@ -107,22 +106,39 @@ export function Mypage() {
               )}
               {!isNameEdit && !isPasswordEdit && (
                 <ButtonGroup>
-                  <StyledEditBtn variant="outlined" onClick={selectNameEdition}>
-                    수정
-                  </StyledEditBtn>
+                  <Button
+                    onClick={() => selectNameEdition()}
+                    width="80px"
+                    height="25px"
+                    fontSize="13px"
+                    $borderRadius="15px"
+                    $border
+                  >
+                    <span>수정</span>
+                  </Button>
                 </ButtonGroup>
               )}
               {isNameEdit && !isPasswordEdit && (
                 <ButtonGroup>
-                  <StyledCancelBtn
-                    variant="outlined"
+                  <Button
                     onClick={selectNameEdition}
+                    width="64px"
+                    height="25px"
+                    fontSize="13px"
+                    $borderRadius="15px"
+                    $border
                   >
-                    취소
-                  </StyledCancelBtn>
-                  <StyledSaveBtn variant="contained" onClick={saveName}>
-                    저장
-                  </StyledSaveBtn>
+                    <span>취소</span>
+                  </Button>
+                  <Button
+                    onClick={saveName}
+                    width="64px"
+                    height="25px"
+                    fontSize="13px"
+                    $borderRadius="15px"
+                  >
+                    <span>저장</span>
+                  </Button>
                 </ButtonGroup>
               )}
             </InputWrapper>
@@ -134,12 +150,16 @@ export function Mypage() {
               <InputWrapper>
                 <Label value="비밀번호" fontSize="14px" width="100px" />
                 <ButtonWrapper>
-                  <StyledEditBtn
-                    variant="outlined"
+                  <Button
                     onClick={selectPasswordEdit}
+                    width="80px"
+                    height="25px"
+                    fontSize="13px"
+                    $borderRadius="15px"
+                    $border
                   >
-                    재설정
-                  </StyledEditBtn>
+                    <span>재설정</span>
+                  </Button>
                 </ButtonWrapper>
               </InputWrapper>
             )}
@@ -162,7 +182,7 @@ export function Mypage() {
               buttonfontsize="13px"
               labelfontsize="14px"
               placeholdersize="12px"
-              display="flex-start"
+              display="flex-end"
             />
           </PasswordWrapper>
         )}
@@ -240,6 +260,7 @@ const Information = styled.p`
 `;
 const ButtonGroup = styled.div`
   border: none;
+
   background-color: transparent;
   display: flex;
   justify-content: flex-end;
@@ -250,33 +271,4 @@ const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex: 0 0 50%;
-`;
-const StyledEditBtn = styled(Button)`
-  && {
-    width: 80px;
-    height: 25px;
-    border-radius: 15px;
-    font-size: 13px;
-    line-height: normal;
-  }
-`;
-
-const StyledCancelBtn = styled(Button)`
-  && {
-    height: 25px;
-    border-radius: 15px;
-    font-size: 13px;
-    line-height: normal;
-  }
-`;
-
-const StyledSaveBtn = styled(Button)`
-  && {
-    height: 25px;
-    border-radius: 15px;
-    font-size: 13px;
-    color: white;
-    font-weight: bolder;
-    line-height: normal;
-  }
 `;

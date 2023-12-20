@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import { Button } from '@mui/material';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { Button } from '../../components';
 import { updateBoolAtom } from '../../state/utilAtom';
 
 export function FileUploadingPopup() {
@@ -17,9 +17,15 @@ export function FileUploadingPopup() {
   return (
     <Container>
       <div>문항 파일 등록 아이텍솔루션</div>
-      <StyledEditBtn variant="contained" onClick={submitSave}>
-        {isEdit ? '수정' : '저장'}
-      </StyledEditBtn>
+      <Button
+        buttonType="button"
+        onClick={submitSave}
+        height={'25px'}
+        width={'70px'}
+        fontSize="12px"
+      >
+        <span>{isEdit ? '수정' : '저장'}</span>
+      </Button>
     </Container>
   );
 }
@@ -30,14 +36,4 @@ const Container = styled.div`
   padding: 20px;
   border: 1px solid #a3aed0;
   border-top: none;
-`;
-
-const StyledEditBtn = styled(Button)`
-  && {
-    width: 70px;
-    height: 25px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;
