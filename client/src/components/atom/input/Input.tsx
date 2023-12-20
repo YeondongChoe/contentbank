@@ -10,7 +10,7 @@ type InputProps = {
   placeholder?: string;
   placeholderSize?: string;
   value?: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   onClick?: () => void;
   padding?: string;
   width?: string;
@@ -67,7 +67,7 @@ export function Input({
         onChange={onChange}
         ref={innerRef}
       ></Component>
-      <ErrorMessage>{errorMessage}</ErrorMessage>
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </>
   );
 }
@@ -96,10 +96,11 @@ const Component = styled.input<InputStyleProps>`
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   border-radius: ${({ $borderRadius }) =>
     $borderRadius ? `${$borderRadius};` : '0px'};
+
   ${({ disabled }) => disabled && 'opacity: 0.5;'};
   ${(props) =>
     props.$border === 'normal'
-      ? `border: 1px solid ${COLOR.BORDER_GRAY};`
+      ? `border: 1px solid rgba(0, 0, 0, 0.23);`
       : props.$border === 'black'
       ? `border: none; border-bottom: 1px solid ${COLOR.BLACK};`
       : 'border: none;'}

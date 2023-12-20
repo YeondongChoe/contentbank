@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { Button } from '../../components';
 import { removeAuthorityCookie } from '../../utils/cookies';
 
 export function Relogin() {
@@ -20,13 +20,16 @@ export function Relogin() {
         <Discription>새로운 비밀번호로 변경이 완료되었습니다.</Discription>
       </DiscriptionWrapper>
       <ButtonWrapper>
-        <StyledLoginBtn
-          variant="outlined"
+        <Button
           onClick={moveLogin}
-          sx={{ backgroundColor: 'white' }}
+          width="250px"
+          height="60px"
+          fontSize="18px"
+          $borderRadius="10px"
+          $border
         >
-          로그인 하러 가기
-        </StyledLoginBtn>
+          <span>로그인 하러 가기</span>
+        </Button>
       </ButtonWrapper>
     </Container>
   );
@@ -57,13 +60,4 @@ const Discription = styled.p`
 const ButtonWrapper = styled.div`
   border: none;
   background-color: transparent;
-`;
-const StyledLoginBtn = styled(Button)`
-  && {
-    width: 250px;
-    height: 60px;
-    border-radius: 10px;
-    font-size: 18px;
-    line-height: normal;
-  }
 `;

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { Button } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -11,6 +10,8 @@ import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
+import { Button } from '../../components/atom';
+import { COLOR } from '../../components/contents/COLOR';
 import {
   editCreateContentBool,
   editCreateListBool,
@@ -225,9 +226,16 @@ export function Authority() {
                 )}
               />
             </InputWrapper>
-            <StyledSaveBtn variant="contained" onClick={openUpdateAlert}>
-              {isClickedName ? '수정' : '저장'}
-            </StyledSaveBtn>
+            <Button
+              buttonType="button"
+              onClick={openUpdateAlert}
+              height={'30px'}
+              width={'80px'}
+              fontSize="12px"
+              $border
+            >
+              <span>{isClickedName ? '수정' : '저장'}</span>
+            </Button>
           </SearchBarWrapper>
           <AuthorityListWrapper>
             {authorityList?.map((el, i) => (
@@ -288,14 +296,14 @@ const Container = styled.div`
 const Wrapper = styled.div`
   height: 500px;
   display: flex;
-  border-top: 1px solid #a3aed0;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
   gap: 40px;
 `;
 const TreeWrapper = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-  border-right: 1px solid #a3aed0;
+  border-right: 1px solid ${COLOR.BORDER_BLUE};
   padding: 10px;
 `;
 const TreeMenuWrapper = styled.div`
@@ -327,7 +335,7 @@ const InputWrapper = styled.div`
 const AuthorityListWrapper = styled.div`
   width: 400px;
   height: 400px;
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -340,9 +348,9 @@ const AuthorityWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   &:hover {
-    background-color: #422afb;
-    border-top: 1px solid #a3aed0;
-    border-bottom: 1px solid #a3aed0;
+    background-color: ${COLOR.SELECT_HOVER};
+    border-top: 1px solid ${COLOR.BORDER_BLUE};
+    border-bottom: 1px solid ${COLOR.BORDER_BLUE};
     color: white;
   }
 `;
@@ -352,13 +360,4 @@ const AuthorityName = styled.div`
 const DeleteIconWrapper = styled.div`
   display: flex;
   cursor: pointer;
-`;
-const StyledSaveBtn = styled(Button)`
-  && {
-    width: 80px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;
