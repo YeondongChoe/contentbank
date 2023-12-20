@@ -95,14 +95,11 @@ export function ContentsList() {
 }
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
 `;
 
 const HeadWrapper = styled.div`
   width: 100%;
-  padding-bottom: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;

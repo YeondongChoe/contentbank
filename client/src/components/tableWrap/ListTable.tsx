@@ -1,15 +1,19 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
-import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getQuestionList } from '../../api/getAxios';
 import { postFavoriteQuestion } from '../../api/postAxios';
 import { putChangeServiced } from '../../api/putAxios';
-import { Select, Button, DropDown, DropDownItemProps } from '../../components';
+import {
+  Select,
+  Button,
+  DropDown,
+  DropDownItemProps,
+  Table,
+} from '../../components';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
@@ -132,7 +136,7 @@ export function ListTable() {
     setContent((prevContent) => [...prevContent, value]);
   };
 
-  const category = [
+  const selectCategory = [
     {
       id: '1',
       label: '개정과정',
@@ -274,6 +278,7 @@ export function ListTable() {
     isFavorited,
   ]);
 
+  // 드롭다운 버튼 기본 값설정
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const DropDownList: DropDownItemProps[] = [
     {
@@ -294,11 +299,28 @@ export function ListTable() {
     },
   ];
 
+  // 테이블 기본 값설정
+  const colWidth = [
+    { width: '5%' },
+    { width: '5%' },
+    { width: '280px' },
+    { width: '15%' },
+    { width: '5%' },
+    { width: '5%' },
+    { width: '5%' },
+    { width: '10%' },
+    { width: '10%' },
+    { width: '10%' },
+    { width: '10%' },
+    { width: '15%' },
+    { width: '5%' },
+  ];
+
   return (
     <>
       <Container>
         <SelectWrapper>
-          {category.map((el) => (
+          {selectCategory.map((el) => (
             <Select
               width={'130px'}
               defaultValue={el.label}
@@ -321,8 +343,10 @@ export function ListTable() {
             height="35px"
             fontSize="14px"
             $border
-            onClick={submitChangingService}
-            disabled={true}
+            onClick={() => {
+              // submitChangingService();
+            }}
+            disabled={false}
           >
             활성화 / 비활성화
           </Button>
@@ -330,115 +354,9 @@ export function ListTable() {
       </Container>
 
       <TableWrapper>
-        <Table>
-          <Thead>
-            <Tr>
-              <Th rowSpan={2} style={{ width: '40px' }}>
-                <input
-                  type="checkbox"
-                  onChange={selectAll}
-                  checked={isAllSelected}
-                ></input>
-              </Th>
-              <Th rowSpan={2} style={{ width: '40px' }}></Th>
-              <Th rowSpan={2} style={{ width: '350px' }}>
-                문항코드
-              </Th>
-              <Th rowSpan={2} style={{ width: '40px' }}>
-                개정과정
-              </Th>
-              <Th rowSpan={2} style={{ width: '40px' }}>
-                학교
-              </Th>
-              <Th rowSpan={2} style={{ width: '40px' }}>
-                학년
-              </Th>
-              <Th rowSpan={2} style={{ width: '40px' }}>
-                학기
-              </Th>
-              <Th rowSpan={2} style={{ width: '200px' }}>
-                대분류
-              </Th>
-              <Th rowSpan={2} style={{ width: '250px' }}>
-                중분류
-              </Th>
-              <Th rowSpan={2} style={{ width: '40px' }}>
-                문항타입
-              </Th>
-              <Th colSpan={3}>업로드</Th>
-            </Tr>
-            <Tr>
-              <Th style={{ width: '60px' }}>작성자</Th>
-              <Th style={{ width: '80px' }}>일자</Th>
-              <Th style={{ width: '40px' }}>오픈여부</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {questionList.map((content, i) => (
-              <Tr key={i}>
-                <Td style={{ height: '10px', textAlign: 'center' }}>
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.includes(content.contentSeq)}
-                    onChange={() => selectRow(content.contentSeq)}
-                  ></input>
-                </Td>
-                <Td style={{ textAlign: 'center' }}>
-                  <div
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => addFavoriteQuestion(content.questionSeq)}
-                  >
-                    {content.favorited ? (
-                      <BookmarkTwoToneIcon fontSize="small" />
-                    ) : (
-                      <BookmarkBorderTwoToneIcon fontSize="small" />
-                    )}
-                  </div>
-                </Td>
-                <Td style={{ textAlign: 'center' }}>{content.questionCode}</Td>
-                <Td style={{ textAlign: 'center' }}>{content.curriculum}</Td>
-                <Td style={{ textAlign: 'center' }}>{content.schoolLevel}</Td>
-                <Td style={{ textAlign: 'center' }}>{content.schoolYear}</Td>
-                <Td style={{ textAlign: 'center' }}>{content.semester}</Td>
-                <Td style={{ textAlign: 'center' }}>
-                  <div
-                    style={{
-                      maxWidth: '200px',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {content.unitMajor}
-                  </div>
-                </Td>
-                <Td style={{ textAlign: 'center' }}>
-                  <div
-                    style={{
-                      maxWidth: '250px',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {content.unitMiddle}
-                  </div>
-                </Td>
-                <Td style={{ textAlign: 'center' }}>{content.questionType}</Td>
-                <Td style={{ textAlign: 'center' }}>
-                  {content.questionCreatedByName}
-                </Td>
-                <Td style={{ textAlign: 'center' }}>
-                  {content.questionCreatedDate}
-                </Td>
-                <Td style={{ textAlign: 'center' }}>
-                  {content.serviced ? 'Y' : 'N'}
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
+        <Table list={questionList} colWidth={colWidth} />
       </TableWrapper>
+
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isDeleteAuthority && (
         <SelectAlert
@@ -475,34 +393,5 @@ const ButtonWrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  height: 400px;
-  overflow: auto;
-`;
-
-const Table = styled.table`
-  border-collapse: collapse;
-  background-color: white;
-  height: 10px;
-`;
-
-const Thead = styled.thead`
-  font-size: medium;
-`;
-
-const Tbody = styled.tbody`
-  font-size: small;
-`;
-
-const Tr = styled.tr`
-  height: 30px;
-`;
-
-const Th = styled.th`
-  border: 1px solid #a3aed0;
-  color: #a3aed0;
-`;
-const Td = styled.td`
-  border: 1px solid #a3aed0;
+  margin-bottom: 40px;
 `;

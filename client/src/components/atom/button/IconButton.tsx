@@ -23,6 +23,7 @@ type IconButtonProps = {
   rightIconSrc?: React.ReactElement;
   textAlign?: 'center' | 'left' | 'right';
   $borderNone?: boolean;
+  $iconOlny?: boolean;
 };
 
 export function IconButton({
@@ -43,6 +44,7 @@ export function IconButton({
   $borderRadius,
   textAlign,
   $borderNone,
+  $iconOlny,
 }: IconButtonProps) {
   return (
     <Component
@@ -59,6 +61,7 @@ export function IconButton({
       fontSize={fontSize}
       $textAlign={textAlign}
       $borderNone={$borderNone}
+      $iconOlny={$iconOlny}
     >
       {leftIconSrc && <LeftIconWrapper>{leftIconSrc}</LeftIconWrapper>}
       <span> {children ? children : text}</span>
@@ -77,6 +80,9 @@ type ButtonStyleProps = {
   $borderRadius?: string;
   $textAlign?: 'center' | 'left' | 'right';
   $borderNone?: boolean;
+  leftIconSrc?: boolean;
+  rightIconSrc?: boolean;
+  $iconOlny?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -85,7 +91,8 @@ const Component = styled.button<ButtonStyleProps>`
   background-color: white;
   position: relative;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '15px')};
-  padding-right: 20px;
+  ${({ rightIconSrc }) => rightIconSrc && `padding-right: 20px;`}
+  ${({ leftIconSrc }) => leftIconSrc && `padding-left: 20px;`}
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '50px')};
