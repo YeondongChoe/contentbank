@@ -304,8 +304,8 @@ export function ListTable() {
     { width: '5%' },
     { width: '5%' },
     { width: '280px' },
-    { width: '15%' },
-    { width: '5%' },
+    { width: '10%' },
+    { width: '10%' },
     { width: '5%' },
     { width: '5%' },
     { width: '10%' },
@@ -393,5 +393,5 @@ const ButtonWrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  margin-bottom: 40px;
+  min-height: 480px;
 `;
