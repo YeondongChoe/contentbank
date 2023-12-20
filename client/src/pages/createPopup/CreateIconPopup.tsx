@@ -108,7 +108,7 @@ const Overlay = styled.div`
   z-index: 1;
 `;
 const Container = styled.div`
-  max-width: 80%;
+  max-width: 1024px;
   min-width: 800px;
   padding: 20px;
   border: 1px solid #a3aed0;

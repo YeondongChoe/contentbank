@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import { Button } from '@mui/material';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { Button } from '../../components';
+import { COLOR } from '../../components/contents/COLOR';
 import { updateBoolAtom } from '../../state/utilAtom';
 
 export function ContentCreatingPopup() {
@@ -17,27 +18,24 @@ export function ContentCreatingPopup() {
   return (
     <Container>
       <div>문항 신규 제작 아이텍솔루션</div>
-      <StyledEditBtn variant="contained" onClick={submitSave}>
-        {isEdit ? '수정' : '저장'}
-      </StyledEditBtn>
+      <Button
+        buttonType="button"
+        onClick={submitSave}
+        height={'25px'}
+        width={'70px'}
+        fontSize="12px"
+      >
+        <span>{isEdit ? '수정' : '저장'}</span>
+      </Button>
     </Container>
   );
 }
 
 const Container = styled.div`
-  max-width: 80%;
+  max-width: 100%;
   min-width: 800px;
   padding: 20px;
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   height: 750px;
-`;
-const StyledEditBtn = styled(Button)`
-  && {
-    width: 70px;
-    height: 25px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;

@@ -3,14 +3,13 @@ import { useState } from 'react';
 
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { Button } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
-import { Input, Label } from '../../components';
+import { Input, Label, Button } from '../../components';
 import { COLOR } from '../../components/contents/COLOR';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { alertBoolAtom } from '../../state/utilAtom';
@@ -113,9 +112,16 @@ export function Login() {
             </SaveIdWrapper>
           </InputWrapper>
           <SaveButtonWrapper>
-            <StyledBtn variant="contained" size="large">
-              로그인
-            </StyledBtn>
+            <Button
+              buttonType="submit"
+              width="400px"
+              height="50px"
+              fontSize="17px"
+              $borderRadius="10px"
+              onClick={() => {}}
+            >
+              <span>로그인</span>
+            </Button>
           </SaveButtonWrapper>
         </Form>
         <NoticeMessage>

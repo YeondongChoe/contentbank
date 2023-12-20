@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { COLOR } from '../../components/contents/COLOR';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
@@ -111,7 +112,7 @@ const TapMenuWrapper = styled.div`
 const TapManu = styled.div<{ choiced: number }>`
   width: 150px;
   height: 40px;
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -144,5 +145,5 @@ const CloseButtonWrapper = styled.div`
 const ContentBox = styled.div`
   height: 750px;
   margin-left: 34px;
-  border-top: 1px solid #a3aed0;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
 `;

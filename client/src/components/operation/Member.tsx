@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-import { Button } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
+import { Button } from '../../components/atom';
+import { COLOR } from '../../components/contents/COLOR';
 import { Search } from '../../components/molecules';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { pageAtom, totalPageAtom } from '../../state/utilAtom';
@@ -70,9 +71,15 @@ export function Member() {
           }}
           placeholder="이름, 권한 검색"
         />
-        <StyledUplodeBtn variant="contained" onClick={openRegisterPopup}>
-          + 아이디 만들기
-        </StyledUplodeBtn>
+        <Button
+          buttonType="button"
+          onClick={openRegisterPopup}
+          height={'35px'}
+          width={'150px'}
+          $margin={'0 0 0 10px'}
+        >
+          <span>아이디만들기</span>
+        </Button>
       </Wrapper>
       <ContentWrapper>
         <MemberTable searchMemberList={memberList} />
@@ -96,33 +103,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-`;
-const InputWrapper = styled.div`
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border-radius: 5px;
-  border: 1px solid white;
-  box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-`;
-const IconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding-right: 10px;
-  cursor: pointer;
 `;
 const ContentWrapper = styled.div`
-  border-top: 1px solid #a3aed0;
-`;
-const StyledUplodeBtn = styled(Button)`
-  && {
-    width: 130px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
 `;

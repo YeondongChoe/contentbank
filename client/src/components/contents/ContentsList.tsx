@@ -57,7 +57,6 @@ export function ContentsList() {
           width={'250px'}
           setTabVeiw={setTabVeiw}
         />
-
         {/* 테이블 상단 검색창 + 문항 업로드 버튼 */}
         <InputWrapper>
           <Search

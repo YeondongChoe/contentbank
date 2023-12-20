@@ -15,4 +15,5 @@ export const COLOR = {
   SUCCESS: '#008000',
   BORDER_GRAY: '#e9ecef',
   BORDER_BLUE: '#a3aed0',
+  SELECT_HOVER: '#422afb',
 };
