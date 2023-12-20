@@ -6,10 +6,10 @@ import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Select, Button } from '..';
 import { getQuestionList } from '../../api/getAxios';
 import { postFavoriteQuestion } from '../../api/postAxios';
 import { putChangeServiced } from '../../api/putAxios';
+import { Select, Button, DropDown, DropDownItemProps } from '../../components';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,
@@ -51,7 +51,6 @@ type questionListProps = {
 };
 
 export function ListTable() {
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   /**문항 리스트 관련 코드 */
@@ -275,6 +274,26 @@ export function ListTable() {
     isFavorited,
   ]);
 
+  const [showDropDown, setShowDropDown] = useState<boolean>(false);
+  const DropDownList: DropDownItemProps[] = [
+    {
+      key: 'ListTabl/DropDownList수정',
+      title: '수정',
+      onClick: () => {
+        openCreateEditFilePopup();
+        setShowDropDown(false);
+      },
+    },
+    {
+      key: 'ListTable/DropDownList복제 후 수정',
+      title: '복제 후 수정',
+      onClick: () => {
+        openCreateEditFilePopup();
+        setShowDropDown(false);
+      },
+    },
+  ];
+
   return (
     <>
       <Container>
@@ -291,148 +310,12 @@ export function ListTable() {
         </SelectWrapper>
 
         <ButtonWrapper>
-          {/* {MenuCode === 'CNM_Q' ? (
-            <>
-              <EachButtonWrapper>
-                <StyledEditBtn
-                  disabled={selectedRows.length === 0}
-                  variant="outlined"
-                  sx={{ backgroundColor: 'white' }}
-                  onClick={openDeleteAlert}
-                >
-                  삭제
-                </StyledEditBtn>
-              </EachButtonWrapper>
-              <EachButtonWrapper>
-                <StyledEditBtn
-                  aria-describedby={id}
-                  disabled={selectedRows.length === 0}
-                  variant="outlined"
-                  sx={{ backgroundColor: 'white' }}
-                  onClick={openPopover}
-                >
-                  수정
-                </StyledEditBtn>
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={closePopover}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  sx={{ marginTop: '5px' }}
-                >
-                  <PopoverMenu
-                    onClick={() => {
-                      closePopover();
-                      openmanagementEditFilePopup();
-                    }}
-                  >
-                    수정
-                  </PopoverMenu>
-                  <PopoverMenu
-                    onClick={() => {
-                      closePopover();
-                      openmanagementEditFilePopup();
-                    }}
-                  >
-                    복제 후 수정
-                  </PopoverMenu>
-                </Popover>
-              </EachButtonWrapper>
-            </>
-          ) : (
-            <EachButtonWrapper>
-              <StyledEditBtn
-                aria-describedby={id}
-                disabled={selectedRows.length === 0}
-                variant="outlined"
-                sx={{ backgroundColor: 'white' }}
-                onClick={openPopover}
-              >
-                수정
-              </StyledEditBtn>
-              <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={closePopover}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                sx={{ marginTop: '5px' }}
-              >
-                <PopoverMenu
-                  onClick={() => {
-                    closePopover();
-                    openCreateEditFilePopup();
-                  }}
-                >
-                  수정
-                </PopoverMenu>
-                <PopoverMenu
-                  onClick={() => {
-                    closePopover();
-                    openCreateEditFilePopup();
-                  }}
-                >
-                  복제 후 수정
-                </PopoverMenu>
-              </Popover>
-            </EachButtonWrapper>
-          )} */}
-          {/* <EachButtonWrapper>
-            <StyledActionBtn
-              variant="outlined"
-              disabled={selectedRows.length === 0}
-              sx={{ backgroundColor: 'white' }}
-              onClick={submitChangingService}
-            >
-              활성화/비활성화
-            </StyledActionBtn>
-          </EachButtonWrapper> */}
-          <DropDown>
-            <Button
-              width="100px"
-              height="35px"
-              fontSize="14px"
-              $border
-              onClick={() => {
-                // submitChangingService;
-                setShowDropDown(!showDropDown);
-              }}
-              disabled={false}
-            >
-              수정
-            </Button>
-            {showDropDown && (
-              <DropDownList>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowDropDown(false);
-                      // openCreateEditFilePopup();
-                    }}
-                  >
-                    수정
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowDropDown(false);
-                      // openCreateEditFilePopup();
-                    }}
-                  >
-                    복제 후 수정
-                  </button>
-                </li>
-              </DropDownList>
-            )}
-          </DropDown>
+          <DropDown
+            list={DropDownList}
+            buttonText={'수정'}
+            showDropDown={showDropDown}
+            setShowDropDown={setShowDropDown}
+          ></DropDown>
           <Button
             width="150px"
             height="35px"
@@ -589,48 +472,6 @@ const ButtonWrapper = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 5px;
-`;
-
-// 컴포넌트로 분리처리 해야할수도 있음
-const DropDown = styled.div`
-  position: relative;
-`;
-const DropDownList = styled.ul`
-  width: 120px;
-  position: absolute;
-  top: 38px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  border: 1px solid ${COLOR.SECONDARY};
-  border-radius: 5px;
-  overflow: hidden;
-
-  li {
-    width: 100%;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    button {
-      font-size: 14px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: #fff;
-      color: ${COLOR.GRAY};
-      transition: all 0.1s;
-
-      &:hover {
-        background-color: ${COLOR.HOVER};
-        color: ${COLOR.PRIMARY};
-      }
-    }
-  }
 `;
 
 const TableWrapper = styled.div`
