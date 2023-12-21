@@ -5,7 +5,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../../components/atom';
-import { COLOR } from '../../components/contents/COLOR';
+import { COLOR } from '../../components/constants';
 import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
 import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
 import { ListTable } from '../tableWrap/ListTable';

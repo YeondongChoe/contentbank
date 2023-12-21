@@ -11,7 +11,6 @@ import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
 import { Button } from '../../components/atom';
-import { COLOR } from '../constants/COLOR';
 import {
   editCreateContentBool,
   editCreateListBool,
@@ -33,6 +32,7 @@ import {
   manageAuthorityBoolAtom,
 } from '../../state/authorityAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
+import { COLOR } from '../constants';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
 

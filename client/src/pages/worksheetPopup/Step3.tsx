@@ -6,7 +6,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Input, Label, Button } from '../../components';
-import { COLOR } from '../../components/contents';
+import { COLOR } from '../../components/constants';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
