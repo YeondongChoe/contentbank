@@ -249,7 +249,8 @@ export function MemberTable({
                       <Button
                         buttonType="button"
                         onClick={() => openDetailInformationPopup(member.key)}
-                        height={'32px'}
+                        height={'30px'}
+                        $padding="10px"
                         width={'60px'}
                         fontSize="12px"
                         $border

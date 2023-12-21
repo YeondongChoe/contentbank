@@ -5,7 +5,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { SelectBar } from '../../components/contents/Selectbar';
 import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
 
 import { ContentCategoryChange } from './ContentCategoryChange';
@@ -75,7 +74,8 @@ const Overlay = styled.div`
   z-index: 1;
 `;
 const Container = styled.div`
-  max-width: 80%;
+  max-width: 1024px;
+  width: 100%;
   min-width: 800px;
   padding: 20px;
   border: 1px solid #a3aed0;
@@ -123,5 +123,5 @@ const CloseButtonWrapper = styled.div`
   align-items: center;
 `;
 const ContentBox = styled.div`
-  height: 750px;
+  height: 650px;
 `;

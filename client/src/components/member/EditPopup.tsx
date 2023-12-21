@@ -6,9 +6,6 @@ import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import Textarea from '@mui/joy/Textarea';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-//import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -22,6 +19,7 @@ import {
   putInitPassword,
 } from '../../api/putAxios';
 import { Input, Label } from '../../components';
+import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
@@ -202,17 +200,18 @@ export function EditPopup() {
                       />
                     )}
                   />
-                  <InitButtonWrapper
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
-                    <StyleDuplicateBtn
-                      variant="contained"
+                  <InitButtonWrapper>
+                    <Button
+                      buttonType="button"
                       onClick={clickInitPassword}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'140px'}
+                      fontSize="14px"
+                      $borderRadius="15px"
                     >
-                      비밀번호 초기화
-                    </StyleDuplicateBtn>
+                      <span>비밀번호 초기화</span>
+                    </Button>
                   </InitButtonWrapper>
                 </Box>
                 <Box
@@ -279,23 +278,27 @@ export function EditPopup() {
                   <Notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</Notice>
                 </NoticeWarpper>
                 <ButtonGroup>
-                  <StyleCancelBtn
-                    variant="outlined"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      closePopup();
-                    }}
+                  <Button
+                    buttonType="button"
+                    onClick={closePopup}
+                    $padding="10px"
+                    height={'50px'}
+                    width={'170px'}
+                    fontSize="14px"
+                    $border
                   >
-                    취소
-                  </StyleCancelBtn>
-                  <StyleSaveBtn
-                    variant="contained"
-                    onClick={() => {
-                      submitEdit();
-                    }}
+                    <span>취소</span>
+                  </Button>
+                  <Button
+                    buttonType="button"
+                    onClick={submitEdit}
+                    $padding="10px"
+                    height={'50px'}
+                    width={'170px'}
+                    fontSize="14px"
                   >
-                    수정
-                  </StyleSaveBtn>
+                    <span>수정</span>
+                  </Button>
                 </ButtonGroup>
                 {isInit && (
                   <NoticeAlert title="비밀번호가 초기화 되었습니다." />
@@ -376,29 +379,4 @@ const ButtonGroup = styled.div`
   padding-top: 30px;
   display: flex;
   gap: 10px;
-`;
-const StyleDuplicateBtn = styled(Button)`
-  && {
-    width: 140px;
-    height: 30px;
-    border-radius: 15px;
-    font-size: 14px;
-    line-height: normal;
-  }
-`;
-const StyleCancelBtn = styled(Button)`
-  && {
-    width: 170px;
-    height: 50px;
-    font-size: 14px;
-    line-height: normal;
-  }
-`;
-const StyleSaveBtn = styled(Button)`
-  && {
-    width: 170px;
-    height: 50px;
-    font-size: 14px;
-    line-height: normal;
-  }
 `;

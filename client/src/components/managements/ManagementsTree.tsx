@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Button } from '../../components/atom';
+import { COLOR } from '../../components/contents/COLOR';
 import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
 import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
 import { ListTable } from '../tableWrap/ListTable';
@@ -25,9 +26,16 @@ export function ManagementsTree() {
             히스토리
           </TapMenu>
         </TapWrapper>
-        <StyledUplodeBtn variant="contained" onClick={() => setIsCreate(true)}>
-          문항 정보 트리구조 변경
-        </StyledUplodeBtn>
+        <Button
+          buttonType="button"
+          onClick={() => setIsCreate(true)}
+          $padding="10px"
+          height={'35px'}
+          width={'170px'}
+          fontSize="12px"
+        >
+          <span>문항 정보 트리구조 변경</span>
+        </Button>
       </HeadWrapper>
       <TableWrapper>
         <ListTable />
@@ -58,7 +66,7 @@ const TapWrapper = styled.div`
 
 const TapMenu = styled.div<{ choiced: number }>`
   height: 40px;
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -80,15 +88,5 @@ const TapMenu = styled.div<{ choiced: number }>`
 `;
 
 const TableWrapper = styled.div`
-  border-top: 1px solid #a3aed0;
-`;
-
-const StyledUplodeBtn = styled(Button)`
-  && {
-    width: 170px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
 `;

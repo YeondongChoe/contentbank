@@ -2,10 +2,11 @@ import * as React from 'react';
 
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseIcon from '@mui/icons-material/Close';
-import { Button } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { Input, Label, Button } from '../../components';
+import { COLOR } from '../../components/contents';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
@@ -60,33 +61,122 @@ export function Step3() {
           <WorksheetSettingSection>
             <InputGroup>
               <InputWrapper>
-                <Label>학습지명</Label>
-                <Input placeholder="학습지명을 작성해주세요." />
+                <Label value="학습지명" fontSize="14px" width="120px" />
+                <Input
+                  width="300px"
+                  height="30px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="12px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="학습지명을 작성해주세요."
+                  //value={nameValue}
+                  // onChange={(e) => {
+                  //   setNameValue(e.target.value);
+                  // }}
+                  //innerRef={nameInputRef}
+                />
               </InputWrapper>
               <InputWrapper>
-                <Label>출제자</Label>
-                <Input />
+                <Label value="출제자" fontSize="14px" width="120px" />
+                <Input
+                  width="300px"
+                  height="30px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="12px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="출제자명을 작성해주세요."
+                  //value={nameValue}
+                  // onChange={(e) => {
+                  //   setNameValue(e.target.value);
+                  // }}
+                  //innerRef={nameInputRef}
+                />
               </InputWrapper>
               <InputWrapper>
-                <Label>학년</Label>
-                <Input placeholder="학습지명을 작성해주세요." />
+                <Label value="학년" fontSize="14px" width="120px" />
+                <Input
+                  width="300px"
+                  height="30px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="12px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="학년을 작성해주세요."
+                  //value={nameValue}
+                  // onChange={(e) => {
+                  //   setNameValue(e.target.value);
+                  // }}
+                  //innerRef={nameInputRef}
+                />
               </InputWrapper>
             </InputGroup>
             <WorksheetNameWrapper>
-              <Label>학습지분류</Label>
+              <Label value="학습지분류" fontSize="14px" width="120px" />
               <ButtonGroup>
-                <StyledNextBtn>연습문항</StyledNextBtn>
-                <StyledNextBtn>숙제</StyledNextBtn>
-                <StyledNextBtn>일일 TEST</StyledNextBtn>
-                <StyledNextBtn>일일 TEST</StyledNextBtn>
-                <StyledNextBtn>일일 TEST</StyledNextBtn>
-                <StyledNextBtn>일일 TEST</StyledNextBtn>
-                <StyledNextBtn>일일 TEST</StyledNextBtn>
-                <StyledNextBtn>+ 추가</StyledNextBtn>
+                <Button
+                  buttonType="button"
+                  onClick={() => {}}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border
+                >
+                  <span>연습문항</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {}}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border
+                >
+                  <span>숙제</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {}}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border
+                >
+                  <span>일일TEST</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {}}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border
+                >
+                  <span>일일TEST</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {}}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border
+                >
+                  <span>+추가</span>
+                </Button>
               </ButtonGroup>
             </WorksheetNameWrapper>
             <TemplateWrapper>
-              <Label>학습지 템플릿</Label>
+              <Label value="학습지 템플릿" fontSize="14px" width="120px" />
               <div>색상 및 디자인 선택</div>
               <div>파란 노랑 주황 빨강 남색 초록</div>
             </TemplateWrapper>
@@ -101,12 +191,16 @@ export function Step3() {
           </WorksheetTemplateViewSection>
         </Wrapper>
         <CreateButtonWrapper>
-          <StyledNextBtn
-            variant="contained"
-            onClick={() => submitCreateWorksheet()}
+          <Button
+            buttonType="button"
+            onClick={submitCreateWorksheet}
+            $padding="10px"
+            height={'30px'}
+            width={'100px'}
+            fontSize="12px"
           >
-            학습지 만들기
-          </StyledNextBtn>
+            <span>학습지 만들기</span>
+          </Button>
         </CreateButtonWrapper>
       </Container>
     </Overlay>
@@ -130,7 +224,7 @@ const Container = styled.div`
   width: 1080px;
   height: 780px;
   padding: 20px;
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
   background-color: white;
 `;
 const TitleWrapper = styled.div`
@@ -150,10 +244,10 @@ const Title = styled.div`
   padding-left: 10px;
 `;
 const FrontSpan = styled.span`
-  color: #a3aed0;
+  color: ${COLOR.BORDER_BLUE};
 `;
 const Span = styled.span`
-  color: #1976d2;
+  color: ${COLOR.SECONDARY};
   padding-right: 10px;
 `;
 const Wrapper = styled.div`
@@ -167,7 +261,7 @@ const WorksheetSettingSection = styled.section`
   flex-direction: column;
   align-items: center;
   flex: 1 0 0;
-  border: 1px solid #5f86fc;
+  border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   padding: 10px;
   gap: 20px;
@@ -183,17 +277,17 @@ const InputWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
-const Label = styled.label`
-  width: 120px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const Input = styled.input`
-  width: 300px;
-  height: 30px;
-  padding: 10px;
-`;
+// const Label = styled.label`
+//   width: 120px;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// `;
+// const Input = styled.input`
+//   width: 300px;
+//   height: 30px;
+//   padding: 10px;
+// `;
 const WorksheetNameWrapper = styled.div`
   display: flex;
 `;
@@ -201,6 +295,7 @@ const ButtonGroup = styled.div`
   width: 300px;
   display: flex;
   flex-wrap: wrap;
+  gap: 5px;
 `;
 const TemplateWrapper = styled.div`
   width: 100%;
@@ -215,7 +310,7 @@ const WorksheetTemplateViewSection = styled.section`
   flex-direction: column;
   align-items: center;
   flex: 1 0 0;
-  border: 1px solid #5f86fc;
+  border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   gap: 10px;
   padding: 10px;
@@ -224,12 +319,4 @@ const CreateButtonWrapper = styled.div`
   padding: 10px 0px;
   display: flex;
   justify-content: flex-end;
-`;
-const StyledNextBtn = styled(Button)`
-  && {
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;

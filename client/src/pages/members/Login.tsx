@@ -184,12 +184,3 @@ const NoticeMessage = styled.p`
   font-size: 13px;
   padding-top: 20px;
 `;
-const StyledBtn = styled(Button)`
-  && {
-    width: 400px;
-    height: 50px;
-    border-radius: 10px;
-    font-size: 17px;
-    line-height: normal;
-  }
-`;

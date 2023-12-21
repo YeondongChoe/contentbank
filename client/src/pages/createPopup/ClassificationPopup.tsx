@@ -27,10 +27,8 @@ export function ClassificationPopup() {
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     // console.log(event.currentTarget.value);
     const value = event.currentTarget.value;
-
     setContent((prevContent) => [...prevContent, value]);
   };
-  console.log(content);
 
   const checkSelectedContentCode = (sort: any) => {
     setSelectedCode(sort === selectedCode ? null : sort);
