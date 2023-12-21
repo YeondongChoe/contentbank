@@ -206,16 +206,16 @@ export function ContentsList() {
     },
   ];
 
-  const firstData = async () => {
-    const list = await questionInstance.get(
-      `/questions?keyword=${''}&page=${1}&size=${10}&menuCode=${'CNC_Q'}`,
-    );
-    setQuestionList(list.data.data.content);
-  };
+  // const firstData = async () => {
+  //   const list = await questionInstance.get(
+  //     `/questions?keyword=${''}&page=${1}&size=${10}&menuCode=${'CNC_Q'}`,
+  //   );
+  //   setQuestionList(list.data.data.content);
+  // };
 
-  useEffect(() => {
-    firstData();
-  }, []);
+  // useEffect(() => {
+  //   firstData();
+  // }, []);
 
   const loadData = useCallback(() => {
     getQuestionList({
