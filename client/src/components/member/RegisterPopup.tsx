@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Textarea from '@mui/joy/Textarea';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import { Controller, useForm } from 'react-hook-form';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -12,6 +11,7 @@ import styled from 'styled-components';
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
 import { Input, Label } from '../../components';
+import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { registerBoolAtom } from '../../state/memberAtom';
 import { alertBoolAtom } from '../../state/utilAtom';
@@ -180,17 +180,18 @@ export function RegisterPopup() {
                 {Id && isDuplicate === true && (
                   <IdSuccessMessage>{successMessage}</IdSuccessMessage>
                 )}
-                <DuplicationButtonWrapper
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  <StyleDuplicateBtn
-                    variant="contained"
+                <DuplicationButtonWrapper>
+                  <Button
+                    buttonType="button"
                     onClick={checkDuplicate}
+                    $padding="10px"
+                    height={'30px'}
+                    width={'110px'}
+                    fontSize="14px"
+                    $borderRadius="15px"
                   >
-                    중복확인
-                  </StyleDuplicateBtn>
+                    <span>중복확인</span>
+                  </Button>
                 </DuplicationButtonWrapper>
               </Box>
               <Box sx={{ width: '350px' }}>
@@ -231,18 +232,27 @@ export function RegisterPopup() {
                 <Notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</Notice>
               </NoticeWarpper>
               <ButtonGroup>
-                <StyleCancelBtn
-                  variant="outlined"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    closePopup();
-                  }}
+                <Button
+                  buttonType="button"
+                  onClick={closePopup}
+                  $padding="10px"
+                  height={'50px'}
+                  width={'170px'}
+                  fontSize="14px"
+                  $border
                 >
-                  취소
-                </StyleCancelBtn>
-                <StyleSaveBtn variant="contained" onClick={submitRegister}>
-                  등록
-                </StyleSaveBtn>
+                  <span>취소</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={submitRegister}
+                  $padding="10px"
+                  height={'50px'}
+                  width={'170px'}
+                  fontSize="14px"
+                >
+                  <span>등록</span>
+                </Button>
               </ButtonGroup>
               {isRequired && <NoticeAlert title="필수 항목을 입력해주세요" />}
               {isRequiredDuplicate && (
@@ -315,31 +325,4 @@ const ButtonGroup = styled.div`
   padding-top: 30px;
   display: flex;
   gap: 10px;
-`;
-const StyleDuplicateBtn = styled(Button)`
-  && {
-    width: 110px;
-    height: 30px;
-    border-radius: 15px;
-    font-size: 14px;
-    line-height: normal;
-  }
-`;
-const StyleCancelBtn = styled(Button)`
-  && {
-    width: 170px;
-    height: 50px;
-    border-radius: 0px;
-    font-size: 14px;
-    line-height: normal;
-  }
-`;
-const StyleSaveBtn = styled(Button)`
-  && {
-    width: 170px;
-    height: 50px;
-    border-radius: 0px;
-    font-size: 14px;
-    line-height: normal;
-  }
 `;

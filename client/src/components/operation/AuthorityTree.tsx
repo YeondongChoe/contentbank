@@ -30,6 +30,7 @@ import {
   manageMemberBoolAtom,
   manageAuthorityBoolAtom,
 } from '../../state/authorityAtom';
+import { Loader } from '../atom/Loader';
 
 import {
   clickAllEdit,
@@ -246,10 +247,18 @@ export function AuthorityTree() {
     setDidMount(true);
   }, []);
 
+  const [display, setDisplay] = useState('none');
+
+  const offLoader = () => {
+    // console.log('off loader');
+    setDisplay('block');
+  };
+
   useEffect(() => {
     if (didMount) {
       getAuthorityMenu({ setMenuValue });
     }
+    offLoader();
   }, [didMount]);
 
   /** 페이지 접근시 체크박스 초기화 */
@@ -277,381 +286,384 @@ export function AuthorityTree() {
   }, []);
 
   return (
-    <TreeView
-      defaultCollapseIcon={<ArrowDropDownIcon />}
-      defaultExpandIcon={<ArrowRightIcon />}
-      defaultExpanded={['Authority', 'CNC', 'CNM', 'OPM']}
-      sx={{
-        minWidth: 600,
-        overflowY: 'auto',
-        '&  .MuiTreeItem-content': {
-          height: '30px',
-        },
-      }}
-    >
-      <TreeWrapper>
-        <TreeItem
-          nodeId="Authority"
-          label="전체"
-          sx={{
-            flexGrow: 1,
-            maxWidth: 600,
-            overflowY: 'auto',
-            '&  .MuiTreeItem-content': {
-              width: '200px',
-            },
-          }}
-        >
-          <TreeWrapper>
-            <TreeItem
-              nodeId="CNC"
-              label={CreateContent?.name as string}
-              sx={{
-                flexGrow: 1,
-                maxWidth: 500,
-                overflowY: 'auto',
-                '&  .MuiTreeItem-content': {
-                  width: '200px',
-                },
-              }}
-            >
-              <TreeWrapper>
-                <TreeItem
-                  nodeId={CreateContent?.children?.[0].code as string}
-                  label={CreateContent?.children?.[0].name as string}
-                  sx={{
-                    flexGrow: 1,
-                    maxWidth: 500,
-                    overflowY: 'auto',
-                    '&  .MuiTreeItem-content': {
-                      width: '200px',
-                    },
-                  }}
-                />
-                <CheckBoxWrapper>
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isEditCreateListChecked}
-                    onClick={() => {
-                      clickListEdit({
-                        setIsEditCreateListChecked,
-                        setIsManageCreateListChecked,
-                      });
-                    }}
-                  />
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isManageCreateListChecked}
-                    onClick={() => {
-                      clickListManage({
-                        isManageCreateListChecked,
-                        isEditCreateListChecked,
-                        setIsManageCreateListChecked,
-                        setIsEditCreateListChecked,
-                      });
-                    }}
-                  />
-                </CheckBoxWrapper>
-              </TreeWrapper>
-              <TreeWrapper>
-                <TreeItem
-                  nodeId={CreateContent?.children?.[1].code as string}
-                  label={CreateContent?.children?.[1].name as string}
-                  sx={{
-                    flexGrow: 1,
-                    maxWidth: 500,
-                    overflowY: 'auto',
-                    '&  .MuiTreeItem-content': {
-                      width: '200px',
-                    },
-                  }}
-                />
-                <CheckBoxWrapper>
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isEditWorksheetChecked}
-                    onClick={() => {
-                      clickWorksheetEdit({
-                        setIsEditWorksheetChecked,
-                        setIsManageWorksheetChecked,
-                      });
-                    }}
-                  />
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isManageWorksheetChecked}
-                    onClick={() => {
-                      clickWorksheetManage({
-                        isManageWorksheetChecked,
-                        isEditWorksheetChecked,
-                        setIsManageWorksheetChecked,
-                        setIsEditWorksheetChecked,
-                      });
-                    }}
-                  />
-                </CheckBoxWrapper>
-              </TreeWrapper>
-            </TreeItem>
-            <CheckBoxWrapper style={{ marginLeft: '-84px' }}>
-              <Checkbox
-                sx={{ height: '24px' }}
-                checked={isEditCreateChecked}
-                onClick={() => {
-                  clickCreateEdit({
-                    isEditCreateChecked,
-                    isEditCreateListChecked,
-                    isEditWorksheetChecked,
-                    setIsEditCreateListChecked,
-                    setIsEditWorksheetChecked,
-                    setIsEditCreateChecked,
-                    setIsManageCreateChecked,
-                    setIsManageCreateListChecked,
-                    setIsManageWorksheetChecked,
-                  });
-                }}
-              />
-              <Checkbox
-                sx={{ height: '24px' }}
-                checked={isManageCreateChecked}
-                onClick={() => {
-                  clickCreateManage({
-                    isManageCreateChecked,
-                    isManageCreateListChecked,
-                    isManageWorksheetChecked,
-                    setIsManageCreateChecked,
-                    setIsManageCreateListChecked,
-                    setIsManageWorksheetChecked,
-                    isEditCreateChecked,
-                    isEditCreateListChecked,
-                    isEditWorksheetChecked,
-                    setIsEditCreateChecked,
-                    setIsEditCreateListChecked,
-                    setIsEditWorksheetChecked,
-                  });
-                }}
-              />
-            </CheckBoxWrapper>
-          </TreeWrapper>
+    <>
+      {display === 'none' && <Loader height={'100px'} size="50px" />}
 
-          <TreeWrapper>
-            <TreeItem
-              nodeId="CNM"
-              label={ManagementContent?.name as string}
-              sx={{
-                flexGrow: 1,
-                maxWidth: 500,
-                overflowY: 'auto',
-                '&  .MuiTreeItem-content': {
-                  width: '200px',
-                },
-              }}
-            >
-              <TreeWrapper>
-                <TreeItem
-                  nodeId={ManagementContent?.children?.[0].code as string}
-                  label={ManagementContent?.children?.[0].name as string}
-                  sx={{
-                    flexGrow: 1,
-                    maxWidth: 500,
-                    overflowY: 'auto',
-                    '&  .MuiTreeItem-content': {
-                      width: '200px',
-                    },
-                  }}
-                />
-                <CheckBoxWrapper>
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isEditManagementListChecked}
-                    onClick={() => {
-                      clickManagemantListEdit({
-                        setIsEditManagementListChecked,
-                        setIsManageManagementListChecked,
-                      });
-                    }}
-                  />
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isManageManagementListChecked}
-                    onClick={() => {
-                      clickManagemantListManage({
-                        isManageManagementListChecked,
-                        isEditManagementListChecked,
-                        setIsManageManagementListChecked,
-                        setIsEditManagementListChecked,
-                      });
-                    }}
-                  />
-                </CheckBoxWrapper>
-              </TreeWrapper>
-
-              <TreeWrapper>
-                <TreeItem
-                  nodeId={ManagementContent?.children?.[1].code as string}
-                  label={ManagementContent?.children?.[1].name as string}
-                  sx={{
-                    flexGrow: 1,
-                    maxWidth: 500,
-                    overflowY: 'auto',
-                    '&  .MuiTreeItem-content': {
-                      width: '200px',
-                    },
-                  }}
-                />
-                <CheckBoxWrapper>
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isEditTreeChecked}
-                    onClick={() => {
-                      clickTreeEdit({
-                        setIsEditTreeChecked,
-                        setIsManageTreeChecked,
-                      });
-                    }}
-                  />
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isManageTreeChecked}
-                    onClick={() => {
-                      clickTreeManage({
-                        isManageTreeChecked,
-                        isEditTreeChecked,
-                        setIsManageTreeChecked,
-                        setIsEditTreeChecked,
-                      });
-                    }}
-                  />
-                </CheckBoxWrapper>
-              </TreeWrapper>
-            </TreeItem>
-            <CheckBoxWrapper style={{ marginLeft: '-84px' }}>
-              <Checkbox
-                sx={{ height: '24px' }}
-                checked={isEditManagementChecked}
-                onClick={() => {
-                  clickManagemantEdit({
-                    isEditManagementChecked,
-                    isEditManagementListChecked,
-                    isEditTreeChecked,
-                    setIsEditManagementChecked,
-                    setIsEditManagementListChecked,
-                    setIsEditTreeChecked,
-                    setIsManageManagementChecked,
-                    setIsManageManagementListChecked,
-                    setIsManageTreeChecked,
-                  });
+      <TreeView
+        defaultCollapseIcon={<ArrowDropDownIcon />}
+        defaultExpandIcon={<ArrowRightIcon />}
+        defaultExpanded={['Authority', 'CNC', 'CNM', 'OPM']}
+        sx={{
+          minWidth: 600,
+          overflowY: 'auto',
+          '&  .MuiTreeItem-content': {
+            height: '30px',
+          },
+        }}
+      >
+        <TreeWrapper>
+          <TreeItem
+            nodeId="Authority"
+            label="전체"
+            sx={{
+              flexGrow: 1,
+              maxWidth: 600,
+              overflowY: 'auto',
+              '&  .MuiTreeItem-content': {
+                width: '200px',
+              },
+            }}
+          >
+            <TreeWrapper>
+              <TreeItem
+                nodeId="CNC"
+                label={CreateContent?.name as string}
+                sx={{
+                  flexGrow: 1,
+                  maxWidth: 500,
+                  overflowY: 'auto',
+                  '&  .MuiTreeItem-content': {
+                    width: '200px',
+                  },
                 }}
-              />
-              <Checkbox
-                sx={{ height: '24px' }}
-                checked={isManageManagementChecked}
-                onClick={() => {
-                  clickManagemantManage({
-                    isManageManagementChecked,
-                    isManageManagementListChecked,
-                    isManageTreeChecked,
-                    setIsManageManagementChecked,
-                    setIsManageManagementListChecked,
-                    setIsManageTreeChecked,
-                    isEditManagementChecked,
-                    isEditManagementListChecked,
-                    isEditTreeChecked,
-                    setIsEditManagementChecked,
-                    setIsEditManagementListChecked,
-                    setIsEditTreeChecked,
-                  });
-                }}
-              />
-            </CheckBoxWrapper>
-          </TreeWrapper>
-
-          <TreeWrapper>
-            <TreeItem
-              nodeId="OPM"
-              label={Operation?.name as string}
-              sx={{
-                flexGrow: 1,
-                maxWidth: 500,
-                overflowY: 'auto',
-                '&  .MuiTreeItem-content': {
-                  width: '200px',
-                },
-              }}
-            >
-              <TreeWrapper>
-                <TreeItem
-                  nodeId={Operation?.children?.[0].code as string}
-                  label={Operation?.children?.[0].name as string}
-                  sx={{
-                    flexGrow: 1,
-                    maxWidth: 500,
-                    overflowY: 'auto',
-                    '&  .MuiTreeItem-content': {
-                      width: '200px',
-                    },
+              >
+                <TreeWrapper>
+                  <TreeItem
+                    nodeId={CreateContent?.children?.[0].code as string}
+                    label={CreateContent?.children?.[0].name as string}
+                    sx={{
+                      flexGrow: 1,
+                      maxWidth: 500,
+                      overflowY: 'auto',
+                      '&  .MuiTreeItem-content': {
+                        width: '200px',
+                      },
+                    }}
+                  />
+                  <CheckBoxWrapper>
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isEditCreateListChecked}
+                      onClick={() => {
+                        clickListEdit({
+                          setIsEditCreateListChecked,
+                          setIsManageCreateListChecked,
+                        });
+                      }}
+                    />
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isManageCreateListChecked}
+                      onClick={() => {
+                        clickListManage({
+                          isManageCreateListChecked,
+                          isEditCreateListChecked,
+                          setIsManageCreateListChecked,
+                          setIsEditCreateListChecked,
+                        });
+                      }}
+                    />
+                  </CheckBoxWrapper>
+                </TreeWrapper>
+                <TreeWrapper>
+                  <TreeItem
+                    nodeId={CreateContent?.children?.[1].code as string}
+                    label={CreateContent?.children?.[1].name as string}
+                    sx={{
+                      flexGrow: 1,
+                      maxWidth: 500,
+                      overflowY: 'auto',
+                      '&  .MuiTreeItem-content': {
+                        width: '200px',
+                      },
+                    }}
+                  />
+                  <CheckBoxWrapper>
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isEditWorksheetChecked}
+                      onClick={() => {
+                        clickWorksheetEdit({
+                          setIsEditWorksheetChecked,
+                          setIsManageWorksheetChecked,
+                        });
+                      }}
+                    />
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isManageWorksheetChecked}
+                      onClick={() => {
+                        clickWorksheetManage({
+                          isManageWorksheetChecked,
+                          isEditWorksheetChecked,
+                          setIsManageWorksheetChecked,
+                          setIsEditWorksheetChecked,
+                        });
+                      }}
+                    />
+                  </CheckBoxWrapper>
+                </TreeWrapper>
+              </TreeItem>
+              <CheckBoxWrapper style={{ marginLeft: '-84px' }}>
+                <Checkbox
+                  sx={{ height: '24px' }}
+                  checked={isEditCreateChecked}
+                  onClick={() => {
+                    clickCreateEdit({
+                      isEditCreateChecked,
+                      isEditCreateListChecked,
+                      isEditWorksheetChecked,
+                      setIsEditCreateListChecked,
+                      setIsEditWorksheetChecked,
+                      setIsEditCreateChecked,
+                      setIsManageCreateChecked,
+                      setIsManageCreateListChecked,
+                      setIsManageWorksheetChecked,
+                    });
                   }}
                 />
-                <CheckBoxWrapper>
-                  {/* <Checkbox
+                <Checkbox
+                  sx={{ height: '24px' }}
+                  checked={isManageCreateChecked}
+                  onClick={() => {
+                    clickCreateManage({
+                      isManageCreateChecked,
+                      isManageCreateListChecked,
+                      isManageWorksheetChecked,
+                      setIsManageCreateChecked,
+                      setIsManageCreateListChecked,
+                      setIsManageWorksheetChecked,
+                      isEditCreateChecked,
+                      isEditCreateListChecked,
+                      isEditWorksheetChecked,
+                      setIsEditCreateChecked,
+                      setIsEditCreateListChecked,
+                      setIsEditWorksheetChecked,
+                    });
+                  }}
+                />
+              </CheckBoxWrapper>
+            </TreeWrapper>
+
+            <TreeWrapper>
+              <TreeItem
+                nodeId="CNM"
+                label={ManagementContent?.name as string}
+                sx={{
+                  flexGrow: 1,
+                  maxWidth: 500,
+                  overflowY: 'auto',
+                  '&  .MuiTreeItem-content': {
+                    width: '200px',
+                  },
+                }}
+              >
+                <TreeWrapper>
+                  <TreeItem
+                    nodeId={ManagementContent?.children?.[0].code as string}
+                    label={ManagementContent?.children?.[0].name as string}
+                    sx={{
+                      flexGrow: 1,
+                      maxWidth: 500,
+                      overflowY: 'auto',
+                      '&  .MuiTreeItem-content': {
+                        width: '200px',
+                      },
+                    }}
+                  />
+                  <CheckBoxWrapper>
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isEditManagementListChecked}
+                      onClick={() => {
+                        clickManagemantListEdit({
+                          setIsEditManagementListChecked,
+                          setIsManageManagementListChecked,
+                        });
+                      }}
+                    />
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isManageManagementListChecked}
+                      onClick={() => {
+                        clickManagemantListManage({
+                          isManageManagementListChecked,
+                          isEditManagementListChecked,
+                          setIsManageManagementListChecked,
+                          setIsEditManagementListChecked,
+                        });
+                      }}
+                    />
+                  </CheckBoxWrapper>
+                </TreeWrapper>
+
+                <TreeWrapper>
+                  <TreeItem
+                    nodeId={ManagementContent?.children?.[1].code as string}
+                    label={ManagementContent?.children?.[1].name as string}
+                    sx={{
+                      flexGrow: 1,
+                      maxWidth: 500,
+                      overflowY: 'auto',
+                      '&  .MuiTreeItem-content': {
+                        width: '200px',
+                      },
+                    }}
+                  />
+                  <CheckBoxWrapper>
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isEditTreeChecked}
+                      onClick={() => {
+                        clickTreeEdit({
+                          setIsEditTreeChecked,
+                          setIsManageTreeChecked,
+                        });
+                      }}
+                    />
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isManageTreeChecked}
+                      onClick={() => {
+                        clickTreeManage({
+                          isManageTreeChecked,
+                          isEditTreeChecked,
+                          setIsManageTreeChecked,
+                          setIsEditTreeChecked,
+                        });
+                      }}
+                    />
+                  </CheckBoxWrapper>
+                </TreeWrapper>
+              </TreeItem>
+              <CheckBoxWrapper style={{ marginLeft: '-84px' }}>
+                <Checkbox
+                  sx={{ height: '24px' }}
+                  checked={isEditManagementChecked}
+                  onClick={() => {
+                    clickManagemantEdit({
+                      isEditManagementChecked,
+                      isEditManagementListChecked,
+                      isEditTreeChecked,
+                      setIsEditManagementChecked,
+                      setIsEditManagementListChecked,
+                      setIsEditTreeChecked,
+                      setIsManageManagementChecked,
+                      setIsManageManagementListChecked,
+                      setIsManageTreeChecked,
+                    });
+                  }}
+                />
+                <Checkbox
+                  sx={{ height: '24px' }}
+                  checked={isManageManagementChecked}
+                  onClick={() => {
+                    clickManagemantManage({
+                      isManageManagementChecked,
+                      isManageManagementListChecked,
+                      isManageTreeChecked,
+                      setIsManageManagementChecked,
+                      setIsManageManagementListChecked,
+                      setIsManageTreeChecked,
+                      isEditManagementChecked,
+                      isEditManagementListChecked,
+                      isEditTreeChecked,
+                      setIsEditManagementChecked,
+                      setIsEditManagementListChecked,
+                      setIsEditTreeChecked,
+                    });
+                  }}
+                />
+              </CheckBoxWrapper>
+            </TreeWrapper>
+
+            <TreeWrapper>
+              <TreeItem
+                nodeId="OPM"
+                label={Operation?.name as string}
+                sx={{
+                  flexGrow: 1,
+                  maxWidth: 500,
+                  overflowY: 'auto',
+                  '&  .MuiTreeItem-content': {
+                    width: '200px',
+                  },
+                }}
+              >
+                <TreeWrapper>
+                  <TreeItem
+                    nodeId={Operation?.children?.[0].code as string}
+                    label={Operation?.children?.[0].name as string}
+                    sx={{
+                      flexGrow: 1,
+                      maxWidth: 500,
+                      overflowY: 'auto',
+                      '&  .MuiTreeItem-content': {
+                        width: '200px',
+                      },
+                    }}
+                  />
+                  <CheckBoxWrapper>
+                    {/* <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditMemberChecked}
                     onClick={() => {
                       clickMemberEdit();
                     }}
                   /> */}
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isManageMemberChecked}
-                    onClick={() => {
-                      clickMemberManage({
-                        isManageMemberChecked,
-                        isEditMemberChecked,
-                        setIsManageMemberChecked,
-                        setIsEditMemberChecked,
-                      });
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isManageMemberChecked}
+                      onClick={() => {
+                        clickMemberManage({
+                          isManageMemberChecked,
+                          isEditMemberChecked,
+                          setIsManageMemberChecked,
+                          setIsEditMemberChecked,
+                        });
+                      }}
+                    />
+                  </CheckBoxWrapper>
+                </TreeWrapper>
+
+                <TreeWrapper>
+                  <TreeItem
+                    nodeId={Operation?.children?.[1].code as string}
+                    label={Operation?.children?.[1].name as string}
+                    sx={{
+                      flexGrow: 1,
+                      maxWidth: 500,
+                      overflowY: 'auto',
+                      '&  .MuiTreeItem-content': {
+                        width: '200px',
+                      },
                     }}
                   />
-                </CheckBoxWrapper>
-              </TreeWrapper>
-
-              <TreeWrapper>
-                <TreeItem
-                  nodeId={Operation?.children?.[1].code as string}
-                  label={Operation?.children?.[1].name as string}
-                  sx={{
-                    flexGrow: 1,
-                    maxWidth: 500,
-                    overflowY: 'auto',
-                    '&  .MuiTreeItem-content': {
-                      width: '200px',
-                    },
-                  }}
-                />
-                <CheckBoxWrapper>
-                  {/* <Checkbox
+                  <CheckBoxWrapper>
+                    {/* <Checkbox
                     sx={{ height: '24px' }}
                     checked={isEditAuthorityChecked}
                     onClick={() => {
                       clickAuthorityEdit();
                     }}
                   /> */}
-                  <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isManageAuthorityChecked}
-                    onClick={() => {
-                      clickAuthorityManage({
-                        isManageAuthorityChecked,
-                        isEditAuthorityChecked,
-                        setIsManageAuthorityChecked,
-                        setIsEditAuthorityChecked,
-                      });
-                    }}
-                  />
-                </CheckBoxWrapper>
-              </TreeWrapper>
-            </TreeItem>
-            <CheckBoxWrapper style={{ marginLeft: '-42px' }}>
-              {/* <Checkbox
+                    <Checkbox
+                      sx={{ height: '24px' }}
+                      checked={isManageAuthorityChecked}
+                      onClick={() => {
+                        clickAuthorityManage({
+                          isManageAuthorityChecked,
+                          isEditAuthorityChecked,
+                          setIsManageAuthorityChecked,
+                          setIsEditAuthorityChecked,
+                        });
+                      }}
+                    />
+                  </CheckBoxWrapper>
+                </TreeWrapper>
+              </TreeItem>
+              <CheckBoxWrapper style={{ marginLeft: '-42px' }}>
+                {/* <Checkbox
   
                 sx={{ height: '24px' }}
                 checked={isEditOperationChecked}
@@ -659,91 +671,92 @@ export function AuthorityTree() {
                   clickOperationEdit();
                 }}
               /> */}
-              <Checkbox
-                sx={{ height: '24px' }}
-                checked={isManageOperationChecked}
-                onClick={() => {
-                  clickOperationManage({
-                    isManageOperationChecked,
-                    isManageMemberChecked,
-                    isManageAuthorityChecked,
-                    setIsManageOperationChecked,
-                    setIsManageMemberChecked,
-                    setIsManageAuthorityChecked,
-                    isEditOperationChecked,
-                    isEditMemberChecked,
-                    isEditAuthorityChecked,
-                    setIsEditOperationChecked,
-                    setIsEditMemberChecked,
-                    setIsEditAuthorityChecked,
-                  });
-                }}
-              />
-            </CheckBoxWrapper>
-          </TreeWrapper>
-        </TreeItem>
-        <CheckBoxWrapper style={{ marginLeft: '-168px' }}>
-          <Checkbox
-            sx={{ height: '24px' }}
-            checked={isEditAllChecked}
-            onClick={() => {
-              clickAllEdit({
-                setIsEditAllChecked,
-                setIsEditCreateChecked,
-                setIsEditCreateListChecked,
-                setIsEditWorksheetChecked,
-                setIsEditManagementChecked,
-                setIsEditManagementListChecked,
-                setIsEditTreeChecked,
-                setIsEditOperationChecked,
-                setIsEditMemberChecked,
-                setIsEditAuthorityChecked,
-                setIsManageAllChecked,
-                setIsManageCreateChecked,
-                setIsManageCreateListChecked,
-                setIsManageWorksheetChecked,
-                setIsManageManagementChecked,
-                setIsManageManagementListChecked,
-                setIsManageTreeChecked,
-                setIsManageOperationChecked,
-                setIsManageMemberChecked,
-                setIsManageAuthorityChecked,
-              });
-            }}
-          />
-          <Checkbox
-            sx={{ height: '24px' }}
-            checked={isManageAllChecked}
-            onClick={() => {
-              clickAllManage({
-                isEditAllChecked,
-                isManageAllChecked,
-                setIsEditAllChecked,
-                setIsEditCreateChecked,
-                setIsEditCreateListChecked,
-                setIsEditWorksheetChecked,
-                setIsEditManagementChecked,
-                setIsEditManagementListChecked,
-                setIsEditTreeChecked,
-                setIsEditOperationChecked,
-                setIsEditMemberChecked,
-                setIsEditAuthorityChecked,
-                setIsManageAllChecked,
-                setIsManageCreateChecked,
-                setIsManageCreateListChecked,
-                setIsManageWorksheetChecked,
-                setIsManageManagementChecked,
-                setIsManageManagementListChecked,
-                setIsManageTreeChecked,
-                setIsManageOperationChecked,
-                setIsManageMemberChecked,
-                setIsManageAuthorityChecked,
-              });
-            }}
-          />
-        </CheckBoxWrapper>
-      </TreeWrapper>
-    </TreeView>
+                <Checkbox
+                  sx={{ height: '24px' }}
+                  checked={isManageOperationChecked}
+                  onClick={() => {
+                    clickOperationManage({
+                      isManageOperationChecked,
+                      isManageMemberChecked,
+                      isManageAuthorityChecked,
+                      setIsManageOperationChecked,
+                      setIsManageMemberChecked,
+                      setIsManageAuthorityChecked,
+                      isEditOperationChecked,
+                      isEditMemberChecked,
+                      isEditAuthorityChecked,
+                      setIsEditOperationChecked,
+                      setIsEditMemberChecked,
+                      setIsEditAuthorityChecked,
+                    });
+                  }}
+                />
+              </CheckBoxWrapper>
+            </TreeWrapper>
+          </TreeItem>
+          <CheckBoxWrapper style={{ marginLeft: '-168px' }}>
+            <Checkbox
+              sx={{ height: '24px' }}
+              checked={isEditAllChecked}
+              onClick={() => {
+                clickAllEdit({
+                  setIsEditAllChecked,
+                  setIsEditCreateChecked,
+                  setIsEditCreateListChecked,
+                  setIsEditWorksheetChecked,
+                  setIsEditManagementChecked,
+                  setIsEditManagementListChecked,
+                  setIsEditTreeChecked,
+                  setIsEditOperationChecked,
+                  setIsEditMemberChecked,
+                  setIsEditAuthorityChecked,
+                  setIsManageAllChecked,
+                  setIsManageCreateChecked,
+                  setIsManageCreateListChecked,
+                  setIsManageWorksheetChecked,
+                  setIsManageManagementChecked,
+                  setIsManageManagementListChecked,
+                  setIsManageTreeChecked,
+                  setIsManageOperationChecked,
+                  setIsManageMemberChecked,
+                  setIsManageAuthorityChecked,
+                });
+              }}
+            />
+            <Checkbox
+              sx={{ height: '24px' }}
+              checked={isManageAllChecked}
+              onClick={() => {
+                clickAllManage({
+                  isEditAllChecked,
+                  isManageAllChecked,
+                  setIsEditAllChecked,
+                  setIsEditCreateChecked,
+                  setIsEditCreateListChecked,
+                  setIsEditWorksheetChecked,
+                  setIsEditManagementChecked,
+                  setIsEditManagementListChecked,
+                  setIsEditTreeChecked,
+                  setIsEditOperationChecked,
+                  setIsEditMemberChecked,
+                  setIsEditAuthorityChecked,
+                  setIsManageAllChecked,
+                  setIsManageCreateChecked,
+                  setIsManageCreateListChecked,
+                  setIsManageWorksheetChecked,
+                  setIsManageManagementChecked,
+                  setIsManageManagementListChecked,
+                  setIsManageTreeChecked,
+                  setIsManageOperationChecked,
+                  setIsManageMemberChecked,
+                  setIsManageAuthorityChecked,
+                });
+              }}
+            />
+          </CheckBoxWrapper>
+        </TreeWrapper>
+      </TreeView>
+    </>
   );
 }
 const TreeWrapper = styled.div`

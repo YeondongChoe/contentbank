@@ -2,11 +2,11 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import SearchIcon from '@mui/icons-material/Search';
-import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Input } from '../../components';
+import { Button } from '../../components/atom';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
 import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
@@ -53,7 +53,7 @@ export function ManagementsList() {
         <InputWrapper>
           <Input
             width="245px"
-            height="25px"
+            height="35px"
             padding="5px"
             placeholderSize="12px"
             fontSize="12px"
@@ -68,9 +68,16 @@ export function ManagementsList() {
             <SearchIcon onClick={searchList} />
           </IconWrapper>
         </InputWrapper>
-        <StyledUplodeBtn variant="contained" onClick={openInformation}>
-          상세 검색
-        </StyledUplodeBtn>
+        <Button
+          buttonType="button"
+          onClick={openInformation}
+          $padding="10px"
+          height={'35px'}
+          width={'130px'}
+          fontSize="12px"
+        >
+          <span>상세 검색</span>
+        </Button>
       </HeadWrapper>
       {choiceValue === 1 && (
         <TableWrapper>
@@ -142,7 +149,7 @@ const TapMenu = styled.div<{ choiced: number }>`
 
 const InputWrapper = styled.div`
   margin-right: 10px;
-  height: 30px;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,14 +168,4 @@ const IconWrapper = styled.div`
 
 const TableWrapper = styled.div`
   border-top: 1px solid #a3aed0;
-`;
-
-const StyledUplodeBtn = styled(Button)`
-  && {
-    width: 130px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;

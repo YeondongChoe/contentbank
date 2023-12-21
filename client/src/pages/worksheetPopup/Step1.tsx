@@ -2,14 +2,11 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import { Button } from '@mui/material';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Button, TabMenu } from '../../components';
+import { COLOR } from '../../components/contents';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
@@ -18,6 +15,21 @@ import {
 import { Step2 } from './Step2';
 
 export function Step1() {
+  const menuList = [
+    {
+      label: '단원·유형별',
+      value: '단원·유형별',
+    },
+    {
+      label: '시중교재',
+      value: '시중교재',
+    },
+    {
+      label: '수능/모의고사',
+      value: '수능/모의고사',
+    },
+  ];
+
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
@@ -125,122 +137,184 @@ export function Step1() {
         <Wrapper>
           <TreeveiwSection>
             <TabWrapper>
-              <Box sx={{ typography: 'body1' }}>
-                <TabContext value={value}>
-                  <Box sx={{ borderColor: 'divider' }}>
-                    <TabList onChange={changeTab}>
-                      <Tab
-                        label="단원·유형별"
-                        value="1"
-                        style={{ fontSize: '16px', fontWeight: 'bold' }}
-                      />
-                      <Tab
-                        label="시중교재"
-                        value="2"
-                        style={{ fontSize: '16px', fontWeight: 'bold' }}
-                      />
-                      <Tab
-                        label="수능/모의고사"
-                        value="3"
-                        style={{ fontSize: '16px', fontWeight: 'bold' }}
-                      />
-                    </TabList>
-                  </Box>
-                </TabContext>
-              </Box>
+              <TabMenu
+                length={3}
+                menu={menuList}
+                initialValue={'단원·유형별'}
+                width={'350px'}
+                lineStyle
+              />
             </TabWrapper>
             <SchoolButtonGroup>
               <SelectorGroup>
-                <StyledMenuBtn
-                  variant={schoolLevel === '1' ? 'contained' : 'outlined'}
+                <Button
+                  buttonType="button"
                   onClick={() => {
                     selectGradeOption('1');
                     selectSchoolLevel('1');
                   }}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'64px'}
+                  fontSize="12px"
+                  $border={schoolLevel !== '1'}
                 >
-                  초
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={schoolLevel === '2' ? 'contained' : 'outlined'}
+                  <span>초</span>
+                </Button>
+                <Button
+                  buttonType="button"
                   onClick={() => {
                     selectGradeOption('2');
                     selectSchoolLevel('2');
                   }}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'64px'}
+                  fontSize="12px"
+                  $border={schoolLevel !== '2'}
                 >
-                  중
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={schoolLevel === '3' ? 'contained' : 'outlined'}
+                  <span>중</span>
+                </Button>
+                <Button
+                  buttonType="button"
                   onClick={() => {
                     selectGradeOption('2');
                     selectSchoolLevel('3');
                   }}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'64px'}
+                  fontSize="12px"
+                  $border={schoolLevel !== '3'}
                 >
-                  고
-                </StyledMenuBtn>
+                  <span>고</span>
+                </Button>
               </SelectorGroup>
-              <div style={{ color: '#a3aed0', fontSize: '25px' }}>|</div>
+              <DivideBar>|</DivideBar>
               <SelectorGroup>
                 {grade === '1' && (
                   <>
-                    <StyledMenuBtn
-                      variant={schoolYear === '1' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('1')}
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('1');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '1'}
                     >
-                      1학년
-                    </StyledMenuBtn>
-                    <StyledMenuBtn
-                      variant={schoolYear === '2' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('2')}
+                      <span>1학년</span>
+                    </Button>
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('2');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '2'}
                     >
-                      2학년
-                    </StyledMenuBtn>
-                    <StyledMenuBtn
-                      variant={schoolYear === '3' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('3')}
+                      <span>2학년</span>
+                    </Button>
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('3');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '3'}
                     >
-                      3학년
-                    </StyledMenuBtn>
-                    <StyledMenuBtn
-                      variant={schoolYear === '4' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('4')}
+                      <span>3학년</span>
+                    </Button>
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('4');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '4'}
                     >
-                      4학년
-                    </StyledMenuBtn>
-                    <StyledMenuBtn
-                      variant={schoolYear === '5' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('5')}
+                      <span>4학년</span>
+                    </Button>
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('5');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '5'}
                     >
-                      5학년
-                    </StyledMenuBtn>
-                    <StyledMenuBtn
-                      variant={schoolYear === '6' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('6')}
+                      <span>5학년</span>
+                    </Button>
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('6');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '6'}
                     >
-                      6학년
-                    </StyledMenuBtn>
+                      <span>6학년</span>
+                    </Button>
                   </>
                 )}
                 {grade === '2' && (
                   <>
-                    <StyledMenuBtn
-                      variant={schoolYear === '1' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('1')}
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('1');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '1'}
                     >
-                      1학년
-                    </StyledMenuBtn>
-                    <StyledMenuBtn
-                      variant={schoolYear === '2' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('2')}
+                      <span>1학년</span>
+                    </Button>
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('2');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '2'}
                     >
-                      2학년
-                    </StyledMenuBtn>
-                    <StyledMenuBtn
-                      variant={schoolYear === '3' ? 'contained' : 'outlined'}
-                      onClick={() => selectSchoolYear('3')}
+                      <span>2학년</span>
+                    </Button>
+                    <Button
+                      buttonType="button"
+                      onClick={() => {
+                        selectSchoolYear('3');
+                      }}
+                      $padding="10px"
+                      height={'30px'}
+                      width={'64px'}
+                      fontSize="12px"
+                      $border={schoolYear !== '3'}
                     >
-                      3학년
-                    </StyledMenuBtn>
+                      <span>3학년</span>
+                    </Button>
                   </>
                 )}
               </SelectorGroup>
@@ -263,38 +337,54 @@ export function Step1() {
             </SubTitle>
             <SelectorGroup>
               <SelectorWrapper>
-                <StyledMenuBtn
-                  variant={questionNum === '25' ? 'contained' : 'outlined'}
+                <Button
+                  buttonType="button"
                   onClick={() => {
                     selectQuestionNum('25');
                   }}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'64px'}
+                  fontSize="12px"
+                  $border={questionNum !== '25'}
                 >
-                  25
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={questionNum === '50' ? 'contained' : 'outlined'}
+                  <span>25</span>
+                </Button>
+                <Button
+                  buttonType="button"
                   onClick={() => {
                     selectQuestionNum('50');
                   }}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'64px'}
+                  fontSize="12px"
+                  $border={questionNum !== '50'}
                 >
-                  50
-                </StyledMenuBtn>
-                <StyledMenuBtn
-                  variant={questionNum === '100' ? 'contained' : 'outlined'}
+                  <span>50</span>
+                </Button>
+                <Button
+                  buttonType="button"
                   onClick={() => {
                     selectQuestionNum('100');
                   }}
+                  $padding="10px 20px"
+                  height={'30px'}
+                  width={'64px'}
+                  fontSize="12px"
+                  $border={questionNum !== '100'}
                 >
-                  100
-                </StyledMenuBtn>
-                <div style={{ color: '#a3aed0', fontSize: '25px' }}>|</div>
+                  <span>100</span>
+                </Button>
+                <DivideBar>|</DivideBar>
                 <NumberInput
                   value={inputValue}
                   maxLength={2}
                   onClick={() => selectQuestionNum('')}
                   style={{
-                    color: questionNum === '' ? 'white' : '#1976d2',
-                    backgroundColor: questionNum === '' ? '#1976d2' : 'white',
+                    color: questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
+                    backgroundColor:
+                      questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
                   }}
                   onChange={(e) => {
                     setInputValue(e.target.value);
@@ -305,42 +395,76 @@ export function Step1() {
             </SelectorGroup>
             <SubTitle>난이도</SubTitle>
             <SelectorGroup>
-              <StyledMenuBtn
-                variant={questionlevel === '하' ? 'contained' : 'outlined'}
-                onClick={() => selectQuestionLevel('하')}
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionLevel('하');
+                }}
+                $padding="10px"
+                height={'30px'}
+                width={'64px'}
+                fontSize="12px"
+                $border={questionlevel !== '하'}
               >
-                하
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                variant={questionlevel === '중하' ? 'contained' : 'outlined'}
-                onClick={() => selectQuestionLevel('중하')}
+                <span>하</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionLevel('중하');
+                }}
+                $padding="10px"
+                height={'30px'}
+                width={'64px'}
+                fontSize="12px"
+                $border={questionlevel !== '중하'}
               >
-                중하
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                variant={questionlevel === '중' ? 'contained' : 'outlined'}
-                onClick={() => selectQuestionLevel('중')}
+                <span>중하</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionLevel('중');
+                }}
+                $padding="10px"
+                height={'30px'}
+                width={'64px'}
+                fontSize="12px"
+                $border={questionlevel !== '중'}
               >
-                중
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                variant={questionlevel === '상' ? 'contained' : 'outlined'}
-                onClick={() => selectQuestionLevel('상')}
+                <span>중</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionLevel('상');
+                }}
+                $padding="10px"
+                height={'30px'}
+                width={'64px'}
+                fontSize="12px"
+                $border={questionlevel !== '상'}
               >
-                상
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                variant={questionlevel === '최상' ? 'contained' : 'outlined'}
-                onClick={() => selectQuestionLevel('최상')}
+                <span>상</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionLevel('최상');
+                }}
+                $padding="10px"
+                height={'30px'}
+                width={'64px'}
+                fontSize="12px"
+                $border={questionlevel !== '최상'}
               >
-                최상
-              </StyledMenuBtn>
+                <span>최상</span>
+              </Button>
             </SelectorGroup>
             <SubTitle>문항 타입</SubTitle>
             <SelectorGroup>
-              <StyledMenuBtn
-                customWidth={80}
-                variant={isAllSelected ? 'contained' : 'outlined'}
+              <Button
+                buttonType="button"
                 onClick={() => {
                   if (isAllSelected) {
                     setQuestionType([]);
@@ -348,73 +472,111 @@ export function Step1() {
                     setQuestionType(['객관식', '주관식', '서술형']);
                   }
                 }}
+                $padding="10px 26px"
+                height={'30px'}
+                width={'80'}
+                fontSize="12px"
+                $border={!isAllSelected}
               >
-                전체
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                customWidth={80}
-                variant={
-                  questionType.includes('객관식') ? 'contained' : 'outlined'
-                }
-                onClick={() => selectQuestionType('객관식')}
+                <span>전체</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionType('객관식');
+                }}
+                $padding="10px 22px"
+                height={'30px'}
+                width={'80'}
+                fontSize="12px"
+                $border={!questionType.includes('객관식')}
               >
-                객관식
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                customWidth={80}
-                variant={
-                  questionType.includes('주관식') ? 'contained' : 'outlined'
-                }
-                onClick={() => selectQuestionType('주관식')}
+                <span>객관식</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionType('주관식');
+                }}
+                $padding="10px 22px"
+                height={'30px'}
+                width={'80'}
+                fontSize="12px"
+                $border={!questionType.includes('주관식')}
               >
-                주관식
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                customWidth={80}
-                variant={
-                  questionType.includes('서술형') ? 'contained' : 'outlined'
-                }
-                onClick={() => selectQuestionType('서술형')}
+                <span>주관식</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectQuestionType('서술형');
+                }}
+                $padding="10px 22px"
+                height={'30px'}
+                width={'80'}
+                fontSize="12px"
+                $border={!questionType.includes('서술형')}
               >
-                서술형
-              </StyledMenuBtn>
+                <span>서술형</span>
+              </Button>
             </SelectorGroup>
             <SubTitle>모의고사 포함 여부</SubTitle>
             <SelectorGroup>
-              {/* <SelectorWrapper customGap={10}> */}
-              <StyledMenuBtn
-                customWidth={110}
-                variant={containMock === '포함' ? 'contained' : 'outlined'}
-                onClick={() => selectContainMock('포함')}
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectContainMock('포함');
+                }}
+                $padding="10px 42px"
+                height={'30px'}
+                width={'110'}
+                fontSize="12px"
+                $border={containMock !== '포함'}
               >
-                포함
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                customWidth={110}
-                variant={containMock === '제외' ? 'contained' : 'outlined'}
-                onClick={() => selectContainMock('제외')}
+                <span>포함</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectContainMock('제외');
+                }}
+                $padding="10px 42px"
+                height={'30px'}
+                width={'110'}
+                fontSize="12px"
+                $border={containMock !== '제외'}
               >
-                제외
-              </StyledMenuBtn>
-              <StyledMenuBtn
-                customWidth={110}
-                variant={
-                  containMock === '모의고사만' ? 'contained' : 'outlined'
-                }
-                onClick={() => selectContainMock('모의고사만')}
+                <span>제외</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectContainMock('모의고사만');
+                }}
+                $padding="10px 24px"
+                height={'30px'}
+                width={'110'}
+                fontSize="12px"
+                $border={containMock !== '모의고사만'}
               >
-                모의고사만
-              </StyledMenuBtn>
-              {/* </SelectorWrapper> */}
+                <span>모의고사만</span>
+              </Button>
             </SelectorGroup>
             <TBD></TBD>
             <Summary>학습지 문항수 {inputValue || questionNum}개</Summary>
           </SchoolSelectorSection>
         </Wrapper>
         <NextStepButtonWrapper>
-          <StyledNextBtn variant="contained" onClick={() => moveStep2()}>
-            다음 단계
-          </StyledNextBtn>
+          <Button
+            buttonType="button"
+            onClick={moveStep2}
+            $padding="10px"
+            height={'30px'}
+            width={'80px'}
+            fontSize="12px"
+          >
+            <span>다음 단계</span>
+          </Button>
         </NextStepButtonWrapper>
       </Container>
       {isStep2 && <Step2 />}
@@ -439,7 +601,7 @@ const Container = styled.div`
   width: 1080px;
   height: 780px;
   padding: 20px;
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
   background-color: white;
 `;
 const TitleWrapper = styled.div`
@@ -461,7 +623,7 @@ const TreeveiwSection = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid #5f86fc;
+  border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
 `;
 const TabWrapper = styled.div`
@@ -470,18 +632,21 @@ const TabWrapper = styled.div`
   gap: 20px;
 `;
 const SchoolButtonGroup = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   padding: 10px;
   gap: 5px;
-  border-top: 1px solid #a3aed0;
-  border-bottom: 1px solid #a3aed0;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
+  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
 `;
 const SelectorGroup = styled.div`
-  width: 100%;
   display: flex;
-  justify-content: space-between;
   gap: 5px;
+`;
+const DivideBar = styled.div`
+  color: ${COLOR.BORDER_BLUE};
+  font-size: 25px;
 `;
 const TreeviewWrapper = styled.div`
   padding: 10px;
@@ -491,7 +656,7 @@ const SchoolSelectorSection = styled.section`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  border: 1px solid #5f86fc;
+  border: 1px solid ${COLOR.BORDER_POPUP};
   padding: 10px;
   border-radius: 25px;
   gap: 10px;
@@ -505,8 +670,7 @@ const TitleSpan = styled.span`
 const SelectorWrapper = styled.div`
   display: flex;
   align-items: center;
-  width: 100%;
-  justify-content: space-between;
+  gap: 8px;
   font-size: 12px;
 `;
 const NumberInput = styled.input`
@@ -515,8 +679,8 @@ const NumberInput = styled.input`
   border-radius: 5px;
   font-size: 12px;
   line-height: normal;
-  border: 1px solid rgba(25, 118, 210, 0.5);
-  color: rgb(25, 118, 210);
+  border: 1px solid ${COLOR.PRIMARY};
+  color: ${COLOR.PRIMARY};
   padding: 5px 15px;
   font-size: 12px;
   outline: none;
@@ -534,21 +698,4 @@ const NextStepButtonWrapper = styled.div`
   padding: 10px 0px;
   display: flex;
   justify-content: flex-end;
-`;
-const StyledMenuBtn = styled(Button)<{ customWidth: number }>`
-  && {
-    width: ${(props) => props.customWidth}px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
-`;
-const StyledNextBtn = styled(Button)`
-  && {
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;

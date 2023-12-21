@@ -229,6 +229,7 @@ export function Authority() {
             <Button
               buttonType="button"
               onClick={openUpdateAlert}
+              $padding="10px"
               height={'30px'}
               width={'80px'}
               fontSize="12px"

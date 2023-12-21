@@ -15,5 +15,6 @@ export const COLOR = {
   SUCCESS: '#008000',
   BORDER_GRAY: '#e9ecef',
   BORDER_BLUE: '#a3aed0',
+  BORDER_POPUP: '#5f86fc',
   SELECT_HOVER: '#422afb',
 };
