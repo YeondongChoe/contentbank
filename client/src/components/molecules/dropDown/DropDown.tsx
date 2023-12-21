@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { styled } from 'styled-components';
 
 import { Button } from '../../../components';
-import { COLOR } from '../../../components/contents';
+import { COLOR } from '../../constants';
 
 export type DropDownItemProps = {
   key: string;

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
 import { Button } from '../../components/atom';
-import { COLOR } from '../../components/contents/COLOR';
+import { COLOR } from '../constants/COLOR';
 import { Search } from '../../components/molecules';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { pageAtom, totalPageAtom } from '../../state/utilAtom';

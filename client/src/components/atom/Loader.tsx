@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../components/contents';
+import { COLOR } from '../constants';
 
 // import LoaderIcon from '../../../public/images/icon/loader.svg';
 

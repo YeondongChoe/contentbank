@@ -10,7 +10,7 @@ import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
 import { Input, Label, Button } from '../../components';
-import { COLOR } from '../../components/contents/COLOR';
+import { COLOR } from '../../components/constants/COLOR';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { alertBoolAtom } from '../../state/utilAtom';
 import { getAuthorityCookie } from '../../utils/cookies';

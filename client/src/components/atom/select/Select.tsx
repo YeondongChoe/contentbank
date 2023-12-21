@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../../components/contents';
+import { COLOR } from '../../constants';
 import { IconButton } from '../button';
 
 type OptionsProps = {

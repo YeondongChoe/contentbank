@@ -5,7 +5,7 @@ import { IoSearch } from 'react-icons/io5';
 import { styled } from 'styled-components';
 
 import { IconButton } from '../../../components/atom';
-import { COLOR } from '../../../components/contents';
+import { COLOR } from '../../constants';
 
 type SearchProps = {
   placeholder?: string;

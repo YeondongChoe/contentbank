@@ -1,44 +1,67 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 import { styled } from 'styled-components';
 
 import { Button, IconButton } from '../../../components';
-import { COLOR } from '../../../components/contents';
+import { TableItemType } from '../../../types';
+import { COLOR } from '../../constants';
 
-export type TableItemProps = {
-  contentSeq: number;
-  questionSeq: number;
-  favorited: boolean;
-  questionCode: string; //문항코드
-  curriculum: string; //개정과정
-  schoolLevel: string; //학교급
-  schoolYear: string; //학년
-  semester: string; //학기
-  unitMajor: string; //대분류
-  unitMiddle: string; //중분류
-  questionType: string; //문항타입??
-  questionCreatedByName: string; //작성자
-  questionCreatedDate: string; //일자
-  serviced: boolean; //오픈여부
+type TheadItemProps = {
+  th: { title: string; rowSpan?: number; colspan?: number }[];
 };
 
 type TableProps = {
-  list: TableItemProps[];
+  list: TableItemType[];
   colWidth?: { width: string }[];
   width?: string;
+  theadList: TheadItemProps[];
 };
 
-export function Table({ list, colWidth, width }: TableProps) {
+export function Table({ list, colWidth, width, theadList }: TableProps) {
+  const [isColspan, setIsColspan] = useState<boolean>(false);
+  const [colspanList, setcolspanList] = useState<TheadItemProps[]>([
+    {
+      th: [
+        {
+          title: '',
+        },
+      ],
+    },
+  ]);
+
+  const findColspan = (element: TheadItemProps) => {
+    if (element.th[0].colspan && element.th[0].colspan > 1) {
+      return true;
+    }
+  };
+
+  const creatColspanList = useCallback(() => {
+    const findIndex = theadList.findIndex(findColspan);
+    if (findIndex) {
+      setIsColspan(true);
+      const filterList: TheadItemProps[] = theadList.filter(
+        (item) => item.th.length > 1,
+      );
+      // console.log(filterList);
+      //마지막 th 두줄일 경우만 적용 TODO: 더 복잡해지는 테이블일경우 개선 필요
+      setcolspanList(filterList);
+    }
+  }, [theadList]);
+
+  useEffect(() => {
+    creatColspanList();
+  }, []);
+
   return (
     <Component cellSpacing="0" cellPadding="0" width={width}>
       {colWidth && (
         <colgroup>
           {colWidth.map((column, index) => (
             <col
-              key={`colgroup-${index}`}
+              key={`colgroup${index}`}
               style={{ width: `${column.width}` }}
             />
           ))}
@@ -46,7 +69,6 @@ export function Table({ list, colWidth, width }: TableProps) {
       )}
       <thead>
         <tr>
-          {/* {theadList.map(() => )} */}
           <th rowSpan={2}>
             <input
               type="checkbox"
@@ -54,22 +76,28 @@ export function Table({ list, colWidth, width }: TableProps) {
               // checked={isAllSelected}
             ></input>
           </th>
-          <th rowSpan={2}></th>
-          <th rowSpan={2}>문항코드</th>
-          <th rowSpan={2}>개정과정</th>
-          <th rowSpan={2}>학교</th>
-          <th rowSpan={2}>학년</th>
-          <th rowSpan={2}>학기</th>
-          <th rowSpan={2}>대분류</th>
-          <th rowSpan={2}>중분류</th>
-          <th rowSpan={2}>문항타입</th>
-          <th colSpan={3}>업로드</th>
+
+          {theadList.map(
+            (item) =>
+              item.th.length === 1 && (
+                <th
+                  key={`colgroup${item.th[0].title}`}
+                  rowSpan={item.th[0]?.rowSpan}
+                  colSpan={item.th[0]?.colspan}
+                >
+                  {item.th[0].title}
+                </th>
+              ),
+          )}
         </tr>
-        <tr>
-          <th>작성자</th>
-          <th>일자</th>
-          <th>오픈여부</th>
-        </tr>
+        {/* colspan 열 th */}
+        {isColspan && (
+          <tr>
+            {colspanList[0].th.map((item) => (
+              <th key={`colgroup${item.title}`}>{item.title}</th>
+            ))}
+          </tr>
+        )}
       </thead>
       <tbody>
         {list.map((content) => (

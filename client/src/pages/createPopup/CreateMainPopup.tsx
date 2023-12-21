@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { COLOR } from '../../components/contents/COLOR';
+import { COLOR } from '../../components/constants/COLOR';
 import {
   createContentPopupBoolAtom,
   uploadBoolAtom,

@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
-import { COLOR } from './contents';
+import { COLOR } from './constants';
 
 export function Header() {
   const navigate = useNavigate();

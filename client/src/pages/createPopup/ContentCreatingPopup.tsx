@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../../components';
-import { COLOR } from '../../components/contents/COLOR';
+import { COLOR } from '../../components/constants/COLOR';
 import { updateBoolAtom } from '../../state/utilAtom';
 
 export function ContentCreatingPopup() {

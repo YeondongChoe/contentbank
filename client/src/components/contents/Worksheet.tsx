@@ -14,7 +14,7 @@ import {
 import { searchValueAtom } from '../../state/valueAtom';
 import { WorksheetTable } from '../tableWrap/WorksheetTable';
 
-import { COLOR } from './COLOR';
+import { COLOR } from '../constants/COLOR';
 
 export function Worksheet() {
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../../components/contents';
+import { COLOR } from '../../constants';
 
 type ButtonProps = {
   children?: React.ReactNode;
@@ -77,7 +77,7 @@ const Component = styled.button<ButtonStyleProps>`
   ${({ $border }) =>
     $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
   background-color: ${({ $border }) =>
-    $border ? ` transparent;` : `${COLOR.PRIMARY};`};
+    $border ? ` #fff;` : `${COLOR.PRIMARY};`};
   color: ${({ $border }) => ($border ? `${COLOR.PRIMARY};` : '#fff')};
   cursor: pointer;
   ${({ disabled }) =>

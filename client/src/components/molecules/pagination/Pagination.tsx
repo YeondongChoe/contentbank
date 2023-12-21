@@ -4,7 +4,7 @@ import Pagination from 'react-js-pagination';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../../components/contents';
+import { COLOR } from '../../constants';
 import { pageAtom } from '../../../state/utilAtom';
 import { checkBoxValueAtom } from '../../../state/valueAtom';
 

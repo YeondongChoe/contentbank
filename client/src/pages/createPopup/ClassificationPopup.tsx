@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { MathViewer, Button, Select, Input } from '../../components';
-import { COLOR } from '../../components/contents/COLOR';
+import { COLOR } from '../../components/constants/COLOR';
 import Contents from '../../components/mathViewer/test1.json';
 import Contents2 from '../../components/mathViewer/test2.json';
 import Contents3 from '../../components/mathViewer/test3.json';

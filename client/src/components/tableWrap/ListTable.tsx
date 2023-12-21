@@ -33,7 +33,7 @@ import {
   checkBoxValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
-import { COLOR } from '../contents';
+import { COLOR } from '../constants';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
 import { PaginationBox } from '../molecules/pagination/Pagination';
 
@@ -315,6 +315,25 @@ export function ListTable() {
     { width: '15%' },
     { width: '5%' },
   ];
+  const theadList = [
+    { th: [{ title: '', rowSpan: 2 }] },
+    { th: [{ title: '문항코드', rowSpan: 2 }] },
+    { th: [{ title: '개정과정', rowSpan: 2 }] },
+    { th: [{ title: '학교', rowSpan: 2 }] },
+    { th: [{ title: '학년', rowSpan: 2 }] },
+    { th: [{ title: '학기', rowSpan: 2 }] },
+    { th: [{ title: '대분류', rowSpan: 2 }] },
+    { th: [{ title: '중분류', rowSpan: 2 }] },
+    { th: [{ title: '문항타입', rowSpan: 2 }] },
+    { th: [{ title: '업로드', rowSpan: 1 }] },
+    {
+      th: [
+        { title: '작성자', rowSpan: 1 },
+        { title: '일자', rowSpan: 1 },
+        { title: '활성화', rowSpan: 1 },
+      ],
+    },
+  ];
 
   return (
     <>
@@ -354,7 +373,7 @@ export function ListTable() {
       </Container>
 
       <TableWrapper>
-        <Table list={questionList} colWidth={colWidth} />
+        <Table list={questionList} colWidth={colWidth} theadList={theadList} />
       </TableWrapper>
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />

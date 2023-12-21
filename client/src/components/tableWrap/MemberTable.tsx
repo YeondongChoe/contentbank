@@ -15,7 +15,7 @@ import {
 } from '../../state/memberAtom';
 import { alertBoolAtom, pageAtom, totalPageAtom } from '../../state/utilAtom';
 import { Loader } from '../atom/Loader';
-import { COLOR } from '../contents/COLOR';
+import { COLOR } from '../constants/COLOR';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
 import { PaginationBox } from '../molecules/pagination/Pagination';
 

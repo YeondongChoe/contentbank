@@ -3,7 +3,7 @@ import { ChangeEvent } from 'react';
 
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../contents';
+import { COLOR } from '../../constants';
 
 type InputProps = {
   type: 'text' | 'password';

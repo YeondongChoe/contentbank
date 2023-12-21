@@ -11,7 +11,7 @@ import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
 import { Button } from '../../components/atom';
-import { COLOR } from '../../components/contents/COLOR';
+import { COLOR } from '../constants/COLOR';
 import {
   editCreateContentBool,
   editCreateListBool,
