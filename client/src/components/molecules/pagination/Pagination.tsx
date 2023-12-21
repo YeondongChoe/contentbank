@@ -4,9 +4,9 @@ import Pagination from 'react-js-pagination';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../constants';
 import { pageAtom } from '../../../state/utilAtom';
 import { checkBoxValueAtom } from '../../../state/valueAtom';
+import { COLOR } from '../../constants';
 
 type PaginationBoxProps = {
   itemsCountPerPage: number;
@@ -19,7 +19,7 @@ export function PaginationBox({
   totalItemsCount,
 }: PaginationBoxProps) {
   const [page, setPage] = useRecoilState(pageAtom);
-  const setSelectedRows = useSetRecoilState<number[]>(checkBoxValueAtom);
+  // const setSelectedRows = useSetRecoilState<number[]>(checkBoxValueAtom);
 
   return (
     <Wrapper>
@@ -32,14 +32,12 @@ export function PaginationBox({
         nextPageText={'>'}
         onChange={(page) => {
           setPage(page);
-          setSelectedRows([]);
+          // setSelectedRows([]);
         }}
       />
     </Wrapper>
   );
 }
-
-// type PaginationStyleProps = {};
 
 const Wrapper = styled.div`
   .pagination {

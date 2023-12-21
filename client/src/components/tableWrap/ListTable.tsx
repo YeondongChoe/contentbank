@@ -337,7 +337,7 @@ export function ListTable() {
 
   return (
     <>
-      <Container>
+      {/* <Container>
         <SelectWrapper>
           {selectCategory.map((el) => (
             <Select
@@ -384,7 +384,7 @@ export function ListTable() {
           action="삭제"
           onClick={() => submitDelete()}
         />
-      )}
+      )} */}
     </>
   );
 }

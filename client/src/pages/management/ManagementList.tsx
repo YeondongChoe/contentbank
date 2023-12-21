@@ -12,10 +12,4 @@ export function ManagementList() {
   );
 }
 
-const Container = styled.div`
-  padding-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
+const Container = styled.div``;

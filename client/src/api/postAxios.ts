@@ -177,7 +177,6 @@ export const postDuplicate = async ({
 };
 
 /** 권한 파트 */
-
 type postCreateAuthorityProps = {
   inputValue: string;
   isEditCreateChecked: boolean;

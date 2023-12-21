@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { questionInstance } from '../../api/axios';
+import { getQuestionList } from '../../api/getAxios';
 import {
   Button,
   DropDown,
@@ -15,25 +17,46 @@ import {
   TabMenu,
   Table,
 } from '../../components';
-import { COLOR } from '../../components/constants';
+import {
+  COLOR,
+  contentColWidth,
+  contentTheadList,
+} from '../../components/constants';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
-import { createContentPopupBoolAtom } from '../../state/creatingContentAtom';
-import { totalPageAtom, updateBoolAtom } from '../../state/utilAtom';
+import {
+  createContentPopupBoolAtom,
+  creatingNewContentBoolAtom,
+  uploadBoolAtom,
+  uploadFileBoolAtom,
+} from '../../state/creatingContentAtom';
+import { pageAtom, totalPageAtom, updateBoolAtom } from '../../state/utilAtom';
+import {
+  createListCodeValueAtom,
+  servicedValueBoolAtom,
+} from '../../state/valueAtom';
 import { TableItemType } from '../../types';
 // import { ListTable } from '../tableWrap/ListTable';
 
 export function ContentsList() {
+  const [searchValue, setSearchValue] = useState<string>('');
+
+  const [isChangedServiced, setIsChangedServiced] = useRecoilState(
+    servicedValueBoolAtom,
+  );
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
+  const page = useRecoilValue(pageAtom);
+  const size = 10;
+  const MenuCode = useRecoilValue(createListCodeValueAtom);
+  // const [pageNumber, setPageNumber] = useState(1);
+  // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<TableItemType[]>([]);
 
-  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const setIsUpdate = useSetRecoilState(updateBoolAtom);
 
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
 
   const [content, setContent] = useState<string[]>([]);
 
-  const [searchValue, setSearchValue] = useState<string>('');
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
@@ -145,14 +168,31 @@ export function ContentsList() {
     },
   ];
 
+  /**문항 업로드 팝업 관련 코드 */
+  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
+  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
+  const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
+
+  const setIsEdit = useSetRecoilState(updateBoolAtom);
+
+  /**문항 업로드 수정 팝업 함수 */
+  const openCreateEditFilePopup = () => {
+    setIsCreate(true);
+    setIsUpload(true);
+    setIsUploadFile(true);
+    setIsCreateNewContent(false);
+    setIsEdit(true);
+  };
+
   // 드롭다운 버튼 기본 값설정
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const DropDownList: DropDownItemProps[] = [
+  const dropDownList: DropDownItemProps[] = [
     {
-      key: 'ListTabl/DropDownList수정',
+      key: 'ListTabl/d수정',
       title: '수정',
       onClick: () => {
-        // openCreateEditFilePopup();
+        openCreateEditFilePopup();
         setShowDropDown(false);
       },
     },
@@ -160,42 +200,46 @@ export function ContentsList() {
       key: 'ListTable/DropDownList복제 후 수정',
       title: '복제 후 수정',
       onClick: () => {
-        // openCreateEditFilePopup();
+        openCreateEditFilePopup();
         setShowDropDown(false);
       },
     },
   ];
-  // 테이블 기본 값설정
-  const colWidth = [
-    { width: '5%' },
-    { width: '5%' },
-    { width: '280px' },
-    { width: '10%' },
-    { width: '10%' },
-    { width: '5%' },
-    { width: '5%' },
-    { width: '10%' },
-    { width: '10%' },
-    { width: '10%' },
-    { width: '10%' },
-    { width: '15%' },
-    { width: '5%' },
-  ];
-  const theadList = [
-    { th: [{ title: '', rowSpan: 2 }] },
-    { th: [{ title: '문항코드', rowSpan: 2 }] },
-    { th: [{ title: '개정과정', rowSpan: 2 }] },
-    { th: [{ title: '학교', rowSpan: 2 }] },
-    { th: [{ title: '학년', rowSpan: 2 }] },
-    { th: [{ title: '학기', rowSpan: 2 }] },
-    { th: [{ title: '대분류', rowSpan: 2 }] },
-    { th: [{ title: '중분류', rowSpan: 2 }] },
-    { th: [{ title: '문항타입', rowSpan: 2 }] },
-    { th: [{ title: '업로드', colspan: 3 }] },
-    {
-      th: [{ title: '작성자' }, { title: '일자' }, { title: '활성화' }],
-    },
-  ];
+
+  const firstData = async () => {
+    const list = await questionInstance.get(
+      `/questions?keyword=${''}&page=${1}&size=${10}&menuCode=${'CNC_Q'}`,
+    );
+    setQuestionList(list.data.data.content);
+  };
+
+  useEffect(() => {
+    firstData();
+  }, []);
+
+  const loadData = useCallback(() => {
+    getQuestionList({
+      setQuestionList,
+      setIsChangedServiced,
+      settotalPage,
+      searchValue,
+      MenuCode,
+      page,
+      size,
+    });
+  }, [
+    page,
+    MenuCode,
+    searchValue,
+    setQuestionList,
+    settotalPage,
+    setIsChangedServiced,
+  ]);
+
+  // 검색이나 셀렉트로 특정지어진 데이터 담은 후 보여주기 변경값이 있을때 마다 랜더링
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   return (
     <Container>
@@ -245,7 +289,7 @@ export function ContentsList() {
           />
           <ButtonWrapper>
             <DropDown
-              list={DropDownList}
+              list={dropDownList}
               buttonText={'수정'}
               showDropDown={showDropDown}
               setShowDropDown={setShowDropDown}
@@ -265,7 +309,11 @@ export function ContentsList() {
           </ButtonWrapper>
         </InputWrapper>
 
-        <Table list={questionList} colWidth={colWidth} theadList={theadList} />
+        <Table
+          list={questionList}
+          colWidth={contentColWidth}
+          theadList={contentTheadList}
+        />
       </TableWrapper>
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />

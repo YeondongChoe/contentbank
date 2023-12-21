@@ -158,7 +158,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
               <span className="ellipsis">{content.questionCreatedByName}</span>
             </td>
             <td>
-              <span className="ellipsis">{content.questionCreatedDate}</span>
+              <span className="hide">{content.questionCreatedDate}</span>
             </td>
             <td>
               <span className="ellipsis">{content.serviced ? 'Y' : 'N'}</span>
@@ -193,11 +193,14 @@ const Component = styled.table<TableStyleProps>`
   th {
     border: 1px solid ${COLOR.SECONDARY};
     color: ${COLOR.SECONDARY};
+    font-size: 14px;
+    font-weight: bold;
   }
   td {
     border: 1px solid ${COLOR.SECONDARY};
     padding: 10px;
     text-align: center;
+    font-size: 13px;
   }
   .textAlignLeft {
     text-align: left;
@@ -207,6 +210,13 @@ const Component = styled.table<TableStyleProps>`
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .hide {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
 `;
