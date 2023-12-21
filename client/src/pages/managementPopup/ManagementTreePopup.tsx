@@ -1,13 +1,13 @@
 import * as React from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
-import { Button } from '@mui/material';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Button } from '../../components/atom';
 import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
 
-const ManagemantTreePopup = () => {
+export function ManagemantTreePopup() {
   const [isCreate, setIsCreate] = useRecoilState(managementTreePopupBoolAtom);
 
   const closePopup = () => {
@@ -20,19 +20,44 @@ const ManagemantTreePopup = () => {
           <TitleWrapper>
             <Title> 문항 정보 트리트리</Title>
             <ButtonGroup>
-              <StyledActionBtn variant="contained">+ 신규 추가</StyledActionBtn>
-              <StyledActionBtn variant="contained">+ 폴더 복제</StyledActionBtn>
+              <Button
+                buttonType="button"
+                $padding="10px"
+                height={'30px'}
+                width={'100px'}
+                fontSize="12px"
+              >
+                <span>+ 신규 추가</span>
+              </Button>
+              <Button
+                buttonType="button"
+                $padding="10px"
+                height={'30px'}
+                width={'100px'}
+                fontSize="12px"
+              >
+                <span>+ 폴더 복제</span>
+              </Button>
             </ButtonGroup>
           </TitleWrapper>
           <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
         </TapWrapper>
         <ContentBox>
-          <StyledSaveBtn variant="contained">저장</StyledSaveBtn>
+          {/* <StyledSaveBtn variant="contained">저장</StyledSaveBtn> */}
+          <Button
+            buttonType="submit"
+            $padding="10px"
+            height={'30px'}
+            width={'100px'}
+            fontSize="12px"
+          >
+            <span>저장</span>
+          </Button>
         </ContentBox>
       </Container>
     </Overlay>
   );
-};
+}
 
 const Overlay = styled.div`
   position: fixed;
@@ -76,23 +101,3 @@ const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
 `;
-const StyledActionBtn = styled(Button)`
-  && {
-    width: 100px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
-`;
-const StyledSaveBtn = styled(Button)`
-  && {
-    width: 100px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
-`;
-
-export { ManagemantTreePopup };

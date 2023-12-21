@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Button } from '@mui/material';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { MathViewer, Button } from '../../components';
 import { Select } from '../../components/atom/select';
+import Contents2 from '../../components/mathViewer/test2.json';
 import { checkListValueAtom } from '../../state/valueAtom';
 import dummy from '../createPopup/data.json';
 
@@ -13,6 +14,7 @@ export function ContentCategoryChange() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   const ContentList = dummy.ContentInfo;
+  const Category = dummy.Category;
 
   const [selectedRows, setSelectedRows] =
     useRecoilState<number[]>(checkListValueAtom);
@@ -35,122 +37,11 @@ export function ContentCategoryChange() {
     setSelectedCode(sort === selectedCode ? null : sort);
   };
 
-  const [content, setContent] = useState({
-    curriculum: '',
-    schoolLevel: '',
-    schoolYear: '',
-    semester: '',
-    unitMajor: '',
-    unitType: '',
-    serviced: '',
-  });
+  const [content, setContent] = useState<string[]>([]);
 
-  const category = [
-    {
-      id: '1',
-      label: '개정과정',
-      value: '1',
-      options: [
-        { id: '1', label: '2015학년', value: '1' },
-        { id: '2', label: '2018학년', value: '2' },
-        { id: '3', label: '2020학년', value: '3' },
-      ],
-    },
-    {
-      id: '2',
-      label: '학교',
-      value: '2',
-      options: [
-        { id: '1', label: '초등', value: '1' },
-        { id: '2', label: '중등', value: '2' },
-        { id: '3', label: '고등', value: '3' },
-      ],
-    },
-    {
-      id: '3',
-      label: '학년',
-      value: '3',
-      options: [
-        { id: '1', label: '초등1', value: '1' },
-        { id: '2', label: '초등2', value: '2' },
-        { id: '3', label: '중등1', value: '3' },
-        { id: '4', label: '중등2', value: '4' },
-        { id: '5', label: '고등1', value: '5' },
-        { id: '6', label: '고등2', value: '6' },
-      ],
-    },
-    {
-      id: '4',
-      label: '학기',
-      value: '4',
-      options: [
-        { id: '1', label: '1학기', value: '1' },
-        { id: '2', label: '2학기', value: '2' },
-      ],
-    },
-    {
-      id: '5',
-      label: '대분류',
-      value: '5',
-      options: [
-        {
-          id: '1',
-          label: '일차부등식 소분류를 연습해봅시다 초등학교 친구들',
-          value: '1',
-        },
-        { id: '2', label: '일차부등식 중분류', value: '2' },
-        { id: '3', label: '일차부등식 대분류', value: '3' },
-      ],
-    },
-    {
-      id: '6',
-      label: '문항타입',
-      value: '6',
-      options: [
-        { id: '1', label: '객관식', value: '1' },
-        { id: '2', label: '주관식', value: '2' },
-        { id: '3', label: '서술형', value: '3' },
-      ],
-    },
-    {
-      id: '7',
-      label: '오픈여부',
-      value: '7',
-      options: [
-        { id: '1', label: '활성화', value: '1' },
-        { id: '2', label: '비활성화', value: '2' },
-      ],
-    },
-  ];
-
-  const selectCategory = (
-    fieldName: string,
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setContent((prevContent) => ({
-      ...prevContent,
-      [fieldName]: event.target.value,
-    }));
-  };
-
-  const [changeContent, setChangeContent] = useState({
-    changeCurriculum: '',
-    changeSchoolLevel: '',
-    changeSchoolYear: '',
-    changeSemester: '',
-    changeUnitMajor: '',
-    changeUnitType: '',
-    putChangeServiced: '',
-  });
-
-  const selectNewCategory = (
-    fieldName: string,
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setChangeContent((prevContent) => ({
-      ...prevContent,
-      [fieldName]: event.target.value,
-    }));
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const value = event.currentTarget.value;
+    setContent((prevContent) => [...prevContent, value]);
   };
 
   const searchCategory = () => {
@@ -254,41 +145,53 @@ export function ContentCategoryChange() {
         <SelectWrapper>
           <TitleWrapper>
             <SelectTitle>찾을 문항 분류</SelectTitle>
-            <StyledActionBtn variant="outlined" onClick={searchCategory}>
-              찾기
-            </StyledActionBtn>
+            <Button
+              buttonType="button"
+              onClick={searchCategory}
+              height="30px"
+              $padding="10px"
+              width={'100px'}
+              fontSize="12px"
+              $border
+            >
+              <span>찾기</span>
+            </Button>
           </TitleWrapper>
-          {/* <SelectBox>
-            {category.map((el) => (
+          <SelectBox>
+            {Category.map((el) => (
               <Select
-                width="120px"
-                // value={el.value}
+                width="130px"
                 defaultValue={el.label}
-                // onChange={(e) => selectCategory(el.value, e)}
                 key={el.label}
                 options={el.options}
+                onSelect={(event) => selectCategoryOption(event)}
               />
             ))}
-          </SelectBox> */}
+          </SelectBox>
           <TitleWrapper>
             <SelectTitle>바꿀 문항 분류</SelectTitle>
-            <StyledActionBtn variant="contained" onClick={changeCategory}>
-              선택 바꾸기
-            </StyledActionBtn>
+            <Button
+              buttonType="button"
+              onClick={changeCategory}
+              height="30px"
+              $padding="10px"
+              width={'100px'}
+              fontSize="12px"
+            >
+              <span>선택 바꾸기</span>
+            </Button>
           </TitleWrapper>
-          {/* <SelectBox>
-            {category.map((el) => (
+          <SelectBox>
+            {Category.map((el) => (
               <Select
-                width="120px"
-                height="40px"
-                // value={el.value}
+                width="130px"
                 defaultValue={el.label}
-                // onChange={(e) => selectNewCategory(el.value, e)}
                 key={el.label}
                 options={el.options}
+                onSelect={(event) => selectCategoryOption(event)}
               />
             ))}
-          </SelectBox> */}
+          </SelectBox>
         </SelectWrapper>
       </SelectsWrapper>
       <ContentWrapper>
@@ -331,16 +234,22 @@ export function ContentCategoryChange() {
           </ContentListWrapper>
         </ContentListSection>
         <ContentViewerSection>
-          <ContentTitle>문항 뷰어 {classificatecode}</ContentTitle>
+          <ContentTitle>문항 뷰어: {classificatecode}</ContentTitle>
           <ViewerWrapper>
-            <div>가지고온 리스트의 문항을 뷰어로 보여주기</div>
-            <div>변경 내용 저장을 눌렀을 때 서버에 Post API</div>
+            <MathViewer data={Contents2} />
           </ViewerWrapper>
         </ContentViewerSection>
         <SaveButtonWrapper>
-          <StyledSaveBtn variant="outlined" onClick={submitSave}>
-            변경 내용 저장
-          </StyledSaveBtn>
+          <Button
+            buttonType="button"
+            onClick={submitSave}
+            height={'40px'}
+            width={'120px'}
+            fontSize="12px"
+            $border
+          >
+            <span>변경 내용 저장</span>
+          </Button>
         </SaveButtonWrapper>
       </ContentWrapper>
     </Container>
@@ -375,15 +284,14 @@ const ContentWrapper = styled.div`
   padding-top: 20px;
 `;
 const ContentTitle = styled.div`
-  font-size: 16px;
   margin-bottom: 5px;
 `;
 const ContentListSection = styled.section`
-  flex: 1 0 22%;
+  flex: 1 0 30%;
 `;
 const ContentListWrapper = styled.div`
   border: 1px solid #a3aed0;
-  height: 500px;
+  height: 400px;
 `;
 const AllCheckWapper = styled.div`
   display: flex;
@@ -406,30 +314,12 @@ const ContentViewerSection = styled.section`
 `;
 const ViewerWrapper = styled.div`
   border: 1px solid #a3aed0;
-  height: 500px;
+  height: 400px;
+  padding: 10px;
 `;
 const SaveButtonWrapper = styled.div`
   flex: 1 0 5%;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
-`;
-
-const StyledActionBtn = styled(Button)`
-  && {
-    width: 100px;
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
-`;
-const StyledSaveBtn = styled(Button)`
-  && {
-    width: 120px;
-    height: 40px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;

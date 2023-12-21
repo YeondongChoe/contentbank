@@ -4,14 +4,11 @@ import { useState } from 'react';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import { Button } from '@mui/material';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { Button, TabMenu } from '../../components';
+import { COLOR } from '../../components/contents';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
@@ -22,6 +19,25 @@ import {
 import { Step3 } from './Step3';
 
 export function Step2() {
+  const menuList = [
+    {
+      label: '학습지 요약',
+      value: '학습지 요약',
+    },
+    {
+      label: '새 문항 추가',
+      value: '새 문항 추가',
+    },
+    {
+      label: '즐겨찾는 문항',
+      value: '즐겨찾는 문항',
+    },
+    {
+      label: '개념',
+      value: '개념',
+    },
+  ];
+
   const [value, setValue] = useState('1');
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
@@ -103,34 +119,13 @@ export function Step2() {
             ) : (
               <>
                 <TabWrapper>
-                  <Box sx={{ typography: 'body1' }}>
-                    <TabContext value={value}>
-                      <Box sx={{ borderColor: 'divider' }}>
-                        <TabList onChange={handleChangeTab}>
-                          <Tab
-                            label="학습지 요약"
-                            value="1"
-                            style={{ fontSize: '16px', fontWeight: 'bold' }}
-                          />
-                          <Tab
-                            label="새 문항 추가"
-                            value="2"
-                            style={{ fontSize: '16px', fontWeight: 'bold' }}
-                          />
-                          <Tab
-                            label="즐겨찾는 문항"
-                            value="3"
-                            style={{ fontSize: '16px', fontWeight: 'bold' }}
-                          />
-                          <Tab
-                            label="개념"
-                            value="4"
-                            style={{ fontSize: '16px', fontWeight: 'bold' }}
-                          />
-                        </TabList>
-                      </Box>
-                    </TabContext>
-                  </Box>
+                  <TabMenu
+                    length={4}
+                    menu={menuList}
+                    initialValue={'학습지 요약'}
+                    width={'490px'}
+                    lineStyle
+                  />
                 </TabWrapper>
                 <DiscriptionWrapper>
                   <div className="학습지 요약">
@@ -156,15 +151,30 @@ export function Step2() {
             <div>문항 뷰어</div>
             <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
             <div>전 단계로부터 전달받은 데이터 뷰어로 보여주기</div>
-            <StyledBtn variant="outlined" onClick={() => showSimilarContent()}>
-              유사문항
-            </StyledBtn>
+            <Button
+              buttonType="button"
+              onClick={showSimilarContent}
+              $padding="10px"
+              height={'30px'}
+              width={'90px'}
+              fontSize="12px"
+              $border
+            >
+              <span>유사문항</span>
+            </Button>
           </ContentListSection>
         </Wrapper>
         <NextStepButtonWrapper>
-          <StyledNextBtn variant="contained" onClick={() => moveStep3()}>
-            다음 단계
-          </StyledNextBtn>
+          <Button
+            buttonType="button"
+            onClick={moveStep3}
+            $padding="10px"
+            height={'30px'}
+            width={'80px'}
+            fontSize="12px"
+          >
+            <span>다음 단계</span>
+          </Button>
         </NextStepButtonWrapper>
       </Container>
       {isStep3 && <Step3 />}
@@ -189,7 +199,7 @@ const Container = styled.div`
   width: 1080px;
   height: 780px;
   padding: 20px;
-  border: 1px solid #a3aed0;
+  border: 1px solid ${COLOR.BORDER_BLUE};
   background-color: white;
 `;
 const TitleWrapper = styled.div`
@@ -210,10 +220,10 @@ const Title = styled.div`
 `;
 
 const FrontSpan = styled.span`
-  color: #a3aed0;
+  color: ${COLOR.BORDER_BLUE};
 `;
 const Span = styled.span`
-  color: #1976d2;
+  color: ${COLOR.SECONDARY};
   padding-right: 10px;
 `;
 const Wrapper = styled.div`
@@ -227,7 +237,7 @@ const DiscriptionSection = styled.section`
   flex: 1 0 0;
   flex-direction: column;
   align-items: center;
-  border: 1px solid #5f86fc;
+  border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
 `;
 const TabWrapper = styled.div`
@@ -258,7 +268,7 @@ const SimilarTitle = styled.div``;
 const SimilarTitleSpan = styled.span`
   font-size: 12px;
   padding-left: 10px;
-  color: #a3aed0;
+  color: ${COLOR.BORDER_BLUE};
 `;
 const RestartWrapper = styled.div`
   display: flex;
@@ -272,7 +282,7 @@ const ContentListSection = styled.section`
   flex: 1 0 0;
   flex-direction: column;
   align-items: center;
-  border: 1px solid #5f86fc;
+  border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   padding: 10px;
   gap: 10px;
@@ -281,20 +291,4 @@ const NextStepButtonWrapper = styled.div`
   padding: 10px 0px;
   display: flex;
   justify-content: flex-end;
-`;
-const StyledBtn = styled(Button)`
-  && {
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
-`;
-const StyledNextBtn = styled(Button)`
-  && {
-    height: 30px;
-    border-radius: 5px;
-    font-size: 12px;
-    line-height: normal;
-  }
 `;
