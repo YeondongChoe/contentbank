@@ -11,10 +11,8 @@ import {
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
 } from '../../state/creatingWorksheetAtom';
-import { searchValueAtom } from '../../state/valueAtom';
-import { WorksheetTable } from '../tableWrap/WorksheetTable';
-
 import { COLOR } from '../constants/COLOR';
+import { WorksheetTable } from '../tableWrap/WorksheetTable';
 
 export function Worksheet() {
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');
@@ -30,27 +28,10 @@ export function Worksheet() {
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const setIsStep2 = useSetRecoilState(createWorksheetStep2BoolAtom);
   const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
-
-  const [choiceValue, setChoiceValue] = useState(1);
-  const [inputValue, setInputValue] = useState('');
-  const setsearchValueAtom = useSetRecoilState(searchValueAtom);
-
   const openStep1 = () => {
     setIsStep1(true);
     setIsStep2(false);
     setIsEditWorksheet(false);
-  };
-
-  const searchList = () => {
-    setsearchValueAtom(inputValue);
-  };
-
-  const clickList = () => {
-    setChoiceValue(1);
-  };
-
-  const clickBookmark = () => {
-    setChoiceValue(2);
   };
 
   useEffect(() => {

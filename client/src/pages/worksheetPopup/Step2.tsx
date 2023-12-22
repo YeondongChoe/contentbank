@@ -38,16 +38,11 @@ export function Step2() {
     },
   ];
 
-  const [value, setValue] = useState('1');
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
   const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
   const [isSimilar, setIsSimilar] = useState(false);
-
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
 
   const closePopup = () => {
     setIsStep1(false);

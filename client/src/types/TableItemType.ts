@@ -14,3 +14,13 @@ export type TableItemType = {
   questionCreatedDate: string; //일자
   serviced: boolean; //오픈여부
 };
+
+// export type TableWorksheetType = {
+//   id: number;
+//   favorited: boolean;
+//   schoolLevel: string; //학교급
+//   tag: string;
+//   worksheetName: string;
+//   createdAt: string;
+//   creater: string;
+// };

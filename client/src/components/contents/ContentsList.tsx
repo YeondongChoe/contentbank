@@ -35,7 +35,6 @@ import {
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
 import { TableItemType } from '../../types';
-// import { ListTable } from '../tableWrap/ListTable';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
@@ -43,6 +42,8 @@ export function ContentsList() {
   const [isChangedServiced, setIsChangedServiced] = useRecoilState(
     servicedValueBoolAtom,
   );
+  const [didMount, setDidMount] = useState(false);
+  let mountCount = 1;
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const page = useRecoilValue(pageAtom);
   const size = 10;
@@ -80,7 +81,6 @@ export function ContentsList() {
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     // console.log(event.currentTarget.value);
     const value = event.currentTarget.value;
-
     setContent((prevContent) => [...prevContent, value]);
   };
   const selectCategory = [
@@ -238,8 +238,15 @@ export function ContentsList() {
 
   // 검색이나 셀렉트로 특정지어진 데이터 담은 후 보여주기 변경값이 있을때 마다 랜더링
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    mountCount++;
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      loadData();
+    }
+  }, [didMount]);
 
   return (
     <Container>
@@ -252,7 +259,6 @@ export function ContentsList() {
           width={'250px'}
           setTabVeiw={setTabVeiw}
         />
-
         <Button
           height={'35px'}
           width={'150px'}

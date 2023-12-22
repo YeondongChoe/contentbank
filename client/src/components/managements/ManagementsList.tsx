@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { getQuestionList } from '../../api/getAxios';
 import {
   Button,
   DropDown,
@@ -22,19 +23,28 @@ import {
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
-import { totalPageAtom } from '../../state/utilAtom';
-import { searchValueAtom, checkBoxValueAtom } from '../../state/valueAtom';
-import { ListTable } from '../tableWrap/ListTable';
+import { totalPageAtom, pageAtom } from '../../state/utilAtom';
+import {
+  createListCodeValueAtom,
+  servicedValueBoolAtom,
+} from '../../state/valueAtom';
+import { TableItemType } from '../../types';
 
 export function ManagementsList() {
-  const [choiceValue, setChoiceValue] = useState(1);
-  const [inputValue, setInputValue] = useState('');
-  const setContentSeq = useSetRecoilState(checkBoxValueAtom);
-  const setsearchValueAtom = useSetRecoilState(searchValueAtom);
+  const [didMount, setDidMount] = useState(false);
+  let mountCount = 1;
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
+  const page = useRecoilValue(pageAtom);
+  const size = 10;
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [questionList, setQuestionList] = useState<TableItemType[]>([]);
+
+  const MenuCode = useRecoilValue(createListCodeValueAtom);
+  const [isChangedServiced, setIsChangedServiced] = useRecoilState(
+    servicedValueBoolAtom,
+  );
 
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
@@ -43,20 +53,6 @@ export function ManagementsList() {
   const [isManagement, setIsManagement] = useRecoilState(
     managementContentPopupBoolAtom,
   );
-
-  const searchList = () => {
-    setsearchValueAtom(inputValue);
-  };
-
-  const clickList = () => {
-    setChoiceValue(1);
-    setContentSeq([]);
-  };
-
-  const clickDeclar = () => {
-    setChoiceValue(2);
-    setContentSeq([]);
-  };
 
   const openInformation = () => {
     setIsManagement(true);
@@ -74,9 +70,7 @@ export function ManagementsList() {
   ];
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // console.log(event.currentTarget.value);
     const value = event.currentTarget.value;
-
     setContent((prevContent) => [...prevContent, value]);
   };
   const selectCategory = [
@@ -185,6 +179,36 @@ export function ManagementsList() {
     },
   ];
 
+  const loadData = useCallback(() => {
+    getQuestionList({
+      setQuestionList,
+      setIsChangedServiced,
+      settotalPage,
+      searchValue,
+      MenuCode,
+      page,
+      size,
+    });
+  }, [
+    page,
+    MenuCode,
+    searchValue,
+    setQuestionList,
+    settotalPage,
+    setIsChangedServiced,
+  ]);
+
+  useEffect(() => {
+    mountCount++;
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      loadData();
+    }
+  }, [didMount]);
+
   return (
     <Container>
       <IndexInfo list={['콘텐츠 관리', '문항', `${tabVeiw}`]} />
@@ -236,7 +260,7 @@ export function ManagementsList() {
               width="100px"
               height="35px"
               fontSize="14px"
-              // $border
+              //$border
               onClick={() => {
                 // submitChangingService();
               }}
@@ -256,7 +280,7 @@ export function ManagementsList() {
               fontSize="14px"
               $border
               onClick={() => {
-                // submitChangingService();
+                //submitChangingService();
               }}
               disabled={false}
             >
@@ -264,12 +288,11 @@ export function ManagementsList() {
             </Button>
           </ButtonWrapper>
         </InputWrapper>
-
-        {/* <Table
+        <Table
           list={questionList}
           colWidth={contentColWidth}
           theadList={contentTheadList}
-        /> */}
+        />
       </TableWrapper>
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />

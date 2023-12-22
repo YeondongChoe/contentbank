@@ -45,12 +45,12 @@ export function Tab({
   return (
     <TabButton
       height={height}
-      lineStyle={lineStyle}
+      $lineStyle={lineStyle}
       className={className}
-      active={value === selected}
+      $active={value === selected}
       onClick={() => onChange(value)}
     >
-      <ButtonText lineStyle={lineStyle} active={value === selected}>
+      <ButtonText $lineStyle={lineStyle} $active={value === selected}>
         {label}
       </ButtonText>
     </TabButton>
@@ -78,7 +78,7 @@ export function TabMenu({
   };
 
   return (
-    <Component length={length} width={width} $margin={$margin}>
+    <Component $length={length} width={width} $margin={$margin}>
       {menu.map(({ label, value }: MenuProps) => (
         <Tab
           className={className}
@@ -97,9 +97,9 @@ export function TabMenu({
 
 type TabStyleProps = {
   height?: string;
-  active: boolean;
+  $active: boolean;
   onClick: () => void;
-  lineStyle?: boolean;
+  $lineStyle?: boolean;
 };
 
 const TabButton = styled.button<TabStyleProps>`
@@ -113,44 +113,47 @@ const TabButton = styled.button<TabStyleProps>`
   cursor: pointer;
   transition: all 0.1s;
 
-  ${({ active }) =>
-    active
+  ${({ $active }) =>
+    $active
       ? `background-color: ${COLOR.PRIMARY}; `
       : `background-color: ${COLOR.GRAY};`}
 
   &:nth-of-type(1) {
-    border-radius: 8px 0 0 0;
+    border-radius: 8px 0px 0 0;
   }
   &:last-child {
-    border-radius: 0 8px 0 0;
+    border-radius: 0px 8px 0 0;
+  }
+  &:only-child {
+    border-radius: 8px 8px 0 0;
   }
 
-  ${({ lineStyle }) => lineStyle && `background: transparent; `}
-  ${({ lineStyle, active }) =>
-    lineStyle && active
+  ${({ $lineStyle }) => $lineStyle && `background: transparent; `}
+  ${({ $lineStyle, $active }) =>
+    $lineStyle && $active
       ? `border-bottom: 2px solid ${COLOR.PRIMARY};`
       : `border-bottom: 2px solid transparent;`}
 `;
-const ButtonText = styled.span<{ active: boolean; lineStyle?: boolean }>`
+const ButtonText = styled.span<{ $active: boolean; $lineStyle?: boolean }>`
   font-size: 14px;
   font-weight: bold;
 
-  ${({ lineStyle, active }) =>
-    lineStyle
-      ? active
+  ${({ $lineStyle, $active }) =>
+    $lineStyle
+      ? $active
         ? `color:${COLOR.PRIMARY}`
         : `color:${COLOR.GRAY}`
       : `color: #fff;`}
 `;
 
 const Component = styled.div<{
-  length: number;
+  $length: number;
   width?: string;
   $margin?: string;
 }>`
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   display: grid;
-  ${({ length }) =>
-    `grid-template-columns: repeat(auto-fit, minmax( calc(100% / ${length}), auto));`}
+  ${({ $length }) =>
+    `grid-template-columns: repeat(auto-fit, minmax( calc(100% / ${$length}), auto));`}
 `;
