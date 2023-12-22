@@ -34,7 +34,6 @@ export function Step1() {
   let mountCount = 1;
   const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  const [value, setValue] = useState('1');
   const [grade, setGrade] = useState('1');
   const [inputValue, setInputValue] = useState('');
   const [schoolLevel, setSchoolLevel] = useState<string | null>(null);
@@ -53,10 +52,6 @@ export function Step1() {
     setIsStep2(true);
     console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
     console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
-  };
-
-  const changeTab = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
   };
 
   const selectGradeOption = (newValue: string) => {

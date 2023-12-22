@@ -119,10 +119,13 @@ const TabButton = styled.button<TabStyleProps>`
       : `background-color: ${COLOR.GRAY};`}
 
   &:nth-of-type(1) {
-    border-radius: 8px 0 0 0;
+    border-radius: 8px 0px 0 0;
   }
   &:last-child {
-    border-radius: 0 8px 0 0;
+    border-radius: 0px 8px 0 0;
+  }
+  &:only-child {
+    border-radius: 8px 8px 0 0;
   }
 
   ${({ $lineStyle }) => $lineStyle && `background: transparent; `}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
@@ -42,6 +42,8 @@ export function EditPopup() {
     enabled: null,
     authCode: null,
   });
+  const [didMount, setDidMount] = useState(false);
+  let mountCount = 1;
   const keyValue = useRecoilValue(memberKeyValueAtom);
   const [isEditer, SetIsEditer] = useRecoilState(editerBoolAtom);
   const [isNameError, setIsNameError] = useState(false);
@@ -59,8 +61,8 @@ export function EditPopup() {
     code: item[1],
     value: index + 1,
   }));
-  console.log(AuthorityOption);
-  console.log(AuthorityList);
+  //console.log(AuthorityOption);
+  //console.log(AuthorityList);
   const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [isInit, setIsInit] = useState(false);
 
@@ -98,7 +100,7 @@ export function EditPopup() {
     });
   };
 
-  useEffect(() => {
+  const loadData = useCallback(() => {
     getIndividualMemberInformation({
       keyValue,
       setMember,
@@ -107,6 +109,17 @@ export function EditPopup() {
       setAuthorityList,
     });
   }, []);
+
+  useEffect(() => {
+    mountCount++;
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      loadData();
+    }
+  }, [didMount]);
 
   useEffect(() => {
     if (member.name) {

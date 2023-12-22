@@ -816,7 +816,7 @@ export function AuthorityTree() {
   );
 }
 const TreeWrapper = styled.div`
-  min-width: 600px;
+  min-width: 500px;
   display: flex;
   font-size: 16px;
   padding: 0px 10px;

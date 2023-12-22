@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Textarea from '@mui/joy/Textarea';
@@ -25,6 +25,8 @@ type authorityListProps = {
 };
 
 export function RegisterPopup() {
+  const [didMount, setDidMount] = useState(false);
+  let mountCount = 1;
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
@@ -38,7 +40,6 @@ export function RegisterPopup() {
   const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [isRequired, setIsRequired] = useState(false);
   const [isRequiredDuplicate, setIsRequiredDuplicate] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
 
   const { control, watch } = useForm();
 
@@ -97,11 +98,22 @@ export function RegisterPopup() {
     }
   };
 
-  useEffect(() => {
+  const loadData = useCallback(() => {
     getAuthorityList({
       setAuthorityList,
     });
   }, []);
+
+  useEffect(() => {
+    mountCount++;
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      loadData();
+    }
+  }, [didMount]);
 
   return (
     <>
@@ -258,7 +270,6 @@ export function RegisterPopup() {
               {isRequiredDuplicate && (
                 <NoticeAlert title="중복확인을 해주세요" />
               )}
-              {isComplete && <NoticeAlert title="회원생성 성공" />}
             </ContentBox>
           </Container>
         </Overlay>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -265,7 +265,7 @@ export function MemberTable({
           </Table>
         </TableWrapper>
       </>
-      <PaginationBox itemsCountPerPage={9} totalItemsCount={totalPage} />
+      <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
       {isEnabled && (
         <SelectAlert
           title="비활성화 처리시 로그인이 불가합니다."
