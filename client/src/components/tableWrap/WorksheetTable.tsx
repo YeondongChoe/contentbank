@@ -263,11 +263,6 @@ export function WorksheetTable() {
             ))}
           </Tbody>
         </Table>
-        {/* <Table
-          list={worksheetList}
-          colWidth={contentColWidth}
-          theadList={contentTheadList}
-        /> */}
       </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isStep2 && <Step2 />}

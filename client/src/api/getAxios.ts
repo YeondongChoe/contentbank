@@ -54,7 +54,9 @@ export const getQuestionList = async ({
   };
   await questionInstance
     .get(
-      `/questions?keyword=${searchValue}&page=${page}&size=${size}&menuCode=${MenuCode}`,
+      `/questions?keyword=${
+        searchValue || ''
+      }&page=${page}&size=${size}&menuCode=${MenuCode}`,
     )
     .then((response) => {
       handleAuthorizationRenewal(response);

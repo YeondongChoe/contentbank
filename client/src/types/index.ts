@@ -1,2 +1,2 @@
 export { ItemQuestionType } from './ItemQuestionType';
-export { TableItemType } from './TableItemType';
+export { TableItemType, TableWorksheetType } from './TableItemType';

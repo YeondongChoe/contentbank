@@ -30,3 +30,26 @@ export const contentTheadList = [
     th: [{ title: '작성자' }, { title: '일자' }, { title: '활성화' }],
   },
 ];
+
+// 학습지 테이블
+export const worksheetColWidth = [
+  { width: '5%' },
+  { width: '5%' },
+  { width: '5%' },
+  { width: '10%' },
+  { width: '40%' },
+  { width: '10%' },
+  { width: '10%' },
+  { width: '10%' },
+  { width: '10%' },
+];
+export const worksheetTheadList = [
+  { th: [{ title: '', rowSpan: 2 }] },
+  { th: [{ title: '학년', rowSpan: 2 }] },
+  { th: [{ title: '태그', rowSpan: 2 }] },
+  { th: [{ title: '학습지명', rowSpan: 2 }] },
+  { th: [{ title: '등록일', rowSpan: 2 }] },
+  { th: [{ title: '작성자', rowSpan: 2 }] },
+  { th: [{ title: '미리보기', rowSpan: 2 }] },
+  { th: [{ title: '설정', rowSpan: 2 }] },
+];

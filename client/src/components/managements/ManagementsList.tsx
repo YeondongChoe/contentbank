@@ -34,7 +34,7 @@ export function ManagementsList() {
   const [didMount, setDidMount] = useState(false);
   let mountCount = 1;
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
-  const page = useRecoilValue(pageAtom);
+  const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
@@ -199,6 +199,7 @@ export function ManagementsList() {
   ]);
 
   useEffect(() => {
+    setPage(1);
     mountCount++;
     setDidMount(true);
   }, []);
@@ -207,7 +208,7 @@ export function ManagementsList() {
     if (didMount) {
       loadData();
     }
-  }, [didMount]);
+  }, [didMount, page]);
 
   return (
     <Container>

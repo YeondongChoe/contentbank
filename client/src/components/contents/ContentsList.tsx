@@ -44,7 +44,7 @@ export function ContentsList() {
     servicedValueBoolAtom,
   );
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
+  const mountCount = 1;
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;
@@ -240,7 +240,7 @@ export function ContentsList() {
 
   // 검색이나 셀렉트로 특정지어진 데이터 담은 후 보여주기 변경값이 있을때 마다 랜더링
   useEffect(() => {
-    mountCount++;
+    setPage(1);
     setDidMount(true);
   }, []);
 
@@ -248,7 +248,7 @@ export function ContentsList() {
     if (didMount) {
       loadData();
     }
-  }, [didMount]);
+  }, [didMount, page]);
 
   return (
     <Container>

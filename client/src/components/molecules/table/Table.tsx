@@ -3,10 +3,12 @@ import { useEffect, useState, useCallback } from 'react';
 
 import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import { styled } from 'styled-components';
 
 import { Button, IconButton } from '../../../components';
-import { TableItemType } from '../../../types';
+import { TableItemType, TableWorksheetType } from '../../../types';
 import { COLOR } from '../../constants';
 
 type TheadItemProps = {
@@ -14,7 +16,7 @@ type TheadItemProps = {
 };
 
 type TableProps = {
-  list: TableItemType[];
+  list: TableItemType[] | TableWorksheetType[];
   colWidth?: { width: string }[];
   width?: string;
   theadList: TheadItemProps[];
@@ -31,10 +33,21 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
       ],
     },
   ]);
+  const [tbodyType, setTbodyType] = useState('');
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+  const openPopover = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closePopover = () => {
+    setAnchorEl(null);
+  };
 
   const findColspan = (element: TheadItemProps) => {
     if (element.th[0].colspan && element.th[0].colspan > 1) {
       return true;
+    } else {
+      return false;
     }
   };
 
@@ -51,7 +64,19 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
     }
   }, [theadList]);
 
+  const creatTbody = () => {
+    if (list[0]) {
+      //학습지 이름을 가졌을시
+      if ('TableWorksheetType' in list[0])
+        return setTbodyType('TableWorksheetType');
+      //문항코드를 가졌을시
+      if ('questionCode' in list[0]) return setTbodyType('questionCode');
+    }
+    return;
+  };
+
   useEffect(() => {
+    creatTbody();
     creatColspanList();
   }, []);
 
@@ -91,7 +116,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
           )}
         </tr>
         {/* colspan 열 th */}
-        {isColspan && (
+        {isColspan && colspanList.length > 0 && (
           <tr>
             {colspanList[0].th.map((item) => (
               <th key={`colgroup${item.title}`}>{item.title}</th>
@@ -99,17 +124,17 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
           </tr>
         )}
       </thead>
-      <tbody>
-        {list.map((content) => (
-          <tr key={content.questionCode}>
-            <td>
-              <input
-                type="checkbox"
-                // checked={selectedRows.includes(content.contentSeq)}
-                // onChange={() => selectRow(content.contentSeq)}
-              ></input>
-            </td>
-            <td>
+      {tbodyType === 'TableWorksheetType' && (
+        <tbody>
+          {list.map((content) => (
+            <tr key={content?.id}>
+              <td>
+                <input
+                  type="checkbox"
+                  // checked={selectedRows.includes(content.contentSeq)}
+                  // onChange={() => selectRow(content.contentSeq)}
+                ></input>
+              </td>
               <span className="ellipsis">
                 <IconButton
                   onClick={() => {
@@ -129,43 +154,141 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
                   )}
                 </IconButton>
               </span>
-            </td>
-            <td className="textAlignLeft">
-              <span className="ellipsis">{content.questionCode}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.curriculum}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.schoolLevel}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.schoolYear}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.semester}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.unitMajor}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.unitMiddle}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.questionType}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.questionCreatedByName}</span>
-            </td>
-            <td>
-              <span className="hide">{content.questionCreatedDate}</span>
-            </td>
-            <td>
-              <span className="ellipsis">{content.serviced ? 'Y' : 'N'}</span>
-            </td>
-          </tr>
-        ))}
-      </tbody>
+              <td>
+                <span className="ellipsis">{content.schoolLevel}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.tag}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.createdAt}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.creater}</span>
+              </td>
+              <td>
+                <button onClick={() => {}}>
+                  <PlagiarismOutlinedIcon />
+                </button>
+              </td>
+              <td>
+                <button
+                  // aria-describedby={id}
+                  onClick={() => openPopover}
+                >
+                  <MoreVertIcon />
+                </button>
+                {/* <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={closePopover}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  sx={{ marginTop: '5px' }}
+                >
+                  <PopoverMenu
+                    onClick={() => {
+                      openEditFilePopup();
+                      closePopover();
+                    }}
+                  >
+                    수정
+                  </PopoverMenu>
+                  <PopoverMenu
+                    onClick={() => {
+                      openEditFilePopup();
+                      closePopover();
+                    }}
+                  >
+                    복제 후 수정
+                  </PopoverMenu>
+                  <PopoverMenu
+                    onClick={() => {
+                      closePopover();
+                    }}
+                  >
+                    삭제
+                  </PopoverMenu>
+                </Popover> */}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      )}
+      {tbodyType === 'TableItemType' && (
+        <tbody>
+          {list.map((content) => (
+            <tr key={content?.questionCode}>
+              <td>
+                <input
+                  type="checkbox"
+                  // checked={selectedRows.includes(content.contentSeq)}
+                  // onChange={() => selectRow(content.contentSeq)}
+                ></input>
+              </td>
+              <td>
+                <span className="ellipsis">
+                  <IconButton
+                    onClick={() => {
+                      // addFavoriteQuestion(content.questionSeq)
+                    }}
+                    $iconOlny
+                    $borderNone
+                    $padding={'0'}
+                    $margin={'-2px'}
+                    width={'20px'}
+                    height={'20px'}
+                  >
+                    {content.favorited ? (
+                      <BookmarkTwoToneIcon fontSize="small" />
+                    ) : (
+                      <BookmarkBorderTwoToneIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </span>
+              </td>
+              <td className="textAlignLeft">
+                <span className="ellipsis">{content.questionCode}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.curriculum}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.schoolLevel}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.schoolYear}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.semester}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.unitMajor}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.unitMiddle}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.questionType}</span>
+              </td>
+              <td>
+                <span className="ellipsis">
+                  {content.questionCreatedByName}
+                </span>
+              </td>
+              <td>
+                <span className="hide">{content.questionCreatedDate}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{content.serviced ? 'Y' : 'N'}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      )}
     </Component>
   );
 }
