@@ -13,10 +13,10 @@ export function LabelingPopup() {
 }
 
 const Container = styled.div`
-  max-width: 80%;
+  max-width: 1024px;
   min-width: 800px;
   padding: 20px;
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
-  height: 750px;
+  height: 673px;
 `;

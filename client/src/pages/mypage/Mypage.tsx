@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -31,8 +31,6 @@ export function Mypage() {
 
   const [didMount, setDidMount] = useState(false);
 
-  let mountCount = 1;
-
   const selectNameEdition = () => {
     setIsNameEdit(!isNameEdit);
   };
@@ -55,12 +53,11 @@ export function Mypage() {
     setIsNameEdit(false);
   };
 
-  const loadData = React.useCallback(() => {
+  const loadData = useCallback(() => {
     getMemberInformation({ setMember });
   }, []);
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 

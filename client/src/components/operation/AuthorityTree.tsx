@@ -96,9 +96,7 @@ export function AuthorityTree() {
   const CreateContent = menuValue?.[0];
   const ManagementContent = menuValue?.[1];
   const Operation = menuValue?.[2];
-  console.log(menuValue);
-
-  let mountCount = 1;
+  //console.log(menuValue);
 
   const authorityMenuList = [
     {
@@ -277,7 +275,6 @@ export function AuthorityTree() {
   }, [isManageMemberChecked, isManageAuthorityChecked]);
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 

@@ -39,11 +39,9 @@ export function WorksheetTable() {
     setIsEditWorksheet(true);
   };
 
-  const [tabVeiw, setTabVeiw] = useState<string>('전체');
   const worksheetList = dummy.Worksheet;
 
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const openPopover = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -94,7 +92,6 @@ export function WorksheetTable() {
   const showFilterdList = (enabled: string) => {};
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
@@ -130,7 +127,7 @@ export function WorksheetTable() {
         menu={menuList}
         initialValue={'전체'}
         width={'300px'}
-        setTabVeiw={setTabVeiw}
+        //getTabList={changeTab}
         lineStyle
         $margin={'10px 0'}
       />

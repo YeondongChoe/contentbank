@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { TabMenu } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import {
   createContentPopupBoolAtom,
@@ -20,27 +21,29 @@ import { FileUploadingPopup } from './FileUploadingPopup';
 import { LabelingPopup } from './LabelingPopup';
 
 export function CreateMainPopup() {
+  const menuList = [
+    {
+      label: 'DT & Editing',
+      value: 'DT & Editing',
+    },
+    {
+      label: '문항 분류',
+      value: '문항 분류',
+    },
+    {
+      label: '개체 라벨링',
+      value: '개체 라벨링',
+    },
+  ];
+  const [tabVeiw, setTabVeiw] = useState<string>('DT & Editing');
+
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
   const isCreateNewContent = useRecoilValue(creatingNewContentBoolAtom);
   const isUploadFile = useRecoilValue(uploadFileBoolAtom);
 
-  const [choiceValue, setChoiceValue] = useState(1);
-
   const goBackMainPopup = () => {
     setIsUpload(false);
-  };
-
-  const moveDT_Editing = () => {
-    setChoiceValue(1);
-  };
-
-  const moveClassification = () => {
-    setChoiceValue(2);
-  };
-
-  const moveLabeling = () => {
-    setChoiceValue(3);
   };
 
   const closePopup = () => {
@@ -55,32 +58,30 @@ export function CreateMainPopup() {
           <ArrowBackIosNewIcon onClick={goBackMainPopup} />
         </IconWrapper>
         <TapMenuWrapper>
-          <TapManu choiced={choiceValue} onClick={moveDT_Editing}>
-            DT & Editing
-          </TapManu>
-          <TapManu choiced={choiceValue} onClick={moveClassification}>
-            문항 분류
-          </TapManu>
-          <TapManu choiced={choiceValue} onClick={moveLabeling}>
-            개체 라벨링
-          </TapManu>
+          <TabMenu
+            length={3}
+            menu={menuList}
+            initialValue={'DT & Editing'}
+            width={'350px'}
+            setTabVeiw={setTabVeiw}
+          />
         </TapMenuWrapper>
         <CloseButtonWrapper>
           <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
         </CloseButtonWrapper>
       </Wrapper>
-      {choiceValue === 1 && (
+      {tabVeiw === 'DT & Editing' && (
         <ContentBox>
           {isCreateNewContent && <ContentCreatingPopup />}
           {isUploadFile && <FileUploadingPopup />}
         </ContentBox>
       )}
-      {choiceValue === 2 && (
+      {tabVeiw === '문항 분류' && (
         <ContentBox>
           <ClassificationPopup />
         </ContentBox>
       )}
-      {choiceValue === 3 && (
+      {tabVeiw === '개체 라벨링' && (
         <ContentBox>
           <LabelingPopup />
         </ContentBox>
@@ -109,41 +110,11 @@ const TapMenuWrapper = styled.div`
   display: flex;
   flex: 1 0 0;
 `;
-const TapManu = styled.div<{ choiced: number }>`
-  width: 150px;
-  height: 40px;
-  border: 1px solid ${COLOR.BORDER_BLUE};
-  border-bottom: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  cursor: pointer;
-  &:first-child {
-    background-color: ${(props) =>
-      props.choiced === 1 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
-    color: ${(props) => (props.choiced === 1 ? 'white' : 'initial')};
-  }
-  &:nth-child(2) {
-    background-color: ${(props) =>
-      props.choiced === 2 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
-    color: ${(props) => (props.choiced === 2 ? 'white' : 'initial')};
-  }
-  &:nth-child(3) {
-    background-color: ${(props) =>
-      props.choiced === 3 ? 'rgba(0, 0, 0, 0.3)' : 'white'};
-    color: ${(props) => (props.choiced === 3 ? 'white' : 'initial')};
-  }
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: white;
-  }
-`;
 const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 const ContentBox = styled.div`
-  height: 750px;
   margin-left: 34px;
   border-top: 1px solid ${COLOR.BORDER_BLUE};
+  height: 700px;
 `;
