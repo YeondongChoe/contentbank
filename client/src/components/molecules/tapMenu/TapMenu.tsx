@@ -82,7 +82,7 @@ export function TabMenu({
       {menu.map(({ label, value }: MenuProps) => (
         <Tab
           className={className}
-          key={value}
+          key={`${value}+${label}`}
           label={label}
           selected={selected}
           value={value}

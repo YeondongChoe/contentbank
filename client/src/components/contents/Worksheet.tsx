@@ -58,12 +58,12 @@ export function Worksheet() {
 
   const menuList = [
     {
-      label: 'Worksheet',
-      value: 'Worksheet',
+      label: '학습지',
+      value: '학습지',
     },
     {
-      label: '즐겨찾는 학습지',
-      value: '즐겨찾는 학습지',
+      label: '즐겨찾는학습지',
+      value: '즐겨찾는학습지',
     },
   ];
   const subMenuList = [
@@ -93,7 +93,7 @@ export function Worksheet() {
         <TabMenu
           length={2}
           menu={menuList}
-          initialValue={'Worksheet'}
+          initialValue={'학습지'}
           width={'250px'}
           setTabVeiw={setTabVeiw}
         />

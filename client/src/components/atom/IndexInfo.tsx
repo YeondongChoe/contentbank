@@ -11,8 +11,8 @@ type IndexInfoProps = {
 export function IndexInfo({ list }: IndexInfoProps) {
   return (
     <Component>
-      {list.map((list) => (
-        <span key={list + `index`}>{list}</span>
+      {list.map((list, index) => (
+        <span key={list + index}>{list}</span>
       ))}
     </Component>
   );
