@@ -39,12 +39,13 @@ import { TableItemType } from '../../types';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
+  const [value, setValue] = useState<string>('');
 
   const [isChangedServiced, setIsChangedServiced] = useRecoilState(
     servicedValueBoolAtom,
   );
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
-  const page = useRecoilValue(pageAtom);
+  const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;
   const MenuCode = useRecoilValue(createListCodeValueAtom);
   // const [pageNumber, setPageNumber] = useState(1);
@@ -58,7 +59,8 @@ export function ContentsList() {
   const [content, setContent] = useState<string[]>([]);
 
   const filterSearchValue = () => {
-    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+    // console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+    setSearchValue(value);
   };
 
   const openCreatePopup = () => {
@@ -280,9 +282,9 @@ export function ContentsList() {
         {/* 테이블 수정 + 활성화 버튼 */}
         <InputWrapper>
           <Search
-            value={searchValue}
+            value={value}
             onClick={() => filterSearchValue()}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={(e) => setValue(e.target.value)}
             placeholder="이름, 권한 검색"
             margin={'0 20px 0 0'}
             width={'50%'}

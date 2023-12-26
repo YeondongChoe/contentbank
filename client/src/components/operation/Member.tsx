@@ -6,10 +6,10 @@ import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
 import { Button } from '../../components/atom';
-import { COLOR } from '../constants/COLOR';
 import { Search } from '../../components/molecules';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { pageAtom, totalPageAtom } from '../../state/utilAtom';
+import { COLOR } from '../constants';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
 import { MemberTable } from '../tableWrap/MemberTable';
