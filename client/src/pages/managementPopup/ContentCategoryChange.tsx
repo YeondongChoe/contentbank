@@ -280,8 +280,8 @@ const SelectBox = styled.div`
 `;
 const ContentWrapper = styled.div`
   display: flex;
-  gap: 20px;
-  padding-top: 20px;
+  gap: 10px;
+  padding: 10px;
 `;
 const ContentTitle = styled.div`
   margin-bottom: 5px;
@@ -318,8 +318,7 @@ const ViewerWrapper = styled.div`
   padding: 10px;
 `;
 const SaveButtonWrapper = styled.div`
-  flex: 1 0 5%;
+  flex: 1 0 0;
   display: flex;
   align-items: flex-end;
-  justify-content: flex-end;
 `;

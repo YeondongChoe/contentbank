@@ -5,11 +5,11 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
-import { Button } from '../../components/atom';
+import { Button, IndexInfo } from '../../components/atom';
 import { Search } from '../../components/molecules';
 import { registerBoolAtom, editerBoolAtom } from '../../state/memberAtom';
 import { pageAtom, totalPageAtom } from '../../state/utilAtom';
-import { COLOR } from '../constants';
+import { COLOR } from '../constants/COLOR';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
 import { MemberTable } from '../tableWrap/MemberTable';
@@ -61,6 +61,7 @@ export function Member() {
 
   return (
     <Container>
+      <IndexInfo list={['운영관리', '회원관리']} />
       <Wrapper>
         <Search
           value={searchValue}
@@ -98,12 +99,10 @@ const Container = styled.div`
 const Wrapper = styled.div`
   width: 100%;
   height: 40px;
-  margin-top: 40px;
-  padding-right: 10px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
 `;
 const ContentWrapper = styled.div`
-  border-top: 1px solid ${COLOR.BORDER_BLUE};
+  border-top: 1px solid ${COLOR.SECONDARY};
 `;

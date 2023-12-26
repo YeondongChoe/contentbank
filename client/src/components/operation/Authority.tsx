@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Controller, useForm } from 'react-hook-form';
@@ -10,7 +10,7 @@ import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
-import { Button } from '../../components/atom';
+import { Button, IndexInfo } from '../../components/atom';
 import {
   editCreateContentBool,
   editCreateListBool,
@@ -177,6 +177,12 @@ export function Authority() {
     DeleteAuthority({ setIsAlertOpen }, code);
   };
 
+  const loadData = useCallback(() => {
+    getAuthorityList({
+      setAuthorityList,
+    });
+  }, [setAuthorityList]);
+
   useEffect(() => {
     mountCount++;
     setDidMount(true);
@@ -184,14 +190,13 @@ export function Authority() {
 
   useEffect(() => {
     if (didMount) {
-      getAuthorityList({
-        setAuthorityList,
-      });
+      loadData();
     }
-  }, [didMount, setAuthorityList]);
+  }, [didMount]);
 
   return (
     <Container>
+      <IndexInfo list={['운영관리', '권한관리']} />
       <Wrapper>
         <TreeWrapper>
           <TreeMenuWrapper>
@@ -289,26 +294,25 @@ export function Authority() {
 }
 
 const Container = styled.div`
+  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 80px;
+  flex-direction: column;
 `;
 const Wrapper = styled.div`
+  margin-top: 40px;
   height: 500px;
   display: flex;
-  border-top: 1px solid ${COLOR.BORDER_BLUE};
+  border-top: 1px solid ${COLOR.SECONDARY};
   gap: 40px;
 `;
 const TreeWrapper = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-  border-right: 1px solid ${COLOR.BORDER_BLUE};
+  border-right: 1px solid ${COLOR.SECONDARY};
   padding: 10px;
 `;
 const TreeMenuWrapper = styled.div`
-  width: 100%;
   display: flex;
   justify-content: flex-end;
   padding: 20px 90px 20px;
@@ -336,7 +340,7 @@ const InputWrapper = styled.div`
 const AuthorityListWrapper = styled.div`
   width: 400px;
   height: 400px;
-  border: 1px solid ${COLOR.BORDER_BLUE};
+  border: 1px solid ${COLOR.SECONDARY};
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -350,8 +354,6 @@ const AuthorityWrapper = styled.div`
   justify-content: space-between;
   &:hover {
     background-color: ${COLOR.SELECT_HOVER};
-    border-top: 1px solid ${COLOR.BORDER_BLUE};
-    border-bottom: 1px solid ${COLOR.BORDER_BLUE};
     color: white;
   }
 `;

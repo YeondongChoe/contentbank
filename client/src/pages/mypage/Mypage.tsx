@@ -55,6 +55,10 @@ export function Mypage() {
     setIsNameEdit(false);
   };
 
+  const loadData = React.useCallback(() => {
+    getMemberInformation({ setMember });
+  }, []);
+
   useEffect(() => {
     mountCount++;
     setDidMount(true);
@@ -62,9 +66,9 @@ export function Mypage() {
 
   useEffect(() => {
     if (didMount) {
-      getMemberInformation({ setMember });
+      loadData();
     }
-  }, [setMember, isNameEdit, didMount]);
+  }, [isNameEdit, didMount]);
 
   useEffect(() => {
     if (isNameEdit && nameInputRef.current) {

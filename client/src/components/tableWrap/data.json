@@ -9,8 +9,8 @@
     {"id": "7", "name": "강길동", "grade": "초등2", "phone": "010-5555-5555"}
   ],
   "Worksheet" : [
-    {"id": 1, "favorited": false, "schoolLevel": "중1", "tag": "기본", "WorksheetName": "내가 만든 중1 문항/ 하/ 소단원명-소단원명", "createdAt": "2020.04.01", "creater": "김용용"},
-    {"id": 2, "favorited": false,"schoolLevel": "초5", "tag": "내신대비", "WorksheetName": "작성자가 작성한 학습자명 표시/선택한 난이도 / 선택한 출제 범위", "createdAt": "2020.04.01", "creater": "김종종"},
-    {"id": 3, "favorited": false, "schoolLevel": "고2", "tag": "모의고사", "WorksheetName": "작성자가 작성한 학습자명 표시/선택한 난이도 / 선택한 출제 범위", "createdAt": "2020.04.01", "creater": "김양양"}    
+    {"id": 1, "favorited": false, "schoolLevel": "중1", "tag": "기본", "worksheetName": "내가 만든 중1 문항/ 하/ 소단원명-소단원명", "createdAt": "2020.04.01", "creater": "김용용"},
+    {"id": 2, "favorited": false,"schoolLevel": "초5", "tag": "내신대비", "worksheetName": "작성자가 작성한 학습자명 표시/선택한 난이도 / 선택한 출제 범위", "createdAt": "2020.04.01", "creater": "김종종"},
+    {"id": 3, "favorited": false, "schoolLevel": "고2", "tag": "모의고사", "worksheetName": "작성자가 작성한 학습자명 표시/선택한 난이도 / 선택한 출제 범위", "createdAt": "2020.04.01", "creater": "김양양"}    
   ]
 }

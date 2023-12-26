@@ -96,8 +96,42 @@ export function AuthorityTree() {
   const CreateContent = menuValue?.[0];
   const ManagementContent = menuValue?.[1];
   const Operation = menuValue?.[2];
+  console.log(menuValue);
 
   let mountCount = 1;
+
+  const authorityMenuList = [
+    {
+      firstTitle: '전체',
+      tabIndex: 1,
+      menuList: [
+        {
+          title: '콘텐츠 제작',
+          tabIndex: 2,
+          list: [
+            { title: '문항', tabIndex: 3 },
+            { title: '학습지', tabIndex: 4 },
+          ],
+        },
+        {
+          title: '콘텐츠 관리',
+          tabIndex: 5,
+          list: [
+            { title: '문항', tabIndex: 6 },
+            { title: '문항정보 트리구조', tabIndex: 7 },
+          ],
+        },
+        {
+          title: '운영 관리',
+          tabIndex: 8,
+          list: [
+            { title: '회원 관리', tabIndex: 9 },
+            { title: '권한 관리', tabIndex: 10 },
+          ],
+        },
+      ],
+    },
+  ];
 
   /** 전체 편집, 하위 항목 체크 상태여부*/
   const [isEditAllChecked, setIsEditAllChecked] = useState<boolean>(false);
@@ -250,7 +284,6 @@ export function AuthorityTree() {
   const [display, setDisplay] = useState('none');
 
   const offLoader = () => {
-    // console.log('off loader');
     setDisplay('block');
   };
 
@@ -285,11 +318,56 @@ export function AuthorityTree() {
     setIsManageAuthorityChecked(false);
   }, []);
 
+  const [isShowAllList, setIsShowAllList] = useState(true);
+
+  const toggleTree = () => {
+    setIsShowAllList((check: boolean) => !check);
+  };
+  const [isShowList, setIsShowList] = useState(
+    Array(menuValue.length).fill(true),
+  );
+  const toggleSubMenu = (index: number) => {
+    setIsShowList((prev) => {
+      const updatedList = [...prev];
+      updatedList[index] = !updatedList[index];
+      return updatedList;
+    });
+  };
+
   return (
     <>
       {display === 'none' && <Loader height={'100px'} size="50px" />}
+      <TreeWrapper>
+        <>
+          <IconWrapper onClick={toggleTree}>
+            <ArrowDropDownIcon />
+          </IconWrapper>
+          <div>
+            전체
+            {isShowAllList && (
+              <ul>
+                {menuValue.map((menu, index) => (
+                  <li key={menu.name} className={menu.name}>
+                    <IconWrapper onClick={() => toggleSubMenu(index)}>
+                      <ArrowDropDownIcon />
+                    </IconWrapper>
+                    {menu.name}
+                    {isShowList[index] && (
+                      <ul>
+                        {menu.children.map((list) => (
+                          <li key={list.name}>{list.name}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      </TreeWrapper>
 
-      <TreeView
+      {/* <TreeView
         defaultCollapseIcon={<ArrowDropDownIcon />}
         defaultExpandIcon={<ArrowRightIcon />}
         defaultExpanded={['Authority', 'CNC', 'CNM', 'OPM']}
@@ -604,13 +682,6 @@ export function AuthorityTree() {
                     }}
                   />
                   <CheckBoxWrapper>
-                    {/* <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isEditMemberChecked}
-                    onClick={() => {
-                      clickMemberEdit();
-                    }}
-                  /> */}
                     <Checkbox
                       sx={{ height: '24px' }}
                       checked={isManageMemberChecked}
@@ -640,13 +711,6 @@ export function AuthorityTree() {
                     }}
                   />
                   <CheckBoxWrapper>
-                    {/* <Checkbox
-                    sx={{ height: '24px' }}
-                    checked={isEditAuthorityChecked}
-                    onClick={() => {
-                      clickAuthorityEdit();
-                    }}
-                  /> */}
                     <Checkbox
                       sx={{ height: '24px' }}
                       checked={isManageAuthorityChecked}
@@ -663,14 +727,6 @@ export function AuthorityTree() {
                 </TreeWrapper>
               </TreeItem>
               <CheckBoxWrapper style={{ marginLeft: '-42px' }}>
-                {/* <Checkbox
-  
-                sx={{ height: '24px' }}
-                checked={isEditOperationChecked}
-                onClick={() => {
-                  clickOperationEdit();
-                }}
-              /> */}
                 <Checkbox
                   sx={{ height: '24px' }}
                   checked={isManageOperationChecked}
@@ -755,13 +811,47 @@ export function AuthorityTree() {
             />
           </CheckBoxWrapper>
         </TreeWrapper>
-      </TreeView>
+      </TreeView> */}
     </>
   );
 }
 const TreeWrapper = styled.div`
+  min-width: 500px;
   display: flex;
+  font-size: 16px;
+  padding: 0px 10px;
+
+  .icon {
+    cursor: pointer;
+  }
+
+  > div {
+    padding-left: 5px;
+    .icon {
+      cursor: pointer;
+    }
+
+    > ul {
+      > li {
+        padding-top: 10px;
+
+        > ul {
+          padding-left: 40px;
+
+          > li {
+            padding-top: 10px;
+          }
+        }
+      }
+    }
+  }
 `;
+const IconWrapper = styled.span`
+  cursor: pointer;
+`;
+// const TreeWrapper = styled.div`
+//   display: flex;
+// `;
 const CheckBoxWrapper = styled.div`
   height: 24px;
 `;
