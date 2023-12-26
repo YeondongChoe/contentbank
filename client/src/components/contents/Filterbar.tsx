@@ -12,8 +12,6 @@ export function Filterbar() {
   const [value, setValue] = useState('1');
   const [didMount, setDidMount] = useState(false);
 
-  let mountCount = 1;
-
   const changeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     setSelectedRows([]);
@@ -24,7 +22,6 @@ export function Filterbar() {
   };
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
     return () => {};
   }, []);

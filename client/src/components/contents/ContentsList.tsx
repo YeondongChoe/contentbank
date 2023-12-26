@@ -44,7 +44,7 @@ export function ContentsList() {
     servicedValueBoolAtom,
   );
   const [didMount, setDidMount] = useState(false);
-  const mountCount = 1;
+
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;

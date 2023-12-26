@@ -26,7 +26,6 @@ type authorityListProps = {
 
 export function RegisterPopup() {
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
@@ -105,7 +104,6 @@ export function RegisterPopup() {
   }, []);
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
@@ -128,54 +126,25 @@ export function RegisterPopup() {
               />
             </TitleWrapper>
             <ContentBox>
-              <Box
-                component="form"
-                display="flex"
-                flexDirection="column"
-                autoComplete="off"
-              >
-                {isNameError ? (
-                  <Label type="error" fontSize="16px" value="이름(필수)" />
-                ) : (
-                  <Label fontSize="16px" value="이름(필수)" />
-                )}
-                <Controller
-                  control={control}
-                  name="name"
-                  defaultValue=""
-                  render={({ field }) => (
-                    <>
-                      <Input
-                        type="text"
-                        placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
-                        value={field.value}
-                        width="350px"
-                        height="32px"
-                        fontSize="16px"
-                        placeholderSize="12px"
-                        margin="0px 0px 10px 0px"
-                        border="black"
-                        borderbottom={isNameError && true}
-                        onChange={field.onChange}
-                        onClick={() => setIsNameError(false)}
-                        errorMessage={isNameError && nameErrorMessage}
-                      />
-                    </>
-                  )}
+              {isNameError ? (
+                <Label
+                  width="350px"
+                  type="error"
+                  fontSize="16px"
+                  value="이름(필수)"
                 />
-                {isNameError ? (
-                  <Label type="error" fontSize="16px" value="아이디(필수)" />
-                ) : (
-                  <Label fontSize="16px" value="아이디(필수)" />
-                )}
-                <Controller
-                  control={control}
-                  name="id"
-                  defaultValue=""
-                  render={({ field }) => (
+              ) : (
+                <Label width="350px" fontSize="16px" value="이름(필수)" />
+              )}
+              <Controller
+                control={control}
+                name="name"
+                defaultValue=""
+                render={({ field }) => (
+                  <>
                     <Input
                       type="text"
-                      placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
+                      placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                       value={field.value}
                       width="350px"
                       height="32px"
@@ -183,62 +152,95 @@ export function RegisterPopup() {
                       placeholderSize="12px"
                       margin="0px 0px 10px 0px"
                       border="black"
+                      borderbottom={isNameError && true}
                       onChange={field.onChange}
-                      onClick={() => setIsIdError(false)}
-                      errorMessage={isIdError && idErrorMessage}
+                      onClick={() => setIsNameError(false)}
+                      errorMessage={isNameError && nameErrorMessage}
                     />
-                  )}
-                />
-                {Id && isDuplicate === true && (
-                  <IdSuccessMessage>{successMessage}</IdSuccessMessage>
+                  </>
                 )}
-                <DuplicationButtonWrapper>
-                  <Button
-                    buttonType="button"
-                    onClick={checkDuplicate}
-                    $padding="10px"
-                    height={'30px'}
-                    width={'110px'}
-                    fontSize="14px"
-                    $borderRadius="15px"
-                  >
-                    <span>중복확인</span>
-                  </Button>
-                </DuplicationButtonWrapper>
-              </Box>
-              <Box sx={{ width: '350px' }}>
-                <Label fontSize="16px" value="권한" />
-                <Controller
-                  control={control}
-                  name="authority"
-                  render={({ field }) => (
-                    <Select
-                      width="350px"
-                      height="50px"
-                      padding="5px 0px 0px 0px"
-                      onSelect={(event, code) => {
-                        setAuthorityCode(code);
-                      }}
-                      options={AuthorityOption}
-                    ></Select>
-                  )}
+              />
+              {isNameError ? (
+                <Label
+                  width="350px"
+                  type="error"
+                  fontSize="16px"
+                  value="아이디(필수)"
                 />
-                <Label fontSize="11px" value="(필수)권한을 선택하세요" />
-              </Box>
-              <Box sx={{ width: '350px' }}>
-                <Label fontSize="16px" value="비고" />
-                <Textarea
-                  sx={{ mb: 1, mt: 1, fontSize: '14px' }}
-                  placeholder=""
-                  size="md"
-                  name="Size"
-                  minRows={3}
-                  maxRows={3}
-                  onChange={(e) => {
-                    setCommentValue(e.target.value);
-                  }}
-                />
-              </Box>
+              ) : (
+                <Label width="350px" fontSize="16px" value="아이디(필수)" />
+              )}
+              <Controller
+                control={control}
+                name="id"
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
+                    value={field.value}
+                    width="350px"
+                    height="32px"
+                    fontSize="16px"
+                    placeholderSize="12px"
+                    margin="0px 0px 10px 0px"
+                    border="black"
+                    onChange={field.onChange}
+                    onClick={() => setIsIdError(false)}
+                    errorMessage={isIdError && idErrorMessage}
+                  />
+                )}
+              />
+              {Id && isDuplicate === true && (
+                <IdSuccessMessage>{successMessage}</IdSuccessMessage>
+              )}
+              <DuplicationButtonWrapper>
+                <Button
+                  buttonType="button"
+                  onClick={checkDuplicate}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'110px'}
+                  fontSize="14px"
+                  $borderRadius="15px"
+                >
+                  <span>중복확인</span>
+                </Button>
+              </DuplicationButtonWrapper>
+
+              <Label width="350px" fontSize="16px" value="권한" />
+              <Controller
+                control={control}
+                name="authority"
+                render={({ field }) => (
+                  <Select
+                    width="350px"
+                    height="50px"
+                    padding="5px 0px 0px 0px"
+                    onSelect={(event, code) => {
+                      setAuthorityCode(code);
+                    }}
+                    options={AuthorityOption}
+                  ></Select>
+                )}
+              />
+              <Label
+                width="350px"
+                fontSize="11px"
+                value="(필수)권한을 선택하세요"
+              />
+              <Label width="350px" fontSize="16px" value="비고" />
+              <Textarea
+                sx={{ mb: 1, mt: 1, fontSize: '14px', width: '350px' }}
+                placeholder=""
+                size="md"
+                name="Size"
+                minRows={3}
+                maxRows={3}
+                onChange={(e) => {
+                  setCommentValue(e.target.value);
+                }}
+              />
               <NoticeWarpper>
                 <Notice>*초기 비밀번호는 drmath@369입니다.</Notice>
                 <Notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</Notice>
@@ -317,7 +319,7 @@ const IdSuccessMessage = styled.p`
   font-size: 12px;
 `;
 const DuplicationButtonWrapper = styled.div`
-  width: 100%;
+  min-width: 350px;
   display: flex;
   justify-content: flex-end;
 `;

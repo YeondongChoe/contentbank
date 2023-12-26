@@ -12,6 +12,7 @@ type PaginationBoxProps = {
   itemsCountPerPage: number;
   totalItemsCount: number;
   onClick?: () => void;
+  onChange?: (e: any) => void;
 };
 
 export function PaginationBox({
@@ -20,14 +21,13 @@ export function PaginationBox({
 }: PaginationBoxProps) {
   const [page, setPage] = useRecoilState(pageAtom);
   // const setSelectedRows = useSetRecoilState<number[]>(checkBoxValueAtom);
-
   return (
     <Wrapper>
       <Pagination
         activePage={page}
         itemsCountPerPage={itemsCountPerPage}
         totalItemsCount={totalItemsCount}
-        pageRangeDisplayed={5}
+        pageRangeDisplayed={2}
         prevPageText={'<'}
         nextPageText={'>'}
         onChange={(page) => {

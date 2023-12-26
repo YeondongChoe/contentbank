@@ -32,7 +32,6 @@ import { TableItemType } from '../../types';
 
 export function ManagementsList() {
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;
@@ -200,7 +199,6 @@ export function ManagementsList() {
 
   useEffect(() => {
     setPage(1);
-    mountCount++;
     setDidMount(true);
   }, []);
 

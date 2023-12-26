@@ -38,8 +38,8 @@ export function ManagementsTree() {
           onClick={() => setIsCreate(true)}
           $padding="10px"
           height={'35px'}
-          width={'170px'}
-          fontSize="12px"
+          width={'200px'}
+          fontSize="16px"
         >
           <span>문항 정보 트리구조 변경</span>
         </Button>

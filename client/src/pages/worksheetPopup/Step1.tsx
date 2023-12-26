@@ -31,7 +31,6 @@ export function Step1() {
   ];
 
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
   const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [grade, setGrade] = useState('1');
@@ -110,7 +109,6 @@ export function Step1() {
   };
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
@@ -467,9 +465,9 @@ export function Step1() {
                     setQuestionType(['객관식', '주관식', '서술형']);
                   }
                 }}
-                $padding="10px 26px"
+                $padding="10px 20px"
                 height={'30px'}
-                width={'80'}
+                width={'82px'}
                 fontSize="12px"
                 $border={!isAllSelected}
               >
@@ -480,9 +478,9 @@ export function Step1() {
                 onClick={() => {
                   selectQuestionType('객관식');
                 }}
-                $padding="10px 22px"
+                $padding="10px 20px"
                 height={'30px'}
-                width={'80'}
+                width={'81px'}
                 fontSize="12px"
                 $border={!questionType.includes('객관식')}
               >
@@ -493,9 +491,9 @@ export function Step1() {
                 onClick={() => {
                   selectQuestionType('주관식');
                 }}
-                $padding="10px 22px"
+                $padding="10px 20px"
                 height={'30px'}
-                width={'80'}
+                width={'81px'}
                 fontSize="12px"
                 $border={!questionType.includes('주관식')}
               >
@@ -506,9 +504,9 @@ export function Step1() {
                 onClick={() => {
                   selectQuestionType('서술형');
                 }}
-                $padding="10px 22px"
+                $padding="10px 20px"
                 height={'30px'}
-                width={'80'}
+                width={'81px'}
                 fontSize="12px"
                 $border={!questionType.includes('서술형')}
               >
@@ -522,9 +520,9 @@ export function Step1() {
                 onClick={() => {
                   selectContainMock('포함');
                 }}
-                $padding="10px 42px"
+                $padding="10px 40px"
                 height={'30px'}
-                width={'110'}
+                width={'110px'}
                 fontSize="12px"
                 $border={containMock !== '포함'}
               >
@@ -535,9 +533,9 @@ export function Step1() {
                 onClick={() => {
                   selectContainMock('제외');
                 }}
-                $padding="10px 42px"
+                $padding="10px 40px"
                 height={'30px'}
-                width={'110'}
+                width={'110px'}
                 fontSize="12px"
                 $border={containMock !== '제외'}
               >
@@ -548,9 +546,9 @@ export function Step1() {
                 onClick={() => {
                   selectContainMock('모의고사만');
                 }}
-                $padding="10px 24px"
+                $padding="10px 20px"
                 height={'30px'}
-                width={'110'}
+                width={'110px'}
                 fontSize="12px"
                 $border={containMock !== '모의고사만'}
               >
@@ -638,6 +636,7 @@ const SchoolButtonGroup = styled.div`
 const SelectorGroup = styled.div`
   display: flex;
   gap: 5px;
+  //padding: 5px;
 `;
 const DivideBar = styled.div`
   color: ${COLOR.BORDER_BLUE};
@@ -649,8 +648,6 @@ const TreeviewWrapper = styled.div`
 const SchoolSelectorSection = styled.section`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
   border: 1px solid ${COLOR.BORDER_POPUP};
   padding: 10px;
   border-radius: 25px;

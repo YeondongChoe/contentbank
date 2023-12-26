@@ -35,7 +35,6 @@ export function Worksheet() {
   };
 
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
 
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
@@ -48,20 +47,19 @@ export function Worksheet() {
   };
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
   useEffect(() => {
     if (didMount) {
-      console.log();
+      console.log('학습지테이블 데이타 가져오기');
     }
   }, [didMount]);
 
   const menuList = [
     {
-      label: '학습지',
-      value: '학습지',
+      label: 'Worksheet',
+      value: 'Worksheet',
     },
     {
       label: '즐겨찾는 학습지',
@@ -95,7 +93,7 @@ export function Worksheet() {
         <TabMenu
           length={2}
           menu={menuList}
-          initialValue={'학습지'}
+          initialValue={'Worksheet'}
           width={'250px'}
           setTabVeiw={setTabVeiw}
         />
@@ -105,7 +103,7 @@ export function Worksheet() {
           <Search
             value={searchValue}
             width={'250px'}
-            onClick={() => filterSearchValue()}
+            onClick={filterSearchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="이름, 권한 검색"
           />
@@ -113,7 +111,7 @@ export function Worksheet() {
             height={'35px'}
             width={'150px'}
             $margin={'0 0 0 10px'}
-            onClick={() => openStep1()}
+            onClick={openStep1}
           >
             학습지 만들기
           </Button>

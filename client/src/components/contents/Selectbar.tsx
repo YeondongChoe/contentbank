@@ -9,7 +9,6 @@ import styled from 'styled-components';
 
 export function SelectBar() {
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
 
   const [curriculum, setCurriculum] = useState('');
   const [schoolLevel, setSchoolLevel] = useState('');
@@ -48,7 +47,6 @@ export function SelectBar() {
   };
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 

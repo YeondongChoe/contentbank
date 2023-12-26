@@ -138,7 +138,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
               <span className="ellipsis">
                 <IconButton
                   onClick={() => {
-                    // addFavoriteQuestion(content.questionSeq)
+                    // addFavoriteQuestion(content.questionSeq);
                   }}
                   $iconOlny
                   $borderNone

@@ -59,7 +59,6 @@ export function Authority() {
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
 
   /** 콘텐츠 제작 편집 체크 상태여부*/
   const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
@@ -184,7 +183,6 @@ export function Authority() {
   }, [setAuthorityList]);
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
