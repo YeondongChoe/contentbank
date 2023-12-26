@@ -32,10 +32,10 @@ export function ContentCreatingPopup() {
 }
 
 const Container = styled.div`
-  max-width: 100%;
+  max-width: 1024px;
   min-width: 800px;
   padding: 20px;
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
-  height: 750px;
+  height: 673px;
 `;

@@ -12,7 +12,6 @@ import dummy from '../createPopup/data.json';
 
 export function ContentCategoryChange() {
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
   const ContentList = dummy.ContentInfo;
   const Category = dummy.Category;
 
@@ -129,7 +128,6 @@ export function ContentCategoryChange() {
   }, []);
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
@@ -224,7 +222,7 @@ export function ContentCategoryChange() {
                     );
                   }
                 }}
-                choiced={
+                $choiced={
                   el.sort === selectedCode || selectedRows.includes(el.sort)
                 }
               >
@@ -302,11 +300,11 @@ const AllCheckWapper = styled.div`
 const AllCheckTitle = styled.div`
   font-size: 14px;
 `;
-const Content = styled.div<{ choiced: boolean }>`
+const Content = styled.div<{ $choiced: boolean }>`
   padding: 0px 10px;
   font-size: 13px;
-  background-color: ${(props) => (props.choiced ? '#a3aed0' : 'white')};
-  color: ${(props) => (props.choiced ? 'white' : 'initial')};
+  background-color: ${(props) => (props.$choiced ? '#a3aed0' : 'white')};
+  color: ${(props) => (props.$choiced ? 'white' : 'initial')};
   cursor: pointer;
 `;
 const ContentViewerSection = styled.section`

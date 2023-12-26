@@ -30,3 +30,23 @@ export const contentTheadList = [
     th: [{ title: '작성자' }, { title: '일자' }, { title: '활성화' }],
   },
 ];
+
+//회원 테이블
+export const memberColWidth = [
+  { width: '5%' },
+  { width: '20%' },
+  { width: '20%' },
+  { width: '20%' },
+  { width: '20%' },
+  { width: '10%' },
+  { width: '10%' },
+];
+export const memberTheadList = [
+  { th: [{ title: '', rowSpan: 2 }] },
+  { th: [{ title: '이름', rowSpan: 2 }] },
+  { th: [{ title: '아이디', rowSpan: 2 }] },
+  { th: [{ title: '권한', rowSpan: 2 }] },
+  { th: [{ title: '등록일', rowSpan: 2 }] },
+  { th: [{ title: '상태', rowSpan: 2 }] },
+  { th: [{ title: '상세정보', rowSpan: 2 }] },
+];

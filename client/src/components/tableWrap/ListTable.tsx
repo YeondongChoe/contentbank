@@ -56,7 +56,6 @@ type questionListProps = {
 
 export function ListTable() {
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
   /**문항 리스트 관련 코드 */
   const [questionList, setQuestionList] = useState<questionListProps[]>([]);
   const searchValue = useRecoilValue(searchValueAtom);
@@ -250,7 +249,6 @@ export function ListTable() {
   };
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 

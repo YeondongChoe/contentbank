@@ -18,7 +18,6 @@ export function ClassificationPopup() {
   const Category2 = dummy.Category2;
 
   const [didMount, setDidMount] = useState(false);
-  let mountCount = 1;
   const [selectedCode, setSelectedCode] = useState(null);
   const [code, setCode] = useState('');
   const [classificatecode, setClassificatecode] = useState('');
@@ -51,7 +50,6 @@ export function ClassificationPopup() {
   };
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
@@ -79,7 +77,7 @@ export function ClassificationPopup() {
                 onClick={() => {
                   selectContentCode(el.sort, el.code, el.classificatecode);
                 }}
-                choiced={el.sort === selectedCode}
+                $choiced={el.sort === selectedCode}
               >
                 {el.code}
               </Content>
@@ -190,11 +188,11 @@ const ContentListWrapper = styled.div`
 const ContentsList = styled.div`
   padding: 10px;
 `;
-const Content = styled.div<{ choiced: boolean }>`
+const Content = styled.div<{ $choiced: boolean }>`
   font-size: 13px;
   background-color: ${(props) =>
-    props.choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
-  color: ${(props) => (props.choiced ? 'white' : 'initial')};
+    props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
+  color: ${(props) => (props.$choiced ? 'white' : 'initial')};
   cursor: pointer;
 `;
 const ContentViewerWrapper = styled.div`

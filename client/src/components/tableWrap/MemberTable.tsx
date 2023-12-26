@@ -60,14 +60,13 @@ export function MemberTable({
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [memberList, setMemberList] = useState<memberListProps[]>([]);
+  const [enabled, setEnabled] = useState<string | undefined>();
   const setKeyValue = useSetRecoilState(memberKeyValueAtom);
   const setIsEdit = useSetRecoilState(editerBoolAtom);
   const relode = useRecoilValue(registerBoolAtom);
   const [isEnabled, setIsEnabled] = useState(false);
   const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
   const [didMount, setDidMount] = useState(false);
-
-  let mountCount = 1;
 
   const [display, setDisplay] = useState('none');
 
@@ -77,16 +76,25 @@ export function MemberTable({
   };
 
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 8;
+
+  const showMemberList = (enabled: string) => {
+    setEnabled(enabled);
+    getMemberList({
+      setMemberList,
+      settotalPage,
+      page,
+      size,
+      enabled,
+    });
+  };
 
   const changeTab = (value: string) => {
     setSelectedRows([]);
     // 현재 페이지 업데이트 후 showMemberList 호출
     if (page !== 1) {
       setPage(1);
-      setCurrentPage(1);
     }
     showMemberList(value === '활성화' ? 'Y' : value === '비활성화' ? 'N' : '');
   };
@@ -115,17 +123,6 @@ export function MemberTable({
       setSelectedRows(memberList?.map((member) => member.id));
     }
   };
-  const [enabled, setEnabled] = useState<string | undefined>();
-  const showMemberList = (enabled: string) => {
-    setEnabled(enabled);
-    getMemberList({
-      setMemberList,
-      settotalPage,
-      page: currentPage,
-      size,
-      enabled,
-    });
-  };
 
   const openDisableAlert = () => {
     setIsEnabled(true);
@@ -146,7 +143,6 @@ export function MemberTable({
   };
 
   useEffect(() => {
-    mountCount++;
     setDidMount(true);
   }, []);
 
@@ -154,19 +150,23 @@ export function MemberTable({
     if (searchMemberList) {
       setMemberList(searchMemberList);
     }
-    offLoader();
   }, [searchMemberList]);
+
+  const loadData = useCallback(() => {
+    getMemberList({
+      setMemberList,
+      settotalPage,
+      page,
+      size,
+      enabled,
+    });
+  }, [page]);
 
   useEffect(() => {
     if (didMount) {
-      getMemberList({
-        setMemberList,
-        settotalPage,
-        page,
-        size,
-        enabled,
-      });
+      loadData();
     }
+    offLoader();
   }, [didMount, relode, page]);
 
   return (
@@ -263,6 +263,11 @@ export function MemberTable({
               ))}
             </Tbody>
           </Table>
+          {/* <Table
+            list={memberList}
+            colWidth={contentColWidth}
+            theadList={contentTheadList}
+          /> */}
         </TableWrapper>
       </>
       <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
