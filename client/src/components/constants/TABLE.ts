@@ -44,14 +44,14 @@ export const worksheetColWidth = [
   { width: '10%' },
 ];
 export const worksheetTheadList = [
-  { th: [{ title: '', rowSpan: 2 }] },
-  { th: [{ title: '학년', rowSpan: 2 }] },
-  { th: [{ title: '태그', rowSpan: 2 }] },
-  { th: [{ title: '학습지명', rowSpan: 2 }] },
-  { th: [{ title: '등록일', rowSpan: 2 }] },
-  { th: [{ title: '작성자', rowSpan: 2 }] },
-  { th: [{ title: '미리보기', rowSpan: 2 }] },
-  { th: [{ title: '설정', rowSpan: 2 }] },
+  { th: [{ title: '' }] },
+  { th: [{ title: '학년' }] },
+  { th: [{ title: '태그' }] },
+  { th: [{ title: '학습지명' }] },
+  { th: [{ title: '등록일' }] },
+  { th: [{ title: '작성자' }] },
+  { th: [{ title: '미리보기' }] },
+  { th: [{ title: '설정' }] },
 ];
 
 //회원 테이블

@@ -109,6 +109,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
                   key={`colgroup${item.th[0].title}`}
                   rowSpan={item.th[0]?.rowSpan}
                   colSpan={item.th[0]?.colspan}
+                  className={item.th[0]?.colspan ? '' : 'padding'}
                 >
                   {item.th[0].title}
                 </th>
@@ -318,6 +319,10 @@ const Component = styled.table<TableStyleProps>`
     color: ${COLOR.SECONDARY};
     font-size: 14px;
     font-weight: bold;
+
+    &.padding {
+      padding: 20px 0;
+    }
   }
   td {
     border: 1px solid ${COLOR.SECONDARY};
