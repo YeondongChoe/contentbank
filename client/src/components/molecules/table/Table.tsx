@@ -5,9 +5,15 @@ import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone
 import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { Button, IconButton } from '../../../components';
+import { IconButton } from '../../../components';
+import {
+  createWorksheetStep1BoolAtom,
+  createWorksheetStep2BoolAtom,
+  editWorksheetBoolAtom,
+} from '../../../state/creatingWorksheetAtom';
 import { TableItemType, TableWorksheetType } from '../../../types';
 import { COLOR } from '../../constants';
 
@@ -34,13 +40,28 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
     },
   ]);
   const [tbodyType, setTbodyType] = useState('');
-  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-  const openPopover = (event: React.MouseEvent<HTMLDivElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
 
-  const closePopover = () => {
-    setAnchorEl(null);
+  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
+  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
+
+  const openEditFilePopup = () => {
+    setIsStep1(false);
+    setIsStep2(true);
+    setIsEditWorksheet(true);
+  };
+  // 학습지 설정 버튼
+  const openSettingList = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    event.preventDefault();
+    console.log(event.currentTarget.children[1].classList);
+    event.currentTarget.children[1].classList.add('show');
+  };
+  const closeSettingList = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    event.currentTarget.children[1].classList.remove('show');
   };
 
   const findColspan = (element: TheadItemProps) => {
@@ -94,13 +115,15 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
       )}
       <thead>
         <tr>
-          <th rowSpan={2}>
-            <input
-              type="checkbox"
-              // onChange={selectAll}
-              // checked={isAllSelected}
-            ></input>
-          </th>
+          {tbodyType === 'TableItemType' && (
+            <th rowSpan={2}>
+              <input
+                type="checkbox"
+                // onChange={selectAll}
+                // checked={isAllSelected}
+              ></input>
+            </th>
+          )}
 
           {theadList.map(
             (item) =>
@@ -131,13 +154,6 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
         <tbody>
           {list.map((content) => (
             <tr key={content?.id}>
-              <td>
-                <input
-                  type="checkbox"
-                  // checked={selectedRows.includes(content.contentSeq)}
-                  // onChange={() => selectRow(content.contentSeq)}
-                ></input>
-              </td>
               <td>
                 <button
                   onClick={() => {
@@ -172,47 +188,40 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
                 </button>
               </td>
               <td>
-                <button
-                  // aria-describedby={id}
-                  onClick={() => openPopover}
+                <SettingButton
+                  type="button"
+                  onClick={(event) => openSettingList(event)}
+                  onMouseLeave={(event) => closeSettingList(event)}
                 >
                   <MoreVertIcon />
-                </button>
-                {/* <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={closePopover}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  sx={{ marginTop: '5px' }}
-                >
-                  <PopoverMenu
-                    onClick={() => {
-                      openEditFilePopup();
-                      closePopover();
-                    }}
-                  >
-                    수정
-                  </PopoverMenu>
-                  <PopoverMenu
-                    onClick={() => {
-                      openEditFilePopup();
-                      closePopover();
-                    }}
-                  >
-                    복제 후 수정
-                  </PopoverMenu>
-                  <PopoverMenu
-                    onClick={() => {
-                      closePopover();
-                    }}
-                  >
-                    삭제
-                  </PopoverMenu>
-                </Popover> */}
+                  <SettingList>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          openEditFilePopup();
+                        }}
+                      >
+                        수정
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          openEditFilePopup();
+                        }}
+                      >
+                        복제 후 수정
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button" onClick={(event) => {}}>
+                        삭제
+                      </button>
+                    </li>
+                  </SettingList>
+                </SettingButton>
               </td>
             </tr>
           ))}
@@ -321,7 +330,7 @@ const Component = styled.table<TableStyleProps>`
     font-weight: bold;
 
     &.padding {
-      padding: 20px 0;
+      padding: 10px;
     }
   }
   td {
@@ -351,5 +360,55 @@ const Component = styled.table<TableStyleProps>`
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+  }
+`;
+
+const SettingButton = styled.button`
+  position: relative;
+  padding: 5px;
+  margin: -5px;
+`;
+
+const SettingList = styled.ul`
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border: 1px solid ${COLOR.SECONDARY};
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 1;
+
+  &.show {
+    display: block;
+  }
+
+  li {
+    width: 140px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      color: ${COLOR.GRAY};
+      transition: all 0.1s;
+      z-index: 2;
+
+      &:hover {
+        background-color: ${COLOR.HOVER};
+        color: ${COLOR.PRIMARY};
+      }
+    }
   }
 `;

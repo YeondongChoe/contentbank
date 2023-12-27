@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import styled from 'styled-components';
 
-import dummy from './data.json';
+import dummy from '../constants/data.json';
 
 export function TablePopup() {
   const studentList = dummy.Student;

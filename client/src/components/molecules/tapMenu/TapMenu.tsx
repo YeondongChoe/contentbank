@@ -18,6 +18,7 @@ type TabProps = {
   onChange: (value: string) => void;
   className?: string;
   lineStyle?: boolean;
+  onClickTab?: () => void;
 };
 
 type TabMenuProps = {
@@ -31,6 +32,7 @@ type TabMenuProps = {
   height?: string;
   $margin?: string;
   lineStyle?: boolean;
+  onClickTab?: () => void;
 };
 
 export function Tab({
@@ -41,6 +43,7 @@ export function Tab({
   onChange,
   className,
   lineStyle,
+  onClickTab,
 }: TabProps) {
   return (
     <TabButton
@@ -48,7 +51,10 @@ export function Tab({
       $lineStyle={lineStyle}
       className={className}
       $active={value === selected}
-      onClick={() => onChange(value)}
+      onClick={() => {
+        onClickTab;
+        onChange(value);
+      }}
     >
       <ButtonText $lineStyle={lineStyle} $active={value === selected}>
         {label}
@@ -68,6 +74,7 @@ export function TabMenu({
   height,
   $margin,
   lineStyle,
+  onClickTab,
 }: TabMenuProps) {
   const [selected, setSelected] = useState(initialValue);
 
@@ -89,6 +96,7 @@ export function TabMenu({
           onChange={handleChange}
           height={height}
           lineStyle={lineStyle}
+          onClickTab={onClickTab}
         />
       ))}
     </Component>
@@ -98,7 +106,6 @@ export function TabMenu({
 type TabStyleProps = {
   height?: string;
   $active: boolean;
-  onClick: () => void;
   $lineStyle?: boolean;
 };
 

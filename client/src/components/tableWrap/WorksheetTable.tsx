@@ -23,9 +23,8 @@ import {
   checkBoxValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
+import dummy from '../constants/data.json';
 import { PaginationBox } from '../molecules/pagination/Pagination';
-
-import dummy from './data.json';
 
 export function WorksheetTable() {
   const [value, setValue] = useState('1');

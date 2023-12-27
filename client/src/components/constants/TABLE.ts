@@ -35,13 +35,12 @@ export const contentTheadList = [
 export const worksheetColWidth = [
   { width: '5%' },
   { width: '5%' },
+  { width: '10%' },
+  { width: '*' },
+  { width: '10%' },
+  { width: '10%' },
   { width: '5%' },
-  { width: '10%' },
-  { width: '40%' },
-  { width: '10%' },
-  { width: '10%' },
-  { width: '10%' },
-  { width: '10%' },
+  { width: '5%' },
 ];
 export const worksheetTheadList = [
   { th: [{ title: '' }] },

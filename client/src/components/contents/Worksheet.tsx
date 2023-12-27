@@ -22,7 +22,7 @@ import {
 import { pageAtom, totalPageAtom } from '../../state/utilAtom';
 import { TableWorksheetType } from '../../types';
 import { COLOR, worksheetColWidth, worksheetTheadList } from '../constants';
-import dummy from '../tableWrap/data.json';
+import dummy from '../constants/data.json';
 
 export function Worksheet() {
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');
@@ -32,6 +32,11 @@ export function Worksheet() {
 
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+  };
+
+  const changeListData = () => {
+    console.log('탭클릭시 tabVeiw에 맞는 리스트 데이터 출력');
+    console.log(tabVeiw, subTabVeiw);
   };
 
   const [didMount, setDidMount] = useState(false);
@@ -55,6 +60,17 @@ export function Worksheet() {
       console.log('학습지테이블 데이타 가져오기');
     }
   }, [didMount]);
+
+  // useEffect(() => {
+  //   //초기화
+  //   if (subTabVeiw !== '전체') {
+  //     return setSubTabVeiw('전체');
+  //   }
+  // }, [tabVeiw]);
+
+  useEffect(() => {
+    changeListData();
+  }, [tabVeiw, subTabVeiw]);
 
   const menuList = [
     {
@@ -118,16 +134,6 @@ export function Worksheet() {
         </InputWrapper>
       </HeadWrapper>
 
-      {/* {tabVeiw === '학습지' && (
-        <TableWrapper>
-          <WorksheetTable />
-        </TableWrapper>
-      )}
-      {tabVeiw === '즐겨찾는 학습지' && (
-        <TableWrapper>
-          <WorksheetTable />
-        </TableWrapper>
-      )} */}
       <TableWrapper>
         <TabMenu
           length={4}
@@ -162,20 +168,6 @@ const HeadWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
-
-const SelectWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 10px;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 5px;
 `;
 
 const InputWrapper = styled.div`
