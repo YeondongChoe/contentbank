@@ -24,7 +24,7 @@ type LabelStyleProps = {
 };
 
 const Component = styled.label<LabelStyleProps>`
-  margin: 5px 0px;
+  padding: 5px 0px;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '14px')};
   ${({ $type }) =>

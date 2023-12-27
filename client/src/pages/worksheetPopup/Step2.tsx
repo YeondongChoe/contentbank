@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CloseIcon from '@mui/icons-material/Close';
@@ -7,8 +7,9 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, TabMenu } from '../../components';
+import { Button, TabMenu, Label, BarChart } from '../../components';
 import { COLOR } from '../../components/constants';
+import dummy from '../../pages/createPopup/data.json';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
@@ -37,12 +38,50 @@ export function Step2() {
       value: '개념',
     },
   ];
+  const Data = [
+    { value: 0, label: '하' },
+    { value: 0, label: '중하' },
+    { value: 100, label: '중' },
+    { value: 0, label: '상' },
+    { value: 0, label: '최상' },
+  ];
 
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
   const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
   const [isSimilar, setIsSimilar] = useState(false);
+  const ContentList = dummy.ContentInfo;
+
+  const [contentList, setContentList] = useState(ContentList);
+  const [selectedCode, setSelectedCode] = useState(null);
+
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
+
+  const dragStart = (e: any, position: number) => {
+    dragItem.current = position;
+  };
+  const dragEnter = (e: any, position: number) => {
+    dragOverItem.current = position;
+  };
+  const drop = () => {
+    if (dragItem.current !== null && dragOverItem.current !== null) {
+      const newList = [...contentList];
+      const [removed] = newList.splice(dragItem.current, 1);
+      newList.splice(dragOverItem.current, 0, removed);
+      dragItem.current = null;
+      dragOverItem.current = null;
+      setContentList(newList);
+    }
+  };
+  const checkSelectedContentCode = (sort: any) => {
+    setSelectedCode(sort === selectedCode ? null : sort);
+  };
+  const selectContentCode = (sort: number) => {
+    checkSelectedContentCode(sort);
+    console.log('가지고 있는 Info 뿌려주기');
+  };
 
   const closePopup = () => {
     setIsStep1(false);
@@ -123,21 +162,35 @@ export function Step2() {
                   />
                 </TabWrapper>
                 <DiscriptionWrapper>
-                  <div className="학습지 요약">
-                    <div>문항 통계</div>
-                    <div>총 45 문항(리스트 length로 계산하기)</div>
-                    <div>객관식 20 주관식 10 서술형 15</div>
-                    <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
-                    <div>전 단계로부터 전달받은 데이터 보여주기</div>
-                    <div>문항 상세 내용 및 순서 변경</div>
-                    <div>번호 문항타입 난이도 유형명 순서변경</div>
-                    <div>1 객관식 중 1000이 10인 수 알아보기</div>
-                    <div>2 객관식 중 1000이 10인 수 알아보기</div>
-                    <div>44 객관식 중 1000이 10인 수 알아보기</div>
-                    <div>45 객관식 중 1000이 10인 수 알아보기</div>
-                    <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
-                    <div>전 단계로부터 전달받은 데이터 보여주기</div>
-                  </div>
+                  <Label value="문항 통계" fontSize="16px" />
+                  <Discripton>
+                    <DiscriptonOutline>
+                      <div>총 45 문항</div>
+                      <DiscriptonType>객관식 20</DiscriptonType>
+                      <DiscriptonType>주관식 10</DiscriptonType>
+                      <DiscriptonType>서술형 15</DiscriptonType>
+                    </DiscriptonOutline>
+                    <BarChart data={Data}></BarChart>
+                  </Discripton>
+                  <Label value="문항 상세 내용 및 순서 변경" fontSize="16px" />
+                  <ContentsList>
+                    {contentList.map((el, i) => (
+                      <Content
+                        key={i}
+                        onClick={() => {
+                          selectContentCode(el.sort);
+                        }}
+                        $choiced={el.sort === selectedCode}
+                        draggable
+                        onDragStart={(e) => dragStart(e, i)}
+                        onDragEnter={(e) => dragEnter(e, i)}
+                        onDragEnd={drop}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
+                        {el.code}
+                      </Content>
+                    ))}
+                  </ContentsList>
                 </DiscriptionWrapper>
               </>
             )}
@@ -213,7 +266,6 @@ const Title = styled.div`
   flex: 1 0 0;
   padding-left: 10px;
 `;
-
 const FrontSpan = styled.span`
   color: ${COLOR.BORDER_BLUE};
 `;
@@ -246,6 +298,35 @@ const DiscriptionWrapper = styled.div`
   flex-direction: column;
   padding: 0px 10px;
 `;
+const Discripton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  height: 152px;
+  padding: 0px 30px 30px 0px;
+`;
+const DiscriptonOutline = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0px 0px 10px;
+  font-size: 16px;
+`;
+const DiscriptonType = styled.div`
+  padding-top: 10px;
+  font-size: 14px;
+  color: ${COLOR.TEXT_GRAY};
+`;
+const ContentsList = styled.div`
+  padding: 10px;
+`;
+const Content = styled.div<{ $choiced: boolean }>`
+  font-size: 13px;
+  background-color: ${(props) =>
+    props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
+  color: ${(props) => (props.$choiced ? 'white' : 'initial')};
+  cursor: pointer;
+`;
+
 const SimilarWrapper = styled.div`
   width: 100%;
   display: flex;
