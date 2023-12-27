@@ -171,7 +171,7 @@ const SaveId = styled.p`
   color: ${COLOR.DARK_GRAY};
   margin-left: 5px;
 `;
-const SaveButtonWrapper = styled.button`
+const SaveButtonWrapper = styled.div`
   margin-top: 30px;
   background-color: transparent;
   border: none;
