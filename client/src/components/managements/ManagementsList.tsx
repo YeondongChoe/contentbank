@@ -28,7 +28,7 @@ import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
-import { TableItemType } from '../../types';
+import { QuestionTableType } from '../../types';
 
 export function ManagementsList() {
   const [didMount, setDidMount] = useState(false);
@@ -38,7 +38,7 @@ export function ManagementsList() {
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [questionList, setQuestionList] = useState<TableItemType[]>([]);
+  const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
   const MenuCode = useRecoilValue(createListCodeValueAtom);
   const [isChangedServiced, setIsChangedServiced] = useRecoilState(

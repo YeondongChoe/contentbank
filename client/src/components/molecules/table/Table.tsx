@@ -8,13 +8,17 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { IconButton } from '../../../components';
+import { Button, IconButton } from '../../../components';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
 } from '../../../state/creatingWorksheetAtom';
-import { TableItemType, TableWorksheetType } from '../../../types';
+import {
+  MemberTableType,
+  QuestionTableType,
+  WorksheetTableType,
+} from '../../../types';
 import { COLOR } from '../../constants';
 
 type TheadItemProps = {
@@ -22,7 +26,7 @@ type TheadItemProps = {
 };
 
 type TableProps = {
-  list: TableItemType[] | TableWorksheetType[];
+  list: QuestionTableType[] | WorksheetTableType[] | MemberTableType[];
   colWidth?: { width: string }[];
   width?: string;
   theadList: TheadItemProps[];
@@ -40,7 +44,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
     },
   ]);
   const [tbodyType, setTbodyType] = useState('');
-
+  //학습지 팝업
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
@@ -86,14 +90,15 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
   }, [theadList]);
 
   const creatTbody = () => {
-    // console.log(theadList[3].th[0]);
-
+    console.log(list && list[1]);
     //학습지 이름을 가졌을시
-    if (theadList[1].th.some((value) => value.title == '문항코드'))
-      setTbodyType('TableItemType');
+    if (theadList[1].th[0].title === '문항코드')
+      setTbodyType('questionTableType');
     //문항코드를 가졌을시
-    if (theadList[3].th.some((value) => value.title == '학습지명'))
-      setTbodyType('TableWorksheetType');
+    if (theadList[3].th[0].title === '학습지명')
+      setTbodyType('worksheetTableType');
+    //회원 아이디를 가졌을시
+    if (theadList[1].th[0].title === '아이디') setTbodyType('memberTableType');
   };
 
   useEffect(() => {
@@ -115,7 +120,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
       )}
       <thead>
         <tr>
-          {tbodyType === 'TableItemType' && (
+          {tbodyType !== 'worksheetTableType' && (
             <th rowSpan={2}>
               <input
                 type="checkbox"
@@ -132,7 +137,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
                   key={`colgroup${item.th[0].title}`}
                   rowSpan={item.th[0]?.rowSpan}
                   colSpan={item.th[0]?.colspan}
-                  className={item.th[0]?.colspan ? '' : 'padding'}
+                  className={item.th[0]?.rowSpan ? '' : 'padding'}
                 >
                   {item.th[0].title}
                 </th>
@@ -150,7 +155,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
       </thead>
       {/* 테이블 타입 별 tbody */}
       {/* 학습지 tbody */}
-      {tbodyType === 'TableWorksheetType' && (
+      {tbodyType === 'worksheetTableType' && (
         <tbody>
           {list.map((content) => (
             <tr key={content?.id}>
@@ -228,7 +233,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
         </tbody>
       )}
       {/* 문항리스트 tbody */}
-      {tbodyType === 'TableItemType' && (
+      {tbodyType === 'questionTableType' && (
         <tbody>
           {list.map((content) => (
             <tr key={content?.questionCode}>
@@ -294,6 +299,52 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
               </td>
               <td>
                 <span className="ellipsis">{content.serviced ? 'Y' : 'N'}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      )}
+      {/* 회원관리 tbody */}
+      {tbodyType === 'memberTableType' && (
+        <tbody>
+          {list.map((member) => (
+            <tr key={member.id}>
+              <td>
+                <input
+                  type="checkbox"
+                  // checked={selectedRows.includes(content.contentSeq)}
+                  // onChange={() => selectRow(content.contentSeq)}
+                ></input>
+              </td>
+              <td>
+                <span className="ellipsis">{member.name}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{member.id}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{member.authority?.name}</span>
+              </td>
+              <td>
+                <span className="ellipsis">{member.createdDate}</span>
+              </td>
+              <td>
+                <span className="ellipsis">
+                  {member.enabled === true ? '활성' : '비활성'}
+                </span>
+              </td>
+              <td>
+                <Button
+                  buttonType="button"
+                  // onClick={() => openDetailInformationPopup(member.key)}
+                  height={'30px'}
+                  $padding="10px"
+                  width={'60px'}
+                  fontSize="12px"
+                  $border
+                >
+                  <span>보기</span>
+                </Button>
               </td>
             </tr>
           ))}

@@ -20,7 +20,7 @@ import {
   editWorksheetBoolAtom,
 } from '../../state/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../state/utilAtom';
-import { TableWorksheetType } from '../../types';
+import { WorksheetTableType } from '../../types';
 import { COLOR, worksheetColWidth, worksheetTheadList } from '../constants';
 import dummy from '../constants/data.json';
 
@@ -100,7 +100,7 @@ export function Worksheet() {
       value: '고등',
     },
   ];
-  const worksheetList: TableWorksheetType[] = dummy.Worksheet;
+  const worksheetList: WorksheetTableType[] = dummy.Worksheet;
 
   return (
     <Container>
@@ -121,7 +121,7 @@ export function Worksheet() {
             width={'250px'}
             onClick={filterSearchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="이름, 권한 검색"
+            placeholder="학습지명, 학년, 태그, 작성자 검색"
           />
           <Button
             height={'35px'}

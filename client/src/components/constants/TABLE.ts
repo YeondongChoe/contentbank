@@ -64,11 +64,10 @@ export const memberColWidth = [
   { width: '10%' },
 ];
 export const memberTheadList = [
-  { th: [{ title: '', rowSpan: 2 }] },
-  { th: [{ title: '이름', rowSpan: 2 }] },
-  { th: [{ title: '아이디', rowSpan: 2 }] },
-  { th: [{ title: '권한', rowSpan: 2 }] },
-  { th: [{ title: '등록일', rowSpan: 2 }] },
-  { th: [{ title: '상태', rowSpan: 2 }] },
-  { th: [{ title: '상세정보', rowSpan: 2 }] },
+  { th: [{ title: '이름' }] },
+  { th: [{ title: '아이디' }] },
+  { th: [{ title: '권한' }] },
+  { th: [{ title: '등록일' }] },
+  { th: [{ title: '상태' }] },
+  { th: [{ title: '상세정보' }] },
 ];

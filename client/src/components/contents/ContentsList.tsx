@@ -34,7 +34,7 @@ import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
 } from '../../state/valueAtom';
-import { TableItemType } from '../../types';
+import { QuestionTableType } from '../../types';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
@@ -51,7 +51,7 @@ export function ContentsList() {
   const MenuCode = useRecoilValue(createListCodeValueAtom);
   // const [pageNumber, setPageNumber] = useState(1);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
-  const [questionList, setQuestionList] = useState<TableItemType[]>([]);
+  const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
   const setIsUpdate = useSetRecoilState(updateBoolAtom);
 

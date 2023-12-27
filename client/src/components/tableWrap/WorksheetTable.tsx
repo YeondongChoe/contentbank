@@ -121,7 +121,7 @@ export function WorksheetTable() {
 
   return (
     <>
-      <TabMenu
+      {/* <TabMenu
         length={4}
         menu={menuList}
         initialValue={'전체'}
@@ -260,7 +260,7 @@ export function WorksheetTable() {
           </Tbody>
         </Table>
       </TableWrapper>
-      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} /> */}
       {isStep2 && <Step2 />}
     </>
   );
