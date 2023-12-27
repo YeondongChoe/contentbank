@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import styled from 'styled-components';
 
@@ -16,6 +16,8 @@ export function ClassificationPopup() {
   const ContentList = dummy.ContentInfo;
   const Category1 = dummy.Category;
   const Category2 = dummy.Category2;
+  const [contentList, setContentList] = useState(ContentList);
+  console.log(contentList);
 
   const [didMount, setDidMount] = useState(false);
   const [selectedCode, setSelectedCode] = useState(null);
@@ -42,6 +44,35 @@ export function ClassificationPopup() {
     setCode(code);
     setClassificatecode(classificatecode);
     console.log('가지고 있는 Info 뿌려주기');
+  };
+
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
+  const [list, setList] = useState([
+    'Item1',
+    'Item2',
+    'Item3',
+    'Item4',
+    'Item5',
+    'Item6',
+  ]);
+  //console.log(list);
+
+  const dragStart = (e: any, position: number) => {
+    dragItem.current = position;
+  };
+  const dragEnter = (e: any, position: number) => {
+    dragOverItem.current = position;
+  };
+  const drop = () => {
+    if (dragItem.current !== null && dragOverItem.current !== null) {
+      const newList = [...contentList];
+      const [removed] = newList.splice(dragItem.current, 1);
+      newList.splice(dragOverItem.current, 0, removed);
+      dragItem.current = null;
+      dragOverItem.current = null;
+      setContentList(newList);
+    }
   };
 
   const submitSave = async () => {
@@ -71,17 +102,35 @@ export function ClassificationPopup() {
         <ContentListWrapper>
           <Title>문항 선택</Title>
           <ContentsList>
-            {ContentList.map((el, i) => (
+            {contentList.map((el, i) => (
               <Content
                 key={i}
                 onClick={() => {
                   selectContentCode(el.sort, el.code, el.classificatecode);
                 }}
                 $choiced={el.sort === selectedCode}
+                draggable
+                onDragStart={(e) => dragStart(e, i)}
+                onDragEnter={(e) => dragEnter(e, i)}
+                onDragEnd={drop}
+                onDragOver={(e) => e.preventDefault()}
               >
                 {el.code}
               </Content>
             ))}
+            {/* {list &&
+              list.map((item, idx) => (
+                <div
+                  key={idx}
+                  draggable
+                  onDragStart={(e) => dragStart(e, idx)}
+                  onDragEnter={(e) => dragEnter(e, idx)}
+                  onDragEnd={drop}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  {item}
+                </div>
+              ))} */}
           </ContentsList>
         </ContentListWrapper>
         <ContentViewerWrapper>
