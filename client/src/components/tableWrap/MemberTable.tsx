@@ -84,7 +84,7 @@ export function MemberTable({
     getMemberList({
       setMemberList,
       settotalPage,
-      page,
+      page: 1,
       size,
       enabled,
     });
@@ -93,6 +93,9 @@ export function MemberTable({
   const changeTab = (value: string) => {
     setSelectedRows([]);
     // 현재 페이지 업데이트 후 showMemberList 호출
+    if (page !== 1) {
+      setPage(1);
+    }
     showMemberList(value === '활성화' ? 'Y' : value === '비활성화' ? 'N' : '');
   };
 
@@ -157,7 +160,7 @@ export function MemberTable({
       size,
       enabled,
     });
-  }, [page]);
+  }, [page, settotalPage, setMemberList]);
 
   useEffect(() => {
     if (didMount) {

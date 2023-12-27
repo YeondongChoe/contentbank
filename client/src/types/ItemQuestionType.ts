@@ -4,7 +4,7 @@ export type ItemQuestionType = {
   // total_no: string;
   // it_quest_context_p: string | null;
   // it_code: string;
-  // doc_num: string;
+  doc_num?: string;
   it_answer: string[];
   // type: string;
   // it_subject: string;

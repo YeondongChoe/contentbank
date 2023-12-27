@@ -17,7 +17,6 @@ export function ClassificationPopup() {
   const Category1 = dummy.Category;
   const Category2 = dummy.Category2;
   const [contentList, setContentList] = useState(ContentList);
-  console.log(contentList);
 
   const [didMount, setDidMount] = useState(false);
   const [selectedCode, setSelectedCode] = useState(null);
@@ -48,21 +47,15 @@ export function ClassificationPopup() {
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
-  const [list, setList] = useState([
-    'Item1',
-    'Item2',
-    'Item3',
-    'Item4',
-    'Item5',
-    'Item6',
-  ]);
-  //console.log(list);
 
   const dragStart = (e: any, position: number) => {
     dragItem.current = position;
   };
   const dragEnter = (e: any, position: number) => {
     dragOverItem.current = position;
+  };
+  const dragOver = (e: React.DragEvent) => {
+    e.preventDefault();
   };
   const drop = () => {
     if (dragItem.current !== null && dragOverItem.current !== null) {
@@ -112,25 +105,12 @@ export function ClassificationPopup() {
                 draggable
                 onDragStart={(e) => dragStart(e, i)}
                 onDragEnter={(e) => dragEnter(e, i)}
+                onDragOver={dragOver}
                 onDragEnd={drop}
-                onDragOver={(e) => e.preventDefault()}
               >
                 {el.code}
               </Content>
             ))}
-            {/* {list &&
-              list.map((item, idx) => (
-                <div
-                  key={idx}
-                  draggable
-                  onDragStart={(e) => dragStart(e, idx)}
-                  onDragEnter={(e) => dragEnter(e, idx)}
-                  onDragEnd={drop}
-                  onDragOver={(e) => e.preventDefault()}
-                >
-                  {item}
-                </div>
-              ))} */}
           </ContentsList>
         </ContentListWrapper>
         <ContentViewerWrapper>

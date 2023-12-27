@@ -10,6 +10,7 @@ import { Loader } from '../atom/Loader';
 type MathViewerProps = {
   data: ItemQuestionType;
   display?: string;
+  width?: string;
 };
 
 const config = {
@@ -29,7 +30,7 @@ const config = {
   },
 };
 
-export function MathViewer({ data }: MathViewerProps) {
+export function MathViewer({ data, width }: MathViewerProps) {
   const [display, setDisplay] = useState('none');
 
   const setMathJax = (mathJax: MathJax3Object) => {};
@@ -49,7 +50,7 @@ export function MathViewer({ data }: MathViewerProps) {
     <>
       {display === 'none' && <Loader height={'50px'} size="35px" />}
 
-      <Component display={display}>
+      <Component display={display} width={width}>
         <MathJaxContext
           version={3}
           config={config}
@@ -69,6 +70,12 @@ export function MathViewer({ data }: MathViewerProps) {
   );
 }
 
-const Component = styled.div<{ display: string }>`
+type MathViewerStyleProps = {
+  display: string;
+  width?: string;
+};
+
+const Component = styled.div<MathViewerStyleProps>`
+  width: ${({ width }) => (width ? ` ${width};` : '100%')};
   display: ${({ display }) => (display ? `${display}` : 'block')};
 `;
