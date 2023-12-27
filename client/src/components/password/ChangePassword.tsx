@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -43,7 +43,6 @@ export function ChangePassword({
   const {
     control,
     watch,
-    handleSubmit,
     formState: { errors, isValid },
   } = useForm<passwordProps>();
 
@@ -51,7 +50,7 @@ export function ChangePassword({
   const PasswordConfirm = watch('password_confirm', '');
   const navigate = useNavigate();
 
-  const submitChangePassword: SubmitHandler<passwordProps> = () => {
+  const submitChangePassword = () => {
     putChangePassword({
       Password,
       PasswordConfirm,
@@ -61,7 +60,7 @@ export function ChangePassword({
 
   return (
     <Container>
-      <form onSubmit={handleSubmit(submitChangePassword)}>
+      <form>
         <InputSection width={width as string}>
           <InputWapper width={width as string}>
             <Label
@@ -163,6 +162,7 @@ export function ChangePassword({
           {PasswordConfirm && isValid ? (
             <ButtonWapper>
               <Button
+                onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
@@ -174,6 +174,7 @@ export function ChangePassword({
           ) : (
             <ButtonWapper>
               <Button
+                onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
@@ -229,7 +230,7 @@ const ButtonGroup = styled.div<{
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
 
-const ButtonWapper = styled.button`
+const ButtonWapper = styled.div`
   border: none;
   background-color: transparent;
 `;
