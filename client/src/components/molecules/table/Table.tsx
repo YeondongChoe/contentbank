@@ -137,30 +137,35 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
                   // onChange={() => selectRow(content.contentSeq)}
                 ></input>
               </td>
-              <span className="ellipsis">
-                <IconButton
-                  onClick={() => {
-                    // addFavoriteQuestion(content.questionSeq);
-                  }}
-                  $iconOlny
-                  $borderNone
-                  $padding={'0'}
-                  $margin={'-2px'}
-                  width={'20px'}
-                  height={'20px'}
-                >
-                  {content.favorited ? (
-                    <BookmarkTwoToneIcon fontSize="small" />
-                  ) : (
-                    <BookmarkBorderTwoToneIcon fontSize="small" />
-                  )}
-                </IconButton>
-              </span>
+              <td>
+                <span className="ellipsis">
+                  <IconButton
+                    onClick={() => {
+                      // addFavoriteQuestion(content.questionSeq);
+                    }}
+                    $iconOlny
+                    $borderNone
+                    $padding={'0'}
+                    $margin={'-2px'}
+                    width={'20px'}
+                    height={'20px'}
+                  >
+                    {content.favorited ? (
+                      <BookmarkTwoToneIcon fontSize="small" />
+                    ) : (
+                      <BookmarkBorderTwoToneIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </span>
+              </td>
               <td>
                 <span className="ellipsis">{content.schoolLevel}</span>
               </td>
               <td>
                 <span className="ellipsis">{content.tag}</span>
+              </td>
+              <td className="textAlignLeft">
+                <span className="ellipsis">{content.worksheetName}</span>
               </td>
               <td>
                 <span className="ellipsis">{content.createdAt}</span>
