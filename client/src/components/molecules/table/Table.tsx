@@ -334,17 +334,19 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
                 </span>
               </td>
               <td>
-                <Button
-                  buttonType="button"
-                  // onClick={() => openDetailInformationPopup(member.key)}
-                  height={'30px'}
-                  $padding="10px"
-                  width={'60px'}
-                  fontSize="12px"
-                  $border
-                >
-                  <span>보기</span>
-                </Button>
+                <span className="center">
+                  <Button
+                    buttonType="button"
+                    // onClick={() => openDetailInformationPopup(member.key)}
+                    height={'30px'}
+                    $padding="10px"
+                    width={'60px'}
+                    fontSize="12px"
+                    $border
+                  >
+                    <span>보기</span>
+                  </Button>
+                </span>
               </td>
             </tr>
           ))}
@@ -389,11 +391,16 @@ const Component = styled.table<TableStyleProps>`
     padding: 10px;
     text-align: center;
     font-size: 13px;
-    button {
+    > button {
       background-color: transparent;
       border: none;
       cursor: pointer;
     }
+  }
+  .center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .textAlignLeft {
     text-align: left;

@@ -74,11 +74,11 @@ const Component = styled.button<ButtonStyleProps>`
   font-weight: bold;
   border-radius: ${({ $borderRadius }) =>
     $borderRadius ? `${$borderRadius};` : '5px'};
-  ${({ $border }) =>
-    $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
   background-color: ${({ $border }) =>
     $border ? ` #fff;` : `${COLOR.PRIMARY};`};
   color: ${({ $border }) => ($border ? `${COLOR.PRIMARY};` : '#fff')};
+  ${({ $border }) =>
+    $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
   cursor: pointer;
   ${({ disabled }) =>
     disabled &&
