@@ -65,14 +65,14 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
   }, [theadList]);
 
   const creatTbody = () => {
-    if (list[0]) {
-      //학습지 이름을 가졌을시
-      if ('TableWorksheetType' in list[0])
-        return setTbodyType('TableWorksheetType');
-      //문항코드를 가졌을시
-      if ('questionCode' in list[0]) return setTbodyType('questionCode');
-    }
-    return;
+    // console.log(theadList[3].th[0]);/
+
+    //학습지 이름을 가졌을시
+    if (theadList[1].th.some((value) => value.title == '문항코드'))
+      setTbodyType('TableItemType');
+    //문항코드를 가졌을시
+    if (theadList[3].th.some((value) => value.title == '학습지명'))
+      setTbodyType('TableWorksheetType');
   };
 
   useEffect(() => {
@@ -125,6 +125,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
           </tr>
         )}
       </thead>
+      {/* 테이블 타입 별 tbody */}
       {tbodyType === 'TableWorksheetType' && (
         <tbody>
           {list.map((content) => (
