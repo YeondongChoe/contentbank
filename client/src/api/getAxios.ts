@@ -60,6 +60,7 @@ export const getQuestionList = async ({
     )
     .then((response) => {
       handleAuthorizationRenewal(response);
+      // console.log(response.data.data.totalElements);
       settotalPage(response.data.data.totalElements);
       const formattedQuestionList = response.data.data.content.map(
         (content: any) => ({
@@ -183,6 +184,7 @@ export const getMemberList = async ({
     )
     .then((response) => {
       handleAuthorizationRenewal(response);
+      // console.log(response.data.data);
       settotalPage(response.data.data.totalElements);
       setMemberList(response.data.data.content);
     })

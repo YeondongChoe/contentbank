@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 
 import Pagination from 'react-js-pagination';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -21,13 +22,24 @@ export function PaginationBox({
 }: PaginationBoxProps) {
   const [page, setPage] = useRecoilState(pageAtom);
   // const setSelectedRows = useSetRecoilState<number[]>(checkBoxValueAtom);
+
+  const pageRangeDisplay = () => {
+    if (totalItemsCount < 5) return totalItemsCount;
+    if (totalItemsCount > 5) return 5;
+  };
+
+  // 페이지 이동시 초기화
+  useEffect(() => {
+    setPage(1);
+  }, []);
+
   return (
     <Wrapper>
       <Pagination
         activePage={page}
         itemsCountPerPage={itemsCountPerPage}
         totalItemsCount={totalItemsCount}
-        pageRangeDisplayed={2}
+        pageRangeDisplayed={pageRangeDisplay()}
         prevPageText={'<'}
         nextPageText={'>'}
         onChange={(page) => {

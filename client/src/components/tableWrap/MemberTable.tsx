@@ -93,9 +93,6 @@ export function MemberTable({
   const changeTab = (value: string) => {
     setSelectedRows([]);
     // 현재 페이지 업데이트 후 showMemberList 호출
-    if (page !== 1) {
-      setPage(1);
-    }
     showMemberList(value === '활성화' ? 'Y' : value === '비활성화' ? 'N' : '');
   };
 

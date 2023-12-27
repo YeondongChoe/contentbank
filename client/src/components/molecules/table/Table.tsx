@@ -65,7 +65,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
   }, [theadList]);
 
   const creatTbody = () => {
-    // console.log(theadList[3].th[0]);/
+    // console.log(theadList[3].th[0]);
 
     //학습지 이름을 가졌을시
     if (theadList[1].th.some((value) => value.title == '문항코드'))
@@ -126,6 +126,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
         )}
       </thead>
       {/* 테이블 타입 별 tbody */}
+      {/* 학습지 tbody */}
       {tbodyType === 'TableWorksheetType' && (
         <tbody>
           {list.map((content) => (
@@ -138,25 +139,17 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
                 ></input>
               </td>
               <td>
-                <span className="ellipsis">
-                  <IconButton
-                    onClick={() => {
-                      // addFavoriteQuestion(content.questionSeq);
-                    }}
-                    $iconOlny
-                    $borderNone
-                    $padding={'0'}
-                    $margin={'-2px'}
-                    width={'20px'}
-                    height={'20px'}
-                  >
-                    {content.favorited ? (
-                      <BookmarkTwoToneIcon fontSize="small" />
-                    ) : (
-                      <BookmarkBorderTwoToneIcon fontSize="small" />
-                    )}
-                  </IconButton>
-                </span>
+                <button
+                  onClick={() => {
+                    // addFavoriteQuestion(content.questionSeq);
+                  }}
+                >
+                  {content.favorited ? (
+                    <BookmarkTwoToneIcon fontSize="small" />
+                  ) : (
+                    <BookmarkBorderTwoToneIcon fontSize="small" />
+                  )}
+                </button>
               </td>
               <td>
                 <span className="ellipsis">{content.schoolLevel}</span>
@@ -225,6 +218,7 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
           ))}
         </tbody>
       )}
+      {/* 문항리스트 tbody */}
       {tbodyType === 'TableItemType' && (
         <tbody>
           {list.map((content) => (
@@ -335,6 +329,11 @@ const Component = styled.table<TableStyleProps>`
     padding: 10px;
     text-align: center;
     font-size: 13px;
+    button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
   }
   .textAlignLeft {
     text-align: left;
