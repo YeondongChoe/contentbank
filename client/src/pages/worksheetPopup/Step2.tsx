@@ -72,23 +72,16 @@ export function Step2() {
     console.log('어떤 데이터 값으로 호출?');
   };
 
-  const handleCardClick = (index: number) => {
-    // 카드를 클릭할 때마다 선택된 카드의 인덱스를 업데이트
-    setSelectedCardIndex(index);
-    // 그리고 유사 내용을 보여주는 함수 호출
-    showSimilarContent();
-  };
-
   const [contentList, setContentList] = useState(ContentList);
   const [selectedCode, setSelectedCode] = useState(null);
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
-  const dragStart = (e: any, position: number) => {
+  const dragStart = (e: React.DragEvent, position: number) => {
     dragItem.current = position;
   };
-  const dragEnter = (e: any, position: number) => {
+  const dragEnter = (e: React.DragEvent, position: number) => {
     dragOverItem.current = position;
   };
   const dragOver = (e: React.DragEvent) => {
@@ -220,14 +213,25 @@ export function Step2() {
             )}
           </DiscriptionSection>
           <ContentListSection>
-            <MathwiewerCard
-              onClick={showSimilarContent}
-              isSimilar={isSimilar}
-              list={list}
-              selectedCardIndex={selectedCardIndex}
-              onSelectCard={setSelectedCardIndex}
-              onCardClick={handleCardClick}
-            ></MathwiewerCard>
+            {list.map((card, i) => (
+              <div
+                key={i}
+                // draggable
+                // onDragStart={(e) => dragStart(e, i)}
+                // onDragEnter={(e) => dragEnter(e, i)}
+                // onDragOver={dragOver}
+                // onDragEnd={drop}
+              >
+                <MathwiewerCard
+                  onClick={showSimilarContent}
+                  isSimilar={isSimilar}
+                  index={i}
+                  data={card}
+                  selectedCardIndex={selectedCardIndex}
+                  onSelectCard={setSelectedCardIndex}
+                ></MathwiewerCard>
+              </div>
+            ))}
           </ContentListSection>
         </Wrapper>
         <NextStepButtonWrapper>
