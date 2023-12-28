@@ -8,7 +8,7 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { IconButton, Loader } from '../../../components';
+import { IconButton, Loader, NullData } from '../../../components';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
@@ -162,9 +162,12 @@ export function Table({
       </thead>
       {/* 테이블 타입 별 tbody */}
       {list.length === 0 && (
-        <LoaderWrap>
-          <Loader size="50px" />
-        </LoaderWrap>
+        // <NullDataWrap>
+        //   <Loader size="50px" />
+        // </NullDataWrap>
+        <NullDataWrap>
+          <NullData />
+        </NullDataWrap>
       )}
       {/* 학습지 tbody */}
       {tbodyType === 'worksheetTableType' && (
@@ -496,7 +499,7 @@ const SettingList = styled.ul`
   }
 `;
 
-const LoaderWrap = styled.div`
+const NullDataWrap = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
