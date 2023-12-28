@@ -8,7 +8,7 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { Button, IconButton, Loader } from '../../../components';
+import { IconButton, Loader } from '../../../components';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
@@ -30,9 +30,16 @@ type TableProps = {
   colWidth?: { width: string }[];
   width?: string;
   theadList: TheadItemProps[];
+  btnOnClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-export function Table({ list, colWidth, width, theadList }: TableProps) {
+export function Table({
+  list,
+  colWidth,
+  width,
+  theadList,
+  btnOnClick,
+}: TableProps) {
   const [isColspan, setIsColspan] = useState<boolean>(false);
   const [colspanList, setcolspanList] = useState<TheadItemProps[]>([
     {
@@ -154,6 +161,12 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
         )}
       </thead>
       {/* 테이블 타입 별 tbody */}
+      {/* 초기값 로더 */}
+      {tbodyType === '' && (
+        <LoaderWrap>
+          <Loader size="50px" />
+        </LoaderWrap>
+      )}
       {/* 학습지 tbody */}
       {tbodyType === 'worksheetTableType' && (
         <tbody>
@@ -335,27 +348,19 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
               </td>
               <td>
                 <span className="center">
-                  <Button
-                    buttonType="button"
-                    // onClick={() => openDetailInformationPopup(member.key)}
-                    height={'30px'}
-                    $padding="10px"
-                    width={'60px'}
-                    fontSize="12px"
-                    $border
+                  <button
+                    type="button"
+                    className="lineBtn"
+                    value={member.key}
+                    onClick={(event) => btnOnClick?.(event)}
                   >
-                    <span>보기</span>
-                  </Button>
+                    보기
+                  </button>
                 </span>
               </td>
             </tr>
           ))}
         </tbody>
-      )}
-      {tbodyType === '' && (
-        <LoaderWrap>
-          <Loader size="50px" />
-        </LoaderWrap>
       )}
     </Component>
   );
@@ -401,6 +406,22 @@ const Component = styled.table<TableStyleProps>`
       border: none;
       cursor: pointer;
     }
+  }
+  .lineBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin: 0;
+    width: 60px;
+    height: 30px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #1565c0;
+    border: 1px solid #1565c0;
+    cursor: pointer;
   }
   .center {
     display: flex;

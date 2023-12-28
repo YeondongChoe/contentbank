@@ -76,8 +76,11 @@ export function Member() {
   };
 
   /** 상세정보 보기 버튼*/
-  const openDetailInformationPopup = (key: string) => {
-    setKeyValue(key);
+  const openDetailInformationPopup = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    const target = event.currentTarget.value;
+    setKeyValue(target);
     setIsEdit(true);
   };
 
@@ -175,6 +178,7 @@ export function Member() {
           list={memberList}
           colWidth={memberColWidth}
           theadList={memberTheadList}
+          btnOnClick={openDetailInformationPopup}
         />
       </TableWrapper>
       <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
