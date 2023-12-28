@@ -5,4 +5,4 @@ export * from './label';
 export * from './select';
 export * from './Loader';
 export * from './IndexInfo';
-export * from './NullData';
+export * from './ValueNone';

@@ -5,12 +5,12 @@ import { styled } from 'styled-components';
 
 import { COLOR } from '../constants';
 
-type NullDataProps = {
+type ValueNoneProps = {
   width?: string;
   height?: string;
 };
 
-export function NullData({ width, height }: NullDataProps) {
+export function ValueNone({ width, height }: ValueNoneProps) {
   return (
     <Component width={width} height={height}>
       <RxValueNone color={`${COLOR.PRIMARY}`} size={40} />
@@ -19,12 +19,12 @@ export function NullData({ width, height }: NullDataProps) {
   );
 }
 
-type NullDataStyleProps = {
+type ValueNoneStyleProps = {
   width?: string;
   height?: string;
 };
 
-const Component = styled.div<NullDataStyleProps>`
+const Component = styled.div<ValueNoneStyleProps>`
   width: ${({ width }) => (width ? ` ${width}` : `100%`)};
   height: ${({ height }) => (height ? ` ${height}` : `100%`)};
   background-color: transparent;
