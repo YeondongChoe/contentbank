@@ -8,7 +8,7 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { Button, IconButton } from '../../../components';
+import { Button, IconButton, Loader } from '../../../components';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
@@ -352,6 +352,11 @@ export function Table({ list, colWidth, width, theadList }: TableProps) {
           ))}
         </tbody>
       )}
+      {tbodyType === '' && (
+        <LoaderWrap>
+          <Loader size="50px" />
+        </LoaderWrap>
+      )}
     </Component>
   );
 }
@@ -469,4 +474,14 @@ const SettingList = styled.ul`
       }
     }
   }
+`;
+
+const LoaderWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 `;

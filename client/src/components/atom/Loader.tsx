@@ -35,6 +35,7 @@ type LoaderStyleProps = {
 const Component = styled.div<LoaderStyleProps>`
   width: ${({ width }) => (width ? ` ${width}` : `100%`)};
   height: ${({ height }) => (height ? ` ${height}` : `100%`)};
+  background-color: transparent;
 
   /* {Pure CSS Loader} */
   .lds-ring {
