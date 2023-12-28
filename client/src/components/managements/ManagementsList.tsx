@@ -249,6 +249,7 @@ export function ManagementsList() {
           <Search
             value={searchValue}
             onClick={() => filterSearchValue()}
+            onKeyDown={(e) => {}}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="문항코드, 중분류, 담당자 검색"
             margin={'0 20px 0 0'}

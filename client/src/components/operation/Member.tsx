@@ -28,20 +28,16 @@ export function Member() {
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
   const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const isEditer = useRecoilValue(editerBoolAtom);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [enabled, setEnabled] = useState<string | undefined>();
   const setKeyValue = useSetRecoilState(memberKeyValueAtom);
   const setIsEdit = useSetRecoilState(editerBoolAtom);
-  const [didMount, setDidMount] = useState(false);
-
-  const [memberList, setMemberList] = useState<MemberTableType[]>([]);
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 8;
+  const [didMount, setDidMount] = useState(false);
+  const [memberList, setMemberList] = useState<MemberTableType[]>([]);
 
   const [searchValue, setSearchValue] = useState<string>('');
-
+  // 검색 기능 함수
   const filterSearchValue = () => {
     getMemberList({
       setMemberList,
@@ -52,27 +48,24 @@ export function Member() {
     });
     setSearchValue('');
   };
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === 'Enter') {
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        searchValue,
+        page,
+        size,
+      });
+      setSearchValue('');
+    }
+  };
 
   const openRegisterPopup = () => {
     SetIsRegister(true);
     setSearchValue('');
-  };
-
-  const showMemberList = (enabled: string) => {
-    setEnabled(enabled);
-    getMemberList({
-      setMemberList,
-      settotalPage,
-      page,
-      size,
-      enabled,
-    });
-  };
-
-  const changeTab = (value: string) => {
-    setSelectedRows([]);
-    // 현재 페이지 업데이트 후 showMemberList 호출
-    showMemberList(value === '활성화' ? 'Y' : value === '비활성화' ? 'N' : '');
   };
 
   /** 상세정보 보기 버튼*/
@@ -84,30 +77,41 @@ export function Member() {
     setIsEdit(true);
   };
 
+  const loadData = () => {
+    if (tabVeiw === '전체') {
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        page,
+        size,
+      });
+    } else {
+      const enabled =
+        tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        page,
+        size,
+        enabled,
+      });
+    }
+  };
   useEffect(() => {
     setDidMount(true);
   }, []);
 
   useEffect(() => {
-    if (memberList) {
-      setMemberList(memberList);
-    }
-  }, [memberList]);
-
-  const loadData = useCallback(() => {
-    getMemberList({
-      setMemberList,
-      settotalPage,
-      page,
-      size,
-      enabled,
-    });
-  }, [page]);
-  useEffect(() => {
     if (didMount) {
       loadData();
     }
   }, [didMount, page]);
+
+  useEffect(() => {
+    // console.log(tabVeiw);
+    loadData();
+  }, [setTabVeiw, tabVeiw]);
+
   const menuList = [
     {
       label: '전체',
@@ -131,6 +135,7 @@ export function Member() {
           value={searchValue}
           width={'250px'}
           onClick={() => filterSearchValue()}
+          onKeyDown={(e) => filterSearchValueEnter(e)}
           onChange={(e) => {
             setSearchValue(e.target.value);
           }}
@@ -146,9 +151,7 @@ export function Member() {
           <span>아이디만들기</span>
         </Button>
       </InputWrapper>
-      {/* <ContentWrapper>
-        <MemberTable searchMemberList={memberList} />
-      </ContentWrapper> */}
+
       <TableWrapper>
         <ButtonWrapper>
           <TabMenu

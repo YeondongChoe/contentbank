@@ -289,6 +289,7 @@ export function ContentsList() {
           <Search
             value={value}
             onClick={() => filterSearchValue()}
+            onKeyDown={(e) => {}}
             onChange={(e) => setValue(e.target.value)}
             placeholder="이름, 권한 검색"
             margin={'0 20px 0 0'}

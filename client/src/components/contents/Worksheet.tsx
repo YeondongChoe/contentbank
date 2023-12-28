@@ -119,7 +119,8 @@ export function Worksheet() {
           <Search
             value={searchValue}
             width={'250px'}
-            onClick={filterSearchValue}
+            onClick={() => filterSearchValue()}
+            onKeyDown={(e) => {}}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder="학습지명, 학년, 태그, 작성자 검색"
           />

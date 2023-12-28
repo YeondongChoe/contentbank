@@ -12,6 +12,7 @@ type SearchProps = {
   value: string;
   onClick: () => void;
   onChange: (value: ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   width?: string;
   height?: string;
   fontSize?: string;
@@ -25,6 +26,7 @@ export function Search({
   value,
   onClick,
   onChange,
+  onKeyDown,
   width,
   height,
   margin,
@@ -37,14 +39,15 @@ export function Search({
       fontSize={fontSize}
       $margin={margin}
     >
-      <input value={value} onChange={onChange} placeholder={placeholder} />
-      <IconButton
-        onClick={onClick}
-        leftIconSrc={React.createElement(IoSearch)}
-        width="24px"
-        height="24px"
-        $borderNone={true}
+      <input
+        value={value}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder={placeholder}
       />
+      <button onClick={onClick} type="button">
+        <IoSearch />
+      </button>
 
       <ErrorMessage>{errorMessage}</ErrorMessage>
     </Component>
@@ -79,6 +82,14 @@ const Component = styled.div<SearchStyleProps>`
     border-radius: 0px;
     border: none;
     background-color: transparent;
+  }
+
+  button {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
   }
 `;
 const ErrorMessage = styled.p`

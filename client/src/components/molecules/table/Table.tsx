@@ -161,8 +161,7 @@ export function Table({
         )}
       </thead>
       {/* 테이블 타입 별 tbody */}
-      {/* 초기값 로더 */}
-      {tbodyType === '' && (
+      {list.length === 0 && (
         <LoaderWrap>
           <Loader size="50px" />
         </LoaderWrap>
