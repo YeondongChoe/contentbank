@@ -9,6 +9,10 @@ import styled from 'styled-components';
 
 import { Button, TabMenu, Label, BarChart } from '../../components';
 import { COLOR } from '../../components/constants';
+import Contents2 from '../../components/mathViewer/test2.json';
+import Contents3 from '../../components/mathViewer/test3.json';
+import Contents4 from '../../components/mathViewer/test4.json';
+import { MathwiewerCard } from '../../components/molecules/mathViewerCard/MathviewerCard';
 import dummy from '../../pages/createPopup/data.json';
 import {
   createWorksheetStep1BoolAtom,
@@ -45,6 +49,14 @@ export function Step2() {
     { value: 0, label: '상' },
     { value: 0, label: '최상' },
   ];
+  const list = [
+    Contents2,
+    Contents3,
+    Contents4,
+    Contents2,
+    Contents3,
+    Contents4,
+  ];
 
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
@@ -53,17 +65,27 @@ export function Step2() {
   const [isSimilar, setIsSimilar] = useState(false);
   const ContentList = dummy.ContentInfo;
 
+  const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
+
+  const showSimilarContent = () => {
+    setIsSimilar(true);
+    console.log('어떤 데이터 값으로 호출?');
+  };
+
   const [contentList, setContentList] = useState(ContentList);
   const [selectedCode, setSelectedCode] = useState(null);
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
-  const dragStart = (e: any, position: number) => {
+  const dragStart = (e: React.DragEvent, position: number) => {
     dragItem.current = position;
   };
-  const dragEnter = (e: any, position: number) => {
+  const dragEnter = (e: React.DragEvent, position: number) => {
     dragOverItem.current = position;
+  };
+  const dragOver = (e: React.DragEvent) => {
+    e.preventDefault();
   };
   const drop = () => {
     if (dragItem.current !== null && dragOverItem.current !== null) {
@@ -94,11 +116,6 @@ export function Step2() {
   const moveStep3 = () => {
     setIsStep3(true);
     console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
-  };
-
-  const showSimilarContent = () => {
-    setIsSimilar(true);
-    console.log('어떤 데이터 값으로 호출?');
   };
 
   return (
@@ -184,8 +201,8 @@ export function Step2() {
                         draggable
                         onDragStart={(e) => dragStart(e, i)}
                         onDragEnter={(e) => dragEnter(e, i)}
+                        onDragOver={dragOver}
                         onDragEnd={drop}
-                        onDragOver={(e) => e.preventDefault()}
                       >
                         {el.code}
                       </Content>
@@ -196,20 +213,25 @@ export function Step2() {
             )}
           </DiscriptionSection>
           <ContentListSection>
-            <div>문항 뷰어</div>
-            <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
-            <div>전 단계로부터 전달받은 데이터 뷰어로 보여주기</div>
-            <Button
-              buttonType="button"
-              onClick={showSimilarContent}
-              $padding="10px"
-              height={'30px'}
-              width={'90px'}
-              fontSize="12px"
-              $border
-            >
-              <span>유사문항</span>
-            </Button>
+            {list.map((card, i) => (
+              <div
+                key={i}
+                // draggable
+                // onDragStart={(e) => dragStart(e, i)}
+                // onDragEnter={(e) => dragEnter(e, i)}
+                // onDragOver={dragOver}
+                // onDragEnd={drop}
+              >
+                <MathwiewerCard
+                  onClick={showSimilarContent}
+                  isSimilar={isSimilar}
+                  index={i}
+                  data={card}
+                  selectedCardIndex={selectedCardIndex}
+                  onSelectCard={setSelectedCardIndex}
+                ></MathwiewerCard>
+              </div>
+            ))}
           </ContentListSection>
         </Wrapper>
         <NextStepButtonWrapper>
@@ -362,6 +384,8 @@ const ContentListSection = styled.section`
   border-radius: 25px;
   padding: 10px;
   gap: 10px;
+  background-color: black;
+  overflow-y: auto;
 `;
 const NextStepButtonWrapper = styled.div`
   padding: 10px 0px;
