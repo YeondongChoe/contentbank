@@ -51,6 +51,8 @@ export function Table({
     },
   ]);
   const [tbodyType, setTbodyType] = useState('');
+  const [checkList, setCheckList] = useState<string[]>([]);
+
   //학습지 팝업
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
@@ -73,6 +75,25 @@ export function Table({
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     event.currentTarget.children[1].classList.remove('show');
+  };
+
+  // 체크박스 설정
+  // TODO: id값 또는 key값 테이블 아이템 고유값 통일 필요
+  const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      setCheckList(list.map((item) => item.key as string));
+    } else {
+      setCheckList([]);
+    }
+  };
+  const handleSingleCheck = (checked: boolean, id: string) => {
+    if (checked) {
+      // 단일 선택 시 체크된 아이템을 배열에 추가
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      // 단일 선택 해제 시 체크된 아이템을 제외한 배열 (필터)
+      setCheckList(checkList.filter((el) => el !== id));
+    }
   };
 
   const findColspan = (element: TheadItemProps) => {
@@ -111,6 +132,7 @@ export function Table({
   useEffect(() => {
     creatTbody();
     creatColspanList();
+    // setCheckedList([]);
   }, []);
 
   return (
@@ -131,9 +153,9 @@ export function Table({
             <th rowSpan={2}>
               <input
                 type="checkbox"
-                // onChange={selectAll}
-                // checked={isAllSelected}
-              ></input>
+                onChange={(e) => handleAllCheck(e)}
+                checked={checkList.length === list.length ? true : false}
+              />
             </th>
           )}
 
@@ -259,7 +281,7 @@ export function Table({
                   type="checkbox"
                   // checked={selectedRows.includes(content.contentSeq)}
                   // onChange={() => selectRow(content.contentSeq)}
-                ></input>
+                />
               </td>
               <td>
                 <span className="ellipsis">
@@ -325,12 +347,19 @@ export function Table({
       {tbodyType === 'memberTableType' && (
         <tbody>
           {list.map((member) => (
-            <tr key={member.id}>
+            <tr key={member.key}>
               <td>
                 <input
                   type="checkbox"
                   // checked={selectedRows.includes(content.contentSeq)}
                   // onChange={() => selectRow(content.contentSeq)}
+                  onChange={(e) =>
+                    handleSingleCheck(e.target.checked, member.key as string)
+                  }
+                  // 체크된 아이템 배열에 해당 아이템이 있을 경우 선택 활성화, 아닐 시 해제
+                  checked={
+                    checkList.includes(member.key as string) ? true : false
+                  }
                 ></input>
               </td>
               <td>
