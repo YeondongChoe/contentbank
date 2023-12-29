@@ -51,7 +51,7 @@ export function Table({
     },
   ]);
   const [tbodyType, setTbodyType] = useState('');
-  const [checkList, setCheckList] = useState<string[]>([]);
+  const [checkList, setCheckList] = useState<string[]>(['']);
 
   //학습지 팝업
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
