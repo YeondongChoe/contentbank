@@ -11,7 +11,7 @@ import { Button } from '../../atom';
 import { COLOR } from '../../constants';
 import { MathViewer } from '../../mathViewer/MathViewer';
 
-type MathwiewerCardProps = {
+type MathviewerCardProps = {
   onClick: () => void;
   isSimilar?: boolean;
   data: ItemQuestionType;
@@ -20,14 +20,14 @@ type MathwiewerCardProps = {
   onSelectCard: (index: number) => void;
 };
 
-export function MathwiewerCard({
+export function MathviewerCard({
   onClick,
   isSimilar,
   selectedCardIndex,
   onSelectCard,
   index,
   data,
-}: MathwiewerCardProps) {
+}: MathviewerCardProps) {
   const [contentList, setContentList] = useState(data);
   const propcessData = { ...data };
   const dragItem = useRef<number | null>(null);
