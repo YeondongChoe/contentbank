@@ -9,7 +9,7 @@ import { putSaveName } from '../../api/putAxios';
 import { Input, Label, Button } from '../../components';
 import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
 import { ChangePassword } from '../../components/password/ChangePassword';
-import { alertBoolAtom } from '../../state/utilAtom';
+import { alertBoolAtom } from '../../store/utilAtom';
 
 export function Mypage() {
   const [isNameEdit, setIsNameEdit] = useState(false);

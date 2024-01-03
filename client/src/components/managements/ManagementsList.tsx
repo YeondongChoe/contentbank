@@ -22,12 +22,12 @@ import {
   contentTheadList,
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
-import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
-import { totalPageAtom, pageAtom } from '../../state/utilAtom';
+import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
+import { totalPageAtom, pageAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
-} from '../../state/valueAtom';
+} from '../../store/valueAtom';
 import { QuestionTableType } from '../../types';
 
 export function ManagementsList() {

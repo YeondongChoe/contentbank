@@ -17,8 +17,8 @@ import {
   registerBoolAtom,
   editerBoolAtom,
   memberKeyValueAtom,
-} from '../../state/memberAtom';
-import { pageAtom, totalPageAtom } from '../../state/utilAtom';
+} from '../../store/memberAtom';
+import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { COLOR } from '../constants/COLOR';
 import { EditPopup } from '../member/EditPopup';

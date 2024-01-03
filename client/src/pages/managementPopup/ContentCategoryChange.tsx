@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { MathViewer, Button } from '../../components';
 import { Select } from '../../components/atom/select';
 import Contents2 from '../../components/mathViewer/test2.json';
-import { checkListValueAtom } from '../../state/valueAtom';
+import { checkListValueAtom } from '../../store/valueAtom';
 import dummy from '../createPopup/data.json';
 
 export function ContentCategoryChange() {

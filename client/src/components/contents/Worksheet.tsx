@@ -18,8 +18,8 @@ import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
-} from '../../state/creatingWorksheetAtom';
-import { pageAtom, totalPageAtom } from '../../state/utilAtom';
+} from '../../store/creatingWorksheetAtom';
+import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { WorksheetTableType } from '../../types';
 import { COLOR, worksheetColWidth, worksheetTheadList } from '../constants';
 import dummy from '../constants/data.json';

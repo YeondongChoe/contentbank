@@ -13,7 +13,7 @@ import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
-} from '../../../state/creatingWorksheetAtom';
+} from '../../../store/creatingWorksheetAtom';
 import {
   MemberTableType,
   QuestionTableType,

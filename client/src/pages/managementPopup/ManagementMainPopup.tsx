@@ -6,7 +6,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { IndexInfo, TabMenu } from '../../components';
-import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
+import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
 
 import { ContentCategoryChange } from './ContentCategoryChange';
 import { ContentInformationChange } from './ContentInformationChange';

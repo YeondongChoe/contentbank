@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../../components';
-import { updateBoolAtom } from '../../state/utilAtom';
+import { updateBoolAtom } from '../../store/utilAtom';
 
 export function FileUploadingPopup() {
   const isEdit = useRecoilValue(updateBoolAtom);

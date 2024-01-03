@@ -19,7 +19,7 @@ import {
   createWorksheetStep2BoolAtom,
   createWorksheetStep3BoolAtom,
   editWorksheetBoolAtom,
-} from '../../state/creatingWorksheetAtom';
+} from '../../store/creatingWorksheetAtom';
 
 import { Step3 } from './Step3';
 

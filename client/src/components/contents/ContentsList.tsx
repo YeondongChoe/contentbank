@@ -28,12 +28,12 @@ import {
   creatingNewContentBoolAtom,
   uploadBoolAtom,
   uploadFileBoolAtom,
-} from '../../state/creatingContentAtom';
-import { pageAtom, totalPageAtom, updateBoolAtom } from '../../state/utilAtom';
+} from '../../store/creatingContentAtom';
+import { pageAtom, totalPageAtom, updateBoolAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
-} from '../../state/valueAtom';
+} from '../../store/valueAtom';
 import { QuestionTableType } from '../../types';
 
 export function ContentsList() {

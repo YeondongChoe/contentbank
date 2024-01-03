@@ -30,8 +30,8 @@ import {
   manageOperationBoolAtom,
   manageMemberBoolAtom,
   manageAuthorityBoolAtom,
-} from '../../state/authorityAtom';
-import { alertBoolAtom } from '../../state/utilAtom';
+} from '../../store/authorityAtom';
+import { alertBoolAtom } from '../../store/utilAtom';
 import { COLOR } from '../constants';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
 import { SelectAlert } from '../molecules/alert/SelectAlert';

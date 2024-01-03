@@ -5,7 +5,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../../components/atom';
-import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
+import { managementTreePopupBoolAtom } from '../../store/managementContentAtom';
 
 export function ManagemantTreePopup() {
   const [isCreate, setIsCreate] = useRecoilState(managementTreePopupBoolAtom);

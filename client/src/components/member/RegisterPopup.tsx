@@ -13,8 +13,8 @@ import { postRegister, postDuplicate } from '../../api/postAxios';
 import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
-import { registerBoolAtom } from '../../state/memberAtom';
-import { alertBoolAtom } from '../../state/utilAtom';
+import { registerBoolAtom } from '../../store/memberAtom';
+import { alertBoolAtom } from '../../store/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
 
 type authorityListProps = {

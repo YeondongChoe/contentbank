@@ -29,7 +29,7 @@ import {
   manageOperationBoolAtom,
   manageMemberBoolAtom,
   manageAuthorityBoolAtom,
-} from '../../state/authorityAtom';
+} from '../../store/authorityAtom';
 import { Loader } from '../atom/Loader';
 
 import {

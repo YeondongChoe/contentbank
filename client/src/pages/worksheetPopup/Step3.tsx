@@ -12,7 +12,7 @@ import {
   createWorksheetStep2BoolAtom,
   createWorksheetStep3BoolAtom,
   editWorksheetBoolAtom,
-} from '../../state/creatingWorksheetAtom';
+} from '../../store/creatingWorksheetAtom';
 
 export function Step3() {
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);

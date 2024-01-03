@@ -10,7 +10,7 @@ import { COLOR } from '../../components/constants';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
-} from '../../state/creatingWorksheetAtom';
+} from '../../store/creatingWorksheetAtom';
 
 import { Step2 } from './Step2';
 

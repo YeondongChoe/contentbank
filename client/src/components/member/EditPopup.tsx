@@ -20,8 +20,8 @@ import {
 import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
-import { editerBoolAtom, memberKeyValueAtom } from '../../state/memberAtom';
-import { alertBoolAtom } from '../../state/utilAtom';
+import { editerBoolAtom, memberKeyValueAtom } from '../../store/memberAtom';
+import { alertBoolAtom } from '../../store/utilAtom';
 import { NoticeAlert } from '../molecules/alert/NoticeAlert';
 
 type authorityProps = {

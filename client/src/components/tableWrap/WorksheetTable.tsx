@@ -15,14 +15,14 @@ import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
-} from '../../state/creatingWorksheetAtom';
-import { pageAtom, totalPageAtom } from '../../state/utilAtom';
+} from '../../store/creatingWorksheetAtom';
+import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   searchValueAtom,
   checkBoxValueAtom,
   servicedValueBoolAtom,
-} from '../../state/valueAtom';
+} from '../../store/valueAtom';
 import dummy from '../constants/data.json';
 import { PaginationBox } from '../molecules/pagination/Pagination';
 

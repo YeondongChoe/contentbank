@@ -19,20 +19,20 @@ import {
   uploadBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
-} from '../../state/creatingContentAtom';
-import { managementContentPopupBoolAtom } from '../../state/managementContentAtom';
+} from '../../store/creatingContentAtom';
+import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
 import {
   pageAtom,
   totalPageAtom,
   updateBoolAtom,
   alertBoolAtom,
-} from '../../state/utilAtom';
+} from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   searchValueAtom,
   checkBoxValueAtom,
   servicedValueBoolAtom,
-} from '../../state/valueAtom';
+} from '../../store/valueAtom';
 import { COLOR } from '../constants';
 import { SelectAlert } from '../molecules/alert/SelectAlert';
 import { PaginationBox } from '../molecules/pagination/Pagination';

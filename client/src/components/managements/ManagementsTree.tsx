@@ -8,7 +8,7 @@ import { TabMenu, IndexInfo } from '../../components';
 import { Button } from '../../components/atom';
 import { COLOR } from '../../components/constants';
 import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
-import { managementTreePopupBoolAtom } from '../../state/managementContentAtom';
+import { managementTreePopupBoolAtom } from '../../store/managementContentAtom';
 
 export function ManagementsTree() {
   const menuList = [

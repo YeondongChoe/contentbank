@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { Button } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
-import { updateBoolAtom } from '../../state/utilAtom';
+import { updateBoolAtom } from '../../store/utilAtom';
 
 export function ContentCreatingPopup() {
   const isEdit = useRecoilValue(updateBoolAtom);

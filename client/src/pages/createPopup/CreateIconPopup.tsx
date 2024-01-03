@@ -12,7 +12,7 @@ import {
   uploadBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
-} from '../../state/creatingContentAtom';
+} from '../../store/creatingContentAtom';
 
 import { CreateMainPopup } from './CreateMainPopup';
 
