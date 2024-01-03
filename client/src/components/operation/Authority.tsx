@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Controller, useForm } from 'react-hook-form';
+import { BiSolidTrashAlt } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -254,7 +254,7 @@ export function Authority() {
                   {el.name}
                 </AuthorityName>
                 <DeleteIconWrapper>
-                  <DeleteForeverIcon
+                  <BiSolidTrashAlt
                     onClick={() => {
                       openDeleteAlert(el.code);
                     }}
@@ -359,6 +359,6 @@ const AuthorityName = styled.div`
   cursor: pointer;
 `;
 const DeleteIconWrapper = styled.div`
-  display: flex;
+  font-size: 17px;
   cursor: pointer;
 `;

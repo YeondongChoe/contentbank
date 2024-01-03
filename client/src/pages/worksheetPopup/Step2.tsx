@@ -7,12 +7,17 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, TabMenu, Label, BarChart } from '../../components';
+import {
+  Button,
+  TabMenu,
+  Label,
+  BarChart,
+  MathviewerCard,
+} from '../../components';
 import { COLOR } from '../../components/constants';
 import Contents2 from '../../components/mathViewer/test2.json';
 import Contents3 from '../../components/mathViewer/test3.json';
 import Contents4 from '../../components/mathViewer/test4.json';
-import { MathwiewerCard } from '../../components/molecules/mathViewerCard/MathviewerCard';
 import dummy from '../../pages/createPopup/data.json';
 import {
   createWorksheetStep1BoolAtom,
@@ -222,14 +227,14 @@ export function Step2() {
                 // onDragOver={dragOver}
                 // onDragEnd={drop}
               >
-                <MathwiewerCard
+                <MathviewerCard
                   onClick={showSimilarContent}
                   isSimilar={isSimilar}
                   index={i}
                   data={card}
                   selectedCardIndex={selectedCardIndex}
                   onSelectCard={setSelectedCardIndex}
-                ></MathwiewerCard>
+                ></MathviewerCard>
               </div>
             ))}
           </ContentListSection>

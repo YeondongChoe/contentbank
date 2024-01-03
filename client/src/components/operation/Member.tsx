@@ -26,10 +26,9 @@ import { RegisterPopup } from '../member/RegisterPopup';
 
 export function Member() {
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
-  const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
-  const isEditer = useRecoilValue(editerBoolAtom);
+  const [isRegister, setIsRegister] = useRecoilState(registerBoolAtom);
+  const [isEditer, setIsEditer] = useRecoilState(editerBoolAtom);
   const setKeyValue = useSetRecoilState(memberKeyValueAtom);
-  const setIsEdit = useSetRecoilState(editerBoolAtom);
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 8;
@@ -64,7 +63,7 @@ export function Member() {
   };
 
   const openRegisterPopup = () => {
-    SetIsRegister(true);
+    setIsRegister(true);
     setSearchValue('');
   };
 
@@ -74,7 +73,7 @@ export function Member() {
   ) => {
     const target = event.currentTarget.value;
     setKeyValue(target);
-    setIsEdit(true);
+    setIsEditer(true);
   };
 
   const loadData = () => {
@@ -129,7 +128,7 @@ export function Member() {
 
   return (
     <Container>
-      <IndexInfo list={['운영관리', '회원관리']} />
+      <IndexInfo list={['운영관리', '회원관리', `${tabVeiw}`]} />
       <InputWrapper>
         <Search
           value={searchValue}

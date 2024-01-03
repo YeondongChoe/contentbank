@@ -636,7 +636,6 @@ const SchoolButtonGroup = styled.div`
 const SelectorGroup = styled.div`
   display: flex;
   gap: 5px;
-  //padding: 5px;
 `;
 const DivideBar = styled.div`
   color: ${COLOR.BORDER_BLUE};
@@ -664,6 +663,22 @@ const SelectorWrapper = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 12px;
+  span {
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      right: 0px;
+      width: 1px;
+      height: 10px;
+      background-color: ${COLOR.SECONDARY};
+    }
+    &:last-child {
+      &::after {
+        display: none;
+      }
+    }
+  }
 `;
 const NumberInput = styled.input`
   width: 64px;
