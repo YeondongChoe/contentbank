@@ -51,7 +51,7 @@ export function Table({
     },
   ]);
   const [tbodyType, setTbodyType] = useState('');
-  const [checkList, setCheckList] = useState<string[]>(['']);
+  const [checkList, setCheckList] = useState<number[]>([]);
 
   //학습지 팝업
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
@@ -81,18 +81,18 @@ export function Table({
   // TODO: id값 또는 key값 테이블 아이템 고유값 통일 필요
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      setCheckList(list.map((item) => item.key as string));
+      setCheckList(list.map((item) => item.seq as number));
     } else {
       setCheckList([]);
     }
   };
-  const handleSingleCheck = (checked: boolean, id: string) => {
+  const handleSingleCheck = (checked: boolean, seq: number) => {
     if (checked) {
       // 단일 선택 시 체크된 아이템을 배열에 추가
-      setCheckList((prev) => [...prev, id]);
+      setCheckList((prev) => [...prev, seq]);
     } else {
       // 단일 선택 해제 시 체크된 아이템을 제외한 배열 (필터)
-      setCheckList(checkList.filter((el) => el !== id));
+      setCheckList(checkList.filter((el) => el !== seq));
     }
   };
 
@@ -347,18 +347,18 @@ export function Table({
       {tbodyType === 'memberTableType' && (
         <tbody>
           {list.map((member) => (
-            <tr key={member.key}>
+            <tr key={member.seq}>
               <td>
                 <input
                   type="checkbox"
                   // checked={selectedRows.includes(content.contentSeq)}
                   // onChange={() => selectRow(content.contentSeq)}
                   onChange={(e) =>
-                    handleSingleCheck(e.target.checked, member.key as string)
+                    handleSingleCheck(e.target.checked, member.seq as number)
                   }
                   // 체크된 아이템 배열에 해당 아이템이 있을 경우 선택 활성화, 아닐 시 해제
                   checked={
-                    checkList.includes(member.key as string) ? true : false
+                    checkList.includes(member.seq as number) ? true : false
                   }
                 ></input>
               </td>
