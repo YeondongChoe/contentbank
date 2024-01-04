@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
 
+import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
+import { pageAtom } from '../../../store/utilAtom';
 import { COLOR } from '../../constants';
 
 export type MenuProps = {
@@ -76,7 +78,13 @@ export function TabMenu({
   lineStyle,
   onClickTab,
 }: TabMenuProps) {
+  const [page, setPage] = useRecoilState(pageAtom);
   const [selected, setSelected] = useState(initialValue);
+
+  // 탭메뉴 클릭시 페이지네이션 초기화
+  const changeTab = () => {
+    setPage(1);
+  };
 
   const handleChange = (value: string) => {
     setSelected(value);
@@ -85,7 +93,12 @@ export function TabMenu({
   };
 
   return (
-    <Component $length={length} width={width} $margin={$margin}>
+    <Component
+      $length={length}
+      width={width}
+      $margin={$margin}
+      onClick={changeTab}
+    >
       {menu.map(({ label, value }: MenuProps) => (
         <Tab
           className={className}

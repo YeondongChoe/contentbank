@@ -67,13 +67,19 @@ export function Member() {
     setSearchValue('');
   };
 
-  /** 상세정보 보기 버튼*/
+  /* 상세정보 보기 버튼*/
   const openDetailInformationPopup = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     const target = event.currentTarget.value;
     setKeyValue(target);
     setIsEditer(true);
+  };
+
+  // 탭메뉴 클릭시 페이지네이션 초기화
+  const changeTab = () => {
+    console.log('dsadsadsadsadsdsadsadada');
+    setPage(1);
   };
 
   const loadData = () => {
@@ -104,12 +110,12 @@ export function Member() {
     if (didMount) {
       loadData();
     }
-  }, [didMount, page]);
+  }, [didMount]);
 
   useEffect(() => {
     // console.log(tabVeiw);
     loadData();
-  }, [setTabVeiw, tabVeiw]);
+  }, [setTabVeiw, tabVeiw, page, settotalPage, setPage]);
 
   const menuList = [
     {
@@ -161,6 +167,7 @@ export function Member() {
             setTabVeiw={setTabVeiw}
             lineStyle
             $margin={'10px 0'}
+            onClickTab={changeTab}
           />
 
           <Button

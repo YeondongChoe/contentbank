@@ -6,7 +6,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import { pageAtom } from '../../../store/utilAtom';
-import { checkBoxValueAtom } from '../../../store/valueAtom';
 import { COLOR } from '../../constants';
 
 type PaginationBoxProps = {
@@ -21,7 +20,6 @@ export function PaginationBox({
   totalItemsCount,
 }: PaginationBoxProps) {
   const [page, setPage] = useRecoilState(pageAtom);
-  // const setSelectedRows = useSetRecoilState<number[]>(checkBoxValueAtom);
 
   const pageRangeDisplay = () => {
     if (totalItemsCount < 5) return totalItemsCount;
@@ -44,7 +42,6 @@ export function PaginationBox({
         nextPageText={'>'}
         onChange={(page) => {
           setPage(page);
-          // setSelectedRows([]);
         }}
       />
     </Wrapper>
