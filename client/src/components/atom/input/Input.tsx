@@ -47,7 +47,7 @@ export function Input({
   innerRef,
 }: InputProps) {
   return (
-    <>
+    <Warpper>
       <Component
         className={className}
         type={type}
@@ -68,7 +68,7 @@ export function Input({
         ref={innerRef}
       ></Component>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-    </>
+    </Warpper>
   );
 }
 
@@ -85,6 +85,10 @@ type InputStyleProps = {
   disabled?: boolean;
 };
 
+const Warpper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 const Component = styled.input<InputStyleProps>`
   display: flex;
   align-items: center;

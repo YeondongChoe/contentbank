@@ -285,7 +285,9 @@ export function Authority() {
         />
       )}
       {/* {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />} */}
-      {isCreateNameError && <NoticeAlert title="권한명을 작성해주세요." />}
+      {isCreateNameError && (
+        <SelectAlert notice title="권한명을 작성해주세요." />
+      )}
       {/* {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />} */}
     </Container>
   );

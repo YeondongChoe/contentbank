@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { MdOutlineRestartAlt } from 'react-icons/md';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -267,7 +268,6 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -280,6 +280,7 @@ const Container = styled.div`
   padding: 20px;
   border: 1px solid ${COLOR.BORDER_BLUE};
   background-color: white;
+  border-radius: 5px;
 `;
 const TitleWrapper = styled.div`
   padding: 20px 0px;

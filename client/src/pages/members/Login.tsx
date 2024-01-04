@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import { postLogin } from '../../api/postAxios';
 import { Input, Label, Button } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
-import { NoticeAlert } from '../../components/molecules/alert/NoticeAlert';
+import { SelectAlert } from '../../components/molecules/alert/SelectAlert';
 import { alertBoolAtom } from '../../store/utilAtom';
 import { getAuthorityCookie } from '../../utils/cookies';
 
@@ -131,7 +131,7 @@ export function Login() {
         <NoticeMessage>
           * 아이디/비밀번호를 모르실 경우, 관리자에게 문의해주세요.
         </NoticeMessage>
-        {isAlertOpen && <NoticeAlert title={errorMessage} />}
+        {isAlertOpen && <SelectAlert notice title={errorMessage} />}
       </Wrapper>
     </Container>
   );

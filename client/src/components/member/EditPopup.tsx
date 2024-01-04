@@ -24,7 +24,7 @@ import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { editerBoolAtom, memberKeyValueAtom } from '../../store/memberAtom';
 import { alertBoolAtom } from '../../store/utilAtom';
-import { NoticeAlert } from '../molecules/alert/NoticeAlert';
+import { SelectAlert } from '../molecules/alert/SelectAlert';
 
 type authorityProps = {
   seq: number;
@@ -305,7 +305,7 @@ export function EditPopup() {
                   </Button>
                 </ButtonGroup>
                 {isInit && (
-                  <NoticeAlert title="비밀번호가 초기화 되었습니다." />
+                  <SelectAlert title="비밀번호가 초기화 되었습니다." />
                 )}
               </ContentBox>
             </form>
@@ -322,7 +322,7 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -334,6 +334,7 @@ const Container = styled.div`
   padding: 20px;
   border: 1px solid gray;
   background-color: white;
+  border-radius: 5px;
 `;
 
 const TitleWrapper = styled.div`

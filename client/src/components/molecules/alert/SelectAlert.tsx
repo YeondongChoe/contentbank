@@ -5,12 +5,14 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { alertBoolAtom } from '../../../store/utilAtom';
+import { Button } from '../../atom';
 
 type AlertProps = {
   title: string;
   description?: string;
   onClick?: () => void;
   action?: string;
+  notice?: boolean;
 };
 
 export function SelectAlert(prop: AlertProps) {
@@ -32,12 +34,45 @@ export function SelectAlert(prop: AlertProps) {
               <Description>{prop.title}</Description>
               <Description>{prop.description}</Description>
             </AlertWrapper>
-            <SelectWrapper>
-              <CancelButton onClick={closeAlert}>취소</CancelButton>
-              <ConfirmButton onClick={prop.onClick}>
-                {prop.action}
-              </ConfirmButton>
-            </SelectWrapper>
+            {prop.notice ? (
+              <Button
+                buttonType="button"
+                onClick={closeAlert}
+                height="10px"
+                width="100px"
+                $margin="0 0 10px 0"
+                fontSize="12px"
+                $borderRadius="15px"
+              >
+                <span>확인</span>
+              </Button>
+            ) : (
+              <SelectWrapper>
+                <Button
+                  buttonType="button"
+                  onClick={closeAlert}
+                  height="10px"
+                  $padding="15px"
+                  width="80px"
+                  fontSize="12px"
+                  $borderRadius="15px"
+                  $border
+                >
+                  <span>취소</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  height="10px"
+                  $padding="15px"
+                  width="80px"
+                  fontSize="12px"
+                  $borderRadius="15px"
+                  onClick={prop.onClick}
+                >
+                  <span>{prop.action}</span>
+                </Button>
+              </SelectWrapper>
+            )}
           </Container>
         </Overlay>
       )}
@@ -51,7 +86,7 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -66,6 +101,7 @@ const Container = styled.div`
   height: 130px;
   border: 1px solid gray;
   background-color: white;
+  border-radius: 5px;
 `;
 const AlertWrapper = styled.div`
   width: 100%;
@@ -90,20 +126,7 @@ const Description = styled.div`
 `;
 const SelectWrapper = styled.div`
   width: 100%;
-  height: 40px;
+  padding-bottom: 10px;
   display: flex;
   justify-content: space-evenly;
-`;
-const CancelButton = styled.div`
-  margin: auto 0;
-  cursor: pointer;
-  font-size: 12px;
-  color: gray;
-`;
-const ConfirmButton = styled.div`
-  margin: auto 0;
-  cursor: pointer;
-  color: #4990d3;
-  font-size: 12px;
-  font-weight: bold;
 `;
