@@ -53,7 +53,7 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -63,6 +63,7 @@ const Container = styled.div`
   width: 500px;
   border: 1px solid gray;
   background-color: white;
+  border-radius: 5px;
 `;
 const HeadWrapper = styled.div`
   width: 100%;
