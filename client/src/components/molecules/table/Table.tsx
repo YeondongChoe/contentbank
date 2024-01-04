@@ -78,7 +78,7 @@ export function Table({
   };
 
   // 체크박스 설정
-  // TODO: id값 또는 key값 테이블 아이템 고유값 통일 필요
+  // 데이터 고유id값 seq : 기획 발표이후 변경될 수 있음
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       setCheckList(list.map((item) => item.seq as number));
@@ -88,10 +88,8 @@ export function Table({
   };
   const handleSingleCheck = (checked: boolean, seq: number) => {
     if (checked) {
-      // 단일 선택 시 체크된 아이템을 배열에 추가
       setCheckList((prev) => [...prev, seq]);
     } else {
-      // 단일 선택 해제 시 체크된 아이템을 제외한 배열 (필터)
       setCheckList(checkList.filter((el) => el !== seq));
     }
   };
@@ -104,6 +102,8 @@ export function Table({
     }
   };
 
+  // 테이블 고정 선언값 components/constants/TABLE.ts
+  // 들어오는 데이터에 따라 thead 생성
   const creatColspanList = useCallback(() => {
     const findIndex = theadList.findIndex(findColspan);
     if (findIndex) {
@@ -117,6 +117,7 @@ export function Table({
     }
   }, [theadList]);
 
+  // 들어오는 데이터에 따라 tbody 생성
   const creatTbody = () => {
     console.log(list && list[1]);
     //학습지 이름을 가졌을시
