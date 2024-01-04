@@ -25,7 +25,9 @@ export function ContentCreatingPopup() {
         frameBorder={0}
         //allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         sandbox="allow-scripts allow-popups allow-same-origin"
-      ></iframe>
+      >
+        iframe이 나오지 않으면 이문구가 대체됩니다.
+      </iframe>
       <Button
         buttonType="button"
         onClick={submitSave}
