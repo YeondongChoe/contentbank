@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
+import { IoMdClose } from 'react-icons/io';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -27,7 +27,7 @@ export function SelectAlert(prop: AlertProps) {
           <Container>
             <AlertWrapper>
               <CancelIconWrapper>
-                <CloseIcon onClick={closeAlert} sx={{ cursor: 'pointer' }} />
+                <IoMdClose onClick={closeAlert} style={{ cursor: 'pointer' }} />
               </CancelIconWrapper>
               <Description>{prop.title}</Description>
               <Description>{prop.description}</Description>

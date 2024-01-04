@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import CloseIcon from '@mui/icons-material/Close';
-import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
+import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu } from '../../components';
@@ -55,7 +54,10 @@ export function CreateMainPopup() {
     <Container>
       <Wrapper>
         <IconWrapper>
-          <ArrowBackIosNewIcon onClick={goBackMainPopup} />
+          <IoIosArrowBack
+            style={{ fontSize: '24px', cursor: 'pointer' }}
+            onClick={goBackMainPopup}
+          />
         </IconWrapper>
         <TapMenuWrapper>
           <TabMenu
@@ -67,7 +69,10 @@ export function CreateMainPopup() {
           />
         </TapMenuWrapper>
         <CloseButtonWrapper>
-          <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+          <IoMdClose
+            onClick={closePopup}
+            style={{ fontSize: '22px', cursor: 'pointer' }}
+          />
         </CloseButtonWrapper>
       </Wrapper>
       {tabVeiw === 'DT & Editing' && (
@@ -104,7 +109,6 @@ const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-right: 10px;
-  cursor: pointer;
 `;
 const TapMenuWrapper = styled.div`
   display: flex;

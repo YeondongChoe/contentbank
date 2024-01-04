@@ -9,6 +9,7 @@ type ButtonProps = {
   text?: string;
   buttonType?: 'button' | 'submit' | 'reset';
   onClick?: () => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
   $padding?: string;
   $margin?: string;
   width?: string;
@@ -24,6 +25,7 @@ export function Button({
   text,
   buttonType = 'button',
   onClick,
+  onKeyDown,
   $padding,
   $margin,
   width,
@@ -41,6 +43,7 @@ export function Button({
       $margin={$margin}
       type={buttonType}
       onClick={onClick}
+      onKeyDown={onKeyDown}
       fontSize={fontSize}
       $borderRadius={$borderRadius}
       $border={$border}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { MdAccountBalance } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -83,7 +83,7 @@ export function Header() {
   return (
     <Container>
       <IconWrapper onClick={moveMainpage} tabIndex={0}>
-        <AccountBalanceIcon
+        <MdAccountBalance
           style={{ fontSize: '50px', color: `${COLOR.PRIMARY}` }}
         />
       </IconWrapper>

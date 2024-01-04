@@ -1,9 +1,8 @@
 import * as React from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
-import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { IoMdClose } from 'react-icons/io';
+import { MdDriveFolderUpload, MdOutlinePostAdd } from 'react-icons/md';
+import { TbFileUpload } from 'react-icons/tb';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -58,12 +57,15 @@ export function CreateIconPopup() {
         ) : (
           <>
             <CancelButtonWrapper>
-              <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+              <IoMdClose
+                onClick={closePopup}
+                style={{ fontSize: '22px', cursor: 'pointer' }}
+              />
             </CancelButtonWrapper>
             <MenuListWrapper>
               <MenuWrapper onClick={moveContentCreating}>
                 <IconWrapper>
-                  <PostAddIcon sx={styleIcon} />
+                  <MdOutlinePostAdd style={styleIcon} />
                 </IconWrapper>
                 <TextWrapper>
                   <MenuName>문항 신규 제작</MenuName>
@@ -71,7 +73,7 @@ export function CreateIconPopup() {
               </MenuWrapper>
               <MenuWrapper onClick={moveFileUploading}>
                 <IconWrapper>
-                  <UploadFileIcon sx={styleIcon} />
+                  <TbFileUpload style={styleIcon} />
                 </IconWrapper>
                 <TextWrapper>
                   <MenuName>문항 파일 등록</MenuName>
@@ -80,7 +82,7 @@ export function CreateIconPopup() {
               </MenuWrapper>
               <MenuWrapper onClick={moveBigFileUploading}>
                 <IconWrapper>
-                  <DriveFolderUploadIcon sx={styleIcon} />
+                  <MdDriveFolderUpload style={styleIcon} />
                 </IconWrapper>
                 <TextWrapper>
                   <MenuName>대량 문항 등록</MenuName>

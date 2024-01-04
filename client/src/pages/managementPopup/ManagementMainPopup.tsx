@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
+import { IoMdClose } from 'react-icons/io';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -44,7 +44,10 @@ export function ManagemantMainPopup() {
             setTabVeiw={setTabVeiw}
           />
           <CloseButtonWrapper>
-            <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+            <IoMdClose
+              onClick={closePopup}
+              style={{ fontSize: '22px', cursor: 'pointer' }}
+            />
           </CloseButtonWrapper>
         </TapWrapper>
         {tabVeiw === '바꾸기' && (

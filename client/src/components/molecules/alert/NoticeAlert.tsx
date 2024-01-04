@@ -1,10 +1,11 @@
 import * as React from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
+import { IoMdClose } from 'react-icons/io';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { alertBoolAtom } from '../../../store/utilAtom';
+import { Button } from '../../atom';
 
 type AlertProps = {
   description?: string;
@@ -26,16 +27,24 @@ export function NoticeAlert(prop: AlertProps) {
           <Container>
             <AlertWrapper>
               <CancelIconWrapper>
-                <CloseIcon onClick={closeAlert} sx={{ cursor: 'pointer' }} />
+                <IoMdClose onClick={closeAlert} style={{ cursor: 'pointer' }} />
               </CancelIconWrapper>
               <Description>
                 <div>{prop.title}</div>
                 <div> {prop.description}</div>
               </Description>
             </AlertWrapper>
-            <SelectWrapper>
-              <ConfirmButton onClick={closeAlert}>확인</ConfirmButton>
-            </SelectWrapper>
+            <Button
+              buttonType="button"
+              onClick={closeAlert}
+              height="10px"
+              width="100px"
+              $margin="0 0 10px 0"
+              fontSize="12px"
+              $borderRadius="15px"
+            >
+              <span>확인</span>
+            </Button>
           </Container>
         </Overlay>
       )}
@@ -73,7 +82,6 @@ const CancelIconWrapper = styled.div`
   justify-content: flex-end;
   margin-top: 5px;
   margin-right: 5px;
-  cursor: pointer;
 `;
 const Description = styled.div`
   display: flex;
@@ -85,17 +93,4 @@ const Description = styled.div`
     margin-top: 3px;
     font-size: 11px;
   }
-`;
-const SelectWrapper = styled.div`
-  width: 100%;
-  height: 40px;
-  display: flex;
-  justify-content: space-evenly;
-`;
-const ConfirmButton = styled.div`
-  margin: auto 0;
-  cursor: pointer;
-  color: #4990d3;
-  font-size: 12px;
-  font-weight: bold;
 `;
