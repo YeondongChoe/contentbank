@@ -50,7 +50,7 @@ export function Table({
     },
   ]);
   const [tbodyType, setTbodyType] = useState('');
-  const [checkList, setCheckList] = useState<number[]>([]);
+  const [checkList, setCheckList] = useState<number[]>([0]);
 
   //학습지 팝업
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
@@ -513,6 +513,7 @@ const SettingList = styled.ul`
       color: ${COLOR.GRAY};
       transition: all 0.1s;
       z-index: 2;
+      border: none;
 
       &:hover {
         background-color: ${COLOR.HOVER};
