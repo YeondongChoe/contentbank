@@ -132,8 +132,11 @@ export function Table({
   useEffect(() => {
     creatTbody();
     creatColspanList();
-    // setCheckedList([]);
   }, []);
+
+  useEffect(() => {
+    setCheckList([0]);
+  }, [list]);
 
   return (
     <Component cellSpacing="0" cellPadding="0" width={width}>
