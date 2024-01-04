@@ -17,12 +17,21 @@ export function ContentCreatingPopup() {
 
   return (
     <Container>
-      <div>문항 신규 제작 아이텍솔루션</div>
+      <iframe
+        width="100%"
+        height="672"
+        src="http://43.201.205.140:40031"
+        title="아이텍솔루션"
+        frameBorder={0}
+        //allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        sandbox="allow-scripts allow-popups allow-same-origin"
+      ></iframe>
       <Button
         buttonType="button"
         onClick={submitSave}
         height={'25px'}
         width={'70px'}
+        $margin="0px"
         fontSize="12px"
       >
         <span>{isEdit ? '수정' : '저장'}</span>
@@ -33,9 +42,7 @@ export function ContentCreatingPopup() {
 
 const Container = styled.div`
   max-width: 1024px;
-  min-width: 800px;
-  padding: 20px;
+  min-width: 948px;
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
-  height: 673px;
 `;
