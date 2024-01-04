@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useEffect, useState, useCallback } from 'react';
 
-import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
-import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
+import { FaRegBookmark, FaBookmark } from 'react-icons/fa';
+import { LuFileSearch2 } from 'react-icons/lu';
+import { SlOptionsVertical } from 'react-icons/sl';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
@@ -205,11 +204,7 @@ export function Table({
                     // addFavoriteQuestion(content.questionSeq);
                   }}
                 >
-                  {content.favorited ? (
-                    <BookmarkTwoToneIcon fontSize="small" />
-                  ) : (
-                    <BookmarkBorderTwoToneIcon fontSize="small" />
-                  )}
+                  {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
                 </button>
               </td>
               <td>
@@ -229,7 +224,7 @@ export function Table({
               </td>
               <td>
                 <button onClick={() => {}}>
-                  <PlagiarismOutlinedIcon />
+                  <LuFileSearch2 style={{ fontSize: '22px' }} />
                 </button>
               </td>
               <td>
@@ -238,7 +233,7 @@ export function Table({
                   onClick={(event) => openSettingList(event)}
                   onMouseLeave={(event) => closeSettingList(event)}
                 >
-                  <MoreVertIcon />
+                  <SlOptionsVertical style={{ fontSize: '16px' }} />
                   <SettingList>
                     <li>
                       <button
@@ -297,11 +292,7 @@ export function Table({
                     width={'20px'}
                     height={'20px'}
                   >
-                    {content.favorited ? (
-                      <BookmarkTwoToneIcon fontSize="small" />
-                    ) : (
-                      <BookmarkBorderTwoToneIcon fontSize="small" />
-                    )}
+                    {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
                   </IconButton>
                 </span>
               </td>

@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import Textarea from '@mui/joy/Textarea';
-import Box from '@mui/material/Box';
 import { Controller, useForm } from 'react-hook-form';
+import { IoMdClose } from 'react-icons/io';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -120,9 +119,9 @@ export function RegisterPopup() {
           <Container>
             <TitleWrapper>
               <Title>회원 아이디 만들기</Title>
-              <ClearTwoToneIcon
+              <IoMdClose
                 onClick={closePopup}
-                sx={{ cursor: 'pointer' }}
+                style={{ fontSize: '20px', cursor: 'pointer' }}
               />
             </TitleWrapper>
             <ContentBox>

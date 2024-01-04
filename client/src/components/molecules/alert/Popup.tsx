@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
+import { IoMdClose } from 'react-icons/io';
 import styled from 'styled-components';
 
 import { TablePopup } from '../../tableWrap/StudentTable';
@@ -34,7 +34,7 @@ export function PopupModal(prop: alertProps) {
           <Container>
             <HeadWrapper>
               <Title>{prop.title}</Title>
-              <CloseIcon onClick={closeAlert} sx={{ cursor: 'pointer' }} />
+              <IoMdClose onClick={closeAlert} style={{ cursor: 'pointer' }} />
             </HeadWrapper>
             <Description>
               <TablePopup />

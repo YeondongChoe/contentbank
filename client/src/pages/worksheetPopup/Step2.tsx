@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import CloseIcon from '@mui/icons-material/Close';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
+import { MdOutlineRestartAlt } from 'react-icons/md';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
@@ -128,9 +127,9 @@ export function Step2() {
       <Container>
         <TitleWrapper>
           <IconWrapper>
-            <ArrowBackIosNewIcon
+            <IoIosArrowBack
+              style={{ fontSize: '24px', cursor: 'pointer' }}
               onClick={goBackMainPopup}
-              sx={{ cursor: 'pointer' }}
             />
           </IconWrapper>
           <Title>
@@ -140,16 +139,19 @@ export function Step2() {
             </Span>
             학습지 상세 편집
           </Title>
-          <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+          <IoMdClose
+            onClick={closePopup}
+            style={{ fontSize: '22px', cursor: 'pointer' }}
+          />
         </TitleWrapper>
         <Wrapper>
           <DiscriptionSection>
             {isSimilar ? (
               <SimilarWrapper>
                 <SimilarCloseButtonWrapper>
-                  <CloseIcon
-                    sx={{ cursor: 'pointer' }}
+                  <IoMdClose
                     onClick={() => setIsSimilar(false)}
+                    style={{ fontSize: '22px', cursor: 'pointer' }}
                   />
                 </SimilarCloseButtonWrapper>
                 <SimilarTitleWrapper>
@@ -160,7 +162,9 @@ export function Step2() {
                     </SimilarTitleSpan>
                   </SimilarTitle>
                   <RestartWrapper>
-                    <RestartAltIcon sx={{ cursor: 'pointer' }} />
+                    <MdOutlineRestartAlt
+                      style={{ fontSize: '22px', cursor: 'pointer' }}
+                    />
                     새로 불러오기
                   </RestartWrapper>
                 </SimilarTitleWrapper>

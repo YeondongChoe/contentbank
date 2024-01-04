@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
+import { IoMdClose } from 'react-icons/io';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -125,7 +125,10 @@ export function Step1() {
           <Title>
             <Span>STEP 1</Span> 학습지 종류 및 번위 선택
           </Title>
-          <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+          <IoMdClose
+            onClick={closePopup}
+            style={{ fontSize: '22px', cursor: 'pointer' }}
+          />
         </TitleWrapper>
         <Wrapper>
           <TreeveiwSection>

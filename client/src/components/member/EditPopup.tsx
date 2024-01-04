@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import Textarea from '@mui/joy/Textarea';
 import { Controller, useForm } from 'react-hook-form';
+import { IoMdClose } from 'react-icons/io';
+import {
+  MdCheckBoxOutlineBlank,
+  MdIndeterminateCheckBox,
+} from 'react-icons/md';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -149,9 +151,9 @@ export function EditPopup() {
           <Container>
             <TitleWrapper>
               <Title>회원 정보 상세보기</Title>
-              <ClearTwoToneIcon
+              <IoMdClose
                 onClick={closePopup}
-                sx={{ cursor: 'pointer' }}
+                style={{ fontSize: '20px', cursor: 'pointer' }}
               />
             </TitleWrapper>
             <form>
@@ -226,12 +228,18 @@ export function EditPopup() {
                   <Label fontSize="16px" width="200px" value="권한" />
                   {isEnabled ? (
                     <CheckBoxWrapper>
-                      <CheckBoxOutlineBlankIcon onClick={checkEnabled} />
+                      <MdCheckBoxOutlineBlank
+                        style={{ fontSize: '18px' }}
+                        onClick={checkEnabled}
+                      />
                       <span>비활성화</span>
                     </CheckBoxWrapper>
                   ) : (
                     <CheckBoxWrapper>
-                      <IndeterminateCheckBoxIcon onClick={checkEnabled} />
+                      <MdIndeterminateCheckBox
+                        style={{ fontSize: '18px' }}
+                        onClick={checkEnabled}
+                      />
                       <span>비활성화</span>
                     </CheckBoxWrapper>
                   )}
