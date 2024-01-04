@@ -81,6 +81,7 @@ const DropDownList = styled.ul<DropDownListStyleProps>`
   border: 1px solid ${COLOR.SECONDARY};
   border-radius: 5px;
   overflow: hidden;
+  z-index: 1;
 
   li {
     width: 100%;

@@ -1,22 +1,32 @@
 import * as React from 'react';
+import { useState } from 'react';
 
 import { styled } from 'styled-components';
 
-import { MathviewerCard } from '../components';
+import {
+  CommonDate,
+  DropDown,
+  MathviewerCard,
+  PaginationBox,
+  Search,
+} from '../components';
 import Contents2 from '../components/mathViewer/test2.json';
 
-import { Button, IconButton, Loader, Input } from './../components/atom';
+import {
+  Button,
+  IconButton,
+  Loader,
+  Input,
+  ValueNone,
+  IndexInfo,
+} from './../components/atom';
 import { Select } from './../components/atom/select';
 
-type CategoryOptionsProps = {
-  id?: string;
-  label: string;
-  value?: number | string;
-};
-
 export function Guide() {
-  const [selectedValue, setSelectedValue] = React.useState<string>();
-  const [content, setContent] = React.useState<string[]>([]);
+  const [selectedValue, setSelectedValue] = useState<string>();
+  const [content, setContent] = useState<string[]>([]);
+  const [showDropDown, setShowDropDown] = useState<boolean>(false);
+  const [chageValue, setChageValue] = useState<string>('');
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     // console.log(event.currentTarget.value);
@@ -61,10 +71,9 @@ export function Guide() {
       >
         <span>border 커스텀 버튼</span>
       </Button>
-      {/* <Select /> */}
-      <h3>loader</h3>
-      <Loader height={'40px'} size="35px" />
-      <Loader height={'80px'} />
+      <h3>index info</h3>
+      <IndexInfo list={['1deps', '2deps', '3deps']}></IndexInfo>
+
       <h3>Select</h3>
       <Select
         width={'150px'}
@@ -127,6 +136,44 @@ export function Guide() {
         padding="10px"
         placeholder="커스텀 인풋 비활성화"
       />
+      <h3>search</h3>
+      <Search
+        value={chageValue}
+        onClick={() => {}}
+        onChange={(e) => setChageValue(e.target.value)}
+        onKeyDown={() => {}}
+      ></Search>
+      <h3>drop down</h3>
+      <DropDown
+        width="100%"
+        list={[
+          {
+            key: 'option1',
+            title: 'option1',
+            onClick: () => {},
+          },
+          {
+            key: 'option2',
+            title: 'option2',
+            onClick: () => {},
+          },
+          {
+            key: 'option3',
+            title: 'option3',
+            onClick: () => {},
+          },
+        ]}
+        buttonText={'dropdown'}
+        showDropDown={showDropDown}
+        setShowDropDown={() => setShowDropDown(!showDropDown)}
+      ></DropDown>
+
+      <h3>date picker</h3>
+      <CommonDate></CommonDate>
+
+      <h3>pagination</h3>
+      <PaginationBox itemsCountPerPage={1} totalItemsCount={10}></PaginationBox>
+
       <h3>mathviewer</h3>
       <div style={{ width: '480px' }}>
         <MathviewerCard
@@ -137,6 +184,11 @@ export function Guide() {
           onSelectCard={() => {}}
         ></MathviewerCard>
       </div>
+      <h3>loader</h3>
+      <Loader height={'40px'} size="35px" />
+      <Loader height={'80px'} />
+      <h3>value none</h3>
+      <ValueNone />
     </Component>
   );
 }
