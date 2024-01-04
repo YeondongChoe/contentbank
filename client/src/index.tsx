@@ -28,7 +28,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <ContentList /> },
       {
-        path: '/guide',
+        path: 'dev/v1/guide',
         element: <Guide />,
       },
       {
