@@ -30,6 +30,7 @@ export function Worksheet() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
 
+  // 검색 기능 함수
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };

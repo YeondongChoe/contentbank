@@ -183,6 +183,7 @@ export function Member() {
             활성화 / 비활성화
           </Button>
         </ButtonWrapper>
+        <Total>Total : {memberList.length}</Total>
         <Table
           list={memberList}
           colWidth={memberColWidth}
@@ -226,4 +227,10 @@ const ButtonWrapper = styled.div`
 const TableWrapper = styled.div`
   min-height: 580px;
   border-top: 1px solid ${COLOR.SECONDARY};
+`;
+const Total = styled.p`
+  text-align: right;
+  font-size: 14px;
+  color: ${COLOR.SECONDARY};
+  padding-bottom: 5px;
 `;
