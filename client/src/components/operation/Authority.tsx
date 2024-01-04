@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
-import { Input } from '../../components';
+import { Input, Table } from '../../components';
 import { Button, IndexInfo } from '../../components/atom';
 import {
   editCreateContentBool,
@@ -197,11 +197,89 @@ export function Authority() {
       <IndexInfo list={['운영관리', '권한관리']} />
       <Wrapper>
         <TreeWrapper>
-          <TreeMenuWrapper>
-            <Menu>편집</Menu>
-            <Menu>관리</Menu>
-          </TreeMenuWrapper>
-          <AuthorityTree />
+          <TableWrapper>
+            {/* <Table list={[]} theadList={[]}></Table> */}
+            <table>
+              <thead>
+                <tr>
+                  <th colSpan={2}>권한</th>
+                  <th>편집</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="textLeft" colSpan={2}>
+                    전체
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                </tr>
+                <tr>
+                  <td rowSpan={2}>콘텐츠 제작</td>
+                  <td>문항</td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>학습지</td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>콘텐츠 관리</td>
+                  <td>문항</td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                </tr>
+                <tr>
+                  <td rowSpan={3}>운영 관리</td>
+                  <td>회원관리</td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>권한관리</td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>권한설정</td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </TableWrapper>
+          {/* <AuthorityTree /> */}
         </TreeWrapper>
         <AuthorityMenuWrapper>
           <SearchBarWrapper>
@@ -310,13 +388,28 @@ const TreeWrapper = styled.div`
   border-right: 1px solid ${COLOR.SECONDARY};
   padding: 10px;
 `;
-const TreeMenuWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 20px 90px 20px;
-  gap: 10px;
+const TableWrapper = styled.div`
+  padding: 10px;
+
+  table {
+    border-collapse: collapse;
+    background-color: white;
+    table-layout: fixed;
+
+    tr {
+    }
+    th,
+    td {
+      text-align: center;
+      border: 1px solid #000;
+      padding: 10px;
+    }
+    .textLeft {
+      text-align: left;
+    }
+  }
 `;
-const Menu = styled.div``;
+
 const AuthorityMenuWrapper = styled.div`
   display: flex;
   flex-direction: column;

@@ -71,3 +71,16 @@ export const memberTheadList = [
   { th: [{ title: '상태' }] },
   { th: [{ title: '상세정보' }] },
 ];
+
+//권한관리 테이블
+export const authorityColWidth = [
+  { width: '30%' },
+  { width: '30%' },
+  { width: '20%' },
+  { width: '20%' },
+];
+export const authorityTheadList = [
+  { th: [{ title: '권한', colspan: 2 }] },
+  { th: [{ title: '편집' }] },
+  { th: [{ title: '관리' }] },
+];
