@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import CloseIcon from '@mui/icons-material/Close';
+import { IoMdClose } from 'react-icons/io';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -40,7 +40,10 @@ export function ManagemantTreePopup() {
               </Button>
             </ButtonGroup>
           </TitleWrapper>
-          <CloseIcon onClick={closePopup} sx={{ cursor: 'pointer' }} />
+          <IoMdClose
+            onClick={closePopup}
+            style={{ fontSize: '22px', cursor: 'pointer' }}
+          />
         </TapWrapper>
         <ContentBox>
           {/* <StyledSaveBtn variant="contained">저장</StyledSaveBtn> */}

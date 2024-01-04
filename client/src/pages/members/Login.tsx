@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { IoIosRadioButtonOff, IoIosRadioButtonOn } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -48,6 +47,10 @@ export function Login() {
 
   const openAlert = () => {
     setIsAlertOpen(true);
+  };
+
+  const enterLogin = () => {
+    handleSubmit(submitLogin)();
   };
 
   return (
@@ -103,11 +106,7 @@ export function Login() {
               )}
             />
             <SaveIdWrapper onClick={checkIconselected}>
-              {isClicked ? (
-                <CheckCircleOutlineIcon fontSize="small" />
-              ) : (
-                <RadioButtonUncheckedIcon fontSize="small" />
-              )}
+              {isClicked ? <IoIosRadioButtonOn /> : <IoIosRadioButtonOff />}
               <SaveId>아이디 저장</SaveId>
             </SaveIdWrapper>
           </InputWrapper>
@@ -118,7 +117,12 @@ export function Login() {
               height="50px"
               fontSize="17px"
               $borderRadius="10px"
-              onClick={() => {}}
+              //onClick={handleLogin} // 클릭 시 로그인 함수 호출
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                }
+              }}
             >
               <span>로그인</span>
             </Button>

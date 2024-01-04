@@ -1,11 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import BookmarkBorderTwoToneIcon from '@mui/icons-material/BookmarkBorderTwoTone';
-import BookmarkTwoToneIcon from '@mui/icons-material/BookmarkTwoTone';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
-import Popover from '@mui/material/Popover';
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
