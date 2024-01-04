@@ -215,7 +215,6 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -228,6 +227,7 @@ const Container = styled.div`
   padding: 20px;
   border: 1px solid ${COLOR.BORDER_BLUE};
   background-color: white;
+  border-radius: 5px;
 `;
 const TitleWrapper = styled.div`
   padding: 20px 0px;

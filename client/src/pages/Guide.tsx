@@ -1,33 +1,56 @@
 import * as React from 'react';
 import { useState } from 'react';
 
+import { useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import {
+  SelectAlert,
   CommonDate,
   DropDown,
   MathviewerCard,
   PaginationBox,
   Search,
+  TabMenu,
 } from '../components';
 import Contents2 from '../components/mathViewer/test2.json';
+import { alertBoolAtom } from '../store/utilAtom';
 
 import {
   Button,
-  IconButton,
   Loader,
+  BarChart,
+  Label,
   Input,
   ValueNone,
   IndexInfo,
+  Select,
 } from './../components/atom';
-import { Select } from './../components/atom/select';
 
 export function Guide() {
   const [selectedValue, setSelectedValue] = useState<string>();
   const [content, setContent] = useState<string[]>([]);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [chageValue, setChageValue] = useState<string>('');
+  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
 
+  const Data = [
+    { value: 10, label: '하' },
+    { value: 20, label: '중하' },
+    { value: 40, label: '중' },
+    { value: 20, label: '상' },
+    { value: 10, label: '최상' },
+  ];
+  const menuList = [
+    {
+      label: '커스텀 메뉴',
+      value: '커스텀 메뉴',
+    },
+    {
+      label: '커스텀 즐겨찾기',
+      value: '커스텀 즐겨찾기',
+    },
+  ];
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     // console.log(event.currentTarget.value);
     const value = event.currentTarget.value;
@@ -73,8 +96,24 @@ export function Guide() {
       </Button>
       <h3>index info</h3>
       <IndexInfo list={['1deps', '2deps', '3deps']}></IndexInfo>
-
-      <h3>Select</h3>
+      <h3>label</h3>
+      <Label value="커스텀 라벨"></Label>
+      <Label type="error" value="커스텀 라벨"></Label>
+      <h3>tabmenu</h3>
+      <TabMenu
+        length={2}
+        menu={menuList}
+        initialValue={'커스텀 메뉴'}
+        width={'250px'}
+      ></TabMenu>
+      <TabMenu
+        length={2}
+        menu={menuList}
+        initialValue={'커스텀 메뉴'}
+        width={'250px'}
+        lineStyle
+      ></TabMenu>
+      <h3>select</h3>
       <Select
         width={'150px'}
         defaultValue={'커스텀 select'}
@@ -86,59 +125,68 @@ export function Guide() {
         ]}
         onSelect={(event) => selectCategoryOption(event)}
       />
-      <h3>Input</h3>
-      <Input
-        type={'text'}
-        border="normal"
-        margin={'5px 0'}
-        padding="10px"
-        placeholder="커스텀 인풋"
-        borderradius="10px"
-      />
-      <Input
-        type={'text'}
-        className="success"
-        border="normal"
-        margin={'5px 0'}
-        padding="10px"
-        placeholder="커스텀 인풋 성공"
-        borderradius="10px"
-      />
-      <Input
-        type={'text'}
-        border="black"
-        margin={'5px 0'}
-        padding="10px"
-        placeholder=" 커스텀 인풋"
-      />
-      <Input
-        type={'text'}
-        margin={'5px 0'}
-        padding="10px"
-        placeholder=" 커스텀 인풋 에러"
-        borderbottom
-        errorMessage={'정보가 일치하지 않습니다.'}
-      />
-      <Input
-        type={'text'}
-        border="normal"
-        margin={'5px 0'}
-        disabled
-        padding="10px"
-        placeholder="커스텀 인풋 비활성화"
-        borderradius="10px"
-      />
-      <Input
-        type={'text'}
-        border="black"
-        margin={'5px 0'}
-        disabled
-        padding="10px"
-        placeholder="커스텀 인풋 비활성화"
-      />
+      <h3>input</h3>
+      <InputWrapper>
+        <Input
+          type={'text'}
+          border="normal"
+          width="200px"
+          margin={'5px 0'}
+          padding="10px"
+          placeholder="커스텀 인풋"
+          borderradius="10px"
+        />
+        <Input
+          type={'text'}
+          className="success"
+          border="normal"
+          width="200px"
+          margin={'5px 0'}
+          padding="10px"
+          placeholder="커스텀 인풋 성공"
+          borderradius="10px"
+        />
+        <Input
+          type={'text'}
+          border="black"
+          width="200px"
+          margin={'5px 0'}
+          padding="10px"
+          placeholder=" 커스텀 인풋"
+        />
+        <Input
+          type={'text'}
+          width="200px"
+          margin={'5px 0'}
+          padding="10px"
+          placeholder=" 커스텀 인풋 에러"
+          borderbottom
+          errorMessage={'정보가 일치하지 않습니다.'}
+        />
+        <Input
+          type={'text'}
+          border="normal"
+          width="200px"
+          margin={'5px 0'}
+          disabled
+          padding="10px"
+          placeholder="커스텀 인풋 비활성화"
+          borderradius="10px"
+        />
+        <Input
+          type={'text'}
+          border="black"
+          width="200px"
+          margin={'5px 0'}
+          disabled
+          padding="10px"
+          placeholder="커스텀 인풋 비활성화"
+        />
+      </InputWrapper>
       <h3>search</h3>
       <Search
         value={chageValue}
+        width="200px"
         onClick={() => {}}
         onChange={(e) => setChageValue(e.target.value)}
         onKeyDown={() => {}}
@@ -167,13 +215,10 @@ export function Guide() {
         showDropDown={showDropDown}
         setShowDropDown={() => setShowDropDown(!showDropDown)}
       ></DropDown>
-
       <h3>date picker</h3>
       <CommonDate></CommonDate>
-
-      <h3>pagination</h3>
-      <PaginationBox itemsCountPerPage={1} totalItemsCount={10}></PaginationBox>
-
+      <h3>barchart</h3>
+      <BarChart data={Data}></BarChart>
       <h3>mathviewer</h3>
       <div style={{ width: '480px' }}>
         <MathviewerCard
@@ -184,6 +229,15 @@ export function Guide() {
           onSelectCard={() => {}}
         ></MathviewerCard>
       </div>
+      <h3>pagination</h3>
+      <PaginationBox itemsCountPerPage={1} totalItemsCount={10}></PaginationBox>
+      <h3>alert</h3>
+      <button onClick={() => setIsAlertOpen(true)}>커스텀 알람</button>
+      <SelectAlert
+        title={'커스텀 알람'}
+        description="props에 notice를 추가하면 확인만 나옴"
+        action="확인"
+      ></SelectAlert>
       <h3>loader</h3>
       <Loader height={'40px'} size="35px" />
       <Loader height={'80px'} />
@@ -197,4 +251,9 @@ const Component = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 `;
