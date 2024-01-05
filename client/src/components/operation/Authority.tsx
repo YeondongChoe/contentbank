@@ -320,7 +320,14 @@ export function Authority() {
           </SearchBarWrapper>
           <AuthorityListWrapper>
             {authorityList?.map((el, i) => (
-              <AuthorityWrapper key={i}>
+              <AuthorityWrapper
+                key={i}
+                onClick={() => {
+                  clickMemberAuthority(el.code);
+                  setInputValue(el.name);
+                  setIsClickedName(true);
+                }}
+              >
                 <AuthorityName
                   onClick={() => {
                     clickMemberAuthority(el.code);
@@ -453,7 +460,7 @@ const AuthorityWrapper = styled.div`
   }
 `;
 const AuthorityName = styled.div`
-  cursor: pointer;
+  //cursor: pointer;
 `;
 const DeleteIconWrapper = styled.div`
   font-size: 17px;
