@@ -33,8 +33,7 @@ import {
 } from '../../store/authorityAtom';
 import { alertBoolAtom } from '../../store/utilAtom';
 import { COLOR } from '../constants';
-import { NoticeAlert } from '../molecules/alert/NoticeAlert';
-import { SelectAlert } from '../molecules/alert/SelectAlert';
+import { Alert } from '../molecules/alert/Alert';
 
 import { AuthorityTree } from './AuthorityTree';
 
@@ -344,7 +343,7 @@ export function Authority() {
         </AuthorityMenuWrapper>
       </Wrapper>
       {isDeleteAuthority && (
-        <SelectAlert
+        <Alert
           title="권한을 삭제할 경우, "
           description="해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"
@@ -352,7 +351,7 @@ export function Authority() {
         />
       )}
       {isUpdateAuthority && (
-        <SelectAlert
+        <Alert
           title={
             isClickedName
               ? '권한을 수정 하시겠습니까?'
@@ -362,9 +361,7 @@ export function Authority() {
           onClick={() => submitAuthority()}
         />
       )}
-      {isCreateNameError && (
-        <SelectAlert notice title="권한명을 작성해주세요." />
-      )}
+      {isCreateNameError && <Alert notice title="권한명을 작성해주세요." />}
     </Container>
   );
 }
