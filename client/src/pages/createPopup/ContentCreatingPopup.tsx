@@ -20,7 +20,7 @@ export function ContentCreatingPopup() {
       <iframe
         width="100%"
         height="672"
-        src="http://43.201.205.140:40031"
+        //src="http://43.201.205.140:40031"
         name="아이텍솔루션"
         frameBorder={0}
         //allow="fullscreen"
