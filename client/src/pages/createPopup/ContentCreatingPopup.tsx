@@ -25,7 +25,7 @@ export function ContentCreatingPopup() {
         frameBorder={0}
         allow="fullscreen"
         //sandbox="allow-forms allow-modals allow-same-origin"
-        referrerPolicy="no-referrer"
+        //referrerPolicy="no-referrer"
       ></iframe>
       <Button
         buttonType="button"
