@@ -27,7 +27,7 @@ export function ContentCreatingPopup() {
         //sandbox="allow-forms allow-modals allow-same-origin"
         //referrerPolicy="no-referrer"
       ></iframe> */}
-      <iframe></iframe>
+      {/* <iframe></iframe> */}
       <Button
         buttonType="button"
         onClick={submitSave}
