@@ -50,16 +50,8 @@ export function ManagemantMainPopup() {
             />
           </CloseButtonWrapper>
         </TapWrapper>
-        {tabVeiw === '바꾸기' && (
-          <ContentBox>
-            <ContentInformationChange />
-          </ContentBox>
-        )}
-        {tabVeiw === '문항 분류 바꾸기' && (
-          <ContentBox>
-            <ContentCategoryChange />
-          </ContentBox>
-        )}
+        {tabVeiw === '바꾸기' && <ContentInformationChange />}
+        {tabVeiw === '문항 분류 바꾸기' && <ContentCategoryChange />}
       </Container>
     </Overlay>
   );
@@ -95,7 +87,4 @@ const CloseButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-right: 10px;
-`;
-const ContentBox = styled.div`
-  height: 650px;
 `;

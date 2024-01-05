@@ -193,12 +193,12 @@ export function Member() {
       </TableWrapper>
       <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
       {/* {isEnabled && (
-        <SelectAlert
+        <Alert
           title="비활성화 처리시 로그인이 불가합니다."
           description="비활성화 처리 하시겠습니까?"
           action="확인"
           onClick={submitDisabled}
-        ></SelectAlert>
+        ></Alert>
       )} */}
       {isRegister ? <RegisterPopup /> : ''}
       {isEditer ? <EditPopup /> : ''}

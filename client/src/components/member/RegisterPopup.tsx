@@ -14,7 +14,7 @@ import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { registerBoolAtom } from '../../store/memberAtom';
 import { alertBoolAtom } from '../../store/utilAtom';
-import { SelectAlert } from '../molecules/alert/SelectAlert';
+import { Alert } from '../molecules/alert/Alert';
 
 type authorityListProps = {
   seq: number;
@@ -267,11 +267,9 @@ export function RegisterPopup() {
                   <span>등록</span>
                 </Button>
               </ButtonGroup>
-              {isRequired && (
-                <SelectAlert notice title="필수 항목을 입력해주세요" />
-              )}
+              {isRequired && <Alert notice title="필수 항목을 입력해주세요" />}
               {isRequiredDuplicate && (
-                <SelectAlert notice title="중복확인을 해주세요" />
+                <Alert notice title="중복확인을 해주세요" />
               )}
             </ContentBox>
           </Container>

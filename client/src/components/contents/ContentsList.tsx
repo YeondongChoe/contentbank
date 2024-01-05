@@ -327,7 +327,7 @@ export function ContentsList() {
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isCreate && <CreateIconPopup />}
       {/* {isDeleteAuthority && (
-        <SelectAlert
+        <Alert
           title="권한을 삭제할 경우, "
           description="해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"

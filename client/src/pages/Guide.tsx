@@ -5,7 +5,7 @@ import { useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import {
-  SelectAlert,
+  Alert,
   CommonDate,
   DropDown,
   MathviewerCard,
@@ -233,11 +233,11 @@ export function Guide() {
       <PaginationBox itemsCountPerPage={1} totalItemsCount={10}></PaginationBox>
       <h3>alert</h3>
       <button onClick={() => setIsAlertOpen(true)}>커스텀 알람</button>
-      <SelectAlert
+      <Alert
         title={'커스텀 알람'}
         description="props에 notice를 추가하면 확인만 나옴"
         action="확인"
-      ></SelectAlert>
+      ></Alert>
       <h3>loader</h3>
       <Loader height={'40px'} size="35px" />
       <Loader height={'80px'} />

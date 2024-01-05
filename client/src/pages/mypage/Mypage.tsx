@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
 import { Input, Label, Button } from '../../components';
-import { SelectAlert } from '../../components/molecules/alert/SelectAlert';
+import { Alert } from '../../components/molecules/alert/Alert';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { alertBoolAtom } from '../../store/utilAtom';
 
@@ -166,8 +166,8 @@ export function Mypage() {
             )}
           </InformationForm>
         </InformationWrapper>
-        {isAlertOpen && <SelectAlert notice title="이름이 수정되었습니다." />}
-        {isError === true && <SelectAlert notice title={errorMessage} />}
+        {isAlertOpen && <Alert notice title="이름이 수정되었습니다." />}
+        {isError === true && <Alert notice title={errorMessage} />}
         {isPasswordEdit && (
           <PasswordWrapper>
             <SubTitleWrapper>
