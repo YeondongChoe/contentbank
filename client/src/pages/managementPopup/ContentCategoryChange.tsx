@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
+import { PiArrowCounterClockwise } from 'react-icons/pi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -190,8 +191,15 @@ export function ContentCategoryChange() {
               />
             ))}
           </SelectBox>
+          <ButtonWrapper>
+            <RewindButton>
+              이전단계 되돌리기
+              <PiArrowCounterClockwise style={{ fontSize: '20px' }} />
+            </RewindButton>
+          </ButtonWrapper>
         </SelectWrapper>
       </SelectsWrapper>
+
       <ContentWrapper>
         <ContentListSection>
           <ContentTitle>문항선택</ContentTitle>
@@ -276,6 +284,18 @@ const SelectBox = styled.div`
   align-items: center;
   gap: 5px;
 `;
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+const RewindButton = styled.div`
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+  gap: 5px;
+  font-size: 12px;
+  cursor: pointer;
+`;
 const ContentWrapper = styled.div`
   display: flex;
   gap: 10px;
@@ -289,7 +309,7 @@ const ContentListSection = styled.section`
 `;
 const ContentListWrapper = styled.div`
   border: 1px solid #a3aed0;
-  height: 400px;
+  height: 370px;
 `;
 const AllCheckWapper = styled.div`
   display: flex;
@@ -312,7 +332,7 @@ const ContentViewerSection = styled.section`
 `;
 const ViewerWrapper = styled.div`
   border: 1px solid #a3aed0;
-  height: 400px;
+  height: 370px;
   padding: 10px;
 `;
 const SaveButtonWrapper = styled.div`

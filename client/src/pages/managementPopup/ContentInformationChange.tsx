@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
+import { PiArrowCounterClockwise } from 'react-icons/pi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -161,6 +162,10 @@ export function ContentInformationChange() {
         >
           <span>선택 바꾸기</span>
         </Button>
+        <RewindButton>
+          이전단계 되돌리기
+          <PiArrowCounterClockwise style={{ fontSize: '20px' }} />
+        </RewindButton>
       </ButtonGroup>
       <ContentWrapper>
         <ContentListSection>
@@ -203,7 +208,9 @@ export function ContentInformationChange() {
         </ContentListSection>
         <ContentViewerSection>
           <ContentTitle>문항 뷰어: {classificatecode}</ContentTitle>
-          <ViewerWrapper>아이프레임으로 아이텍솔루션 편집기 삽입</ViewerWrapper>
+          <ViewerWrapper>
+            <MathViewer data={Contents2}></MathViewer>
+          </ViewerWrapper>
         </ContentViewerSection>
         <SaveButtonWrapper>
           <Button
@@ -236,8 +243,12 @@ const ButtonGroup = styled.div`
   padding: 10px;
   align-items: center;
 `;
-const ContentBox = styled.div`
-  padding-top: 20px;
+const RewindButton = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  cursor: pointer;
 `;
 const ContentWrapper = styled.div`
   display: flex;

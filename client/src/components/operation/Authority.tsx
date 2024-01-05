@@ -267,7 +267,7 @@ export function Authority() {
                     <input type="checkbox" />
                   </td>
                 </tr>
-                <tr>
+                {/* <tr>
                   <td>권한설정</td>
                   <td>
                     <input type="checkbox" />
@@ -275,7 +275,7 @@ export function Authority() {
                   <td>
                     <input type="checkbox" />
                   </td>
-                </tr>
+                </tr> */}
               </tbody>
             </table>
           </TableWrapper>
@@ -362,11 +362,9 @@ export function Authority() {
           onClick={() => submitAuthority()}
         />
       )}
-      {/* {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />} */}
       {isCreateNameError && (
         <SelectAlert notice title="권한명을 작성해주세요." />
       )}
-      {/* {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />} */}
     </Container>
   );
 }
@@ -378,17 +376,19 @@ const Container = styled.div`
 `;
 const Wrapper = styled.div`
   margin-top: 40px;
-  height: 500px;
+  //height: 500px;
   display: flex;
+  justify-content: space-evenly;
   border-top: 1px solid ${COLOR.SECONDARY};
-  gap: 40px;
+  //gap: 40px;
 `;
 const TreeWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  background-color: white;
+  align-items: center;
+  //flex-direction: column;
+  //background-color: white;
   border-right: 1px solid ${COLOR.SECONDARY};
-  padding: 10px;
+  padding-right: 70px;
 `;
 const TableWrapper = styled.div`
   padding: 10px;
@@ -400,11 +400,17 @@ const TableWrapper = styled.div`
 
     tr {
     }
-    th,
+    th {
+      border: 1px solid ${COLOR.SECONDARY};
+      color: ${COLOR.SECONDARY};
+      padding: 10px;
+      font-size: 18px;
+    }
     td {
       text-align: center;
-      border: 1px solid #000;
+      border: 1px solid ${COLOR.SECONDARY};
       padding: 10px;
+      font-size: 16px;
     }
     .textLeft {
       text-align: left;
@@ -415,9 +421,8 @@ const TableWrapper = styled.div`
 const AuthorityMenuWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 30px;
+  padding-top: 30px;
 `;
 const SearchBarWrapper = styled.div`
   display: flex;

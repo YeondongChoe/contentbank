@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import Checkbox from '@mui/material/Checkbox';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import { useRecoilState } from 'recoil';
@@ -336,18 +333,16 @@ export function AuthorityTree() {
       {display === 'none' && <Loader height={'100px'} size="50px" />}
       <TreeWrapper>
         <>
-          <IconWrapper onClick={toggleTree}>
-            <ArrowDropDownIcon />
-          </IconWrapper>
+          <IconWrapper onClick={toggleTree}></IconWrapper>
           <div>
             전체
             {isShowAllList && (
               <ul>
                 {menuValue.map((menu, index) => (
                   <li key={menu.name} className={menu.name}>
-                    <IconWrapper onClick={() => toggleSubMenu(index)}>
-                      <ArrowDropDownIcon />
-                    </IconWrapper>
+                    <IconWrapper
+                      onClick={() => toggleSubMenu(index)}
+                    ></IconWrapper>
                     {menu.name}
                     {isShowList[index] && (
                       <ul>
