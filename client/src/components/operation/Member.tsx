@@ -108,13 +108,13 @@ export function Member() {
 
   useEffect(() => {
     if (didMount) {
-      // loadData();
+      loadData();
     }
   }, [didMount]);
 
   useEffect(() => {
     // console.log(tabVeiw);
-    // loadData();
+    loadData();
   }, [setTabVeiw, tabVeiw, page, settotalPage, setPage]);
 
   const menuList = [

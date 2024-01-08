@@ -350,7 +350,7 @@ const DiscriptonType = styled.div`
 const ContentsList = styled.div`
   padding: 10px;
 `;
-const Content = styled.div<{ $choiced: boolean }>`
+const Content = styled.div<{ $choiced?: boolean }>`
   font-size: 13px;
   background-color: ${(props) =>
     props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
