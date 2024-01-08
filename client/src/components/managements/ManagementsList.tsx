@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { getQuestionList } from '../../api/getAxios';
+import { putChangeServiced } from '../../api/putAxios';
 import {
   Alert,
   Button,
@@ -52,10 +53,21 @@ export function ManagementsList() {
   const submitChangingService = () => {
     setIsAlertOpen(true);
   };
+
   // 활성화/비활성화 데이터 전송
   const submitDisabled = () => {
+    // console.log(selectedRows);
+
+    const formattedArray: { contentSeq: number }[] = [];
+    // 데이터 형태 api쪽에 맞춰 { contentSeq: number }[]; 로 변경
+    for (let i = 0; i < selectedRows.length; i += 1) {
+      formattedArray.push({ contentSeq: selectedRows[i] });
+    }
+    putChangeServiced({ formattedArray, setIsChangedServiced });
+
     setIsAlertOpen(false);
   };
+
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
