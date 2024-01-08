@@ -245,7 +245,7 @@ export function ListTable() {
   const [isFavorited, setIsFavorited] = useState(false);
   /**문항 즐겨찾기 API */
   const addFavoriteQuestion = (questionSeq: number) => {
-    postFavoriteQuestion({ isFavorited, setIsFavorited }, questionSeq);
+    // postFavoriteQuestion({ isFavorited, setIsFavorited }, questionSeq);
   };
 
   useEffect(() => {

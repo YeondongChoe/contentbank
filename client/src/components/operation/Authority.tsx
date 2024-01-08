@@ -100,29 +100,29 @@ export function Authority() {
   const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
     useRecoilState<boolean>(manageAuthorityBoolAtom);
 
-  const submitAuthority = () => {
-    postCreateAuthority({
-      inputValue,
-      isEditCreateChecked,
-      isManageCreateChecked,
-      isEditCreateListChecked,
-      isManageCreateListChecked,
-      isEditWorksheetChecked,
-      isManageWorksheetChecked,
-      isEditManagementChecked,
-      isManageManagementChecked,
-      isEditManagementListChecked,
-      isManageManagementListChecked,
-      isEditTreeChecked,
-      isManageTreeChecked,
-      isEditOperationChecked,
-      isManageOperationChecked,
-      isEditMemberChecked,
-      isManageMemberChecked,
-      isEditAuthorityChecked,
-      isManageAuthorityChecked,
-    });
-  };
+  // const submitAuthority = () => {
+  //   postCreateAuthority({
+  //     inputValue,
+  //     isEditCreateChecked,
+  //     isManageCreateChecked,
+  //     isEditCreateListChecked,
+  //     isManageCreateListChecked,
+  //     isEditWorksheetChecked,
+  //     isManageWorksheetChecked,
+  //     isEditManagementChecked,
+  //     isManageManagementChecked,
+  //     isEditManagementListChecked,
+  //     isManageManagementListChecked,
+  //     isEditTreeChecked,
+  //     isManageTreeChecked,
+  //     isEditOperationChecked,
+  //     isManageOperationChecked,
+  //     isEditMemberChecked,
+  //     isManageMemberChecked,
+  //     isEditAuthorityChecked,
+  //     isManageAuthorityChecked,
+  //   });
+  // };
 
   const openUpdateAlert = () => {
     if (inputValue === '') {
@@ -365,7 +365,7 @@ export function Authority() {
               : '권한을 생성 하시겠습니까?'
           }
           action={isClickedName ? '수정' : '생성'}
-          onClick={() => submitAuthority()}
+          // onClick={() => submitAuthority()}
         />
       )}
       {isCreateNameError && <Alert notice title="권한명을 작성해주세요." />}

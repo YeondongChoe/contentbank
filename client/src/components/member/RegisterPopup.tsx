@@ -62,39 +62,39 @@ export function RegisterPopup() {
     SetIsRegister(false);
   };
 
-  const checkDuplicate = () => {
-    postDuplicate({
-      Id,
-      setduplicatedId,
-      setIsDuplicate,
-      setIsIdError,
-      setSuccessMessage,
-      setIdErrorMessage,
-    });
-  };
+  // const checkDuplicate = () => {
+  //   postDuplicate({
+  //     Id,
+  //     setduplicatedId,
+  //     setIsDuplicate,
+  //     setIsIdError,
+  //     setSuccessMessage,
+  //     setIdErrorMessage,
+  //   });
+  // };
 
-  const submitRegister = () => {
-    if (Name === '' || Id === '' || Authority === undefined) {
-      setIsRequired(true);
-      setIsAlertOpen(true);
-    } else if (duplicatedId !== Id || isDuplicate === false) {
-      setIsRequiredDuplicate(true);
-      setIsAlertOpen(true);
-    } else {
-      postRegister({
-        Id,
-        Name,
-        Authority,
-        Comment,
-        SetIsRegister,
-        setIsNameError,
-        setIsDuplicate,
-        setIsRequired,
-        setIsRequiredDuplicate,
-        setNameErrorMessage,
-      });
-    }
-  };
+  // const submitRegister = () => {
+  //   if (Name === '' || Id === '' || Authority === undefined) {
+  //     setIsRequired(true);
+  //     setIsAlertOpen(true);
+  //   } else if (duplicatedId !== Id || isDuplicate === false) {
+  //     setIsRequiredDuplicate(true);
+  //     setIsAlertOpen(true);
+  //   } else {
+  //     postRegister({
+  //       Id,
+  //       Name,
+  //       Authority,
+  //       Comment,
+  //       SetIsRegister,
+  //       setIsNameError,
+  //       setIsDuplicate,
+  //       setIsRequired,
+  //       setIsRequiredDuplicate,
+  //       setNameErrorMessage,
+  //     });
+  //   }
+  // };
 
   const loadData = useCallback(() => {
     getAuthorityList({
@@ -196,7 +196,7 @@ export function RegisterPopup() {
               <DuplicationButtonWrapper>
                 <Button
                   buttonType="button"
-                  onClick={checkDuplicate}
+                  // onClick={checkDuplicate}
                   $padding="10px"
                   height={'30px'}
                   width={'110px'}
@@ -258,7 +258,7 @@ export function RegisterPopup() {
                 </Button>
                 <Button
                   buttonType="button"
-                  onClick={submitRegister}
+                  // onClick={submitRegister}
                   $padding="10px"
                   height={'50px'}
                   width={'170px'}
