@@ -1,6 +1,10 @@
 import * as React from 'react';
+import { useState } from 'react';
 
+import { FaCircle } from 'react-icons/fa';
+import { FaCircleCheck } from 'react-icons/fa6';
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
+import { SlPicture } from 'react-icons/sl';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
@@ -18,6 +22,7 @@ export function Step3() {
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
   const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
+  const [colorChoice, setColorChoice] = useState('');
 
   const closePopup = () => {
     setIsStep1(false);
@@ -179,9 +184,140 @@ export function Step3() {
             </WorksheetNameWrapper>
             <TemplateWrapper>
               <Label value="학습지 템플릿" fontSize="14px" width="120px" />
-              <div>색상 및 디자인 선택</div>
-              <div>파란 노랑 주황 빨강 남색 초록</div>
+              <ColorBox>
+                <Label value="색상 및 디자인 선택" fontSize="12px" />
+                <ColorOption>
+                  {colorChoice == 'skyblue' ? (
+                    <FaCircleCheck
+                      color="skyblue"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="skyblue"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('skyblue')}
+                    />
+                  )}
+                  {colorChoice == 'blue' ? (
+                    <FaCircleCheck
+                      color="blue"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="blue"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('blue')}
+                    />
+                  )}
+                  {colorChoice == 'yellow' ? (
+                    <FaCircleCheck
+                      color="yellow"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="yellow"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('yellow')}
+                    />
+                  )}
+                  {colorChoice == 'orange' ? (
+                    <FaCircleCheck
+                      color="orange"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="orange"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('orange')}
+                    />
+                  )}
+                  {colorChoice == 'red' ? (
+                    <FaCircleCheck
+                      color="red"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="red"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('red')}
+                    />
+                  )}
+                  {colorChoice == 'green' ? (
+                    <FaCircleCheck
+                      color="green"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="green"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('green')}
+                    />
+                  )}
+                  {colorChoice == 'purple' ? (
+                    <FaCircleCheck
+                      color="purple"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="purple"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('purple')}
+                    />
+                  )}
+                  {colorChoice == 'gray' ? (
+                    <FaCircleCheck
+                      color="gray"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="gray"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('gray')}
+                    />
+                  )}
+                </ColorOption>
+              </ColorBox>
             </TemplateWrapper>
+            <TypeOptionWrapper>
+              <TypeOption>
+                <SlPicture color="gray" fontSize={40} />A Type
+              </TypeOption>
+              <TypeOption>
+                <SlPicture color="gray" fontSize={40} />B Type
+              </TypeOption>
+            </TypeOptionWrapper>
           </WorksheetSettingSection>
           <WorksheetTemplateViewSection>
             <div>학습지 템플릿 보여주기</div>
@@ -279,17 +415,6 @@ const InputWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
-// const Label = styled.label`
-//   width: 120px;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;
-// const Input = styled.input`
-//   width: 300px;
-//   height: 30px;
-//   padding: 10px;
-// `;
 const WorksheetNameWrapper = styled.div`
   display: flex;
 `;
@@ -305,7 +430,43 @@ const TemplateWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding-left: 35px;
-  gap: 10px;
+`;
+const ColorBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: ${COLOR.LIGHT_GRAY};
+  padding: 10px;
+`;
+const ColorOption = styled.div`
+  display: flex;
+  gap: 20px;
+  :hover {
+    border: 1px solid ${COLOR.HOVER};
+    border-radius: 10px;
+  }
+`;
+const TypeOptionWrapper = styled.div`
+  padding-left: 35px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+`;
+const TypeOption = styled.div`
+  width: 150px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: ${COLOR.LIGHT_GRAY};
+  border: 1px solid ${COLOR.BORDER_BLUE};
+  font-size: 14px;
+  color: ${COLOR.TEXT_GRAY};
+  cursor: pointer;
+  :hover {
+    font-size: 50px;
+  }
 `;
 const WorksheetTemplateViewSection = styled.section`
   display: flex;

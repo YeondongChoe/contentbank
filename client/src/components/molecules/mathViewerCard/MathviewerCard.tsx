@@ -29,7 +29,6 @@ export function MathviewerCard({
   data,
 }: MathviewerCardProps) {
   const [contentList, setContentList] = useState(data);
-  const propcessData = { ...data };
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
@@ -65,7 +64,7 @@ export function MathviewerCard({
         //onDragOver={dragOver}
         //onDragEnd={drop}
         $isSimilar={isSimilar}
-        isSelected={index === selectedCardIndex}
+        $isSelected={index === selectedCardIndex}
         onClick={() => {
           onSelectCard(index);
         }}
@@ -119,7 +118,7 @@ export function MathviewerCard({
 
 const Component = styled.div<{
   $isSimilar?: boolean;
-  isSelected?: boolean;
+  $isSelected?: boolean;
 }>`
   display: flex;
   justify-content: space-between;
@@ -128,8 +127,8 @@ const Component = styled.div<{
   background-color: white;
   border-radius: 15px;
   padding: 10px;
-  border: ${({ isSelected, $isSimilar }) =>
-    $isSimilar && isSelected
+  border: ${({ $isSelected, $isSimilar }) =>
+    $isSimilar && $isSelected
       ? `3px solid ${COLOR.PRIMARY}`
       : '3px solid white'};
 
