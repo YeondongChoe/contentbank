@@ -136,7 +136,7 @@ export function Member() {
     <Container>
       <IndexInfo list={['운영관리', '회원관리', `${tabVeiw}`]} />
       <InputWrapper>
-        {/* <Search
+        <Search
           value={searchValue}
           width={'250px'}
           onClick={() => filterSearchValue()}
@@ -145,7 +145,7 @@ export function Member() {
             setSearchValue(e.target.value);
           }}
           placeholder="이름, 권한 검색"
-        /> */}
+        />
         <Button
           buttonType="button"
           onClick={openRegisterPopup}

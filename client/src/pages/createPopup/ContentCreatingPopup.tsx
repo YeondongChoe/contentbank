@@ -17,7 +17,7 @@ export function ContentCreatingPopup() {
 
   return (
     <Container>
-      {/* <iframe
+      <iframe
         width="100%"
         height="672"
         //src="http://43.201.205.140:40031"
@@ -26,8 +26,7 @@ export function ContentCreatingPopup() {
         //allow="fullscreen"
         //sandbox="allow-forms allow-modals allow-same-origin"
         //referrerPolicy="no-referrer"
-      ></iframe> */}
-      {/* <iframe></iframe> */}
+      ></iframe>
       <Button
         buttonType="button"
         onClick={submitSave}
