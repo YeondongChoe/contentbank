@@ -34,7 +34,7 @@ import {
   servicedValueBoolAtom,
 } from '../../store/valueAtom';
 import { COLOR } from '../constants';
-import { SelectAlert } from '../molecules/alert/SelectAlert';
+import { Alert } from '../molecules/alert/Alert';
 import { PaginationBox } from '../molecules/pagination/Pagination';
 
 type questionListProps = {
@@ -376,7 +376,7 @@ export function ListTable() {
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isDeleteAuthority && (
-        <SelectAlert
+        <Alert
           title="권한을 삭제할 경우, "
           description="해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"

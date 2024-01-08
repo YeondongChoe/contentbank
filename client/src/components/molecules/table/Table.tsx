@@ -118,7 +118,7 @@ export function Table({
 
   // 들어오는 데이터에 따라 tbody 생성
   const creatTbody = () => {
-    console.log(list && list[1]);
+    //console.log(list && list[1]);
     //학습지 이름을 가졌을시
     if (theadList[1].th[0].title === '문항코드')
       setTbodyType('questionTableType');
@@ -295,7 +295,11 @@ export function Table({
                     width={'20px'}
                     height={'20px'}
                   >
-                    {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
+                    {content.favorited ? (
+                      <FaBookmark color="orange" />
+                    ) : (
+                      <FaRegBookmark />
+                    )}
                   </IconButton>
                 </span>
               </td>

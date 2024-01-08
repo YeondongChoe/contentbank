@@ -33,8 +33,7 @@ import {
 } from '../../store/authorityAtom';
 import { alertBoolAtom } from '../../store/utilAtom';
 import { COLOR } from '../constants';
-import { NoticeAlert } from '../molecules/alert/NoticeAlert';
-import { SelectAlert } from '../molecules/alert/SelectAlert';
+import { Alert } from '../molecules/alert/Alert';
 
 import { AuthorityTree } from './AuthorityTree';
 
@@ -267,7 +266,7 @@ export function Authority() {
                     <input type="checkbox" />
                   </td>
                 </tr>
-                <tr>
+                {/* <tr>
                   <td>권한설정</td>
                   <td>
                     <input type="checkbox" />
@@ -275,7 +274,7 @@ export function Authority() {
                   <td>
                     <input type="checkbox" />
                   </td>
-                </tr>
+                </tr> */}
               </tbody>
             </table>
           </TableWrapper>
@@ -321,7 +320,14 @@ export function Authority() {
           </SearchBarWrapper>
           <AuthorityListWrapper>
             {authorityList?.map((el, i) => (
-              <AuthorityWrapper key={i}>
+              <AuthorityWrapper
+                key={i}
+                onClick={() => {
+                  clickMemberAuthority(el.code);
+                  setInputValue(el.name);
+                  setIsClickedName(true);
+                }}
+              >
                 <AuthorityName
                   onClick={() => {
                     clickMemberAuthority(el.code);
@@ -344,7 +350,7 @@ export function Authority() {
         </AuthorityMenuWrapper>
       </Wrapper>
       {isDeleteAuthority && (
-        <SelectAlert
+        <Alert
           title="권한을 삭제할 경우, "
           description="해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"
@@ -352,21 +358,17 @@ export function Authority() {
         />
       )}
       {isUpdateAuthority && (
-        <SelectAlert
+        <Alert
           title={
             isClickedName
               ? '권한을 수정 하시겠습니까?'
               : '권한을 생성 하시겠습니까?'
           }
           action={isClickedName ? '수정' : '생성'}
-          onClick={() => submitAuthority()}
+          onClick={submitAuthority}
         />
       )}
-      {/* {isPutAuthority && <NoticeAlert title="권한이 수정되었습니다." />} */}
-      {isCreateNameError && (
-        <SelectAlert notice title="권한명을 작성해주세요." />
-      )}
-      {/* {isPutNameError && <NoticeAlert title="수정할 권한을 선택해주세요." />} */}
+      {isCreateNameError && <Alert notice title="권한명을 작성해주세요." />}
     </Container>
   );
 }
@@ -378,17 +380,19 @@ const Container = styled.div`
 `;
 const Wrapper = styled.div`
   margin-top: 40px;
-  height: 500px;
+  //height: 500px;
   display: flex;
+  justify-content: space-evenly;
   border-top: 1px solid ${COLOR.SECONDARY};
-  gap: 40px;
+  //gap: 40px;
 `;
 const TreeWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  background-color: white;
+  align-items: center;
+  //flex-direction: column;
+  //background-color: white;
   border-right: 1px solid ${COLOR.SECONDARY};
-  padding: 10px;
+  padding-right: 70px;
 `;
 const TableWrapper = styled.div`
   padding: 10px;
@@ -400,11 +404,17 @@ const TableWrapper = styled.div`
 
     tr {
     }
-    th,
+    th {
+      border: 1px solid ${COLOR.SECONDARY};
+      color: ${COLOR.SECONDARY};
+      padding: 10px;
+      font-size: 18px;
+    }
     td {
       text-align: center;
-      border: 1px solid #000;
+      border: 1px solid ${COLOR.SECONDARY};
       padding: 10px;
+      font-size: 16px;
     }
     .textLeft {
       text-align: left;
@@ -415,9 +425,8 @@ const TableWrapper = styled.div`
 const AuthorityMenuWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 30px;
+  padding-top: 30px;
 `;
 const SearchBarWrapper = styled.div`
   display: flex;
@@ -451,7 +460,7 @@ const AuthorityWrapper = styled.div`
   }
 `;
 const AuthorityName = styled.div`
-  cursor: pointer;
+  //cursor: pointer;
 `;
 const DeleteIconWrapper = styled.div`
   font-size: 17px;

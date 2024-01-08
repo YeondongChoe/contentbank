@@ -24,7 +24,7 @@ import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { editerBoolAtom, memberKeyValueAtom } from '../../store/memberAtom';
 import { alertBoolAtom } from '../../store/utilAtom';
-import { SelectAlert } from '../molecules/alert/SelectAlert';
+import { Alert } from '../molecules/alert/Alert';
 
 type authorityProps = {
   seq: number;
@@ -304,9 +304,7 @@ export function EditPopup() {
                     <span>수정</span>
                   </Button>
                 </ButtonGroup>
-                {isInit && (
-                  <SelectAlert title="비밀번호가 초기화 되었습니다." />
-                )}
+                {isInit && <Alert title="비밀번호가 초기화 되었습니다." />}
               </ContentBox>
             </form>
           </Container>

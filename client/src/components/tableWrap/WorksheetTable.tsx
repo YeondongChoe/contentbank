@@ -5,6 +5,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu } from '..';
+import { postFavoriteQuestion } from '../../api/postAxios';
 import { Step2 } from '../../pages/worksheetPopup/Step2';
 import {
   createWorksheetStep1BoolAtom,
@@ -20,7 +21,6 @@ import {
 } from '../../store/valueAtom';
 import dummy from '../constants/data.json';
 import { PaginationBox } from '../molecules/pagination/Pagination';
-
 export function WorksheetTable() {
   const [value, setValue] = useState('1');
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);

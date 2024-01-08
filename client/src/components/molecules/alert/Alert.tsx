@@ -15,7 +15,7 @@ type AlertProps = {
   notice?: boolean;
 };
 
-export function SelectAlert(prop: AlertProps) {
+export function Alert(prop: AlertProps) {
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
 
   const closeAlert = () => {

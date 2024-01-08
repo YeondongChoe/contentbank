@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { MdOutlineRestartAlt } from 'react-icons/md';
 import { useRecoilState, useRecoilValue } from 'recoil';

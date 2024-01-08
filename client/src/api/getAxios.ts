@@ -184,7 +184,7 @@ export const getMemberList = async ({
     )
     .then((response) => {
       handleAuthorizationRenewal(response);
-      // console.log(response.data.data);
+      //console.log(response.data.data);
       settotalPage(response.data.data.totalElements);
       setMemberList(response.data.data.content);
     })
