@@ -162,7 +162,7 @@ export function ChangePassword({
           {PasswordConfirm && isValid ? (
             <ButtonWapper>
               <Button
-                // onClick={submitChangePassword}
+                onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
