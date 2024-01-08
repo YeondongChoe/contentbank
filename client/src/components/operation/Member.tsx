@@ -184,6 +184,7 @@ export function Member() {
           </Button>
         </ButtonWrapper>
         <Total>Total : {memberList.length}</Total>
+        {/*TODO : 전체토탈 데이터로 변경 필요 */}
         <Table
           list={memberList}
           colWidth={memberColWidth}
