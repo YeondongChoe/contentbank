@@ -229,7 +229,7 @@ export function ManagementsList() {
     if (didMount) {
       loadData();
     }
-  }, [didMount, page]);
+  }, [didMount, page, isChangedServiced]);
 
   return (
     <Container>
