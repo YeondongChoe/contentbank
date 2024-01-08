@@ -136,31 +136,31 @@ export function Authority() {
     }
   };
 
-  const clickMemberAuthority = (code: string) => {
-    getMemberAuthority(
-      {
-        setIsEditCreateChecked,
-        setIsManageCreateChecked,
-        setIsEditCreateListChecked,
-        setIsManageCreateListChecked,
-        setIsEditWorksheetChecked,
-        setIsManageWorksheetChecked,
-        setIsEditManagementChecked,
-        setIsManageManagementChecked,
-        setIsEditManagementListChecked,
-        setIsManageManagementListChecked,
-        setIsEditTreeChecked,
-        setIsManageTreeChecked,
-        setIsEditOperationChecked,
-        setIsManageOperationChecked,
-        setIsEditMemberChecked,
-        setIsManageMemberChecked,
-        setIsEditAuthorityChecked,
-        setIsManageAuthorityChecked,
-      },
-      code,
-    );
-  };
+  // const clickMemberAuthority = (code: string) => {
+  //   getMemberAuthority(
+  //     {
+  //       setIsEditCreateChecked,
+  //       setIsManageCreateChecked,
+  //       setIsEditCreateListChecked,
+  //       setIsManageCreateListChecked,
+  //       setIsEditWorksheetChecked,
+  //       setIsManageWorksheetChecked,
+  //       setIsEditManagementChecked,
+  //       setIsManageManagementChecked,
+  //       setIsEditManagementListChecked,
+  //       setIsManageManagementListChecked,
+  //       setIsEditTreeChecked,
+  //       setIsManageTreeChecked,
+  //       setIsEditOperationChecked,
+  //       setIsManageOperationChecked,
+  //       setIsEditMemberChecked,
+  //       setIsManageMemberChecked,
+  //       setIsEditAuthorityChecked,
+  //       setIsManageAuthorityChecked,
+  //     },
+  //     code,
+  //   );
+  // };
 
   const openDeleteAlert = (code: string) => {
     setCodeValue(code);
@@ -172,14 +172,14 @@ export function Authority() {
   };
 
   const submitDelete = (code: string) => {
-    DeleteAuthority({ setIsAlertOpen }, code);
+    // DeleteAuthority({ setIsAlertOpen }, code);
   };
 
-  const loadData = useCallback(() => {
-    getAuthorityList({
-      setAuthorityList,
-    });
-  }, [setAuthorityList]);
+  // const loadData = useCallback(() => {
+  //   getAuthorityList({
+  //     setAuthorityList,
+  //   });
+  // }, [setAuthorityList]);
 
   useEffect(() => {
     setDidMount(true);
@@ -187,7 +187,7 @@ export function Authority() {
 
   useEffect(() => {
     if (didMount) {
-      loadData();
+      // loadData();
     }
   }, [didMount]);
 
@@ -323,14 +323,14 @@ export function Authority() {
               <AuthorityWrapper
                 key={i}
                 onClick={() => {
-                  clickMemberAuthority(el.code);
+                  // clickMemberAuthority(el.code);
                   setInputValue(el.name);
                   setIsClickedName(true);
                 }}
               >
                 <AuthorityName
                   onClick={() => {
-                    clickMemberAuthority(el.code);
+                    // clickMemberAuthority(el.code);
                     setInputValue(el.name);
                     setIsClickedName(true);
                   }}

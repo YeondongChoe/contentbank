@@ -96,11 +96,11 @@ export function RegisterPopup() {
   //   }
   // };
 
-  const loadData = useCallback(() => {
-    getAuthorityList({
-      setAuthorityList,
-    });
-  }, []);
+  // const loadData = useCallback(() => {
+  //   getAuthorityList({
+  //     setAuthorityList,
+  //   });
+  // }, []);
 
   useEffect(() => {
     setDidMount(true);
@@ -108,7 +108,7 @@ export function RegisterPopup() {
 
   useEffect(() => {
     if (didMount) {
-      loadData();
+      // loadData();
     }
   }, [didMount]);
 

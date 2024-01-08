@@ -54,7 +54,7 @@ export function Mypage() {
   };
 
   const loadData = useCallback(() => {
-    getMemberInformation({ setMember });
+    // getMemberInformation({ setMember });
   }, []);
 
   useEffect(() => {

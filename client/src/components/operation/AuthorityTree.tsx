@@ -283,7 +283,7 @@ export function AuthorityTree() {
 
   useEffect(() => {
     if (didMount) {
-      getAuthorityMenu({ setMenuValue });
+      // getAuthorityMenu({ setMenuValue });
     }
     offLoader();
   }, [didMount]);

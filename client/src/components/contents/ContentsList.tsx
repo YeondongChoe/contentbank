@@ -219,24 +219,24 @@ export function ContentsList() {
   //   firstData();
   // }, []);
 
-  const loadData = useCallback(() => {
-    getQuestionList({
-      setQuestionList,
-      setIsChangedServiced,
-      settotalPage,
-      searchValue,
-      MenuCode,
-      page,
-      size,
-    });
-  }, [
-    page,
-    MenuCode,
-    searchValue,
-    setQuestionList,
-    settotalPage,
-    setIsChangedServiced,
-  ]);
+  // const loadData = useCallback(() => {
+  //   getQuestionList({
+  //     setQuestionList,
+  //     setIsChangedServiced,
+  //     settotalPage,
+  //     searchValue,
+  //     MenuCode,
+  //     page,
+  //     size,
+  //   });
+  // }, [
+  //   page,
+  //   MenuCode,
+  //   searchValue,
+  //   setQuestionList,
+  //   settotalPage,
+  //   setIsChangedServiced,
+  // ]);
 
   // 검색이나 셀렉트로 특정지어진 데이터 담은 후 보여주기 변경값이 있을때 마다 랜더링
   useEffect(() => {
@@ -245,7 +245,7 @@ export function ContentsList() {
 
   useEffect(() => {
     if (didMount) {
-      loadData();
+      // loadData();
     }
   }, [didMount, page]);
 

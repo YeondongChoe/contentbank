@@ -101,15 +101,15 @@ export function EditPopup() {
   //   });
   // };
 
-  const loadData = useCallback(() => {
-    getIndividualMemberInformation({
-      keyValue,
-      setMember,
-    });
-    getAuthorityList({
-      setAuthorityList,
-    });
-  }, []);
+  // const loadData = useCallback(() => {
+  //   getIndividualMemberInformation({
+  //     keyValue,
+  //     setMember,
+  //   });
+  //   getAuthorityList({
+  //     setAuthorityList,
+  //   });
+  // }, []);
 
   useEffect(() => {
     setDidMount(true);
@@ -117,7 +117,7 @@ export function EditPopup() {
 
   useEffect(() => {
     if (didMount) {
-      loadData();
+      // loadData();
     }
   }, [didMount]);
 

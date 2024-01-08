@@ -254,18 +254,18 @@ export function ListTable() {
 
   useEffect(() => {
     if (didMount) {
-      getQuestionList({
-        //즐겨찾기 문항 리스트 불러올 경우
-        //전역상태 관리로 즐겨찾기 관리 후 상황에 맞게 해당 상태값을 전달해서
-        //API 파라미터에 추가해주기
-        setQuestionList,
-        setIsChangedServiced,
-        settotalPage,
-        searchValue,
-        MenuCode,
-        page,
-        size,
-      });
+      // getQuestionList({
+      //   //즐겨찾기 문항 리스트 불러올 경우
+      //   //전역상태 관리로 즐겨찾기 관리 후 상황에 맞게 해당 상태값을 전달해서
+      //   //API 파라미터에 추가해주기
+      //   setQuestionList,
+      //   setIsChangedServiced,
+      //   settotalPage,
+      //   searchValue,
+      //   MenuCode,
+      //   page,
+      //   size,
+      // });
     }
   }, [
     didMount,
