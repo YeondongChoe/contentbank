@@ -6,7 +6,9 @@ import styled from 'styled-components';
 
 import { questionInstance } from '../../api/axios';
 import { getQuestionList } from '../../api/getAxios';
+import { putChangeServiced } from '../../api/putAxios';
 import {
+  Alert,
   Button,
   DropDown,
   DropDownItemProps,
@@ -29,7 +31,12 @@ import {
   uploadBoolAtom,
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
-import { pageAtom, totalPageAtom, updateBoolAtom } from '../../store/utilAtom';
+import {
+  alertBoolAtom,
+  pageAtom,
+  totalPageAtom,
+  updateBoolAtom,
+} from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
@@ -58,6 +65,27 @@ export function ContentsList() {
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
 
   const [content, setContent] = useState<string[]>([]);
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  // 활성화/비활성화 버튼상태 토글
+  const submitChangingService = () => {
+    setIsAlertOpen(true);
+  };
+  // 활성화/비활성화 데이터 전송
+  const submitDisabled = () => {
+    // console.log(selectedRows);
+
+    const formattedArray: { contentSeq: number }[] = [];
+    // 데이터 형태 api쪽에 맞춰 { contentSeq: number }[]; 로 변경
+    for (let i = 0; i < selectedRows.length; i += 1) {
+      formattedArray.push({ contentSeq: selectedRows[i] });
+    }
+    putChangeServiced({ formattedArray, setIsChangedServiced });
+
+    setIsAlertOpen(false);
+  };
 
   const filterSearchValue = () => {
     // console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
@@ -247,7 +275,7 @@ export function ContentsList() {
     if (didMount) {
       loadData();
     }
-  }, [didMount, page]);
+  }, [didMount, page, isChangedServiced]);
 
   return (
     <Container>
@@ -301,6 +329,7 @@ export function ContentsList() {
               buttonText={'수정'}
               showDropDown={showDropDown}
               setShowDropDown={setShowDropDown}
+              disabled={isEnabled}
             ></DropDown>
             <Button
               width="150px"
@@ -308,9 +337,9 @@ export function ContentsList() {
               fontSize="14px"
               $border
               onClick={() => {
-                // submitChangingService();
+                submitChangingService();
               }}
-              disabled={false}
+              disabled={isEnabled}
             >
               활성화 / 비활성화
             </Button>
@@ -321,19 +350,19 @@ export function ContentsList() {
           list={questionList}
           colWidth={contentColWidth}
           theadList={contentTheadList}
+          setIsEnabled={setIsEnabled}
+          setSelectedRows={setSelectedRows}
         />
       </TableWrapper>
-
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+
+      <Alert
+        title="비활성화 처리시 로그인이 불가합니다."
+        description="비활성화 처리 하시겠습니까?"
+        action="확인"
+        onClick={submitDisabled}
+      ></Alert>
       {isCreate && <CreateIconPopup />}
-      {/* {isDeleteAuthority && (
-        <Alert
-          title="권한을 삭제할 경우, "
-          description="해당 권한의 아이디는 접속이 불가합니다."
-          action="삭제"
-          onClick={() => submitDelete()}
-        />
-      )} */}
     </Container>
   );
 }

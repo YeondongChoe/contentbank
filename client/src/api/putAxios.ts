@@ -132,7 +132,7 @@ export const putInitPassword = async ({
 };
 
 type putDisableMemberProps = {
-  selectedRows: string[];
+  selectedRows: number[];
   setIsEnabled: (result: boolean) => void;
 };
 

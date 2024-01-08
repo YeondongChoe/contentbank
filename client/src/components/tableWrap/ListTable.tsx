@@ -109,6 +109,7 @@ export function ListTable() {
   const [contentSeq, setContentSeq] = useRecoilState(checkBoxValueAtom);
   const formattedArray = contentSeq.map((value) => ({ contentSeq: value }));
   /**문항 활성화/비활성화 API */
+  console.log(formattedArray);
   const submitChangingService = () => {
     putChangeServiced({ formattedArray, setIsChangedServiced });
     setContentSeq([]);

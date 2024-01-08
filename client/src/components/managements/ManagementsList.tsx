@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 import { getQuestionList } from '../../api/getAxios';
 import {
+  Alert,
   Button,
   DropDown,
   DropDownItemProps,
@@ -23,7 +24,7 @@ import {
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
-import { totalPageAtom, pageAtom } from '../../store/utilAtom';
+import { totalPageAtom, pageAtom, alertBoolAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
@@ -40,11 +41,21 @@ export function ManagementsList() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const MenuCode = useRecoilValue(createListCodeValueAtom);
   const [isChangedServiced, setIsChangedServiced] = useRecoilState(
     servicedValueBoolAtom,
   );
-
+  // 활성화/비활성화 버튼상태 토글
+  const submitChangingService = () => {
+    setIsAlertOpen(true);
+  };
+  // 활성화/비활성화 데이터 전송
+  const submitDisabled = () => {
+    setIsAlertOpen(false);
+  };
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
@@ -262,9 +273,9 @@ export function ManagementsList() {
               fontSize="14px"
               //$border
               onClick={() => {
-                // submitChangingService();
+                submitChangingService();
               }}
-              disabled={false}
+              disabled={isEnabled}
             >
               삭제
             </Button>
@@ -273,6 +284,7 @@ export function ManagementsList() {
               buttonText={'수정'}
               showDropDown={showDropDown}
               setShowDropDown={setShowDropDown}
+              disabled={isEnabled}
             ></DropDown>
             <Button
               width="150px"
@@ -280,9 +292,9 @@ export function ManagementsList() {
               fontSize="14px"
               $border
               onClick={() => {
-                //submitChangingService();
+                submitChangingService();
               }}
-              disabled={false}
+              disabled={isEnabled}
             >
               활성화 / 비활성화
             </Button>
@@ -292,8 +304,23 @@ export function ManagementsList() {
           list={questionList}
           colWidth={contentColWidth}
           theadList={contentTheadList}
+          setIsEnabled={setIsEnabled}
+          setSelectedRows={setSelectedRows}
         />
       </TableWrapper>
+
+      <Alert
+        title="권한을 삭제할 경우, "
+        description="해당 권한의 아이디는 접속이 불가합니다."
+        action="삭제"
+        // onClick={() => submitDelete()}
+      />
+      <Alert
+        title="비활성화 처리시 로그인이 불가합니다."
+        description="비활성화 처리 하시겠습니까?"
+        action="확인"
+        onClick={submitDisabled}
+      ></Alert>
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       {isManagement && <ManagemantMainPopup />}

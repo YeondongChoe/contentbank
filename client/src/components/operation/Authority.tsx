@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
-import { Input, Table } from '../../components';
+import { Input } from '../../components';
 import { Button, IndexInfo } from '../../components/atom';
 import {
   editCreateContentBool,
@@ -45,6 +45,8 @@ type authorityListProps = {
 };
 
 export function Authority() {
+  const [checked, setChecked] = useState<boolean[]>([false]);
+
   const { control } = useForm();
   const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -212,7 +214,15 @@ export function Authority() {
                     전체
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'id'}>
+                      <input
+                        type="checkbox"
+                        name={'name'}
+                        id={'id'}
+                        value={'value'}
+                        checked={checked[0]}
+                      />
+                    </label>
                   </td>
                   <td>
                     <input type="checkbox" />
@@ -266,7 +276,7 @@ export function Authority() {
                     <input type="checkbox" />
                   </td>
                 </tr>
-                {/* <tr>
+                <tr>
                   <td>권한설정</td>
                   <td>
                     <input type="checkbox" />
@@ -274,7 +284,7 @@ export function Authority() {
                   <td>
                     <input type="checkbox" />
                   </td>
-                </tr> */}
+                </tr>
               </tbody>
             </table>
           </TableWrapper>
@@ -407,14 +417,16 @@ const TableWrapper = styled.div`
     th {
       border: 1px solid ${COLOR.SECONDARY};
       color: ${COLOR.SECONDARY};
-      padding: 10px;
-      font-size: 18px;
+      padding: 15px;
+      font-size: 14px;
+      font-weight: bold;
     }
     td {
       text-align: center;
       border: 1px solid ${COLOR.SECONDARY};
-      padding: 10px;
-      font-size: 16px;
+      padding: 15px;
+      text-align: center;
+      font-size: 13px;
     }
     .textLeft {
       text-align: left;

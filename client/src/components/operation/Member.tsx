@@ -5,9 +5,11 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
+import { putDisableMember } from '../../api/putAxios';
 import { Button, IndexInfo } from '../../components/atom';
 import { memberColWidth, memberTheadList } from '../../components/constants';
 import {
+  Alert,
   PaginationBox,
   Search,
   TabMenu,
@@ -18,7 +20,7 @@ import {
   editerBoolAtom,
   memberKeyValueAtom,
 } from '../../store/memberAtom';
-import { pageAtom, totalPageAtom } from '../../store/utilAtom';
+import { alertBoolAtom, pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { COLOR } from '../constants/COLOR';
 import { EditPopup } from '../member/EditPopup';
@@ -35,7 +37,23 @@ export function Member() {
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
 
+  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  // 활성화/비활성화 버튼상태 토글
+  const submitChangingService = () => {
+    setIsAlertOpen(true);
+  };
+  // 활성화/비활성화 데이터 전송
+  const submitDisabled = () => {
+    putDisableMember({
+      selectedRows,
+      setIsEnabled,
+    });
+    setIsAlertOpen(false);
+  };
+
   // 검색 기능 함수
   const filterSearchValue = () => {
     getMemberList({
@@ -78,7 +96,6 @@ export function Member() {
 
   // 탭메뉴 클릭시 페이지네이션 초기화
   const changeTab = () => {
-    console.log('dsadsadsadsadsdsadsadada');
     setPage(1);
   };
 
@@ -176,9 +193,9 @@ export function Member() {
             fontSize="14px"
             $border
             onClick={() => {
-              // submitChangingService();
+              submitChangingService();
             }}
-            disabled={false}
+            disabled={isEnabled}
           >
             활성화 / 비활성화
           </Button>
@@ -190,17 +207,19 @@ export function Member() {
           colWidth={memberColWidth}
           theadList={memberTheadList}
           btnOnClick={openDetailInformationPopup}
+          setIsEnabled={setIsEnabled}
+          setSelectedRows={setSelectedRows}
         />
       </TableWrapper>
       <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
-      {/* {isEnabled && (
-        <Alert
-          title="비활성화 처리시 로그인이 불가합니다."
-          description="비활성화 처리 하시겠습니까?"
-          action="확인"
-          onClick={submitDisabled}
-        ></Alert>
-      )} */}
+
+      <Alert
+        title="비활성화 처리시 로그인이 불가합니다."
+        description="비활성화 처리 하시겠습니까?"
+        action="확인"
+        onClick={submitDisabled}
+      ></Alert>
+
       {isRegister ? <RegisterPopup /> : ''}
       {isEditer ? <EditPopup /> : ''}
     </Container>

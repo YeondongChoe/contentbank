@@ -151,6 +151,8 @@ export function Worksheet() {
           list={worksheetList}
           colWidth={worksheetColWidth}
           theadList={worksheetTheadList}
+          setIsEnabled={() => {}}
+          setSelectedRows={() => {}}
         />
       </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />

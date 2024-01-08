@@ -77,13 +77,21 @@ const Component = styled.button<ButtonStyleProps>`
   font-weight: bold;
   border-radius: ${({ $borderRadius }) =>
     $borderRadius ? `${$borderRadius};` : '5px'};
-  background-color: ${({ $border }) =>
-    $border ? ` #fff;` : `${COLOR.PRIMARY};`};
+  background-color: ${({ $border, disabled }) =>
+    $border
+      ? disabled
+        ? `background-color:${COLOR.LIGHT_GRAY};`
+        : ` #fff;`
+      : `${COLOR.PRIMARY};`};
   color: ${({ $border }) => ($border ? `${COLOR.PRIMARY};` : '#fff')};
-  ${({ $border }) =>
-    $border ? `border: 1px solid ${COLOR.PRIMARY};` : 'border: none;'};
+  ${({ $border, disabled }) =>
+    $border
+      ? disabled
+        ? `border:none;`
+        : `border: 1px solid ${COLOR.PRIMARY};`
+      : 'border: none;'};
   cursor: pointer;
   ${({ disabled }) =>
-    disabled &&
+    disabled === true &&
     `border:none; color:${COLOR.GRAY} ;background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
 `;

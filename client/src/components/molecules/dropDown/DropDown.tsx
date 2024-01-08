@@ -21,6 +21,7 @@ type DropDownProps = {
   buttonHeight?: string;
   showDropDown: boolean;
   setShowDropDown: React.Dispatch<React.SetStateAction<boolean>>;
+  disabled?: boolean;
 };
 
 export function DropDown({
@@ -32,6 +33,7 @@ export function DropDown({
   height,
   buttonWidth = '100px',
   buttonHeight = '35px',
+  disabled,
 }: DropDownProps) {
   return (
     <Component>
@@ -41,7 +43,7 @@ export function DropDown({
         fontSize="14px"
         $border
         onClick={() => setShowDropDown(!showDropDown)}
-        disabled={false}
+        disabled={disabled}
       >
         {buttonText}
       </Button>

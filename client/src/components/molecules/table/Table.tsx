@@ -1,18 +1,10 @@
 import * as React from 'react';
 import { useEffect, useState, useCallback } from 'react';
 
-import { FaRegBookmark, FaBookmark } from 'react-icons/fa';
-import { LuFileSearch2 } from 'react-icons/lu';
-import { SlOptionsVertical } from 'react-icons/sl';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { IconButton, Loader, ValueNone } from '../../../components';
-import {
-  createWorksheetStep1BoolAtom,
-  createWorksheetStep2BoolAtom,
-  editWorksheetBoolAtom,
-} from '../../../store/creatingWorksheetAtom';
+import { Loader, ValueNone } from '../../../components';
 import {
   MemberTableType,
   QuestionTableType,
@@ -32,6 +24,8 @@ type TableProps = {
   width?: string;
   theadList: TheadItemProps[];
   btnOnClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  setIsEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedRows: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export function Table({
@@ -40,6 +34,8 @@ export function Table({
   width,
   theadList,
   btnOnClick,
+  setIsEnabled,
+  setSelectedRows,
 }: TableProps) {
   const [isColspan, setIsColspan] = useState<boolean>(false);
   const [colspanList, setcolspanList] = useState<TheadItemProps[]>([
@@ -52,39 +48,17 @@ export function Table({
     },
   ]);
   const [tbodyType, setTbodyType] = useState('');
-  const [checkList, setCheckList] = useState<number[]>([0]);
-
-  //학습지 팝업
-  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
-  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
-
-  const openEditFilePopup = () => {
-    setIsStep1(false);
-    setIsStep2(true);
-    setIsEditWorksheet(true);
-  };
-  // 학습지 설정 버튼
-  const openSettingList = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.preventDefault();
-    console.log(event.currentTarget.children[1].classList);
-    event.currentTarget.children[1].classList.add('show');
-  };
-  const closeSettingList = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.currentTarget.children[1].classList.remove('show');
-  };
+  const [checkList, setCheckList] = useState<number[]>([]);
 
   // 체크박스 설정
   // 데이터 고유id값 seq : 기획 발표이후 변경될 수 있음
   const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       setCheckList(list.map((item) => item.seq as number));
+      setIsEnabled(false);
     } else {
       setCheckList([]);
+      setIsEnabled(true);
     }
   };
   const handleSingleCheck = (checked: boolean, seq: number) => {
@@ -137,8 +111,19 @@ export function Table({
   }, []);
 
   useEffect(() => {
-    setCheckList([0]);
+    setCheckList([]);
   }, [list]);
+
+  useEffect(() => {
+    console.log(checkList);
+    // 활성화 버튼 이용가능상태 // 데이터 전송
+    if (checkList.length > 0) {
+      setIsEnabled(false);
+      setSelectedRows(checkList);
+    } else {
+      setIsEnabled(true);
+    }
+  }, [checkList]);
 
   return (
     <Component cellSpacing="0" cellPadding="0" width={width}>
@@ -219,6 +204,7 @@ export function Table({
           btnOnClick={btnOnClick}
         />
       )}
+      {/* 권한관리 tbody */}
     </Component>
   );
 }
@@ -301,57 +287,6 @@ const Component = styled.table<TableStyleProps>`
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-  }
-`;
-
-const SettingButton = styled.button`
-  position: relative;
-  padding: 5px;
-  margin: -5px;
-`;
-
-const SettingList = styled.ul`
-  display: none;
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  border: 1px solid ${COLOR.SECONDARY};
-  border-radius: 5px;
-  overflow: hidden;
-  z-index: 1;
-
-  &.show {
-    display: block;
-  }
-
-  li {
-    width: 140px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    button {
-      font-size: 14px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      background-color: #fff;
-      color: ${COLOR.GRAY};
-      transition: all 0.1s;
-      z-index: 2;
-      border: none;
-
-      &:hover {
-        background-color: ${COLOR.HOVER};
-        color: ${COLOR.PRIMARY};
-      }
-    }
   }
 `;
 
