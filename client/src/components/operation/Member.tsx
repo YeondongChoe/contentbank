@@ -37,30 +37,30 @@ export function Member() {
 
   const [searchValue, setSearchValue] = useState<string>('');
   // 검색 기능 함수
-  // const filterSearchValue = () => {
-  //   getMemberList({
-  //     setMemberList,
-  //     settotalPage,
-  //     searchValue,
-  //     page,
-  //     size,
-  //   });
-  //   setSearchValue('');
-  // };
-  // const filterSearchValueEnter = (
-  //   event: React.KeyboardEvent<HTMLInputElement>,
-  // ) => {
-  //   if (event.key === 'Enter') {
-  //     getMemberList({
-  //       setMemberList,
-  //       settotalPage,
-  //       searchValue,
-  //       page,
-  //       size,
-  //     });
-  //     setSearchValue('');
-  //   }
-  // };
+  const filterSearchValue = () => {
+    getMemberList({
+      setMemberList,
+      settotalPage,
+      searchValue,
+      page,
+      size,
+    });
+    setSearchValue('');
+  };
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === 'Enter') {
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        searchValue,
+        page,
+        size,
+      });
+      setSearchValue('');
+    }
+  };
 
   const openRegisterPopup = () => {
     setIsRegister(true);
@@ -82,26 +82,26 @@ export function Member() {
     setPage(1);
   };
 
-  // const loadData = () => {
-  //   if (tabVeiw === '전체') {
-  //     getMemberList({
-  //       setMemberList,
-  //       settotalPage,
-  //       page,
-  //       size,
-  //     });
-  //   } else {
-  //     const enabled =
-  //       tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
-  //     getMemberList({
-  //       setMemberList,
-  //       settotalPage,
-  //       page,
-  //       size,
-  //       enabled,
-  //     });
-  //   }
-  // };
+  const loadData = () => {
+    if (tabVeiw === '전체') {
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        page,
+        size,
+      });
+    } else {
+      const enabled =
+        tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
+      getMemberList({
+        setMemberList,
+        settotalPage,
+        page,
+        size,
+        enabled,
+      });
+    }
+  };
   useEffect(() => {
     setDidMount(true);
   }, []);

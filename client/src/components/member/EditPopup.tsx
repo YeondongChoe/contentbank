@@ -84,32 +84,32 @@ export function EditPopup() {
 
   const clickInitPassword = () => {
     setIsAlertOpen(true);
-    //putInitPassword({ keyValue, setIsInit });
+    putInitPassword({ keyValue, setIsInit });
   };
 
-  // const submitEdit = async () => {
-  //   putChangeMemberInformation({
-  //     Authority,
-  //     member,
-  //     Name,
-  //     Comment,
-  //     CheckBox,
-  //     keyValue,
-  //     SetIsEditer,
-  //     setIsNameError,
-  //     setNameErrorMessage,
-  //   });
-  // };
+  const submitEdit = async () => {
+    putChangeMemberInformation({
+      Authority,
+      member,
+      Name,
+      Comment,
+      CheckBox,
+      keyValue,
+      SetIsEditer,
+      setIsNameError,
+      setNameErrorMessage,
+    });
+  };
 
-  // const loadData = useCallback(() => {
-  //   getIndividualMemberInformation({
-  //     keyValue,
-  //     setMember,
-  //   });
-  //   getAuthorityList({
-  //     setAuthorityList,
-  //   });
-  // }, []);
+  const loadData = useCallback(() => {
+    getIndividualMemberInformation({
+      keyValue,
+      setMember,
+    });
+    getAuthorityList({
+      setAuthorityList,
+    });
+  }, []);
 
   useEffect(() => {
     setDidMount(true);
@@ -117,7 +117,7 @@ export function EditPopup() {
 
   useEffect(() => {
     if (didMount) {
-      // loadData();
+      loadData();
     }
   }, [didMount]);
 
@@ -295,7 +295,7 @@ export function EditPopup() {
                   </Button>
                   <Button
                     buttonType="button"
-                    // onClick={submitEdit}
+                    onClick={submitEdit}
                     $padding="10px"
                     height={'50px'}
                     width={'170px'}

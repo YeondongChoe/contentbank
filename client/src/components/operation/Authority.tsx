@@ -100,29 +100,29 @@ export function Authority() {
   const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
     useRecoilState<boolean>(manageAuthorityBoolAtom);
 
-  // const submitAuthority = () => {
-  //   postCreateAuthority({
-  //     inputValue,
-  //     isEditCreateChecked,
-  //     isManageCreateChecked,
-  //     isEditCreateListChecked,
-  //     isManageCreateListChecked,
-  //     isEditWorksheetChecked,
-  //     isManageWorksheetChecked,
-  //     isEditManagementChecked,
-  //     isManageManagementChecked,
-  //     isEditManagementListChecked,
-  //     isManageManagementListChecked,
-  //     isEditTreeChecked,
-  //     isManageTreeChecked,
-  //     isEditOperationChecked,
-  //     isManageOperationChecked,
-  //     isEditMemberChecked,
-  //     isManageMemberChecked,
-  //     isEditAuthorityChecked,
-  //     isManageAuthorityChecked,
-  //   });
-  // };
+  const submitAuthority = () => {
+    postCreateAuthority({
+      inputValue,
+      isEditCreateChecked,
+      isManageCreateChecked,
+      isEditCreateListChecked,
+      isManageCreateListChecked,
+      isEditWorksheetChecked,
+      isManageWorksheetChecked,
+      isEditManagementChecked,
+      isManageManagementChecked,
+      isEditManagementListChecked,
+      isManageManagementListChecked,
+      isEditTreeChecked,
+      isManageTreeChecked,
+      isEditOperationChecked,
+      isManageOperationChecked,
+      isEditMemberChecked,
+      isManageMemberChecked,
+      isEditAuthorityChecked,
+      isManageAuthorityChecked,
+    });
+  };
 
   const openUpdateAlert = () => {
     if (inputValue === '') {
@@ -136,31 +136,31 @@ export function Authority() {
     }
   };
 
-  // const clickMemberAuthority = (code: string) => {
-  //   getMemberAuthority(
-  //     {
-  //       setIsEditCreateChecked,
-  //       setIsManageCreateChecked,
-  //       setIsEditCreateListChecked,
-  //       setIsManageCreateListChecked,
-  //       setIsEditWorksheetChecked,
-  //       setIsManageWorksheetChecked,
-  //       setIsEditManagementChecked,
-  //       setIsManageManagementChecked,
-  //       setIsEditManagementListChecked,
-  //       setIsManageManagementListChecked,
-  //       setIsEditTreeChecked,
-  //       setIsManageTreeChecked,
-  //       setIsEditOperationChecked,
-  //       setIsManageOperationChecked,
-  //       setIsEditMemberChecked,
-  //       setIsManageMemberChecked,
-  //       setIsEditAuthorityChecked,
-  //       setIsManageAuthorityChecked,
-  //     },
-  //     code,
-  //   );
-  // };
+  const clickMemberAuthority = (code: string) => {
+    getMemberAuthority(
+      {
+        setIsEditCreateChecked,
+        setIsManageCreateChecked,
+        setIsEditCreateListChecked,
+        setIsManageCreateListChecked,
+        setIsEditWorksheetChecked,
+        setIsManageWorksheetChecked,
+        setIsEditManagementChecked,
+        setIsManageManagementChecked,
+        setIsEditManagementListChecked,
+        setIsManageManagementListChecked,
+        setIsEditTreeChecked,
+        setIsManageTreeChecked,
+        setIsEditOperationChecked,
+        setIsManageOperationChecked,
+        setIsEditMemberChecked,
+        setIsManageMemberChecked,
+        setIsEditAuthorityChecked,
+        setIsManageAuthorityChecked,
+      },
+      code,
+    );
+  };
 
   const openDeleteAlert = (code: string) => {
     setCodeValue(code);
@@ -172,14 +172,14 @@ export function Authority() {
   };
 
   const submitDelete = (code: string) => {
-    // DeleteAuthority({ setIsAlertOpen }, code);
+    DeleteAuthority({ setIsAlertOpen }, code);
   };
 
-  // const loadData = useCallback(() => {
-  //   getAuthorityList({
-  //     setAuthorityList,
-  //   });
-  // }, [setAuthorityList]);
+  const loadData = useCallback(() => {
+    getAuthorityList({
+      setAuthorityList,
+    });
+  }, [setAuthorityList]);
 
   useEffect(() => {
     setDidMount(true);
@@ -187,7 +187,7 @@ export function Authority() {
 
   useEffect(() => {
     if (didMount) {
-      // loadData();
+      loadData();
     }
   }, [didMount]);
 
@@ -323,14 +323,14 @@ export function Authority() {
               <AuthorityWrapper
                 key={i}
                 onClick={() => {
-                  // clickMemberAuthority(el.code);
+                  clickMemberAuthority(el.code);
                   setInputValue(el.name);
                   setIsClickedName(true);
                 }}
               >
                 <AuthorityName
                   onClick={() => {
-                    // clickMemberAuthority(el.code);
+                    clickMemberAuthority(el.code);
                     setInputValue(el.name);
                     setIsClickedName(true);
                   }}
@@ -365,7 +365,7 @@ export function Authority() {
               : '권한을 생성 하시겠습니까?'
           }
           action={isClickedName ? '수정' : '생성'}
-          // onClick={() => submitAuthority()}
+          onClick={submitAuthority}
         />
       )}
       {isCreateNameError && <Alert notice title="권한명을 작성해주세요." />}

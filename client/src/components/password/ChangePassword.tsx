@@ -50,13 +50,13 @@ export function ChangePassword({
   const PasswordConfirm = watch('password_confirm', '');
   const navigate = useNavigate();
 
-  // const submitChangePassword = () => {
-  //   putChangePassword({
-  //     Password,
-  //     PasswordConfirm,
-  //     navigate,
-  //   });
-  // };
+  const submitChangePassword = () => {
+    putChangePassword({
+      Password,
+      PasswordConfirm,
+      navigate,
+    });
+  };
 
   return (
     <Container>
@@ -174,7 +174,7 @@ export function ChangePassword({
           ) : (
             <ButtonWapper>
               <Button
-                // onClick={submitChangePassword}
+                onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}

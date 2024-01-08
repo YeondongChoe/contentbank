@@ -178,24 +178,24 @@ export function ManagementsList() {
     },
   ];
 
-  // const loadData = useCallback(() => {
-  //   getQuestionList({
-  //     setQuestionList,
-  //     setIsChangedServiced,
-  //     settotalPage,
-  //     searchValue,
-  //     MenuCode,
-  //     page,
-  //     size,
-  //   });
-  // }, [
-  //   page,
-  //   MenuCode,
-  //   searchValue,
-  //   setQuestionList,
-  //   settotalPage,
-  //   setIsChangedServiced,
-  // ]);
+  const loadData = useCallback(() => {
+    getQuestionList({
+      setQuestionList,
+      setIsChangedServiced,
+      settotalPage,
+      searchValue,
+      MenuCode,
+      page,
+      size,
+    });
+  }, [
+    page,
+    MenuCode,
+    searchValue,
+    setQuestionList,
+    settotalPage,
+    setIsChangedServiced,
+  ]);
 
   useEffect(() => {
     setPage(1);
@@ -204,7 +204,7 @@ export function ManagementsList() {
 
   useEffect(() => {
     if (didMount) {
-      // loadData();
+      loadData();
     }
   }, [didMount, page]);
 

@@ -38,7 +38,7 @@ export function Login() {
   const navigate = useNavigate();
 
   const submitLogin: SubmitHandler<loginProps> = async (data) => {
-    // postLogin({ navigate, isClicked, Id, setErrorMessage, openAlert }, data);
+    postLogin({ navigate, isClicked, Id, setErrorMessage, openAlert }, data);
   };
 
   const checkIconselected = () => {

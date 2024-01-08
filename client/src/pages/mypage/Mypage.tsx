@@ -35,18 +35,18 @@ export function Mypage() {
     setIsNameEdit(!isNameEdit);
   };
 
-  // const saveName = async () => {
-  //   putSaveName({
-  //     member,
-  //     nameValue,
-  //     isNameEdit,
-  //     setIsNameEdit,
-  //     setIsError,
-  //     setIsAlertOpen,
-  //     setNameValue,
-  //     setErrorMessage,
-  //   });
-  // };
+  const saveName = async () => {
+    putSaveName({
+      member,
+      nameValue,
+      isNameEdit,
+      setIsNameEdit,
+      setIsError,
+      setIsAlertOpen,
+      setNameValue,
+      setErrorMessage,
+    });
+  };
 
   const selectPasswordEdit = () => {
     setIsPasswordEdit(!isPasswordEdit);
@@ -54,7 +54,7 @@ export function Mypage() {
   };
 
   const loadData = useCallback(() => {
-    // getMemberInformation({ setMember });
+    getMemberInformation({ setMember });
   }, []);
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export function Mypage() {
                     <span>취소</span>
                   </Button>
                   <Button
-                    // onClick={saveName}
+                    onClick={saveName}
                     width="64px"
                     height="25px"
                     fontSize="13px"
