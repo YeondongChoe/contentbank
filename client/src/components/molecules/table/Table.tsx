@@ -20,6 +20,8 @@ import {
 } from '../../../types';
 import { COLOR } from '../../constants';
 
+import { MemberTbody, QuestionTbody, WorksheetTbody } from './tbody';
+
 type TheadItemProps = {
   th: { title: string; rowSpan?: number; colspan?: number }[];
 };
@@ -198,201 +200,24 @@ export function Table({
       )}
       {/* 학습지 tbody */}
       {tbodyType === 'worksheetTableType' && (
-        <tbody>
-          {list.map((content) => (
-            <tr key={content?.id}>
-              <td>
-                <button
-                  onClick={() => {
-                    // addFavoriteQuestion(content.questionSeq);
-                  }}
-                >
-                  {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
-                </button>
-              </td>
-              <td>
-                <span className="ellipsis">{content.schoolLevel}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.tag}</span>
-              </td>
-              <td className="textAlignLeft">
-                <span className="ellipsis">{content.worksheetName}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.createdAt}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.creater}</span>
-              </td>
-              <td>
-                <button onClick={() => {}}>
-                  <LuFileSearch2 style={{ fontSize: '22px' }} />
-                </button>
-              </td>
-              <td>
-                <SettingButton
-                  type="button"
-                  onClick={(event) => openSettingList(event)}
-                  onMouseLeave={(event) => closeSettingList(event)}
-                >
-                  <SlOptionsVertical style={{ fontSize: '16px' }} />
-                  <SettingList>
-                    <li>
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          openEditFilePopup();
-                        }}
-                      >
-                        수정
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          openEditFilePopup();
-                        }}
-                      >
-                        복제 후 수정
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" onClick={(event) => {}}>
-                        삭제
-                      </button>
-                    </li>
-                  </SettingList>
-                </SettingButton>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        <WorksheetTbody list={list as WorksheetTableType[]} />
       )}
       {/* 문항리스트 tbody */}
       {tbodyType === 'questionTableType' && (
-        <tbody>
-          {list.map((content) => (
-            <tr key={content?.questionCode}>
-              <td>
-                <input
-                  type="checkbox"
-                  // checked={selectedRows.includes(content.contentSeq)}
-                  // onChange={() => selectRow(content.contentSeq)}
-                />
-              </td>
-              <td>
-                <span className="ellipsis">
-                  <IconButton
-                    onClick={() => {
-                      // addFavoriteQuestion(content.questionSeq)
-                    }}
-                    $iconOlny
-                    $borderNone
-                    $padding={'0'}
-                    $margin={'-2px'}
-                    width={'20px'}
-                    height={'20px'}
-                  >
-                    {content.favorited ? (
-                      <FaBookmark color="orange" />
-                    ) : (
-                      <FaRegBookmark />
-                    )}
-                  </IconButton>
-                </span>
-              </td>
-              <td className="textAlignLeft">
-                <span className="ellipsis">{content.questionCode}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.curriculum}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.schoolLevel}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.schoolYear}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.semester}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.unitMajor}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.unitMiddle}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.questionType}</span>
-              </td>
-              <td>
-                <span className="ellipsis">
-                  {content.questionCreatedByName}
-                </span>
-              </td>
-              <td>
-                <span className="hide">{content.questionCreatedDate}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{content.serviced ? 'Y' : 'N'}</span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        <QuestionTbody
+          list={list as QuestionTableType[]}
+          handleSingleCheck={handleSingleCheck}
+          checkList={checkList}
+        />
       )}
       {/* 회원관리 tbody */}
       {tbodyType === 'memberTableType' && (
-        <tbody>
-          {list.map((member) => (
-            <tr key={member.seq}>
-              <td>
-                <input
-                  type="checkbox"
-                  // checked={selectedRows.includes(content.contentSeq)}
-                  // onChange={() => selectRow(content.contentSeq)}
-                  onChange={(e) =>
-                    handleSingleCheck(e.target.checked, member.seq as number)
-                  }
-                  // 체크된 아이템 배열에 해당 아이템이 있을 경우 선택 활성화, 아닐 시 해제
-                  checked={
-                    checkList.includes(member.seq as number) ? true : false
-                  }
-                ></input>
-              </td>
-              <td>
-                <span className="ellipsis">{member.name}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{member.id}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{member.authority?.name}</span>
-              </td>
-              <td>
-                <span className="ellipsis">{member.createdDate}</span>
-              </td>
-              <td>
-                <span className="ellipsis">
-                  {member.enabled === true ? '활성' : '비활성'}
-                </span>
-              </td>
-              <td>
-                <span className="center">
-                  <button
-                    type="button"
-                    className="lineBtn"
-                    value={member.key}
-                    onClick={(event) => btnOnClick?.(event)}
-                  >
-                    보기
-                  </button>
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        <MemberTbody
+          list={list as MemberTableType[]}
+          handleSingleCheck={handleSingleCheck}
+          checkList={checkList}
+          btnOnClick={btnOnClick}
+        />
       )}
     </Component>
   );
