@@ -110,8 +110,8 @@ export function ListTable() {
   const formattedArray = contentSeq.map((value) => ({ contentSeq: value }));
   /**문항 활성화/비활성화 API */
   const submitChangingService = () => {
-    putChangeServiced({ formattedArray, setIsChangedServiced });
-    setContentSeq([]);
+    // putChangeServiced({ formattedArray, setIsChangedServiced });
+    // setContentSeq([]);
   };
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
