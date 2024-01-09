@@ -77,12 +77,46 @@ export function Authority() {
   const [didMount, setDidMount] = useState(false);
   // const [checkList, setCheckList] = useState(defaultPermissions);
 
-  const [checkList, setCheckList] = useState<
-    {
-      key: string;
-      checked: boolean;
-    }[]
-  >(defaultPermissions);
+  /** 콘텐츠 제작 편집 체크 상태여부*/
+  // const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
+  //   editCreateContentBool,
+  // );
+  // const [isEditCreateListChecked, setIsEditCreateListChecked] =
+  //   useRecoilState<boolean>(editCreateListBool);
+  // const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
+  //   useRecoilState<boolean>(editCreateContentWorksheetBool);
+  // const [isEditManagementChecked, setIsEditManagementChecked] =
+  //   useRecoilState<boolean>(editManagementContentBool);
+  // const [isEditManagementListChecked, setIsEditManagementListChecked] =
+  //   useRecoilState<boolean>(editManagementListBool);
+  // const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
+  //   editManagementTreeBool,
+  // );
+  // const [isEditOperationChecked, setIsEditOperationChecked] =
+  //   useRecoilState<boolean>(editOperationBoolAtom);
+  // const [isEditMemberChecked, setIsEditMemberChecked] =
+  //   useRecoilState<boolean>(editMemberBoolAtom);
+  // const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
+  //   useRecoilState<boolean>(editAuthorityBoolAtom);
+  // const [isManageCreateChecked, setIsManageCreateChecked] =
+  //   useRecoilState<boolean>(manageCreateContentBoolAtom);
+  // const [isManageCreateListChecked, setIsManageCreateListChecked] =
+  //   useRecoilState<boolean>(manageCreateListBoolAtom);
+  // const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
+  //   useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
+  // const [isManageManagementChecked, setIsManageManagementChecked] =
+  //   useRecoilState<boolean>(manageManagementContentBoolAtom);
+  // const [isManageManagementListChecked, setIsManageManagementListChecked] =
+  //   useRecoilState<boolean>(manageManagementListBoolAtom);
+  // const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
+  //   manageManagementTreeBoolAtom,
+  // );
+  // const [isManageOperationChecked, setIsManageOperationChecked] =
+  //   useRecoilState<boolean>(manageOperationBoolAtom);
+  // const [isManageMemberChecked, setIsManageMemberChecked] =
+  //   useRecoilState<boolean>(manageMemberBoolAtom);
+  // const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
+  //   useRecoilState<boolean>(manageAuthorityBoolAtom);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
@@ -122,44 +156,51 @@ export function Authority() {
   //   );
   // };
 
-  // 신규 권한 생성
   const submitAuthority = () => {
-    // const isEditCreateChecked = checkList[0].checked; //전체
-    // const isManageCreateChecked = checkList[1].checked;
-    const isEditCreateListChecked = checkList[2].checked;
-    const isManageCreateListChecked = checkList[3].checked;
-    const isEditWorksheetChecked = checkList[4].checked;
-    const isManageWorksheetChecked = checkList[5].checked;
-    // const isEditManagementChecked = checkList[6].checked;
-    // const isManageManagementChecked = checkList[7].checked;
-    const isEditManagementListChecked = checkList[8].checked;
-    const isManageManagementListChecked = checkList[9].checked;
-    const isEditTreeChecked = checkList[10].checked;
-    const isManageTreeChecked = checkList[11].checked;
-    // const isEditOperationChecked = checkList[12].checked;
-    // const isManageOperationChecked = checkList[13].checked;
-    const isEditMemberChecked = checkList[14].checked;
-    const isManageMemberChecked = checkList[15].checked;
-    const isEditAuthorityChecked = checkList[16].checked;
-    const isManageAuthorityChecked = checkList[17].checked;
-    postCreateAuthority({
-      inputValue,
-      isEditCreateListChecked,
-      isManageCreateListChecked,
-      isEditWorksheetChecked,
-      isManageWorksheetChecked,
-      isEditManagementListChecked,
-      isManageManagementListChecked,
-      isEditTreeChecked,
-      isManageTreeChecked,
-      isEditMemberChecked,
-      isManageMemberChecked,
-      isEditAuthorityChecked,
-      isManageAuthorityChecked,
-    });
-    setIsAlertOpen(false);
+    // postCreateAuthority({
+    //   inputValue,
+    //   isEditCreateChecked,
+    //   isManageCreateChecked,
+    //   isEditCreateListChecked,
+    //   isManageCreateListChecked,
+    //   isEditWorksheetChecked,
+    //   isManageWorksheetChecked,
+    //   isEditManagementChecked,
+    //   isManageManagementChecked,
+    //   isEditManagementListChecked,
+    //   isManageManagementListChecked,
+    //   isEditTreeChecked,
+    //   isManageTreeChecked,
+    //   isEditOperationChecked,
+    //   isManageOperationChecked,
+    //   isEditMemberChecked,
+    //   isManageMemberChecked,
+    //   isEditAuthorityChecked,
+    //   isManageAuthorityChecked,
+    // });
   };
 
+  const defaultPermissions = [
+    { key: 'isEditCreateChecked', checked: false },
+    { key: 'isManageCreateChecked', checked: false },
+    { key: 'isEditCreateListChecked', checked: false },
+    { key: 'isManageCreateListChecked', checked: false },
+    { key: 'isEditWorksheetChecked', checked: false },
+    { key: 'isManageWorksheetChecked', checked: false },
+    { key: 'isEditManagementChecked', checked: false },
+    { key: 'isManageManagementChecked', checked: false },
+    { key: 'isEditManagementListChecked', checked: false },
+    { key: 'isManageManagementListChecked', checked: false },
+    { key: 'isEditTreeChecked', checked: false },
+    { key: 'isManageTreeChecked', checked: false },
+    { key: 'isEditOperationChecked', checked: false },
+    { key: 'isManageOperationChecked', checked: false },
+    { key: 'isEditMemberChecked', checked: false },
+    { key: 'isManageMemberChecked', checked: false },
+    { key: 'isEditAuthorityChecked', checked: false },
+    { key: 'isManageAuthorityChecked', checked: false },
+  ];
+  const [checkList, setCheckList] = useState(defaultPermissions);
   // 권한관리 체크박스 핸들러
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
     // 체크박스 선택시 해당 배열값변경
@@ -607,6 +648,28 @@ export function Authority() {
       <Wrapper>
         {/* <strong>권한 관리</strong> */}
         <InputWrapper>
+          {/* <Controller
+            control={control}
+            name="input"
+            defaultValue=""
+            render={({ field }) => (
+              <Input
+                width="100%"
+                height="30px"
+                padding="5px"
+                placeholderSize="14px"
+                fontSize="14px"
+                borderradius="5px"
+                type="text"
+                placeholder="권한명을 작성해주세요."
+                value={field.value || inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setIsClickedName(false);
+                }}
+              />
+            )}
+          /> */}
           <Input
             height="40px"
             padding="5px"
@@ -654,9 +717,8 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditCreateChecked'}
                         id={'isEditCreateChecked'}
-                        value={0}
+                        value={'isEditCreateChecked'}
                         onChange={(e) => handleChecked(e)}
-                        checked={checkList[0].checked}
                       />
                     </label>
                   </td>
@@ -666,10 +728,8 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageCreateChecked'}
                         id={'isManageCreateChecked'}
-                        value={1}
+                        value={'isManageCreateChecked'}
                         onChange={(e) => handleChecked(e)}
-                        disabled={!checkList[0].checked}
-                        checked={checkList[1].checked}
                       />
                     </label>
                   </td>
@@ -682,9 +742,8 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditCreateListChecked'}
                         id={'isEditCreateListChecked'}
-                        value={2}
+                        value={'isEditCreateListChecked'}
                         onChange={(e) => handleChecked(e)}
-                        checked={checkList[2].checked}
                       />
                     </label>
                   </td>
@@ -694,10 +753,8 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageCreateListChecked'}
                         id={'isManageCreateListChecked'}
-                        value={3}
+                        value={'isManageCreateListChecked'}
                         onChange={(e) => handleChecked(e)}
-                        checked={checkList[3].checked}
-                        disabled={!checkList[2].checked}
                       />
                     </label>
                   </td>
@@ -710,9 +767,8 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditWorksheetChecked'}
                         id={'isEditWorksheetChecked'}
-                        value={4}
+                        value={'isEditWorksheetChecked'}
                         onChange={(e) => handleChecked(e)}
-                        checked={checkList[4].checked}
                       />
                     </label>
                   </td>
@@ -722,10 +778,8 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageWorksheetChecked'}
                         id={'isManageWorksheetChecked'}
-                        value={5}
+                        value={'isManageWorksheetChecked'}
                         onChange={(e) => handleChecked(e)}
-                        checked={checkList[5].checked}
-                        disabled={!checkList[4].checked}
                       />
                     </label>
                   </td>
@@ -903,6 +957,7 @@ export function Authority() {
               </tbody>
             </table>
           </TableWrapper>
+          {/* <AuthorityTree /> */}
 
           <AuthorityListWrapper>
             {/* {authorityList?.map((el, i) => (
