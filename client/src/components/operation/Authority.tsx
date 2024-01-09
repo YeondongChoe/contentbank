@@ -200,20 +200,20 @@ export function Authority() {
     { key: 'isEditAuthorityChecked', checked: false },
     { key: 'isManageAuthorityChecked', checked: false },
   ];
-  const [checkList, setCheckList] = useState(defaultPermissions);
   // 권한관리 체크박스 핸들러
-  const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const target = e.currentTarget;
-    const list = checkList.map((check) => {
-      if (check.key === target.id) {
-        return target.checked;
-      }
-    });
-    // setCheckList([...{target.id: target.checked}])
-    // for (let i = 0; i < checkList.length; i++) {}
-    // console.log(target.id, target.checked);
-    console.log(target.id, target.checked, list);
-  };
+  // const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const target = e.currentTarget;
+  //   const list = checkList.map((check) => {
+  //     if (check.key === target.id) {
+  //       return target.checked;
+  //     }
+  //   });
+  //   // setCheckList([...{target.id: target.checked}])
+  //   // for (let i = 0; i < checkList.length; i++) {}
+  //   // console.log(target.id, target.checked);
+  //   console.log(target.id, target.checked, list);
+  // };
+  const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
   // 권한관리 체크박스 핸들러
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
