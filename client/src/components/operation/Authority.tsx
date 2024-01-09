@@ -62,45 +62,45 @@ export function Authority() {
   const [didMount, setDidMount] = useState(false);
 
   /** 콘텐츠 제작 편집 체크 상태여부*/
-  // const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
-  //   editCreateContentBool,
-  // );
-  // const [isEditCreateListChecked, setIsEditCreateListChecked] =
-  //   useRecoilState<boolean>(editCreateListBool);
-  // const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-  //   useRecoilState<boolean>(editCreateContentWorksheetBool);
-  // const [isEditManagementChecked, setIsEditManagementChecked] =
-  //   useRecoilState<boolean>(editManagementContentBool);
-  // const [isEditManagementListChecked, setIsEditManagementListChecked] =
-  //   useRecoilState<boolean>(editManagementListBool);
-  // const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
-  //   editManagementTreeBool,
-  // );
-  // const [isEditOperationChecked, setIsEditOperationChecked] =
-  //   useRecoilState<boolean>(editOperationBoolAtom);
-  // const [isEditMemberChecked, setIsEditMemberChecked] =
-  //   useRecoilState<boolean>(editMemberBoolAtom);
-  // const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-  //   useRecoilState<boolean>(editAuthorityBoolAtom);
-  // const [isManageCreateChecked, setIsManageCreateChecked] =
-  //   useRecoilState<boolean>(manageCreateContentBoolAtom);
-  // const [isManageCreateListChecked, setIsManageCreateListChecked] =
-  //   useRecoilState<boolean>(manageCreateListBoolAtom);
-  // const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-  //   useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
-  // const [isManageManagementChecked, setIsManageManagementChecked] =
-  //   useRecoilState<boolean>(manageManagementContentBoolAtom);
-  // const [isManageManagementListChecked, setIsManageManagementListChecked] =
-  //   useRecoilState<boolean>(manageManagementListBoolAtom);
-  // const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
-  //   manageManagementTreeBoolAtom,
-  // );
-  // const [isManageOperationChecked, setIsManageOperationChecked] =
-  //   useRecoilState<boolean>(manageOperationBoolAtom);
-  // const [isManageMemberChecked, setIsManageMemberChecked] =
-  //   useRecoilState<boolean>(manageMemberBoolAtom);
-  // const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-  //   useRecoilState<boolean>(manageAuthorityBoolAtom);
+  const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
+    editCreateContentBool,
+  );
+  const [isEditCreateListChecked, setIsEditCreateListChecked] =
+    useRecoilState<boolean>(editCreateListBool);
+  const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
+    useRecoilState<boolean>(editCreateContentWorksheetBool);
+  const [isEditManagementChecked, setIsEditManagementChecked] =
+    useRecoilState<boolean>(editManagementContentBool);
+  const [isEditManagementListChecked, setIsEditManagementListChecked] =
+    useRecoilState<boolean>(editManagementListBool);
+  const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
+    editManagementTreeBool,
+  );
+  const [isEditOperationChecked, setIsEditOperationChecked] =
+    useRecoilState<boolean>(editOperationBoolAtom);
+  const [isEditMemberChecked, setIsEditMemberChecked] =
+    useRecoilState<boolean>(editMemberBoolAtom);
+  const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
+    useRecoilState<boolean>(editAuthorityBoolAtom);
+  const [isManageCreateChecked, setIsManageCreateChecked] =
+    useRecoilState<boolean>(manageCreateContentBoolAtom);
+  const [isManageCreateListChecked, setIsManageCreateListChecked] =
+    useRecoilState<boolean>(manageCreateListBoolAtom);
+  const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
+    useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
+  const [isManageManagementChecked, setIsManageManagementChecked] =
+    useRecoilState<boolean>(manageManagementContentBoolAtom);
+  const [isManageManagementListChecked, setIsManageManagementListChecked] =
+    useRecoilState<boolean>(manageManagementListBoolAtom);
+  const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
+    manageManagementTreeBoolAtom,
+  );
+  const [isManageOperationChecked, setIsManageOperationChecked] =
+    useRecoilState<boolean>(manageOperationBoolAtom);
+  const [isManageMemberChecked, setIsManageMemberChecked] =
+    useRecoilState<boolean>(manageMemberBoolAtom);
+  const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
+    useRecoilState<boolean>(manageAuthorityBoolAtom);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
@@ -114,54 +114,54 @@ export function Authority() {
     }
   };
 
-  // const clickMemberAuthority = (code: string) => {
-  //   getMemberAuthority(
-  //     {
-  //       setIsEditCreateChecked,
-  //       setIsManageCreateChecked,
-  //       setIsEditCreateListChecked,
-  //       setIsManageCreateListChecked,
-  //       setIsEditWorksheetChecked,
-  //       setIsManageWorksheetChecked,
-  //       setIsEditManagementChecked,
-  //       setIsManageManagementChecked,
-  //       setIsEditManagementListChecked,
-  //       setIsManageManagementListChecked,
-  //       setIsEditTreeChecked,
-  //       setIsManageTreeChecked,
-  //       setIsEditOperationChecked,
-  //       setIsManageOperationChecked,
-  //       setIsEditMemberChecked,
-  //       setIsManageMemberChecked,
-  //       setIsEditAuthorityChecked,
-  //       setIsManageAuthorityChecked,
-  //     },
-  //     code,
-  //   );
-  // };
+  const clickMemberAuthority = (code: string) => {
+    getMemberAuthority(
+      {
+        setIsEditCreateChecked,
+        setIsManageCreateChecked,
+        setIsEditCreateListChecked,
+        setIsManageCreateListChecked,
+        setIsEditWorksheetChecked,
+        setIsManageWorksheetChecked,
+        setIsEditManagementChecked,
+        setIsManageManagementChecked,
+        setIsEditManagementListChecked,
+        setIsManageManagementListChecked,
+        setIsEditTreeChecked,
+        setIsManageTreeChecked,
+        setIsEditOperationChecked,
+        setIsManageOperationChecked,
+        setIsEditMemberChecked,
+        setIsManageMemberChecked,
+        setIsEditAuthorityChecked,
+        setIsManageAuthorityChecked,
+      },
+      code,
+    );
+  };
 
   const submitAuthority = () => {
-    // postCreateAuthority({
-    //   inputValue,
-    //   isEditCreateChecked,
-    //   isManageCreateChecked,
-    //   isEditCreateListChecked,
-    //   isManageCreateListChecked,
-    //   isEditWorksheetChecked,
-    //   isManageWorksheetChecked,
-    //   isEditManagementChecked,
-    //   isManageManagementChecked,
-    //   isEditManagementListChecked,
-    //   isManageManagementListChecked,
-    //   isEditTreeChecked,
-    //   isManageTreeChecked,
-    //   isEditOperationChecked,
-    //   isManageOperationChecked,
-    //   isEditMemberChecked,
-    //   isManageMemberChecked,
-    //   isEditAuthorityChecked,
-    //   isManageAuthorityChecked,
-    // });
+    postCreateAuthority({
+      inputValue,
+      isEditCreateChecked,
+      isManageCreateChecked,
+      isEditCreateListChecked,
+      isManageCreateListChecked,
+      isEditWorksheetChecked,
+      isManageWorksheetChecked,
+      isEditManagementChecked,
+      isManageManagementChecked,
+      isEditManagementListChecked,
+      isManageManagementListChecked,
+      isEditTreeChecked,
+      isManageTreeChecked,
+      isEditOperationChecked,
+      isManageOperationChecked,
+      isEditMemberChecked,
+      isManageMemberChecked,
+      isEditAuthorityChecked,
+      isManageAuthorityChecked,
+    });
   };
 
   const defaultPermissions = [
