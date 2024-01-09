@@ -87,7 +87,7 @@ export function Table({
         (item) => item.th.length > 1,
       );
       // console.log(filterList);
-      //마지막 th 두줄일 경우만 적용 TODO: 더 복잡해지는 테이블일경우 개선 필요
+      // 마지막 th 두줄일 경우만 적용 TODO: 더 복잡해지는 테이블일경우 개선 필요
       setcolspanList(filterList);
     }
   }, [theadList]);
@@ -115,7 +115,7 @@ export function Table({
   }, [list]);
 
   useEffect(() => {
-    console.log(checkList);
+    // console.log(checkList);
     // 활성화 버튼 이용가능상태 // 데이터 전송
     if (checkList.length > 0) {
       setIsEnabled(false);
