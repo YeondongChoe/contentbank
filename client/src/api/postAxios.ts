@@ -225,47 +225,47 @@ export const postCreateAuthority = async ({
     name: inputValue,
     permissions: [
       {
-        code: 'CNC',
+        code: 'CNC', // 콘텐츠 제작
         edited: isEditCreateChecked,
         managed: isManageCreateChecked,
       },
       {
-        code: 'CNC_Q',
+        code: 'CNC_Q', // 콘텐츠 제작 문항
         edited: isEditCreateListChecked,
         managed: isManageCreateListChecked,
       },
       {
-        code: 'CNC_W',
+        code: 'CNC_W', // 콘텐츠 제작 학습지
         edited: isEditWorksheetChecked,
         managed: isManageWorksheetChecked,
       },
       {
-        code: 'CNM',
+        code: 'CNM', // 콘텐츠 관리
         edited: isEditManagementChecked,
         managed: isManageManagementChecked,
       },
       {
-        code: 'CNM_Q',
+        code: 'CNM_Q', // 콘텐츠 관리 문항
         edited: isEditManagementListChecked,
         managed: isManageManagementListChecked,
       },
       {
-        code: 'CNM_T',
+        code: 'CNM_T', // 콘텐츠 관리 문항트리
         edited: isEditTreeChecked,
         managed: isManageTreeChecked,
       },
       {
-        code: 'OPM',
+        code: 'OPM', // 운영관리
         edited: isEditOperationChecked,
         managed: isManageOperationChecked,
       },
       {
-        code: 'OPM_M',
+        code: 'OPM_M', //운영관리 회원관리
         edited: isEditMemberChecked,
         managed: isManageMemberChecked,
       },
       {
-        code: 'OPM_R',
+        code: 'OPM_R', //운영관리 권한관리
         edited: isEditAuthorityChecked,
         managed: isManageAuthorityChecked,
       },
@@ -277,7 +277,6 @@ export const postCreateAuthority = async ({
       handleAuthorizationRenewal(response);
       window.location.reload();
     })
-
     .catch((error) => {
       alert(error);
     });

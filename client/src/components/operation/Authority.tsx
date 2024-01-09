@@ -62,106 +62,110 @@ export function Authority() {
   const [didMount, setDidMount] = useState(false);
 
   /** 콘텐츠 제작 편집 체크 상태여부*/
-  const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
-    editCreateContentBool,
-  );
-  const [isEditCreateListChecked, setIsEditCreateListChecked] =
-    useRecoilState<boolean>(editCreateListBool);
-  const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-    useRecoilState<boolean>(editCreateContentWorksheetBool);
-  const [isEditManagementChecked, setIsEditManagementChecked] =
-    useRecoilState<boolean>(editManagementContentBool);
-  const [isEditManagementListChecked, setIsEditManagementListChecked] =
-    useRecoilState<boolean>(editManagementListBool);
-  const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
-    editManagementTreeBool,
-  );
-  const [isEditOperationChecked, setIsEditOperationChecked] =
-    useRecoilState<boolean>(editOperationBoolAtom);
-  const [isEditMemberChecked, setIsEditMemberChecked] =
-    useRecoilState<boolean>(editMemberBoolAtom);
-  const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-    useRecoilState<boolean>(editAuthorityBoolAtom);
-  const [isManageCreateChecked, setIsManageCreateChecked] =
-    useRecoilState<boolean>(manageCreateContentBoolAtom);
-  const [isManageCreateListChecked, setIsManageCreateListChecked] =
-    useRecoilState<boolean>(manageCreateListBoolAtom);
-  const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-    useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
-  const [isManageManagementChecked, setIsManageManagementChecked] =
-    useRecoilState<boolean>(manageManagementContentBoolAtom);
-  const [isManageManagementListChecked, setIsManageManagementListChecked] =
-    useRecoilState<boolean>(manageManagementListBoolAtom);
-  const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
-    manageManagementTreeBoolAtom,
-  );
-  const [isManageOperationChecked, setIsManageOperationChecked] =
-    useRecoilState<boolean>(manageOperationBoolAtom);
-  const [isManageMemberChecked, setIsManageMemberChecked] =
-    useRecoilState<boolean>(manageMemberBoolAtom);
-  const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-    useRecoilState<boolean>(manageAuthorityBoolAtom);
+  // const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
+  //   editCreateContentBool,
+  // );
+  // const [isEditCreateListChecked, setIsEditCreateListChecked] =
+  //   useRecoilState<boolean>(editCreateListBool);
+  // const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
+  //   useRecoilState<boolean>(editCreateContentWorksheetBool);
+  // const [isEditManagementChecked, setIsEditManagementChecked] =
+  //   useRecoilState<boolean>(editManagementContentBool);
+  // const [isEditManagementListChecked, setIsEditManagementListChecked] =
+  //   useRecoilState<boolean>(editManagementListBool);
+  // const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
+  //   editManagementTreeBool,
+  // );
+  // const [isEditOperationChecked, setIsEditOperationChecked] =
+  //   useRecoilState<boolean>(editOperationBoolAtom);
+  // const [isEditMemberChecked, setIsEditMemberChecked] =
+  //   useRecoilState<boolean>(editMemberBoolAtom);
+  // const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
+  //   useRecoilState<boolean>(editAuthorityBoolAtom);
+  // const [isManageCreateChecked, setIsManageCreateChecked] =
+  //   useRecoilState<boolean>(manageCreateContentBoolAtom);
+  // const [isManageCreateListChecked, setIsManageCreateListChecked] =
+  //   useRecoilState<boolean>(manageCreateListBoolAtom);
+  // const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
+  //   useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
+  // const [isManageManagementChecked, setIsManageManagementChecked] =
+  //   useRecoilState<boolean>(manageManagementContentBoolAtom);
+  // const [isManageManagementListChecked, setIsManageManagementListChecked] =
+  //   useRecoilState<boolean>(manageManagementListBoolAtom);
+  // const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
+  //   manageManagementTreeBoolAtom,
+  // );
+  // const [isManageOperationChecked, setIsManageOperationChecked] =
+  //   useRecoilState<boolean>(manageOperationBoolAtom);
+  // const [isManageMemberChecked, setIsManageMemberChecked] =
+  //   useRecoilState<boolean>(manageMemberBoolAtom);
+  // const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
+  //   useRecoilState<boolean>(manageAuthorityBoolAtom);
 
   const submitAuthority = () => {
-    postCreateAuthority({
-      inputValue,
-      isEditCreateChecked,
-      isManageCreateChecked,
-      isEditCreateListChecked,
-      isManageCreateListChecked,
-      isEditWorksheetChecked,
-      isManageWorksheetChecked,
-      isEditManagementChecked,
-      isManageManagementChecked,
-      isEditManagementListChecked,
-      isManageManagementListChecked,
-      isEditTreeChecked,
-      isManageTreeChecked,
-      isEditOperationChecked,
-      isManageOperationChecked,
-      isEditMemberChecked,
-      isManageMemberChecked,
-      isEditAuthorityChecked,
-      isManageAuthorityChecked,
-    });
+    // postCreateAuthority({
+    //   inputValue,
+    //   isEditCreateChecked,
+    //   isManageCreateChecked,
+    //   isEditCreateListChecked,
+    //   isManageCreateListChecked,
+    //   isEditWorksheetChecked,
+    //   isManageWorksheetChecked,
+    //   isEditManagementChecked,
+    //   isManageManagementChecked,
+    //   isEditManagementListChecked,
+    //   isManageManagementListChecked,
+    //   isEditTreeChecked,
+    //   isManageTreeChecked,
+    //   isEditOperationChecked,
+    //   isManageOperationChecked,
+    //   isEditMemberChecked,
+    //   isManageMemberChecked,
+    //   isEditAuthorityChecked,
+    //   isManageAuthorityChecked,
+    // });
   };
 
   const openUpdateAlert = () => {
+    setIsAlertOpen(true);
     if (inputValue === '') {
-      setIsAlertOpen(true);
       setIsCreateNameError(true);
       setIsUpdateAuthority(false);
-    } else if (inputValue) {
-      setIsAlertOpen(true);
+    }
+    if (inputValue) {
       setIsCreateNameError(false);
       setIsUpdateAuthority(true);
     }
   };
 
-  const clickMemberAuthority = (code: string) => {
-    getMemberAuthority(
-      {
-        setIsEditCreateChecked,
-        setIsManageCreateChecked,
-        setIsEditCreateListChecked,
-        setIsManageCreateListChecked,
-        setIsEditWorksheetChecked,
-        setIsManageWorksheetChecked,
-        setIsEditManagementChecked,
-        setIsManageManagementChecked,
-        setIsEditManagementListChecked,
-        setIsManageManagementListChecked,
-        setIsEditTreeChecked,
-        setIsManageTreeChecked,
-        setIsEditOperationChecked,
-        setIsManageOperationChecked,
-        setIsEditMemberChecked,
-        setIsManageMemberChecked,
-        setIsEditAuthorityChecked,
-        setIsManageAuthorityChecked,
-      },
-      code,
-    );
+  // const clickMemberAuthority = (code: string) => {
+  //   getMemberAuthority(
+  //     {
+  //       setIsEditCreateChecked,
+  //       setIsManageCreateChecked,
+  //       setIsEditCreateListChecked,
+  //       setIsManageCreateListChecked,
+  //       setIsEditWorksheetChecked,
+  //       setIsManageWorksheetChecked,
+  //       setIsEditManagementChecked,
+  //       setIsManageManagementChecked,
+  //       setIsEditManagementListChecked,
+  //       setIsManageManagementListChecked,
+  //       setIsEditTreeChecked,
+  //       setIsManageTreeChecked,
+  //       setIsEditOperationChecked,
+  //       setIsManageOperationChecked,
+  //       setIsEditMemberChecked,
+  //       setIsManageMemberChecked,
+  //       setIsEditAuthorityChecked,
+  //       setIsManageAuthorityChecked,
+  //     },
+  //     code,
+  //   );
+  // };
+  const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const target = e.currentTarget;
+    console.log(target.id, target.checked);
   };
 
   const openDeleteAlert = (code: string) => {
@@ -214,75 +218,180 @@ export function Authority() {
                     전체
                   </td>
                   <td>
-                    <label htmlFor={'id'}>
+                    <label htmlFor={'all_edit'}>
                       <input
                         type="checkbox"
-                        name={'name'}
-                        id={'id'}
-                        value={'value'}
-                        checked={checked[0]}
+                        name={'all_edit'}
+                        id={'all_edit'}
+                        value={'all_edit'}
+                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'all_manage'}>
+                      <input
+                        type="checkbox"
+                        name={'all_manage'}
+                        id={'all_manage'}
+                        value={'all_manage'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <td rowSpan={2}>콘텐츠 제작</td>
                   <td>문항</td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'content_question_edit'}>
+                      <input
+                        type="checkbox"
+                        name={'content_question_edit'}
+                        id={'content_question_edit'}
+                        value={'content_question_edit'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'content_question_manage'}>
+                      <input
+                        type="checkbox"
+                        name={'content_question_manage'}
+                        id={'content_question_manage'}
+                        value={'content_question_manage'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <td>학습지</td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'content_worksheet_edit'}>
+                      <input
+                        type="checkbox"
+                        name={'content_worksheet_edit'}
+                        id={'content_worksheet_edit'}
+                        value={'content_worksheet_edit'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'content_worksheet_manage'}>
+                      <input
+                        type="checkbox"
+                        name={'content_worksheet_manage'}
+                        id={'content_worksheet_manage'}
+                        value={'content_worksheet_manage'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <td>콘텐츠 관리</td>
                   <td>문항</td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'content_management_question_edit'}>
+                      <input
+                        type="checkbox"
+                        name={'content_management_question_edit'}
+                        id={'content_management_question_edit'}
+                        value={'content_management_question_edit'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'content_management_question_manage'}>
+                      <input
+                        type="checkbox"
+                        name={'content_management_question_manage'}
+                        id={'content_management_question_manage'}
+                        value={'content_management_question_manage'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <td rowSpan={3}>운영 관리</td>
                   <td>회원관리</td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'membership_edit'}>
+                      <input
+                        type="checkbox"
+                        name={'membership_edit'}
+                        id={'membership_edit'}
+                        value={'membership_edit'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'membership_manage'}>
+                      <input
+                        type="checkbox"
+                        name={'membership_manage'}
+                        id={'membership_manage'}
+                        value={'membership_manage'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <td>권한관리</td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'permission_edit'}>
+                      <input
+                        type="checkbox"
+                        name={'permission_edit'}
+                        id={'permission_edit'}
+                        value={'permission_edit'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'permission_manage'}>
+                      <input
+                        type="checkbox"
+                        name={'permission_manage'}
+                        id={'permission_manage'}
+                        value={'permission_manage'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                 </tr>
                 <tr>
                   <td>권한설정</td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'permission_setting_edit'}>
+                      <input
+                        type="checkbox"
+                        name={'permission_setting_edit'}
+                        id={'permission_setting_edit'}
+                        value={'permission_setting_edit'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                   <td>
-                    <input type="checkbox" />
+                    <label htmlFor={'permission_setting_manage'}>
+                      <input
+                        type="checkbox"
+                        name={'permission_setting_manage'}
+                        id={'permission_setting_manage'}
+                        value={'permission_setting_manage'}
+                        // checked={checked[0]}
+                      />
+                    </label>
                   </td>
                 </tr>
               </tbody>
@@ -333,14 +442,14 @@ export function Authority() {
               <AuthorityWrapper
                 key={i}
                 onClick={() => {
-                  clickMemberAuthority(el.code);
+                  // clickMemberAuthority(el.code);
                   setInputValue(el.name);
                   setIsClickedName(true);
                 }}
               >
                 <AuthorityName
                   onClick={() => {
-                    clickMemberAuthority(el.code);
+                    // clickMemberAuthority(el.code);
                     setInputValue(el.name);
                     setIsClickedName(true);
                   }}
