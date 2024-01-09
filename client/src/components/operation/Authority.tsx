@@ -214,54 +214,51 @@ export function Authority() {
               </thead>
               <tbody>
                 <tr>
-                  <td className="textLeft" colSpan={2}>
-                    전체
-                  </td>
+                  <td rowSpan={3}>콘텐츠 제작</td>
+                  <td>전체</td>
                   <td>
-                    <label htmlFor={'all_edit'}>
+                    <label htmlFor={'isEditCreateChecked'}>
                       <input
                         type="checkbox"
-                        name={'all_edit'}
-                        id={'all_edit'}
-                        value={'all_edit'}
-                        onChange={(e) => handleChecked(e)}
+                        name={'isEditCreateChecked'}
+                        id={'isEditCreateChecked'}
+                        value={'isEditCreateChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                   <td>
-                    <label htmlFor={'all_manage'}>
+                    <label htmlFor={'isManageCreateChecked'}>
                       <input
                         type="checkbox"
-                        name={'all_manage'}
-                        id={'all_manage'}
-                        value={'all_manage'}
+                        name={'isManageCreateChecked'}
+                        id={'isManageCreateChecked'}
+                        value={'isManageCreateChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                 </tr>
                 <tr>
-                  <td rowSpan={2}>콘텐츠 제작</td>
                   <td>문항</td>
                   <td>
-                    <label htmlFor={'content_question_edit'}>
+                    <label htmlFor={'isEditCreateListChecked'}>
                       <input
                         type="checkbox"
-                        name={'content_question_edit'}
-                        id={'content_question_edit'}
-                        value={'content_question_edit'}
+                        name={'isEditCreateListChecked'}
+                        id={'isEditCreateListChecked'}
+                        value={'isEditCreateListChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                   <td>
-                    <label htmlFor={'content_question_manage'}>
+                    <label htmlFor={'isManageCreateListChecked'}>
                       <input
                         type="checkbox"
-                        name={'content_question_manage'}
-                        id={'content_question_manage'}
-                        value={'content_question_manage'}
+                        name={'isManageCreateListChecked'}
+                        id={'isManageCreateListChecked'}
+                        value={'isManageCreateListChecked'}
                         // checked={checked[0]}
                       />
                     </label>
@@ -270,49 +267,99 @@ export function Authority() {
                 <tr>
                   <td>학습지</td>
                   <td>
-                    <label htmlFor={'content_worksheet_edit'}>
+                    <label htmlFor={'isEditWorksheetChecked'}>
                       <input
                         type="checkbox"
-                        name={'content_worksheet_edit'}
-                        id={'content_worksheet_edit'}
-                        value={'content_worksheet_edit'}
+                        name={'isEditWorksheetChecked'}
+                        id={'isEditWorksheetChecked'}
+                        value={'isEditWorksheetChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                   <td>
-                    <label htmlFor={'content_worksheet_manage'}>
+                    <label htmlFor={'isManageWorksheetChecked'}>
                       <input
                         type="checkbox"
-                        name={'content_worksheet_manage'}
-                        id={'content_worksheet_manage'}
-                        value={'content_worksheet_manage'}
+                        name={'isManageWorksheetChecked'}
+                        id={'isManageWorksheetChecked'}
+                        value={'isManageWorksheetChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                 </tr>
                 <tr>
-                  <td>콘텐츠 관리</td>
-                  <td>문항</td>
+                  <td rowSpan={3}>콘텐츠 관리</td>
+                  <td>전체</td>
                   <td>
-                    <label htmlFor={'content_management_question_edit'}>
+                    <label htmlFor={'isEditManagementChecked'}>
                       <input
                         type="checkbox"
-                        name={'content_management_question_edit'}
-                        id={'content_management_question_edit'}
-                        value={'content_management_question_edit'}
+                        name={'isEditManagementChecked'}
+                        id={'isEditManagementChecked'}
+                        value={'isEditManagementChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                   <td>
-                    <label htmlFor={'content_management_question_manage'}>
+                    <label htmlFor={'isManageManagementChecked'}>
                       <input
                         type="checkbox"
-                        name={'content_management_question_manage'}
-                        id={'content_management_question_manage'}
-                        value={'content_management_question_manage'}
+                        name={'isManageManagementChecked'}
+                        id={'isManageManagementChecked'}
+                        value={'isManageManagementChecked'}
+                        // checked={checked[0]}
+                      />
+                    </label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>문항</td>
+                  <td>
+                    <label htmlFor={'isEditManagementListChecked'}>
+                      <input
+                        type="checkbox"
+                        name={'isEditManagementListChecked'}
+                        id={'isEditManagementListChecked'}
+                        value={'isEditManagementListChecked'}
+                        // checked={checked[0]}
+                      />
+                    </label>
+                  </td>
+                  <td>
+                    <label htmlFor={'isManageManagementListChecked'}>
+                      <input
+                        type="checkbox"
+                        name={'isManageManagementListChecked'}
+                        id={'isManageManagementListChecked'}
+                        value={'isManageManagementListChecked'}
+                        // checked={checked[0]}
+                      />
+                    </label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>문항트리</td>
+                  <td>
+                    <label htmlFor={'isEditTreeChecked'}>
+                      <input
+                        type="checkbox"
+                        name={'isEditTreeChecked'}
+                        id={'isEditTreeChecked'}
+                        value={'isEditTreeChecked'}
+                        // checked={checked[0]}
+                      />
+                    </label>
+                  </td>
+                  <td>
+                    <label htmlFor={'isManageTreeChecked'}>
+                      <input
+                        type="checkbox"
+                        name={'isManageTreeChecked'}
+                        id={'isManageTreeChecked'}
+                        value={'isManageTreeChecked'}
                         // checked={checked[0]}
                       />
                     </label>
@@ -320,25 +367,50 @@ export function Authority() {
                 </tr>
                 <tr>
                   <td rowSpan={3}>운영 관리</td>
-                  <td>회원관리</td>
+                  <td>전체</td>
                   <td>
-                    <label htmlFor={'membership_edit'}>
+                    <label htmlFor={'isEditOperationChecked'}>
                       <input
                         type="checkbox"
-                        name={'membership_edit'}
-                        id={'membership_edit'}
-                        value={'membership_edit'}
+                        name={'isEditOperationChecked'}
+                        id={'isEditOperationChecked'}
+                        value={'isEditOperationChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                   <td>
-                    <label htmlFor={'membership_manage'}>
+                    <label htmlFor={'isManageOperationChecked'}>
                       <input
                         type="checkbox"
-                        name={'membership_manage'}
-                        id={'membership_manage'}
-                        value={'membership_manage'}
+                        name={'isManageOperationChecked'}
+                        id={'isManageOperationChecked'}
+                        value={'isManageOperationChecked'}
+                        // checked={checked[0]}
+                      />
+                    </label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>회원관리</td>
+                  <td>
+                    <label htmlFor={'isEditMemberChecked'}>
+                      <input
+                        type="checkbox"
+                        name={'isEditMemberChecked'}
+                        id={'isEditMemberChecked'}
+                        value={'isEditMemberChecked'}
+                        // checked={checked[0]}
+                      />
+                    </label>
+                  </td>
+                  <td>
+                    <label htmlFor={'isManageMemberChecked'}>
+                      <input
+                        type="checkbox"
+                        name={'isManageMemberChecked'}
+                        id={'isManageMemberChecked'}
+                        value={'isManageMemberChecked'}
                         // checked={checked[0]}
                       />
                     </label>
@@ -347,48 +419,23 @@ export function Authority() {
                 <tr>
                   <td>권한관리</td>
                   <td>
-                    <label htmlFor={'permission_edit'}>
+                    <label htmlFor={'isEditAuthorityChecked'}>
                       <input
                         type="checkbox"
-                        name={'permission_edit'}
-                        id={'permission_edit'}
-                        value={'permission_edit'}
+                        name={'isEditAuthorityChecked'}
+                        id={'isEditAuthorityChecked'}
+                        value={'isEditAuthorityChecked'}
                         // checked={checked[0]}
                       />
                     </label>
                   </td>
                   <td>
-                    <label htmlFor={'permission_manage'}>
+                    <label htmlFor={'isManageAuthorityChecked'}>
                       <input
                         type="checkbox"
-                        name={'permission_manage'}
-                        id={'permission_manage'}
-                        value={'permission_manage'}
-                        // checked={checked[0]}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>권한설정</td>
-                  <td>
-                    <label htmlFor={'permission_setting_edit'}>
-                      <input
-                        type="checkbox"
-                        name={'permission_setting_edit'}
-                        id={'permission_setting_edit'}
-                        value={'permission_setting_edit'}
-                        // checked={checked[0]}
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'permission_setting_manage'}>
-                      <input
-                        type="checkbox"
-                        name={'permission_setting_manage'}
-                        id={'permission_setting_manage'}
-                        value={'permission_setting_manage'}
+                        name={'isManageAuthorityChecked'}
+                        id={'isManageAuthorityChecked'}
+                        value={'isManageAuthorityChecked'}
                         // checked={checked[0]}
                       />
                     </label>
