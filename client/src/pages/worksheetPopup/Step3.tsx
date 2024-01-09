@@ -6,7 +6,7 @@ import { FaCircleCheck } from 'react-icons/fa6';
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { SlPicture } from 'react-icons/sl';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 
 import { Input, Label, Button } from '../../components';
 import { COLOR } from '../../components/constants';
@@ -17,12 +17,55 @@ import {
   editWorksheetBoolAtom,
 } from '../../store/creatingWorksheetAtom';
 
+import {
+  RedTheme,
+  OrangeTheme,
+  GreenTheme,
+  BlueTheme,
+  PurpleTheme,
+  GrayTheme,
+} from './theme';
+
 export function Step3() {
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
   const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
+  const [nameValue, setNameValue] = useState('');
+  const [gradeValue, setGradeValue] = useState('');
+  const [contentAuthor, setContentAuthor] = useState('');
+
   const [colorChoice, setColorChoice] = useState('');
+
+  const selectedTheme = (() => {
+    switch (colorChoice) {
+      case 'red':
+        return RedTheme;
+      case 'orange':
+        return OrangeTheme;
+      case 'green':
+        return GreenTheme;
+      case 'blue':
+        return BlueTheme;
+      case 'purple':
+        return PurpleTheme;
+      case 'gray':
+        return GrayTheme;
+      default:
+        return {}; // 기본값
+    }
+  })();
+
+  const [column, setColumn] = useState<string>();
+  const selectColumn = (newValue: string) => {
+    setColumn(newValue);
+  };
+
+  const [contentQuantity, setContentQuantity] = useState<string>();
+
+  const selectContentQuantity = (newValue: string) => {
+    setContentQuantity(newValue);
+  };
 
   const closePopup = () => {
     setIsStep1(false);
@@ -78,10 +121,10 @@ export function Step3() {
                   fontSize="14px"
                   type="text"
                   placeholder="학습지명을 작성해주세요."
-                  //value={nameValue}
-                  // onChange={(e) => {
-                  //   setNameValue(e.target.value);
-                  // }}
+                  value={nameValue}
+                  onChange={(e) => {
+                    setNameValue(e.target.value);
+                  }}
                   //innerRef={nameInputRef}
                 />
               </InputWrapper>
@@ -96,10 +139,10 @@ export function Step3() {
                   fontSize="14px"
                   type="text"
                   placeholder="출제자명을 작성해주세요."
-                  //value={nameValue}
-                  // onChange={(e) => {
-                  //   setNameValue(e.target.value);
-                  // }}
+                  value={contentAuthor}
+                  onChange={(e) => {
+                    setContentAuthor(e.target.value);
+                  }}
                   //innerRef={nameInputRef}
                 />
               </InputWrapper>
@@ -114,10 +157,10 @@ export function Step3() {
                   fontSize="14px"
                   type="text"
                   placeholder="학년을 작성해주세요."
-                  //value={nameValue}
-                  // onChange={(e) => {
-                  //   setNameValue(e.target.value);
-                  // }}
+                  value={gradeValue}
+                  onChange={(e) => {
+                    setGradeValue(e.target.value);
+                  }}
                   //innerRef={nameInputRef}
                 />
               </InputWrapper>
@@ -187,106 +230,76 @@ export function Step3() {
               <ColorBox>
                 <Label value="색상 및 디자인 선택" fontSize="12px" />
                 <ColorOption>
-                  {colorChoice == 'skyblue' ? (
-                    <FaCircleCheck
-                      color="skyblue"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="skyblue"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('skyblue')}
-                    />
-                  )}
-                  {colorChoice == 'blue' ? (
-                    <FaCircleCheck
-                      color="blue"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="blue"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('blue')}
-                    />
-                  )}
-                  {colorChoice == 'yellow' ? (
-                    <FaCircleCheck
-                      color="yellow"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="yellow"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('yellow')}
-                    />
-                  )}
-                  {colorChoice == 'orange' ? (
-                    <FaCircleCheck
-                      color="orange"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="orange"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('orange')}
-                    />
-                  )}
                   {colorChoice == 'red' ? (
                     <FaCircleCheck
-                      color="red"
+                      color="#FA897B"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('')}
                     />
                   ) : (
                     <FaCircle
-                      color="red"
+                      color="#FA897B"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('red')}
                     />
                   )}
-                  {colorChoice == 'green' ? (
+                  {colorChoice == 'orange' ? (
                     <FaCircleCheck
-                      color="green"
+                      color="#FFDD94"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('')}
                     />
                   ) : (
                     <FaCircle
-                      color="green"
+                      color="#FFDD94"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('orange')}
+                    />
+                  )}
+                  {colorChoice == 'green' ? (
+                    <FaCircleCheck
+                      color="#DDE6A5"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="#DDE6A5"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('green')}
                     />
                   )}
-                  {colorChoice == 'purple' ? (
+                  {colorChoice == 'blue' ? (
                     <FaCircleCheck
-                      color="purple"
+                      color="#86E3CE"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('')}
                     />
                   ) : (
                     <FaCircle
-                      color="purple"
+                      color="#86E3CE"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('blue')}
+                    />
+                  )}
+                  {colorChoice == 'purple' ? (
+                    <FaCircleCheck
+                      color="#CCABD8"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="#CCABD8"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('purple')}
@@ -318,14 +331,133 @@ export function Step3() {
                 <SlPicture color="gray" fontSize={40} />B Type
               </TypeOption>
             </TypeOptionWrapper>
+            <PositionOption>
+              <ColumnOption>
+                <Label value="학습지 단" fontSize="14px" width="100px" />
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectColumn('2단');
+                  }}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border={column !== '2단'}
+                >
+                  <span>2단</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectColumn('1단');
+                  }}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border={column !== '1단'}
+                >
+                  <span>1단</span>
+                </Button>
+              </ColumnOption>
+              <ContentQuantity>
+                <Label value="학습지 배치" fontSize="14px" width="100px" />
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('최대');
+                  }}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border={contentQuantity !== '최대'}
+                >
+                  <span>최대</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('2문제');
+                  }}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border={contentQuantity !== '2문제'}
+                >
+                  <span>2문제</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('4문제');
+                  }}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border={contentQuantity !== '4문제'}
+                >
+                  <span>4문제</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('6문제');
+                  }}
+                  $padding="5px"
+                  height={'30px'}
+                  width={'65px'}
+                  fontSize="12px"
+                  $border={contentQuantity !== '6문제'}
+                >
+                  <span>6문제</span>
+                </Button>
+              </ContentQuantity>
+            </PositionOption>
           </WorksheetSettingSection>
           <WorksheetTemplateViewSection>
-            <div>학습지 템플릿 보여주기</div>
-            <div>미리보기</div>
-            <div>분할선택</div>
-            <div>기본</div>
-            <div>2분할</div>
-            <div>전단계에서 받은 데이타를 리스트로 보여주기</div>
+            <ThemeProvider theme={selectedTheme}>
+              <WorksheetTemplateWrapper>
+                <Label value={'미리보기'} margin="20px"></Label>
+                <WorksheetTemplate>
+                  <InsideWorksheetTemplate>
+                    <Input
+                      width="300px"
+                      height="30px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="12px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder={nameValue || '학습지명'}
+                    />
+                    <Input
+                      width="300px"
+                      height="30px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="12px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder={gradeValue || '학년'}
+                    />
+                    <Input
+                      width="300px"
+                      height="30px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="12px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder={contentAuthor || '출제자명'}
+                    />
+                  </InsideWorksheetTemplate>
+                </WorksheetTemplate>
+              </WorksheetTemplateWrapper>
+            </ThemeProvider>
           </WorksheetTemplateViewSection>
         </Wrapper>
         <CreateButtonWrapper>
@@ -468,6 +600,22 @@ const TypeOption = styled.div`
     font-size: 50px;
   }
 `;
+const PositionOption = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 35px;
+`;
+const ColumnOption = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+const ContentQuantity = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+
 const WorksheetTemplateViewSection = styled.section`
   display: flex;
   flex-direction: column;
@@ -476,7 +624,23 @@ const WorksheetTemplateViewSection = styled.section`
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   gap: 10px;
+`;
+const WorksheetTemplateWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 25px;
+  background-color: ${({ theme }) => theme?.color?.background || 'initial'};
+`;
+const WorksheetTemplate = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
+const InsideWorksheetTemplate = styled.div`
   padding: 10px;
+  background-color: white;
 `;
 const CreateButtonWrapper = styled.div`
   padding: 10px 0px;
