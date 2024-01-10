@@ -57,12 +57,13 @@ export function MathViewer({ data, width }: MathViewerProps) {
           onStartup={(mathJax) => setMathJax(mathJax)}
         >
           <strong>{data.it_title}</strong>
-
           <MathJax inline dynamic onInitTypeset={() => offLoader()}>
-            <div dangerouslySetInnerHTML={createMarkup(data.it_quest)}></div>
-            <div
+            <ContentQuestion
+              dangerouslySetInnerHTML={createMarkup(data.it_quest)}
+            ></ContentQuestion>
+            <ContentAnswer
               dangerouslySetInnerHTML={createMarkup(data.it_answer[0])}
-            ></div>
+            ></ContentAnswer>
           </MathJax>
         </MathJaxContext>
       </Component>
@@ -78,4 +79,10 @@ type MathViewerStyleProps = {
 const Component = styled.div<MathViewerStyleProps>`
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   display: ${({ display }) => (display ? `${display}` : 'block')};
+`;
+const ContentQuestion = styled.div`
+  //height: 200px;
+`;
+const ContentAnswer = styled.div`
+  height: 100px;
 `;

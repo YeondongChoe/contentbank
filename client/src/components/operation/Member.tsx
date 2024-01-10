@@ -229,21 +229,18 @@ export function Member() {
 const Container = styled.div`
   width: 100%;
 `;
-
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
   margin-bottom: 2px;
 `;
-
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 5px;
 `;
-
 const TableWrapper = styled.div`
   min-height: 580px;
   border-top: 1px solid ${COLOR.SECONDARY};

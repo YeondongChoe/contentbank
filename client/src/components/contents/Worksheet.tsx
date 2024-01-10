@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
+import { IoMdClose } from 'react-icons/io';
+import { LuDownload } from 'react-icons/lu';
+import { SlPrinter } from 'react-icons/sl';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -12,18 +15,19 @@ import {
   TabMenu,
   Table,
 } from '../../components';
+import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';
 import { Step1 } from '../../pages/worksheetPopup/Step1';
 import { Step2 } from '../../pages/worksheetPopup/Step2';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
+  previewWorksheetBoolAtom,
 } from '../../store/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { WorksheetTableType } from '../../types';
 import { COLOR, worksheetColWidth, worksheetTheadList } from '../constants';
 import dummy from '../constants/data.json';
-
 export function Worksheet() {
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');
   const [subTabVeiw, setSubTabVeiw] = useState<string>('전체');
@@ -44,7 +48,7 @@ export function Worksheet() {
 
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-
+  const [isPreview, setIsPreview] = useRecoilState(previewWorksheetBoolAtom);
   const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
   const openStep1 = () => {
     setIsStep1(true);
@@ -159,6 +163,11 @@ export function Worksheet() {
 
       {isStep1 && <Step1 />}
       {isStep2 && <Step2 />}
+      {isPreview && (
+        <Overlay>
+          <WorksheetBasic />
+        </Overlay>
+      )}
     </Container>
   );
 }
@@ -166,21 +175,31 @@ export function Worksheet() {
 const Container = styled.div`
   width: 100%;
 `;
-
 const HeadWrapper = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
-
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
-
 const TableWrapper = styled.div`
   min-height: 580px;
   border-top: 1px solid ${COLOR.SECONDARY};
+`;
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
 `;

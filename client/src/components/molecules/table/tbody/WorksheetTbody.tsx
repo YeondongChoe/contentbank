@@ -10,6 +10,7 @@ import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,
   editWorksheetBoolAtom,
+  previewWorksheetBoolAtom,
 } from '../../../../store/creatingWorksheetAtom';
 import { WorksheetTableType } from '../../../../types';
 import { COLOR } from '../../../constants';
@@ -22,6 +23,7 @@ export function WorksheetTbody({ list }: TbodyProps) {
   //학습지 팝업
   const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
   const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
   const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
 
   const openEditFilePopup = () => {
@@ -73,7 +75,12 @@ export function WorksheetTbody({ list }: TbodyProps) {
           </td>
           <td>
             <button onClick={() => {}}>
-              <LuFileSearch2 style={{ fontSize: '22px' }} />
+              <LuFileSearch2
+                style={{ fontSize: '22px' }}
+                onClick={() => {
+                  setIsPreview(true);
+                }}
+              />
             </button>
           </td>
           <td>
