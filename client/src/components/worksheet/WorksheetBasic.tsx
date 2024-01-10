@@ -76,7 +76,7 @@ export function WorksheetBasic() {
   return (
     <Container>
       <Wrapper>
-        학습지명
+        학습지명aa
         <IconWrapper>
           <LuDownload
             onClick={handlePrint}
