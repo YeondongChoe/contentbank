@@ -200,10 +200,10 @@ export function Authority() {
   return (
     <Container>
       <IndexInfo list={['운영관리', '권한관리']} />
-      <Wrapper>
+      {/* <Wrapper>
         <TreeWrapper>
           <TableWrapper>
-            {/* <Table list={[]} theadList={[]}></Table> */}
+           
             <table>
               <thead>
                 <tr>
@@ -444,7 +444,7 @@ export function Authority() {
               </tbody>
             </table>
           </TableWrapper>
-          {/* <AuthorityTree /> */}
+         
         </TreeWrapper>
         <AuthorityMenuWrapper>
           <SearchBarWrapper>
@@ -514,7 +514,7 @@ export function Authority() {
             ))}
           </AuthorityListWrapper>
         </AuthorityMenuWrapper>
-      </Wrapper>
+      </Wrapper> */}
       {isDeleteAuthority && (
         <Alert
           title="권한을 삭제할 경우, "
