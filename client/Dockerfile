@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-RUN npm cache clean --force
+RUN docker builder prune
 RUN npm install 
 
 # 앱 소스코드 추가
