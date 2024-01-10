@@ -531,7 +531,7 @@ export function Authority() {
           {/* <AuthorityTree /> */}
 
           <AuthorityListWrapper>
-            {authorityList?.map((el, i) => (
+            {/* {authorityList?.map((el, i) => (
               <AuthorityWrapper
                 key={i}
                 onClick={() => {
@@ -557,7 +557,7 @@ export function Authority() {
                   />
                 </DeleteIconWrapper>
               </AuthorityWrapper>
-            ))}
+            ))} */}
           </AuthorityListWrapper>
         </ListWrap>
       </Wrapper>
