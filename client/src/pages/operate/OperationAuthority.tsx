@@ -2,14 +2,10 @@ import * as React from 'react';
 
 import styled from 'styled-components';
 
-import { Authority } from '../../components/operation/AuthorityCopy';
+// import { Authority } from '../../components/operation/AuthorityCopy';
 
 export function OperationAuthority() {
-  return (
-    <Container>
-      <Authority />
-    </Container>
-  );
+  return <Container>{/* <Authority /> */}</Container>;
 }
 
 const Container = styled.div`
