@@ -201,58 +201,7 @@ export function Authority() {
     <Container>
       <IndexInfo list={['운영관리', '권한관리']} />
       <Wrapper>
-        {/* <strong>권한 관리</strong> */}
-        <InputWrapper>
-          <Controller
-            control={control}
-            name="input"
-            defaultValue=""
-            render={({ field }) => (
-              <Input
-                width="100%"
-                height="30px"
-                padding="5px"
-                placeholderSize="14px"
-                fontSize="14px"
-                borderradius="5px"
-                type="text"
-                placeholder="권한명을 작성해주세요."
-                value={field.value || inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value);
-                  setIsClickedName(false);
-                }}
-              />
-            )}
-          />
-          {/* <Input
-            height="40px"
-            padding="5px"
-            placeholderSize="14px"
-            fontSize="14px"
-            borderradius="5px"
-            type="text"
-            placeholder="권한명을 작성해주세요."
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setIsClickedName(false);
-            }}
-          /> */}
-          <Button
-            buttonType="button"
-            onClick={openUpdateAlert}
-            $padding="10px"
-            height={'40px'}
-            width={'100px'}
-            fontSize="12px"
-            $border
-          >
-            <span>{isClickedName ? '수정' : '저장'}</span>
-          </Button>
-        </InputWrapper>
-
-        <ListWrap>
+        <TreeWrapper>
           <TableWrapper>
             {/* <Table list={[]} theadList={[]}></Table> */}
             <table>
@@ -274,7 +223,7 @@ export function Authority() {
                         name={'isEditCreateChecked'}
                         id={'isEditCreateChecked'}
                         value={'isEditCreateChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -285,7 +234,7 @@ export function Authority() {
                         name={'isManageCreateChecked'}
                         id={'isManageCreateChecked'}
                         value={'isManageCreateChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -299,7 +248,7 @@ export function Authority() {
                         name={'isEditCreateListChecked'}
                         id={'isEditCreateListChecked'}
                         value={'isEditCreateListChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -310,7 +259,7 @@ export function Authority() {
                         name={'isManageCreateListChecked'}
                         id={'isManageCreateListChecked'}
                         value={'isManageCreateListChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -324,7 +273,7 @@ export function Authority() {
                         name={'isEditWorksheetChecked'}
                         id={'isEditWorksheetChecked'}
                         value={'isEditWorksheetChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -335,7 +284,7 @@ export function Authority() {
                         name={'isManageWorksheetChecked'}
                         id={'isManageWorksheetChecked'}
                         value={'isManageWorksheetChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -350,7 +299,7 @@ export function Authority() {
                         name={'isEditManagementChecked'}
                         id={'isEditManagementChecked'}
                         value={'isEditManagementChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -361,7 +310,7 @@ export function Authority() {
                         name={'isManageManagementChecked'}
                         id={'isManageManagementChecked'}
                         value={'isManageManagementChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -375,7 +324,7 @@ export function Authority() {
                         name={'isEditManagementListChecked'}
                         id={'isEditManagementListChecked'}
                         value={'isEditManagementListChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -386,7 +335,7 @@ export function Authority() {
                         name={'isManageManagementListChecked'}
                         id={'isManageManagementListChecked'}
                         value={'isManageManagementListChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -400,7 +349,7 @@ export function Authority() {
                         name={'isEditTreeChecked'}
                         id={'isEditTreeChecked'}
                         value={'isEditTreeChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -411,7 +360,7 @@ export function Authority() {
                         name={'isManageTreeChecked'}
                         id={'isManageTreeChecked'}
                         value={'isManageTreeChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -426,7 +375,7 @@ export function Authority() {
                         name={'isEditOperationChecked'}
                         id={'isEditOperationChecked'}
                         value={'isEditOperationChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -437,7 +386,7 @@ export function Authority() {
                         name={'isManageOperationChecked'}
                         id={'isManageOperationChecked'}
                         value={'isManageOperationChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -451,7 +400,7 @@ export function Authority() {
                         name={'isEditMemberChecked'}
                         id={'isEditMemberChecked'}
                         value={'isEditMemberChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -462,7 +411,7 @@ export function Authority() {
                         name={'isManageMemberChecked'}
                         id={'isManageMemberChecked'}
                         value={'isManageMemberChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -476,7 +425,7 @@ export function Authority() {
                         name={'isEditAuthorityChecked'}
                         id={'isEditAuthorityChecked'}
                         value={'isEditAuthorityChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -487,7 +436,7 @@ export function Authority() {
                         name={'isManageAuthorityChecked'}
                         id={'isManageAuthorityChecked'}
                         value={'isManageAuthorityChecked'}
-                        onChange={(e) => handleChecked(e)}
+                        // checked={checked[0]}
                       />
                     </label>
                   </td>
@@ -496,37 +445,75 @@ export function Authority() {
             </table>
           </TableWrapper>
           {/* <AuthorityTree /> */}
-
+        </TreeWrapper>
+        <AuthorityMenuWrapper>
+          <SearchBarWrapper>
+            {/* <InputWrapper>
+              <Controller
+                control={control}
+                name="input"
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    width="300px"
+                    height="30px"
+                    padding="5px"
+                    placeholderSize="14px"
+                    fontSize="14px"
+                    borderradius="5px"
+                    type="text"
+                    placeholder="권한명을 작성해주세요."
+                    value={field.value || inputValue}
+                    onChange={(e) => {
+                      setInputValue(e.target.value);
+                      setIsClickedName(false);
+                    }}
+                  />
+                )}
+              />
+            </InputWrapper> */}
+            <Button
+              buttonType="button"
+              onClick={openUpdateAlert}
+              $padding="10px"
+              height={'30px'}
+              width={'80px'}
+              fontSize="12px"
+              $border
+            >
+              <span>{isClickedName ? '수정' : '저장'}</span>
+            </Button>
+          </SearchBarWrapper>
           <AuthorityListWrapper>
-            {/* {authorityList?.map((el, i) => (
-						<AuthorityWrapper
-							key={i}
-							onClick={() => {
-								// clickMemberAuthority(el.code);
-								setInputValue(el.name);
-								setIsClickedName(true);
-							}}
-						>
-							<AuthorityName
-								onClick={() => {
-									// clickMemberAuthority(el.code);
-									setInputValue(el.name);
-									setIsClickedName(true);
-								}}
-							>
-								{el.name}
-							</AuthorityName>
-							<DeleteIconWrapper>
-								<BiSolidTrashAlt
-									onClick={() => {
-										// openDeleteAlert(el.code);
-									}}
-								/>
-							</DeleteIconWrapper>
-						</AuthorityWrapper>
-					))} */}
+            {authorityList?.map((el, i) => (
+              <AuthorityWrapper
+                key={i}
+                onClick={() => {
+                  // clickMemberAuthority(el.code);
+                  setInputValue(el.name);
+                  setIsClickedName(true);
+                }}
+              >
+                <AuthorityName
+                  onClick={() => {
+                    // clickMemberAuthority(el.code);
+                    setInputValue(el.name);
+                    setIsClickedName(true);
+                  }}
+                >
+                  {el.name}
+                </AuthorityName>
+                <DeleteIconWrapper>
+                  <BiSolidTrashAlt
+                    onClick={() => {
+                      openDeleteAlert(el.code);
+                    }}
+                  />
+                </DeleteIconWrapper>
+              </AuthorityWrapper>
+            ))}
           </AuthorityListWrapper>
-        </ListWrap>
+        </AuthorityMenuWrapper>
       </Wrapper>
       {isDeleteAuthority && (
         <Alert
@@ -554,41 +541,29 @@ export function Authority() {
 
 const Container = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 const Wrapper = styled.div`
   margin-top: 40px;
+  //height: 500px;
   display: flex;
-  align-items: center;
-  flex-direction: column;
-  border-top: 1px solid ${COLOR.SECONDARY};
-  padding-top: 10px;
-`;
-const ListWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-  padding-top: 10px;
-`;
-
-const InputWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
   justify-content: space-evenly;
-  > div {
-    width: 100%;
-    margin-right: 10px;
-  }
+  border-top: 1px solid ${COLOR.SECONDARY};
+  //gap: 40px;
 `;
-
+const TreeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  //flex-direction: column;
+  //background-color: white;
+  border-right: 1px solid ${COLOR.SECONDARY};
+  padding-right: 70px;
+`;
 const TableWrapper = styled.div`
-  width: calc(50% - 20px);
-  height: 500px;
+  padding: 10px;
 
   table {
-    width: 100%;
     border-collapse: collapse;
     background-color: white;
     table-layout: fixed;
@@ -615,13 +590,33 @@ const TableWrapper = styled.div`
   }
 `;
 
+const AuthorityMenuWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-top: 30px;
+`;
+const SearchBarWrapper = styled.div`
+  display: flex;
+  justify-content: space-around;
+`;
+const InputWrapper = styled.div`
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
+`;
 const AuthorityListWrapper = styled.div`
-  width: calc(50% - 20px);
-  height: 500px;
+  width: 400px;
+  height: 400px;
   border: 1px solid ${COLOR.SECONDARY};
   background-color: white;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
 `;
 const AuthorityWrapper = styled.div`
   width: 100%;
