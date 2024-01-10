@@ -203,29 +203,29 @@ export function Authority() {
       <Wrapper>
         {/* <strong>권한 관리</strong> */}
         <InputWrapper>
-          {/* <Controller
-					control={control}
-					name="input"
-					defaultValue=""
-					render={({ field }) => (
-						<Input
-							width="100%"
-							height="30px"
-							padding="5px"
-							placeholderSize="14px"
-							fontSize="14px"
-							borderradius="5px"
-							type="text"
-							placeholder="권한명을 작성해주세요."
-							value={field.value || inputValue}
-							onChange={(e) => {
-								setInputValue(e.target.value);
-								setIsClickedName(false);
-							}}
-						/>
-					)}
-				/> */}
-          <Input
+          <Controller
+            control={control}
+            name="input"
+            defaultValue=""
+            render={({ field }) => (
+              <Input
+                width="100%"
+                height="30px"
+                padding="5px"
+                placeholderSize="14px"
+                fontSize="14px"
+                borderradius="5px"
+                type="text"
+                placeholder="권한명을 작성해주세요."
+                value={field.value || inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setIsClickedName(false);
+                }}
+              />
+            )}
+          />
+          {/* <Input
             height="40px"
             padding="5px"
             placeholderSize="14px"
@@ -238,7 +238,7 @@ export function Authority() {
               setInputValue(e.target.value);
               setIsClickedName(false);
             }}
-          />
+          /> */}
           <Button
             buttonType="button"
             onClick={openUpdateAlert}
