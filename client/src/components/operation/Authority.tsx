@@ -448,7 +448,7 @@ export function Authority() {
         </TreeWrapper>
         <AuthorityMenuWrapper>
           <SearchBarWrapper>
-            {/* <InputWrapper>
+            <InputWrapper>
               <Controller
                 control={control}
                 name="input"
@@ -471,7 +471,7 @@ export function Authority() {
                   />
                 )}
               />
-            </InputWrapper> */}
+            </InputWrapper>
             <Button
               buttonType="button"
               onClick={openUpdateAlert}
