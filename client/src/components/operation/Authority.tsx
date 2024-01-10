@@ -215,9 +215,9 @@ export function Authority() {
   };
 
   const loadData = useCallback(() => {
-    getAuthorityList({
-      setAuthorityList,
-    });
+    // getAuthorityList({
+    //   setAuthorityList,
+    // });
   }, [setAuthorityList]);
 
   useEffect(() => {
