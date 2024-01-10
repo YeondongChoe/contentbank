@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import styled from 'styled-components';
 
-import { Authority } from '../../components/operation/Authority';
+import { Authority } from '../../components/operation/AuthorityCopy';
 
 export function OperationAuthority() {
   return (
