@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-import { Controller, useForm } from 'react-hook-form';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { Input } from '..';
 import { DeleteAuthority } from '../../api/deleteAxios';
 import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
-import { Input } from '../../components';
-import { Button, IndexInfo } from '../../components/atom';
 import {
   editCreateContentBool,
   editCreateListBool,
@@ -32,6 +30,7 @@ import {
   manageAuthorityBoolAtom,
 } from '../../store/authorityAtom';
 import { alertBoolAtom } from '../../store/utilAtom';
+import { Button, IndexInfo } from '../atom';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
