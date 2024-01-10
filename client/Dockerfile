@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-RUN npm cache clean --force
+# RUN npm cache clean --force
 RUN npm install 
 
 # 앱 소스코드 추가
@@ -23,6 +23,8 @@ RUN npm install
 # 인자값을 지정하지 않을시 node app.js를 실행
 CMD [ "npm", "start" ]
 # 2. build
+
+
 
 
 # 3. ./client/build -> nginx root directory에 복사
