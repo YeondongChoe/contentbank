@@ -88,249 +88,249 @@ type menuProps = {
 };
 
 export function AuthorityTree() {
-  const [didMount, setDidMount] = useState(false);
-  const [menuValue, setMenuValue] = useState<menuProps[]>([]);
-  const CreateContent = menuValue?.[0];
-  const ManagementContent = menuValue?.[1];
-  const Operation = menuValue?.[2];
-  //console.log(menuValue);
+  // const [didMount, setDidMount] = useState(false);
+  // const [menuValue, setMenuValue] = useState<menuProps[]>([]);
+  // const CreateContent = menuValue?.[0];
+  // const ManagementContent = menuValue?.[1];
+  // const Operation = menuValue?.[2];
+  // //console.log(menuValue);
 
-  const authorityMenuList = [
-    {
-      firstTitle: '전체',
-      tabIndex: 1,
-      menuList: [
-        {
-          title: '콘텐츠 제작',
-          tabIndex: 2,
-          list: [
-            { title: '문항', tabIndex: 3 },
-            { title: '학습지', tabIndex: 4 },
-          ],
-        },
-        {
-          title: '콘텐츠 관리',
-          tabIndex: 5,
-          list: [
-            { title: '문항', tabIndex: 6 },
-            { title: '문항정보 트리구조', tabIndex: 7 },
-          ],
-        },
-        {
-          title: '운영 관리',
-          tabIndex: 8,
-          list: [
-            { title: '회원 관리', tabIndex: 9 },
-            { title: '권한 관리', tabIndex: 10 },
-          ],
-        },
-      ],
-    },
-  ];
+  // const authorityMenuList = [
+  //   {
+  //     firstTitle: '전체',
+  //     tabIndex: 1,
+  //     menuList: [
+  //       {
+  //         title: '콘텐츠 제작',
+  //         tabIndex: 2,
+  //         list: [
+  //           { title: '문항', tabIndex: 3 },
+  //           { title: '학습지', tabIndex: 4 },
+  //         ],
+  //       },
+  //       {
+  //         title: '콘텐츠 관리',
+  //         tabIndex: 5,
+  //         list: [
+  //           { title: '문항', tabIndex: 6 },
+  //           { title: '문항정보 트리구조', tabIndex: 7 },
+  //         ],
+  //       },
+  //       {
+  //         title: '운영 관리',
+  //         tabIndex: 8,
+  //         list: [
+  //           { title: '회원 관리', tabIndex: 9 },
+  //           { title: '권한 관리', tabIndex: 10 },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // ];
 
-  /** 전체 편집, 하위 항목 체크 상태여부*/
-  const [isEditAllChecked, setIsEditAllChecked] = useState<boolean>(false);
+  // /** 전체 편집, 하위 항목 체크 상태여부*/
+  // const [isEditAllChecked, setIsEditAllChecked] = useState<boolean>(false);
 
-  /** 콘텐츠 제작 편집, 하위 항목 체크 상태여부*/
-  const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
-    editCreateContentBool,
-  );
-  const [isEditCreateListChecked, setIsEditCreateListChecked] =
-    useRecoilState<boolean>(editCreateListBool);
-  const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-    useRecoilState<boolean>(editCreateContentWorksheetBool);
+  // /** 콘텐츠 제작 편집, 하위 항목 체크 상태여부*/
+  // const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
+  //   editCreateContentBool,
+  // );
+  // const [isEditCreateListChecked, setIsEditCreateListChecked] =
+  //   useRecoilState<boolean>(editCreateListBool);
+  // const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
+  //   useRecoilState<boolean>(editCreateContentWorksheetBool);
 
-  /** 콘텐츠 관리 편집, 하위 항목 체크 상태여부*/
-  const [isEditManagementChecked, setIsEditManagementChecked] =
-    useRecoilState<boolean>(editManagementContentBool);
-  const [isEditManagementListChecked, setIsEditManagementListChecked] =
-    useRecoilState<boolean>(editManagementListBool);
-  const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
-    editManagementTreeBool,
-  );
+  // /** 콘텐츠 관리 편집, 하위 항목 체크 상태여부*/
+  // const [isEditManagementChecked, setIsEditManagementChecked] =
+  //   useRecoilState<boolean>(editManagementContentBool);
+  // const [isEditManagementListChecked, setIsEditManagementListChecked] =
+  //   useRecoilState<boolean>(editManagementListBool);
+  // const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
+  //   editManagementTreeBool,
+  // );
 
-  /** 운영 관리 편집, 하위 항목 체크 상태여부*/
-  const [isEditOperationChecked, setIsEditOperationChecked] =
-    useRecoilState<boolean>(editOperationBoolAtom);
-  const [isEditMemberChecked, setIsEditMemberChecked] =
-    useRecoilState<boolean>(editMemberBoolAtom);
-  const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-    useRecoilState<boolean>(editAuthorityBoolAtom);
+  // /** 운영 관리 편집, 하위 항목 체크 상태여부*/
+  // const [isEditOperationChecked, setIsEditOperationChecked] =
+  //   useRecoilState<boolean>(editOperationBoolAtom);
+  // const [isEditMemberChecked, setIsEditMemberChecked] =
+  //   useRecoilState<boolean>(editMemberBoolAtom);
+  // const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
+  //   useRecoilState<boolean>(editAuthorityBoolAtom);
 
-  /** 전체 관리, 하위 항목 체크 상태여부*/
-  const [isManageAllChecked, setIsManageAllChecked] = useState<boolean>(false);
+  // /** 전체 관리, 하위 항목 체크 상태여부*/
+  // const [isManageAllChecked, setIsManageAllChecked] = useState<boolean>(false);
 
-  /** 콘텐츠 제작 관리, 하위 항목 체크 상태여부*/
-  const [isManageCreateChecked, setIsManageCreateChecked] =
-    useRecoilState<boolean>(manageCreateContentBoolAtom);
-  const [isManageCreateListChecked, setIsManageCreateListChecked] =
-    useRecoilState<boolean>(manageCreateListBoolAtom);
-  const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-    useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
+  // /** 콘텐츠 제작 관리, 하위 항목 체크 상태여부*/
+  // const [isManageCreateChecked, setIsManageCreateChecked] =
+  //   useRecoilState<boolean>(manageCreateContentBoolAtom);
+  // const [isManageCreateListChecked, setIsManageCreateListChecked] =
+  //   useRecoilState<boolean>(manageCreateListBoolAtom);
+  // const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
+  //   useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
 
-  /** 콘텐츠 관리 관리, 하위 항목 체크 상태여부*/
-  const [isManageManagementChecked, setIsManageManagementChecked] =
-    useRecoilState<boolean>(manageManagementContentBoolAtom);
-  const [isManageManagementListChecked, setIsManageManagementListChecked] =
-    useRecoilState<boolean>(manageManagementListBoolAtom);
-  const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
-    manageManagementTreeBoolAtom,
-  );
+  // /** 콘텐츠 관리 관리, 하위 항목 체크 상태여부*/
+  // const [isManageManagementChecked, setIsManageManagementChecked] =
+  //   useRecoilState<boolean>(manageManagementContentBoolAtom);
+  // const [isManageManagementListChecked, setIsManageManagementListChecked] =
+  //   useRecoilState<boolean>(manageManagementListBoolAtom);
+  // const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
+  //   manageManagementTreeBoolAtom,
+  // );
 
-  /** 운영 관리 관리, 하위 항목 체크 상태여부*/
-  const [isManageOperationChecked, setIsManageOperationChecked] =
-    useRecoilState<boolean>(manageOperationBoolAtom);
-  const [isManageMemberChecked, setIsManageMemberChecked] =
-    useRecoilState<boolean>(manageMemberBoolAtom);
-  const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-    useRecoilState<boolean>(manageAuthorityBoolAtom);
+  // /** 운영 관리 관리, 하위 항목 체크 상태여부*/
+  // const [isManageOperationChecked, setIsManageOperationChecked] =
+  //   useRecoilState<boolean>(manageOperationBoolAtom);
+  // const [isManageMemberChecked, setIsManageMemberChecked] =
+  //   useRecoilState<boolean>(manageMemberBoolAtom);
+  // const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
+  //   useRecoilState<boolean>(manageAuthorityBoolAtom);
 
-  /** 전체 편집 선택 상태 업데이트 */
-  useEffect(() => {
-    if (isEditCreateChecked === true && isEditManagementChecked === true) {
-      setIsEditAllChecked(true);
-    } else {
-      setIsEditAllChecked(false);
-    }
-  }, [isEditCreateChecked, isEditManagementChecked, isEditOperationChecked]);
+  // /** 전체 편집 선택 상태 업데이트 */
+  // useEffect(() => {
+  //   if (isEditCreateChecked === true && isEditManagementChecked === true) {
+  //     setIsEditAllChecked(true);
+  //   } else {
+  //     setIsEditAllChecked(false);
+  //   }
+  // }, [isEditCreateChecked, isEditManagementChecked, isEditOperationChecked]);
 
-  /** 콘텐츠 제작 편집 상태 업데이트 */
-  useEffect(() => {
-    if (isEditCreateListChecked === true && isEditWorksheetChecked === true) {
-      setIsEditCreateChecked(true);
-    } else {
-      setIsEditCreateChecked(false);
-    }
-  }, [isEditCreateListChecked, isEditWorksheetChecked]);
+  // /** 콘텐츠 제작 편집 상태 업데이트 */
+  // useEffect(() => {
+  //   if (isEditCreateListChecked === true && isEditWorksheetChecked === true) {
+  //     setIsEditCreateChecked(true);
+  //   } else {
+  //     setIsEditCreateChecked(false);
+  //   }
+  // }, [isEditCreateListChecked, isEditWorksheetChecked]);
 
-  /** 콘텐츠 관리 편집 상태 업데이트 */
-  useEffect(() => {
-    if (isEditManagementListChecked === true && isEditTreeChecked === true) {
-      setIsEditManagementChecked(true);
-    } else {
-      setIsEditManagementChecked(false);
-    }
-  }, [isEditManagementListChecked, isEditTreeChecked]);
+  // /** 콘텐츠 관리 편집 상태 업데이트 */
+  // useEffect(() => {
+  //   if (isEditManagementListChecked === true && isEditTreeChecked === true) {
+  //     setIsEditManagementChecked(true);
+  //   } else {
+  //     setIsEditManagementChecked(false);
+  //   }
+  // }, [isEditManagementListChecked, isEditTreeChecked]);
 
-  /** 운영 관리 편집 상태 업데이트 */
-  useEffect(() => {
-    if (isEditMemberChecked === true && isEditAuthorityChecked === true) {
-      setIsEditOperationChecked(true);
-    } else {
-      setIsEditOperationChecked(false);
-    }
-  }, [isEditMemberChecked, isEditAuthorityChecked]);
+  // /** 운영 관리 편집 상태 업데이트 */
+  // useEffect(() => {
+  //   if (isEditMemberChecked === true && isEditAuthorityChecked === true) {
+  //     setIsEditOperationChecked(true);
+  //   } else {
+  //     setIsEditOperationChecked(false);
+  //   }
+  // }, [isEditMemberChecked, isEditAuthorityChecked]);
 
-  /** 전체 관리 선택 상태 업데이트 */
-  useEffect(() => {
-    if (
-      isManageCreateChecked === true &&
-      isManageManagementChecked === true &&
-      isManageOperationChecked === true
-    ) {
-      setIsManageAllChecked(true);
-    } else {
-      setIsManageAllChecked(false);
-    }
-  }, [
-    isManageCreateChecked,
-    isManageManagementChecked,
-    isManageOperationChecked,
-  ]);
+  // /** 전체 관리 선택 상태 업데이트 */
+  // useEffect(() => {
+  //   if (
+  //     isManageCreateChecked === true &&
+  //     isManageManagementChecked === true &&
+  //     isManageOperationChecked === true
+  //   ) {
+  //     setIsManageAllChecked(true);
+  //   } else {
+  //     setIsManageAllChecked(false);
+  //   }
+  // }, [
+  //   isManageCreateChecked,
+  //   isManageManagementChecked,
+  //   isManageOperationChecked,
+  // ]);
 
-  /** 콘텐츠 제작 관리 상태 업데이트 */
-  useEffect(() => {
-    if (
-      isManageCreateListChecked === true &&
-      isManageWorksheetChecked === true
-    ) {
-      setIsManageCreateChecked(true);
-    } else {
-      setIsManageCreateChecked(false);
-    }
-  }, [isManageCreateListChecked, isManageWorksheetChecked]);
+  // /** 콘텐츠 제작 관리 상태 업데이트 */
+  // useEffect(() => {
+  //   if (
+  //     isManageCreateListChecked === true &&
+  //     isManageWorksheetChecked === true
+  //   ) {
+  //     setIsManageCreateChecked(true);
+  //   } else {
+  //     setIsManageCreateChecked(false);
+  //   }
+  // }, [isManageCreateListChecked, isManageWorksheetChecked]);
 
-  /** 콘텐츠 관리 관리 상태 업데이트 */
-  useEffect(() => {
-    if (
-      isManageManagementListChecked === true &&
-      isManageTreeChecked === true
-    ) {
-      setIsManageManagementChecked(true);
-    } else {
-      setIsManageManagementChecked(false);
-    }
-  }, [isManageManagementListChecked, isManageTreeChecked]);
+  // /** 콘텐츠 관리 관리 상태 업데이트 */
+  // useEffect(() => {
+  //   if (
+  //     isManageManagementListChecked === true &&
+  //     isManageTreeChecked === true
+  //   ) {
+  //     setIsManageManagementChecked(true);
+  //   } else {
+  //     setIsManageManagementChecked(false);
+  //   }
+  // }, [isManageManagementListChecked, isManageTreeChecked]);
 
-  /** 운영 관리 관리 상태 업데이트 */
-  useEffect(() => {
-    if (isManageMemberChecked === true && isManageAuthorityChecked === true) {
-      setIsManageOperationChecked(true);
-    } else {
-      setIsManageOperationChecked(false);
-    }
-  }, [isManageMemberChecked, isManageAuthorityChecked]);
+  // /** 운영 관리 관리 상태 업데이트 */
+  // useEffect(() => {
+  //   if (isManageMemberChecked === true && isManageAuthorityChecked === true) {
+  //     setIsManageOperationChecked(true);
+  //   } else {
+  //     setIsManageOperationChecked(false);
+  //   }
+  // }, [isManageMemberChecked, isManageAuthorityChecked]);
 
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
+  // useEffect(() => {
+  //   setDidMount(true);
+  // }, []);
 
-  const [display, setDisplay] = useState('none');
+  // const [display, setDisplay] = useState('none');
 
-  const offLoader = () => {
-    setDisplay('block');
-  };
+  // const offLoader = () => {
+  //   setDisplay('block');
+  // };
 
-  useEffect(() => {
-    if (didMount) {
-      getAuthorityMenu({ setMenuValue });
-    }
-    offLoader();
-  }, [didMount]);
+  // useEffect(() => {
+  //   if (didMount) {
+  //     getAuthorityMenu({ setMenuValue });
+  //   }
+  //   offLoader();
+  // }, [didMount]);
 
   /** 페이지 접근시 체크박스 초기화 */
-  useEffect(() => {
-    setIsEditAllChecked(false);
-    setIsEditCreateChecked(false);
-    setIsEditCreateListChecked(false);
-    setIsEditWorksheetChecked(false);
-    setIsEditManagementChecked(false);
-    setIsEditManagementListChecked(false);
-    setIsEditTreeChecked(false);
-    setIsEditOperationChecked(false);
-    setIsEditMemberChecked(false);
-    setIsEditAuthorityChecked(false);
-    setIsManageAllChecked(false);
-    setIsManageCreateChecked(false);
-    setIsManageCreateListChecked(false);
-    setIsManageWorksheetChecked(false);
-    setIsManageManagementChecked(false);
-    setIsManageManagementListChecked(false);
-    setIsManageTreeChecked(false);
-    setIsManageOperationChecked(false);
-    setIsManageMemberChecked(false);
-    setIsManageAuthorityChecked(false);
-  }, []);
+  // useEffect(() => {
+  //   setIsEditAllChecked(false);
+  //   setIsEditCreateChecked(false);
+  //   setIsEditCreateListChecked(false);
+  //   setIsEditWorksheetChecked(false);
+  //   setIsEditManagementChecked(false);
+  //   setIsEditManagementListChecked(false);
+  //   setIsEditTreeChecked(false);
+  //   setIsEditOperationChecked(false);
+  //   setIsEditMemberChecked(false);
+  //   setIsEditAuthorityChecked(false);
+  //   setIsManageAllChecked(false);
+  //   setIsManageCreateChecked(false);
+  //   setIsManageCreateListChecked(false);
+  //   setIsManageWorksheetChecked(false);
+  //   setIsManageManagementChecked(false);
+  //   setIsManageManagementListChecked(false);
+  //   setIsManageTreeChecked(false);
+  //   setIsManageOperationChecked(false);
+  //   setIsManageMemberChecked(false);
+  //   setIsManageAuthorityChecked(false);
+  // }, []);
 
-  const [isShowAllList, setIsShowAllList] = useState(true);
+  // const [isShowAllList, setIsShowAllList] = useState(true);
 
-  const toggleTree = () => {
-    setIsShowAllList((check: boolean) => !check);
-  };
-  const [isShowList, setIsShowList] = useState(
-    Array(menuValue.length).fill(true),
-  );
-  const toggleSubMenu = (index: number) => {
-    setIsShowList((prev) => {
-      const updatedList = [...prev];
-      updatedList[index] = !updatedList[index];
-      return updatedList;
-    });
-  };
+  // const toggleTree = () => {
+  //   setIsShowAllList((check: boolean) => !check);
+  // };
+  // const [isShowList, setIsShowList] = useState(
+  //   Array(menuValue.length).fill(true),
+  // );
+  // const toggleSubMenu = (index: number) => {
+  //   setIsShowList((prev) => {
+  //     const updatedList = [...prev];
+  //     updatedList[index] = !updatedList[index];
+  //     return updatedList;
+  //   });
+  // };
 
   return (
     <>
-      {display === 'none' && <Loader height={'100px'} size="50px" />}
+      {/* {display === 'none' && <Loader height={'100px'} size="50px" />}
       <TreeWrapper>
         <>
           <IconWrapper onClick={toggleTree}></IconWrapper>
@@ -357,7 +357,7 @@ export function AuthorityTree() {
             )}
           </div>
         </>
-      </TreeWrapper>
+      </TreeWrapper> */}
 
       {/* <TreeView
         defaultCollapseIcon={<ArrowDropDownIcon />}
