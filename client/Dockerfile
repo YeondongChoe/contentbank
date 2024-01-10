@@ -1,5 +1,5 @@
 # 노드 이미지를 최신 버전으로 가져옴
-FROM node:latest as build
+FROM node:20.10.0 as build
 # 1. nginx 설치
 
 # Node.js 앱을 위한 app 폴더 생성
