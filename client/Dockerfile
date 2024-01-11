@@ -13,6 +13,7 @@ COPY . /app
 
 # 의존성 설치
 # RUN npm cache clean --force
+RUN rm -rf node_modules
 RUN npm install 
 
 # 앱 소스코드 추가
