@@ -14,7 +14,7 @@ COPY . /app
 # 의존성 설치
 # RUN sudo apt-get remove npm
 # RUN npm cache clean --force
-RUN npm install npm@10.3.0
+# RUN npm install npm@10.3.0
 # 서버에 npm 버전 로컬과 동일하게
 RUN npm install
 
