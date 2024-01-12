@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-RUN find /node_modules 
+RUN find /.npm 
 RUN sudo rm -rf /app/node_modules
 
 # RUN sudo apt-get remove npm
