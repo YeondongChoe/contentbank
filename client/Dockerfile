@@ -12,11 +12,13 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-RUN sudo apt remove npm
+RUN find / -name'.npm*'
+RUN sudo rm -rf /.npm
+RUN sudo apt-get remove npm
 RUN npm install npm@10.2.5 
 # 서버에 npm 버전 로컬과 동일하게
 RUN rm -rf node_modules
-RUN npm install 
+# RUN npm install 
 RUN npm cache clean --force
 
 # 앱 소스코드 추가
