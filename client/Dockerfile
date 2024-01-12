@@ -12,9 +12,10 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-# RUN npm cache clean --force
+RUN npm install npm@10.2.5
 RUN rm -rf node_modules
 RUN npm install 
+RUN npm cache clean --force
 
 # 앱 소스코드 추가
 # COPY App.tsx /app/
