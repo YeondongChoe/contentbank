@@ -12,8 +12,8 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-RUN sudo rm -rf /app/node_modules
-# RUN rm -rf node_modules
+RUN sudo rm -rf ./app/node_modules
+
 # RUN sudo apt-get remove npm
 RUN npm install npm@10.2.5 
 # 서버에 npm 버전 로컬과 동일하게
