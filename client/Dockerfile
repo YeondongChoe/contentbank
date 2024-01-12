@@ -12,15 +12,11 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-# RUN find */_cacache
-# RUN sudo rm -rf _cacache
-
 # RUN sudo apt-get remove npm
 # RUN npm install npm@10.2.5 
 # 서버에 npm 버전 로컬과 동일하게
 RUN npm install 
 RUN npm cache clean --force
-
 # 앱 소스코드 추가
 # COPY App.tsx /app/
 
