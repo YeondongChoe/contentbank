@@ -12,7 +12,8 @@ WORKDIR /app
 COPY . /app
 
 # 의존성 설치
-RUN sudo rm -rf ./app/node_modules
+RUN find /node_modules 
+RUN sudo rm -rf /app/node_modules
 
 # RUN sudo apt-get remove npm
 RUN npm install npm@10.2.5 
