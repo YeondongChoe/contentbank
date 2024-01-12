@@ -13,7 +13,7 @@ COPY . /app
 
 # 의존성 설치
 RUN find */_cacache
-RUN sudo rm -rf /app/node_modules
+RUN sudo rm -rf _cacache
 
 # RUN sudo apt-get remove npm
 RUN npm install npm@10.2.5 
