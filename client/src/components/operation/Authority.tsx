@@ -234,7 +234,6 @@ export function Authority() {
     }
 
     // [2] 콘텐츠 제작 문항 편집 선택
-
     console.log(onList);
     // } else if (i === 6 || i === 8) {
     //   // 6 편집 전체 선택 토글
