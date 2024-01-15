@@ -123,40 +123,34 @@ export function Authority() {
 
   // 신규 권한 생성
   const submitAuthority = () => {
-    const isEditCreateChecked = checkList[0].checked;
-    const isManageCreateChecked = checkList[1].checked;
+    // const isEditCreateChecked = checkList[0].checked; //전체
+    // const isManageCreateChecked = checkList[1].checked;
     const isEditCreateListChecked = checkList[2].checked;
     const isManageCreateListChecked = checkList[3].checked;
     const isEditWorksheetChecked = checkList[4].checked;
     const isManageWorksheetChecked = checkList[5].checked;
-    const isEditManagementChecked = checkList[6].checked;
-    const isManageManagementChecked = checkList[7].checked;
+    // const isEditManagementChecked = checkList[6].checked;
+    // const isManageManagementChecked = checkList[7].checked;
     const isEditManagementListChecked = checkList[8].checked;
     const isManageManagementListChecked = checkList[9].checked;
     const isEditTreeChecked = checkList[10].checked;
     const isManageTreeChecked = checkList[11].checked;
-    const isEditOperationChecked = checkList[12].checked;
-    const isManageOperationChecked = checkList[13].checked;
+    // const isEditOperationChecked = checkList[12].checked;
+    // const isManageOperationChecked = checkList[13].checked;
     const isEditMemberChecked = checkList[14].checked;
     const isManageMemberChecked = checkList[15].checked;
     const isEditAuthorityChecked = checkList[16].checked;
     const isManageAuthorityChecked = checkList[17].checked;
     postCreateAuthority({
       inputValue,
-      isEditCreateChecked,
-      isManageCreateChecked,
       isEditCreateListChecked,
       isManageCreateListChecked,
       isEditWorksheetChecked,
       isManageWorksheetChecked,
-      isEditManagementChecked,
-      isManageManagementChecked,
       isEditManagementListChecked,
       isManageManagementListChecked,
       isEditTreeChecked,
       isManageTreeChecked,
-      isEditOperationChecked,
-      isManageOperationChecked,
       isEditMemberChecked,
       isManageMemberChecked,
       isEditAuthorityChecked,
@@ -170,6 +164,18 @@ export function Authority() {
     // 체크박스 선택시 해당 배열값변경
     const target = e.currentTarget;
     for (let i = 0; i <= checkList.length - 1; i++) {
+      if (i === 0 || i === 1) {
+        // 0 편집 전체 선택 토글
+        // 1 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
+      }
+      if (i === 6 || i === 8) {
+        // 6 편집 전체 선택 토글
+        // 8 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
+      }
+      if (i === 12 || i === 13) {
+        // 12 편집 전체 선택 토글
+        // 13 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
+      }
       if (checkList[i].key == target.id) {
         checkList.splice(i, 1, { key: target.id, checked: target.checked });
       }
@@ -191,6 +197,8 @@ export function Authority() {
     }
   }, [isClickedName]);
 
+  useEffect(() => {}, [setCheckList]);
+
   // const openDeleteAlert = (code: string) => {
   //   setCodeValue(code);
   //   setIsUpdateAuthority(false);
@@ -205,20 +213,20 @@ export function Authority() {
   };
 
   const loadData = useCallback(() => {
-    // getAuthorityList({
-    //   setAuthorityList,
-    // });
+    getAuthorityList({
+      setAuthorityList,
+    });
   }, [setAuthorityList]);
 
-  // useEffect(() => {
-  //   setDidMount(true);
-  // }, []);
+  useEffect(() => {
+    setDidMount(true);
+  }, []);
   // 저장된 권한리스트 데이터 불러오기
-  // useEffect(() => {
-  //   if (didMount) {
-  //     loadData();
-  //   }
-  // }, [didMount]);
+  useEffect(() => {
+    if (didMount) {
+      loadData();
+    }
+  }, [didMount]);
 
   return (
     <Container>
@@ -255,7 +263,6 @@ export function Authority() {
 
         <ListWrap>
           <TableWrapper>
-            {/* <Table list={[]} theadList={[]}></Table> */}
             <table>
               <thead>
                 <tr>
@@ -287,6 +294,7 @@ export function Authority() {
                         id={'isManageCreateChecked'}
                         value={'isManageCreateChecked'}
                         onChange={(e) => handleChecked(e)}
+                        disabled={!checkList[0].checked}
                       />
                     </label>
                   </td>
@@ -496,10 +504,9 @@ export function Authority() {
               </tbody>
             </table>
           </TableWrapper>
-          {/* <AuthorityTree /> */}
 
           <AuthorityListWrapper>
-            {/* {authorityList?.map((el, i) => (
+            {authorityList?.map((el, i) => (
               <AuthorityWrapper
                 key={i}
                 onClick={() => {
@@ -525,7 +532,7 @@ export function Authority() {
                   />
                 </DeleteIconWrapper>
               </AuthorityWrapper>
-            ))} */}
+            ))}
           </AuthorityListWrapper>
         </ListWrap>
       </Wrapper>
