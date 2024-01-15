@@ -64,22 +64,24 @@ export function WorksheetBasic() {
         const imgData = canvas.toDataURL('image/png');
         img.src = imgData;
         // 이미지를 현재 페이지에 표시
-        const imgElement = document.createElement('img');
-        imgElement.src = imgData;
-        document.body.appendChild(imgElement);
+        // const imgElement = document.createElement('img');
+        // imgElement.src = imgData;
+        // document.body.appendChild(imgElement);
       } catch (error) {
         console.error('Error during PDF generation:', error);
       }
     }
   };
+  const print = () => {
+    window.print();
+  };
 
   return (
     <Container>
       <Wrapper>
-        학습지명aa
         <IconWrapper>
           <LuDownload
-            onClick={handlePrint}
+            onClick={print}
             style={{ fontSize: '30px', cursor: 'pointer' }}
           />
           <IoMdClose
@@ -93,7 +95,7 @@ export function WorksheetBasic() {
           {list.map((card, i) => (
             <div key={i}>
               {i}
-              <MathViewer data={card} width="350px"></MathViewer>
+              <MathViewer data={card} width="300px"></MathViewer>
             </div>
           ))}
         </ContainerDiv>
@@ -102,7 +104,7 @@ export function WorksheetBasic() {
   );
 }
 
-const A4_WIDTH = '210mm';
+const A4_WIDTH = '220mm';
 const A4_HEIGHT = '230mm';
 
 const Container = styled.div`
@@ -116,12 +118,14 @@ const Wrapper = styled.div`
   padding: 5px;
 `;
 const IconWrapper = styled.div`
+  width: 100%;
   display: flex;
+  justify-content: flex-end;
   gap: 20px;
 `;
 const MathviewrWrapper = styled.div`
-  margin: 0 auto;
-  border: 1px solid ${COLOR.BORDER_GRAY};
+  //margin: 0 auto;
+  //border: 1px solid ${COLOR.BORDER_GRAY};
   background-color: white;
 `;
 const ContainerDiv = styled.div`

@@ -81,7 +81,7 @@ const Component = styled.div<MathViewerStyleProps>`
   display: ${({ display }) => (display ? `${display}` : 'block')};
 `;
 const ContentQuestion = styled.div`
-  //height: 200px;
+  //height: 100px;
 `;
 const ContentAnswer = styled.div`
   height: 100px;
