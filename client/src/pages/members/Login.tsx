@@ -57,7 +57,7 @@ export function Login() {
     <Container>
       <Wrapper>
         <Title>로그인</Title>
-        <Form onSubmit={handleSubmit(submitLogin)}>
+        <Form onSubmit={handleSubmit(submitLogin)} method="POST">
           <InputWrapper>
             <Label fontSize="14px" value="아이디*" />
             <Controller
