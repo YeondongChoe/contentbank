@@ -1,9 +1,11 @@
 # 노드 이미지를 최신 버전으로 가져옴
 FROM node:20.10.0 as build
 
-## build
+## npm install & build
 WORKDIR /app
 COPY . .
+
+RUN npm install
 RUN npm run build
 
 # nginx 설치
