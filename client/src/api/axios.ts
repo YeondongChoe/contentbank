@@ -3,7 +3,6 @@ import * as React from 'react';
 import axios, { AxiosResponse } from 'axios';
 
 import { getAuthorityCookie, setAuthorityCookie } from '../utils/cookies';
-import {processColorStops} from "html2canvas/dist/types/css/types/functions/gradient";
 
 /** 문항서버 API Instance*/
 export const questionInstance = axios.create({
