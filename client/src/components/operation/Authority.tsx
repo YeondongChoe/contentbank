@@ -66,7 +66,7 @@ export function Authority() {
   // const [checked, setChecked] = useState<boolean[]>([false]);
 
   // const { control } = useForm();
-  const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
+  const [authorityList, setAuthorityList] = useState<AuthorityListProps[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
@@ -184,28 +184,68 @@ export function Authority() {
   };
 
   // 권한관리 체크박스 핸들러
-  // const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const target = e.currentTarget;
-  //   const list = checkList.map((check) => {
-  //     if (check.key === target.id) {
-  //       return target.checked;
-  //     }
-  //   });
-  //   // setCheckList([...{target.id: target.checked}])
-  //   // for (let i = 0; i < checkList.length; i++) {}
-  //   // console.log(target.id, target.checked);
-  //   console.log(target.id, target.checked, list);
-  // };
-  const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 체크박스 선택시 해당 배열값변경
+    const onList = checkList;
+    const target = e.currentTarget;
+    console.log(target.id, target.checked);
 
-  // const openDeleteAlert = (code: string) => {
-  //   setCodeValue(code);
-  //   setIsUpdateAuthority(false);
-  //   setIsCreateNameError(false);
-  //   setIsPutAuthority(false);
-  //   setIsAlertOpen(true);
-  //   setIsDeleteAuthority(true);
-  // };
+    if (target.id === 'isEditCreateChecked' && target.checked) {
+      // [0] 편집 전체 선택 토글
+      onList.splice(0, 1, { key: target.id, checked: target.checked });
+      onList.splice(2, 1, {
+        key: checkList[2].key,
+        checked: !checkList[2].checked,
+      });
+      onList.splice(4, 1, {
+        key: checkList[4].key,
+        checked: !checkList[4].checked,
+      });
+      // if (!target.checked) {
+      //   onList.splice(1, 1, { key: 'isManageCreateChecked', checked: false });
+      // }
+      setCheckList([...onList]);
+      return;
+    }
+    if (target.id === 'isManageCreateChecked' && !target.disabled) {
+      // [1] 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
+      onList.splice(1, 1, { key: target.id, checked: target.checked });
+      onList.splice(2, 1, {
+        key: checkList[3].key,
+        checked: !checkList[3].checked,
+      });
+      onList.splice(5, 1, {
+        key: checkList[5].key,
+        checked: !checkList[5].checked,
+      });
+      setCheckList([...onList]);
+      return;
+    }
+
+    console.log(onList);
+    // } else if (i === 6 || i === 8) {
+    //   // 6 편집 전체 선택 토글
+    //   // 8 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
+    // } else if (i === 12 || i === 13) {
+    //   // 12 편집 전체 선택 토글
+    //   // 13 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
+    // }
+
+    // });
+    // for (let i = 0; i < checkList.length; i++) {
+    //   if (onList[i].key == target.id) {
+    //     onList.splice(i, 1, { key: target.id, checked: target.checked });
+    //     setCheckList([...onList]);
+    //     return;
+    //   }
+    // }
+  };
+
+  // 전체 체크로직
+  const handleAllCheck = (
+    i: number,
+    target: EventTarget & HTMLInputElement,
+  ) => {};
 
   useEffect(() => {
     if (isClickedName === true) {
@@ -331,6 +371,7 @@ export function Authority() {
                         id={'isEditCreateChecked'}
                         value={'isEditCreateChecked'}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[0].checked}
                       />
                     </label>
                   </td>
@@ -342,6 +383,8 @@ export function Authority() {
                         id={'isManageCreateChecked'}
                         value={'isManageCreateChecked'}
                         onChange={(e) => handleChecked(e)}
+                        disabled={!checkList[0].checked}
+                        checked={checkList[1].checked}
                       />
                     </label>
                   </td>
@@ -356,6 +399,7 @@ export function Authority() {
                         id={'isEditCreateListChecked'}
                         value={'isEditCreateListChecked'}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[2].checked}
                       />
                     </label>
                   </td>
@@ -367,6 +411,8 @@ export function Authority() {
                         id={'isManageCreateListChecked'}
                         value={'isManageCreateListChecked'}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[3].checked}
+                        disabled={!checkList[2].checked}
                       />
                     </label>
                   </td>
@@ -381,6 +427,7 @@ export function Authority() {
                         id={'isEditWorksheetChecked'}
                         value={'isEditWorksheetChecked'}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[4].checked}
                       />
                     </label>
                   </td>
@@ -392,6 +439,8 @@ export function Authority() {
                         id={'isManageWorksheetChecked'}
                         value={'isManageWorksheetChecked'}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[5].checked}
+                        disabled={!checkList[4].checked}
                       />
                     </label>
                   </td>
