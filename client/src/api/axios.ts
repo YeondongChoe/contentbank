@@ -4,11 +4,10 @@ import axios, { AxiosResponse } from 'axios';
 
 import { getAuthorityCookie, setAuthorityCookie } from '../utils/cookies';
 import {processColorStops} from "html2canvas/dist/types/css/types/functions/gradient";
-import * as process from "process";
 
 /** 문항서버 API Instance*/
 export const questionInstance = axios.create({
-  baseURL: `${process.env.AXIOS_BASE_URL}/question-service/api/v1/`,
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/question-service/api/v1/`,
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
@@ -23,7 +22,7 @@ questionInstance.interceptors.request.use(function (config) {
 /** 권한서버 API Instance*/
 export const authInstance = axios.create({
   // baseURL: '/auth-service/api/v1/',
-  baseURL: `${process.env.AXIOS_BASE_URL}/auth-service/api/v1/`,
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service/api/v1/`,
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
