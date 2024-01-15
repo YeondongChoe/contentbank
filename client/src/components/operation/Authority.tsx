@@ -34,7 +34,7 @@ import { alertBoolAtom } from '../../store/utilAtom';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
-type authorityListProps = {
+type AuthorityListProps = {
   seq: number;
   code: string;
   name: string;
@@ -63,7 +63,7 @@ export const defaultPermissions = [
 ];
 
 export function Authority() {
-  const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
+  const [authorityList, setAuthorityList] = useState<AuthorityListProps[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
@@ -75,48 +75,13 @@ export function Authority() {
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
   const [didMount, setDidMount] = useState(false);
-  const [checkList, setCheckList] = useState(defaultPermissions);
 
-  /** 콘텐츠 제작 편집 체크 상태여부*/
-  // const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
-  //   editCreateContentBool,
-  // );
-  // const [isEditCreateListChecked, setIsEditCreateListChecked] =
-  //   useRecoilState<boolean>(editCreateListBool);
-  // const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-  //   useRecoilState<boolean>(editCreateContentWorksheetBool);
-  // const [isEditManagementChecked, setIsEditManagementChecked] =
-  //   useRecoilState<boolean>(editManagementContentBool);
-  // const [isEditManagementListChecked, setIsEditManagementListChecked] =
-  //   useRecoilState<boolean>(editManagementListBool);
-  // const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
-  //   editManagementTreeBool,
-  // );
-  // const [isEditOperationChecked, setIsEditOperationChecked] =
-  //   useRecoilState<boolean>(editOperationBoolAtom);
-  // const [isEditMemberChecked, setIsEditMemberChecked] =
-  //   useRecoilState<boolean>(editMemberBoolAtom);
-  // const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-  //   useRecoilState<boolean>(editAuthorityBoolAtom);
-  // const [isManageCreateChecked, setIsManageCreateChecked] =
-  //   useRecoilState<boolean>(manageCreateContentBoolAtom);
-  // const [isManageCreateListChecked, setIsManageCreateListChecked] =
-  //   useRecoilState<boolean>(manageCreateListBoolAtom);
-  // const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-  //   useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
-  // const [isManageManagementChecked, setIsManageManagementChecked] =
-  //   useRecoilState<boolean>(manageManagementContentBoolAtom);
-  // const [isManageManagementListChecked, setIsManageManagementListChecked] =
-  //   useRecoilState<boolean>(manageManagementListBoolAtom);
-  // const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
-  //   manageManagementTreeBoolAtom,
-  // );
-  // const [isManageOperationChecked, setIsManageOperationChecked] =
-  //   useRecoilState<boolean>(manageOperationBoolAtom);
-  // const [isManageMemberChecked, setIsManageMemberChecked] =
-  //   useRecoilState<boolean>(manageMemberBoolAtom);
-  // const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-  //   useRecoilState<boolean>(manageAuthorityBoolAtom);
+  const [checkList, setCheckList] = useState<
+    {
+      key: string;
+      checked: boolean;
+    }[]
+  >(defaultPermissions);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
@@ -156,44 +121,75 @@ export function Authority() {
   //   );
   // };
 
+  // 신규 권한 생성
   const submitAuthority = () => {
-    // postCreateAuthority({
-    //   inputValue,
-    //   isEditCreateChecked,
-    //   isManageCreateChecked,
-    //   isEditCreateListChecked,
-    //   isManageCreateListChecked,
-    //   isEditWorksheetChecked,
-    //   isManageWorksheetChecked,
-    //   isEditManagementChecked,
-    //   isManageManagementChecked,
-    //   isEditManagementListChecked,
-    //   isManageManagementListChecked,
-    //   isEditTreeChecked,
-    //   isManageTreeChecked,
-    //   isEditOperationChecked,
-    //   isManageOperationChecked,
-    //   isEditMemberChecked,
-    //   isManageMemberChecked,
-    //   isEditAuthorityChecked,
-    //   isManageAuthorityChecked,
-    // });
+    const isEditCreateChecked = checkList[0].checked;
+    const isManageCreateChecked = checkList[1].checked;
+    const isEditCreateListChecked = checkList[2].checked;
+    const isManageCreateListChecked = checkList[3].checked;
+    const isEditWorksheetChecked = checkList[4].checked;
+    const isManageWorksheetChecked = checkList[5].checked;
+    const isEditManagementChecked = checkList[6].checked;
+    const isManageManagementChecked = checkList[7].checked;
+    const isEditManagementListChecked = checkList[8].checked;
+    const isManageManagementListChecked = checkList[9].checked;
+    const isEditTreeChecked = checkList[10].checked;
+    const isManageTreeChecked = checkList[11].checked;
+    const isEditOperationChecked = checkList[12].checked;
+    const isManageOperationChecked = checkList[13].checked;
+    const isEditMemberChecked = checkList[14].checked;
+    const isManageMemberChecked = checkList[15].checked;
+    const isEditAuthorityChecked = checkList[16].checked;
+    const isManageAuthorityChecked = checkList[17].checked;
+    postCreateAuthority({
+      inputValue,
+      isEditCreateChecked,
+      isManageCreateChecked,
+      isEditCreateListChecked,
+      isManageCreateListChecked,
+      isEditWorksheetChecked,
+      isManageWorksheetChecked,
+      isEditManagementChecked,
+      isManageManagementChecked,
+      isEditManagementListChecked,
+      isManageManagementListChecked,
+      isEditTreeChecked,
+      isManageTreeChecked,
+      isEditOperationChecked,
+      isManageOperationChecked,
+      isEditMemberChecked,
+      isManageMemberChecked,
+      isEditAuthorityChecked,
+      isManageAuthorityChecked,
+    });
+    setIsAlertOpen(false);
   };
 
   // 권한관리 체크박스 핸들러
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 체크박스 선택시 해당 배열값변경
     const target = e.currentTarget;
-    const list = checkList.map((check) => {
-      if (check.key === target.id) {
-        return target.checked;
+    for (let i = 0; i <= checkList.length - 1; i++) {
+      if (checkList[i].key == target.id) {
+        checkList.splice(i, 1, { key: target.id, checked: target.checked });
       }
-    });
-    // setCheckList([...{target.id: target.checked}])
-    // for (let i = 0; i < checkList.length; i++) {}
-    // console.log(target.id, target.checked);
-    console.log(target.id, target.checked, list);
+    }
+    setCheckList(checkList);
   };
-  // const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {};
+
+  useEffect(() => {
+    if (isClickedName === true) {
+      // isClickedName상태값이 수정이고 데이터가 있을시 해당 데이터로
+      loadData();
+      // 불러온 체크박스 배열값넣기
+      // setCheckList();
+    }
+
+    if (isClickedName === false) {
+      // isClickedName상태값이 저장일시 디폴트 (defaultPermissions) 로
+      setCheckList(defaultPermissions);
+    }
+  }, [isClickedName]);
 
   // const openDeleteAlert = (code: string) => {
   //   setCodeValue(code);
@@ -214,15 +210,15 @@ export function Authority() {
     // });
   }, [setAuthorityList]);
 
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
-
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount]);
+  // useEffect(() => {
+  //   setDidMount(true);
+  // }, []);
+  // 저장된 권한리스트 데이터 불러오기
+  // useEffect(() => {
+  //   if (didMount) {
+  //     loadData();
+  //   }
+  // }, [didMount]);
 
   return (
     <Container>

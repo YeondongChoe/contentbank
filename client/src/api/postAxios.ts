@@ -177,7 +177,7 @@ export const postDuplicate = async ({
 };
 
 /** 권한 파트 */
-type postCreateAuthorityProps = {
+type PostCreateAuthorityProps = {
   inputValue: string;
   isEditCreateChecked: boolean;
   isManageCreateChecked: boolean;
@@ -220,7 +220,7 @@ export const postCreateAuthority = async ({
   isManageMemberChecked,
   isEditAuthorityChecked,
   isManageAuthorityChecked,
-}: postCreateAuthorityProps) => {
+}: PostCreateAuthorityProps) => {
   const data = {
     name: inputValue,
     permissions: [
