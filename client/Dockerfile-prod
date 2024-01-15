@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 RUN npm install
-RUN npm run build:prod
+RUN npm run build:prod --verbose
 
 # nginx 설치
 FROM nginx:stable-alpine
