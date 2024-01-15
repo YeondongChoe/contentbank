@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { LuDownload } from 'react-icons/lu';
 import { SlPrinter } from 'react-icons/sl';
+import ReactToPrint from 'react-to-print';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -55,6 +56,8 @@ export function Worksheet() {
     setIsStep2(false);
     setIsEditWorksheet(false);
   };
+
+  const ref = useRef(null);
 
   useEffect(() => {
     setDidMount(true);
