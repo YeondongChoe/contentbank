@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { SlPrinter } from 'react-icons/sl';
 import ReactToPrint from 'react-to-print';
-import { useSetRecoilState } from 'recoil';
+import { useSetRecoilState, useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import Contents2 from '../../components/mathViewer/test2.json';
 import Contents3 from '../../components/mathViewer/test3.json';
 import Contents4 from '../../components/mathViewer/test4.json';
+import { PaginationBox } from '../../components/molecules';
 import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
+import { totalPageAtom } from '../../store/utilAtom';
 import { COLOR } from '../constants';
 import { MathViewer } from '../mathViewer/MathViewer';
 
@@ -27,8 +29,13 @@ export function WorksheetBasic() {
     Contents2,
     Contents3,
   ];
+  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
 
   const ref = useRef(null);
+
+  useEffect(() => {
+    // console.log(tabVeiw);
+  }, [totalPage]);
 
   return (
     <Container>
@@ -54,6 +61,10 @@ export function WorksheetBasic() {
             ))}
           </MathviewrList>
         </MathviewrContainer>
+        <PaginationBox
+          itemsCountPerPage={8}
+          totalItemsCount={totalPage}
+        ></PaginationBox>
       </MathviewrWrapper>
     </Container>
   );
