@@ -84,5 +84,9 @@ const ContentQuestion = styled.div`
   height: 150px;
 `;
 const ContentAnswer = styled.div`
+  //기본일때 50
+  //6문제일때 100
+  //4문제일때 200
+  //2문제일때 800
   height: 50px;
 `;
