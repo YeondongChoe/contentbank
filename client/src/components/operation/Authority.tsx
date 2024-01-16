@@ -164,11 +164,22 @@ export function Authority() {
     // 체크박스 선택시 해당 배열값변경
     const onList = checkList;
     const target = e.currentTarget;
-    console.log(target.id, target.checked);
+    console.log(target.id, target.checked, target.value);
 
-    if (target.id === 'isEditCreateChecked' && target.checked) {
+    onList.splice(Number(target.value), 1, {
+      key: target.id,
+      checked: target.checked,
+    });
+
+    setCheckList([...onList]);
+
+    if (target.id === 'isEditCreateChecked') {
       // [0] 편집 전체 선택 토글
-      onList.splice(0, 1, { key: target.id, checked: target.checked });
+      onList.splice(Number(target.value), 1, {
+        key: target.id,
+        checked: target.checked,
+      });
+
       onList.splice(2, 1, {
         key: checkList[2].key,
         checked: !checkList[2].checked,
@@ -183,7 +194,7 @@ export function Authority() {
       setCheckList([...onList]);
       return;
     }
-    if (target.id === 'isManageCreateChecked' && !target.disabled) {
+    if (target.id === 'isManageCreateChecked') {
       // [1] 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
       onList.splice(1, 1, { key: target.id, checked: target.checked });
       onList.splice(2, 1, {
@@ -197,6 +208,8 @@ export function Authority() {
       setCheckList([...onList]);
       return;
     }
+
+    // [2] 콘텐츠 제작 문항 편집 선택
 
     console.log(onList);
     // } else if (i === 6 || i === 8) {
@@ -323,7 +336,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditCreateChecked'}
                         id={'isEditCreateChecked'}
-                        value={'isEditCreateChecked'}
+                        value={0}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[0].checked}
                       />
@@ -335,7 +348,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageCreateChecked'}
                         id={'isManageCreateChecked'}
-                        value={'isManageCreateChecked'}
+                        value={1}
                         onChange={(e) => handleChecked(e)}
                         disabled={!checkList[0].checked}
                         checked={checkList[1].checked}
@@ -351,7 +364,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditCreateListChecked'}
                         id={'isEditCreateListChecked'}
-                        value={'isEditCreateListChecked'}
+                        value={2}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[2].checked}
                       />
@@ -363,7 +376,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageCreateListChecked'}
                         id={'isManageCreateListChecked'}
-                        value={'isManageCreateListChecked'}
+                        value={3}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[3].checked}
                         disabled={!checkList[2].checked}
@@ -379,7 +392,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditWorksheetChecked'}
                         id={'isEditWorksheetChecked'}
-                        value={'isEditWorksheetChecked'}
+                        value={4}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[4].checked}
                       />
@@ -391,7 +404,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageWorksheetChecked'}
                         id={'isManageWorksheetChecked'}
-                        value={'isManageWorksheetChecked'}
+                        value={5}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[5].checked}
                         disabled={!checkList[4].checked}
