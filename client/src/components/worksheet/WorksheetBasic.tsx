@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { SlPrinter } from 'react-icons/sl';
@@ -17,6 +17,7 @@ import { COLOR } from '../constants';
 import { MathViewer } from '../mathViewer/MathViewer';
 
 export function WorksheetBasic() {
+  const [didMount, setDidMount] = useState(false);
   const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
 
   const list = [
@@ -32,6 +33,16 @@ export function WorksheetBasic() {
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
 
   const ref = useRef(null);
+
+  useEffect(() => {
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      //loadData();
+    }
+  }, [didMount]);
 
   useEffect(() => {
     // console.log(tabVeiw);
@@ -51,21 +62,40 @@ export function WorksheetBasic() {
           style={{ fontSize: '30px', cursor: 'pointer' }}
         />
       </IconWrapper>
-      <MathviewrWrapper>
-        <MathviewrContainer ref={ref}>
-          <MathviewrList>
+      <MathViewerWrapper>
+        <MathViewerContainer ref={ref}>
+          <MathViewerHeader>
+            <HeaderLeft>
+              <div>
+                <h3>기본 중1-1</h3>
+                <p>소인수분해</p>
+              </div>
+              <div>50문항 | 콘텐츠뱅츠</div>
+            </HeaderLeft>
+
+            <HeaderRight>
+              <div>
+                <SlPrinter style={{ fontSize: '80px' }} />
+              </div>
+              <div>
+                <span>2022.01.04 이름</span>
+                <input></input>
+              </div>
+            </HeaderRight>
+          </MathViewerHeader>
+          <MathViewerList>
             {list.map((card, i) => (
               <div key={i}>
                 문제 {i + 1}.<MathViewer data={card} width="350px"></MathViewer>
               </div>
             ))}
-          </MathviewrList>
-        </MathviewrContainer>
+          </MathViewerList>
+        </MathViewerContainer>
         <PaginationBox
           itemsCountPerPage={8}
           totalItemsCount={totalPage}
         ></PaginationBox>
-      </MathviewrWrapper>
+      </MathViewerWrapper>
     </Container>
   );
 }
@@ -84,19 +114,27 @@ const IconWrapper = styled.div`
   color: white;
   padding-bottom: 5px;
 `;
-const MathviewrWrapper = styled.div`
+const MathViewerWrapper = styled.div`
   width: 100%;
   overflow: auto;
   background-color: white;
-  height: 850px;
+  height: 800px;
 `;
-const MathviewrContainer = styled.div`
+const MathViewerContainer = styled.div`
   width: ${A4_WIDTH};
   margin: 0 auto;
 `;
-const MathviewrList = styled.div`
+const MathViewerHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  height: 150px;
+  padding: 10px;
+`;
+const HeaderLeft = styled.div``;
+const HeaderRight = styled.div``;
+const MathViewerList = styled.div`
   width: ${A4_WIDTH};
-  height: ${A4_HEIGHT};
+  height: calc(${A4_HEIGHT} - 150px);
   display: flex;
   flex-direction: column;
   align-items: center;
