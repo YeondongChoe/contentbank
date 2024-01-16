@@ -95,8 +95,7 @@ export function WorksheetBasic() {
           <MathViewerList>
             {list.map((card, i) => (
               <div key={i}>
-                문제.. {i + 1}.
-                <MathViewer data={card} width="350px"></MathViewer>
+                문제 {i + 1}.<MathViewer data={card} width="350px"></MathViewer>
               </div>
             ))}
           </MathViewerList>
