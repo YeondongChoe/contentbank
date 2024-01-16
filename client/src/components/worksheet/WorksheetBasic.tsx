@@ -7,6 +7,7 @@ import ReactToPrint from 'react-to-print';
 import { useSetRecoilState, useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
+import { Input } from '../../components/atom';
 import Contents2 from '../../components/mathViewer/test2.json';
 import Contents3 from '../../components/mathViewer/test3.json';
 import Contents4 from '../../components/mathViewer/test4.json';
@@ -66,21 +67,29 @@ export function WorksheetBasic() {
         <MathViewerContainer ref={ref}>
           <MathViewerHeader>
             <HeaderLeft>
-              <div>
-                <h3>기본 중1-1</h3>
-                <p>소인수분해</p>
-              </div>
-              <div>50문항 | 콘텐츠뱅츠</div>
+              <TitleWrapper>
+                <Title>
+                  <span className="tag">기본</span>
+                  <span className="grade">중1-1</span>
+                </Title>
+                <p className="subTitle">소인수분해</p>
+              </TitleWrapper>
+              <Description>50문항 | 콘텐츠뱅츠</Description>
             </HeaderLeft>
 
             <HeaderRight>
-              <div>
-                <SlPrinter style={{ fontSize: '80px' }} />
-              </div>
-              <div>
-                <span>2022.01.04 이름</span>
-                <input></input>
-              </div>
+              <ImageWrapper>
+                <SlPrinter style={{ fontSize: '60px' }} />
+              </ImageWrapper>
+              <InputWrapper>
+                <Description>2024.01.16 이름</Description>
+                <Input
+                  type={'text'}
+                  width="100px"
+                  border="black"
+                  height="20px"
+                />
+              </InputWrapper>
             </HeaderRight>
           </MathViewerHeader>
           <MathViewerList>
@@ -92,7 +101,7 @@ export function WorksheetBasic() {
           </MathViewerList>
         </MathViewerContainer>
         <PaginationBox
-          itemsCountPerPage={8}
+          itemsCountPerPage={4}
           totalItemsCount={totalPage}
         ></PaginationBox>
       </MathViewerWrapper>
@@ -119,6 +128,7 @@ const MathViewerWrapper = styled.div`
   overflow: auto;
   background-color: white;
   height: 800px;
+  border: 1px solid ${COLOR.BORDER_POPUP};
 `;
 const MathViewerContainer = styled.div`
   width: ${A4_WIDTH};
@@ -129,15 +139,58 @@ const MathViewerHeader = styled.div`
   justify-content: space-between;
   height: 150px;
   padding: 10px;
+  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
 `;
-const HeaderLeft = styled.div``;
-const HeaderRight = styled.div``;
+const HeaderLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 0;
+  justify-content: space-between;
+  padding: 20px 10px 10px 20px;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  .subTitle {
+    color: ${COLOR.TEXT_GRAY};
+    font-weight: 600;
+  }
+`;
+const Title = styled.div`
+  display: flex;
+  gap: 5px;
+  font-size: 25px;
+  font-weight: 800;
+  .tag {
+    color: ${COLOR.SECONDARY};
+  }
+`;
+const HeaderRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 0;
+  justify-content: space-between;
+  padding: 20px 10px 10px 20px;
+`;
+const ImageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+`;
+const Description = styled.div`
+  font-weight: 800;
+`;
 const MathViewerList = styled.div`
   width: ${A4_WIDTH};
-  height: calc(${A4_HEIGHT} - 150px);
+  height: calc(${A4_HEIGHT} - 140px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
   flex-wrap: wrap;
+  padding-top: 10px;
 `;
