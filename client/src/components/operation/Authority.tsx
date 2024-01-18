@@ -1030,19 +1030,3 @@ const AuthorityListWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const AuthorityWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  &:hover {
-    background-color: ${COLOR.SELECT_HOVER};
-    color: white;
-  }
-`;
-const AuthorityName = styled.div`
-  //cursor: pointer;
-`;
-const DeleteIconWrapper = styled.div`
-  font-size: 17px;
-  cursor: pointer;
-`;
