@@ -21,20 +21,30 @@ export function Navigation() {
       <NavigationMenuWrapper>
         <NavigationMenu>
           <Label value={'콘텐츠 제작'} fontSize="14px"></Label>
-          <li>문항</li>
-          <li>
-            <Link to={'/contentworksheet'}>학습지</Link>
-          </li>
+          <Link to={'/contentlist'}>
+            <li>문항</li>
+          </Link>
+          <Link to={'/contentworksheet'}>
+            <li>학습지</li>
+          </Link>
         </NavigationMenu>
         <NavigationMenu>
           <Label value={'콘텐츠 관리'}></Label>
-          <li>문항</li>
-          <li>문항 정보 트리 구조</li>
+          <Link to={'/managementlist'}>
+            <li>문항</li>
+          </Link>
+          <Link to={'/managementtree'}>
+            <li>문항 정보 트리 구조</li>
+          </Link>
         </NavigationMenu>
         <NavigationMenu>
           <Label value={'운영 관리'}></Label>
-          <li>회원 관리</li>
-          <li>권한 관리</li>
+          <Link to={'/operationmember'}>
+            <li>회원 관리</li>
+          </Link>
+          <Link to={'/operationauthority'}>
+            <li>권한 관리</li>
+          </Link>
         </NavigationMenu>
       </NavigationMenuWrapper>
     </Container>
@@ -70,6 +80,12 @@ const NavigationMenu = styled.ol`
   gap: 10px;
   color: white;
   font-size: 14px;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
   li {
     padding: 10px;
     cursor: pointer;
