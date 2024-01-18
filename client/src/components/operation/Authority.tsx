@@ -78,48 +78,14 @@ export function Authority() {
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
   const [didMount, setDidMount] = useState(false);
-  const [checkList, setCheckList] = useState(defaultPermissions);
+  // const [checkList, setCheckList] = useState(defaultPermissions);
 
-  /** 콘텐츠 제작 편집 체크 상태여부*/
-  // const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
-  //   editCreateContentBool,
-  // );
-  // const [isEditCreateListChecked, setIsEditCreateListChecked] =
-  //   useRecoilState<boolean>(editCreateListBool);
-  // const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-  //   useRecoilState<boolean>(editCreateContentWorksheetBool);
-  // const [isEditManagementChecked, setIsEditManagementChecked] =
-  //   useRecoilState<boolean>(editManagementContentBool);
-  // const [isEditManagementListChecked, setIsEditManagementListChecked] =
-  //   useRecoilState<boolean>(editManagementListBool);
-  // const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
-  //   editManagementTreeBool,
-  // );
-  // const [isEditOperationChecked, setIsEditOperationChecked] =
-  //   useRecoilState<boolean>(editOperationBoolAtom);
-  // const [isEditMemberChecked, setIsEditMemberChecked] =
-  //   useRecoilState<boolean>(editMemberBoolAtom);
-  // const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-  //   useRecoilState<boolean>(editAuthorityBoolAtom);
-  // const [isManageCreateChecked, setIsManageCreateChecked] =
-  //   useRecoilState<boolean>(manageCreateContentBoolAtom);
-  // const [isManageCreateListChecked, setIsManageCreateListChecked] =
-  //   useRecoilState<boolean>(manageCreateListBoolAtom);
-  // const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-  //   useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
-  // const [isManageManagementChecked, setIsManageManagementChecked] =
-  //   useRecoilState<boolean>(manageManagementContentBoolAtom);
-  // const [isManageManagementListChecked, setIsManageManagementListChecked] =
-  //   useRecoilState<boolean>(manageManagementListBoolAtom);
-  // const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
-  //   manageManagementTreeBoolAtom,
-  // );
-  // const [isManageOperationChecked, setIsManageOperationChecked] =
-  //   useRecoilState<boolean>(manageOperationBoolAtom);
-  // const [isManageMemberChecked, setIsManageMemberChecked] =
-  //   useRecoilState<boolean>(manageMemberBoolAtom);
-  // const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-  //   useRecoilState<boolean>(manageAuthorityBoolAtom);
+  const [checkList, setCheckList] = useState<
+    {
+      key: string;
+      checked: boolean;
+    }[]
+  >(defaultPermissions);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
