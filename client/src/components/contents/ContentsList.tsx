@@ -272,9 +272,10 @@ export function ContentsList() {
         <Title>문항</Title>
         <Button
           height={'35px'}
-          width={'150px'}
+          width={'110px'}
           $margin={'0 0 0 10px'}
           onClick={openCreatePopup}
+          fontSize="13px"
         >
           + 문항 업로드
         </Button>
