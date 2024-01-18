@@ -190,74 +190,392 @@ export function Authority() {
     const target = e.currentTarget;
     console.log(target.id, target.checked, target.value);
 
+    // 개당 체크시 체크 토글
     onList.splice(Number(target.value), 1, {
       key: target.id,
       checked: target.checked,
     });
-
     setCheckList([...onList]);
 
+    //콘텐츠 제작
+    // [0] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
     if (target.id === 'isEditCreateChecked') {
-      // [0] 편집 전체 선택 토글
-      onList.splice(Number(target.value), 1, {
-        key: target.id,
-        checked: target.checked,
-      });
+      if (target.checked === true) {
+        onList.splice(2, 1, {
+          key: checkList[2].key,
+          checked: true,
+        });
+        onList.splice(4, 1, {
+          key: checkList[4].key,
+          checked: true,
+        });
 
-      onList.splice(2, 1, {
-        key: checkList[2].key,
-        checked: !checkList[2].checked,
-      });
-      onList.splice(4, 1, {
-        key: checkList[4].key,
-        checked: !checkList[4].checked,
-      });
-      // if (!target.checked) {
-      //   onList.splice(1, 1, { key: 'isManageCreateChecked', checked: false });
-      // }
-      setCheckList([...onList]);
+        setCheckList([...onList]);
+      }
+      if (target.checked === false) {
+        onList.splice(2, 1, {
+          key: checkList[2].key,
+          checked: false,
+        });
+        onList.splice(4, 1, {
+          key: checkList[4].key,
+          checked: false,
+        });
+        // 편집 false일시 관리도 false
+        onList.splice(1, 1, {
+          key: checkList[1].key,
+          checked: false,
+        });
+        onList.splice(3, 1, {
+          key: checkList[3].key,
+          checked: false,
+        });
+        onList.splice(5, 1, {
+          key: checkList[5].key,
+          checked: false,
+        });
+
+        setCheckList([...onList]);
+      }
       return;
     }
-    if (target.id === 'isManageCreateChecked') {
-      // [1] 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
-      onList.splice(1, 1, { key: target.id, checked: target.checked });
-      onList.splice(2, 1, {
-        key: checkList[3].key,
-        checked: !checkList[3].checked,
-      });
-      onList.splice(5, 1, {
-        key: checkList[5].key,
-        checked: !checkList[5].checked,
-      });
-      setCheckList([...onList]);
+    // [2][4] 문항 학습지 전체 체크 초기화
+    if (Number(target.value) === 2 || Number(target.value) === 4) {
+      if (target.checked === false) {
+        onList.splice(0, 1, {
+          key: target.id,
+          checked: false,
+        });
+
+        // 편집 false일시 관리도 false
+        onList.splice(1, 1, {
+          key: checkList[1].key,
+          checked: false,
+        });
+        onList.splice(3, 1, {
+          key: checkList[3].key,
+          checked: false,
+        });
+        onList.splice(5, 1, {
+          key: checkList[5].key,
+          checked: false,
+        });
+
+        setCheckList([...onList]);
+      }
+      if (checkList[2].checked && checkList[4].checked) {
+        onList.splice(0, 1, {
+          key: target.id,
+          checked: true,
+        });
+
+        setCheckList([...onList]);
+      }
       return;
     }
+    // [1][3][5] 관리 전체 선택 토글 또는 개별 선택
+    if (
+      Number(target.value) === 1 ||
+      Number(target.value) === 3 ||
+      Number(target.value) === 5
+    ) {
+      if (Number(target.value) === 1 && target.checked === true) {
+        onList.splice(3, 1, {
+          key: checkList[3].key,
+          checked: true,
+        });
+        onList.splice(5, 1, {
+          key: checkList[5].key,
+          checked: true,
+        });
+        setCheckList([...onList]);
+        return;
+      }
+      if (Number(target.value) === 1 && target.checked === false) {
+        onList.splice(3, 1, {
+          key: checkList[3].key,
+          checked: false,
+        });
+        onList.splice(5, 1, {
+          key: checkList[5].key,
+          checked: false,
+        });
+        setCheckList([...onList]);
+        return;
+      }
+      if (Number(target.value) === 3 || Number(target.value) === 5) {
+        if (target.checked === false) {
+          onList.splice(1, 1, {
+            key: checkList[1].key,
+            checked: false,
+          });
+          setCheckList([...onList]);
+          return;
+        }
+        if (checkList[3].checked && checkList[5].checked) {
+          onList.splice(1, 1, {
+            key: checkList[1].key,
+            checked: true,
+          });
+          setCheckList([...onList]);
+          return;
+        }
+      }
+    }
 
-    // [2] 콘텐츠 제작 문항 편집 선택
-    console.log(onList);
-    // } else if (i === 6 || i === 8) {
-    //   // 6 편집 전체 선택 토글
-    //   // 8 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
-    // } else if (i === 12 || i === 13) {
-    //   // 12 편집 전체 선택 토글
-    //   // 13 관리 전체 선택 토글 -> 편집 선택 해제시 disabled
-    // }
+    //콘텐츠 관리
+    // [6] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
+    if (target.id === 'isEditManagementChecked') {
+      if (target.checked === true) {
+        onList.splice(8, 1, {
+          key: checkList[8].key,
+          checked: true,
+        });
+        onList.splice(10, 1, {
+          key: checkList[10].key,
+          checked: true,
+        });
 
-    // });
-    // for (let i = 0; i < checkList.length; i++) {
-    //   if (onList[i].key == target.id) {
-    //     onList.splice(i, 1, { key: target.id, checked: target.checked });
-    //     setCheckList([...onList]);
-    //     return;
-    //   }
-    // }
+        setCheckList([...onList]);
+      }
+      if (target.checked === false) {
+        onList.splice(8, 1, {
+          key: checkList[8].key,
+          checked: false,
+        });
+        onList.splice(10, 1, {
+          key: checkList[10].key,
+          checked: false,
+        });
+        // 편집 false일시 관리도 false
+        onList.splice(7, 1, {
+          key: checkList[7].key,
+          checked: false,
+        });
+        onList.splice(9, 1, {
+          key: checkList[9].key,
+          checked: false,
+        });
+        onList.splice(11, 1, {
+          key: checkList[11].key,
+          checked: false,
+        });
+
+        setCheckList([...onList]);
+      }
+      return;
+    }
+    // [8][10] 문항 학습지 전체 체크 초기화
+    if (Number(target.value) === 8 || Number(target.value) === 10) {
+      if (target.checked === false) {
+        onList.splice(6, 1, {
+          key: target.id,
+          checked: false,
+        });
+
+        // 편집 false일시 관리도 false
+        onList.splice(7, 1, {
+          key: checkList[7].key,
+          checked: false,
+        });
+        onList.splice(9, 1, {
+          key: checkList[9].key,
+          checked: false,
+        });
+        onList.splice(11, 1, {
+          key: checkList[11].key,
+          checked: false,
+        });
+
+        setCheckList([...onList]);
+      }
+      if (checkList[8].checked && checkList[10].checked) {
+        onList.splice(6, 1, {
+          key: target.id,
+          checked: true,
+        });
+
+        setCheckList([...onList]);
+      }
+      return;
+    }
+    // [7][9][11] 관리 전체 선택 토글 또는 개별 선택
+    if (
+      Number(target.value) === 7 ||
+      Number(target.value) === 9 ||
+      Number(target.value) === 11
+    ) {
+      if (Number(target.value) === 7 && target.checked === true) {
+        onList.splice(9, 1, {
+          key: checkList[9].key,
+          checked: true,
+        });
+        onList.splice(11, 1, {
+          key: checkList[11].key,
+          checked: true,
+        });
+        setCheckList([...onList]);
+        return;
+      }
+      if (Number(target.value) === 7 && target.checked === false) {
+        onList.splice(9, 1, {
+          key: checkList[9].key,
+          checked: false,
+        });
+        onList.splice(11, 1, {
+          key: checkList[11].key,
+          checked: false,
+        });
+        setCheckList([...onList]);
+        return;
+      }
+      if (Number(target.value) === 9 || Number(target.value) === 11) {
+        if (target.checked === false) {
+          onList.splice(7, 1, {
+            key: checkList[7].key,
+            checked: false,
+          });
+          setCheckList([...onList]);
+          return;
+        }
+        if (checkList[9].checked && checkList[11].checked) {
+          onList.splice(7, 1, {
+            key: checkList[7].key,
+            checked: true,
+          });
+          setCheckList([...onList]);
+          return;
+        }
+      }
+    }
+
+    //운영 관리
+    // [12] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
+    if (target.id === 'isEditOperationChecked') {
+      if (target.checked === true) {
+        onList.splice(14, 1, {
+          key: checkList[14].key,
+          checked: true,
+        });
+        onList.splice(16, 1, {
+          key: checkList[16].key,
+          checked: true,
+        });
+
+        setCheckList([...onList]);
+      }
+      if (target.checked === false) {
+        onList.splice(14, 1, {
+          key: checkList[14].key,
+          checked: false,
+        });
+        onList.splice(16, 1, {
+          key: checkList[16].key,
+          checked: false,
+        });
+        // 편집 false일시 관리도 false
+        onList.splice(13, 1, {
+          key: checkList[13].key,
+          checked: false,
+        });
+        onList.splice(15, 1, {
+          key: checkList[15].key,
+          checked: false,
+        });
+        onList.splice(17, 1, {
+          key: checkList[17].key,
+          checked: false,
+        });
+
+        setCheckList([...onList]);
+      }
+      return;
+    }
+    // [14][16] 문항 학습지 전체 체크 초기화
+    if (Number(target.value) === 14 || Number(target.value) === 16) {
+      if (target.checked === false) {
+        onList.splice(12, 1, {
+          key: target.id,
+          checked: false,
+        });
+
+        // 편집 false일시 관리도 false
+        onList.splice(13, 1, {
+          key: checkList[13].key,
+          checked: false,
+        });
+        onList.splice(15, 1, {
+          key: checkList[15].key,
+          checked: false,
+        });
+        onList.splice(17, 1, {
+          key: checkList[17].key,
+          checked: false,
+        });
+
+        setCheckList([...onList]);
+      }
+      if (checkList[14].checked && checkList[16].checked) {
+        onList.splice(12, 1, {
+          key: target.id,
+          checked: true,
+        });
+
+        setCheckList([...onList]);
+      }
+      return;
+    }
+    // [13][15][17] 관리 전체 선택 토글 또는 개별 선택
+    if (
+      Number(target.value) === 13 ||
+      Number(target.value) === 15 ||
+      Number(target.value) === 17
+    ) {
+      if (Number(target.value) === 13 && target.checked === true) {
+        onList.splice(15, 1, {
+          key: checkList[15].key,
+          checked: true,
+        });
+        onList.splice(17, 1, {
+          key: checkList[17].key,
+          checked: true,
+        });
+        setCheckList([...onList]);
+        return;
+      }
+      if (Number(target.value) === 13 && target.checked === false) {
+        onList.splice(15, 1, {
+          key: checkList[15].key,
+          checked: false,
+        });
+        onList.splice(17, 1, {
+          key: checkList[17].key,
+          checked: false,
+        });
+        setCheckList([...onList]);
+        return;
+      }
+      if (Number(target.value) === 15 || Number(target.value) === 17) {
+        if (target.checked === false) {
+          onList.splice(13, 1, {
+            key: checkList[13].key,
+            checked: false,
+          });
+          setCheckList([...onList]);
+          return;
+        }
+        if (checkList[15].checked && checkList[17].checked) {
+          onList.splice(13, 1, {
+            key: checkList[13].key,
+            checked: true,
+          });
+          setCheckList([...onList]);
+          return;
+        }
+      }
+    }
+    // console.log(onList);
   };
-
-  // 전체 체크로직
-  const handleAllCheck = (
-    i: number,
-    target: EventTarget & HTMLInputElement,
-  ) => {};
 
   useEffect(() => {
     if (isClickedName === true) {
@@ -466,8 +784,9 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditManagementChecked'}
                         id={'isEditManagementChecked'}
-                        value={'isEditManagementChecked'}
+                        value={6}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[6].checked}
                       />
                     </label>
                   </td>
@@ -477,8 +796,10 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageManagementChecked'}
                         id={'isManageManagementChecked'}
-                        value={'isManageManagementChecked'}
+                        value={7}
                         onChange={(e) => handleChecked(e)}
+                        disabled={!checkList[6].checked}
+                        checked={checkList[7].checked}
                       />
                     </label>
                   </td>
@@ -491,8 +812,9 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditManagementListChecked'}
                         id={'isEditManagementListChecked'}
-                        value={'isEditManagementListChecked'}
+                        value={8}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[8].checked}
                       />
                     </label>
                   </td>
@@ -502,8 +824,10 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageManagementListChecked'}
                         id={'isManageManagementListChecked'}
-                        value={'isManageManagementListChecked'}
+                        value={9}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[9].checked}
+                        disabled={!checkList[8].checked}
                       />
                     </label>
                   </td>
@@ -516,8 +840,9 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditTreeChecked'}
                         id={'isEditTreeChecked'}
-                        value={'isEditTreeChecked'}
+                        value={10}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[10].checked}
                       />
                     </label>
                   </td>
@@ -527,8 +852,10 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageTreeChecked'}
                         id={'isManageTreeChecked'}
-                        value={'isManageTreeChecked'}
+                        value={11}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[11].checked}
+                        disabled={!checkList[10].checked}
                       />
                     </label>
                   </td>
@@ -542,8 +869,9 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditOperationChecked'}
                         id={'isEditOperationChecked'}
-                        value={'isEditOperationChecked'}
+                        value={12}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[12].checked}
                       />
                     </label>
                   </td>
@@ -553,8 +881,10 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageOperationChecked'}
                         id={'isManageOperationChecked'}
-                        value={'isManageOperationChecked'}
+                        value={13}
                         onChange={(e) => handleChecked(e)}
+                        disabled={!checkList[12].checked}
+                        checked={checkList[13].checked}
                       />
                     </label>
                   </td>
@@ -567,8 +897,9 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditMemberChecked'}
                         id={'isEditMemberChecked'}
-                        value={'isEditMemberChecked'}
+                        value={14}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[14].checked}
                       />
                     </label>
                   </td>
@@ -578,8 +909,10 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageMemberChecked'}
                         id={'isManageMemberChecked'}
-                        value={'isManageMemberChecked'}
+                        value={15}
                         onChange={(e) => handleChecked(e)}
+                        disabled={!checkList[14].checked}
+                        checked={checkList[15].checked}
                       />
                     </label>
                   </td>
@@ -592,8 +925,9 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditAuthorityChecked'}
                         id={'isEditAuthorityChecked'}
-                        value={'isEditAuthorityChecked'}
+                        value={16}
                         onChange={(e) => handleChecked(e)}
+                        checked={checkList[16].checked}
                       />
                     </label>
                   </td>
@@ -603,8 +937,10 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageAuthorityChecked'}
                         id={'isManageAuthorityChecked'}
-                        value={'isManageAuthorityChecked'}
+                        value={17}
                         onChange={(e) => handleChecked(e)}
+                        disabled={!checkList[16].checked}
+                        checked={checkList[17].checked}
                       />
                     </label>
                   </td>
