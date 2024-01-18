@@ -75,6 +75,7 @@ export function Authority() {
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
   const [didMount, setDidMount] = useState(false);
+  // const [checkList, setCheckList] = useState(defaultPermissions);
 
   const [checkList, setCheckList] = useState<
     {
@@ -581,9 +582,9 @@ export function Authority() {
   };
 
   const loadData = useCallback(() => {
-    getAuthorityList({
-      setAuthorityList,
-    });
+    // getAuthorityList({
+    //   setAuthorityList,
+    // });
   }, [setAuthorityList]);
 
   useEffect(() => {
@@ -904,7 +905,7 @@ export function Authority() {
           </TableWrapper>
 
           <AuthorityListWrapper>
-            {authorityList?.map((el, i) => (
+            {/* {authorityList?.map((el, i) => (
               <AuthorityWrapper
                 key={i}
                 onClick={() => {
@@ -930,7 +931,7 @@ export function Authority() {
                   />
                 </DeleteIconWrapper>
               </AuthorityWrapper>
-            ))}
+            ))} */}
           </AuthorityListWrapper>
         </ListWrap>
       </Wrapper>
