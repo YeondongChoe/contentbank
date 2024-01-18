@@ -177,22 +177,22 @@ export const postDuplicate = async ({
 };
 
 /** 권한 파트 */
-type postCreateAuthorityProps = {
+type PostCreateAuthorityProps = {
   inputValue: string;
-  isEditCreateChecked: boolean;
-  isManageCreateChecked: boolean;
+  isEditCreateChecked?: boolean;
+  isManageCreateChecked?: boolean;
   isEditCreateListChecked: boolean;
   isManageCreateListChecked: boolean;
   isEditWorksheetChecked: boolean;
   isManageWorksheetChecked: boolean;
-  isEditManagementChecked: boolean;
-  isManageManagementChecked: boolean;
+  isEditManagementChecked?: boolean;
+  isManageManagementChecked?: boolean;
   isEditManagementListChecked: boolean;
   isManageManagementListChecked: boolean;
   isEditTreeChecked: boolean;
   isManageTreeChecked: boolean;
-  isEditOperationChecked: boolean;
-  isManageOperationChecked: boolean;
+  isEditOperationChecked?: boolean;
+  isManageOperationChecked?: boolean;
   isEditMemberChecked: boolean;
   isManageMemberChecked: boolean;
   isEditAuthorityChecked: boolean;
@@ -220,12 +220,12 @@ export const postCreateAuthority = async ({
   isManageMemberChecked,
   isEditAuthorityChecked,
   isManageAuthorityChecked,
-}: postCreateAuthorityProps) => {
+}: PostCreateAuthorityProps) => {
   const data = {
     name: inputValue,
     permissions: [
       {
-        code: 'CNC', // 콘텐츠 제작
+        code: 'CNC', // 콘텐츠 제작 //전체
         edited: isEditCreateChecked,
         managed: isManageCreateChecked,
       },
@@ -240,7 +240,7 @@ export const postCreateAuthority = async ({
         managed: isManageWorksheetChecked,
       },
       {
-        code: 'CNM', // 콘텐츠 관리
+        code: 'CNM', // 콘텐츠 관리 //전체
         edited: isEditManagementChecked,
         managed: isManageManagementChecked,
       },
@@ -255,7 +255,7 @@ export const postCreateAuthority = async ({
         managed: isManageTreeChecked,
       },
       {
-        code: 'OPM', // 운영관리
+        code: 'OPM', // 운영관리 //전체
         edited: isEditOperationChecked,
         managed: isManageOperationChecked,
       },

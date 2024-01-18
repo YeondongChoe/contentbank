@@ -6,7 +6,7 @@ import { getAuthorityCookie, setAuthorityCookie } from '../utils/cookies';
 
 /** 문항서버 API Instance*/
 export const questionInstance = axios.create({
-  baseURL: '/question-service/api/v1/',
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/question-service/api/v1/`,
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
@@ -20,7 +20,8 @@ questionInstance.interceptors.request.use(function (config) {
 
 /** 권한서버 API Instance*/
 export const authInstance = axios.create({
-  baseURL: '/auth-service/api/v1/',
+  // baseURL: '/auth-service/api/v1/',
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service/api/v1/`,
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,

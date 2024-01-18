@@ -19,3 +19,8 @@ export const editWorksheetBoolAtom = atom({
   key: 'editWorksheetBoolAtom',
   default: false,
 });
+
+export const previewWorksheetBoolAtom = atom({
+  key: 'previewWorksheetBoolAtom',
+  default: false,
+});
