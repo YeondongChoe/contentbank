@@ -82,14 +82,14 @@ export function Header() {
 
   return (
     <Container>
-      <IconWrapper onClick={moveMainpage} tabIndex={0}>
+      {/* <IconWrapper onClick={moveMainpage} tabIndex={0}>
         <MdAccountBalance
           style={{ fontSize: '50px', color: `${COLOR.PRIMARY}` }}
         />
-      </IconWrapper>
+      </IconWrapper> */}
 
       {/* 메인 메뉴 */}
-      <NavBarWrapper>
+      {/* <NavBarWrapper>
         {mainMenuList.map((menu) => (
           <button
             type="button"
@@ -115,7 +115,7 @@ export function Header() {
             </ul>
           </button>
         ))}
-      </NavBarWrapper>
+      </NavBarWrapper> */}
 
       {/* 사이드메뉴 */}
       <SideMenuWrapper>
@@ -131,11 +131,11 @@ export function Header() {
 }
 
 const Container = styled.div`
-  padding-top: 20px;
+  //padding-top: 20px;
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  height: 110px;
+  justify-content: flex-end;
+  height: 40px;
   border-bottom: 1px solid ${COLOR.SECONDARY};
 `;
 
@@ -221,7 +221,7 @@ const NavBarWrapper = styled.nav`
 
 const SideMenuWrapper = styled.div`
   display: flex;
-  align-items: flex-end;
+  //align-items: flex-end;
 
   a {
     display: flex;

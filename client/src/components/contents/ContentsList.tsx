@@ -236,17 +236,6 @@ export function ContentsList() {
     },
   ];
 
-  // const firstData = async () => {
-  //   const list = await questionInstance.get(
-  //     `/questions?keyword=${''}&page=${1}&size=${10}&menuCode=${'CNC_Q'}`,
-  //   );
-  //   setQuestionList(list.data.data.content);
-  // };
-
-  // useEffect(() => {
-  //   firstData();
-  // }, []);
-
   const loadData = useCallback(() => {
     getQuestionList({
       setQuestionList,
@@ -279,7 +268,19 @@ export function ContentsList() {
 
   return (
     <Container>
-      <IndexInfo list={['콘텐츠 제작', '문항', `${tabVeiw}`]} />
+      <TitleWrapper>
+        <Title>문항</Title>
+        <Button
+          height={'35px'}
+          width={'150px'}
+          $margin={'0 0 0 10px'}
+          onClick={openCreatePopup}
+        >
+          + 문항 업로드
+        </Button>
+      </TitleWrapper>
+
+      {/* <IndexInfo list={['콘텐츠 제작', '문항', `${tabVeiw}`]} /> */}
       <HeadWrapper>
         <TabMenu
           length={2}
@@ -288,16 +289,7 @@ export function ContentsList() {
           width={'250px'}
           setTabVeiw={setTabVeiw}
         />
-        <Button
-          height={'35px'}
-          width={'150px'}
-          $margin={'0 0 0 10px'}
-          onClick={openCreatePopup}
-        >
-          문항 업로드
-        </Button>
       </HeadWrapper>
-
       {/* 셀렉트 + 테이블 + 수정 비활성화 버튼 */}
       <TableWrapper>
         {/* 테이블 셀렉트 */}
@@ -346,16 +338,15 @@ export function ContentsList() {
           </ButtonWrapper>
         </InputWrapper>
 
-        <Table
+        {/* <Table
           list={questionList}
           colWidth={contentColWidth}
           theadList={contentTheadList}
           setIsEnabled={setIsEnabled}
           setSelectedRows={setSelectedRows}
-        />
+        /> */}
       </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
-
       <Alert
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
@@ -368,11 +359,20 @@ export function ContentsList() {
 }
 
 const Container = styled.div`
+  padding: 20px;
   width: 100%;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: 800;
 `;
 
 const HeadWrapper = styled.div`
-  width: 100%;
+  //width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -401,6 +401,6 @@ const InputWrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  min-height: 580px;
+  min-height: 700px;
   border-top: 1px solid ${COLOR.SECONDARY};
 `;
