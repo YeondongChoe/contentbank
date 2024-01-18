@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 
+import ReactDOM from 'react-dom';
 import { IoMdClose } from 'react-icons/io';
 import { SlPrinter } from 'react-icons/sl';
 import ReactToPrint from 'react-to-print';
@@ -20,19 +21,32 @@ import { MathViewer } from '../mathViewer/MathViewer';
 export function WorksheetBasic() {
   const [didMount, setDidMount] = useState(false);
   const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const list = [
     Contents2,
     Contents3,
-    Contents4,
-    Contents2,
     Contents3,
     Contents4,
+    Contents4,
+    Contents2,
+    Contents2,
+    Contents3,
+    Contents3,
+    Contents4,
+  ];
+  const list1 = [
+    Contents4,
+    Contents2,
+    Contents2,
+    Contents3,
+    Contents3,
+    Contents4,
+    Contents4,
+    Contents2,
     Contents2,
     Contents3,
   ];
-  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
-
   const ref = useRef(null);
 
   useEffect(() => {
@@ -44,10 +58,6 @@ export function WorksheetBasic() {
       //loadData();
     }
   }, [didMount]);
-
-  useEffect(() => {
-    // console.log(tabVeiw);
-  }, [totalPage]);
 
   return (
     <Container>
@@ -92,18 +102,25 @@ export function WorksheetBasic() {
               </InputWrapper>
             </HeaderRight>
           </MathViewerHeader>
-          <MathViewerList>
-            {list.map((card, i) => (
-              <div key={i}>
-                문제 {i + 1}.<MathViewer data={card} width="350px"></MathViewer>
-              </div>
-            ))}
+          <MathViewerList ref={containerRef}>
+            <MathViewerGroupLeft>
+              {list.map((card, i) => (
+                <>
+                  문제 {i + 1}.
+                  <MathViewer key={i} data={card} width="350px"></MathViewer>
+                </>
+              ))}
+            </MathViewerGroupLeft>
+            <MathViewerGroupRight>
+              {list1.map((card, i) => (
+                <>
+                  문제 {i + 1}.
+                  <MathViewer key={i} data={card} width="350px"></MathViewer>
+                </>
+              ))}
+            </MathViewerGroupRight>
           </MathViewerList>
         </MathViewerContainer>
-        <PaginationBox
-          itemsCountPerPage={4}
-          totalItemsCount={totalPage}
-        ></PaginationBox>
       </MathViewerWrapper>
     </Container>
   );
@@ -177,6 +194,7 @@ const ImageWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
+
 const InputWrapper = styled.div`
   display: flex;
   align-items: flex-end;
@@ -186,11 +204,14 @@ const Description = styled.div`
 `;
 const MathViewerList = styled.div`
   width: ${A4_WIDTH};
-  height: calc(${A4_HEIGHT} - 140px);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  flex-wrap: wrap;
+  justify-content: center;
   padding-top: 10px;
+  gap: 40px;
+`;
+const MathViewerGroupLeft = styled.div`
+  //height: ${A4_HEIGHT};
+`;
+const MathViewerGroupRight = styled.div`
+  //height: ${A4_HEIGHT};
 `;

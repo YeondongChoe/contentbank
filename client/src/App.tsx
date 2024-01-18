@@ -2,8 +2,10 @@ import * as React from 'react';
 
 import { Outlet, useLocation } from 'react-router-dom';
 import { RecoilRoot, useRecoilValue } from 'recoil';
+import styled from 'styled-components';
 
 import { Header } from './components/Header';
+import { Navigation } from './components/Navigation';
 import { Login } from './pages/members/Login';
 import { previewWorksheetBoolAtom } from './store/creatingWorksheetAtom';
 import { getAuthorityCookie } from './utils/cookies';
@@ -15,16 +17,26 @@ export function App() {
   return (
     <>
       <RecoilRoot>
-        {/* TODO: 쿼리스트링에 토큰이 있을시 메인으로 없을시 로그인페이지 */}
-
-        {!getAuthorityCookie('accessToken') && <Login />}
-        {location.pathname === '/' && <Login />}
-        {location.pathname !== '/login' && location.pathname !== '/' && (
-          <Header />
-        )}
-
-        <Outlet />
+        <Container>
+          {location.pathname !== '/login' &&
+            location.pathname !== '/firstlogin' &&
+            location.pathname !== '/relogin' && <Navigation />}
+          <MainWrapper>
+            {location.pathname !== '/login' &&
+              location.pathname !== '/firstlogin' &&
+              location.pathname !== '/relogin' && <Header />}
+            <Outlet />
+          </MainWrapper>
+        </Container>
       </RecoilRoot>
     </>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  height: 100vh;
+`;
+const MainWrapper = styled.div`
+  width: 100%;
+`;

@@ -61,9 +61,9 @@ export function MathViewer({ data, width }: MathViewerProps) {
             <ContentQuestion
               dangerouslySetInnerHTML={createMarkup(data.it_quest)}
             ></ContentQuestion>
-            <ContentAnswer
+            {/* <ContentAnswer
               dangerouslySetInnerHTML={createMarkup(data.it_answer[0])}
-            ></ContentAnswer>
+            ></ContentAnswer> */}
           </MathJax>
         </MathJaxContext>
       </Component>
@@ -81,12 +81,16 @@ const Component = styled.div<MathViewerStyleProps>`
   display: ${({ display }) => (display ? `${display}` : 'block')};
 `;
 const ContentQuestion = styled.div`
-  height: 150px;
+  //기본일때 50
+  //6문제일때 100
+  //4문제일때 200
+  //2문제일때 800
+  height: 400px;
 `;
 const ContentAnswer = styled.div`
   //기본일때 50
   //6문제일때 100
   //4문제일때 200
   //2문제일때 800
-  height: 50px;
+  height: 250px;
 `;

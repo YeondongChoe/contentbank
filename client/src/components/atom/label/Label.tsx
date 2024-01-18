@@ -45,6 +45,5 @@ const Component = styled.label<LabelStyleProps>`
   padding: ${({ $padding }) => ($padding ? ` ${$padding};` : '5px 0px')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '14px')};
-  ${({ $type }) =>
-    $type === 'error' ? 'color: #d32f2f;' : 'color: rgba(0, 0, 0, 0.6);'};
+  ${({ $type }) => ($type === 'error' ? 'color: #d32f2f;' : 'color: #8299D4;')};
 `;

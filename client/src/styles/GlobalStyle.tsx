@@ -36,8 +36,6 @@ fieldset {
 
 body {
 	margin: 0 auto;
-	max-width: 1024px;
-	background-color: #F4F7FE;
 	font-family: Consolas, monaco;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -50,13 +48,12 @@ code {
 }
 
 /* 타블릿 사이즈 */
-@media screen and (max-width:1024px) {
+/* @media screen and (max-width:1024px) {
 	body {
 	margin: 0;
-	max-width: 1024px;
 	padding: 0 20px;
 	}
-}
+} */
 `;
 
 export default GlobalStyle;

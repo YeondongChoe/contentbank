@@ -1,6 +1,11 @@
 export const COLOR = {
-  PRIMARY: '#1565c0',
-  SECONDARY: '#1976d2;',
+  PRIMARY: '#358aff',
+  SECONDARY: '#3e5798',
+  WARNING: '#ffcc06',
+  MUTE: '#aaaaaa',
+  SUCCESS: '#11c218',
+  ERROR: '#ff523e',
+
   HOVER: '#f4f7fe',
   BLACK: '#262525',
   LIGHT_GRAY: '#ededed',
@@ -11,8 +16,6 @@ export const COLOR = {
   TEXT_LIGHT_GRAY: '#bcb3c5',
   RED: '#ff0000',
   BLUEGREEN: '#15979e',
-  ERROR: '#d32f2f',
-  SUCCESS: '#008000',
   BORDER_GRAY: '#e9ecef',
   BORDER_BLUE: '#a3aed0',
   BORDER_POPUP: '#5f86fc',
