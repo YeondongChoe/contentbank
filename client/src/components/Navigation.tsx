@@ -22,7 +22,9 @@ export function Navigation() {
         <NavigationMenu>
           <Label value={'콘텐츠 제작'} fontSize="14px"></Label>
           <li>문항</li>
-          <li>학습지</li>
+          <li>
+            <Link to={'/contentworksheet'}>학습지</Link>
+          </li>
         </NavigationMenu>
         <NavigationMenu>
           <Label value={'콘텐츠 관리'}></Label>
@@ -71,6 +73,10 @@ const NavigationMenu = styled.ol`
   li {
     padding: 10px;
     cursor: pointer;
+
+    a {
+      color: white;
+    }
 
     &:hover {
       background-color: #5a76be;
