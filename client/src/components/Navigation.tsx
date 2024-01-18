@@ -21,7 +21,7 @@ export function Navigation() {
       <NavigationMenuWrapper>
         <NavigationMenu>
           <Label value={'콘텐츠 제작'} fontSize="14px"></Label>
-          <li>문항.</li>
+          <li>문항</li>
           <li>학습지</li>
         </NavigationMenu>
         <NavigationMenu>
