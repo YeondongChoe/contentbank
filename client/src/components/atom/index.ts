@@ -1,5 +1,6 @@
 export * from './button';
 export * from './barChart';
+export * from './contentCard';
 export * from './input';
 export * from './label';
 export * from './select';

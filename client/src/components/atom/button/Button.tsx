@@ -18,6 +18,9 @@ type ButtonProps = {
   $borderRadius?: string;
   $border?: boolean;
   disabled?: boolean;
+  $filled?: boolean;
+  isChecked?: boolean;
+  $normal?: boolean;
 };
 
 export function Button({
@@ -34,6 +37,9 @@ export function Button({
   $borderRadius,
   $border,
   disabled,
+  $filled,
+  $normal,
+  isChecked,
 }: ButtonProps) {
   return (
     <Component
@@ -48,6 +54,9 @@ export function Button({
       $borderRadius={$borderRadius}
       $border={$border}
       disabled={disabled}
+      $filled={$filled}
+      $isChecked={isChecked}
+      $normal={$normal}
     >
       {children ? children : text}
     </Component>
@@ -63,6 +72,9 @@ type ButtonStyleProps = {
   $borderRadius?: string;
   $border?: boolean;
   disabled?: boolean;
+  $filled?: boolean;
+  $isChecked?: boolean;
+  $normal?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -77,11 +89,22 @@ const Component = styled.button<ButtonStyleProps>`
   font-weight: bold;
   border-radius: ${({ $borderRadius }) =>
     $borderRadius ? `${$borderRadius};` : '5px'};
-  background-color: ${({ $border, disabled }) =>
+  ${(props) =>
+    props.$isChecked
+      ? `background-color: ${COLOR.BUTTON_LIGHT_NORMAL}; color: white; border: none;`
+      : `background-color: ${COLOR.BUTTON_NORMAL}; color: ${COLOR.FONT_BLACK}; border: none;`}
+  ${(props) =>
+    props.$filled &&
+    `background-color: ${COLOR.PRIMARY}; color: white; border: none;`}
+  ${(props) =>
+    props.$normal &&
+    `background-color: white; color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`}
+
+  /* background-color: ${({ $border, disabled }) =>
     $border
       ? disabled
         ? `background-color:${COLOR.LIGHT_GRAY};`
-        : ` #fff;`
+        : ` #D9D9D9;`
       : `${COLOR.PRIMARY};`};
   color: ${({ $border }) => ($border ? `${COLOR.PRIMARY};` : '#fff')};
   ${({ $border, disabled }) =>
@@ -89,9 +112,9 @@ const Component = styled.button<ButtonStyleProps>`
       ? disabled
         ? `border:none;`
         : `border: 1px solid ${COLOR.PRIMARY};`
-      : 'border: none;'};
+      : 'border: none;'}; */
   cursor: pointer;
   ${({ disabled }) =>
     disabled === true &&
-    `border:none; color:${COLOR.GRAY} ;background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
+    `border:none; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
 `;

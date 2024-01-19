@@ -42,6 +42,7 @@ export function DropDown({
         height={buttonHeight}
         fontSize="14px"
         $border
+        $borderRadius="7px"
         onClick={() => setShowDropDown(!showDropDown)}
         disabled={disabled}
       >

@@ -5,6 +5,10 @@ export const COLOR = {
   MUTE: '#aaaaaa',
   SUCCESS: '#11c218',
   ERROR: '#ff523e',
+  BORDER_GRAY: '#D1D1D1',
+  FONT_BLACK: '#252525',
+  BUTTON_NORMAL: '#d9d9d9',
+  BUTTON_LIGHT_NORMAL: '#d9d9d9',
 
   HOVER: '#f4f7fe',
   BLACK: '#262525',
@@ -16,7 +20,6 @@ export const COLOR = {
   TEXT_LIGHT_GRAY: '#bcb3c5',
   RED: '#ff0000',
   BLUEGREEN: '#15979e',
-  BORDER_GRAY: '#e9ecef',
   BORDER_BLUE: '#a3aed0',
   BORDER_POPUP: '#5f86fc',
   SELECT_HOVER: '#422afb',

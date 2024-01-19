@@ -1,48 +1,30 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
-import { MdAccountBalance } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { openNaviationBoolAtom } from '../store/utilAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
+import { IndexInfo } from './atom';
 import { COLOR } from './constants';
 
 export function Header() {
+  const [isOpenNavigation, setIsOpenNavigation] = useRecoilState(
+    openNaviationBoolAtom,
+  );
+
   const navigate = useNavigate();
 
-  // 메인메뉴 버튼 이벤트
-  // 1뎁스 네비버튼 이벤트
-  const handleShowList = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.preventDefault();
-    const currentButton = event.currentTarget.tabIndex;
-    const currentTargetUl = event.currentTarget.children[1].className;
-    if (currentButton === Number(currentTargetUl)) {
-      event.currentTarget.children[1].classList.add('show');
-    }
-  };
-  const handleRemoveList = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.currentTarget.children[1].classList.remove('show');
-  };
-  //2뎁스 네비버튼 이벤트
-  const removeClass = (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-  ) => {
-    event.currentTarget.parentElement?.parentElement?.classList.remove('show');
+  const openNavigation = () => {
+    setIsOpenNavigation(!isOpenNavigation);
   };
 
   // 사이드메뉴 로그아웃 시
   const removeCookie = () => {
     removeAuthorityCookie('accessToken');
-  };
-
-  const moveMainpage = () => {
-    navigate('/contentlist');
   };
 
   useEffect(() => {
@@ -53,69 +35,25 @@ export function Header() {
     }
   }, []);
 
-  const mainMenuList = [
-    {
-      firstTItle: '콘텐츠 제작',
-      tabIndex: 1,
-      menuList: [
-        { title: '문항', link: '/contentlist', tabIndex: 2 },
-        { title: '학습지', link: '/contentworksheet', tabIndex: 3 },
-      ],
-    },
-    {
-      firstTItle: '콘텐츠 관리',
-      tabIndex: 4,
-      menuList: [
-        { title: '문항', link: '/managementlist', tabIndex: 5 },
-        { title: '문항 트리 구조', link: '/managementtree', tabIndex: 6 },
-      ],
-    },
-    {
-      firstTItle: '운영관리',
-      tabIndex: 7,
-      menuList: [
-        { title: '회원관리', link: '/operationmember', tabIndex: 8 },
-        { title: '권한관리', link: '/operationauthority', tabIndex: 9 },
-      ],
-    },
-  ];
-
   return (
-    <Container>
-      {/* <IconWrapper onClick={moveMainpage} tabIndex={0}>
-        <MdAccountBalance
-          style={{ fontSize: '50px', color: `${COLOR.PRIMARY}` }}
-        />
-      </IconWrapper> */}
-
-      {/* 메인 메뉴 */}
-      {/* <NavBarWrapper>
-        {mainMenuList.map((menu) => (
-          <button
-            type="button"
-            key={menu.firstTItle}
-            tabIndex={menu.tabIndex}
-            onMouseEnter={(event) => handleShowList(event)}
-            onMouseLeave={(event) => handleRemoveList(event)}
+    <Container $isOpenNavigation={isOpenNavigation}>
+      <Wrapper>
+        <IconWrapper onClick={openNavigation}>
+          <svg
+            width="30"
+            height="30"
+            viewBox="0 0 30 30"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <strong>{menu.firstTItle}</strong>
-
-            <ul className={`${menu.tabIndex} `}>
-              {menu.menuList.map((list) => (
-                <li key={list.title}>
-                  <Link
-                    onClick={(event) => removeClass(event)}
-                    to={list.link}
-                    tabIndex={list.tabIndex}
-                  >
-                    {list.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </button>
-        ))}
-      </NavBarWrapper> */}
+            <path
+              d="M25 6.61111L25 24.3889L12.7778 24.3889L12.7778 22.1667L22.7778 22.1667L22.7778 8.83333L12.7778 8.83333L12.7778 6.61111L25 6.61111ZM5 25.5L5 5.5L11.6667 5.5L11.6667 25.5L5 25.5ZM7.22222 23.2778L9.44444 23.2778L9.44444 7.72222L7.22222 7.72222M20.5556 17.1667L17.2222 17.1667L17.2222 19.9444L12.7778 15.5L17.2222 11.0556L17.2222 13.8333L20.5556 13.8333"
+              fill="#252525"
+            />
+          </svg>
+        </IconWrapper>
+        <IndexInfo list={['콘텐츠 제작', '문항']} />
+      </Wrapper>
 
       {/* 사이드메뉴 */}
       <SideMenuWrapper>
@@ -130,105 +68,39 @@ export function Header() {
   );
 }
 
-const Container = styled.div`
-  //padding-top: 20px;
-  width: 100%;
+const Container = styled.div<{ $isOpenNavigation: boolean }>`
+  position: fixed;
+  top: 0;
+  ${(props) =>
+    props.$isOpenNavigation ? 'width: calc(100% - 250px);' : 'width: 100%;'}
   display: flex;
   justify-content: flex-end;
   height: 40px;
-  border-bottom: 1px solid ${COLOR.SECONDARY};
+  padding: 0 40px 0 20px;
+  z-index: 100;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+`;
+const Wrapper = styled.div`
+  display: flex;
+  flex: 1 0 0;
 `;
 
 const IconWrapper = styled.div`
-  width: 50px;
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  padding-right: 20px;
   cursor: pointer;
-`;
-
-const NavBarWrapper = styled.nav`
-  display: flex;
-  align-items: center;
-  flex: 1 0 0;
-  font-size: 20px;
-
-  > button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px 20px;
-    border: none;
-    background-color: transparent;
-    position: relative;
-    transition: all 0.5s;
-    z-index: 1;
-
-    &:hover,
-    :active {
-      > strong {
-        color: ${COLOR.PRIMARY};
-      }
-    }
-
-    cursor: pointer;
-    > strong {
-      font-size: 20px;
-      color: ${COLOR.DARK_GRAY};
-    }
-
-    ul {
-      display: none;
-      position: absolute;
-      top: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #fff;
-      border: 1px solid ${COLOR.LIGHT_GRAY};
-      border-radius: 5px;
-
-      &.show {
-        display: block;
-      }
-
-      li {
-        width: 140px;
-        height: 35px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        a {
-          font-size: 14px;
-          font-weight: bold;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100%;
-          color: ${COLOR.DARK_GRAY};
-          transition: all 0.1s;
-          z-index: 2;
-
-          &:hover {
-            background-color: ${COLOR.HOVER};
-          }
-        }
-      }
-    }
-  }
 `;
 
 const SideMenuWrapper = styled.div`
   display: flex;
-  //align-items: flex-end;
 
   a {
     display: flex;
     align-items: center;
     font-size: 14px;
     font-weight: bold;
-    color: ${COLOR.SECONDARY};
+    color: ${COLOR.FONT_BLACK};
     padding: 5px 10px;
     text-decoration: none;
     position: relative;

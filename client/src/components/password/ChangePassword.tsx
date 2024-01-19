@@ -58,6 +58,10 @@ export function ChangePassword({
     });
   };
 
+  const enterLogin = () => {
+    submitChangePassword();
+  };
+
   return (
     <Container>
       <form>
@@ -154,7 +158,7 @@ export function ChangePassword({
               height={height}
               fontSize={buttonfontsize}
               $borderRadius="10px"
-              $border
+              $normal
             >
               <span>취소</span>
             </Button>
@@ -162,11 +166,18 @@ export function ChangePassword({
           {PasswordConfirm && isValid ? (
             <ButtonWapper>
               <Button
+                buttonType="submit"
                 onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
                 $borderRadius="10px"
+                $filled
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                  }
+                }}
               >
                 <span>확인</span>
               </Button>
@@ -174,12 +185,17 @@ export function ChangePassword({
           ) : (
             <ButtonWapper>
               <Button
+                buttonType="submit"
                 onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
                 $borderRadius="10px"
-                $border
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                  }
+                }}
               >
                 <span>확인</span>
               </Button>
