@@ -22,7 +22,7 @@ export function Navigation() {
         <NavigationMenu>
           <Label value={'콘텐츠 제작'} fontSize="14px"></Label>
           <Link to={'/contentlist'}>
-            <li>문항</li>
+            <li>문항.</li>
           </Link>
           <Link to={'/contentworksheet'}>
             <li>학습지</li>
