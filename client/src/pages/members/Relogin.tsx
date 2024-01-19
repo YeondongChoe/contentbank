@@ -27,6 +27,7 @@ export function Relogin() {
           fontSize="18px"
           $borderRadius="10px"
           $border
+          $normal
         >
           <span>로그인 하러 가기</span>
         </Button>

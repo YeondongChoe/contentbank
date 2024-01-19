@@ -19,3 +19,8 @@ export const updateBoolAtom = atom({
   key: 'updateBoolAtom',
   default: false,
 });
+
+export const openNaviationBoolAtom = atom({
+  key: 'openNaviationBoolAtom',
+  default: true,
+});

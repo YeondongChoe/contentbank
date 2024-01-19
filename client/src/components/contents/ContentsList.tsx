@@ -18,6 +18,7 @@ import {
   Select,
   TabMenu,
   Table,
+  ContentCard,
 } from '../../components';
 import {
   COLOR,
@@ -54,9 +55,8 @@ export function ContentsList() {
 
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
-  const size = 10;
+  const size = 7;
   const MenuCode = useRecoilValue(createListCodeValueAtom);
-  // const [pageNumber, setPageNumber] = useState(1);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
@@ -68,6 +68,33 @@ export function ContentsList() {
   const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  const [isAllchecked, setIsAllChecked] = useState<boolean>(false);
+
+  const handleAllCheck = () => {
+    setIsAllChecked(!isAllchecked);
+  };
+
+  const [checkList, setCheckList] = useState<number[]>([]);
+
+  // 체크박스 설정
+  // 데이터 고유id값 seq : 기획 발표이후 변경될 수 있음
+  // const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (event.target.checked) {
+  //     setCheckList(questionList.map((item) => item.seq as number));
+  //     setIsEnabled(false);
+  //   } else {
+  //     setCheckList([]);
+  //     setIsEnabled(true);
+  //   }
+  // };
+  const handleSingleCheck = (checked: boolean, seq: number) => {
+    if (checked) {
+      setCheckList((prev) => [...prev, seq]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== seq));
+    }
+  };
 
   // 활성화/비활성화 버튼상태 토글
   const submitChangingService = () => {
@@ -276,12 +303,11 @@ export function ContentsList() {
           $margin={'0 0 0 10px'}
           onClick={openCreatePopup}
           fontSize="13px"
+          $filled
         >
           + 문항 업로드
         </Button>
       </TitleWrapper>
-
-      {/* <IndexInfo list={['콘텐츠 제작', '문항', `${tabVeiw}`]} /> */}
       <HeadWrapper>
         <TabMenu
           length={2}
@@ -290,10 +316,19 @@ export function ContentsList() {
           width={'250px'}
           setTabVeiw={setTabVeiw}
         />
+        <Search
+          value={value}
+          onClick={() => filterSearchValue()}
+          onKeyDown={(e) => {}}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="문항코드, 중단원, 담당자 검색"
+          width={'25%'}
+        />
       </HeadWrapper>
       {/* 셀렉트 + 테이블 + 수정 비활성화 버튼 */}
       <TableWrapper>
         {/* 테이블 셀렉트 */}
+        {/* Total 18,293 */}
         <SelectWrapper>
           {selectCategory.map((el) => (
             <Select
@@ -306,17 +341,54 @@ export function ContentsList() {
           ))}
         </SelectWrapper>
         {/* 테이블 수정 + 활성화 버튼 */}
-        <InputWrapper>
-          <Search
-            value={value}
-            onClick={() => filterSearchValue()}
-            onKeyDown={(e) => {}}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="이름, 권한 검색"
-            margin={'0 20px 0 0'}
-            width={'50%'}
-          />
-          <ButtonWrapper>
+        <ButtonWrapper>
+          <AllCheckButtonWrapper>
+            {isAllchecked ? (
+              <div onClick={handleAllCheck}>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  cursor={'pointer'}
+                >
+                  <circle
+                    cx="10"
+                    cy="10"
+                    r="9.5"
+                    fill="white"
+                    stroke="#A0A0A0"
+                  />
+                  <path
+                    d="M16 6.84116L8.45714 14L5 10.7189L5.88629 9.8777L8.45714 12.3117L15.1137 6L16 6.84116Z"
+                    fill="#4A4A4A"
+                  />
+                </svg>
+              </div>
+            ) : (
+              <div onClick={handleAllCheck}>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  cursor={'pointer'}
+                >
+                  <circle
+                    cx="10"
+                    cy="10"
+                    r="9.5"
+                    fill="white"
+                    stroke="#A0A0A0"
+                  />
+                </svg>
+              </div>
+            )}
+            전체선택
+          </AllCheckButtonWrapper>
+          <ActionButtonWrapper>
             <DropDown
               list={dropDownList}
               buttonText={'수정'}
@@ -325,10 +397,11 @@ export function ContentsList() {
               disabled={isEnabled}
             ></DropDown>
             <Button
-              width="150px"
+              width="140px"
               height="35px"
               fontSize="14px"
               $border
+              $borderRadius="7px"
               onClick={() => {
                 submitChangingService();
               }}
@@ -336,9 +409,16 @@ export function ContentsList() {
             >
               활성화 / 비활성화
             </Button>
-          </ButtonWrapper>
-        </InputWrapper>
-
+          </ActionButtonWrapper>
+        </ButtonWrapper>
+        <ContentCardWrapper>
+          {questionList.map((content) => (
+            <ContentCard
+              key={content.questionCode}
+              content={content}
+            ></ContentCard>
+          ))}
+        </ContentCardWrapper>
         {/* <Table
           list={questionList}
           colWidth={contentColWidth}
@@ -347,7 +427,7 @@ export function ContentsList() {
           setSelectedRows={setSelectedRows}
         /> */}
       </TableWrapper>
-      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+      <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
       <Alert
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
@@ -360,48 +440,57 @@ export function ContentsList() {
 }
 
 const Container = styled.div`
-  padding: 20px;
+  padding: 40px 100px;
   width: 100%;
 `;
 const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  padding-bottom: 20px;
 `;
 const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
 `;
-
 const HeadWrapper = styled.div`
-  //width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-bottom: 10px;
 `;
-
 const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 5px;
-  padding: 10px;
+  padding-bottom: 20px;
 `;
-
 const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+`;
+const AllCheckButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  gap: 10px;
+`;
+const ActionButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 5px;
 `;
-
-const InputWrapper = styled.div`
+const ContentCardWrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  padding-top: 0;
+  flex-direction: column;
+  gap: 10px;
+
+  padding-bottom: 30px;
 `;
 
 const TableWrapper = styled.div`
-  min-height: 700px;
-  border-top: 1px solid ${COLOR.SECONDARY};
+  //min-height: 670px;
 `;
