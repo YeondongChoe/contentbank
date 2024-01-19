@@ -440,7 +440,7 @@ export function ContentsList() {
 }
 
 const Container = styled.div`
-  padding: 40px 100px;
+  padding: 40px 80px;
   width: 100%;
 `;
 const TitleWrapper = styled.div`
@@ -487,7 +487,6 @@ const ContentCardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-
   padding-bottom: 30px;
 `;
 

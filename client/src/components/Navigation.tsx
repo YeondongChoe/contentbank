@@ -188,7 +188,7 @@ const IconWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-bottom: 20px;
+  padding: 20px 0;
 `;
 const NavigationMenuWrapper = styled.div`
   width: 230px;
