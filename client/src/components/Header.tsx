@@ -76,7 +76,7 @@ const Container = styled.div<{ $isOpenNavigation: boolean }>`
   display: flex;
   justify-content: flex-end;
   height: 40px;
-  padding: 0 40px 0 20px;
+  padding: 0 20px;
   z-index: 100;
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
