@@ -99,6 +99,10 @@ const Component = styled.button<ButtonStyleProps>`
   ${(props) =>
     props.$normal &&
     `background-color: white; color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`}
+${({ disabled }) =>
+    disabled === true &&
+    `border:none; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
+  cursor: pointer;
 
   /* background-color: ${({ $border, disabled }) =>
     $border
@@ -113,8 +117,4 @@ const Component = styled.button<ButtonStyleProps>`
         ? `border:none;`
         : `border: 1px solid ${COLOR.PRIMARY};`
       : 'border: none;'}; */
-  cursor: pointer;
-  ${({ disabled }) =>
-    disabled === true &&
-    `border:none; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
 `;

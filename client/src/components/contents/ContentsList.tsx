@@ -8,6 +8,7 @@ import { questionInstance } from '../../api/axios';
 import { getQuestionList } from '../../api/getAxios';
 import { putChangeServiced } from '../../api/putAxios';
 import {
+  ContentList,
   Alert,
   Button,
   DropDown,
@@ -75,26 +76,9 @@ export function ContentsList() {
     setIsAllChecked(!isAllchecked);
   };
 
-  const [checkList, setCheckList] = useState<number[]>([]);
-
-  // 체크박스 설정
-  // 데이터 고유id값 seq : 기획 발표이후 변경될 수 있음
-  // const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (event.target.checked) {
-  //     setCheckList(questionList.map((item) => item.seq as number));
-  //     setIsEnabled(false);
-  //   } else {
-  //     setCheckList([]);
-  //     setIsEnabled(true);
-  //   }
-  // };
-  const handleSingleCheck = (checked: boolean, seq: number) => {
-    if (checked) {
-      setCheckList((prev) => [...prev, seq]);
-    } else {
-      setCheckList(checkList.filter((el) => el !== seq));
-    }
-  };
+  useEffect(() => {
+    setIsAllChecked(false);
+  }, [page]);
 
   // 활성화/비활성화 버튼상태 토글
   const submitChangingService = () => {
@@ -246,7 +230,7 @@ export function ContentsList() {
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const dropDownList: DropDownItemProps[] = [
     {
-      key: 'ListTabl/d수정',
+      key: 'ListTabl/수정',
       title: '수정',
       onClick: () => {
         openCreateEditFilePopup();
@@ -341,17 +325,21 @@ export function ContentsList() {
           ))}
         </SelectWrapper>
         {/* 테이블 수정 + 활성화 버튼 */}
-        <ButtonWrapper>
-          <AllCheckButtonWrapper>
+        <ContentList
+          openPopup={openCreateEditFilePopup}
+          list={questionList}
+          onClick={submitChangingService}
+        ></ContentList>
+        {/* <ButtonWrapper>
+          <AllCheckButtonWrapper onClick={handleAllCheck}>
             {isAllchecked ? (
-              <div onClick={handleAllCheck}>
+              <div>
                 <svg
                   width="20"
                   height="20"
                   viewBox="0 0 20 20"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  cursor={'pointer'}
                 >
                   <circle
                     cx="10"
@@ -367,14 +355,13 @@ export function ContentsList() {
                 </svg>
               </div>
             ) : (
-              <div onClick={handleAllCheck}>
+              <div>
                 <svg
                   width="20"
                   height="20"
                   viewBox="0 0 20 20"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  cursor={'pointer'}
                 >
                   <circle
                     cx="10"
@@ -411,14 +398,17 @@ export function ContentsList() {
             </Button>
           </ActionButtonWrapper>
         </ButtonWrapper>
+
         <ContentCardWrapper>
           {questionList.map((content) => (
             <ContentCard
               key={content.questionCode}
               content={content}
+              allChecked={isAllchecked ? [content.contentSeq] : []}
+              onClick={() => setIsEnabled(false)}
             ></ContentCard>
           ))}
-        </ContentCardWrapper>
+        </ContentCardWrapper> */}
         {/* <Table
           list={questionList}
           colWidth={contentColWidth}
@@ -476,6 +466,7 @@ const AllCheckButtonWrapper = styled.div`
   align-items: center;
   padding-left: 20px;
   gap: 10px;
+  cursor: pointer;
 `;
 const ActionButtonWrapper = styled.div`
   display: flex;
