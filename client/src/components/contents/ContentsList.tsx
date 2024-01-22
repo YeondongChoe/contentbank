@@ -8,6 +8,7 @@ import { questionInstance } from '../../api/axios';
 import { getQuestionList } from '../../api/getAxios';
 import { putChangeServiced } from '../../api/putAxios';
 import {
+  ContentList,
   Alert,
   Button,
   DropDown,
@@ -229,7 +230,7 @@ export function ContentsList() {
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const dropDownList: DropDownItemProps[] = [
     {
-      key: 'ListTabl/d수정',
+      key: 'ListTabl/수정',
       title: '수정',
       onClick: () => {
         openCreateEditFilePopup();
@@ -324,7 +325,12 @@ export function ContentsList() {
           ))}
         </SelectWrapper>
         {/* 테이블 수정 + 활성화 버튼 */}
-        <ButtonWrapper>
+        <ContentList
+          openPopup={openCreateEditFilePopup}
+          list={questionList}
+          onClick={submitChangingService}
+        ></ContentList>
+        {/* <ButtonWrapper>
           <AllCheckButtonWrapper onClick={handleAllCheck}>
             {isAllchecked ? (
               <div>
@@ -392,15 +398,17 @@ export function ContentsList() {
             </Button>
           </ActionButtonWrapper>
         </ButtonWrapper>
+
         <ContentCardWrapper>
           {questionList.map((content) => (
             <ContentCard
               key={content.questionCode}
               content={content}
               allChecked={isAllchecked ? [content.contentSeq] : []}
+              onClick={() => setIsEnabled(false)}
             ></ContentCard>
           ))}
-        </ContentCardWrapper>
+        </ContentCardWrapper> */}
         {/* <Table
           list={questionList}
           colWidth={contentColWidth}

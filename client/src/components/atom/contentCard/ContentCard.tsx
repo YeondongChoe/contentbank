@@ -11,13 +11,20 @@ import { Button } from '../button';
 
 type ContentCardProps = {
   content: QuestionTableType;
-  allChecked: number[];
+  setIsEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  isEnabled: boolean;
+  checkList: number[];
+  setCheckList: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
-export function ContentCard({ content, allChecked }: ContentCardProps) {
+export function ContentCard({
+  content,
+  checkList,
+  setCheckList,
+  isEnabled,
+  setIsEnabled,
+}: ContentCardProps) {
   const page = useRecoilValue(pageAtom);
-
-  const [checkList, setCheckList] = useState<number[]>([]);
 
   const handleSingleCheck = (checked: boolean, seq: number) => {
     if (checked) {
@@ -26,12 +33,9 @@ export function ContentCard({ content, allChecked }: ContentCardProps) {
       setCheckList(checkList.filter((el) => el !== seq));
     }
   };
+
   const isChecked =
     content.contentSeq !== undefined && checkList.includes(content.contentSeq);
-
-  useEffect(() => {
-    setCheckList(allChecked);
-  }, [allChecked]);
 
   useEffect(() => {
     setCheckList([]);
@@ -41,48 +45,29 @@ export function ContentCard({ content, allChecked }: ContentCardProps) {
     <Component>
       <Wrapper $isChecked={isChecked}>
         <IconWrapper>
+          <div style={{ cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              onChange={(e) =>
+                handleSingleCheck(
+                  e.target.checked,
+                  content.contentSeq as number,
+                )
+              }
+              // 체크된 아이템 배열에 해당 아이템이 있을 경우 선택 활성화, 아닐 시 해제
+              checked={
+                checkList.includes(content.contentSeq as number) ? true : false
+              }
+            />
+          </div>
           {isChecked ? (
-            <div>
+            <div style={{ cursor: 'pointer' }}>
               <svg
                 width="20"
                 height="20"
                 viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                cursor={'pointer'}
-                onClick={() => handleSingleCheck(false, content.contentSeq)}
-              >
-                <circle cx="10" cy="10" r="9.5" fill="white" stroke="#A0A0A0" />
-                <path
-                  d="M16 6.84116L8.45714 14L5 10.7189L5.88629 9.8777L8.45714 12.3117L15.1137 6L16 6.84116Z"
-                  fill="#4A4A4A"
-                />
-              </svg>
-            </div>
-          ) : (
-            <div>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                cursor={'pointer'}
-                onClick={() => handleSingleCheck(true, content.contentSeq)}
-              >
-                <circle cx="10" cy="10" r="9.5" fill="white" stroke="#A0A0A0" />
-              </svg>
-            </div>
-          )}
-          {isChecked ? (
-            <div>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                cursor={'pointer'}
               >
                 <path
                   d="M0.531331 0C0.219736 0.0390547 -0.00502249 0.222442 8.5322e-05 0.434695V19.5613C-0.00246858 19.7175 0.12268 19.8618 0.324452 19.9399C0.526224 20.0197 0.776522 20.0197 0.980847 19.9416L8.5 16L16.0192 19.9416C16.2235 20.0197 16.4738 20.0197 16.6756 19.9399C16.8774 19.8618 17.0025 19.7175 17 19.5613V0.434695C17 0.195273 16.7062 0 16.3461 0H0.653927C0.633494 0 0.613062 0 0.592629 0C0.572197 0 0.551764 0 0.531331 0ZM1.30777 0.86939H15.6923V18.8006L8.925 15.2C8.72323 15.1219 8.27677 15.1219 8.075 15.2L1.30777 18.8006V0.86939Z"
@@ -91,14 +76,13 @@ export function ContentCard({ content, allChecked }: ContentCardProps) {
               </svg>
             </div>
           ) : (
-            <div>
+            <div style={{ cursor: 'pointer' }}>
               <svg
                 width="20"
                 height="20"
                 viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                cursor={'pointer'}
               >
                 <path
                   d="M0.531331 0C0.219736 0.0390547 -0.00502249 0.222442 8.5322e-05 0.434695V19.5613C-0.00246858 19.7175 0.12268 19.8618 0.324452 19.9399C0.526224 20.0197 0.776522 20.0197 0.980847 19.9416L8.5 16L16.0192 19.9416C16.2235 20.0197 16.4738 20.0197 16.6756 19.9399C16.8774 19.8618 17.0025 19.7175 17 19.5613V0.434695C17 0.195273 16.7062 0 16.3461 0H0.653927C0.633494 0 0.613062 0 0.592629 0C0.572197 0 0.551764 0 0.531331 0ZM1.30777 0.86939H15.6923V18.8006L8.925 15.2C8.72323 15.1219 8.27677 15.1219 8.075 15.2L1.30777 18.8006V0.86939Z"
@@ -217,17 +201,20 @@ export function ContentCard({ content, allChecked }: ContentCardProps) {
   );
 }
 
-const Component = styled.div`
+const Component = styled.li`
   width: 100%;
   height: 80px;
   border: 1px solid ${COLOR.BORDER_GRAY};
   border-radius: 10px;
 `;
-const Wrapper = styled.div<{ $isChecked: boolean }>`
+const Wrapper = styled.button<{ $isChecked?: boolean }>`
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   padding: 20px;
+  border-radius: 10px;
+  border: none;
   ${({ $isChecked }) =>
     $isChecked &&
     `background-color: ${COLOR.SECONDARY}; color: white; border-radius: 10px;`}

@@ -2,6 +2,7 @@ export * from './search';
 export * from './alert';
 export * from './tapMenu';
 export * from './dropDown';
+export * from './contentList';
 export * from './mathViewerCard';
 export * from './table';
 export * from './pagination';
