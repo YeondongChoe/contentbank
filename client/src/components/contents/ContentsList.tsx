@@ -75,26 +75,9 @@ export function ContentsList() {
     setIsAllChecked(!isAllchecked);
   };
 
-  const [checkList, setCheckList] = useState<number[]>([]);
-
-  // 체크박스 설정
-  // 데이터 고유id값 seq : 기획 발표이후 변경될 수 있음
-  // const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (event.target.checked) {
-  //     setCheckList(questionList.map((item) => item.seq as number));
-  //     setIsEnabled(false);
-  //   } else {
-  //     setCheckList([]);
-  //     setIsEnabled(true);
-  //   }
-  // };
-  const handleSingleCheck = (checked: boolean, seq: number) => {
-    if (checked) {
-      setCheckList((prev) => [...prev, seq]);
-    } else {
-      setCheckList(checkList.filter((el) => el !== seq));
-    }
-  };
+  useEffect(() => {
+    setIsAllChecked(false);
+  }, [page]);
 
   // 활성화/비활성화 버튼상태 토글
   const submitChangingService = () => {
@@ -416,6 +399,7 @@ export function ContentsList() {
             <ContentCard
               key={content.questionCode}
               content={content}
+              allChecked={isAllchecked ? [content.contentSeq] : []}
             ></ContentCard>
           ))}
         </ContentCardWrapper>

@@ -1,28 +1,48 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
+import { useRecoilValue } from 'recoil';
 import { styled } from 'styled-components';
 
+import { pageAtom } from '../../../store/utilAtom';
 import { QuestionTableType } from '../../../types';
 import { COLOR } from '../../constants';
 import { Button } from '../button';
 
 type ContentCardProps = {
   content: QuestionTableType;
+  allChecked: number[];
 };
 
-export function ContentCard({ content }: ContentCardProps) {
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+export function ContentCard({ content, allChecked }: ContentCardProps) {
+  const page = useRecoilValue(pageAtom);
 
-  const handleCheck = () => {
-    setIsChecked(!isChecked);
+  const [checkList, setCheckList] = useState<number[]>([]);
+
+  const handleSingleCheck = (checked: boolean, seq: number) => {
+    if (checked) {
+      setCheckList((prev) => [...prev, seq]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== seq));
+    }
   };
+  const isChecked =
+    content.contentSeq !== undefined && checkList.includes(content.contentSeq);
+
+  useEffect(() => {
+    setCheckList(allChecked);
+  }, [allChecked]);
+
+  useEffect(() => {
+    setCheckList([]);
+  }, [page]);
+
   return (
     <Component>
       <Wrapper $isChecked={isChecked}>
         <IconWrapper>
           {isChecked ? (
-            <div onClick={handleCheck}>
+            <div>
               <svg
                 width="20"
                 height="20"
@@ -30,6 +50,7 @@ export function ContentCard({ content }: ContentCardProps) {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 cursor={'pointer'}
+                onClick={() => handleSingleCheck(false, content.contentSeq)}
               >
                 <circle cx="10" cy="10" r="9.5" fill="white" stroke="#A0A0A0" />
                 <path
@@ -39,7 +60,7 @@ export function ContentCard({ content }: ContentCardProps) {
               </svg>
             </div>
           ) : (
-            <div onClick={handleCheck}>
+            <div>
               <svg
                 width="20"
                 height="20"
@@ -47,6 +68,7 @@ export function ContentCard({ content }: ContentCardProps) {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 cursor={'pointer'}
+                onClick={() => handleSingleCheck(true, content.contentSeq)}
               >
                 <circle cx="10" cy="10" r="9.5" fill="white" stroke="#A0A0A0" />
               </svg>
