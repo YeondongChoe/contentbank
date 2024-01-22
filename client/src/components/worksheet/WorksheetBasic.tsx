@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 
-import ReactDOM from 'react-dom';
 import { IoMdClose } from 'react-icons/io';
 import { SlPrinter } from 'react-icons/sl';
 import ReactToPrint from 'react-to-print';

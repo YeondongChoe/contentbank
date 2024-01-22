@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import styled from 'styled-components';
 
-import { TablePopup } from '../../tableWrap/StudentTable';
+// import { TablePopup } from '../../tableWrap/StudentTable';
 
 type alertProps = {
   description?: string;
@@ -36,9 +36,7 @@ export function PopupModal(prop: alertProps) {
               <Title>{prop.title}</Title>
               <IoMdClose onClick={closeAlert} style={{ cursor: 'pointer' }} />
             </HeadWrapper>
-            <Description>
-              <TablePopup />
-            </Description>
+            <Description>{/* <TablePopup /> */}</Description>
             <SubmitButton onClick={submit}>등록</SubmitButton>
           </Container>
         </Overlay>
