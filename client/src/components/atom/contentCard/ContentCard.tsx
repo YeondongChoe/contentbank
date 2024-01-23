@@ -21,18 +21,15 @@ type ContentCardProps = {
 export function ContentCard({
   content,
   checkList,
-  isEnabled,
   setCheckList,
   setIsEnabled,
 }: ContentCardProps) {
   const page = useRecoilValue(pageAtom);
 
-  //console.log(checkList);
-
   const [isChecked, setIsChecked] = useState(
     checkList.includes(content.contentSeq),
   );
-  //console.log(isChecked);
+
   console.log(checkList.includes(content.contentSeq));
   const handleSingleCheck = (seq: number) => {
     setIsChecked((prev) => !prev);
@@ -62,32 +59,9 @@ export function ContentCard({
     <Component>
       <Wrapper $isChecked={isChecked}>
         <IconWrapper>
-          {/* <div>
-            <CheckBoxx
-              type="checkbox"
-              onChange={(e) =>
-                handleSingleCheck(
-                  e.target.checked,
-                  content.contentSeq as number,
-                )
-              }
-              // 체크된 아이템 배열에 해당 아이템이 있을 경우 선택 활성화, 아닐 시 해제
-              checked={
-                checkList.includes(content.contentSeq as number) ? true : false
-              }
-            />
-          </div> */}
           <CheckBox
             onClick={() => handleSingleCheck(content.contentSeq)}
             isChecked={isChecked}
-            setIsChecked={setIsChecked}
-            // onChange={(e) =>
-            //   handleSingleCheck(e.target.checked, content.contentSeq as number)
-            // }
-            // isChecked={isChecked}
-            // checked={
-            //   checkList.includes(content.contentSeq as number) ? true : false
-            // }
           ></CheckBox>
           {isChecked ? (
             <div style={{ cursor: 'pointer' }}>
@@ -229,8 +203,6 @@ export function ContentCard({
     </Component>
   );
 }
-const CheckBoxx = styled.input``;
-
 const Component = styled.li`
   width: 100%;
   height: 80px;
@@ -261,7 +233,6 @@ const CodeWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  //flex: 1 0 0;
   padding-right: 50px;
 `;
 const Code = styled.div`
