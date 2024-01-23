@@ -11,6 +11,7 @@ type MathViewerProps = {
   data: ItemQuestionType;
   display?: string;
   width?: string;
+  padding?: string;
 };
 
 const config = {
@@ -30,7 +31,7 @@ const config = {
   },
 };
 
-export function MathViewer({ data, width }: MathViewerProps) {
+export function MathViewer({ data, width, padding }: MathViewerProps) {
   const [display, setDisplay] = useState('none');
 
   const setMathJax = (mathJax: MathJax3Object) => {};
@@ -50,7 +51,7 @@ export function MathViewer({ data, width }: MathViewerProps) {
     <>
       {display === 'none' && <Loader height={'50px'} size="35px" />}
 
-      <Component display={display} width={width}>
+      <Component display={display} width={width} padding={padding}>
         <MathJaxContext
           version={3}
           config={config}
@@ -74,23 +75,25 @@ export function MathViewer({ data, width }: MathViewerProps) {
 type MathViewerStyleProps = {
   display: string;
   width?: string;
+  padding?: string;
 };
 
 const Component = styled.div<MathViewerStyleProps>`
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   display: ${({ display }) => (display ? `${display}` : 'block')};
+  padding: ${({ padding }) => (padding ? `${padding}` : '0')};
 `;
 const ContentQuestion = styled.div`
   //기본일때 50
   //6문제일때 100
   //4문제일때 200
   //2문제일때 800
-  height: 400px;
+  /* height: 400px; */
 `;
 const ContentAnswer = styled.div`
   //기본일때 50
   //6문제일때 100
   //4문제일때 200
   //2문제일때 800
-  height: 250px;
+  /* height: 250px; */
 `;

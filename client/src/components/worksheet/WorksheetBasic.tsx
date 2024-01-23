@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { SlPrinter } from 'react-icons/sl';
 import ReactToPrint from 'react-to-print';
 import { useSetRecoilState, useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
+import { number } from 'yargs';
 
 import { Input } from '../../components/atom';
 import Contents2 from '../../components/mathViewer/test2.json';
@@ -14,67 +15,136 @@ import Contents4 from '../../components/mathViewer/test4.json';
 import { PaginationBox } from '../../components/molecules';
 import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
 import { totalPageAtom } from '../../store/utilAtom';
-import { COLOR } from '../constants';
+import { ItemQuestionType } from '../../types';
+import { A4_HEIGHT, A4_WIDTH, COLOR } from '../constants';
 import { MathViewer } from '../mathViewer/MathViewer';
+
+// 더미 데이터
+export const list = [
+  Contents2,
+  Contents3,
+  Contents3,
+  Contents4,
+  Contents4,
+  Contents2,
+  Contents2,
+  Contents3,
+  Contents3,
+  Contents4,
+  Contents4,
+  Contents2,
+  Contents2,
+  Contents3,
+  Contents3,
+  Contents2,
+  Contents2,
+  Contents2,
+  Contents2,
+  Contents2,
+  Contents2,
+];
 
 export function WorksheetBasic() {
   const [didMount, setDidMount] = useState(false);
   const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const printDivRef = useRef<HTMLDivElement | null>(null);
 
-  const list = [
-    Contents2,
-    Contents3,
-    Contents3,
-    Contents4,
-    Contents4,
-    Contents2,
-    Contents2,
-    Contents3,
-    Contents3,
-    Contents4,
-  ];
-  const list1 = [
-    Contents4,
-    Contents2,
-    Contents2,
-    Contents3,
-    Contents3,
-    Contents4,
-    Contents4,
-    Contents2,
-    Contents2,
-    Contents3,
-  ];
-  const ref = useRef(null);
+  const [heightList, setHeightList] = useState<number[]>([]);
+  const [colList, setColList] = useState<ItemQuestionType[]>([]);
+  const [colList2, setColList2] = useState<ItemQuestionType[]>([]);
+
+  const loadData = () => {
+    // 데이터 불러오기
+
+    // 리스트 초기화
+    setColList(list);
+  };
+
+  const cardWidth = useMemo(() => {
+    //기본 A4 넓이에서 - 패딩값
+    const width = A4_WIDTH / 2 - 105 + 'px'; // 1col
+    const width_2col = A4_WIDTH / 4 - 45 + 'px'; // 2col
+    console.log('width_2col', width_2col);
+
+    return width_2col;
+  }, [colList]);
+
+  const cardHeight = () => {
+    const rowDiv = document.querySelectorAll('.row'); //문항 요소
+    //문항 요소들의 높이값
+    const rowHeightArr: number[] = [];
+    console.log('rowDiv', rowDiv);
+
+    for (let i = 0; i < rowDiv.length; i++) {
+      rowHeightArr.push(rowDiv[i].clientHeight);
+    }
+    setHeightList(rowHeightArr);
+  };
+  console.log('heightList', heightList);
+
+  const getHeight = () => {
+    // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
+    // const containerHeight = containerRef.current?.clientHeight; //전체 문항 리스트 높이
+    // console.log('printDivRef', printDivHeight);
+    // console.log('containerRef', containerHeight);
+    // if (printDivHeight && containerHeight) {
+    //   // 나뉘는 열
+    //   const col = containerHeight / printDivHeight;
+    //   console.log(col);
+    // }
+    // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
+    let total: number = 0;
+    const sortList = [];
+    for (let i = 0; i < heightList.length; i++) {
+      // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
+      const num = (total += heightList[i]); // 문항의 누적 높이
+      if (A4_HEIGHT && A4_HEIGHT / 2 - 140 > num) {
+        sortList.push(list[i]);
+        console.log(list[i]);
+      }
+    }
+
+    setColList2(sortList);
+  };
+
+  console.log('colList', colList);
+
+  useEffect(() => {
+    if (didMount) {
+      loadData();
+    }
+  }, [didMount]);
 
   useEffect(() => {
     setDidMount(true);
   }, []);
 
   useEffect(() => {
-    if (didMount) {
-      //loadData();
-    }
-  }, [didMount]);
+    cardHeight();
+    getHeight();
+  }, [colList]);
+
+  console.log('colList22222', colList2);
 
   return (
     <Container>
-      <IconWrapper>
-        <ReactToPrint
-          trigger={() => (
-            <SlPrinter style={{ fontSize: '30px', cursor: 'pointer' }} />
-          )}
-          content={() => ref.current}
-        />
-        <IoMdClose
-          onClick={() => setIsPreview(false)}
-          style={{ fontSize: '30px', cursor: 'pointer' }}
-        />
-      </IconWrapper>
       <MathViewerWrapper>
-        <MathViewerContainer ref={ref}>
-          <MathViewerHeader>
+        <IconWrapper>
+          <ReactToPrint
+            trigger={() => (
+              <SlPrinter style={{ fontSize: '30px', cursor: 'pointer' }} />
+            )}
+            content={() => printDivRef.current}
+          />
+          <IoMdClose
+            onClick={() => setIsPreview(false)}
+            style={{ fontSize: '30px', cursor: 'pointer' }}
+          />
+        </IconWrapper>
+
+        <MathViewerContainer ref={printDivRef}>
+          {/* <MathViewerHeader>
             <HeaderLeft>
               <TitleWrapper>
                 <Title>
@@ -100,56 +170,115 @@ export function WorksheetBasic() {
                 />
               </InputWrapper>
             </HeaderRight>
-          </MathViewerHeader>
-          <MathViewerList ref={containerRef}>
-            <MathViewerGroupLeft>
-              {list.map((card, i) => (
-                <>
+          </MathViewerHeader> */}
+
+          {colList2.length > 1 ? (
+            <MathViewerList ref={containerRef}>
+              {colList2.map((card, i) => (
+                <div
+                  key={card.it_quest + i}
+                  style={{ width: cardWidth }}
+                  // onLoad={(e) => {
+                  //   getItemHeight(e);
+                  // }}
+                  className="row"
+                >
                   문제 {i + 1}.
-                  <MathViewer key={i} data={card} width="350px"></MathViewer>
-                </>
+                  <MathViewer
+                    key={i}
+                    data={card}
+                    padding={`10px 15px 30px 0`}
+                    width={cardWidth}
+                  ></MathViewer>
+                </div>
               ))}
-            </MathViewerGroupLeft>
-            <MathViewerGroupRight>
-              {list1.map((card, i) => (
-                <>
+            </MathViewerList>
+          ) : (
+            <MathViewerList ref={containerRef}>
+              {colList.map((card, i) => (
+                <div
+                  key={card.it_quest + i}
+                  style={{ width: cardWidth }}
+                  // onLoad={(e) => {
+                  //   getItemHeight(e);
+                  // }}
+                  className="row"
+                >
                   문제 {i + 1}.
-                  <MathViewer key={i} data={card} width="350px"></MathViewer>
-                </>
+                  <MathViewer
+                    key={i}
+                    data={card}
+                    padding={`10px 15px 30px 0`}
+                    width={cardWidth}
+                  ></MathViewer>
+                </div>
               ))}
-            </MathViewerGroupRight>
-          </MathViewerList>
+            </MathViewerList>
+          )}
         </MathViewerContainer>
       </MathViewerWrapper>
     </Container>
   );
 }
 
-const A4_WIDTH = '210mm';
-const A4_HEIGHT = '297mm';
-
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: 100%;
 `;
 const IconWrapper = styled.div`
+  position: absolute;
+  top: -50px;
+  right: 0;
+  z-index: 2;
+  width: 100px;
   display: flex;
   justify-content: flex-end;
-  gap: 20px;
+  gap: 15px;
   color: white;
-  padding-bottom: 5px;
 `;
 const MathViewerWrapper = styled.div`
-  width: 100%;
-  overflow: auto;
+  max-width: ${`${A4_WIDTH}px`};
   background-color: white;
-  height: 800px;
+  max-height: 100vh;
   border: 1px solid ${COLOR.BORDER_POPUP};
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
 `;
+
 const MathViewerContainer = styled.div`
-  width: ${A4_WIDTH};
-  margin: 0 auto;
+  position: absolute;
+  width: ${`${A4_WIDTH / 2}px`};
+  height: ${`${A4_HEIGHT / 2 - 120}px`};
+  max-height: 100vh;
+  position: relative;
+  padding-top: 10px;
+  overflow: auto;
 `;
+
+const MathViewerList = styled.div`
+  position: absolute;
+  overflow: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px;
+  width: ${`${A4_WIDTH / 2 - 30}px`};
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-direction: column;
+
+  /* .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    flex-direction: column;
+ 
+  } */
+`;
+
 const MathViewerHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -201,13 +330,7 @@ const InputWrapper = styled.div`
 const Description = styled.div`
   font-weight: 800;
 `;
-const MathViewerList = styled.div`
-  width: ${A4_WIDTH};
-  display: flex;
-  justify-content: center;
-  padding-top: 10px;
-  gap: 40px;
-`;
+
 const MathViewerGroupLeft = styled.div`
   //height: ${A4_HEIGHT};
 `;

@@ -1,5 +1,5 @@
 export type ItemQuestionType = {
-  it_title: string;
+  it_title: string | number;
   // quest_no: string;
   // total_no: string;
   // it_quest_context_p: string | null;
