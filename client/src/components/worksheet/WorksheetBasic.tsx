@@ -45,11 +45,11 @@ export const list = [
 ];
 
 export function WorksheetBasic() {
-  const [didMount, setDidMount] = useState(false);
   const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const printDivRef = useRef<HTMLDivElement | null>(null);
 
+  const [didMount, setDidMount] = useState(false);
   const [heightList, setHeightList] = useState<number[]>([]);
   const [colList, setColList] = useState<ItemQuestionType[]>([]);
   const [colList2, setColList2] = useState<ItemQuestionType[]>([]);
@@ -65,7 +65,7 @@ export function WorksheetBasic() {
     //기본 A4 넓이에서 - 패딩값
     const width = A4_WIDTH / 2 - 105 + 'px'; // 1col
     const width_2col = A4_WIDTH / 4 - 45 + 'px'; // 2col
-    console.log('width_2col', width_2col);
+    // console.log('width_2col', width_2col);
 
     return width_2col;
   }, [colList]);
@@ -84,48 +84,54 @@ export function WorksheetBasic() {
   console.log('heightList', heightList);
 
   const getHeight = () => {
-    // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
-    // const containerHeight = containerRef.current?.clientHeight; //전체 문항 리스트 높이
-    // console.log('printDivRef', printDivHeight);
-    // console.log('containerRef', containerHeight);
-    // if (printDivHeight && containerHeight) {
-    //   // 나뉘는 열
-    //   const col = containerHeight / printDivHeight;
-    //   console.log(col);
-    // }
     // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
     let total: number = 0;
     const sortList = [];
     for (let i = 0; i < heightList.length; i++) {
       // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
       const num = (total += heightList[i]); // 문항의 누적 높이
-      if (A4_HEIGHT && A4_HEIGHT / 2 - 140 > num) {
+      if (A4_HEIGHT / 2 - 140 > num) {
         sortList.push(list[i]);
-        console.log(list[i]);
       }
     }
 
     setColList2(sortList);
   };
 
-  console.log('colList', colList);
+  // const colListArr = useMemo(() => {
+  //   // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
+  //   let total: number = 0;
+  //   const sortList = [];
 
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount]);
+  //   for (let i = 0; i < heightList.length; i++) {
+  //     // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
+  //     const num = (total += heightList[i]); // 문항의 누적 높이
+
+  //     if (A4_HEIGHT / 2 - 140 > num) {
+  //       sortList.push(list[i]);
+  //       // console.log(list[i]);
+  //     }
+  //   }
+
+  //   return sortList;
+  // }, [heightList]);
 
   useEffect(() => {
     setDidMount(true);
+    loadData();
   }, []);
 
   useEffect(() => {
-    cardHeight();
     getHeight();
   }, [colList]);
 
-  console.log('colList22222', colList2);
+  useEffect(() => {
+    if (didMount) {
+      getHeight();
+      cardHeight();
+      console.log('colList2', colList2);
+    }
+  }, [didMount]);
 
   return (
     <Container>
@@ -172,7 +178,7 @@ export function WorksheetBasic() {
             </HeaderRight>
           </MathViewerHeader> */}
 
-          {colList2.length > 1 ? (
+          {colList2.length > 1 && (
             <MathViewerList ref={containerRef}>
               {colList2.map((card, i) => (
                 <div
@@ -193,7 +199,10 @@ export function WorksheetBasic() {
                 </div>
               ))}
             </MathViewerList>
-          ) : (
+          )}
+
+          {/* 첫 랜더링 이후 높이값 지정 돔 */}
+          {colList2.length < 1 && (
             <MathViewerList ref={containerRef}>
               {colList.map((card, i) => (
                 <div
