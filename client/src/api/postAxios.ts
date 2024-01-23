@@ -42,13 +42,14 @@ type postLoginProps = {
   isClicked: boolean;
   Id: string;
   navigate: (result: string) => void;
-  openAlert: () => void;
+
   setErrorMessage: (result: string) => void;
+  openNewAlert: () => void;
 };
 
 /** 로그인 API */
 export const postLogin = async (
-  { navigate, isClicked, Id, setErrorMessage, openAlert }: postLoginProps,
+  { navigate, isClicked, Id, setErrorMessage, openNewAlert }: postLoginProps,
   data: dataProps,
 ) => {
   await authInstance
@@ -74,7 +75,7 @@ export const postLogin = async (
     })
     .catch((error) => {
       setErrorMessage(error.response.data.message);
-      openAlert();
+      openNewAlert();
     });
 };
 

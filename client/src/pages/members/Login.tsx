@@ -9,10 +9,9 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
-import { Input, Label, Button, CheckBox } from '../../components';
+import { Input, Label, Button, CheckBox, AlertBar } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import { Alert } from '../../components/molecules/alert/Alert';
-import { alertBoolAtom } from '../../store/utilAtom';
 import { getAuthorityCookie } from '../../utils/cookies';
 
 type loginProps = {
@@ -24,7 +23,7 @@ export function Login() {
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('userId') ? true : false,
   );
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+
   const [errorMessage, setErrorMessage] = useState('');
   const {
     control,
@@ -39,23 +38,33 @@ export function Login() {
   const navigate = useNavigate();
 
   const submitLogin: SubmitHandler<loginProps> = async (data) => {
-    postLogin({ navigate, isClicked, Id, setErrorMessage, openAlert }, data);
+    postLogin({ navigate, isClicked, Id, setErrorMessage, openNewAlert }, data);
   };
 
   const checkIconselected = () => {
     setIsClicked(!isClicked);
   };
 
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-
   const enterLogin = () => {
     handleSubmit(submitLogin)();
   };
 
+  const [isAlertNewOpen, setIsAlertNewOpen] = useState(false);
+  const openNewAlert = () => {
+    setIsAlertNewOpen(true);
+  };
+  const closeNewAlert = () => {
+    setIsAlertNewOpen(false);
+  };
+
   return (
     <Container>
+      <AlertBar
+        type="success"
+        isAlertNewOpen={isAlertNewOpen}
+        closeNewAlert={closeNewAlert}
+        message={errorMessage}
+      ></AlertBar>
       <Wrapper>
         <LogoIconWrapper>
           <MdAccountBalance style={{ fontSize: '50px' }} />
@@ -81,8 +90,6 @@ export function Login() {
                     placeholder="아이디를 입력해주세요."
                     onChange={field.onChange}
                     value={field.value}
-                    onClick={() => setErrorMessage('')}
-                    errorMessage={errorMessage}
                   />
                 )}
               />
@@ -105,8 +112,6 @@ export function Login() {
                     placeholder="비밀번호를 입력해주세요."
                     onChange={field.onChange}
                     value={field.value}
-                    onClick={() => setErrorMessage('')}
-                    errorMessage={errorMessage}
                   />
                 )}
               />
@@ -139,7 +144,6 @@ export function Login() {
         <NoticeMessage>
           아이디 혹은 비밀번호를 모르실 경우 관리자에게 문의해주세요
         </NoticeMessage>
-        {isAlertOpen && <Alert notice title={errorMessage} />}
       </Wrapper>
     </Container>
   );
@@ -151,7 +155,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 100px;
+  padding: 150px;
 `;
 const Wrapper = styled.div``;
 const LogoIconWrapper = styled.div`
