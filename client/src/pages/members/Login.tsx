@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { IoIosRadioButtonOff, IoIosRadioButtonOn } from 'react-icons/io';
@@ -34,6 +34,8 @@ export function Login() {
 
   const Id = watch('id', '');
   const Password = watch('password', '');
+  const IdInputRef = useRef<HTMLInputElement | null>(null);
+  const PasswordInputRef = useRef<HTMLInputElement | null>(null);
 
   const navigate = useNavigate();
 
@@ -49,19 +51,32 @@ export function Login() {
     handleSubmit(submitLogin)();
   };
 
-  const [isAlertNewOpen, setIsAlertNewOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const openNewAlert = () => {
-    setIsAlertNewOpen(true);
+    setIsAlertOpen(true);
   };
   const closeNewAlert = () => {
-    setIsAlertNewOpen(false);
+    setIsAlertOpen(false);
+  };
+
+  // useEffect(() => {
+  //   if (isNameEdit && nameInputRef.current) {
+  //     nameInputRef.current.focus();
+  //   }
+  // }, [isNameEdit]);
+
+  const ClickIdLabel = () => {
+    IdInputRef?.current?.focus();
+  };
+  const ClickPasswordLabel = () => {
+    PasswordInputRef?.current?.focus();
   };
 
   return (
     <Container>
       <AlertBar
-        type="success"
-        isAlertNewOpen={isAlertNewOpen}
+        type="error"
+        isAlertNewOpen={isAlertOpen}
         closeNewAlert={closeNewAlert}
         message={errorMessage}
       ></AlertBar>
@@ -73,7 +88,7 @@ export function Login() {
         <Form onSubmit={handleSubmit(submitLogin)} method="POST">
           <InputWrapper>
             <IdWrapper>
-              <Label fontSize="14px" value="아이디" />
+              <Label fontSize="14px" value="아이디" onClick={ClickIdLabel} />
               <Controller
                 control={control}
                 name="id"
@@ -90,12 +105,17 @@ export function Login() {
                     placeholder="아이디를 입력해주세요."
                     onChange={field.onChange}
                     value={field.value}
+                    innerRef={IdInputRef}
                   />
                 )}
               />
             </IdWrapper>
             <PasswordWrapper>
-              <Label fontSize="14px" value="비밀번호" />
+              <Label
+                fontSize="14px"
+                value="비밀번호"
+                onClick={ClickPasswordLabel}
+              />
               <Controller
                 control={control}
                 name="password"
@@ -112,6 +132,7 @@ export function Login() {
                     placeholder="비밀번호를 입력해주세요."
                     onChange={field.onChange}
                     value={field.value}
+                    innerRef={PasswordInputRef}
                   />
                 )}
               />

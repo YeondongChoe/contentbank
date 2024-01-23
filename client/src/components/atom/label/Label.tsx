@@ -11,6 +11,7 @@ type LabelProps = {
   fontSize?: string;
   padding?: string;
   margin?: string;
+  onClick?: () => void;
 };
 
 export function Label({
@@ -20,6 +21,7 @@ export function Label({
   width,
   padding,
   margin,
+  onClick,
 }: LabelProps) {
   return (
     <Component
@@ -28,6 +30,7 @@ export function Label({
       width={width}
       $padding={padding}
       $margin={margin}
+      onClick={onClick}
     >
       <label>{value}</label>
     </Component>
