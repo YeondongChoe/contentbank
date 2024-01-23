@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
+import { useRecoilValue } from 'recoil';
 import { styled } from 'styled-components';
 
 import {
@@ -8,7 +9,9 @@ import {
   DropDown,
   ContentCard,
   DropDownItemProps,
+  CheckBox,
 } from '../../../components';
+import { pageAtom } from '../../../store/utilAtom';
 import { QuestionTableType } from '../../../types';
 import { COLOR } from '../../constants';
 
@@ -19,8 +22,9 @@ type ContentListProps = {
 };
 
 export function ContentList({ list, onClick, openPopup }: ContentListProps) {
+  const page = useRecoilValue(pageAtom);
+
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
-  //console.log(isEnabled);
 
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const dropDownList: DropDownItemProps[] = [
@@ -42,27 +46,35 @@ export function ContentList({ list, onClick, openPopup }: ContentListProps) {
     },
   ];
 
-  const [isAllchecked, setIsAllChecked] = useState<boolean>(false);
-
   const [checkList, setCheckList] = useState<number[]>([]);
 
-  const handleAllCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      setCheckList(list.map((item) => item.seq as number));
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
+  const handleAllCheck = () => {
+    setIsChecked(!isChecked);
+    if (isChecked === false) {
+      setCheckList(list.map((item) => item.contentSeq as number));
       setIsEnabled(false);
     } else {
       setCheckList([]);
       setIsEnabled(true);
     }
   };
+
+  useEffect(() => {
+    setIsChecked(false);
+  }, [page]);
+
   return (
     <>
       <ButtonWrapper>
         <AllCheckButtonWrapper>
-          <div>
-            <input type="checkbox" onChange={(e) => handleAllCheck(e)}></input>
-          </div>
-          전체선택
+          <CheckBox
+            onClick={() => handleAllCheck()}
+            isChecked={isChecked}
+            setIsChecked={setIsChecked}
+          ></CheckBox>
+          <div>전체선택</div>
         </AllCheckButtonWrapper>
         <ActionButtonWrapper>
           <DropDown
@@ -112,7 +124,6 @@ const AllCheckButtonWrapper = styled.div`
   align-items: center;
   padding-left: 20px;
   gap: 10px;
-  cursor: pointer;
 `;
 const ActionButtonWrapper = styled.div`
   display: flex;
@@ -125,4 +136,40 @@ const ContentCardWrapper = styled.ul`
   flex-direction: column;
   gap: 10px;
   padding-bottom: 30px;
+`;
+
+const StyledCheckbox = styled.input`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 2px solid #a0a0a0;
+  background-color: white;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+
+  &::before {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4a4a4a;
+    display: none;
+  }
+
+  &:checked::before {
+    display: block;
+  }
+`;
+
+const Icon = styled.svg`
+  fill: none;
+  stroke-width: 2px;
 `;

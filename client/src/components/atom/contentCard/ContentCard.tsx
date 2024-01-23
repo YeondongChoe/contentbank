@@ -8,6 +8,7 @@ import { pageAtom } from '../../../store/utilAtom';
 import { QuestionTableType } from '../../../types';
 import { COLOR } from '../../constants';
 import { Button } from '../button';
+import { CheckBox } from '../checkBox';
 
 type ContentCardProps = {
   content: QuestionTableType;
@@ -20,33 +21,49 @@ type ContentCardProps = {
 export function ContentCard({
   content,
   checkList,
-  setCheckList,
   isEnabled,
+  setCheckList,
   setIsEnabled,
 }: ContentCardProps) {
   const page = useRecoilValue(pageAtom);
 
-  const handleSingleCheck = (checked: boolean, seq: number) => {
-    if (checked) {
+  //console.log(checkList);
+
+  const [isChecked, setIsChecked] = useState(
+    checkList.includes(content.contentSeq),
+  );
+  //console.log(isChecked);
+  console.log(checkList.includes(content.contentSeq));
+  const handleSingleCheck = (seq: number) => {
+    setIsChecked((prev) => !prev);
+    if (!isChecked) {
       setCheckList((prev) => [...prev, seq]);
+      setIsEnabled(false);
     } else {
-      setCheckList(checkList.filter((el) => el !== seq));
+      setCheckList((prev) => prev.filter((el) => el !== seq));
     }
   };
-
-  const isChecked =
-    content.contentSeq !== undefined && checkList.includes(content.contentSeq);
 
   useEffect(() => {
     setCheckList([]);
   }, [page]);
 
+  useEffect(() => {
+    setIsChecked(checkList.includes(content.contentSeq));
+  }, [checkList]);
+
+  useEffect(() => {
+    if (checkList.length <= 0) {
+      setIsEnabled(true);
+    }
+  }, [checkList]);
+
   return (
     <Component>
       <Wrapper $isChecked={isChecked}>
         <IconWrapper>
-          <div style={{ cursor: 'pointer' }}>
-            <input
+          {/* <div>
+            <CheckBoxx
               type="checkbox"
               onChange={(e) =>
                 handleSingleCheck(
@@ -59,7 +76,19 @@ export function ContentCard({
                 checkList.includes(content.contentSeq as number) ? true : false
               }
             />
-          </div>
+          </div> */}
+          <CheckBox
+            onClick={() => handleSingleCheck(content.contentSeq)}
+            isChecked={isChecked}
+            setIsChecked={setIsChecked}
+            // onChange={(e) =>
+            //   handleSingleCheck(e.target.checked, content.contentSeq as number)
+            // }
+            // isChecked={isChecked}
+            // checked={
+            //   checkList.includes(content.contentSeq as number) ? true : false
+            // }
+          ></CheckBox>
           {isChecked ? (
             <div style={{ cursor: 'pointer' }}>
               <svg
@@ -200,6 +229,7 @@ export function ContentCard({
     </Component>
   );
 }
+const CheckBoxx = styled.input``;
 
 const Component = styled.li`
   width: 100%;
@@ -215,9 +245,11 @@ const Wrapper = styled.button<{ $isChecked?: boolean }>`
   padding: 20px;
   border-radius: 10px;
   border: none;
+  background-color: white;
   ${({ $isChecked }) =>
-    $isChecked &&
-    `background-color: ${COLOR.SECONDARY}; color: white; border-radius: 10px;`}
+    $isChecked
+      ? `background-color: ${COLOR.SECONDARY}; color: white; border-radius: 10px;`
+      : 'background-color: white;'}
 `;
 const IconWrapper = styled.div`
   display: flex;
