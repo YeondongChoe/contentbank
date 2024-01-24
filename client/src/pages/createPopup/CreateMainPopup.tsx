@@ -2,14 +2,14 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import {
   createContentPopupBoolAtom,
-  uploadBoolAtom,
+  uploadPopupBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
@@ -36,8 +36,8 @@ export function CreateMainPopup() {
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('DT & Editing');
 
-  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
-  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const setIsCreate = useSetRecoilState(createContentPopupBoolAtom);
+  const setIsUpload = useSetRecoilState(uploadPopupBoolAtom);
   const isCreateNewContent = useRecoilValue(creatingNewContentBoolAtom);
   const isUploadFile = useRecoilValue(uploadFileBoolAtom);
 

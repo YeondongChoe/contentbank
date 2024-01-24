@@ -13,7 +13,6 @@ import {
 } from '../../../components';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuestionTableType } from '../../../types';
-import { COLOR } from '../../constants';
 
 type ContentListProps = {
   list: QuestionTableType[];
@@ -72,7 +71,6 @@ export function ContentList({ list, onClick, openPopup }: ContentListProps) {
           <CheckBox
             onClick={() => handleAllCheck()}
             isChecked={isChecked}
-            setIsChecked={setIsChecked}
           ></CheckBox>
           <div>전체선택</div>
         </AllCheckButtonWrapper>
@@ -136,40 +134,4 @@ const ContentCardWrapper = styled.ul`
   flex-direction: column;
   gap: 10px;
   padding-bottom: 30px;
-`;
-
-const StyledCheckbox = styled.input`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  border: 2px solid #a0a0a0;
-  background-color: white;
-  outline: none;
-  cursor: pointer;
-  position: relative;
-
-  &::before {
-    content: '✔';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #4a4a4a;
-    display: none;
-  }
-
-  &:checked::before {
-    display: block;
-  }
-`;
-
-const Icon = styled.svg`
-  fill: none;
-  stroke-width: 2px;
 `;

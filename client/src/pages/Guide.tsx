@@ -14,7 +14,6 @@ import {
   TabMenu,
 } from '../components';
 import Contents2 from '../components/mathViewer/test2.json';
-import { alertBoolAtom } from '../store/utilAtom';
 
 import {
   Button,
@@ -32,7 +31,7 @@ export function Guide() {
   const [content, setContent] = useState<string[]>([]);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [chageValue, setChageValue] = useState<string>('');
-  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const Data = [
     { value: 10, label: '하' },
@@ -234,6 +233,7 @@ export function Guide() {
       <h3>alert</h3>
       <button onClick={() => setIsAlertOpen(true)}>커스텀 알람</button>
       <Alert
+        isAlertOpen={isAlertOpen}
         title={'커스텀 알람'}
         description="props에 notice를 추가하면 확인만 나옴"
         action="확인"

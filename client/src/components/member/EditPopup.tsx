@@ -22,8 +22,6 @@ import {
 import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
-import { editerBoolAtom, memberKeyValueAtom } from '../../store/memberAtom';
-import { alertBoolAtom } from '../../store/utilAtom';
 import { Alert } from '../molecules/alert/Alert';
 
 type authorityProps = {
@@ -33,7 +31,17 @@ type authorityProps = {
   sort: number;
 };
 
-export function EditPopup() {
+type RegisterPopupProps = {
+  isEditer: boolean;
+  setIsEditer: React.Dispatch<React.SetStateAction<boolean>>;
+  keyValue: string;
+};
+
+export function EditPopup({
+  isEditer,
+  setIsEditer,
+  keyValue,
+}: RegisterPopupProps) {
   const [member, setMember] = useState({
     id: null,
     name: null,
@@ -44,9 +52,6 @@ export function EditPopup() {
     authCode: null,
   });
   const [didMount, setDidMount] = useState(false);
-
-  const keyValue = useRecoilValue(memberKeyValueAtom);
-  const [isEditer, SetIsEditer] = useRecoilState(editerBoolAtom);
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
@@ -62,9 +67,8 @@ export function EditPopup() {
     code: item[1],
     value: index + 1,
   }));
-  //console.log(AuthorityOption);
-  //console.log(AuthorityList);
-  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isInit, setIsInit] = useState(false);
 
   const { control, setValue, watch } = useForm();
@@ -75,7 +79,7 @@ export function EditPopup() {
   const CheckBox = isEnabled;
 
   const closePopup = () => {
-    SetIsEditer(false);
+    setIsEditer(false);
   };
 
   const checkEnabled = () => {
@@ -95,7 +99,7 @@ export function EditPopup() {
       Comment,
       CheckBox,
       keyValue,
-      SetIsEditer,
+      setIsEditer,
       setIsNameError,
       setNameErrorMessage,
     });
@@ -304,7 +308,12 @@ export function EditPopup() {
                     <span>수정</span>
                   </Button>
                 </ButtonGroup>
-                {isInit && <Alert title="비밀번호가 초기화 되었습니다." />}
+                {isInit && (
+                  <Alert
+                    isAlertOpen={isAlertOpen}
+                    title="비밀번호가 초기화 되었습니다."
+                  />
+                )}
               </ContentBox>
             </form>
           </Container>

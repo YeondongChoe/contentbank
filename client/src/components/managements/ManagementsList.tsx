@@ -24,12 +24,7 @@ import {
   contentTheadList,
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
-import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
-import { totalPageAtom, pageAtom, alertBoolAtom } from '../../store/utilAtom';
-import {
-  createListCodeValueAtom,
-  servicedValueBoolAtom,
-} from '../../store/valueAtom';
+import { totalPageAtom, pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 
 export function ManagementsList() {
@@ -42,13 +37,16 @@ export function ManagementsList() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
+
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const MenuCode = useRecoilValue(createListCodeValueAtom);
-  const [isChangedServiced, setIsChangedServiced] = useRecoilState(
-    servicedValueBoolAtom,
-  );
+  const MenuCode = 'CNC_Q';
+  const [isChangedServiced, setIsChangedServiced] = useState(false);
   // 활성화/비활성화 버튼상태 토글
   const submitChangingService = () => {
     setIsAlertOpen(true);
@@ -72,12 +70,10 @@ export function ManagementsList() {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
 
-  const [isManagement, setIsManagement] = useRecoilState(
-    managementContentPopupBoolAtom,
-  );
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
 
-  const openInformation = () => {
-    setIsManagement(true);
+  const openPopup = () => {
+    setIsOpenPopup(true);
   };
 
   const menuList = [
@@ -247,7 +243,7 @@ export function ManagementsList() {
           height={'35px'}
           width={'150px'}
           $margin={'0 0 0 10px'}
-          onClick={openInformation}
+          onClick={openPopup}
         >
           상세 검색
         </Button>
@@ -322,20 +318,24 @@ export function ManagementsList() {
       </TableWrapper>
 
       <Alert
+        isAlertOpen={isAlertOpen}
         title="권한을 삭제할 경우, "
         description="해당 권한의 아이디는 접속이 불가합니다."
         action="삭제"
+        onClose={closeAlert}
         // onClick={() => submitDelete()}
       />
       <Alert
+        isAlertOpen={isAlertOpen}
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
         action="확인"
+        onClose={closeAlert}
         onClick={submitDisabled}
       ></Alert>
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
-      {isManagement && <ManagemantMainPopup />}
+      {isOpenPopup && <ManagemantMainPopup setIsOpenPopup={setIsOpenPopup} />}
     </Container>
   );
 }

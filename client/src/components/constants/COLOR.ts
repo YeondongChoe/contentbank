@@ -9,9 +9,12 @@ export const COLOR = {
   FONT_BLACK: '#252525',
   BUTTON_NORMAL: '#d9d9d9',
   BUTTON_LIGHT_NORMAL: '#d9d9d9',
+  BORDER_BLACK: '#262525',
+  ALERTBAR_ERROR: 'rgba(255, 42, 18, 0.6)',
+  ALERTBAR_SUCCESS: '#11C218',
+  ALERTBAR_WARNING: '#FFCC06',
 
   HOVER: '#f4f7fe',
-  BLACK: '#262525',
   LIGHT_GRAY: '#ededed',
   GRAY: '#9a9a9a',
   DARK_GRAY: '#333333',

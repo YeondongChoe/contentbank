@@ -106,7 +106,7 @@ const Component = styled.input<InputStyleProps>`
     props.$border === 'normal'
       ? `border: 1px solid rgba(0, 0, 0, 0.23);`
       : props.$border === 'black'
-      ? `border: none; border-bottom: 1px solid ${COLOR.BLACK};`
+      ? `border: none; border-bottom: 1px solid ${COLOR.BORDER_BLACK};`
       : 'border: none;'}
   ${({ $borderBottom }) =>
     $borderBottom && `border: none; border-bottom: 1px solid ${COLOR.ERROR};`};

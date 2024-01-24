@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { questionInstance } from '../../api/axios';
@@ -28,45 +28,33 @@ import {
 } from '../../components/constants';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import {
+  editingBoolAtom,
   createContentPopupBoolAtom,
   creatingNewContentBoolAtom,
-  uploadBoolAtom,
+  uploadPopupBoolAtom,
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
-import {
-  alertBoolAtom,
-  pageAtom,
-  totalPageAtom,
-  updateBoolAtom,
-} from '../../store/utilAtom';
-import {
-  createListCodeValueAtom,
-  servicedValueBoolAtom,
-} from '../../store/valueAtom';
+import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [value, setValue] = useState<string>('');
 
-  const [isChangedServiced, setIsChangedServiced] = useRecoilState(
-    servicedValueBoolAtom,
-  );
+  const [isChangedServiced, setIsChangedServiced] = useState(false);
   const [didMount, setDidMount] = useState(false);
 
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 7;
-  const MenuCode = useRecoilValue(createListCodeValueAtom);
+  const MenuCode = 'CNC_Q';
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
-
-  const setIsUpdate = useSetRecoilState(updateBoolAtom);
 
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
 
   const [content, setContent] = useState<string[]>([]);
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
@@ -105,7 +93,6 @@ export function ContentsList() {
 
   const openCreatePopup = () => {
     setIsCreate(true);
-    setIsUpdate(false);
   };
 
   const menuList = [
@@ -211,11 +198,10 @@ export function ContentsList() {
 
   /**문항 업로드 팝업 관련 코드 */
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
-  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const setIsUpload = useSetRecoilState(uploadPopupBoolAtom);
   const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
   const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
-
-  const setIsEdit = useSetRecoilState(updateBoolAtom);
+  const setIsEdit = useSetRecoilState(editingBoolAtom);
 
   /**문항 업로드 수정 팝업 함수 */
   const openCreateEditFilePopup = () => {
@@ -225,27 +211,6 @@ export function ContentsList() {
     setIsCreateNewContent(false);
     setIsEdit(true);
   };
-
-  // 드롭다운 버튼 기본 값설정
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const dropDownList: DropDownItemProps[] = [
-    {
-      key: 'ListTabl/수정',
-      title: '수정',
-      onClick: () => {
-        openCreateEditFilePopup();
-        setShowDropDown(false);
-      },
-    },
-    {
-      key: 'ListTable/DropDownList복제 후 수정',
-      title: '복제 후 수정',
-      onClick: () => {
-        openCreateEditFilePopup();
-        setShowDropDown(false);
-      },
-    },
-  ];
 
   const loadData = useCallback(() => {
     getQuestionList({
@@ -330,95 +295,10 @@ export function ContentsList() {
           list={questionList}
           onClick={submitChangingService}
         ></ContentList>
-        {/* <ButtonWrapper>
-          <AllCheckButtonWrapper onClick={handleAllCheck}>
-            {isAllchecked ? (
-              <div>
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="9.5"
-                    fill="white"
-                    stroke="#A0A0A0"
-                  />
-                  <path
-                    d="M16 6.84116L8.45714 14L5 10.7189L5.88629 9.8777L8.45714 12.3117L15.1137 6L16 6.84116Z"
-                    fill="#4A4A4A"
-                  />
-                </svg>
-              </div>
-            ) : (
-              <div>
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="9.5"
-                    fill="white"
-                    stroke="#A0A0A0"
-                  />
-                </svg>
-              </div>
-            )}
-            전체선택
-          </AllCheckButtonWrapper>
-          <ActionButtonWrapper>
-            <DropDown
-              list={dropDownList}
-              buttonText={'수정'}
-              showDropDown={showDropDown}
-              setShowDropDown={setShowDropDown}
-              disabled={isEnabled}
-            ></DropDown>
-            <Button
-              width="140px"
-              height="35px"
-              fontSize="14px"
-              $border
-              $borderRadius="7px"
-              onClick={() => {
-                submitChangingService();
-              }}
-              disabled={isEnabled}
-            >
-              활성화 / 비활성화
-            </Button>
-          </ActionButtonWrapper>
-        </ButtonWrapper>
-
-        <ContentCardWrapper>
-          {questionList.map((content) => (
-            <ContentCard
-              key={content.questionCode}
-              content={content}
-              allChecked={isAllchecked ? [content.contentSeq] : []}
-              onClick={() => setIsEnabled(false)}
-            ></ContentCard>
-          ))}
-        </ContentCardWrapper> */}
-        {/* <Table
-          list={questionList}
-          colWidth={contentColWidth}
-          theadList={contentTheadList}
-          setIsEnabled={setIsEnabled}
-          setSelectedRows={setSelectedRows}
-        /> */}
       </TableWrapper>
       <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
       <Alert
+        isAlertOpen={isAlertOpen}
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
         action="확인"

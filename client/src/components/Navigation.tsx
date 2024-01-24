@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { MdAccountBalance } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { openNaviationBoolAtom } from '../store/utilAtom';
@@ -12,9 +12,7 @@ import { Label } from './atom';
 import { COLOR } from './constants';
 
 export function Navigation() {
-  const [isOpenNavigation, setIsOpenNavigation] = useRecoilState(
-    openNaviationBoolAtom,
-  );
+  const isOpenNavigation = useRecoilValue(openNaviationBoolAtom);
   const navigate = useNavigate();
 
   if (!isOpenNavigation) {

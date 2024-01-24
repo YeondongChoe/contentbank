@@ -1,17 +1,19 @@
 import * as React from 'react';
 
 import { IoMdClose } from 'react-icons/io';
-import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../../components/atom';
-import { managementTreePopupBoolAtom } from '../../store/managementContentAtom';
 
-export function ManagemantTreePopup() {
-  const [isCreate, setIsCreate] = useRecoilState(managementTreePopupBoolAtom);
+type ManagemantTreePopupProps = {
+  setIsOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
+export function ManagemantTreePopup({
+  setIsOpenPopup,
+}: ManagemantTreePopupProps) {
   const closePopup = () => {
-    setIsCreate(false);
+    setIsOpenPopup(false);
   };
   return (
     <Overlay>

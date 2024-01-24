@@ -42,13 +42,14 @@ type postLoginProps = {
   isClicked: boolean;
   Id: string;
   navigate: (result: string) => void;
-  openAlert: () => void;
+
   setErrorMessage: (result: string) => void;
+  openNewAlert: () => void;
 };
 
 /** 로그인 API */
 export const postLogin = async (
-  { navigate, isClicked, Id, setErrorMessage, openAlert }: postLoginProps,
+  { navigate, isClicked, Id, setErrorMessage, openNewAlert }: postLoginProps,
   data: dataProps,
 ) => {
   await authInstance
@@ -74,7 +75,7 @@ export const postLogin = async (
     })
     .catch((error) => {
       setErrorMessage(error.response.data.message);
-      openAlert();
+      openNewAlert();
     });
 };
 
@@ -83,7 +84,7 @@ type postRegisterProps = {
   Name: string;
   Authority: string | undefined;
   Comment: string;
-  SetIsRegister: (result: boolean) => void;
+  setIsRegister: (result: boolean) => void;
   setIsNameError: (result: boolean) => void;
   setIsDuplicate: (result: boolean) => void;
   setIsRequired: (result: boolean) => void;
@@ -97,7 +98,7 @@ export const postRegister = async ({
   Name,
   Authority,
   Comment,
-  SetIsRegister,
+  setIsRegister,
   setIsNameError,
   setIsDuplicate,
   setIsRequired,
@@ -114,7 +115,7 @@ export const postRegister = async ({
     .then((response) => {
       handleAuthorizationRenewal(response);
       //성공메시지 서버쪽에서 넘겨주면 띄우기
-      SetIsRegister(false);
+      setIsRegister(false);
       setIsNameError(false);
       alert('회원 생성 성공');
     })

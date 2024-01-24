@@ -1,15 +1,11 @@
 import * as React from 'react';
 
-import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
-import { updateBoolAtom } from '../../store/utilAtom';
 
 export function ContentCreatingPopup() {
-  const isEdit = useRecoilValue(updateBoolAtom);
-
   const submitSave = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     console.log('신규 등록된 문항 리스트 get 요청 API');
@@ -35,7 +31,7 @@ export function ContentCreatingPopup() {
         $margin="0px"
         fontSize="12px"
       >
-        <span>{isEdit ? '수정' : '저장'}</span>
+        <span>저장</span>
       </Button>
     </Container>
   );

@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu, IndexInfo } from '../../components';
 import { Button } from '../../components/atom';
 import { COLOR } from '../../components/constants';
 import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
-import { managementTreePopupBoolAtom } from '../../store/managementContentAtom';
 
 export function ManagementsTree() {
   const menuList = [
@@ -19,7 +18,11 @@ export function ManagementsTree() {
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('히스토리');
 
-  const [isCreate, setIsCreate] = useRecoilState(managementTreePopupBoolAtom);
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
+
+  const openPopup = () => {
+    setIsOpenPopup(true);
+  };
 
   return (
     <Container>
@@ -35,7 +38,7 @@ export function ManagementsTree() {
         />
         <Button
           buttonType="button"
-          onClick={() => setIsCreate(true)}
+          onClick={openPopup}
           $padding="10px"
           height={'35px'}
           width={'200px'}
@@ -44,8 +47,8 @@ export function ManagementsTree() {
           <span>문항 정보 트리구조 변경</span>
         </Button>
       </HeadWrapper>
-      <TableWrapper>{/* <WorksheetTable /> */}</TableWrapper>
-      {isCreate && <ManagemantTreePopup />}
+      <TableWrapper></TableWrapper>
+      {isOpenPopup && <ManagemantTreePopup setIsOpenPopup={setIsOpenPopup} />}
     </Container>
   );
 }

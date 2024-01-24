@@ -15,12 +15,7 @@ import {
   TabMenu,
   Table,
 } from '../../components/molecules';
-import {
-  registerBoolAtom,
-  editerBoolAtom,
-  memberKeyValueAtom,
-} from '../../store/memberAtom';
-import { alertBoolAtom, pageAtom, totalPageAtom } from '../../store/utilAtom';
+import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { COLOR } from '../constants/COLOR';
 import { EditPopup } from '../member/EditPopup';
@@ -28,16 +23,16 @@ import { RegisterPopup } from '../member/RegisterPopup';
 
 export function Member() {
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
-  const [isRegister, setIsRegister] = useRecoilState(registerBoolAtom);
-  const [isEditer, setIsEditer] = useRecoilState(editerBoolAtom);
-  const setKeyValue = useSetRecoilState(memberKeyValueAtom);
+  const [isRegister, setIsRegister] = useState(false);
+  const [isEditer, setIsEditer] = useState(false);
+  const [keyValue, setKeyValue] = useState('');
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 8;
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
 
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -214,14 +209,27 @@ export function Member() {
       <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
 
       <Alert
+        isAlertOpen={isAlertOpen}
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
         action="확인"
         onClick={submitDisabled}
       ></Alert>
 
-      {isRegister ? <RegisterPopup /> : ''}
-      {isEditer ? <EditPopup /> : ''}
+      {isRegister ? (
+        <RegisterPopup isRegister={isRegister} setIsRegister={setIsRegister} />
+      ) : (
+        ''
+      )}
+      {isEditer ? (
+        <EditPopup
+          keyValue={keyValue}
+          isEditer={isEditer}
+          setIsEditer={setIsEditer}
+        />
+      ) : (
+        ''
+      )}
     </Container>
   );
 }
