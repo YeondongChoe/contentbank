@@ -1,24 +1,26 @@
 import * as React from 'react';
 
 export const NO_FRAME_WINDOW_OPTIONS = `scrollbars=no,status=no,location=no,menubar=no,fullscreen=no,toolbar=no,titlebar=no,frame=no`;
-export const WINDOW_OPTIONS = `toolbar=no,titlebar=no`;
+export const WINDOW_OPTIONS = `toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no`;
 
 export const windowOpenHandler = ({
-  name = '',
+  name = '_blank',
   url,
   options = '',
-  width = '800px',
-  height = '500px',
 }: {
-  name: string;
+  name?: string;
   url: string;
-  options: string;
-  width: string;
-  height: string;
+  options?: string;
 }) => {
+  const windowWidth = 1200;
+  const windowHeight = 800;
+  const left = Math.round(window.screen.width / 2 - windowWidth / 2);
+  const top = Math.round(window.screen.height / 2 - windowHeight / 2);
+
   const target = `${name}`;
-  const defaultOption = `${WINDOW_OPTIONS},width=${width},height=${height}`;
-  return window.open(url, target, `${defaultOption},${options}`);
+  const defaultOption = `width=${windowWidth},height=${windowHeight},top=${top},left=${left},toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no`;
+  //TODO : url 에 BASEURL 추가
+  window.open(url, target, options ? options : `${defaultOption}`);
 };
 
 //TODO: 함수 분기 추가 커스텀 필요

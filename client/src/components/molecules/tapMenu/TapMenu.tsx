@@ -124,7 +124,7 @@ type TabStyleProps = {
 
 const TabButton = styled.button<TabStyleProps>`
   align-items: center;
-  border-bottom-style: solid;
+  /* border-bottom-style: solid; */
   display: flex;
   height: ${({ height }) => (height ? ` ${height};` : '40px')};
   justify-content: center;
@@ -136,17 +136,9 @@ const TabButton = styled.button<TabStyleProps>`
   ${({ $active }) =>
     $active
       ? `background-color: ${COLOR.PRIMARY}; `
-      : `background-color: ${COLOR.GRAY};`}
+      : `background-color: transparent;`}
 
-  &:nth-of-type(1) {
-    border-radius: 10px;
-  }
-  &:last-child {
-    border-radius: 10px;
-  }
-  &:only-child {
-    border-radius: 10px;
-  }
+  border-radius: 10px;
 
   ${({ $lineStyle }) => $lineStyle && `background: transparent; `}
   ${({ $lineStyle, $active }) =>
@@ -158,12 +150,7 @@ const ButtonText = styled.span<{ $active: boolean; $lineStyle?: boolean }>`
   font-size: 14px;
   font-weight: bold;
 
-  ${({ $lineStyle, $active }) =>
-    $lineStyle
-      ? $active
-        ? `color:${COLOR.PRIMARY}`
-        : `color:${COLOR.GRAY}`
-      : `color: #fff;`}
+  ${({ $active }) => ($active ? `color: #fff;` : `color:${COLOR.FONT_BLACK}`)}
 `;
 
 const Component = styled.div<{

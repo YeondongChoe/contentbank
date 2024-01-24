@@ -36,6 +36,7 @@ import {
 } from '../../store/creatingContentAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
+import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
@@ -91,8 +92,14 @@ export function ContentsList() {
     setSearchValue(value);
   };
 
-  const openCreatePopup = () => {
-    setIsCreate(true);
+  //문항 생성 윈도우 열기
+  const openWindowCreate = () => {
+    // setIsCreate(true);
+
+    windowOpenHandler({
+      name: 'createcontentwindow',
+      url: '/createcontentwindow',
+    });
   };
 
   const menuList = [
@@ -197,7 +204,7 @@ export function ContentsList() {
   ];
 
   /**문항 업로드 팝업 관련 코드 */
-  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
+  // const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
   const setIsUpload = useSetRecoilState(uploadPopupBoolAtom);
   const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
   const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
@@ -205,7 +212,7 @@ export function ContentsList() {
 
   /**문항 업로드 수정 팝업 함수 */
   const openCreateEditFilePopup = () => {
-    setIsCreate(true);
+    // setIsCreate(true);
     setIsUpload(true);
     setIsUploadFile(true);
     setIsCreateNewContent(false);
@@ -250,7 +257,7 @@ export function ContentsList() {
           height={'35px'}
           width={'110px'}
           $margin={'0 0 0 10px'}
-          onClick={openCreatePopup}
+          onClick={openWindowCreate}
           fontSize="13px"
           $filled
         >
@@ -304,7 +311,7 @@ export function ContentsList() {
         action="확인"
         onClick={submitDisabled}
       ></Alert>
-      {isCreate && <CreateIconPopup />}
+      {/* {isCreate && <CreateIconPopup />} */}
     </Container>
   );
 }
@@ -334,31 +341,6 @@ const SelectWrapper = styled.div`
   justify-content: flex-end;
   gap: 5px;
   padding-bottom: 20px;
-`;
-const ButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 10px;
-`;
-const AllCheckButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 20px;
-  gap: 10px;
-  cursor: pointer;
-`;
-const ActionButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 5px;
-`;
-const ContentCardWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 30px;
 `;
 
 const TableWrapper = styled.div`

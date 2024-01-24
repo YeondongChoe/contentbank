@@ -27,12 +27,16 @@ export function App() {
           {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
             location.pathname !== '/firstlogin' &&
-            location.pathname !== '/relogin' && <Navigation />}
+            location.pathname !== '/relogin' &&
+            location.pathname !== '/createcontentwindow' &&
+            location.pathname !== '/createcontentmain' && <Navigation />}
           <MainWrapper>
             {getAuthorityCookie('accessToken') &&
               location.pathname !== '/login' &&
               location.pathname !== '/firstlogin' &&
-              location.pathname !== '/relogin' && <Header />}
+              location.pathname !== '/relogin' &&
+              location.pathname !== '/createcontentwindow' &&
+              location.pathname !== '/createcontentmain' && <Header />}
             <BodyWrapper>
               <Outlet />
             </BodyWrapper>

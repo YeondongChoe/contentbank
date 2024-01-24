@@ -5,8 +5,12 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { App } from './App';
-import { ContentList } from './pages/content/ContentList';
-import { ContentWorksheet } from './pages/content/ContentWorksheet';
+import {
+  ContentList,
+  ContentWorksheet,
+  CreateContentMain,
+  CreateContentWindow,
+} from './pages/content';
 import { Guide } from './pages/Guide';
 import { ManagementList } from './pages/management/ManagementList';
 import { ManagementTree } from './pages/management/ManagementTree';
@@ -53,6 +57,14 @@ const router = createBrowserRouter([
       {
         path: '/contentlist',
         element: <ContentList />,
+      },
+      {
+        path: '/createcontentwindow',
+        element: <CreateContentWindow />,
+      },
+      {
+        path: '/createcontentmain',
+        element: <CreateContentMain />,
       },
       {
         path: '/contentworksheet',
