@@ -14,10 +14,10 @@ import {
   MathviewerCard,
 } from '../../components';
 import { COLOR } from '../../components/constants';
+import dummy from '../../components/contents/createcontent/data.json';
 import Contents2 from '../../components/mathViewer/test2.json';
 import Contents3 from '../../components/mathViewer/test3.json';
 import Contents4 from '../../components/mathViewer/test4.json';
-import dummy from '../../pages/createPopup/data.json';
 import {
   createWorksheetStep1BoolAtom,
   createWorksheetStep2BoolAtom,

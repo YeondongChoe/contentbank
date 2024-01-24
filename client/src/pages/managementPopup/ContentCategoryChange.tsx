@@ -7,8 +7,8 @@ import styled from 'styled-components';
 
 import { MathViewer, Button } from '../../components';
 import { Select } from '../../components/atom/select';
+import dummy from '../../components/contents/createcontent/data.json';
 import Contents2 from '../../components/mathViewer/test2.json';
-import dummy from '../createPopup/data.json';
 
 export function ContentCategoryChange() {
   const [didMount, setDidMount] = useState(false);

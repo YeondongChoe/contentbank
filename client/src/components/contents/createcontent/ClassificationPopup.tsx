@@ -3,12 +3,12 @@ import { useEffect, useState, useRef } from 'react';
 
 import styled from 'styled-components';
 
-import { MathViewer, Button, Select, Input } from '../../components';
-import { COLOR } from '../../components/constants/COLOR';
-import Contents from '../../components/mathViewer/test1.json';
-import Contents2 from '../../components/mathViewer/test2.json';
-import Contents3 from '../../components/mathViewer/test3.json';
-import Contents4 from '../../components/mathViewer/test4.json';
+import { MathViewer, Button, Select, Input } from '../..';
+import { COLOR } from '../../constants/COLOR';
+import Contents from '../../mathViewer/test1.json';
+import Contents2 from '../../mathViewer/test2.json';
+import Contents3 from '../../mathViewer/test3.json';
+import Contents4 from '../../mathViewer/test4.json';
 
 import dummy from './data.json';
 

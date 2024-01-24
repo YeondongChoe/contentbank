@@ -57,7 +57,7 @@ export function CreateContentMain() {
 
   return (
     <Container>
-      <Wrapper>
+      <ButtonWrapper>
         <IconWrapper>
           <IoIosArrowBack
             style={{ fontSize: '24px', cursor: 'pointer' }}
@@ -79,7 +79,7 @@ export function CreateContentMain() {
             style={{ fontSize: '22px', cursor: 'pointer' }}
           />
         </CloseButtonWrapper> */}
-      </Wrapper>
+      </ButtonWrapper>
       {tabVeiw === 'DT & Editing' && (
         <ContentBox>
           {/* {isCreateNewContent && <ContentCreatingPopup />}
@@ -100,16 +100,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const Wrapper = styled.div`
-  padding-top: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const ButtonWrapper = styled.div`
+  padding: 10px 20px;
 `;
 const IconWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  position: absolute;
+  top: 15px;
 `;
 const TapMenuWrapper = styled.div`
   display: flex;
@@ -119,7 +117,5 @@ const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 const ContentBox = styled.div`
-  margin-left: 34px;
-  border-top: 1px solid ${COLOR.BORDER_BLUE};
-  height: 700px;
+  min-height: 700px;
 `;

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import styled from 'styled-components';
 
-import { COLOR } from '../../components/constants/COLOR';
+import { COLOR } from '../../constants/COLOR';
 
 export function LabelingPopup() {
   return (

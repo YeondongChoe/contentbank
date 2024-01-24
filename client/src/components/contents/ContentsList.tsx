@@ -4,9 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { questionInstance } from '../../api/axios';
-import { getQuestionList } from '../../api/getAxios';
-import { putChangeServiced } from '../../api/putAxios';
 import {
   ContentList,
   Alert,
@@ -20,13 +17,10 @@ import {
   TabMenu,
   Table,
   ContentCard,
-} from '../../components';
-import {
-  COLOR,
-  contentColWidth,
-  contentTheadList,
-} from '../../components/constants';
-import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
+} from '..';
+import { questionInstance } from '../../api/axios';
+import { getQuestionList } from '../../api/getAxios';
+import { putChangeServiced } from '../../api/putAxios';
 import {
   editingBoolAtom,
   createContentPopupBoolAtom,
@@ -37,6 +31,7 @@ import {
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
+import { COLOR, contentColWidth, contentTheadList } from '../constants';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
