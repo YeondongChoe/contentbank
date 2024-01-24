@@ -14,8 +14,3 @@ export const checkBoxValueAtom = atom({
   key: 'checkBoxValueAtom',
   default: <number[]>[],
 });
-
-export const checkListValueAtom = atom({
-  key: 'checkListValueAtom',
-  default: <number[]>[],
-});
