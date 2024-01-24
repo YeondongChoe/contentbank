@@ -26,6 +26,8 @@ type ChangePasswordProps = {
   buttonfontsize?: string;
   labelfontsize?: string;
   placeholdersize?: string;
+  buttonGroupWidth?: string;
+  messageWidth?: string;
 };
 
 export function ChangePassword({
@@ -38,6 +40,8 @@ export function ChangePassword({
   marginleft,
   padding,
   buttonfontsize,
+  buttonGroupWidth,
+  messageWidth,
   labelfontsize,
   placeholdersize,
 }: ChangePasswordProps) {
@@ -117,7 +121,7 @@ export function ChangePassword({
                 <Input
                   borderbottom
                   width={inputwidth as string}
-                  height="40px"
+                  height="30px"
                   padding="10px 20px"
                   fontSize="15px"
                   placeholderSize={placeholdersize as string}
@@ -131,8 +135,16 @@ export function ChangePassword({
               )}
             />
           </InputWapper>
-          {Password && <ErrorMessage>{errors?.password?.message}</ErrorMessage>}
-          {isValid && <SuccessMessage>사용가능</SuccessMessage>}
+          {Password && (
+            <ErrorMessage $messageWidth={messageWidth as string}>
+              {errors?.password?.message}
+            </ErrorMessage>
+          )}
+          {isValid && (
+            <SuccessMessage $messageWidth={messageWidth as string}>
+              사용가능
+            </SuccessMessage>
+          )}
           <InputWapper width={width as string}>
             <Label
               value="새 비밀번호 재확인"
@@ -155,7 +167,7 @@ export function ChangePassword({
                 <Input
                   borderbottom
                   width={inputwidth as string}
-                  height="40px"
+                  height="30px"
                   padding="10px 20px"
                   fontSize="15px"
                   placeholderSize={placeholdersize as string}
@@ -174,15 +186,20 @@ export function ChangePassword({
             />
           </InputWapper>
           {PasswordConfirm && Password === PasswordConfirm ? (
-            <SuccessMessage>비밀번호 일치</SuccessMessage>
+            <SuccessMessage $messageWidth={messageWidth as string}>
+              비밀번호 일치
+            </SuccessMessage>
           ) : (
-            <ErrorMessage>{errors?.password_confirm?.message}</ErrorMessage>
+            <ErrorMessage $messageWidth={messageWidth as string}>
+              {errors?.password_confirm?.message}
+            </ErrorMessage>
           )}
         </InputSection>
         <ButtonGroup
           display={display as string}
           marginLeft={marginleft as string}
           $padding={padding as string}
+          $buttonGroupWidth={buttonGroupWidth as string}
         >
           <ButtonWapper>
             <Button
@@ -190,7 +207,7 @@ export function ChangePassword({
               width={btnwidth}
               height={height}
               fontSize={buttonfontsize}
-              $borderRadius="10px"
+              $borderRadius="7px"
               $normal
             >
               <span>취소</span>
@@ -204,7 +221,7 @@ export function ChangePassword({
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
-                $borderRadius="10px"
+                $borderRadius="7px"
                 $filled
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -223,7 +240,7 @@ export function ChangePassword({
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
-                $borderRadius="10px"
+                $borderRadius="7px"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
@@ -247,20 +264,27 @@ const InputSection = styled.section<{ width: string }>`
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
 const InputWapper = styled.div<{ width: string }>`
+  height: 50px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 0px;
+  gap: 40px;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
-const SuccessMessage = styled.div`
+const SuccessMessage = styled.div<{ $messageWidth: string }>`
+  width: ${({ $messageWidth }) =>
+    $messageWidth ? ` ${$messageWidth};` : '600px'};
+  padding: 0 10px;
   font-size: 12px;
   color: green;
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
 `;
-const ErrorMessage = styled.div`
+const ErrorMessage = styled.div<{ $messageWidth: string }>`
+  width: ${({ $messageWidth }) =>
+    $messageWidth ? ` ${$messageWidth};` : '600px'};
+  width: 700px;
+  padding: 0 10px;
   font-size: 12px;
   color: red;
   display: flex;
@@ -272,7 +296,10 @@ const ButtonGroup = styled.div<{
   display: string;
   marginLeft: string;
   $padding: string;
+  $buttonGroupWidth: string;
 }>`
+  width: ${({ $buttonGroupWidth }) =>
+    $buttonGroupWidth ? `${$buttonGroupWidth};` : '600px'};
   display: flex;
   gap: 20px;
   justify-content: ${(props) => props.display};
