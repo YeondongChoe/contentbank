@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { questionInstance } from '../../api/axios';
@@ -35,7 +35,6 @@ import {
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
-import { createListCodeValueAtom } from '../../store/valueAtom';
 import { QuestionTableType } from '../../types';
 
 export function ContentsList() {
@@ -48,7 +47,7 @@ export function ContentsList() {
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 7;
-  const MenuCode = useRecoilValue(createListCodeValueAtom);
+  const MenuCode = 'CNC_Q';
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 

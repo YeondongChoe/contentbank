@@ -25,7 +25,6 @@ import {
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { totalPageAtom, pageAtom } from '../../store/utilAtom';
-import { createListCodeValueAtom } from '../../store/valueAtom';
 import { QuestionTableType } from '../../types';
 
 export function ManagementsList() {
@@ -46,7 +45,7 @@ export function ManagementsList() {
 
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const MenuCode = useRecoilValue(createListCodeValueAtom);
+  const MenuCode = 'CNC_Q';
   const [isChangedServiced, setIsChangedServiced] = useState(false);
   // 활성화/비활성화 버튼상태 토글
   const submitChangingService = () => {
