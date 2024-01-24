@@ -87,13 +87,17 @@ type putChangePasswordProps = {
   Password: string;
   PasswordConfirm: string;
   navigate: (result: string) => void;
+  setErrorMessage: (result: string) => void;
+  openAlert: () => void;
 };
 
 /** 비밀번호 변경 API */
 export const putChangePassword = async ({
   Password,
   PasswordConfirm,
+  setErrorMessage,
   navigate,
+  openAlert,
 }: putChangePasswordProps) => {
   const data = {
     password: Password,
@@ -105,8 +109,9 @@ export const putChangePassword = async ({
       handleAuthorizationRenewal(response);
       navigate('/relogin');
     })
-    .catch(() => {
-      alert('비밀번호 재확인을 입력해주세요.');
+    .catch((error) => {
+      setErrorMessage(error.response.data.message);
+      openAlert();
     });
 };
 

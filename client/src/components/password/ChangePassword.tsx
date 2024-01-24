@@ -46,6 +46,15 @@ export function ChangePassword({
     watch,
     formState: { errors, isValid },
   } = useForm<passwordProps>();
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const openAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
 
   const PasswordInputRef = useRef<HTMLInputElement | null>(null);
   const PasswordConfirmInputRef = useRef<HTMLInputElement | null>(null);
@@ -67,19 +76,13 @@ export function ChangePassword({
       Password,
       PasswordConfirm,
       navigate,
+      setErrorMessage,
+      openAlert,
     });
   };
 
   const enterLogin = () => {
     submitChangePassword();
-  };
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeAlert = () => {
-    setIsAlertOpen(false);
   };
 
   return (
@@ -88,7 +91,7 @@ export function ChangePassword({
         type="error"
         isAlertNewOpen={isAlertOpen}
         closeNewAlert={closeAlert}
-        //message={errorMessage}
+        message={errorMessage}
       ></AlertBar>
       <form>
         <InputSection width={width as string}>

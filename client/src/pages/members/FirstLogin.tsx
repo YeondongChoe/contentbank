@@ -4,6 +4,7 @@ import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { COLOR } from '../../components/constants';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { removeAuthorityCookie } from '../../utils/cookies';
 
@@ -68,11 +69,11 @@ const Title = styled.div`
   font-size: 20px;
   font-weight: 800;
   padding-bottom: 25px;
-  color: #1b254b;
+  color: ${COLOR.FONT_BLACK};
 `;
 const DiscriptionWrapper = styled.div`
   width: 600px;
-  background-color: #eeeeee;
+  background-color: ${COLOR.LIGHT_GRAY};
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 40px;

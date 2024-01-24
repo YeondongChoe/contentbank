@@ -29,6 +29,14 @@ export function Login() {
     formState: { errors },
   } = useForm<loginProps>();
 
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const openAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
+
   const Id = watch('id', '');
   const Password = watch('password', '');
   const IdInputRef = useRef<HTMLInputElement | null>(null);
@@ -46,14 +54,6 @@ export function Login() {
 
   const enterLogin = () => {
     handleSubmit(submitLogin)();
-  };
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeAlert = () => {
-    setIsAlertOpen(false);
   };
 
   const ClickIdLabel = () => {
