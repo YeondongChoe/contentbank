@@ -42,7 +42,13 @@ export function ManagementsList() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  // const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
+
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const MenuCode = useRecoilValue(createListCodeValueAtom);
@@ -325,12 +331,14 @@ export function ManagementsList() {
         title="권한을 삭제할 경우, "
         description="해당 권한의 아이디는 접속이 불가합니다."
         action="삭제"
+        onClose={closeAlert}
         // onClick={() => submitDelete()}
       />
       <Alert
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
         action="확인"
+        onClose={closeAlert}
         onClick={submitDisabled}
       ></Alert>
 

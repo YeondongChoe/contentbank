@@ -11,16 +11,22 @@ type AlertProps = {
   title: string;
   description?: string;
   onClick?: () => void;
+  onClose?: () => void;
   action?: string;
   notice?: boolean;
+  isAlertOpen?: boolean;
 };
 
-export function Alert(prop: AlertProps) {
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
-
-  const closeAlert = () => {
-    setIsAlertOpen(false);
-  };
+export function Alert({
+  title,
+  description,
+  onClick,
+  onClose,
+  action,
+  notice,
+  isAlertOpen,
+}: AlertProps) {
+  //const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
 
   return (
     <>
@@ -29,15 +35,15 @@ export function Alert(prop: AlertProps) {
           <Container>
             <AlertWrapper>
               <CancelIconWrapper>
-                <IoMdClose onClick={closeAlert} style={{ cursor: 'pointer' }} />
+                <IoMdClose onClick={onClose} style={{ cursor: 'pointer' }} />
               </CancelIconWrapper>
-              <Description>{prop.title}</Description>
-              <Description>{prop.description}</Description>
+              <Description>{title}</Description>
+              <Description>{description}</Description>
             </AlertWrapper>
-            {prop.notice ? (
+            {notice ? (
               <Button
                 buttonType="button"
-                onClick={closeAlert}
+                onClick={onClose}
                 height="10px"
                 width="100px"
                 $margin="0 0 10px 0"
@@ -50,7 +56,7 @@ export function Alert(prop: AlertProps) {
               <SelectWrapper>
                 <Button
                   buttonType="button"
-                  onClick={closeAlert}
+                  onClick={onClose}
                   height="10px"
                   $padding="15px"
                   width="80px"
@@ -67,9 +73,9 @@ export function Alert(prop: AlertProps) {
                   width="80px"
                   fontSize="12px"
                   $borderRadius="15px"
-                  onClick={prop.onClick}
+                  onClick={onClick}
                 >
-                  <span>{prop.action}</span>
+                  <span>{action}</span>
                 </Button>
               </SelectWrapper>
             )}
