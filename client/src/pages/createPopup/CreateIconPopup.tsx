@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import {
   createContentPopupBoolAtom,
-  uploadBoolAtom,
+  uploadPopupBoolAtom,
   creatingNewContentBoolAtom,
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
@@ -21,8 +21,8 @@ const styleIcon = {
 };
 
 export function CreateIconPopup() {
-  const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
-  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const setIsCreate = useSetRecoilState(createContentPopupBoolAtom);
+  const [isUpload, setIsUpload] = useRecoilState(uploadPopupBoolAtom);
   const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
   const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
 

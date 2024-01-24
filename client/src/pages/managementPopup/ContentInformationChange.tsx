@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import { Button, MathViewer } from '../../components';
 import { Select } from '../../components/atom/select';
 import Contents2 from '../../components/mathViewer/test2.json';
-import { checkListValueAtom } from '../../store/valueAtom';
 import dummy from '../createPopup/data.json';
 
 export function ContentInformationChange() {
@@ -17,8 +16,7 @@ export function ContentInformationChange() {
 
   const [didMount, setDidMount] = useState(false);
 
-  const [selectedRows, setSelectedRows] =
-    useRecoilState<number[]>(checkListValueAtom);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const isAllSelected = selectedRows.length === ContentList.length;
 
   const selectAll = () => {

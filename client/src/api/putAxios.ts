@@ -163,7 +163,7 @@ type putChangeMemberInformationProps = {
   Comment: string;
   CheckBox: boolean | null;
   keyValue: string;
-  SetIsEditer: (result: boolean) => void;
+  setIsEditer: (result: boolean) => void;
   setIsNameError: (result: boolean) => void;
   setNameErrorMessage: (result: string) => void;
 };
@@ -176,7 +176,7 @@ export const putChangeMemberInformation = async ({
   Comment,
   CheckBox,
   keyValue,
-  SetIsEditer,
+  setIsEditer,
   setIsNameError,
   setNameErrorMessage,
 }: putChangeMemberInformationProps) => {
@@ -191,7 +191,7 @@ export const putChangeMemberInformation = async ({
     .then((response) => {
       handleAuthorizationRenewal(response);
       //성공메시지 서버쪽에서 넘겨주면 띄우기
-      SetIsEditer(false);
+      setIsEditer(false);
       setIsNameError(false);
       window.location.reload();
     })

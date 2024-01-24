@@ -19,14 +19,13 @@ import { OperationAuthority } from './pages/operate/OperationAuthority';
 import { OperationMember } from './pages/operate/OperationMember';
 import { Preparing } from './pages/Preparing';
 import GlobalStyle from './styles/GlobalStyle';
-
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     errorElement: <Notfound />,
     children: [
-      // { index: true, path: '/login', element: <Login /> },
+      { index: true, path: '/', element: <ContentList /> },
       {
         path: 'dev/v1/guide',
         element: <Guide />,
@@ -78,7 +77,6 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
 // eslint-disable-next-line import/no-named-as-default-member
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,

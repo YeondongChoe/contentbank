@@ -10,27 +10,6 @@ import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
 import { Button, IndexInfo } from '../../components/atom';
-// import {
-//   editCreateContentBool,
-//   editCreateListBool,
-//   editCreateContentWorksheetBool,
-//   editManagementContentBool,
-//   editManagementListBool,
-//   editManagementTreeBool,
-//   editOperationBoolAtom,
-//   editMemberBoolAtom,
-//   editAuthorityBoolAtom,
-//   manageCreateContentBoolAtom,
-//   manageCreateListBoolAtom,
-//   manageCreateContentWorksheetBoolAtom,
-//   manageManagementContentBoolAtom,
-//   manageManagementListBoolAtom,
-//   manageManagementTreeBoolAtom,
-//   manageOperationBoolAtom,
-//   manageMemberBoolAtom,
-//   manageAuthorityBoolAtom,
-// } from '../../store/authorityAtom';
-import { alertBoolAtom } from '../../store/utilAtom';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
@@ -70,7 +49,7 @@ export function Authority() {
   const [inputValue, setInputValue] = useState('');
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isPutAuthority, setIsPutAuthority] = useState(false);
   const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
@@ -913,8 +892,6 @@ export function Authority() {
               </tbody>
             </table>
           </TableWrapper>
-          {/* <AuthorityTree /> */}
-
           <AuthorityListWrapper>
             {/* {authorityList?.map((el, i) => (
               <AuthorityWrapper
@@ -948,6 +925,7 @@ export function Authority() {
       </Wrapper>
       {isDeleteAuthority && (
         <Alert
+          isAlertOpen={isAlertOpen}
           title="권한을 삭제할 경우, "
           description="해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"
@@ -956,6 +934,7 @@ export function Authority() {
       )}
       {isUpdateAuthority && (
         <Alert
+          isAlertOpen={isAlertOpen}
           title={
             isClickedName
               ? '권한을 수정 하시겠습니까?'
@@ -965,7 +944,13 @@ export function Authority() {
           onClick={submitAuthority}
         />
       )}
-      {isCreateNameError && <Alert notice title="권한명을 작성해주세요." />}
+      {isCreateNameError && (
+        <Alert
+          isAlertOpen={isAlertOpen}
+          notice
+          title="권한명을 작성해주세요."
+        />
+      )}
     </Container>
   );
 }
