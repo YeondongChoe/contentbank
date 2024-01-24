@@ -7,12 +7,10 @@ import styled from 'styled-components';
 
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
-import { Login } from './pages/members/Login';
-import { previewWorksheetBoolAtom } from './store/creatingWorksheetAtom';
 import { getAuthorityCookie } from './utils/cookies';
 export function App() {
   const location = useLocation();
-  //const pring = useRecoilValue(previewWorksheetBoolAtom);
+
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -28,12 +28,13 @@ import {
 } from '../../components/constants';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import {
+  updateBoolAtom,
   createContentPopupBoolAtom,
   creatingNewContentBoolAtom,
   uploadBoolAtom,
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
-import { pageAtom, totalPageAtom, updateBoolAtom } from '../../store/utilAtom';
+import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
@@ -221,27 +222,6 @@ export function ContentsList() {
     setIsEdit(true);
   };
 
-  // 드롭다운 버튼 기본 값설정
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const dropDownList: DropDownItemProps[] = [
-    {
-      key: 'ListTabl/수정',
-      title: '수정',
-      onClick: () => {
-        openCreateEditFilePopup();
-        setShowDropDown(false);
-      },
-    },
-    {
-      key: 'ListTable/DropDownList복제 후 수정',
-      title: '복제 후 수정',
-      onClick: () => {
-        openCreateEditFilePopup();
-        setShowDropDown(false);
-      },
-    },
-  ];
-
   const loadData = useCallback(() => {
     getQuestionList({
       setQuestionList,
@@ -325,92 +305,6 @@ export function ContentsList() {
           list={questionList}
           onClick={submitChangingService}
         ></ContentList>
-        {/* <ButtonWrapper>
-          <AllCheckButtonWrapper onClick={handleAllCheck}>
-            {isAllchecked ? (
-              <div>
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="9.5"
-                    fill="white"
-                    stroke="#A0A0A0"
-                  />
-                  <path
-                    d="M16 6.84116L8.45714 14L5 10.7189L5.88629 9.8777L8.45714 12.3117L15.1137 6L16 6.84116Z"
-                    fill="#4A4A4A"
-                  />
-                </svg>
-              </div>
-            ) : (
-              <div>
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="9.5"
-                    fill="white"
-                    stroke="#A0A0A0"
-                  />
-                </svg>
-              </div>
-            )}
-            전체선택
-          </AllCheckButtonWrapper>
-          <ActionButtonWrapper>
-            <DropDown
-              list={dropDownList}
-              buttonText={'수정'}
-              showDropDown={showDropDown}
-              setShowDropDown={setShowDropDown}
-              disabled={isEnabled}
-            ></DropDown>
-            <Button
-              width="140px"
-              height="35px"
-              fontSize="14px"
-              $border
-              $borderRadius="7px"
-              onClick={() => {
-                submitChangingService();
-              }}
-              disabled={isEnabled}
-            >
-              활성화 / 비활성화
-            </Button>
-          </ActionButtonWrapper>
-        </ButtonWrapper>
-
-        <ContentCardWrapper>
-          {questionList.map((content) => (
-            <ContentCard
-              key={content.questionCode}
-              content={content}
-              allChecked={isAllchecked ? [content.contentSeq] : []}
-              onClick={() => setIsEnabled(false)}
-            ></ContentCard>
-          ))}
-        </ContentCardWrapper> */}
-        {/* <Table
-          list={questionList}
-          colWidth={contentColWidth}
-          theadList={contentTheadList}
-          setIsEnabled={setIsEnabled}
-          setSelectedRows={setSelectedRows}
-        /> */}
       </TableWrapper>
       <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
       <Alert
