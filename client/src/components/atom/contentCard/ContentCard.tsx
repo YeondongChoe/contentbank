@@ -30,7 +30,6 @@ export function ContentCard({
     checkList.includes(content.contentSeq),
   );
 
-  console.log(checkList.includes(content.contentSeq));
   const handleSingleCheck = (seq: number) => {
     setIsChecked((prev) => !prev);
     if (!isChecked) {

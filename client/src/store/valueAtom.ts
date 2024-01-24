@@ -19,8 +19,3 @@ export const checkListValueAtom = atom({
   key: 'checkListValueAtom',
   default: <number[]>[],
 });
-
-export const servicedValueBoolAtom = atom({
-  key: 'servicedValueBoolAtom',
-  default: false,
-});

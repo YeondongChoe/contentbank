@@ -35,19 +35,14 @@ import {
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
-import {
-  createListCodeValueAtom,
-  servicedValueBoolAtom,
-} from '../../store/valueAtom';
+import { createListCodeValueAtom } from '../../store/valueAtom';
 import { QuestionTableType } from '../../types';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [value, setValue] = useState<string>('');
 
-  const [isChangedServiced, setIsChangedServiced] = useRecoilState(
-    servicedValueBoolAtom,
-  );
+  const [isChangedServiced, setIsChangedServiced] = useState(false);
   const [didMount, setDidMount] = useState(false);
 
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
