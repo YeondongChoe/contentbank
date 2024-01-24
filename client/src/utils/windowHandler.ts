@@ -18,8 +18,8 @@ export const windowOpenHandler = ({
   const top = Math.round(window.screen.height / 2 - windowHeight / 2);
 
   const target = `${name}`;
-  const defaultOption = `width=${windowWidth},height=${windowHeight},top=${top},left=${left},toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no`;
-  //TODO : url 에 BASEURL 추가
+  const defaultOption = `width=${windowWidth},height=${windowHeight},top=${top},left=${left},toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no`;
+  //TODO : url 에 ${BASEURL} 추가
   window.open(url, target, options ? options : `${defaultOption}`);
 };
 

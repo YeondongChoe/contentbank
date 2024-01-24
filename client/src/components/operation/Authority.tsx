@@ -643,7 +643,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditCreateChecked'}
                         id={'isEditCreateChecked'}
-                        value={'isEditCreateChecked'}
+                        value={0}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[0].checked}
                       />
@@ -655,7 +655,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageCreateChecked'}
                         id={'isManageCreateChecked'}
-                        value={'isManageCreateChecked'}
+                        value={1}
                         onChange={(e) => handleChecked(e)}
                         disabled={!checkList[0].checked}
                         checked={checkList[1].checked}
@@ -671,7 +671,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditCreateListChecked'}
                         id={'isEditCreateListChecked'}
-                        value={'isEditCreateListChecked'}
+                        value={2}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[2].checked}
                       />
@@ -683,7 +683,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageCreateListChecked'}
                         id={'isManageCreateListChecked'}
-                        value={'isManageCreateListChecked'}
+                        value={3}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[3].checked}
                         disabled={!checkList[2].checked}
@@ -699,7 +699,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isEditWorksheetChecked'}
                         id={'isEditWorksheetChecked'}
-                        value={'isEditWorksheetChecked'}
+                        value={4}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[4].checked}
                       />
@@ -711,7 +711,7 @@ export function Authority() {
                         type="checkbox"
                         name={'isManageWorksheetChecked'}
                         id={'isManageWorksheetChecked'}
-                        value={'isManageWorksheetChecked'}
+                        value={5}
                         onChange={(e) => handleChecked(e)}
                         checked={checkList[5].checked}
                         disabled={!checkList[4].checked}
