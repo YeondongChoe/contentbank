@@ -1,8 +1,10 @@
 import * as React from 'react';
 
+import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { COLOR } from '../../components/constants';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { removeAuthorityCookie } from '../../utils/cookies';
 
@@ -19,24 +21,26 @@ export function FirstLogin() {
   return (
     <Container>
       <Wrapper>
+        <LogoIconWrapper>
+          <MdAccountBalance style={{ fontSize: '50px' }} />
+        </LogoIconWrapper>
         <Title>최초 로그인시 비밀번호 변경</Title>
         <DiscriptionWrapper>
           <DiscriptionTitle>새로운 비밀번호로 변경해주세요</DiscriptionTitle>
           <Discription>
             비밀번호는 영문과 숫자, 특수문자(~,!,@,#,$,%,^,&,*,(,),_,-만 사용
-            가능)를 <br />
-            조합하여 8 ~ 20자 이내로 설정해야 합니다.
+            가능) <br />를 조합하여 8 ~ 20자 이내로 설정해야 합니다.
           </Discription>
         </DiscriptionWrapper>
         <ChangePassword
           onClick={logout}
           display="space-evenly"
-          width="750px"
-          inputwidth="600px"
-          btnwidth="250px"
-          height="60px"
-          padding="40px 0px 0px 0px"
-          buttonfontsize="16px"
+          width="600px"
+          inputwidth="400px"
+          btnwidth="200px"
+          height="40px"
+          padding="20px 0px"
+          buttonfontsize="15px"
         />
       </Wrapper>
     </Container>
@@ -45,45 +49,47 @@ export function FirstLogin() {
 
 const Container = styled.div`
   min-width: 800px;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 150px;
 `;
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: white;
-  border-radius: 20px;
-  box-shadow: 0px 1px 10px -4px rgba(112, 144, 176, 0.8);
-  padding: 20px;
+`;
+const LogoIconWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-bottom: 30px;
 `;
 const Title = styled.div`
-  font-size: 25px;
-  padding-bottom: 30px;
-  color: #1b254b;
+  font-size: 20px;
+  font-weight: 800;
+  padding-bottom: 25px;
+  color: ${COLOR.FONT_BLACK};
 `;
 const DiscriptionWrapper = styled.div`
   width: 600px;
-  background-color: white;
-  box-shadow: 1px 1px 5px 1px rgba(112, 144, 176, 0.4);
+  background-color: ${COLOR.LIGHT_GRAY};
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px;
   margin-bottom: 40px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 `;
 const DiscriptionTitle = styled.p`
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 800;
   display: flex;
   justify-content: center;
 `;
 const Discription = styled.p`
   font-size: 14px;
   display: flex;
-  text-align: left;
+  text-align: center;
   justify-content: center;
 `;

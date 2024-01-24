@@ -7,7 +7,7 @@ import { COLOR } from '../../../components/constants/COLOR';
 type AlertBarProps = {
   isAlertNewOpen: boolean;
   closeNewAlert: () => void;
-  message: string;
+  message?: string;
   type: string;
 };
 
@@ -158,4 +158,5 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: white;
 `;

@@ -45,9 +45,10 @@ type putSaveNameProps = {
   isNameEdit: boolean;
   setIsNameEdit: (result: boolean) => void;
   setIsError: (result: boolean) => void;
-  setIsAlertOpen: (result: boolean) => void;
+  setIsSuccess: (result: boolean) => void;
+  openAlert: () => void;
   setNameValue: (result: string) => void;
-  setErrorMessage: (result: string) => void;
+  setMessage: (result: string) => void;
 };
 
 /** 이름 변경 API */
@@ -57,9 +58,10 @@ export const putSaveName = async ({
   isNameEdit,
   setIsNameEdit,
   setIsError,
-  setIsAlertOpen,
+  setIsSuccess,
+  openAlert,
   setNameValue,
-  setErrorMessage,
+  setMessage,
 }: putSaveNameProps) => {
   const data = {
     authority: member.authority,
@@ -73,13 +75,16 @@ export const putSaveName = async ({
       handleAuthorizationRenewal(response);
       setIsNameEdit(!isNameEdit);
       setIsError(false);
-      setIsAlertOpen(true);
+      setIsSuccess(true);
+      setMessage(response.data.message);
+      openAlert();
       setNameValue('');
     })
     .catch((error) => {
-      setErrorMessage('수정할 이름을 확인해주세요');
       setIsError(true);
-      setIsAlertOpen(true);
+      setIsSuccess(false);
+      openAlert();
+      setMessage(error.response.data.message);
     });
 };
 
@@ -87,13 +92,17 @@ type putChangePasswordProps = {
   Password: string;
   PasswordConfirm: string;
   navigate: (result: string) => void;
+  setErrorMessage: (result: string) => void;
+  openAlert: () => void;
 };
 
 /** 비밀번호 변경 API */
 export const putChangePassword = async ({
   Password,
   PasswordConfirm,
+  setErrorMessage,
   navigate,
+  openAlert,
 }: putChangePasswordProps) => {
   const data = {
     password: Password,
@@ -105,8 +114,9 @@ export const putChangePassword = async ({
       handleAuthorizationRenewal(response);
       navigate('/relogin');
     })
-    .catch(() => {
-      alert('비밀번호 재확인을 입력해주세요.');
+    .catch((error) => {
+      setErrorMessage(error.response.data.message);
+      openAlert();
     });
 };
 

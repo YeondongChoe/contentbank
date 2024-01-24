@@ -13,9 +13,9 @@ export const COLOR = {
   ALERTBAR_ERROR: 'rgba(255, 42, 18, 0.6)',
   ALERTBAR_SUCCESS: '#11C218',
   ALERTBAR_WARNING: '#FFCC06',
+  LIGHT_GRAY: '#eeeeee',
 
   HOVER: '#f4f7fe',
-  LIGHT_GRAY: '#ededed',
   GRAY: '#9a9a9a',
   DARK_GRAY: '#333333',
   POINT_GRAY: '#ccc',
