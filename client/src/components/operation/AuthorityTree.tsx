@@ -7,26 +7,6 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getAuthorityMenu } from '../../api/getAxios';
-import {
-  editCreateContentBool,
-  editCreateListBool,
-  editCreateContentWorksheetBool,
-  editManagementContentBool,
-  editManagementListBool,
-  editManagementTreeBool,
-  editOperationBoolAtom,
-  editMemberBoolAtom,
-  editAuthorityBoolAtom,
-  manageCreateContentBoolAtom,
-  manageCreateListBoolAtom,
-  manageCreateContentWorksheetBoolAtom,
-  manageManagementContentBoolAtom,
-  manageManagementListBoolAtom,
-  manageManagementTreeBoolAtom,
-  manageOperationBoolAtom,
-  manageMemberBoolAtom,
-  manageAuthorityBoolAtom,
-} from '../../store/authorityAtom';
 import { Loader } from '../atom/Loader';
 
 import {
@@ -131,59 +111,8 @@ export function AuthorityTree() {
   // /** 전체 편집, 하위 항목 체크 상태여부*/
   // const [isEditAllChecked, setIsEditAllChecked] = useState<boolean>(false);
 
-  // /** 콘텐츠 제작 편집, 하위 항목 체크 상태여부*/
-  // const [isEditCreateChecked, setIsEditCreateChecked] = useRecoilState<boolean>(
-  //   editCreateContentBool,
-  // );
-  // const [isEditCreateListChecked, setIsEditCreateListChecked] =
-  //   useRecoilState<boolean>(editCreateListBool);
-  // const [isEditWorksheetChecked, setIsEditWorksheetChecked] =
-  //   useRecoilState<boolean>(editCreateContentWorksheetBool);
-
-  // /** 콘텐츠 관리 편집, 하위 항목 체크 상태여부*/
-  // const [isEditManagementChecked, setIsEditManagementChecked] =
-  //   useRecoilState<boolean>(editManagementContentBool);
-  // const [isEditManagementListChecked, setIsEditManagementListChecked] =
-  //   useRecoilState<boolean>(editManagementListBool);
-  // const [isEditTreeChecked, setIsEditTreeChecked] = useRecoilState<boolean>(
-  //   editManagementTreeBool,
-  // );
-
-  // /** 운영 관리 편집, 하위 항목 체크 상태여부*/
-  // const [isEditOperationChecked, setIsEditOperationChecked] =
-  //   useRecoilState<boolean>(editOperationBoolAtom);
-  // const [isEditMemberChecked, setIsEditMemberChecked] =
-  //   useRecoilState<boolean>(editMemberBoolAtom);
-  // const [isEditAuthorityChecked, setIsEditAuthorityChecked] =
-  //   useRecoilState<boolean>(editAuthorityBoolAtom);
-
   // /** 전체 관리, 하위 항목 체크 상태여부*/
   // const [isManageAllChecked, setIsManageAllChecked] = useState<boolean>(false);
-
-  // /** 콘텐츠 제작 관리, 하위 항목 체크 상태여부*/
-  // const [isManageCreateChecked, setIsManageCreateChecked] =
-  //   useRecoilState<boolean>(manageCreateContentBoolAtom);
-  // const [isManageCreateListChecked, setIsManageCreateListChecked] =
-  //   useRecoilState<boolean>(manageCreateListBoolAtom);
-  // const [isManageWorksheetChecked, setIsManageWorksheetChecked] =
-  //   useRecoilState<boolean>(manageCreateContentWorksheetBoolAtom);
-
-  // /** 콘텐츠 관리 관리, 하위 항목 체크 상태여부*/
-  // const [isManageManagementChecked, setIsManageManagementChecked] =
-  //   useRecoilState<boolean>(manageManagementContentBoolAtom);
-  // const [isManageManagementListChecked, setIsManageManagementListChecked] =
-  //   useRecoilState<boolean>(manageManagementListBoolAtom);
-  // const [isManageTreeChecked, setIsManageTreeChecked] = useRecoilState<boolean>(
-  //   manageManagementTreeBoolAtom,
-  // );
-
-  // /** 운영 관리 관리, 하위 항목 체크 상태여부*/
-  // const [isManageOperationChecked, setIsManageOperationChecked] =
-  //   useRecoilState<boolean>(manageOperationBoolAtom);
-  // const [isManageMemberChecked, setIsManageMemberChecked] =
-  //   useRecoilState<boolean>(manageMemberBoolAtom);
-  // const [isManageAuthorityChecked, setIsManageAuthorityChecked] =
-  //   useRecoilState<boolean>(manageAuthorityBoolAtom);
 
   // /** 전체 편집 선택 상태 업데이트 */
   // useEffect(() => {

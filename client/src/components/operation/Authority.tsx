@@ -10,26 +10,6 @@ import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
 import { Button, IndexInfo } from '../../components/atom';
-// import {
-//   editCreateContentBool,
-//   editCreateListBool,
-//   editCreateContentWorksheetBool,
-//   editManagementContentBool,
-//   editManagementListBool,
-//   editManagementTreeBool,
-//   editOperationBoolAtom,
-//   editMemberBoolAtom,
-//   editAuthorityBoolAtom,
-//   manageCreateContentBoolAtom,
-//   manageCreateListBoolAtom,
-//   manageCreateContentWorksheetBoolAtom,
-//   manageManagementContentBoolAtom,
-//   manageManagementListBoolAtom,
-//   manageManagementTreeBoolAtom,
-//   manageOperationBoolAtom,
-//   manageMemberBoolAtom,
-//   manageAuthorityBoolAtom,
-// } from '../../store/authorityAtom';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
