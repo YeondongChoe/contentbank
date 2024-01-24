@@ -2,16 +2,13 @@ import * as React from 'react';
 import { useState, useRef } from 'react';
 
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { IoIosRadioButtonOff, IoIosRadioButtonOn } from 'react-icons/io';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
 import { Input, Label, Button, CheckBox, AlertBar } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
-import { Alert } from '../../components/molecules/alert/Alert';
 import { getAuthorityCookie } from '../../utils/cookies';
 
 type loginProps = {
@@ -40,7 +37,7 @@ export function Login() {
   const navigate = useNavigate();
 
   const submitLogin: SubmitHandler<loginProps> = async (data) => {
-    postLogin({ navigate, isClicked, Id, setErrorMessage, openNewAlert }, data);
+    postLogin({ navigate, isClicked, Id, setErrorMessage, openAlert }, data);
   };
 
   const checkIconselected = () => {
@@ -52,22 +49,17 @@ export function Login() {
   };
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const openNewAlert = () => {
+  const openAlert = () => {
     setIsAlertOpen(true);
   };
-  const closeNewAlert = () => {
+  const closeAlert = () => {
     setIsAlertOpen(false);
   };
-
-  // useEffect(() => {
-  //   if (isNameEdit && nameInputRef.current) {
-  //     nameInputRef.current.focus();
-  //   }
-  // }, [isNameEdit]);
 
   const ClickIdLabel = () => {
     IdInputRef?.current?.focus();
   };
+
   const ClickPasswordLabel = () => {
     PasswordInputRef?.current?.focus();
   };
@@ -77,7 +69,7 @@ export function Login() {
       <AlertBar
         type="error"
         isAlertNewOpen={isAlertOpen}
-        closeNewAlert={closeNewAlert}
+        closeNewAlert={closeAlert}
         message={errorMessage}
       ></AlertBar>
       <Wrapper>
@@ -138,7 +130,6 @@ export function Login() {
               />
             </PasswordWrapper>
             <SaveIdWrapper onClick={checkIconselected}>
-              {/* {isClicked ? <IoIosRadioButtonOn /> : <IoIosRadioButtonOff />} */}
               <CheckBox isChecked={isClicked}></CheckBox>
               <SaveId>아이디 저장</SaveId>
             </SaveIdWrapper>
@@ -147,14 +138,14 @@ export function Login() {
             <Button
               buttonType="submit"
               width="400px"
-              height="50px"
-              fontSize="17px"
+              height="40px"
+              fontSize="15px"
               $borderRadius="10px"
               $filled
               //onClick={handleLogin} // 클릭 시 로그인 함수 호출
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                  enterLogin();
                 }
               }}
             >

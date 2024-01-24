@@ -22,11 +22,10 @@ export function Relogin() {
       <ButtonWrapper>
         <Button
           onClick={moveLogin}
-          width="250px"
-          height="60px"
-          fontSize="18px"
+          width="200px"
+          height="40px"
+          fontSize="15px"
           $borderRadius="10px"
-          $border
           $normal
         >
           <span>로그인 하러 가기</span>
@@ -37,26 +36,25 @@ export function Relogin() {
 }
 
 const Container = styled.div`
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 150px;
 `;
 const DiscriptionWrapper = styled.div`
   width: 600px;
-  background-color: white;
-  box-shadow: 1px 1px 5px 1px rgba(112, 144, 176, 0.4);
-  padding: 20px;
+  background-color: #eeeeee;
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 150px;
+  margin-bottom: 100px;
 `;
 const Discription = styled.p`
   display: flex;
   justify-content: center;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 800;
 `;
 const ButtonWrapper = styled.div`
   border: none;

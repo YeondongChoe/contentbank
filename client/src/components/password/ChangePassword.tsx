@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { useState, useRef } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
-import { Input, Label, Button } from '../../components';
+import { Input, Label, Button, AlertBar } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
 
 type passwordProps = {
@@ -46,6 +47,17 @@ export function ChangePassword({
     formState: { errors, isValid },
   } = useForm<passwordProps>();
 
+  const PasswordInputRef = useRef<HTMLInputElement | null>(null);
+  const PasswordConfirmInputRef = useRef<HTMLInputElement | null>(null);
+
+  const ClickPasswordLabel = () => {
+    PasswordInputRef?.current?.focus();
+  };
+
+  const ClickPasswordConfirmLabel = () => {
+    PasswordConfirmInputRef?.current?.focus();
+  };
+
   const Password = watch('password', '');
   const PasswordConfirm = watch('password_confirm', '');
   const navigate = useNavigate();
@@ -62,8 +74,22 @@ export function ChangePassword({
     submitChangePassword();
   };
 
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const openAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
+
   return (
     <Container>
+      <AlertBar
+        type="error"
+        isAlertNewOpen={isAlertOpen}
+        closeNewAlert={closeAlert}
+        //message={errorMessage}
+      ></AlertBar>
       <form>
         <InputSection width={width as string}>
           <InputWapper width={width as string}>
@@ -71,6 +97,7 @@ export function ChangePassword({
               value="새 비밀번호"
               fontSize={labelfontsize || '16px'}
               width="150px"
+              onClick={ClickPasswordLabel}
             />
             <Controller
               control={control}
@@ -88,14 +115,15 @@ export function ChangePassword({
                   borderbottom
                   width={inputwidth as string}
                   height="40px"
-                  padding="10px"
-                  fontSize="16px"
+                  padding="10px 20px"
+                  fontSize="15px"
                   placeholderSize={placeholdersize as string}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                   onChange={field.onChange}
                   value={field.value}
                   className={isValid ? 'success' : ''}
+                  innerRef={PasswordInputRef}
                 />
               )}
             />
@@ -107,6 +135,7 @@ export function ChangePassword({
               value="새 비밀번호 재확인"
               fontSize={labelfontsize || '16px'}
               width="150px"
+              onClick={ClickPasswordConfirmLabel}
             />
             <Controller
               control={control}
@@ -124,8 +153,8 @@ export function ChangePassword({
                   borderbottom
                   width={inputwidth as string}
                   height="40px"
-                  padding="10px"
-                  fontSize="16px"
+                  padding="10px 20px"
+                  fontSize="15px"
                   placeholderSize={placeholdersize as string}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
@@ -136,6 +165,7 @@ export function ChangePassword({
                       ? 'passwordMatch'
                       : ''
                   }
+                  innerRef={PasswordConfirmInputRef}
                 />
               )}
             />
