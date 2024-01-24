@@ -24,7 +24,6 @@ import {
   contentTheadList,
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
-import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
 import { totalPageAtom, pageAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
@@ -77,12 +76,10 @@ export function ManagementsList() {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
 
-  const [isManagement, setIsManagement] = useRecoilState(
-    managementContentPopupBoolAtom,
-  );
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
 
-  const openInformation = () => {
-    setIsManagement(true);
+  const openPopup = () => {
+    setIsOpenPopup(true);
   };
 
   const menuList = [
@@ -252,7 +249,7 @@ export function ManagementsList() {
           height={'35px'}
           width={'150px'}
           $margin={'0 0 0 10px'}
-          onClick={openInformation}
+          onClick={openPopup}
         >
           상세 검색
         </Button>
@@ -344,7 +341,7 @@ export function ManagementsList() {
       ></Alert>
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
-      {isManagement && <ManagemantMainPopup />}
+      {isOpenPopup && <ManagemantMainPopup setIsOpenPopup={setIsOpenPopup} />}
     </Container>
   );
 }

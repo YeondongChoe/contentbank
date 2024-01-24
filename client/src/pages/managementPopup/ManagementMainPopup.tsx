@@ -2,16 +2,20 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
-import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { IndexInfo, TabMenu } from '../../components';
-import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
 
 import { ContentCategoryChange } from './ContentCategoryChange';
 import { ContentInformationChange } from './ContentInformationChange';
 
-export function ManagemantMainPopup() {
+type ManagemantMainPopupProps = {
+  setIsOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export function ManagemantMainPopup({
+  setIsOpenPopup,
+}: ManagemantMainPopupProps) {
   const menuList = [
     {
       label: '바꾸기',
@@ -24,12 +28,8 @@ export function ManagemantMainPopup() {
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('바꾸기');
 
-  const [isCreate, setIsCreate] = useRecoilState(
-    managementContentPopupBoolAtom,
-  );
-
   const closePopup = () => {
-    setIsCreate(false);
+    setIsOpenPopup(false);
   };
   return (
     <Overlay>
