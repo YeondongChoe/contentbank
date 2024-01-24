@@ -4,10 +4,10 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../../components';
-import { updateBoolAtom } from '../../store/creatingContentAtom';
+import { editingBoolAtom } from '../../store/creatingContentAtom';
 
 export function FileUploadingPopup() {
-  const isEdit = useRecoilValue(updateBoolAtom);
+  const isEdit = useRecoilValue(editingBoolAtom);
 
   const submitSave = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청 API');

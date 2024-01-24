@@ -28,10 +28,10 @@ import {
 } from '../../components/constants';
 import { CreateIconPopup } from '../../pages/createPopup/CreateIconPopup';
 import {
-  updateBoolAtom,
+  editingBoolAtom,
   createContentPopupBoolAtom,
   creatingNewContentBoolAtom,
-  uploadBoolAtom,
+  uploadPopupBoolAtom,
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
@@ -56,8 +56,6 @@ export function ContentsList() {
   const MenuCode = useRecoilValue(createListCodeValueAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
-
-  const setIsUpdate = useSetRecoilState(updateBoolAtom);
 
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
 
@@ -101,7 +99,6 @@ export function ContentsList() {
 
   const openCreatePopup = () => {
     setIsCreate(true);
-    setIsUpdate(false);
   };
 
   const menuList = [
@@ -207,11 +204,10 @@ export function ContentsList() {
 
   /**문항 업로드 팝업 관련 코드 */
   const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
-  const [isUpload, setIsUpload] = useRecoilState(uploadBoolAtom);
+  const setIsUpload = useSetRecoilState(uploadPopupBoolAtom);
   const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
   const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
-
-  const setIsEdit = useSetRecoilState(updateBoolAtom);
+  const setIsEdit = useSetRecoilState(editingBoolAtom);
 
   /**문항 업로드 수정 팝업 함수 */
   const openCreateEditFilePopup = () => {
