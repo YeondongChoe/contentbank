@@ -9,8 +9,3 @@ export const searchValueAtom = atom({
   key: 'searchValueAtom',
   default: '',
 });
-
-export const checkBoxValueAtom = atom({
-  key: 'checkBoxValueAtom',
-  default: <number[]>[],
-});
