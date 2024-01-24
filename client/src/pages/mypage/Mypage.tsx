@@ -9,12 +9,11 @@ import { putSaveName } from '../../api/putAxios';
 import { Input, Label, Button } from '../../components';
 import { Alert } from '../../components/molecules/alert/Alert';
 import { ChangePassword } from '../../components/password/ChangePassword';
-import { alertBoolAtom } from '../../store/utilAtom';
 
 export function Mypage() {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const [nameValue, setNameValue] = useState('');
@@ -166,8 +165,16 @@ export function Mypage() {
             )}
           </InformationForm>
         </InformationWrapper>
-        {isAlertOpen && <Alert notice title="이름이 수정되었습니다." />}
-        {isError === true && <Alert notice title={errorMessage} />}
+        {isAlertOpen && (
+          <Alert
+            isAlertOpen={isAlertOpen}
+            notice
+            title="이름이 수정되었습니다."
+          />
+        )}
+        {isError === true && (
+          <Alert isAlertOpen={isAlertOpen} notice title={errorMessage} />
+        )}
         {isPasswordEdit && (
           <PasswordWrapper>
             <SubTitleWrapper>

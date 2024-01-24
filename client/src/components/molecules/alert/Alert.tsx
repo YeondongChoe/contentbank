@@ -4,7 +4,6 @@ import { IoMdClose } from 'react-icons/io';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { alertBoolAtom } from '../../../store/utilAtom';
 import { Button } from '../../atom';
 
 type AlertProps = {
@@ -14,7 +13,7 @@ type AlertProps = {
   onClose?: () => void;
   action?: string;
   notice?: boolean;
-  isAlertOpen?: boolean;
+  isAlertOpen: boolean;
 };
 
 export function Alert({
@@ -26,8 +25,6 @@ export function Alert({
   notice,
   isAlertOpen,
 }: AlertProps) {
-  //const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
-
   return (
     <>
       {isAlertOpen && (

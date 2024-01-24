@@ -23,7 +23,6 @@ import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { editerBoolAtom, memberKeyValueAtom } from '../../store/memberAtom';
-import { alertBoolAtom } from '../../store/utilAtom';
 import { Alert } from '../molecules/alert/Alert';
 
 type authorityProps = {
@@ -62,9 +61,8 @@ export function EditPopup() {
     code: item[1],
     value: index + 1,
   }));
-  //console.log(AuthorityOption);
-  //console.log(AuthorityList);
-  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isInit, setIsInit] = useState(false);
 
   const { control, setValue, watch } = useForm();
@@ -304,7 +302,12 @@ export function EditPopup() {
                     <span>수정</span>
                   </Button>
                 </ButtonGroup>
-                {isInit && <Alert title="비밀번호가 초기화 되었습니다." />}
+                {isInit && (
+                  <Alert
+                    isAlertOpen={isAlertOpen}
+                    title="비밀번호가 초기화 되었습니다."
+                  />
+                )}
               </ContentBox>
             </form>
           </Container>

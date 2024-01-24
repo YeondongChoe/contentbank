@@ -33,12 +33,7 @@ import {
   uploadBoolAtom,
   uploadFileBoolAtom,
 } from '../../store/creatingContentAtom';
-import {
-  alertBoolAtom,
-  pageAtom,
-  totalPageAtom,
-  updateBoolAtom,
-} from '../../store/utilAtom';
+import { pageAtom, totalPageAtom, updateBoolAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
@@ -66,7 +61,7 @@ export function ContentsList() {
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
 
   const [content, setContent] = useState<string[]>([]);
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
@@ -419,6 +414,7 @@ export function ContentsList() {
       </TableWrapper>
       <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
       <Alert
+        isAlertOpen={isAlertOpen}
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
         action="확인"

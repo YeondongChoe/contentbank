@@ -13,7 +13,6 @@ import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { registerBoolAtom } from '../../store/memberAtom';
-import { alertBoolAtom } from '../../store/utilAtom';
 import { Alert } from '../molecules/alert/Alert';
 
 type authorityListProps = {
@@ -35,7 +34,8 @@ export function RegisterPopup() {
   const [duplicatedId, setduplicatedId] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [commentValue, setCommentValue] = useState('');
-  const setIsAlertOpen = useSetRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   const [isRequired, setIsRequired] = useState(false);
   const [isRequiredDuplicate, setIsRequiredDuplicate] = useState(false);
 
@@ -267,9 +267,19 @@ export function RegisterPopup() {
                   <span>등록</span>
                 </Button>
               </ButtonGroup>
-              {isRequired && <Alert notice title="필수 항목을 입력해주세요" />}
+              {isRequired && (
+                <Alert
+                  isAlertOpen={isAlertOpen}
+                  notice
+                  title="필수 항목을 입력해주세요"
+                />
+              )}
               {isRequiredDuplicate && (
-                <Alert notice title="중복확인을 해주세요" />
+                <Alert
+                  isAlertOpen={isAlertOpen}
+                  notice
+                  title="중복확인을 해주세요"
+                />
               )}
             </ContentBox>
           </Container>

@@ -25,7 +25,7 @@ import {
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { managementContentPopupBoolAtom } from '../../store/managementContentAtom';
-import { totalPageAtom, pageAtom, alertBoolAtom } from '../../store/utilAtom';
+import { totalPageAtom, pageAtom } from '../../store/utilAtom';
 import {
   createListCodeValueAtom,
   servicedValueBoolAtom,
@@ -42,7 +42,6 @@ export function ManagementsList() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
-  // const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const closeAlert = () => {
@@ -328,6 +327,7 @@ export function ManagementsList() {
       </TableWrapper>
 
       <Alert
+        isAlertOpen={isAlertOpen}
         title="권한을 삭제할 경우, "
         description="해당 권한의 아이디는 접속이 불가합니다."
         action="삭제"
@@ -335,6 +335,7 @@ export function ManagementsList() {
         // onClick={() => submitDelete()}
       />
       <Alert
+        isAlertOpen={isAlertOpen}
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
         action="확인"

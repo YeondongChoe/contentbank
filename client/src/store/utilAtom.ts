@@ -1,10 +1,5 @@
 import { atom } from 'recoil';
 
-export const alertBoolAtom = atom({
-  key: 'alertBoolAtom',
-  default: false,
-});
-
 export const totalPageAtom = atom({
   key: 'totalPageAtom',
   default: 1,

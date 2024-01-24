@@ -20,7 +20,7 @@ import {
   editerBoolAtom,
   memberKeyValueAtom,
 } from '../../store/memberAtom';
-import { alertBoolAtom, pageAtom, totalPageAtom } from '../../store/utilAtom';
+import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { COLOR } from '../constants/COLOR';
 import { EditPopup } from '../member/EditPopup';
@@ -37,7 +37,7 @@ export function Member() {
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
 
-  const [isAlertOpen, setIsAlertOpen] = useRecoilState(alertBoolAtom);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -214,6 +214,7 @@ export function Member() {
       <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
 
       <Alert
+        isAlertOpen={isAlertOpen}
         title="비활성화 처리시 로그인이 불가합니다."
         description="비활성화 처리 하시겠습니까?"
         action="확인"
