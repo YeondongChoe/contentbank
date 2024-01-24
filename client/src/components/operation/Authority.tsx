@@ -892,8 +892,6 @@ export function Authority() {
               </tbody>
             </table>
           </TableWrapper>
-          {/* <AuthorityTree /> */}
-
           <AuthorityListWrapper>
             {/* {authorityList?.map((el, i) => (
               <AuthorityWrapper
