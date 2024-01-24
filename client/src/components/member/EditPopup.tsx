@@ -22,7 +22,6 @@ import {
 import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
-import { editerBoolAtom, memberKeyValueAtom } from '../../store/memberAtom';
 import { Alert } from '../molecules/alert/Alert';
 
 type authorityProps = {
@@ -32,7 +31,17 @@ type authorityProps = {
   sort: number;
 };
 
-export function EditPopup() {
+type RegisterPopupProps = {
+  isEditer: boolean;
+  setIsEditer: React.Dispatch<React.SetStateAction<boolean>>;
+  keyValue: string;
+};
+
+export function EditPopup({
+  isEditer,
+  setIsEditer,
+  keyValue,
+}: RegisterPopupProps) {
   const [member, setMember] = useState({
     id: null,
     name: null,
@@ -43,9 +52,6 @@ export function EditPopup() {
     authCode: null,
   });
   const [didMount, setDidMount] = useState(false);
-
-  const keyValue = useRecoilValue(memberKeyValueAtom);
-  const [isEditer, SetIsEditer] = useRecoilState(editerBoolAtom);
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
@@ -73,7 +79,7 @@ export function EditPopup() {
   const CheckBox = isEnabled;
 
   const closePopup = () => {
-    SetIsEditer(false);
+    setIsEditer(false);
   };
 
   const checkEnabled = () => {
@@ -93,7 +99,7 @@ export function EditPopup() {
       Comment,
       CheckBox,
       keyValue,
-      SetIsEditer,
+      setIsEditer,
       setIsNameError,
       setNameErrorMessage,
     });

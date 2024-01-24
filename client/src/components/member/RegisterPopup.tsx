@@ -12,7 +12,6 @@ import { postRegister, postDuplicate } from '../../api/postAxios';
 import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
-import { registerBoolAtom } from '../../store/memberAtom';
 import { Alert } from '../molecules/alert/Alert';
 
 type authorityListProps = {
@@ -22,9 +21,16 @@ type authorityListProps = {
   sort: number;
 };
 
-export function RegisterPopup() {
+type RegisterPopupProps = {
+  isRegister: boolean;
+  setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export function RegisterPopup({
+  isRegister,
+  setIsRegister,
+}: RegisterPopupProps) {
   const [didMount, setDidMount] = useState(false);
-  const [isRegister, SetIsRegister] = useRecoilState(registerBoolAtom);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
@@ -59,7 +65,7 @@ export function RegisterPopup() {
   const Comment = commentValue;
 
   const closePopup = () => {
-    SetIsRegister(false);
+    setIsRegister(false);
   };
 
   const checkDuplicate = () => {
@@ -86,7 +92,7 @@ export function RegisterPopup() {
         Name,
         Authority,
         Comment,
-        SetIsRegister,
+        setIsRegister,
         setIsNameError,
         setIsDuplicate,
         setIsRequired,

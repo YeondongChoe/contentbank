@@ -15,11 +15,6 @@ import {
   TabMenu,
   Table,
 } from '../../components/molecules';
-import {
-  registerBoolAtom,
-  editerBoolAtom,
-  memberKeyValueAtom,
-} from '../../store/memberAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { COLOR } from '../constants/COLOR';
@@ -28,9 +23,9 @@ import { RegisterPopup } from '../member/RegisterPopup';
 
 export function Member() {
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
-  const [isRegister, setIsRegister] = useRecoilState(registerBoolAtom);
-  const [isEditer, setIsEditer] = useRecoilState(editerBoolAtom);
-  const setKeyValue = useSetRecoilState(memberKeyValueAtom);
+  const [isRegister, setIsRegister] = useState(false);
+  const [isEditer, setIsEditer] = useState(false);
+  const [keyValue, setKeyValue] = useState('');
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 8;
@@ -221,8 +216,20 @@ export function Member() {
         onClick={submitDisabled}
       ></Alert>
 
-      {isRegister ? <RegisterPopup /> : ''}
-      {isEditer ? <EditPopup /> : ''}
+      {isRegister ? (
+        <RegisterPopup isRegister={isRegister} setIsRegister={setIsRegister} />
+      ) : (
+        ''
+      )}
+      {isEditer ? (
+        <EditPopup
+          keyValue={keyValue}
+          isEditer={isEditer}
+          setIsEditer={setIsEditer}
+        />
+      ) : (
+        ''
+      )}
     </Container>
   );
 }
