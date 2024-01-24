@@ -132,7 +132,7 @@ export function Authority() {
     // 체크박스 선택시 해당 배열값변경
     const onList = checkList;
     const target = e.currentTarget;
-    console.log(target.id, target.checked);
+    // console.log(target.id, target.checked);
 
     // 개당 체크시 체크 토글
     onList.splice(Number(target.value), 1, {
