@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { Button } from '../..';
 import { editingBoolAtom } from '../../../store/creatingContentAtom';
 
-export function FileUploadingPopup() {
+export function FileUploading() {
   const isEdit = useRecoilValue(editingBoolAtom);
 
   const submitSave = () => {
@@ -16,7 +16,7 @@ export function FileUploadingPopup() {
 
   return (
     <Container>
-      <div>문항 파일 등록 아이텍솔루션</div>
+      <div>setIsUploadFile문항 파일 등록 아이텍솔루션</div>
       <Button
         buttonType="button"
         onClick={submitSave}

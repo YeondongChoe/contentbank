@@ -12,7 +12,7 @@ import Contents4 from '../../mathViewer/test4.json';
 
 import dummy from './data.json';
 
-export function ClassificationPopup() {
+export function Classification() {
   const ContentList = dummy.ContentInfo;
   const Category1 = dummy.Category;
   const Category2 = dummy.Category2;

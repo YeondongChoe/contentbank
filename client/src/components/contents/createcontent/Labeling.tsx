@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { COLOR } from '../../constants/COLOR';
 
-export function LabelingPopup() {
+export function Labeling() {
   return (
     <Container>
       <div>개체 라벨링</div>

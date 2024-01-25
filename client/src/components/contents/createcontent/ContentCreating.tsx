@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Button } from '../..';
 import { COLOR } from '../../constants/COLOR';
 
-export function ContentCreatingPopup() {
+export function ContentCreating() {
   const submitSave = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     console.log('신규 등록된 문항 리스트 get 요청 API');

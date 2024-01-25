@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
 // import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -9,23 +9,17 @@ import styled from 'styled-components';
 import { TabMenu } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import {
-  createContentPopupBoolAtom,
-  uploadPopupBoolAtom,
-  creatingNewContentBoolAtom,
-  uploadFileBoolAtom,
-} from '../../store/creatingContentAtom';
-
-// import { ClassificationPopup } from './ClassificationPopup';
-// import { ContentCreatingPopup } from './ContentCreatingPopup';
-// import { FileUploadingPopup } from './FileUploadingPopup';
-// import { LabelingPopup } from './LabelingPopup';
+  ContentCreating,
+  Classification,
+  Labeling,
+  FileUploading,
+} from '../../components/contents/createcontent';
 
 export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const goBack = () => {
-    // setIsCreate(false);
     navigate(-1);
   };
 
@@ -45,15 +39,9 @@ export function CreateContentMain() {
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('DT & Editing');
 
-  // const setIsCreate = useSetRecoilState(createContentPopupBoolAtom);
-  // const setIsUpload = useSetRecoilState(uploadPopupBoolAtom);
-  // const isCreateNewContent = useRecoilValue(creatingNewContentBoolAtom);
-  // const isUploadFile = useRecoilValue(uploadFileBoolAtom);
-
-  // const closePopup = () => {
-  //   // setIsCreate(false);
-  //   // setIsUpload(false);
-  // };
+  // useEffect(() => {
+  //   console.log('location', location.state.isUploadFile);
+  // }, []);
 
   return (
     <Container>
@@ -82,15 +70,22 @@ export function CreateContentMain() {
       </ButtonWrapper>
       {tabVeiw === 'DT & Editing' && (
         <ContentBox>
-          {/* {isCreateNewContent && <ContentCreatingPopup />}
-          {isUploadFile && <FileUploadingPopup />} */}
+          {!location.state.isUploadFile ? (
+            <ContentCreating />
+          ) : (
+            <FileUploading />
+          )}
         </ContentBox>
       )}
       {tabVeiw === '문항 분류' && (
-        <ContentBox>{/* <ClassificationPopup /> */}</ContentBox>
+        <ContentBox>
+          <Classification />
+        </ContentBox>
       )}
       {tabVeiw === '개체 라벨링' && (
-        <ContentBox>{/* <LabelingPopup /> */}</ContentBox>
+        <ContentBox>
+          <Labeling />
+        </ContentBox>
       )}
     </Container>
   );
@@ -99,6 +94,7 @@ export function CreateContentMain() {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  margin-top: -40px;
 `;
 const ButtonWrapper = styled.div`
   padding: 10px 20px;
@@ -112,10 +108,14 @@ const IconWrapper = styled.div`
 const TapMenuWrapper = styled.div`
   display: flex;
   flex: 1 0 0;
+  margin-left: 40px;
 `;
 const CloseButtonWrapper = styled.div`
   display: flex;
 `;
 const ContentBox = styled.div`
+  width: 100%;
+  padding: 0 20px;
   min-height: 700px;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
 `;

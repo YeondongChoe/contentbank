@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { MdDriveFolderUpload, MdOutlinePostAdd } from 'react-icons/md';
@@ -21,27 +22,19 @@ export function CreateContentWindow() {
     // setIsCreate(false);
   };
 
-  const moveContentCreating = () => {
-    const state = {};
+  const goToPage = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const target = e.currentTarget.value;
+    let isUploadFile;
+    if (target === 'uploadfile') {
+      isUploadFile = true;
+    }
+    if (target === 'createcontent') {
+      isUploadFile = false;
+    }
 
+    // console.log('isUploadFile0000', isUploadFile);
     navigate('/createcontentmain', {
-      state: { state },
-    });
-  };
-
-  const moveFileUploading = () => {
-    const state = {};
-
-    navigate('/createcontentmain', {
-      state: { state },
-    });
-  };
-
-  const moveBigFileUploading = () => {
-    const state = {};
-
-    navigate('/createcontentmain', {
-      state: { state },
+      state: { isUploadFile: isUploadFile },
     });
   };
 
@@ -49,7 +42,12 @@ export function CreateContentWindow() {
     <Container>
       <Title>문항 업로드</Title>
       <MenuListWrapper>
-        <MenuWrapper onClick={moveContentCreating}>
+        <MenuWrapper
+          onClick={(e) => {
+            goToPage(e);
+          }}
+          value="createcontent"
+        >
           <IconWrapper>
             <MdOutlinePostAdd style={styleIcon} />
           </IconWrapper>
@@ -57,7 +55,12 @@ export function CreateContentWindow() {
             <MenuName>문항 신규 제작</MenuName>
           </TextWrapper>
         </MenuWrapper>
-        <MenuWrapper onClick={moveFileUploading}>
+        <MenuWrapper
+          onClick={(e) => {
+            goToPage(e);
+          }}
+          value="uploadfile"
+        >
           <IconWrapper>
             <TbFileUpload style={styleIcon} />
           </IconWrapper>
@@ -66,7 +69,12 @@ export function CreateContentWindow() {
             <MenuDiscription>(촬영, 이미지, PDF 등)</MenuDiscription>
           </TextWrapper>
         </MenuWrapper>
-        <MenuWrapper onClick={moveBigFileUploading}>
+        <MenuWrapper
+          onClick={(e) => {
+            goToPage(e);
+          }}
+          value="uploadfile"
+        >
           <IconWrapper>
             <MdDriveFolderUpload style={styleIcon} />
           </IconWrapper>
@@ -98,7 +106,7 @@ const MenuListWrapper = styled.div`
   padding-top: 5em;
   gap: 3em;
 `;
-const MenuWrapper = styled.div`
+const MenuWrapper = styled.button`
   padding: 2em;
   width: 22em;
   max-width: 250px;
