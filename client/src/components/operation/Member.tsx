@@ -28,17 +28,21 @@ export function Member() {
   const [keyValue, setKeyValue] = useState('');
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
-  const size = 8;
+  const size = 10;
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
+  const [checkedList, setCheckedList] = useState<number[]>([]);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
   // 활성화/비활성화 버튼상태 토글
-  const submitChangingService = () => {
+  const openSubmitAlert = () => {
     setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
   };
   // 활성화/비활성화 데이터 전송
   const submitDisabled = () => {
@@ -146,11 +150,24 @@ export function Member() {
 
   return (
     <Container>
-      <IndexInfo list={['운영관리', '회원관리', `${tabVeiw}`]} />
+      <TitleWrapper>
+        <Title>회원 관리</Title>
+        <Button
+          height={'35px'}
+          width={'130px'}
+          onClick={openRegisterPopup}
+          fontSize="13px"
+          $filled
+        >
+          + 아이디 만들기
+        </Button>
+      </TitleWrapper>
       <InputWrapper>
+        <Total>Total : {memberList.length}</Total>
         <Search
           value={searchValue}
-          width={'250px'}
+          width={'25%'}
+          height="40px"
           onClick={() => filterSearchValue()}
           onKeyDown={(e) => filterSearchValueEnter(e)}
           onChange={(e) => {
@@ -158,17 +175,7 @@ export function Member() {
           }}
           placeholder="이름, 권한 검색"
         />
-        <Button
-          buttonType="button"
-          onClick={openRegisterPopup}
-          height={'35px'}
-          width={'150px'}
-          $margin={'0 0 0 10px'}
-        >
-          <span>아이디만들기</span>
-        </Button>
       </InputWrapper>
-
       <TableWrapper>
         <ButtonWrapper>
           <TabMenu
@@ -181,21 +188,18 @@ export function Member() {
             $margin={'10px 0'}
             onClickTab={changeTab}
           />
-
           <Button
-            width="150px"
-            height="35px"
-            fontSize="14px"
-            $border
-            onClick={() => {
-              submitChangingService();
-            }}
+            height={'35px'}
+            width={'130px'}
+            onClick={openSubmitAlert}
+            fontSize="15px"
+            $filled
             disabled={isEnabled}
           >
-            활성화 / 비활성화
+            비활성화
           </Button>
         </ButtonWrapper>
-        <Total>Total : {memberList.length}</Total>
+
         {/*TODO : 전체토탈 데이터로 변경 필요 */}
         <Table
           list={memberList}
@@ -207,15 +211,14 @@ export function Member() {
         />
       </TableWrapper>
       <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
-
       <Alert
         isAlertOpen={isAlertOpen}
-        title="비활성화 처리시 로그인이 불가합니다."
+        title={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
         description="비활성화 처리 하시겠습니까?"
         action="확인"
         onClick={submitDisabled}
+        onClose={closeSubmitAlert}
       ></Alert>
-
       {isRegister ? (
         <RegisterPopup isRegister={isRegister} setIsRegister={setIsRegister} />
       ) : (
@@ -235,13 +238,23 @@ export function Member() {
 }
 
 const Container = styled.div`
+  padding: 40px 80px;
   width: 100%;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
+`;
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: 800;
 `;
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 2px;
+  justify-content: space-between;
+  padding-bottom: 10px;
 `;
 const ButtonWrapper = styled.div`
   display: flex;
@@ -251,11 +264,12 @@ const ButtonWrapper = styled.div`
 `;
 const TableWrapper = styled.div`
   min-height: 580px;
-  border-top: 1px solid ${COLOR.SECONDARY};
+  padding-bottom: 30px;
+  //border-top: 1px solid ${COLOR.SECONDARY};
 `;
 const Total = styled.p`
   text-align: right;
-  font-size: 14px;
-  color: ${COLOR.SECONDARY};
+  font-size: 18px;
+  color: ${COLOR.FONT_BLACK};
   padding-bottom: 5px;
 `;
