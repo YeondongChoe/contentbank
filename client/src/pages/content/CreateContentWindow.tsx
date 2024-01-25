@@ -107,6 +107,7 @@ const MenuListWrapper = styled.div`
   gap: 3em;
 `;
 const MenuWrapper = styled.button`
+  background-color: #fff;
   padding: 2em;
   width: 22em;
   max-width: 250px;
@@ -118,20 +119,14 @@ const MenuWrapper = styled.button`
   border: 1px solid #adadad;
   border-radius: 10px;
   cursor: pointer;
-
-  .title {
-  }
-  .sub_title {
-  }
 `;
-const IconWrapper = styled.div`
+const IconWrapper = styled.span`
   padding: 10px 0;
 `;
-const TextWrapper = styled.div`
+const TextWrapper = styled.span`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2em 0;
 `;
 const MenuName = styled.strong`
   font-size: 20px;

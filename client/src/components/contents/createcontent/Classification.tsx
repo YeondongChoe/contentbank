@@ -197,8 +197,6 @@ export function Classification() {
 }
 
 const Container = styled.div`
-  max-width: 1024px;
-  min-width: 800px;
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
 `;

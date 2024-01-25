@@ -31,10 +31,5 @@ export function FileUploading() {
 }
 
 const Container = styled.div`
-  max-width: 1024px;
-  min-width: 800px;
   padding: 20px;
-  border: 1px solid #a3aed0;
-  border-top: none;
-  height: 673px;
 `;
