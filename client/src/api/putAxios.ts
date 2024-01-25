@@ -91,9 +91,9 @@ export const putSaveName = async ({
 type putChangePasswordProps = {
   Password: string;
   PasswordConfirm: string;
-  navigate: (result: string) => void;
   setErrorMessage: (result: string) => void;
   openAlert: () => void;
+  openSuccessAlert?: (() => void) | undefined;
 };
 
 /** 비밀번호 변경 API */
@@ -101,8 +101,8 @@ export const putChangePassword = async ({
   Password,
   PasswordConfirm,
   setErrorMessage,
-  navigate,
   openAlert,
+  openSuccessAlert,
 }: putChangePasswordProps) => {
   const data = {
     password: Password,
@@ -112,7 +112,9 @@ export const putChangePassword = async ({
     .put('/auth/changed-password', data)
     .then((response) => {
       handleAuthorizationRenewal(response);
-      navigate('/relogin');
+      if (openSuccessAlert) {
+        openSuccessAlert();
+      }
     })
     .catch((error) => {
       setErrorMessage(error.response.data.message);

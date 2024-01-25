@@ -13,7 +13,7 @@ export function Relogin() {
 
   const moveLogin = () => {
     // removeAuthorityCookie('accessToken', { path: '/' });
-    // navigate('/login');
+    navigate('/login');
   };
 
   return (

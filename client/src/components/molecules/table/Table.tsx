@@ -143,6 +143,7 @@ export function Table({
             <th rowSpan={2}>
               <input
                 type="checkbox"
+                style={{ width: '15px', height: '15px' }}
                 onChange={(e) => handleAllCheck(e)}
                 checked={checkList.length === list.length ? true : false}
               />
@@ -217,7 +218,6 @@ const Component = styled.table<TableStyleProps>`
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   background-color: #fff;
   border-collapse: collapse;
-  background-color: white;
   table-layout: fixed;
 
   thead {
@@ -227,38 +227,39 @@ const Component = styled.table<TableStyleProps>`
     font-size: small;
   }
 
-  tr {
-  }
+  /* tr {
+  } */
   th {
-    border: 1px solid ${COLOR.SECONDARY};
-    color: ${COLOR.SECONDARY};
-    font-size: 14px;
+    border-top: 1px solid ${COLOR.BORDER_GRAY};
+    border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+    font-size: 15px;
     font-weight: bold;
+    background-color: ${COLOR.TABLE_GRAY};
 
     &.padding {
       padding: 10px;
     }
   }
-  td {
-    border: 1px solid ${COLOR.SECONDARY};
+  /* td {
+    //border-bottom: 1px solid ${COLOR.BORDER_GRAY};
     padding: 10px;
     text-align: center;
-    font-size: 13px;
+    //font-size: 15px;
     > button {
       background-color: transparent;
       border: none;
       cursor: pointer;
     }
-  }
+  } */
   .lineBtn {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px;
     margin: 0;
-    width: 60px;
-    height: 30px;
-    font-size: 12px;
+    width: 70px;
+    height: 35px;
+    font-size: 15px;
     font-weight: bold;
     border-radius: 5px;
     background-color: #fff;

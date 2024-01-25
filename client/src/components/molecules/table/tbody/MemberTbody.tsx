@@ -26,6 +26,7 @@ export function MemberTbody({
           <td>
             <input
               type="checkbox"
+              style={{ width: '15px', height: '15px' }}
               onChange={(e) =>
                 handleSingleCheck(e.target.checked, member.seq as number)
               }
@@ -71,21 +72,21 @@ export function MemberTbody({
 const TbodyWrap = styled.tbody`
   font-size: small;
 
-  th {
+  /* th {
     border: 1px solid ${COLOR.SECONDARY};
     color: ${COLOR.SECONDARY};
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
 
     &.padding {
       padding: 10px;
     }
-  }
+  } */
   td {
-    border: 1px solid ${COLOR.SECONDARY};
+    border-bottom: 1px solid ${COLOR.BORDER_GRAY};
     padding: 10px;
     text-align: center;
-    font-size: 13px;
+    font-size: 15px;
     > button {
       background-color: transparent;
       border: none;
@@ -100,7 +101,7 @@ const TbodyWrap = styled.tbody`
     margin: 0;
     width: 60px;
     height: 30px;
-    font-size: 12px;
+    font-size: 15px;
     font-weight: bold;
     border-radius: 5px;
     background-color: #fff;

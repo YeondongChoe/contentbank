@@ -74,7 +74,7 @@ const Component = styled.div<SearchStyleProps>`
   input {
     width: '100%';
     flex: 1 0 0;
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px;
     padding-left: 12px;
     padding-right: 0px;

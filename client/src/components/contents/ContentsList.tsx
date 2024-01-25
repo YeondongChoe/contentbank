@@ -251,7 +251,6 @@ export function ContentsList() {
         <Button
           height={'35px'}
           width={'110px'}
-          $margin={'0 0 0 10px'}
           onClick={openWindowCreate}
           fontSize="13px"
           $filled
@@ -274,6 +273,7 @@ export function ContentsList() {
           onChange={(e) => setValue(e.target.value)}
           placeholder="문항코드, 중단원, 담당자 검색"
           width={'25%'}
+          height="40px"
         />
       </HeadWrapper>
       {/* 셀렉트 + 테이블 + 수정 비활성화 버튼 */}
