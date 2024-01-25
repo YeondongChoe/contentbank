@@ -311,7 +311,7 @@ export function EditPopup({
                 {isInit && (
                   <Alert
                     isAlertOpen={isAlertOpen}
-                    title="비밀번호가 초기화 되었습니다."
+                    description="비밀번호가 초기화 되었습니다."
                   />
                 )}
               </ContentBox>

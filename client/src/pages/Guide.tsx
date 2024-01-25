@@ -234,8 +234,7 @@ export function Guide() {
       <button onClick={() => setIsAlertOpen(true)}>커스텀 알람</button>
       <Alert
         isAlertOpen={isAlertOpen}
-        title={'커스텀 알람'}
-        description="props에 notice를 추가하면 확인만 나옴"
+        description={'커스텀 알람 props에 notice를 추가하면 확인만 나옴'}
         action="확인"
       ></Alert>
       <h3>loader</h3>

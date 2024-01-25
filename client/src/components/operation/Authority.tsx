@@ -926,8 +926,7 @@ export function Authority() {
       {isDeleteAuthority && (
         <Alert
           isAlertOpen={isAlertOpen}
-          title="권한을 삭제할 경우, "
-          description="해당 권한의 아이디는 접속이 불가합니다."
+          description="권한을 삭제할 경우, 해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"
           onClick={() => submitDelete(codeValue)}
         />
@@ -935,7 +934,7 @@ export function Authority() {
       {isUpdateAuthority && (
         <Alert
           isAlertOpen={isAlertOpen}
-          title={
+          description={
             isClickedName
               ? '권한을 수정 하시겠습니까?'
               : '권한을 생성 하시겠습니까?'
@@ -948,7 +947,7 @@ export function Authority() {
         <Alert
           isAlertOpen={isAlertOpen}
           notice
-          title="권한명을 작성해주세요."
+          description="권한명을 작성해주세요."
         />
       )}
     </Container>

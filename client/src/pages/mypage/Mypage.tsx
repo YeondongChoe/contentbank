@@ -273,7 +273,7 @@ export function Mypage() {
       </Wrapper>
       {isSuccessAlertOpen && (
         <Alert
-          title={
+          description={
             '비밀번호를 변경하면 로그인한 디바이스에서 모두 로그아웃 처리됩니다. 변경하시겠습니까?'
           }
           isAlertOpen={isSuccessAlertOpen}
