@@ -58,7 +58,7 @@ export function Mypage() {
     });
   };
 
-  const [isShow, setIsShow] = useState(true);
+  const [isShow, setIsShow] = useState(false);
 
   const selectPasswordEdit = () => {
     setIsPasswordEdit(!isPasswordEdit);
