@@ -21,17 +21,10 @@ import {
 import { questionInstance } from '../../api/axios';
 import { getQuestionList } from '../../api/getAxios';
 import { putChangeServiced } from '../../api/putAxios';
-import {
-  editingBoolAtom,
-  createContentPopupBoolAtom,
-  creatingNewContentBoolAtom,
-  uploadPopupBoolAtom,
-  uploadFileBoolAtom,
-} from '../../store/creatingContentAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
-import { COLOR, contentColWidth, contentTheadList } from '../constants';
+import { COLOR } from '../constants';
 
 export function ContentsList() {
   const [searchValue, setSearchValue] = useState<string>('');
@@ -89,8 +82,6 @@ export function ContentsList() {
 
   //문항 생성 윈도우 열기
   const openWindowCreate = () => {
-    // setIsCreate(true);
-
     windowOpenHandler({
       name: 'createcontentwindow',
       url: '/createcontentwindow',
@@ -198,22 +189,6 @@ export function ContentsList() {
     },
   ];
 
-  /**문항 업로드 팝업 관련 코드 */
-  // const [isCreate, setIsCreate] = useRecoilState(createContentPopupBoolAtom);
-  const setIsUpload = useSetRecoilState(uploadPopupBoolAtom);
-  const setIsCreateNewContent = useSetRecoilState(creatingNewContentBoolAtom);
-  const setIsUploadFile = useSetRecoilState(uploadFileBoolAtom);
-  const setIsEdit = useSetRecoilState(editingBoolAtom);
-
-  /**문항 업로드 수정 팝업 함수 */
-  const openCreateEditFilePopup = () => {
-    // setIsCreate(true);
-    setIsUpload(true);
-    setIsUploadFile(true);
-    setIsCreateNewContent(false);
-    setIsEdit(true);
-  };
-
   const loadData = useCallback(() => {
     getQuestionList({
       setQuestionList,
@@ -293,7 +268,6 @@ export function ContentsList() {
         </SelectWrapper>
         {/* 테이블 수정 + 활성화 버튼 */}
         <ContentList
-          openPopup={openCreateEditFilePopup}
           list={questionList}
           onClick={submitChangingService}
         ></ContentList>

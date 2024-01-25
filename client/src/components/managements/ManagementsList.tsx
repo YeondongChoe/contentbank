@@ -26,6 +26,7 @@ import {
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { totalPageAtom, pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
+import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function ManagementsList() {
   const [didMount, setDidMount] = useState(false);
@@ -176,6 +177,13 @@ export function ManagementsList() {
     },
   ];
 
+  const openCreateEditWindow = () => {
+    windowOpenHandler({
+      name: 'createcontentwindow',
+      url: '/createcontentwindow',
+    });
+  };
+
   // 드롭다운 버튼 기본 값설정
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const dropDownList: DropDownItemProps[] = [
@@ -183,7 +191,7 @@ export function ManagementsList() {
       key: 'ListTabl/d수정',
       title: '수정',
       onClick: () => {
-        // openCreateEditFilePopup();
+        openCreateEditWindow();
         setShowDropDown(false);
       },
     },
@@ -191,7 +199,7 @@ export function ManagementsList() {
       key: 'ListTable/DropDownList복제 후 수정',
       title: '복제 후 수정',
       onClick: () => {
-        // openCreateEditFilePopup();
+        openCreateEditWindow();
         setShowDropDown(false);
       },
     },

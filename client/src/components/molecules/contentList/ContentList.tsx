@@ -13,14 +13,14 @@ import {
 } from '../../../components';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuestionTableType } from '../../../types';
+import { windowOpenHandler } from '../../../utils/windowHandler';
 
 type ContentListProps = {
   list: QuestionTableType[];
   onClick: () => void;
-  openPopup: () => void;
 };
 
-export function ContentList({ list, onClick, openPopup }: ContentListProps) {
+export function ContentList({ list, onClick }: ContentListProps) {
   const page = useRecoilValue(pageAtom);
 
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -31,7 +31,7 @@ export function ContentList({ list, onClick, openPopup }: ContentListProps) {
       key: 'ListTabl/수정',
       title: '수정',
       onClick: () => {
-        openPopup();
+        openCreateEditWindow();
         setShowDropDown(false);
       },
     },
@@ -39,11 +39,19 @@ export function ContentList({ list, onClick, openPopup }: ContentListProps) {
       key: 'ListTable/DropDownList복제 후 수정',
       title: '복제 후 수정',
       onClick: () => {
-        openPopup();
+        openCreateEditWindow();
         setShowDropDown(false);
       },
     },
   ];
+
+  // 문항 수정 윈도우 열기
+  const openCreateEditWindow = () => {
+    windowOpenHandler({
+      name: 'createcontentwindow',
+      url: '/createcontentwindow',
+    });
+  };
 
   const [checkList, setCheckList] = useState<number[]>([]);
 
