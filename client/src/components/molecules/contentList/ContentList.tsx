@@ -47,11 +47,17 @@ export function ContentList({ list, onClick }: ContentListProps) {
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = () => {
-    windowOpenHandler({
-      name: 'createcontentmain',
-      url: '/createcontentmain',
-      sendData: false,
-    });
+    // const window = windowOpenHandler({
+    //   name: 'createcontentmain',
+    //   url: '/createcontentmain',
+    // });
+    const target = window.open('/createcontentmain', '/createcontentmain');
+    target?.postMessage({ type: 'BOOL' }, '*');
+    // window &&
+    //   window.postMessage(
+    //     { type: 'BOOL', payload: [], data: false, sendData: 'false' },
+    //     '*',
+    //   );
   };
 
   const [checkList, setCheckList] = useState<number[]>([]);

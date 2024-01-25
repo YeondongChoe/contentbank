@@ -6,13 +6,12 @@ export const WINDOW_OPTIONS = `toolbar=no,titlebar=no,scrollbars=no,status=no,lo
 export const windowOpenHandler = ({
   name = '_blank',
   url,
-  options = '',
-  sendData = '',
+  options = '', // sendData = '',
 }: {
   name?: string;
   url: string;
   options?: string;
-  sendData?: unknown;
+  // sendData?: unknown;
 }) => {
   const windowWidth = 1200;
   const windowHeight = 800;
@@ -27,7 +26,11 @@ export const windowOpenHandler = ({
     target,
     options ? options : `${defaultOption}`,
   );
-  popup && popup.postMessage({ sendData }, '*');
+  popup &&
+    popup.postMessage(
+      { type: 'BOOL', payload: [], data: false, sendData: 'false' },
+      '*',
+    );
 };
 
 //TODO: 함수 분기 추가 커스텀 필요

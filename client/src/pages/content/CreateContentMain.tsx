@@ -48,13 +48,34 @@ export function CreateContentMain() {
       setTabState(false);
     }
     // console.log('location', location?.state?.isUploadFile);
-
-    window.addEventListener('message', (event) => {
-      const { sendData } = event.data;
-      console.log('sendData000', event.data);
-      setData(sendData);
-    });
+    window.addEventListener('message', receiveMessage, false);
+    return () => {
+      window.removeEventListener('message', receiveMessage);
+    };
   }, []);
+
+  const receiveMessage = (event: any) => {
+    const { sendData, type } = event.data;
+    console.log('event', event);
+    console.log('type', type);
+    console.log('event.data', event.data);
+    console.log('sendData', event.data.sendData);
+  };
+
+  // window.parent.addEventListener(
+  //   'message',
+  //   (event) => {
+  //     const { sendData, type } = event.data;
+  //     console.log('event', event);
+  //     console.log('type', type);
+  //     console.log('event.data', event.data);
+  //     console.log('sendData', event.data.sendData);
+  //     if (type !== 'BOOL') return;
+  //     setData(sendData);
+  //   },
+  //   false,
+  // );
+
   console.log(data);
 
   return (
