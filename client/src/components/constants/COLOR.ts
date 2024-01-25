@@ -14,6 +14,7 @@ export const COLOR = {
   ALERTBAR_SUCCESS: '#11C218',
   ALERTBAR_WARNING: '#FFCC06',
   LIGHT_GRAY: '#eeeeee',
+  TABLE_GRAY: '#f0f0f0',
 
   HOVER: '#f4f7fe',
   GRAY: '#9a9a9a',

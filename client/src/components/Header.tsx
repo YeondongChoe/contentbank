@@ -77,7 +77,7 @@ const Container = styled.div<{ $isOpenNavigation: boolean }>`
   justify-content: flex-end;
   height: 40px;
   padding: 0 20px;
-  z-index: 100;
+  z-index: 1;
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
 const Wrapper = styled.div`

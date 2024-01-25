@@ -31,11 +31,21 @@ export function Alert({
         <Overlay>
           <Container>
             <AlertWrapper>
-              <CancelIconWrapper>
-                <IoMdClose onClick={onClose} style={{ cursor: 'pointer' }} />
-              </CancelIconWrapper>
+              <svg
+                width="35"
+                height="30"
+                viewBox="0 0 35 30"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19.0909 18.9474H15.9091V11.0526H19.0909M19.0909 25.2632H15.9091V22.1053H19.0909M0 30H35L17.5 0L0 30Z"
+                  fill="#FF523E"
+                />
+              </svg>
+
               <Description>{title}</Description>
-              <Description>{description}</Description>
+              {/* <Description>{description}</Description> */}
             </AlertWrapper>
             {notice ? (
               <Button
@@ -54,23 +64,24 @@ export function Alert({
                 <Button
                   buttonType="button"
                   onClick={onClose}
-                  height="10px"
+                  height="30px"
                   $padding="15px"
                   width="80px"
-                  fontSize="12px"
-                  $borderRadius="15px"
+                  fontSize="14px"
+                  $borderRadius="7px"
                   $border
                 >
                   <span>취소</span>
                 </Button>
                 <Button
                   buttonType="button"
-                  height="10px"
+                  height="30px"
                   $padding="15px"
                   width="80px"
-                  fontSize="12px"
-                  $borderRadius="15px"
+                  fontSize="14px"
+                  $borderRadius="7px"
                   onClick={onClick}
+                  $filled
                 >
                   <span>{action}</span>
                 </Button>
@@ -89,25 +100,29 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 99;
+  z-index: 2;
+  padding-top: 20px;
 `;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 300px;
-  height: 130px;
+  width: 450px;
+  height: 150px;
   border: 1px solid gray;
   background-color: white;
-  border-radius: 5px;
+  border-radius: 10px;
 `;
 const AlertWrapper = styled.div`
+  display: flex;
+  align-items: center;
   width: 100%;
+  height: 100%;
+  padding: 20px 20px 10px 20px;
+  gap: 5px;
 `;
 const CancelIconWrapper = styled.div`
   display: flex;
@@ -117,9 +132,9 @@ const CancelIconWrapper = styled.div`
   cursor: pointer;
 `;
 const Description = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  //display: flex;
+  //flex-direction: column;
+  //align-items: center;
   margin-top: 5px;
   font-size: 13px;
   > div:nth-child(2) {
@@ -129,7 +144,8 @@ const Description = styled.div`
 `;
 const SelectWrapper = styled.div`
   width: 100%;
-  padding-bottom: 10px;
+  padding: 10px 20px 20px 0;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-end;
+  gap: 10px;
 `;

@@ -138,9 +138,11 @@ const TabButton = styled.button<TabStyleProps>`
       ? `background-color: ${COLOR.PRIMARY}; `
       : `background-color: transparent;`}
 
-  border-radius: 10px;
+  ${({ $lineStyle }) => $lineStyle && `background: transparent;`}
+  ${({ $lineStyle }) =>
+    $lineStyle ? 'border-radius: 0px; ' : 'border-radius: 10px;'}
 
-  ${({ $lineStyle }) => $lineStyle && `background: transparent; `}
+
   ${({ $lineStyle, $active }) =>
     $lineStyle && $active
       ? `border-bottom: 2px solid ${COLOR.PRIMARY};`
@@ -148,9 +150,10 @@ const TabButton = styled.button<TabStyleProps>`
 `;
 const ButtonText = styled.span<{ $active: boolean; $lineStyle?: boolean }>`
   font-size: 14px;
-  font-weight: bold;
-
-  ${({ $active }) => ($active ? `color: #fff;` : `color:${COLOR.FONT_BLACK}`)}
+  ${({ $active, $lineStyle }) => $active && $lineStyle && 'font-weight: bold;'}
+  ${({ $lineStyle }) => !$lineStyle && 'font-weight: bold'};
+  ${({ $active, $lineStyle }) =>
+    $active && !$lineStyle ? 'color: #fff;' : `color:${COLOR.FONT_BLACK}`}
 `;
 
 const Component = styled.div<{

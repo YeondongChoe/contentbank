@@ -131,11 +131,11 @@ const Overlay = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 20%;
+  height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 99;
+  z-index: 2;
+  padding-top: 20px;
 `;
 const Container = styled.div<{ $type: string }>`
   width: 430px;

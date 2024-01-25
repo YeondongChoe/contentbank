@@ -251,7 +251,6 @@ export function ContentsList() {
         <Button
           height={'35px'}
           width={'110px'}
-          $margin={'0 0 0 10px'}
           onClick={openWindowCreate}
           fontSize="13px"
           $filled
