@@ -1,13 +1,13 @@
 import * as React from 'react';
+import { useState } from 'react';
 
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Button } from '../..';
-import { editingBoolAtom } from '../../../store/creatingContentAtom';
 
 export function FileUploading() {
-  const isEdit = useRecoilValue(editingBoolAtom);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const submitSave = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청 API');
