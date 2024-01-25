@@ -249,7 +249,20 @@ export function RegisterPopup({
                 ></Textarea>
               </InputWrapper>
               <NoticeWarpper>
-                <Notice>초기 비밀번호는 drmath@369 입니다.</Notice>
+                <Notice>
+                  초기 비밀번호는
+                  <Button
+                    height={'23px'}
+                    width={'90px'}
+                    fontSize="13px"
+                    $borderRadius="5px"
+                    $filled
+                    $success
+                  >
+                    <span>drmath@369</span>
+                  </Button>
+                  입니다.
+                </Notice>
                 <Notice>
                   로그인 후 비밀번호를 변경하고 다시 로그인 하면 사용 할 수
                   있습니다.
@@ -370,7 +383,10 @@ const NoticeWarpper = styled.div`
   gap: 5px;
   padding-bottom: 30px;
 `;
-const Notice = styled.p`
+const Notice = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 12px;
 `;
 const ButtonGroup = styled.div`
