@@ -65,8 +65,11 @@ export function ContentsList() {
   }, [page]);
 
   // 활성화/비활성화 버튼상태 토글
-  const submitChangingService = () => {
+  const openSubmitAlert = () => {
     setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
   };
   // 활성화/비활성화 데이터 전송
   const submitDisabled = () => {
@@ -295,7 +298,7 @@ export function ContentsList() {
         <ContentList
           openPopup={openCreateEditFilePopup}
           list={questionList}
-          onClick={submitChangingService}
+          onClick={openSubmitAlert}
         ></ContentList>
       </TableWrapper>
       <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
@@ -305,6 +308,7 @@ export function ContentsList() {
         description="비활성화 처리 하시겠습니까?"
         action="확인"
         onClick={submitDisabled}
+        onClose={closeSubmitAlert}
       ></Alert>
       {/* {isCreate && <CreateIconPopup />} */}
     </Container>

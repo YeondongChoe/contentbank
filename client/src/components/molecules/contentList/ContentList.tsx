@@ -86,9 +86,9 @@ export function ContentList({ list, onClick, openPopup }: ContentListProps) {
             width="140px"
             height="35px"
             fontSize="14px"
-            $border
             $borderRadius="7px"
             onClick={onClick}
+            $filled
             disabled={isEnabled}
           >
             활성화 / 비활성화
