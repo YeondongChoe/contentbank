@@ -48,8 +48,9 @@ export function ContentList({ list, onClick }: ContentListProps) {
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = () => {
     windowOpenHandler({
-      name: 'createcontentwindow',
-      url: '/createcontentwindow',
+      name: 'createcontentmain',
+      url: '/createcontentmain',
+      sendData: false,
     });
   };
 

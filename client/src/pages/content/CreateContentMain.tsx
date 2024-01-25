@@ -18,6 +18,8 @@ import {
 export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [data, setData] = useState(null);
+  const [tabState, setTabState] = useState<boolean>(false);
 
   const goBack = () => {
     navigate(-1);
@@ -39,9 +41,21 @@ export function CreateContentMain() {
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('DT & Editing');
 
-  // useEffect(() => {
-  //   console.log('location', location.state.isUploadFile);
-  // }, []);
+  useEffect(() => {
+    if (location?.state?.isUploadFile !== undefined) {
+      setTabState(location.state.isUploadFile);
+    } else {
+      setTabState(false);
+    }
+    // console.log('location', location?.state?.isUploadFile);
+
+    window.addEventListener('message', (event) => {
+      const { sendData } = event.data;
+      console.log('sendData000', event.data);
+      setData(sendData);
+    });
+  }, []);
+  console.log(data);
 
   return (
     <Container>
@@ -70,11 +84,7 @@ export function CreateContentMain() {
       </ButtonWrapper>
       {tabVeiw === 'DT & Editing' && (
         <ContentBox>
-          {!location.state.isUploadFile ? (
-            <ContentCreating />
-          ) : (
-            <FileUploading />
-          )}
+          {!tabState ? <ContentCreating /> : <FileUploading />}
         </ContentBox>
       )}
       {tabVeiw === '문항 분류' && (

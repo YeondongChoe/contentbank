@@ -7,10 +7,12 @@ export const windowOpenHandler = ({
   name = '_blank',
   url,
   options = '',
+  sendData = '',
 }: {
   name?: string;
   url: string;
   options?: string;
+  sendData?: unknown;
 }) => {
   const windowWidth = 1200;
   const windowHeight = 800;
@@ -20,7 +22,12 @@ export const windowOpenHandler = ({
   const target = `${name}`;
   const defaultOption = `width=${windowWidth},height=${windowHeight},top=${top},left=${left},toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no`;
   //TODO : url 에 ${BASEURL} 추가
-  window.open(url, target, options ? options : `${defaultOption}`);
+  const popup = window.open(
+    url,
+    target,
+    options ? options : `${defaultOption}`,
+  );
+  popup && popup.postMessage({ sendData }, '*');
 };
 
 //TODO: 함수 분기 추가 커스텀 필요
