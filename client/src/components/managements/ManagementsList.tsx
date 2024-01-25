@@ -327,16 +327,14 @@ export function ManagementsList() {
 
       <Alert
         isAlertOpen={isAlertOpen}
-        title="권한을 삭제할 경우, "
-        description="해당 권한의 아이디는 접속이 불가합니다."
+        description="권한을 삭제할 경우, 해당 권한의 아이디는 접속이 불가합니다."
         action="삭제"
         onClose={closeAlert}
         // onClick={() => submitDelete()}
       />
       <Alert
         isAlertOpen={isAlertOpen}
-        title="비활성화 처리시 로그인이 불가합니다."
-        description="비활성화 처리 하시겠습니까?"
+        description="비활성화 처리시 로그인이 불가합니다. 비활성화 처리 하시겠습니까?"
         action="확인"
         onClose={closeAlert}
         onClick={submitDisabled}

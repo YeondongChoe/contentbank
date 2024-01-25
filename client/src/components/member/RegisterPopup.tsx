@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-import Textarea from '@mui/joy/Textarea';
+//import Textarea from '@mui/joy/Textarea';
 import { Controller, useForm } from 'react-hook-form';
 import { IoMdClose } from 'react-icons/io';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -12,6 +12,7 @@ import { postRegister, postDuplicate } from '../../api/postAxios';
 import { Input, Label } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
+import { COLOR } from '../../components/constants';
 import { Alert } from '../molecules/alert/Alert';
 
 type authorityListProps = {
@@ -41,6 +42,10 @@ export function RegisterPopup({
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [commentValue, setCommentValue] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
 
   const [isRequired, setIsRequired] = useState(false);
   const [isRequiredDuplicate, setIsRequiredDuplicate] = useState(false);
@@ -125,139 +130,152 @@ export function RegisterPopup({
           <Container>
             <TitleWrapper>
               <Title>회원 아이디 만들기</Title>
-              <IoMdClose
-                onClick={closePopup}
-                style={{ fontSize: '20px', cursor: 'pointer' }}
-              />
             </TitleWrapper>
             <ContentBox>
-              {isNameError ? (
-                <Label
-                  width="350px"
-                  type="error"
-                  fontSize="16px"
-                  value="이름(필수)"
-                />
-              ) : (
-                <Label width="350px" fontSize="16px" value="이름(필수)" />
-              )}
-              <Controller
-                control={control}
-                name="name"
-                defaultValue=""
-                render={({ field }) => (
-                  <>
-                    <Input
-                      type="text"
-                      placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
-                      value={field.value}
-                      width="350px"
-                      height="32px"
-                      fontSize="16px"
-                      placeholderSize="12px"
-                      margin="0px 0px 10px 0px"
-                      border="black"
-                      borderbottom={isNameError && true}
-                      onChange={field.onChange}
-                      onClick={() => setIsNameError(false)}
-                      errorMessage={isNameError && nameErrorMessage}
-                    />
-                  </>
-                )}
-              />
-              {isNameError ? (
-                <Label
-                  width="350px"
-                  type="error"
-                  fontSize="16px"
-                  value="아이디(필수)"
-                />
-              ) : (
-                <Label width="350px" fontSize="16px" value="아이디(필수)" />
-              )}
-              <Controller
-                control={control}
-                name="id"
-                defaultValue=""
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
-                    value={field.value}
-                    width="350px"
-                    height="32px"
-                    fontSize="16px"
-                    placeholderSize="12px"
-                    margin="0px 0px 10px 0px"
-                    border="black"
-                    onChange={field.onChange}
-                    onClick={() => setIsIdError(false)}
-                    errorMessage={isIdError && idErrorMessage}
+              <InputWrapper>
+                {isNameError ? (
+                  <Label
+                    width="130px"
+                    type="error"
+                    fontSize="15px"
+                    value="* 이름"
                   />
+                ) : (
+                  <Label width="130px" fontSize="15px" value="* 이름" />
                 )}
-              />
-              {Id && isDuplicate === true && (
-                <IdSuccessMessage>{successMessage}</IdSuccessMessage>
-              )}
-              <DuplicationButtonWrapper>
-                <Button
-                  buttonType="button"
-                  onClick={checkDuplicate}
-                  $padding="10px"
-                  height={'30px'}
-                  width={'110px'}
-                  fontSize="14px"
-                  $borderRadius="15px"
-                >
-                  <span>중복확인</span>
-                </Button>
-              </DuplicationButtonWrapper>
+                <Controller
+                  control={control}
+                  name="name"
+                  defaultValue=""
+                  render={({ field }) => (
+                    <>
+                      <Input
+                        type="text"
+                        placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
+                        value={field.value}
+                        width="450px"
+                        height="38px"
+                        fontSize="16px"
+                        placeholderSize="12px"
+                        margin="0px 0px 10px 0px"
+                        border="black"
+                        borderbottom={isNameError && true}
+                        onChange={field.onChange}
+                        onClick={() => setIsNameError(false)}
+                        errorMessage={isNameError && nameErrorMessage}
+                      />
+                    </>
+                  )}
+                />
+              </InputWrapper>
+              <InputWrapper>
+                {isNameError ? (
+                  <Label
+                    width="130px"
+                    type="error"
+                    fontSize="15px"
+                    value="* 아이디"
+                  />
+                ) : (
+                  <Label width="130px" fontSize="15px" value="* 아이디" />
+                )}
+                <InputBox>
+                  <Controller
+                    control={control}
+                    name="id"
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Input
+                        type="text"
+                        placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
+                        value={field.value}
+                        width="330px"
+                        height="38px"
+                        fontSize="16px"
+                        placeholderSize="12px"
+                        margin="0px 0px 10px 0px"
+                        border="black"
+                        onChange={field.onChange}
+                        onClick={() => setIsIdError(false)}
+                        errorMessage={isIdError && idErrorMessage}
+                      />
+                    )}
+                  />
+                  {Id && isDuplicate === true && (
+                    <IdSuccessMessage>{successMessage}</IdSuccessMessage>
+                  )}
+                </InputBox>
 
-              <Label width="350px" fontSize="16px" value="권한" />
-              <Controller
-                control={control}
-                name="authority"
-                render={({ field }) => (
-                  <Select
-                    width="350px"
-                    height="50px"
-                    padding="5px 0px 0px 0px"
-                    onSelect={(event, code) => {
-                      setAuthorityCode(code);
-                    }}
-                    options={AuthorityOption}
-                  ></Select>
-                )}
-              />
-              <Label
-                width="350px"
-                fontSize="11px"
-                value="(필수)권한을 선택하세요"
-              />
-              <Label width="350px" fontSize="16px" value="비고" />
-              <Textarea
-                sx={{ mb: 1, mt: 1, fontSize: '14px', width: '350px' }}
-                placeholder=""
-                size="md"
-                name="Size"
-                minRows={3}
-                maxRows={3}
-                onChange={(e) => {
-                  setCommentValue(e.target.value);
-                }}
-              />
+                <DuplicationButtonWrapper>
+                  <Button
+                    buttonType="button"
+                    onClick={checkDuplicate}
+                    $padding="10px"
+                    height={'38px'}
+                    width={'110px'}
+                    fontSize="15px"
+                    $borderRadius="7px"
+                    $filled
+                  >
+                    <span>중복확인</span>
+                  </Button>
+                </DuplicationButtonWrapper>
+              </InputWrapper>
+              <InputWrapper>
+                <Label width="130px" fontSize="15px" value="* 권한" />
+                <Controller
+                  control={control}
+                  name="authority"
+                  render={({ field }) => (
+                    <Select
+                      width="450px"
+                      height="50px"
+                      padding="5px 0px 0px 0px"
+                      defaultValue={'권한을 선택하세요'}
+                      onSelect={(event, code) => {
+                        setAuthorityCode(code);
+                      }}
+                      options={AuthorityOption}
+                    ></Select>
+                  )}
+                />
+              </InputWrapper>
+              <InputWrapper>
+                <Label width="130px" fontSize="15px" value="비고" />
+                <Textarea
+                  onChange={(e) => {
+                    setCommentValue(e.target.value);
+                  }}
+                ></Textarea>
+              </InputWrapper>
               <NoticeWarpper>
-                <Notice>*초기 비밀번호는 drmath@369입니다.</Notice>
-                <Notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</Notice>
+                <Notice>
+                  초기 비밀번호는
+                  <Button
+                    height={'23px'}
+                    width={'90px'}
+                    fontSize="13px"
+                    $borderRadius="5px"
+                    $filled
+                    $success
+                  >
+                    <span>drmath@369</span>
+                  </Button>
+                  입니다.
+                </Notice>
+                <Notice>
+                  로그인 후 비밀번호를 변경하고 다시 로그인 하면 사용 할 수
+                  있습니다.
+                </Notice>
               </NoticeWarpper>
               <ButtonGroup>
                 <Button
                   buttonType="button"
                   onClick={closePopup}
                   $padding="10px"
-                  height={'50px'}
-                  width={'170px'}
-                  fontSize="14px"
+                  height={'40px'}
+                  width={'120px'}
+                  fontSize="16px"
                   $border
                 >
                   <span>취소</span>
@@ -266,9 +284,10 @@ export function RegisterPopup({
                   buttonType="button"
                   onClick={submitRegister}
                   $padding="10px"
-                  height={'50px'}
-                  width={'170px'}
-                  fontSize="14px"
+                  height={'40px'}
+                  width={'120px'}
+                  fontSize="16px"
+                  $filled
                 >
                   <span>등록</span>
                 </Button>
@@ -277,14 +296,16 @@ export function RegisterPopup({
                 <Alert
                   isAlertOpen={isAlertOpen}
                   notice
-                  title="필수 항목을 입력해주세요"
+                  description="필수 항목을 입력해주세요"
+                  onClose={closeAlert}
                 />
               )}
               {isRequiredDuplicate && (
                 <Alert
                   isAlertOpen={isAlertOpen}
                   notice
-                  title="중복확인을 해주세요"
+                  description="중복확인을 해주세요"
+                  onClose={closeAlert}
                 />
               )}
             </ContentBox>
@@ -301,22 +322,24 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  //background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 99;
 `;
 const Container = styled.div`
-  min-width: 500px;
-  padding: 20px;
-  border: 1px solid gray;
+  min-width: 700px;
+  height: 650px;
+  padding: 30px;
+  border: 1px solid ${COLOR.BORDER_GRAY};
   background-color: white;
   border-radius: 5px;
 `;
 const TitleWrapper = styled.div`
   display: flex;
   align-items: center;
+  padding-bottom: 20px;
 `;
 const Title = styled.div`
   font-size: 22px;
@@ -328,30 +351,45 @@ const ContentBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
 `;
+const InputWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 680px;
+  padding-bottom: 20px;
+`;
+const InputBox = styled.div``;
 const IdSuccessMessage = styled.p`
-  color: rgba(0, 0, 0, 0.6);
+  color: ${COLOR.SUCCESS};
   font-size: 12px;
 `;
 const DuplicationButtonWrapper = styled.div`
-  min-width: 350px;
   display: flex;
-  justify-content: flex-end;
+  padding-left: 10px;
+`;
+const Textarea = styled.textarea`
+  width: 450px;
+  height: 180px;
+  font-size: 14px;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  padding: 10px;
+  resize: none;
 `;
 const NoticeWarpper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding-left: 60px;
-  gap: 10px;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 30px;
 `;
-const Notice = styled.p`
+const Notice = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 12px;
 `;
 const ButtonGroup = styled.div`
-  padding-top: 30px;
   display: flex;
   gap: 10px;
 `;

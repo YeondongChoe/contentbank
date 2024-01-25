@@ -7,8 +7,7 @@ import styled from 'styled-components';
 import { Button } from '../../atom';
 
 type AlertProps = {
-  title: string;
-  description?: string;
+  description: string;
   onClick?: () => void;
   onClose?: () => void;
   action?: string;
@@ -17,7 +16,6 @@ type AlertProps = {
 };
 
 export function Alert({
-  title,
   description,
   onClick,
   onClose,
@@ -44,21 +42,23 @@ export function Alert({
                 />
               </svg>
 
-              <Description>{title}</Description>
-              {/* <Description>{description}</Description> */}
+              <Description>{description}</Description>
             </AlertWrapper>
             {notice ? (
-              <Button
-                buttonType="button"
-                onClick={onClose}
-                height="10px"
-                width="100px"
-                $margin="0 0 10px 0"
-                fontSize="12px"
-                $borderRadius="15px"
-              >
-                <span>확인</span>
-              </Button>
+              <SelectWrapper>
+                <Button
+                  buttonType="button"
+                  onClick={onClose}
+                  height="30px"
+                  width="80px"
+                  $padding="15px"
+                  fontSize="14px"
+                  $borderRadius="7px"
+                  $filled
+                >
+                  <span>확인</span>
+                </Button>
+              </SelectWrapper>
             ) : (
               <SelectWrapper>
                 <Button
@@ -132,15 +132,11 @@ const CancelIconWrapper = styled.div`
   cursor: pointer;
 `;
 const Description = styled.div`
-  //display: flex;
+  display: flex;
   //flex-direction: column;
   //align-items: center;
-  margin-top: 5px;
-  font-size: 13px;
-  > div:nth-child(2) {
-    margin-top: 3px;
-    font-size: 11px;
-  }
+  justify-content: center;
+  font-size: 16px;
 `;
 const SelectWrapper = styled.div`
   width: 100%;

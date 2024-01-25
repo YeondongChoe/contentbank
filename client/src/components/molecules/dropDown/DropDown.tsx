@@ -41,10 +41,10 @@ export function DropDown({
         width={buttonWidth}
         height={buttonHeight}
         fontSize="14px"
-        $border
         $borderRadius="7px"
         onClick={() => setShowDropDown(!showDropDown)}
         disabled={disabled}
+        $filled
       >
         {buttonText}
       </Button>

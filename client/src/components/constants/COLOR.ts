@@ -1,21 +1,25 @@
 export const COLOR = {
   PRIMARY: '#358aff',
   SECONDARY: '#3e5798',
-  WARNING: '#ffcc06',
   MUTE: '#aaaaaa',
   SUCCESS: '#11c218',
+  WARNING: '#ffcc06',
   ERROR: '#ff523e',
-  BORDER_GRAY: '#D1D1D1',
+
   FONT_BLACK: '#252525',
+  LIGHT_GRAY: '#eeeeee',
+
   BUTTON_NORMAL: '#d9d9d9',
   BUTTON_LIGHT_NORMAL: '#d9d9d9',
   BORDER_BLACK: '#262525',
+  BORDER_GRAY: '#D1D1D1',
+
   ALERTBAR_ERROR: 'rgba(255, 42, 18, 0.6)',
   ALERTBAR_SUCCESS: '#11C218',
   ALERTBAR_WARNING: '#FFCC06',
-  LIGHT_GRAY: '#eeeeee',
-  TABLE_GRAY: '#f0f0f0',
 
+  TABLE_GRAY: '#f0f0f0',
+  //
   HOVER: '#f4f7fe',
   GRAY: '#9a9a9a',
   DARK_GRAY: '#333333',
