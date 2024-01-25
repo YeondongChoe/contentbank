@@ -19,6 +19,7 @@ type ButtonProps = {
   $border?: boolean;
   disabled?: boolean;
   $filled?: boolean;
+  $success?: boolean;
   isChecked?: boolean;
   $normal?: boolean;
 };
@@ -39,6 +40,7 @@ export function Button({
   disabled,
   $filled,
   $normal,
+  $success,
   isChecked,
 }: ButtonProps) {
   return (
@@ -55,6 +57,7 @@ export function Button({
       $border={$border}
       disabled={disabled}
       $filled={$filled}
+      $success={$success}
       $isChecked={isChecked}
       $normal={$normal}
     >
@@ -75,6 +78,7 @@ type ButtonStyleProps = {
   $filled?: boolean;
   $isChecked?: boolean;
   $normal?: boolean;
+  $success?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -99,6 +103,11 @@ const Component = styled.button<ButtonStyleProps>`
   ${(props) =>
     props.$normal &&
     `background-color: white; color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`}
+${(props) =>
+    props.$filled &&
+    props.$success &&
+    `background-color: ${COLOR.SUCCESS}; color: white;`}
+
 ${({ disabled }) =>
     disabled === true &&
     `border:none; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
