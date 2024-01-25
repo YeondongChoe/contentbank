@@ -2,11 +2,10 @@ import * as React from 'react';
 import { useState, useRef } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
-import { Input, Label, Button, AlertBar } from '../../components';
+import { Input, Label, Button, AlertBar, Alert } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
 
 type passwordProps = {
@@ -16,6 +15,7 @@ type passwordProps = {
 
 type ChangePasswordProps = {
   onClick?: () => void;
+  openSuccessAlert?: () => void;
   width?: string;
   inputwidth?: string;
   btnwidth?: string;
@@ -44,6 +44,7 @@ export function ChangePassword({
   messageWidth,
   labelfontsize,
   placeholdersize,
+  openSuccessAlert,
 }: ChangePasswordProps) {
   const {
     control,
@@ -73,15 +74,15 @@ export function ChangePassword({
 
   const Password = watch('password', '');
   const PasswordConfirm = watch('password_confirm', '');
-  const navigate = useNavigate();
+  console.log(PasswordConfirm);
 
   const submitChangePassword = () => {
     putChangePassword({
       Password,
       PasswordConfirm,
-      navigate,
       setErrorMessage,
       openAlert,
+      openSuccessAlert,
     });
   };
 

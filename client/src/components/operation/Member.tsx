@@ -38,8 +38,11 @@ export function Member() {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
   // 활성화/비활성화 버튼상태 토글
-  const submitChangingService = () => {
+  const openSubmitAlert = () => {
     setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
   };
   // 활성화/비활성화 데이터 전송
   const submitDisabled = () => {
@@ -164,6 +167,7 @@ export function Member() {
         <Search
           value={searchValue}
           width={'25%'}
+          height="40px"
           onClick={() => filterSearchValue()}
           onKeyDown={(e) => filterSearchValueEnter(e)}
           onChange={(e) => {
@@ -172,7 +176,6 @@ export function Member() {
           placeholder="이름, 권한 검색"
         />
       </InputWrapper>
-
       <TableWrapper>
         <ButtonWrapper>
           <TabMenu
@@ -188,7 +191,7 @@ export function Member() {
           <Button
             height={'35px'}
             width={'130px'}
-            onClick={submitChangingService}
+            onClick={openSubmitAlert}
             fontSize="15px"
             $filled
             disabled={isEnabled}
@@ -214,6 +217,7 @@ export function Member() {
         description="비활성화 처리 하시겠습니까?"
         action="확인"
         onClick={submitDisabled}
+        onClose={closeSubmitAlert}
       ></Alert>
       {isRegister ? (
         <RegisterPopup isRegister={isRegister} setIsRegister={setIsRegister} />
