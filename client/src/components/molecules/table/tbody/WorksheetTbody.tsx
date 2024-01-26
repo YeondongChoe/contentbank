@@ -6,30 +6,31 @@ import { SlOptionsVertical } from 'react-icons/sl';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import {
-  createWorksheetStep1BoolAtom,
-  createWorksheetStep2BoolAtom,
-  editWorksheetBoolAtom,
-  previewWorksheetBoolAtom,
-} from '../../../../store/creatingWorksheetAtom';
+// import {
+//   createWorksheetStep1BoolAtom,
+//   createWorksheetStep2BoolAtom,
+//   editWorksheetBoolAtom,
+//   previewWorksheetBoolAtom,
+// } from '../../../../store/creatingWorksheetAtom';
 import { WorksheetTableType } from '../../../../types';
 import { COLOR } from '../../../constants';
 
 type TbodyProps = {
   list: WorksheetTableType[];
+  // setIsPreview?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function WorksheetTbody({ list }: TbodyProps) {
   //학습지 팝업
-  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
-  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
-  const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
+  // const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
+  // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  // const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
+  // const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
 
   const openEditFilePopup = () => {
-    setIsStep1(false);
-    setIsStep2(true);
-    setIsEditWorksheet(true);
+    // setIsStep1(false);
+    // setIsStep2(true);
+    // setIsEditWorksheet(true);
   };
   // 학습지 설정 버튼
   const openSettingList = (
@@ -78,7 +79,7 @@ export function WorksheetTbody({ list }: TbodyProps) {
               <LuFileSearch2
                 style={{ fontSize: '22px' }}
                 onClick={() => {
-                  setIsPreview(true);
+                  // setIsPreview && setIsPreview(true);
                 }}
               />
             </button>

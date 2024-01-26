@@ -6,24 +6,18 @@ import { MdOutlineRestartAlt } from 'react-icons/md';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import {
-  Button,
-  TabMenu,
-  Label,
-  BarChart,
-  MathviewerCard,
-} from '../../components';
-import { COLOR } from '../../components/constants';
-import dummy from '../../components/contents/createcontent/data.json';
-import Contents2 from '../../components/mathViewer/test2.json';
-import Contents3 from '../../components/mathViewer/test3.json';
-import Contents4 from '../../components/mathViewer/test4.json';
-import {
-  createWorksheetStep1BoolAtom,
-  createWorksheetStep2BoolAtom,
-  createWorksheetStep3BoolAtom,
-  editWorksheetBoolAtom,
-} from '../../store/creatingWorksheetAtom';
+import { Button, TabMenu, Label, BarChart, MathviewerCard } from '../..';
+import { COLOR } from '../../constants';
+import Contents2 from '../../mathViewer/test2.json';
+import Contents3 from '../../mathViewer/test3.json';
+import Contents4 from '../../mathViewer/test4.json';
+import dummy from '../createcontent/data.json';
+// import {
+//   createWorksheetStep1BoolAtom,
+//   createWorksheetStep2BoolAtom,
+//   createWorksheetStep3BoolAtom,
+//   editWorksheetBoolAtom,
+// } from '../../store/creatingWorksheetAtom';
 
 import { Step3 } from './Step3';
 
@@ -62,10 +56,10 @@ export function Step2() {
     Contents4,
   ];
 
-  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
-  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
-  const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
+  // const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
+  // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  // const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
+  // const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
   const [isSimilar, setIsSimilar] = useState(false);
   const ContentList = dummy.ContentInfo;
 
@@ -110,15 +104,15 @@ export function Step2() {
   };
 
   const closePopup = () => {
-    setIsStep1(false);
-    setIsStep2(false);
+    // setIsStep1(false);
+    // setIsStep2(false);
   };
   const goBackMainPopup = () => {
-    setIsStep2(false);
+    // setIsStep2(false);
   };
 
   const moveStep3 = () => {
-    setIsStep3(true);
+    // setIsStep3(true);
     console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
 
@@ -134,7 +128,7 @@ export function Step2() {
           </IconWrapper>
           <Title>
             <Span>
-              {!isEditWorksheet && <FrontSpan>STEP 1 -</FrontSpan>}
+              {/* {!isEditWorksheet && <FrontSpan>STEP 1 -</FrontSpan>} */}
               STEP 2
             </Span>
             학습지 상세 편집
@@ -256,7 +250,7 @@ export function Step2() {
           </Button>
         </NextStepButtonWrapper>
       </Container>
-      {isStep3 && <Step3 />}
+      {/* {isStep3 && <Step3 />} */}
     </Overlay>
   );
 }

@@ -199,6 +199,10 @@ const NavigationMenu = styled.li`
     gap: 5px;
     color: white;
 
+    span {
+      padding-left: 5px;
+    }
+
     &:hover {
       background-color: #5a76be;
       border-radius: 7px;

@@ -5,12 +5,12 @@ import { IoMdClose } from 'react-icons/io';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, TabMenu } from '../../components';
-import { COLOR } from '../../components/constants';
-import {
-  createWorksheetStep1BoolAtom,
-  createWorksheetStep2BoolAtom,
-} from '../../store/creatingWorksheetAtom';
+import { Button, TabMenu } from '../..';
+import { COLOR } from '../../constants';
+// import {
+//   createWorksheetStep1BoolAtom,
+//   createWorksheetStep2BoolAtom,
+// } from '../../store/creatingWorksheetAtom';
 
 import { Step2 } from './Step2';
 
@@ -31,8 +31,8 @@ export function Step1() {
   ];
 
   const [didMount, setDidMount] = useState(false);
-  const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
-  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  // const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
+  // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [grade, setGrade] = useState('1');
   const [inputValue, setInputValue] = useState('');
   const [schoolLevel, setSchoolLevel] = useState<string | null>(null);
@@ -44,11 +44,11 @@ export function Step1() {
   const [containMock, setContainMock] = useState<string | null>(null);
 
   const closePopup = () => {
-    setIsStep1(false);
+    // setIsStep1(false);
   };
 
   const moveStep2 = () => {
-    setIsStep2(true);
+    // setIsStep2(true);
     console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
     console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
   };
@@ -575,7 +575,7 @@ export function Step1() {
           </Button>
         </NextStepButtonWrapper>
       </Container>
-      {isStep2 && <Step2 />}
+      {/* {isStep2 && <Step2 />} */}
     </Overlay>
   );
 }

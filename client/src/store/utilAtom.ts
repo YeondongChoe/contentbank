@@ -11,7 +11,7 @@ export const pageAtom = atom({
   default: 1,
 });
 
-// 메뉴슬라이드 아톰
+// main메뉴 슬라이드 아톰
 export const openNaviationBoolAtom = atom({
   key: 'openNaviationBoolAtom',
   default: true,

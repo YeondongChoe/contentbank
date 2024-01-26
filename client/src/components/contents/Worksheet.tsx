@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import { LuDownload } from 'react-icons/lu';
 import { SlPrinter } from 'react-icons/sl';
+import { useLocation, useNavigate } from 'react-router';
 import ReactToPrint from 'react-to-print';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -17,19 +18,23 @@ import {
   Table,
 } from '../../components';
 import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';
-import { Step1 } from '../../pages/worksheetPopup/Step1';
-import { Step2 } from '../../pages/worksheetPopup/Step2';
+// import { Step1 } from '../../pages/worksheetPopup/Step1';
+// import { Step2 } from '../../pages/worksheetPopup/Step2';
 import {
-  createWorksheetStep1BoolAtom,
-  createWorksheetStep2BoolAtom,
-  editWorksheetBoolAtom,
+  // createWorksheetStep1BoolAtom,
+  // createWorksheetStep2BoolAtom,
+  // editWorksheetBoolAtom,
   previewWorksheetBoolAtom,
 } from '../../store/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { WorksheetTableType } from '../../types';
 import { COLOR, worksheetColWidth, worksheetTheadList } from '../constants';
 import dummy from '../constants/data.json';
+
 export function Worksheet() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');
   const [subTabVeiw, setSubTabVeiw] = useState<string>('전체');
   const [searchValue, setSearchValue] = useState<string>('');
@@ -47,14 +52,15 @@ export function Worksheet() {
 
   const [didMount, setDidMount] = useState(false);
 
-  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
-  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
   const [isPreview, setIsPreview] = useRecoilState(previewWorksheetBoolAtom);
-  const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
-  const openStep1 = () => {
-    setIsStep1(true);
-    setIsStep2(false);
-    setIsEditWorksheet(false);
+  // const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
+
+  // 학습지 만들기 페이지로 이동
+  const openCreateWorksheet = () => {
+    // setIsStep1(true);
+    // setIsStep2(false);
+    // setIsEditWorksheet(false);
+    navigate('/');
   };
 
   const ref = useRef(null);
@@ -136,7 +142,7 @@ export function Worksheet() {
             height={'35px'}
             width={'150px'}
             $margin={'0 0 0 10px'}
-            onClick={openStep1}
+            onClick={openCreateWorksheet}
           >
             학습지 만들기
           </Button>
@@ -164,8 +170,6 @@ export function Worksheet() {
       </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
 
-      {isStep1 && <Step1 />}
-      {isStep2 && <Step2 />}
       {isPreview && (
         <Overlay>
           <WorksheetBasic />

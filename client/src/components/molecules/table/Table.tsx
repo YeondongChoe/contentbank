@@ -25,6 +25,7 @@ type TableProps = {
   theadList: TheadItemProps[];
   btnOnClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   setIsEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  // setIsPreview?: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedRows: React.Dispatch<React.SetStateAction<number[]>>;
 };
 

@@ -8,14 +8,16 @@ import { SlPicture } from 'react-icons/sl';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled, { ThemeProvider } from 'styled-components';
 
-import { Input, Label, Button } from '../../components';
-import { COLOR } from '../../components/constants';
-import {
-  createWorksheetStep1BoolAtom,
-  createWorksheetStep2BoolAtom,
-  createWorksheetStep3BoolAtom,
-  editWorksheetBoolAtom,
-} from '../../store/creatingWorksheetAtom';
+import { Input, Label, Button } from '../../atom';
+// eslint-disable-next-line import/order
+import { COLOR } from '../../constants/COLOR';
+
+// import {
+//   createWorksheetStep1BoolAtom,
+//   createWorksheetStep2BoolAtom,
+//   createWorksheetStep3BoolAtom,
+//   editWorksheetBoolAtom,
+// } from '../../store/creatingWorksheetAtom';
 
 import {
   RedTheme,
@@ -24,13 +26,13 @@ import {
   BlueTheme,
   PurpleTheme,
   GrayTheme,
-} from './theme';
+} from '../../constants/THEME';
 
 export function Step3() {
-  const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
-  const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
-  const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
+  // const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
+  // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
+  // const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
+  // const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
   const [contentAuthor, setContentAuthor] = useState('');
@@ -68,19 +70,19 @@ export function Step3() {
   };
 
   const closePopup = () => {
-    setIsStep1(false);
-    setIsStep2(false);
-    setIsStep3(false);
+    // setIsStep1(false);
+    // setIsStep2(false);
+    // setIsStep3(false);
   };
   const goBackMainPopup = () => {
-    setIsStep2(true);
-    setIsStep3(false);
+    // setIsStep2(true);
+    // setIsStep3(false);
   };
 
   const submitCreateWorksheet = () => {
-    setIsStep1(false);
-    setIsStep2(false);
-    setIsStep3(false);
+    // setIsStep1(false);
+    // setIsStep2(false);
+    // setIsStep3(false);
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 
@@ -96,7 +98,7 @@ export function Step3() {
           </IconWrapper>
           <Title>
             <Span>
-              {!isEditWorksheet && <FrontSpan>STEP 1 -</FrontSpan>}
+              {/* {!isEditWorksheet && <FrontSpan>STEP 1 -</FrontSpan>} */}
               <FrontSpan>STEP 2 -</FrontSpan>
               STEP 3
             </Span>
