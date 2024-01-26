@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
 // import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -18,7 +18,9 @@ import {
 export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
+  const [didMount, setDidMount] = useState<boolean>(false);
+  const [isHide, setIsHide] = useState<boolean>(false);
+
   const [tabState, setTabState] = useState<boolean>(false);
 
   const goBack = () => {
@@ -41,47 +43,66 @@ export function CreateContentMain() {
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('DT & Editing');
 
-  useEffect(() => {
-    if (location?.state?.isUploadFile !== undefined) {
-      setTabState(location.state.isUploadFile);
-    } else {
-      setTabState(false);
-    }
-    // console.log('location', location?.state?.isUploadFile);
-    window.addEventListener('message', receiveMessage, false);
-    return () => {
-      window.removeEventListener('message', receiveMessage);
-    };
-  }, []);
-
+  //iframe 데이터 통신시
   const receiveMessage = (event: any) => {
-    const { sendData, type } = event.data;
-    console.log('event', event);
-    console.log('type', type);
-    console.log('event.data', event.data);
-    console.log('sendData', event.data.sendData);
+    // 불필요한 react-devtools 메세지 이벤트 차단
+    if (/^react-devtools/gi.test(event.data.source)) {
+      return;
+    }
+    const { type } = event.data;
+    // if (type === 'BOOL')
   };
 
-  // window.parent.addEventListener(
-  //   'message',
-  //   (event) => {
-  //     const { sendData, type } = event.data;
-  //     console.log('event', event);
-  //     console.log('type', type);
-  //     console.log('event.data', event.data);
-  //     console.log('sendData', event.data.sendData);
-  //     if (type !== 'BOOL') return;
-  //     setData(sendData);
-  //   },
-  //   false,
-  // );
+  // 부모 로컬스토리지에서 데이터 가져오기
+  const getLocalData = useCallback(() => {
+    const data = localStorage.getItem('sendData');
+    let sendData;
+    if (data) sendData = JSON.parse(data);
 
-  console.log(data);
+    console.log('데이터 조회', sendData);
+    if (sendData !== undefined) {
+      setIsHide(true);
+      setTabState(sendData.data);
+
+      // 로컬스토리지 값 다받은 뒤 초기화
+      window.opener.localStorage.clear();
+    }
+  }, [tabState]);
+
+  useEffect(() => {
+    if (didMount) {
+      // navigate 이동하며 전달된 데이터 받기
+      if (location?.state?.isUploadFile !== undefined) {
+        setTabState(location.state.isUploadFile);
+      } else {
+        setTabState(false);
+      }
+
+      // 윈도우 열릴때 부모윈도우 스토리지 접근
+      getLocalData();
+
+      // iframe 데이터 통신 데이터 받기
+      // window.addEventListener('message', receiveMessage, false);
+      // return () => {
+      //   window.removeEventListener('message', receiveMessage);
+      // };
+    }
+  }, [didMount]);
+
+  useEffect(() => {
+    setDidMount(true);
+  }, []);
+
+  // useEffect(() => {
+  //   if (didMount) {
+  //     loadData();
+  //   }
+  // }, [didMount]);
 
   return (
     <Container>
       <ButtonWrapper>
-        <IconWrapper>
+        <IconWrapper className={isHide ? 'hide' : ''}>
           <IoIosArrowBack
             style={{ fontSize: '24px', cursor: 'pointer' }}
             onClick={goBack}
@@ -135,6 +156,9 @@ const IconWrapper = styled.div`
   align-items: center;
   position: absolute;
   top: 15px;
+  &.hide {
+    display: none;
+  }
 `;
 const TapMenuWrapper = styled.div`
   display: flex;
