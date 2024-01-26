@@ -60,7 +60,7 @@ export function Worksheet() {
     // setIsStep1(true);
     // setIsStep2(false);
     // setIsEditWorksheet(false);
-    navigate('/');
+    navigate('/createworksheet/step1', { state: 'step1' });
   };
 
   const ref = useRef(null);

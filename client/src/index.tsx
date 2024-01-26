@@ -10,6 +10,9 @@ import {
   ContentWorksheet,
   CreateContentMain,
   CreateContentWindow,
+  CreateWorksheetStep1,
+  CreateWorksheetStep2,
+  CreateWorksheetStep3,
 } from './pages/content';
 import { Guide } from './pages/Guide';
 import { ManagementList } from './pages/management/ManagementList';
@@ -23,6 +26,7 @@ import { OperationAuthority } from './pages/operate/OperationAuthority';
 import { OperationMember } from './pages/operate/OperationMember';
 import { Preparing } from './pages/Preparing';
 import GlobalStyle from './styles/GlobalStyle';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -69,6 +73,18 @@ const router = createBrowserRouter([
       {
         path: '/contentworksheet',
         element: <ContentWorksheet />,
+      },
+      {
+        path: '/createworksheet/step1',
+        element: <CreateWorksheetStep1 />,
+      },
+      {
+        path: '/createworksheet/step2',
+        element: <CreateWorksheetStep2 />,
+      },
+      {
+        path: '/createworksheet/step3',
+        element: <CreateWorksheetStep3 />,
       },
       {
         path: '/managementlist',
