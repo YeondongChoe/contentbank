@@ -6,7 +6,7 @@ import { COLOR } from '../../../components/constants';
 
 type LabelProps = {
   value: string;
-  type?: 'error';
+  type?: 'error' | 'navi';
   width?: string;
   fontSize?: string;
   padding?: string;
@@ -50,8 +50,14 @@ const Component = styled.label<LabelStyleProps>`
   padding: ${({ $padding }) => ($padding ? ` ${$padding};` : '5px 0px')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '14px')};
-  ${({ $type }) =>
-    $type === 'error'
-      ? `color: ${COLOR.ERROR};`
-      : `color: ${COLOR.FONT_BLACK};`};
+  ${({ $type }) => {
+    if ($type === 'error') {
+      return `color: ${COLOR.ERROR};`;
+    }
+    if ($type === 'navi') {
+      return `color: ${COLOR.FONT_NAVI};`;
+    } else {
+      `color: ${COLOR.FONT_BLACK};`;
+    }
+  }};
 `;

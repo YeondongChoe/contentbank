@@ -324,7 +324,6 @@ export function ManagementsList() {
           setSelectedRows={setSelectedRows}
         />
       </TableWrapper>
-
       <Alert
         isAlertOpen={isAlertOpen}
         description="권한을 삭제할 경우, 해당 권한의 아이디는 접속이 불가합니다."
@@ -334,8 +333,9 @@ export function ManagementsList() {
       />
       <Alert
         isAlertOpen={isAlertOpen}
-        description="비활성화 처리시 로그인이 불가합니다. 비활성화 처리 하시겠습니까?"
+        description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
         action="확인"
+        isWarning={true}
         onClose={closeAlert}
         onClick={submitDisabled}
       ></Alert>

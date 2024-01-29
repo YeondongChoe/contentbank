@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { putChangePassword } from '../../api/putAxios';
 import { Input, Label, Button, AlertBar, Alert } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
+import { COLOR } from '../constants/COLOR';
 
 type passwordProps = {
   password: string;
@@ -78,7 +79,6 @@ export function ChangePassword({
 
   const openSuccessAlert = () => {
     setIsSuccessAlertOpen(true);
-    console.log('mypage');
   };
   const CloseSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
@@ -99,7 +99,6 @@ export function ChangePassword({
       setIsSuccessAlertOpen,
       setIsRedirect,
     });
-    console.log('changePassword');
   };
 
   return (
@@ -117,15 +116,18 @@ export function ChangePassword({
           }
           isAlertOpen={isSuccessAlertOpen}
           action="확인"
+          isWarning={true}
           onClick={submitChangePassword}
           onClose={CloseSuccessAlert}
         ></Alert>
       )}
       {isRedirect && (
         <Alert
-          description={'새로운 비밀번호로 변경이 완료되었습니다.'}
+          description="새로운 비밀번호로 변경이 완료되었습니다."
+          subDescription="로그인 페이지로 이동합니다."
           isAlertOpen={isRedirect}
           action="확인"
+          isWarning={false}
           notice
           onClose={RedirectLogin}
         ></Alert>
@@ -168,15 +170,39 @@ export function ChangePassword({
               )}
             />
           </InputWapper>
-          {Password && (
-            <ErrorMessage $messageWidth={messageWidth as string}>
-              {errors?.password?.message}
-            </ErrorMessage>
-          )}
-          {isValid && (
+          {Password && isValid && (
             <SuccessMessage $messageWidth={messageWidth as string}>
               사용가능
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#11C218"
+                />
+              </svg>
             </SuccessMessage>
+          )}
+          {Password && !isValid && !PasswordConfirm && (
+            <ErrorMessage $messageWidth={messageWidth as string}>
+              사용 불가능
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#FF523E"
+                />
+              </svg>
+            </ErrorMessage>
           )}
           <InputWapper width={width as string}>
             <Label
@@ -218,13 +244,38 @@ export function ChangePassword({
               )}
             />
           </InputWapper>
-          {PasswordConfirm && Password === PasswordConfirm ? (
+          {PasswordConfirm && Password === PasswordConfirm && (
             <SuccessMessage $messageWidth={messageWidth as string}>
               비밀번호 일치
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#11C218"
+                />
+              </svg>
             </SuccessMessage>
-          ) : (
+          )}
+          {PasswordConfirm && Password !== PasswordConfirm && (
             <ErrorMessage $messageWidth={messageWidth as string}>
-              {errors?.password_confirm?.message}
+              비밀번호 불일치
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#FF523E"
+                />
+              </svg>
             </ErrorMessage>
           )}
         </InputSection>
@@ -306,10 +357,11 @@ const SuccessMessage = styled.div<{ $messageWidth: string }>`
     $messageWidth ? ` ${$messageWidth};` : '600px'};
   padding: 0 10px;
   font-size: 12px;
-  color: green;
+  color: ${COLOR.SUCCESS};
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
+  gap: 7px;
 `;
 const ErrorMessage = styled.div<{ $messageWidth: string }>`
   width: ${({ $messageWidth }) =>
@@ -317,10 +369,11 @@ const ErrorMessage = styled.div<{ $messageWidth: string }>`
   width: 700px;
   padding: 0 10px;
   font-size: 12px;
-  color: red;
+  color: ${COLOR.ERROR};
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
+  gap: 7px;
 `;
 
 const ButtonGroup = styled.div<{

@@ -215,6 +215,7 @@ export function Member() {
         isAlertOpen={isAlertOpen}
         description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
         action="확인"
+        isWarning={true}
         onClick={submitDisabled}
         onClose={closeSubmitAlert}
       ></Alert>
