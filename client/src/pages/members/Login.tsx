@@ -142,7 +142,7 @@ export function Login() {
               fontSize="15px"
               $borderRadius="10px"
               $filled
-              //onClick={handleLogin} // 클릭 시 로그인 함수 호출
+              cursor
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   enterLogin();

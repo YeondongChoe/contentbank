@@ -45,6 +45,7 @@ export function DropDown({
         onClick={() => setShowDropDown(!showDropDown)}
         disabled={disabled}
         $filled
+        cursor
       >
         {buttonText}
       </Button>

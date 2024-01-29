@@ -292,7 +292,8 @@ export function ChangePassword({
               height={height}
               fontSize={buttonfontsize}
               $borderRadius="7px"
-              $normal
+              $border
+              cursor
             >
               <span>취소</span>
             </Button>
@@ -306,13 +307,14 @@ export function ChangePassword({
                 fontSize={buttonfontsize}
                 $borderRadius="7px"
                 $filled
+                cursor
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     openSuccessAlert();
                   }
                 }}
               >
-                <span>확인</span>
+                <span>변경</span>
               </Button>
             </ButtonWapper>
           ) : (
@@ -323,13 +325,14 @@ export function ChangePassword({
                 height={height}
                 fontSize={buttonfontsize}
                 $borderRadius="7px"
+                cursor
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     submitChangePassword();
                   }
                 }}
               >
-                <span>확인</span>
+                <span>변경</span>
               </Button>
             </ButtonWapper>
           )}
@@ -366,7 +369,6 @@ const SuccessMessage = styled.div<{ $messageWidth: string }>`
 const ErrorMessage = styled.div<{ $messageWidth: string }>`
   width: ${({ $messageWidth }) =>
     $messageWidth ? ` ${$messageWidth};` : '600px'};
-  width: 700px;
   padding: 0 10px;
   font-size: 12px;
   color: ${COLOR.ERROR};

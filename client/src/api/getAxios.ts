@@ -162,7 +162,7 @@ type getMemberListProps = {
   setMemberList: React.Dispatch<React.SetStateAction<memberListProps[]>>;
   page: number;
   size: number;
-  settotalPage: (result: number) => void;
+  setTotalPage: (result: number) => void;
   enabled?: string | undefined;
   searchValue?: string | undefined;
 };
@@ -170,7 +170,7 @@ type getMemberListProps = {
 /** 회원리스트 가져오는 API*/
 export const getMemberList = async ({
   setMemberList,
-  settotalPage,
+  setTotalPage,
   page,
   size,
   enabled,
@@ -184,8 +184,7 @@ export const getMemberList = async ({
     )
     .then((response) => {
       handleAuthorizationRenewal(response);
-      //console.log(response.data.data);
-      settotalPage(response.data.data.totalElements);
+      setTotalPage(response.data.data.totalElements);
       setMemberList(response.data.data.content);
     })
     .catch((err) => {

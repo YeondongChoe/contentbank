@@ -123,6 +123,12 @@ export function RegisterPopup({
     }
   }, [didMount]);
 
+  useEffect(() => {
+    if (Id === '') {
+      setIsDuplicate(false);
+    }
+  }, [Id]);
+
   return (
     <>
       {isRegister && (
@@ -219,6 +225,7 @@ export function RegisterPopup({
                     fontSize="15px"
                     $borderRadius="7px"
                     $filled
+                    disabled={!Id}
                   >
                     <span>중복확인</span>
                   </Button>
