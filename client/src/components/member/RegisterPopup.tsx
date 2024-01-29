@@ -169,7 +169,7 @@ export function RegisterPopup({
                 />
               </InputWrapper>
               <InputWrapper>
-                {isNameError ? (
+                {isIdError ? (
                   <Label
                     width="130px"
                     type="error"
