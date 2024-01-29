@@ -84,6 +84,7 @@ export const putSaveName = async ({
       setIsError(true);
       setIsSuccess(false);
       openAlert();
+      //setMessage(error.response.data.errors.name);
       setMessage(error.response.data.message);
     });
 };
@@ -93,7 +94,8 @@ type putChangePasswordProps = {
   PasswordConfirm: string;
   setErrorMessage: (result: string) => void;
   openAlert: () => void;
-  openSuccessAlert?: (() => void) | undefined;
+  setIsSuccessAlertOpen: (result: boolean) => void;
+  setIsRedirect: (result: boolean) => void;
 };
 
 /** 비밀번호 변경 API */
@@ -102,7 +104,8 @@ export const putChangePassword = async ({
   PasswordConfirm,
   setErrorMessage,
   openAlert,
-  openSuccessAlert,
+  setIsSuccessAlertOpen,
+  setIsRedirect,
 }: putChangePasswordProps) => {
   const data = {
     password: Password,
@@ -112,9 +115,8 @@ export const putChangePassword = async ({
     .put('/auth/changed-password', data)
     .then((response) => {
       handleAuthorizationRenewal(response);
-      if (openSuccessAlert) {
-        openSuccessAlert();
-      }
+      setIsSuccessAlertOpen(false);
+      setIsRedirect(true);
     })
     .catch((error) => {
       setErrorMessage(error.response.data.message);

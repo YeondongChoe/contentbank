@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useRef } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
@@ -15,7 +16,6 @@ type passwordProps = {
 
 type ChangePasswordProps = {
   onClick?: () => void;
-  openSuccessAlert?: () => void;
   width?: string;
   inputwidth?: string;
   btnwidth?: string;
@@ -44,7 +44,6 @@ export function ChangePassword({
   messageWidth,
   labelfontsize,
   placeholdersize,
-  openSuccessAlert,
 }: ChangePasswordProps) {
   const {
     control,
@@ -74,7 +73,22 @@ export function ChangePassword({
 
   const Password = watch('password', '');
   const PasswordConfirm = watch('password_confirm', '');
-  console.log(PasswordConfirm);
+
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+
+  const openSuccessAlert = () => {
+    setIsSuccessAlertOpen(true);
+    console.log('mypage');
+  };
+  const CloseSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+  };
+  const navigate = useNavigate();
+  const [isRedirect, setIsRedirect] = useState(false);
+
+  const RedirectLogin = () => {
+    navigate('/login');
+  };
 
   const submitChangePassword = () => {
     putChangePassword({
@@ -82,12 +96,10 @@ export function ChangePassword({
       PasswordConfirm,
       setErrorMessage,
       openAlert,
-      openSuccessAlert,
+      setIsSuccessAlertOpen,
+      setIsRedirect,
     });
-  };
-
-  const enterLogin = () => {
-    submitChangePassword();
+    console.log('changePassword');
   };
 
   return (
@@ -98,6 +110,26 @@ export function ChangePassword({
         closeNewAlert={closeAlert}
         message={errorMessage}
       ></AlertBar>
+      {isSuccessAlertOpen && (
+        <Alert
+          description={
+            '비밀번호를 변경하면 로그인한 디바이스에서 모두 로그아웃 처리됩니다. 변경하시겠습니까?'
+          }
+          isAlertOpen={isSuccessAlertOpen}
+          action="확인"
+          onClick={submitChangePassword}
+          onClose={CloseSuccessAlert}
+        ></Alert>
+      )}
+      {isRedirect && (
+        <Alert
+          description={'새로운 비밀번호로 변경이 완료되었습니다.'}
+          isAlertOpen={isRedirect}
+          action="확인"
+          notice
+          onClose={RedirectLogin}
+        ></Alert>
+      )}
       <form>
         <InputSection width={width as string}>
           <InputWapper width={width as string}>
@@ -217,8 +249,7 @@ export function ChangePassword({
           {PasswordConfirm && isValid ? (
             <ButtonWapper>
               <Button
-                buttonType="submit"
-                onClick={submitChangePassword}
+                onClick={openSuccessAlert}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
@@ -226,7 +257,7 @@ export function ChangePassword({
                 $filled
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                    openSuccessAlert();
                   }
                 }}
               >
@@ -236,7 +267,6 @@ export function ChangePassword({
           ) : (
             <ButtonWapper>
               <Button
-                buttonType="submit"
                 onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
@@ -244,7 +274,7 @@ export function ChangePassword({
                 $borderRadius="7px"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                    submitChangePassword();
                   }
                 }}
               >

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getMemberInformation } from '../../api/getAxios';
@@ -43,6 +41,7 @@ export function Mypage() {
 
   const selectNameEdition = () => {
     setIsNameEdit(!isNameEdit);
+    setNameValue('');
   };
 
   const saveName = async () => {
@@ -59,17 +58,6 @@ export function Mypage() {
     });
   };
 
-  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(true);
-  const openSuccessAlert = () => {
-    setIsSuccessAlertOpen(true);
-  };
-  const CloseSuccessAlert = () => {
-    setIsSuccessAlertOpen(false);
-  };
-  const navigate = useNavigate();
-  const moveRelogin = () => {
-    navigate('/relogin');
-  };
   const [isShow, setIsShow] = useState(false);
 
   const selectPasswordEdit = () => {
@@ -265,23 +253,11 @@ export function Mypage() {
                 display="flex-end"
                 buttonGroupWidth="700px"
                 messageWidth="700px"
-                openSuccessAlert={openSuccessAlert}
               />
             </PasswordWrapper>
           </div>
         )}
       </Wrapper>
-      {isSuccessAlertOpen && (
-        <Alert
-          description={
-            '비밀번호를 변경하면 로그인한 디바이스에서 모두 로그아웃 처리됩니다. 변경하시겠습니까?'
-          }
-          isAlertOpen={isSuccessAlertOpen}
-          action="확인"
-          onClick={moveRelogin}
-          onClose={CloseSuccessAlert}
-        ></Alert>
-      )}
     </Container>
   );
 }
