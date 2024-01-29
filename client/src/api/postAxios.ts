@@ -118,10 +118,10 @@ export const postRegister = async ({
     })
     .then((response) => {
       handleAuthorizationRenewal(response);
-      //성공메시지 서버쪽에서 넘겨주면 띄우기
       setIsRegister(false);
       setIsNameError(false);
       setIsSuccessAlertOpen(true);
+      window.location.reload();
     })
     .catch((response) => {
       setIsDuplicate(false);

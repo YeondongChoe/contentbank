@@ -129,7 +129,6 @@ export function Member() {
   }, [didMount]);
 
   useEffect(() => {
-    // console.log(tabVeiw);
     loadData();
   }, [setTabVeiw, tabVeiw, page, settotalPage, setPage]);
 
@@ -154,6 +153,12 @@ export function Member() {
     setIsSuccessAlertOpen(false);
   };
 
+  const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
+
+  const closeEditAlert = () => {
+    setIsEditAlertOpen(false);
+  };
+
   return (
     <Container>
       <AlertBar
@@ -161,6 +166,12 @@ export function Member() {
         isAlertOpen={isSuccessAlertOpen}
         closeAlert={closeSuccessAlert}
         message={'아이디가 생성 되었습니다.'}
+      ></AlertBar>
+      <AlertBar
+        type="success"
+        isAlertOpen={isEditAlertOpen}
+        closeAlert={closeEditAlert}
+        message={'회원정보가 수정 되었습니다.'}
       ></AlertBar>
       <TitleWrapper>
         <Title>회원 관리</Title>
@@ -245,6 +256,7 @@ export function Member() {
           keyValue={keyValue}
           isEditer={isEditer}
           setIsEditer={setIsEditer}
+          setIsEditAlertOpen={setIsEditAlertOpen}
         />
       ) : (
         ''

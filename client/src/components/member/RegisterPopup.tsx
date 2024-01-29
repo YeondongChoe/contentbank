@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
-import { Input, Label } from '../../components';
+import { Input, Label, AlertBar } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { COLOR } from '../../components/constants';
@@ -209,7 +209,6 @@ export function RegisterPopup({
                     <IdSuccessMessage>{successMessage}</IdSuccessMessage>
                   )}
                 </InputBox>
-
                 <DuplicationButtonWrapper>
                   <Button
                     buttonType="button"
@@ -297,20 +296,20 @@ export function RegisterPopup({
                 </Button>
               </ButtonGroup>
               {isRequired && (
-                <Alert
+                <AlertBar
+                  type="warning"
                   isAlertOpen={isAlertOpen}
-                  notice
-                  description="필수 항목을 입력해주세요"
-                  onClose={closeAlert}
-                />
+                  closeAlert={closeAlert}
+                  message={'필수 항목을 입력해주세요.'}
+                ></AlertBar>
               )}
               {isRequiredDuplicate && (
-                <Alert
+                <AlertBar
+                  type="warning"
                   isAlertOpen={isAlertOpen}
-                  notice
-                  description="중복확인을 해주세요"
-                  onClose={closeAlert}
-                />
+                  closeAlert={closeAlert}
+                  message={'중복확인을 해주세요.'}
+                ></AlertBar>
               )}
             </ContentBox>
           </Container>
@@ -326,11 +325,10 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  //background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99;
+  z-index: 1;
 `;
 const Container = styled.div`
   min-width: 700px;

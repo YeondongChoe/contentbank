@@ -1,14 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-import Textarea from '@mui/joy/Textarea';
 import { Controller, useForm } from 'react-hook-form';
 import { IoMdClose } from 'react-icons/io';
 import {
   MdCheckBoxOutlineBlank,
   MdIndeterminateCheckBox,
 } from 'react-icons/md';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
@@ -19,9 +17,10 @@ import {
   putChangeMemberInformation,
   putInitPassword,
 } from '../../api/putAxios';
-import { Input, Label } from '../../components';
+import { Input, Label, AlertBar } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
+import { COLOR } from '../../components/constants';
 import { Alert } from '../molecules/alert/Alert';
 
 type authorityProps = {
@@ -31,17 +30,19 @@ type authorityProps = {
   sort: number;
 };
 
-type RegisterPopupProps = {
+type EditPopupProps = {
   isEditer: boolean;
-  setIsEditer: React.Dispatch<React.SetStateAction<boolean>>;
   keyValue: string;
+  setIsEditer: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEditAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function EditPopup({
   isEditer,
-  setIsEditer,
   keyValue,
-}: RegisterPopupProps) {
+  setIsEditer,
+  setIsEditAlertOpen,
+}: EditPopupProps) {
   const [member, setMember] = useState({
     id: null,
     name: null,
@@ -86,9 +87,26 @@ export function EditPopup({
     setIsEnabled(!isEnabled);
   };
 
-  const clickInitPassword = () => {
+  const openInitPasswordAlert = () => {
     setIsAlertOpen(true);
-    putInitPassword({ keyValue, setIsInit });
+  };
+  const closeInitPasswordAlert = () => {
+    setIsAlertOpen(false);
+  };
+
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+  };
+
+  const clickInitPassword = () => {
+    putInitPassword({
+      keyValue,
+      setIsInit,
+      setIsAlertOpen,
+      setIsSuccessAlertOpen,
+    });
   };
 
   const submitEdit = async () => {
@@ -102,6 +120,7 @@ export function EditPopup({
       setIsEditer,
       setIsNameError,
       setNameErrorMessage,
+      setIsEditAlertOpen,
     });
   };
 
@@ -153,37 +172,39 @@ export function EditPopup({
       {isEditer && (
         <Overlay>
           <Container>
+            <AlertBar
+              type="success"
+              isAlertOpen={isSuccessAlertOpen}
+              closeAlert={closeSuccessAlert}
+              message={'정상 처리되었습니다.'}
+            ></AlertBar>
             <TitleWrapper>
               <Title>회원 정보 상세보기</Title>
-              <IoMdClose
-                onClick={closePopup}
-                style={{ fontSize: '20px', cursor: 'pointer' }}
-              />
             </TitleWrapper>
             <form>
               <ContentBox>
-                {isNameError ? (
-                  <Label
-                    width="350px"
-                    type="error"
-                    fontSize="16px"
-                    value="이름(필수)"
-                  />
-                ) : (
-                  <Label width="350px" fontSize="16px" value="이름(필수)" />
-                )}
-                <Controller
-                  control={control}
-                  name="name"
-                  defaultValue=""
-                  render={({ field }) => (
-                    <>
+                <InputWrapper>
+                  {isNameError ? (
+                    <Label
+                      width="130px"
+                      type="error"
+                      fontSize="15px"
+                      value="* 이름"
+                    />
+                  ) : (
+                    <Label width="130px" fontSize="15px" value="* 이름" />
+                  )}
+                  <Controller
+                    control={control}
+                    name="name"
+                    defaultValue=""
+                    render={({ field }) => (
                       <Input
                         type="text"
                         placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                         value={field.value}
-                        width="350px"
-                        height="32px"
+                        width="450px"
+                        height="38px"
                         fontSize="16px"
                         placeholderSize="12px"
                         margin="0px 0px 10px 0px"
@@ -193,106 +214,126 @@ export function EditPopup({
                         onClick={() => setIsNameError(false)}
                         errorMessage={isNameError && nameErrorMessage}
                       />
-                    </>
-                  )}
-                />
-                <Label width="350px" fontSize="16px" value="아이디" />
-                <Controller
-                  control={control}
-                  name="id"
-                  defaultValue=""
-                  render={({ field }) => (
-                    <Input
-                      disabled
-                      type="text"
-                      value={field.value}
-                      width="350px"
-                      height="32px"
-                      fontSize="16px"
-                      margin="0px 0px 10px 0px"
-                      border="black"
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                <InitButtonWrapper>
-                  <Button
-                    buttonType="button"
-                    onClick={clickInitPassword}
-                    $padding="10px"
-                    height={'30px'}
-                    width={'140px'}
-                    fontSize="14px"
-                    $borderRadius="15px"
-                  >
-                    <span>비밀번호 초기화</span>
-                  </Button>
-                </InitButtonWrapper>
-                <DisableWrapper>
-                  <Label fontSize="16px" width="200px" value="권한" />
-                  {isEnabled ? (
-                    <CheckBoxWrapper>
-                      <MdCheckBoxOutlineBlank
-                        style={{ fontSize: '18px' }}
-                        onClick={checkEnabled}
+                    )}
+                  />
+                </InputWrapper>
+                <InputWrapper>
+                  <Label width="130px" fontSize="15px" value="* 아이디" />
+                  <Controller
+                    control={control}
+                    name="id"
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Input
+                        disabled
+                        type="text"
+                        value={field.value}
+                        width="310px"
+                        height="38px"
+                        fontSize="16px"
+                        margin="0px 0px 10px 0px"
+                        border="black"
+                        onChange={field.onChange}
                       />
-                      <span>비활성화</span>
-                    </CheckBoxWrapper>
-                  ) : (
-                    <CheckBoxWrapper>
-                      <MdIndeterminateCheckBox
-                        style={{ fontSize: '18px' }}
-                        onClick={checkEnabled}
-                      />
-                      <span>비활성화</span>
-                    </CheckBoxWrapper>
-                  )}
-                </DisableWrapper>
-                <Controller
-                  control={control}
-                  name="authority"
-                  render={({ field }) => (
-                    <Select
-                      width="350px"
-                      height="50px"
-                      defaultValue={member.authority}
-                      onSelect={(event, code) => {
-                        setAuthorityCode(code);
-                      }}
-                      options={AuthorityOption}
-                    ></Select>
-                  )}
-                />
-
-                <Label width="350px" fontSize="16px" value="비고" />
-                <Controller
-                  control={control}
-                  name="comment"
-                  defaultValue=""
-                  render={({ field }) => (
-                    <Textarea
-                      sx={{ mb: 1, mt: 1, fontSize: '14px', width: '350px' }}
-                      placeholder=""
-                      size="md"
-                      minRows={3}
-                      maxRows={3}
-                      onChange={field.onChange}
-                      value={field.value}
+                    )}
+                  />
+                  <InitButtonWrapper>
+                    <Button
+                      buttonType="button"
+                      onClick={openInitPasswordAlert}
+                      $padding="10px"
+                      height={'38px'}
+                      width={'130px'}
+                      fontSize="15px"
+                      $borderRadius="7px"
+                      $filled
+                    >
+                      <span>비밀번호 초기화</span>
+                    </Button>
+                  </InitButtonWrapper>
+                </InputWrapper>
+                <InputWrapper>
+                  <Label width="130px" fontSize="15px" value="* 권한" />
+                  <DisableWrapper>
+                    <Controller
+                      control={control}
+                      name="authority"
+                      render={({ field }) => (
+                        <Select
+                          width="360px"
+                          height="50px"
+                          padding="5px 0px 0px 0px"
+                          defaultValue={member.authority}
+                          onSelect={(event, code) => {
+                            setAuthorityCode(code);
+                          }}
+                          options={AuthorityOption}
+                        ></Select>
+                      )}
                     />
-                  )}
-                />
+                    {isEnabled ? (
+                      <CheckBoxWrapper>
+                        <input
+                          type="checkbox"
+                          style={{ width: '15px', height: '15px' }}
+                          onClick={checkEnabled}
+                        ></input>
+                        <span>비활성화</span>
+                      </CheckBoxWrapper>
+                    ) : (
+                      <CheckBoxWrapper>
+                        <input
+                          type="checkbox"
+                          style={{ width: '15px', height: '15px' }}
+                          onClick={checkEnabled}
+                        ></input>
+                        <span>비활성화</span>
+                      </CheckBoxWrapper>
+                    )}
+                  </DisableWrapper>
+                </InputWrapper>
+                <InputWrapper>
+                  <Label width="130px" fontSize="15px" value="비고" />
+                  <Controller
+                    control={control}
+                    name="comment"
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Textarea
+                        onChange={field.onChange}
+                        value={field.value}
+                      ></Textarea>
+                    )}
+                  />
+                </InputWrapper>
                 <NoticeWarpper>
-                  <Notice>*초기 비밀번호는 drmath@369입니다.</Notice>
-                  <Notice>*첫 로그인시 비밀번호를 변경할 수 있습니다.</Notice>
+                  <Notice>
+                    초기 비밀번호는
+                    <Button
+                      height={'23px'}
+                      width={'90px'}
+                      fontSize="13px"
+                      $borderRadius="5px"
+                      $filled
+                      $success
+                    >
+                      <span>drmath@369</span>
+                    </Button>
+                    입니다.
+                  </Notice>
+                  <Notice>
+                    로그인 후 비밀번호를 변경하고 다시 로그인 하면 사용 할 수
+                    있습니다.
+                  </Notice>
                 </NoticeWarpper>
                 <ButtonGroup>
                   <Button
                     buttonType="button"
                     onClick={closePopup}
                     $padding="10px"
-                    height={'50px'}
-                    width={'170px'}
-                    fontSize="14px"
+                    height={'40px'}
+                    width={'120px'}
+                    fontSize="16px"
                     $border
                   >
                     <span>취소</span>
@@ -301,19 +342,22 @@ export function EditPopup({
                     buttonType="button"
                     onClick={submitEdit}
                     $padding="10px"
-                    height={'50px'}
-                    width={'170px'}
-                    fontSize="14px"
+                    height={'40px'}
+                    width={'120px'}
+                    fontSize="16px"
+                    $filled
                   >
                     <span>수정</span>
                   </Button>
                 </ButtonGroup>
-                {isInit && (
-                  <Alert
-                    isAlertOpen={isAlertOpen}
-                    description="비밀번호가 초기화 되었습니다."
-                  />
-                )}
+                <Alert
+                  isAlertOpen={isAlertOpen}
+                  description="초기화된 아이디는 자동 로그아웃 처리 됩니다."
+                  subDescription="비밀번호를 초기화 하시겠습니까?"
+                  onClick={clickInitPassword}
+                  onClose={closeInitPasswordAlert}
+                  action="확인"
+                />
               </ContentBox>
             </form>
           </Container>
@@ -329,17 +373,17 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99;
+  z-index: 1;
 `;
 
 const Container = styled.div`
-  min-width: 500px;
-  padding: 20px;
-  border: 1px solid gray;
+  min-width: 700px;
+  height: 650px;
+  padding: 30px;
+  border: 1px solid ${COLOR.BORDER_GRAY};
   background-color: white;
   border-radius: 5px;
 `;
@@ -347,6 +391,7 @@ const Container = styled.div`
 const TitleWrapper = styled.div`
   display: flex;
   align-items: center;
+  padding-bottom: 20px;
 `;
 
 const Title = styled.div`
@@ -359,37 +404,51 @@ const ContentBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+`;
+const InputWrapper = styled.div`
+  width: 680px;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 20px;
 `;
 const InitButtonWrapper = styled.div`
-  min-width: 350px;
   display: flex;
-  justify-content: flex-end;
-  padding-bottom: 10px;
+  padding-left: 10px;
 `;
 const DisableWrapper = styled.div`
-  min-width: 350px;
+  min-width: 450px;
   display: flex;
-  justify-content: space-between;
-  padding: 0px 10px 0px 0px;
 `;
 const CheckBoxWrapper = styled.div`
   display: flex;
   align-items: center;
+  padding-left: 10px;
+  gap: 10px;
+  font-size: 14px;
+`;
+const Textarea = styled.textarea`
+  width: 450px;
+  height: 180px;
+  font-size: 14px;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  padding: 10px;
+  resize: none;
 `;
 const NoticeWarpper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding-left: 60px;
-  gap: 10px;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 30px;
 `;
-const Notice = styled.p`
+const Notice = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 12px;
 `;
 const ButtonGroup = styled.div`
-  padding-top: 30px;
   display: flex;
   gap: 10px;
 `;
