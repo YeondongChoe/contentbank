@@ -22,6 +22,7 @@ type ButtonProps = {
   $success?: boolean;
   isChecked?: boolean;
   $normal?: boolean;
+  cursor?: boolean;
 };
 
 export function Button({
@@ -42,6 +43,7 @@ export function Button({
   $normal,
   $success,
   isChecked,
+  cursor,
 }: ButtonProps) {
   return (
     <Component
@@ -60,6 +62,7 @@ export function Button({
       $success={$success}
       $isChecked={isChecked}
       $normal={$normal}
+      $cursor={cursor}
     >
       {children ? children : text}
     </Component>
@@ -79,6 +82,7 @@ type ButtonStyleProps = {
   $isChecked?: boolean;
   $normal?: boolean;
   $success?: boolean;
+  $cursor?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -109,21 +113,7 @@ ${(props) =>
     `background-color: ${COLOR.SUCCESS}; color: white;`}
 
 ${({ disabled }) =>
-    disabled === true &&
+    disabled &&
     `border:none; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
-  cursor: pointer;
-
-  /* background-color: ${({ $border, disabled }) =>
-    $border
-      ? disabled
-        ? `background-color:${COLOR.LIGHT_GRAY};`
-        : ` #D9D9D9;`
-      : `${COLOR.PRIMARY};`};
-  color: ${({ $border }) => ($border ? `${COLOR.PRIMARY};` : '#fff')};
-  ${({ $border, disabled }) =>
-    $border
-      ? disabled
-        ? `border:none;`
-        : `border: 1px solid ${COLOR.PRIMARY};`
-      : 'border: none;'}; */
+${({ $cursor, disabled }) => $cursor && !disabled && 'cursor:pointer;'}
 `;

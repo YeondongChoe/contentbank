@@ -26,7 +26,7 @@ export function Member() {
   const [isRegister, setIsRegister] = useState(false);
   const [isEditer, setIsEditer] = useState(false);
   const [keyValue, setKeyValue] = useState('');
-  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
+  const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;
   const [didMount, setDidMount] = useState(false);
@@ -57,7 +57,7 @@ export function Member() {
   const filterSearchValue = () => {
     getMemberList({
       setMemberList,
-      settotalPage,
+      setTotalPage,
       searchValue,
       page,
       size,
@@ -70,7 +70,7 @@ export function Member() {
     if (event.key === 'Enter') {
       getMemberList({
         setMemberList,
-        settotalPage,
+        setTotalPage,
         searchValue,
         page,
         size,
@@ -102,7 +102,7 @@ export function Member() {
     if (tabVeiw === '전체') {
       getMemberList({
         setMemberList,
-        settotalPage,
+        setTotalPage,
         page,
         size,
       });
@@ -111,7 +111,7 @@ export function Member() {
         tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
       getMemberList({
         setMemberList,
-        settotalPage,
+        setTotalPage,
         page,
         size,
         enabled,
@@ -126,11 +126,7 @@ export function Member() {
     if (didMount) {
       loadData();
     }
-  }, [didMount]);
-
-  useEffect(() => {
-    loadData();
-  }, [setTabVeiw, tabVeiw, page, settotalPage, setPage]);
+  }, [didMount, setTabVeiw, tabVeiw, page, setTotalPage, setPage]);
 
   const menuList = [
     {
@@ -181,12 +177,13 @@ export function Member() {
           onClick={openRegisterPopup}
           fontSize="13px"
           $filled
+          cursor
         >
           + 아이디 만들기
         </Button>
       </TitleWrapper>
       <InputWrapper>
-        <Total>Total : {memberList.length}</Total>
+        <Total>Total : {totalPage}</Total>
         <Search
           value={searchValue}
           width={'25%'}
@@ -218,11 +215,11 @@ export function Member() {
             fontSize="15px"
             $filled
             disabled={isEnabled}
+            cursor
           >
             비활성화
           </Button>
         </ButtonWrapper>
-
         {/*TODO : 전체토탈 데이터로 변경 필요 */}
         <Table
           list={memberList}
@@ -233,7 +230,7 @@ export function Member() {
           setSelectedRows={setSelectedRows}
         />
       </TableWrapper>
-      <PaginationBox itemsCountPerPage={8} totalItemsCount={totalPage} />
+      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
       <Alert
         isAlertOpen={isAlertOpen}
         description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}

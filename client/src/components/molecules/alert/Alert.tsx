@@ -61,6 +61,7 @@ export function Alert({
                   fontSize="14px"
                   $borderRadius="7px"
                   $filled
+                  cursor
                 >
                   <span>확인</span>
                 </Button>
@@ -76,6 +77,7 @@ export function Alert({
                   fontSize="14px"
                   $borderRadius="7px"
                   $border
+                  cursor
                 >
                   <span>취소</span>
                 </Button>
@@ -88,6 +90,7 @@ export function Alert({
                   $borderRadius="7px"
                   onClick={onClick}
                   $filled
+                  cursor
                 >
                   <span>{action}</span>
                 </Button>

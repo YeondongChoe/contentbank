@@ -232,6 +232,7 @@ export function ContentsList() {
           onClick={openWindowCreate}
           fontSize="13px"
           $filled
+          cursor
         >
           + 문항 업로드
         </Button>

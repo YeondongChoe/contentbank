@@ -110,6 +110,7 @@ export function ContentList({ list, onClick }: ContentListProps) {
             onClick={onClick}
             $filled
             disabled={isEnabled}
+            cursor
           >
             활성화 / 비활성화
           </Button>

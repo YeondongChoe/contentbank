@@ -125,7 +125,8 @@ export function Mypage() {
                   height="30px"
                   fontSize="15px"
                   $borderRadius="7px"
-                  $border
+                  $normal
+                  cursor
                 >
                   <span>수정</span>
                 </Button>
@@ -140,6 +141,7 @@ export function Mypage() {
                   fontSize="15px"
                   $borderRadius="7px"
                   $border
+                  cursor
                 >
                   <span>취소</span>
                 </Button>
@@ -150,6 +152,7 @@ export function Mypage() {
                   fontSize="15px"
                   $borderRadius="7px"
                   $filled
+                  cursor
                 >
                   <span>저장</span>
                 </Button>
@@ -171,6 +174,7 @@ export function Mypage() {
                   fontSize="15px"
                   $borderRadius="7px"
                   $normal
+                  cursor
                 >
                   <span>재설정</span>
                 </Button>
