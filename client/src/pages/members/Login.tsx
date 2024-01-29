@@ -68,8 +68,8 @@ export function Login() {
     <Container>
       <AlertBar
         type="error"
-        isAlertNewOpen={isAlertOpen}
-        closeNewAlert={closeAlert}
+        isAlertOpen={isAlertOpen}
+        closeAlert={closeAlert}
         message={errorMessage}
       ></AlertBar>
       <Wrapper>

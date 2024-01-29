@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
-import { Button, IndexInfo } from '../../components/atom';
+import { Button, AlertBar } from '../../components/atom';
 import { memberColWidth, memberTheadList } from '../../components/constants';
 import {
   Alert,
@@ -129,7 +129,6 @@ export function Member() {
   }, [didMount]);
 
   useEffect(() => {
-    // console.log(tabVeiw);
     loadData();
   }, [setTabVeiw, tabVeiw, page, settotalPage, setPage]);
 
@@ -148,8 +147,32 @@ export function Member() {
     },
   ];
 
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+  };
+
+  const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
+
+  const closeEditAlert = () => {
+    setIsEditAlertOpen(false);
+  };
+
   return (
     <Container>
+      <AlertBar
+        type="success"
+        isAlertOpen={isSuccessAlertOpen}
+        closeAlert={closeSuccessAlert}
+        message={'아이디가 생성 되었습니다.'}
+      ></AlertBar>
+      <AlertBar
+        type="success"
+        isAlertOpen={isEditAlertOpen}
+        closeAlert={closeEditAlert}
+        message={'회원정보가 수정 되었습니다.'}
+      ></AlertBar>
       <TitleWrapper>
         <Title>회원 관리</Title>
         <Button
@@ -215,11 +238,16 @@ export function Member() {
         isAlertOpen={isAlertOpen}
         description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
         action="확인"
+        isWarning={true}
         onClick={submitDisabled}
         onClose={closeSubmitAlert}
       ></Alert>
       {isRegister ? (
-        <RegisterPopup isRegister={isRegister} setIsRegister={setIsRegister} />
+        <RegisterPopup
+          isRegister={isRegister}
+          setIsRegister={setIsRegister}
+          setIsSuccessAlertOpen={setIsSuccessAlertOpen}
+        />
       ) : (
         ''
       )}
@@ -228,6 +256,7 @@ export function Member() {
           keyValue={keyValue}
           isEditer={isEditer}
           setIsEditer={setIsEditer}
+          setIsEditAlertOpen={setIsEditAlertOpen}
         />
       ) : (
         ''

@@ -84,6 +84,7 @@ export const putSaveName = async ({
       setIsError(true);
       setIsSuccess(false);
       openAlert();
+      //setMessage(error.response.data.errors.name);
       setMessage(error.response.data.message);
     });
 };
@@ -93,7 +94,8 @@ type putChangePasswordProps = {
   PasswordConfirm: string;
   setErrorMessage: (result: string) => void;
   openAlert: () => void;
-  openSuccessAlert?: (() => void) | undefined;
+  setIsSuccessAlertOpen: (result: boolean) => void;
+  setIsRedirect: (result: boolean) => void;
 };
 
 /** 비밀번호 변경 API */
@@ -102,7 +104,8 @@ export const putChangePassword = async ({
   PasswordConfirm,
   setErrorMessage,
   openAlert,
-  openSuccessAlert,
+  setIsSuccessAlertOpen,
+  setIsRedirect,
 }: putChangePasswordProps) => {
   const data = {
     password: Password,
@@ -112,9 +115,8 @@ export const putChangePassword = async ({
     .put('/auth/changed-password', data)
     .then((response) => {
       handleAuthorizationRenewal(response);
-      if (openSuccessAlert) {
-        openSuccessAlert();
-      }
+      setIsSuccessAlertOpen(false);
+      setIsRedirect(true);
     })
     .catch((error) => {
       setErrorMessage(error.response.data.message);
@@ -125,18 +127,24 @@ export const putChangePassword = async ({
 type putInitPasswordProps = {
   keyValue: string;
   setIsInit: (result: boolean) => void;
+  setIsAlertOpen: (result: boolean) => void;
+  setIsSuccessAlertOpen: (result: boolean) => void;
 };
 
 /** 비밀번호 초기화 API */
 export const putInitPassword = async ({
   keyValue,
   setIsInit,
+  setIsAlertOpen,
+  setIsSuccessAlertOpen,
 }: putInitPasswordProps) => {
   await authInstance
     .put(`/auth/${keyValue}/init-password`, {})
     .then((response) => {
       handleAuthorizationRenewal(response);
       setIsInit(true);
+      setIsAlertOpen(false);
+      setIsSuccessAlertOpen(true);
     })
     .catch((error) => {
       alert(error);
@@ -178,6 +186,7 @@ type putChangeMemberInformationProps = {
   setIsEditer: (result: boolean) => void;
   setIsNameError: (result: boolean) => void;
   setNameErrorMessage: (result: string) => void;
+  setIsEditAlertOpen: (result: boolean) => void;
 };
 
 /** 회원 정보변경 API */
@@ -191,6 +200,7 @@ export const putChangeMemberInformation = async ({
   setIsEditer,
   setIsNameError,
   setNameErrorMessage,
+  setIsEditAlertOpen,
 }: putChangeMemberInformationProps) => {
   const data = {
     authority: Authority || member.authCode, //code
@@ -202,9 +212,9 @@ export const putChangeMemberInformation = async ({
     .put(`/auth/${keyValue}`, data)
     .then((response) => {
       handleAuthorizationRenewal(response);
-      //성공메시지 서버쪽에서 넘겨주면 띄우기
       setIsEditer(false);
       setIsNameError(false);
+      setIsEditAlertOpen(true);
       window.location.reload();
     })
     .catch((response) => {

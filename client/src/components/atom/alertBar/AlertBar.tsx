@@ -5,8 +5,8 @@ import styled from 'styled-components';
 import { COLOR } from '../../../components/constants/COLOR';
 
 type AlertBarProps = {
-  isAlertNewOpen: boolean;
-  closeNewAlert: () => void;
+  isAlertOpen: boolean;
+  closeAlert: () => void;
   message?: string;
   type: string;
 };
@@ -25,14 +25,14 @@ const CustomCloseSvg = styled.svg`
 `;
 
 export function AlertBar({
-  isAlertNewOpen,
-  closeNewAlert,
+  isAlertOpen,
+  closeAlert,
   message,
   type,
 }: AlertBarProps) {
   return (
     <>
-      {isAlertNewOpen && (
+      {isAlertOpen && (
         <Overlay>
           <Container $type={type}>
             {type === 'error' && (
@@ -54,7 +54,7 @@ export function AlertBar({
                 <CustomCloseSvg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 25 25"
-                  onClick={closeNewAlert}
+                  onClick={closeAlert}
                 >
                   <path
                     d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
@@ -82,7 +82,7 @@ export function AlertBar({
                 <CustomCloseSvg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 25 25"
-                  onClick={closeNewAlert}
+                  onClick={closeAlert}
                 >
                   <path
                     d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
@@ -110,7 +110,7 @@ export function AlertBar({
                 <CustomCloseSvg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 25 25"
-                  onClick={closeNewAlert}
+                  onClick={closeAlert}
                 >
                   <path
                     d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"

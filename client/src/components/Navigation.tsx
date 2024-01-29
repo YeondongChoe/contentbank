@@ -32,7 +32,7 @@ export function Navigation() {
       </IconWrapper>
       <NavigationMenuWrapper>
         <NavigationMenu>
-          <Label value={'콘텐츠 제작'} fontSize="14px"></Label>
+          <Label type="navi" value={'콘텐츠 제작'}></Label>
           <Link to={'/contentlist'}>
             <svg
               width="15"
@@ -73,7 +73,7 @@ export function Navigation() {
           </Link>
         </NavigationMenu>
         <NavigationMenu>
-          <Label value={'콘텐츠 관리'}></Label>
+          <Label type="navi" value={'콘텐츠 관리'}></Label>
           <Link to={'/managementlist'}>
             <svg
               width="15"
@@ -123,7 +123,7 @@ export function Navigation() {
           </Link>
         </NavigationMenu>
         <NavigationMenu>
-          <Label value={'운영 관리'}></Label>
+          <Label type="navi" value={'운영 관리'}></Label>
           <Link to={'/operationmember'}>
             <svg
               width="12"
