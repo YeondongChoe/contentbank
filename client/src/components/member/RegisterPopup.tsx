@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-//import Textarea from '@mui/joy/Textarea';
 import { Controller, useForm } from 'react-hook-form';
-import { IoMdClose } from 'react-icons/io';
-import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getAuthorityList } from '../../api/getAxios';
@@ -25,11 +22,13 @@ type authorityListProps = {
 type RegisterPopupProps = {
   isRegister: boolean;
   setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSuccessAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function RegisterPopup({
   isRegister,
   setIsRegister,
+  setIsSuccessAlertOpen,
 }: RegisterPopupProps) {
   const [didMount, setDidMount] = useState(false);
   const [isIdError, setIsIdError] = useState(false);
@@ -103,6 +102,7 @@ export function RegisterPopup({
         setIsRequired,
         setIsRequiredDuplicate,
         setNameErrorMessage,
+        setIsSuccessAlertOpen,
       });
     }
   };
@@ -196,12 +196,16 @@ export function RegisterPopup({
                         margin="0px 0px 10px 0px"
                         border="black"
                         onChange={field.onChange}
-                        onClick={() => setIsIdError(false)}
+                        onClick={() => {
+                          setIsIdError(false);
+                        }}
                         errorMessage={isIdError && idErrorMessage}
+                        className={Id && isDuplicate ? 'success' : ''}
+                        borderbottom={isIdError}
                       />
                     )}
                   />
-                  {Id && isDuplicate === true && (
+                  {Id && isDuplicate && (
                     <IdSuccessMessage>{successMessage}</IdSuccessMessage>
                   )}
                 </InputBox>

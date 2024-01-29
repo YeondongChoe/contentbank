@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
-import { Button, IndexInfo } from '../../components/atom';
+import { Button, AlertBar } from '../../components/atom';
 import { memberColWidth, memberTheadList } from '../../components/constants';
 import {
   Alert,
@@ -148,8 +148,20 @@ export function Member() {
     },
   ];
 
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+  };
+
   return (
     <Container>
+      <AlertBar
+        type="success"
+        isAlertOpen={isSuccessAlertOpen}
+        closeAlert={closeSuccessAlert}
+        message={'아이디가 생성 되었습니다.'}
+      ></AlertBar>
       <TitleWrapper>
         <Title>회원 관리</Title>
         <Button
@@ -220,7 +232,11 @@ export function Member() {
         onClose={closeSubmitAlert}
       ></Alert>
       {isRegister ? (
-        <RegisterPopup isRegister={isRegister} setIsRegister={setIsRegister} />
+        <RegisterPopup
+          isRegister={isRegister}
+          setIsRegister={setIsRegister}
+          setIsSuccessAlertOpen={setIsSuccessAlertOpen}
+        />
       ) : (
         ''
       )}

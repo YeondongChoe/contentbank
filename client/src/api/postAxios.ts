@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import { AxiosError } from 'axios';
 
 import { setAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
@@ -89,6 +91,7 @@ type postRegisterProps = {
   setIsDuplicate: (result: boolean) => void;
   setIsRequired: (result: boolean) => void;
   setIsRequiredDuplicate: (result: boolean) => void;
+  setIsSuccessAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setNameErrorMessage: (result: string) => void;
 };
 
@@ -104,6 +107,7 @@ export const postRegister = async ({
   setIsRequired,
   setIsRequiredDuplicate,
   setNameErrorMessage,
+  setIsSuccessAlertOpen,
 }: postRegisterProps) => {
   await authInstance
     .post('/auth/register', {
@@ -117,7 +121,7 @@ export const postRegister = async ({
       //성공메시지 서버쪽에서 넘겨주면 띄우기
       setIsRegister(false);
       setIsNameError(false);
-      alert('회원 생성 성공');
+      setIsSuccessAlertOpen(true);
     })
     .catch((response) => {
       setIsDuplicate(false);

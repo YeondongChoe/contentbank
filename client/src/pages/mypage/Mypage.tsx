@@ -181,16 +181,16 @@ export function Mypage() {
         {isSuccess && (
           <AlertBar
             type="error"
-            isAlertNewOpen={isAlertOpen}
-            closeNewAlert={closeAlert}
+            isAlertOpen={isAlertOpen}
+            closeAlert={closeAlert}
             message={message}
           ></AlertBar>
         )}
         {isError && (
           <AlertBar
             type="warning"
-            isAlertNewOpen={isAlertOpen}
-            closeNewAlert={closeAlert}
+            isAlertOpen={isAlertOpen}
+            closeAlert={closeAlert}
             message={message}
           ></AlertBar>
         )}

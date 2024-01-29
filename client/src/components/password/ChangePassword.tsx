@@ -105,8 +105,8 @@ export function ChangePassword({
     <Container>
       <AlertBar
         type="error"
-        isAlertNewOpen={isAlertOpen}
-        closeNewAlert={closeAlert}
+        isAlertOpen={isAlertOpen}
+        closeAlert={closeAlert}
         message={errorMessage}
       ></AlertBar>
       {isSuccessAlertOpen && (
