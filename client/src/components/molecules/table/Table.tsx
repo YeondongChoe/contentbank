@@ -50,6 +50,7 @@ export function Table({
   ]);
   const [tbodyType, setTbodyType] = useState('');
   const [checkList, setCheckList] = useState<number[]>([]);
+  console.log(checkList);
 
   // 체크박스 설정
   // 데이터 고유id값 seq : 기획 발표이후 변경될 수 있음
