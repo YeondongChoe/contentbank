@@ -7,6 +7,7 @@ export const COLOR = {
   ERROR: '#ff523e',
 
   FONT_BLACK: '#252525',
+  FONT_NAVI: '#8299D4',
   LIGHT_GRAY: '#eeeeee',
 
   BUTTON_NORMAL: '#d9d9d9',

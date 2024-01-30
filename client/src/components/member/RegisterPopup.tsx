@@ -1,15 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-//import Textarea from '@mui/joy/Textarea';
 import { Controller, useForm } from 'react-hook-form';
-import { IoMdClose } from 'react-icons/io';
-import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getAuthorityList } from '../../api/getAxios';
 import { postRegister, postDuplicate } from '../../api/postAxios';
-import { Input, Label } from '../../components';
+import { Input, Label, AlertBar } from '../../components';
 import { Button } from '../../components/atom';
 import { Select } from '../../components/atom/select';
 import { COLOR } from '../../components/constants';
@@ -25,11 +22,13 @@ type authorityListProps = {
 type RegisterPopupProps = {
   isRegister: boolean;
   setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSuccessAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function RegisterPopup({
   isRegister,
   setIsRegister,
+  setIsSuccessAlertOpen,
 }: RegisterPopupProps) {
   const [didMount, setDidMount] = useState(false);
   const [isIdError, setIsIdError] = useState(false);
@@ -103,6 +102,7 @@ export function RegisterPopup({
         setIsRequired,
         setIsRequiredDuplicate,
         setNameErrorMessage,
+        setIsSuccessAlertOpen,
       });
     }
   };
@@ -122,6 +122,12 @@ export function RegisterPopup({
       loadData();
     }
   }, [didMount]);
+
+  useEffect(() => {
+    if (Id === '') {
+      setIsDuplicate(false);
+    }
+  }, [Id]);
 
   return (
     <>
@@ -169,7 +175,7 @@ export function RegisterPopup({
                 />
               </InputWrapper>
               <InputWrapper>
-                {isNameError ? (
+                {isIdError ? (
                   <Label
                     width="130px"
                     type="error"
@@ -196,16 +202,19 @@ export function RegisterPopup({
                         margin="0px 0px 10px 0px"
                         border="black"
                         onChange={field.onChange}
-                        onClick={() => setIsIdError(false)}
+                        onClick={() => {
+                          setIsIdError(false);
+                        }}
                         errorMessage={isIdError && idErrorMessage}
+                        className={Id && isDuplicate ? 'success' : ''}
+                        borderbottom={isIdError}
                       />
                     )}
                   />
-                  {Id && isDuplicate === true && (
+                  {Id && isDuplicate && (
                     <IdSuccessMessage>{successMessage}</IdSuccessMessage>
                   )}
                 </InputBox>
-
                 <DuplicationButtonWrapper>
                   <Button
                     buttonType="button"
@@ -216,6 +225,7 @@ export function RegisterPopup({
                     fontSize="15px"
                     $borderRadius="7px"
                     $filled
+                    disabled={!Id}
                   >
                     <span>중복확인</span>
                   </Button>
@@ -293,20 +303,20 @@ export function RegisterPopup({
                 </Button>
               </ButtonGroup>
               {isRequired && (
-                <Alert
+                <AlertBar
+                  type="warning"
                   isAlertOpen={isAlertOpen}
-                  notice
-                  description="필수 항목을 입력해주세요"
-                  onClose={closeAlert}
-                />
+                  closeAlert={closeAlert}
+                  message={'필수 항목을 입력해주세요.'}
+                ></AlertBar>
               )}
               {isRequiredDuplicate && (
-                <Alert
+                <AlertBar
+                  type="warning"
                   isAlertOpen={isAlertOpen}
-                  notice
-                  description="중복확인을 해주세요"
-                  onClose={closeAlert}
-                />
+                  closeAlert={closeAlert}
+                  message={'중복확인을 해주세요.'}
+                ></AlertBar>
               )}
             </ContentBox>
           </Container>
@@ -322,11 +332,10 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  //background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99;
+  z-index: 1;
 `;
 const Container = styled.div`
   min-width: 700px;

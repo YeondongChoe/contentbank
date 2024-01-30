@@ -2,11 +2,13 @@ import * as React from 'react';
 import { useState, useRef } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
 import { Input, Label, Button, AlertBar, Alert } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
+import { COLOR } from '../constants/COLOR';
 
 type passwordProps = {
   password: string;
@@ -15,7 +17,6 @@ type passwordProps = {
 
 type ChangePasswordProps = {
   onClick?: () => void;
-  openSuccessAlert?: () => void;
   width?: string;
   inputwidth?: string;
   btnwidth?: string;
@@ -44,7 +45,6 @@ export function ChangePassword({
   messageWidth,
   labelfontsize,
   placeholdersize,
-  openSuccessAlert,
 }: ChangePasswordProps) {
   const {
     control,
@@ -74,7 +74,21 @@ export function ChangePassword({
 
   const Password = watch('password', '');
   const PasswordConfirm = watch('password_confirm', '');
-  console.log(PasswordConfirm);
+
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+
+  const openSuccessAlert = () => {
+    setIsSuccessAlertOpen(true);
+  };
+  const CloseSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+  };
+  const navigate = useNavigate();
+  const [isRedirect, setIsRedirect] = useState(false);
+
+  const RedirectLogin = () => {
+    navigate('/login');
+  };
 
   const submitChangePassword = () => {
     putChangePassword({
@@ -82,22 +96,42 @@ export function ChangePassword({
       PasswordConfirm,
       setErrorMessage,
       openAlert,
-      openSuccessAlert,
+      setIsSuccessAlertOpen,
+      setIsRedirect,
     });
-  };
-
-  const enterLogin = () => {
-    submitChangePassword();
   };
 
   return (
     <Container>
       <AlertBar
         type="error"
-        isAlertNewOpen={isAlertOpen}
-        closeNewAlert={closeAlert}
+        isAlertOpen={isAlertOpen}
+        closeAlert={closeAlert}
         message={errorMessage}
       ></AlertBar>
+      {isSuccessAlertOpen && (
+        <Alert
+          description={
+            '비밀번호를 변경하면 로그인한 디바이스에서 모두 로그아웃 처리됩니다. 변경하시겠습니까?'
+          }
+          isAlertOpen={isSuccessAlertOpen}
+          action="확인"
+          isWarning={true}
+          onClick={submitChangePassword}
+          onClose={CloseSuccessAlert}
+        ></Alert>
+      )}
+      {isRedirect && (
+        <Alert
+          description="새로운 비밀번호로 변경이 완료되었습니다."
+          subDescription="로그인 페이지로 이동합니다."
+          isAlertOpen={isRedirect}
+          action="확인"
+          isWarning={false}
+          notice
+          onClose={RedirectLogin}
+        ></Alert>
+      )}
       <form>
         <InputSection width={width as string}>
           <InputWapper width={width as string}>
@@ -136,15 +170,39 @@ export function ChangePassword({
               )}
             />
           </InputWapper>
-          {Password && (
-            <ErrorMessage $messageWidth={messageWidth as string}>
-              {errors?.password?.message}
-            </ErrorMessage>
-          )}
-          {isValid && (
+          {Password && isValid && (
             <SuccessMessage $messageWidth={messageWidth as string}>
               사용가능
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#11C218"
+                />
+              </svg>
             </SuccessMessage>
+          )}
+          {Password && !isValid && !PasswordConfirm && (
+            <ErrorMessage $messageWidth={messageWidth as string}>
+              사용 불가능
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#FF523E"
+                />
+              </svg>
+            </ErrorMessage>
           )}
           <InputWapper width={width as string}>
             <Label
@@ -186,13 +244,38 @@ export function ChangePassword({
               )}
             />
           </InputWapper>
-          {PasswordConfirm && Password === PasswordConfirm ? (
+          {PasswordConfirm && Password === PasswordConfirm && (
             <SuccessMessage $messageWidth={messageWidth as string}>
               비밀번호 일치
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#11C218"
+                />
+              </svg>
             </SuccessMessage>
-          ) : (
+          )}
+          {PasswordConfirm && Password !== PasswordConfirm && (
             <ErrorMessage $messageWidth={messageWidth as string}>
-              {errors?.password_confirm?.message}
+              비밀번호 불일치
+              <svg
+                width="18"
+                height="15"
+                viewBox="0 0 18 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+                  fill="#FF523E"
+                />
+              </svg>
             </ErrorMessage>
           )}
         </InputSection>
@@ -209,7 +292,8 @@ export function ChangePassword({
               height={height}
               fontSize={buttonfontsize}
               $borderRadius="7px"
-              $normal
+              $border
+              cursor
             >
               <span>취소</span>
             </Button>
@@ -217,38 +301,38 @@ export function ChangePassword({
           {PasswordConfirm && isValid ? (
             <ButtonWapper>
               <Button
-                buttonType="submit"
-                onClick={submitChangePassword}
+                onClick={openSuccessAlert}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
                 $borderRadius="7px"
                 $filled
+                cursor
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                    openSuccessAlert();
                   }
                 }}
               >
-                <span>확인</span>
+                <span>변경</span>
               </Button>
             </ButtonWapper>
           ) : (
             <ButtonWapper>
               <Button
-                buttonType="submit"
                 onClick={submitChangePassword}
                 width={btnwidth}
                 height={height}
                 fontSize={buttonfontsize}
                 $borderRadius="7px"
+                cursor
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    enterLogin(); // Enter 키 눌렀을 때도 로그인 함수 호출
+                    submitChangePassword();
                   }
                 }}
               >
-                <span>확인</span>
+                <span>변경</span>
               </Button>
             </ButtonWapper>
           )}
@@ -276,21 +360,22 @@ const SuccessMessage = styled.div<{ $messageWidth: string }>`
     $messageWidth ? ` ${$messageWidth};` : '600px'};
   padding: 0 10px;
   font-size: 12px;
-  color: green;
+  color: ${COLOR.SUCCESS};
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
+  gap: 7px;
 `;
 const ErrorMessage = styled.div<{ $messageWidth: string }>`
   width: ${({ $messageWidth }) =>
     $messageWidth ? ` ${$messageWidth};` : '600px'};
-  width: 700px;
   padding: 0 10px;
   font-size: 12px;
-  color: red;
+  color: ${COLOR.ERROR};
   display: flex;
   font-weight: bold;
   justify-content: flex-end;
+  gap: 7px;
 `;
 
 const ButtonGroup = styled.div<{

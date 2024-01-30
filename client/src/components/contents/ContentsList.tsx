@@ -232,6 +232,7 @@ export function ContentsList() {
           onClick={openWindowCreate}
           fontSize="13px"
           $filled
+          cursor
         >
           + 문항 업로드
         </Button>
@@ -278,8 +279,10 @@ export function ContentsList() {
       <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
       <Alert
         isAlertOpen={isAlertOpen}
-        description="비활성화 처리시 로그인이 불가합니다. 비활성화 처리 하시겠습니까?"
+        description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
         action="확인"
+        isWarning={true}
+        onClose={closeSubmitAlert}
         onClick={submitDisabled}
       ></Alert>
       {/* {isCreate && <CreateIconPopup />} */}
