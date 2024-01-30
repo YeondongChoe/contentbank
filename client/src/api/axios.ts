@@ -48,3 +48,5 @@ export const handleAuthorizationRenewal = (response: AxiosResponse) => {
     }
   }
 };
+
+/** 404 5** 따로 반환 하지 않음 - TODO: 기획 변경시 반영  */

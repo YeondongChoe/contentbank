@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { getMemberList } from '../../api/getAxios';
+// import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
 import { Button, AlertBar } from '../../components/atom';
 import { memberColWidth, memberTheadList } from '../../components/constants';
@@ -15,6 +15,7 @@ import {
   TabMenu,
   Table,
 } from '../../components/molecules';
+import { useQueryGetMemberList } from '../../hooks/useQueryGet';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { COLOR } from '../constants/COLOR';
@@ -32,7 +33,7 @@ export function Member() {
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
   const [checkedList, setCheckedList] = useState<number[]>([]);
-  console.log(memberList);
+  // console.log(memberList);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -56,26 +57,26 @@ export function Member() {
 
   // 검색 기능 함수
   const filterSearchValue = () => {
-    getMemberList({
-      setMemberList,
-      setTotalPage,
-      searchValue,
-      page,
-      size,
-    });
+    // getMemberList({
+    //   setMemberList,
+    //   setTotalPage,
+    //   searchValue,
+    //   page,
+    //   size,
+    // });
     setSearchValue('');
   };
   const filterSearchValueEnter = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === 'Enter') {
-      getMemberList({
-        setMemberList,
-        setTotalPage,
-        searchValue,
-        page,
-        size,
-      });
+      // getMemberList({
+      //   setMemberList,
+      //   setTotalPage,
+      //   searchValue,
+      //   page,
+      //   size,
+      // });
       setSearchValue('');
     }
   };
@@ -100,23 +101,33 @@ export function Member() {
   };
 
   const loadData = () => {
+    const enabled =
+      tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
+
+    const { isLoading, error, data, isFetching } = useQueryGetMemberList({
+      searchValue,
+      page,
+      size,
+      enabled,
+    });
+    isFetching && setMemberList(data?.data.content);
+    isFetching && setTotalPage(data?.data.data.totalElements);
+
     if (tabVeiw === '전체') {
-      getMemberList({
-        setMemberList,
-        setTotalPage,
-        page,
-        size,
-      });
+      // getMemberList({
+      //   setMemberList,
+      //   setTotalPage,
+      //   page,
+      //   size,
+      // });
     } else {
-      const enabled =
-        tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
-      getMemberList({
-        setMemberList,
-        setTotalPage,
-        page,
-        size,
-        enabled,
-      });
+      // getMemberList({
+      //   setMemberList,
+      //   setTotalPage,
+      //   page,
+      //   size,
+      //   enabled,
+      // });
     }
   };
   useEffect(() => {
