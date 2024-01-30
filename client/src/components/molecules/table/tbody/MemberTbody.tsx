@@ -42,9 +42,9 @@ export function MemberTbody({
             <input
               type="checkbox"
               style={{ width: '15px', height: '15px' }}
-              onChange={(e) =>
-                handleSingleCheck(e.target.checked, member.seq as number)
-              }
+              // onChange={(e) =>
+              //   handleSingleCheck(e.target.checked, member.seq as number)
+              // }
               // 체크된 아이템 배열에 해당 아이템이 있을 경우 선택 활성화, 아닐 시 해제
               checked={checkList.includes(member.seq as number) ? true : false}
             />

@@ -37,7 +37,6 @@ export function Member() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  console.log(selectedRows);
   const [searchValue, setSearchValue] = useState<string>('');
   // 활성화/비활성화 버튼상태 토글
   const openSubmitAlert = () => {
