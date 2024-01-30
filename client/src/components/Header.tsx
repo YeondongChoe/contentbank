@@ -72,7 +72,9 @@ const Container = styled.div<{ $isOpenNavigation: boolean }>`
   position: fixed;
   top: 0;
   ${(props) =>
-    props.$isOpenNavigation ? 'width: calc(100% - 250px);' : 'width: 100%;'}
+    props.$isOpenNavigation
+      ? 'width: calc(100% - 250px);'
+      : 'width: calc(100% - 60px);'}
   display: flex;
   justify-content: flex-end;
   height: 40px;
