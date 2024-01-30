@@ -5,6 +5,7 @@ import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { SlPicture } from 'react-icons/sl';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -29,10 +30,9 @@ import {
 } from '../../constants/THEME';
 
 export function Step3() {
-  // const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
-  // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  // const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
-  // const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
+  // const location = useLocation();
+  const navigate = useNavigate();
+
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
   const [contentAuthor, setContentAuthor] = useState('');
@@ -71,8 +71,7 @@ export function Step3() {
 
   const closePopup = () => {
     // setIsStep1(false);
-    // setIsStep2(false);
-    // setIsStep3(false);
+    navigate('/contentworksheet');
   };
   const goBackMainPopup = () => {
     // setIsStep2(true);
@@ -83,6 +82,7 @@ export function Step3() {
     // setIsStep1(false);
     // setIsStep2(false);
     // setIsStep3(false);
+    navigate('/contentworksheet');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 

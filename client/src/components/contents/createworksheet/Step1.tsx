@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -30,6 +31,9 @@ export function Step1() {
     },
   ];
 
+  // const location = useLocation();
+  const navigate = useNavigate();
+
   const [didMount, setDidMount] = useState(false);
   // const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
   // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
@@ -45,10 +49,12 @@ export function Step1() {
 
   const closePopup = () => {
     // setIsStep1(false);
+    navigate('/contentworksheet');
   };
 
   const moveStep2 = () => {
     // setIsStep2(true);
+    navigate('/createworksheet/step2');
     console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
     console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
   };

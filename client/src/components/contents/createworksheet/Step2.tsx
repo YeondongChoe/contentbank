@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { MdOutlineRestartAlt } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
@@ -56,10 +57,8 @@ export function Step2() {
     Contents4,
   ];
 
-  // const [isStep1, setIsStep1] = useRecoilState(createWorksheetStep1BoolAtom);
-  // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  // const [isStep3, setIsStep3] = useRecoilState(createWorksheetStep3BoolAtom);
-  // const isEditWorksheet = useRecoilValue(editWorksheetBoolAtom);
+  // const location = useLocation();
+  const navigate = useNavigate();
   const [isSimilar, setIsSimilar] = useState(false);
   const ContentList = dummy.ContentInfo;
 
@@ -105,14 +104,16 @@ export function Step2() {
 
   const closePopup = () => {
     // setIsStep1(false);
-    // setIsStep2(false);
+    navigate('/contentworksheet');
   };
+
   const goBackMainPopup = () => {
     // setIsStep2(false);
   };
 
   const moveStep3 = () => {
     // setIsStep3(true);
+    navigate('/createworksheet/step3');
     console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
 
