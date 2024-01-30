@@ -10,6 +10,7 @@ type TbodyProps = {
   list: MemberTableType[];
   handleSingleCheck: (checked: boolean, seq: number) => void;
   checkList: number[];
+  setCheckList: React.Dispatch<React.SetStateAction<number[]>>;
   btnOnClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
@@ -17,12 +18,26 @@ export function MemberTbody({
   list,
   handleSingleCheck,
   checkList,
+  setCheckList,
   btnOnClick,
 }: TbodyProps) {
+  const clickTr = (seq: number) => {
+    // 배열에 seq가 포함되어 있지 않으면 추가하고, 포함되어 있다면 제거한다.
+    setCheckList((prevList: number[]) => {
+      if (prevList.includes(seq)) {
+        return prevList.filter((item: number) => item !== seq);
+      } else {
+        return [...prevList, seq];
+      }
+    });
+  };
+  //tr클릭했을 때 해당 tr의 member.seq 가져오기
+  //member.seq 와 일치하는 tr은 setCheckList에 넣기
+
   return (
     <TbodyWrap>
       {list.map((member) => (
-        <tr key={member.seq}>
+        <tr key={member.seq} onClick={() => clickTr(member.seq)}>
           <td>
             <input
               type="checkbox"
@@ -71,6 +86,9 @@ export function MemberTbody({
 
 const TbodyWrap = styled.tbody`
   font-size: small;
+  /* tr {
+    cursor: pointer;
+  } */
 
   /* th {
     border: 1px solid ${COLOR.SECONDARY};

@@ -58,6 +58,7 @@ export function EditPopup({
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState<string | undefined>();
   const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
+  //console.log(isEnabled);
 
   const AuthorityList = authorityList.map((el) => {
     return [el.name, el.code];
@@ -273,20 +274,18 @@ export function EditPopup({
                     />
                     {isEnabled ? (
                       <CheckBoxWrapper>
-                        <input
-                          type="checkbox"
-                          style={{ width: '15px', height: '15px' }}
+                        <MdCheckBoxOutlineBlank
+                          style={{ width: '20px', height: '20px' }}
                           onClick={checkEnabled}
-                        ></input>
+                        />
                         <span>비활성화</span>
                       </CheckBoxWrapper>
                     ) : (
                       <CheckBoxWrapper>
-                        <input
-                          type="checkbox"
-                          style={{ width: '15px', height: '15px' }}
+                        <MdIndeterminateCheckBox
+                          style={{ width: '20px', height: '20px' }}
                           onClick={checkEnabled}
-                        ></input>
+                        />
                         <span>비활성화</span>
                       </CheckBoxWrapper>
                     )}
@@ -335,6 +334,7 @@ export function EditPopup({
                     width={'120px'}
                     fontSize="16px"
                     $border
+                    cursor
                   >
                     <span>취소</span>
                   </Button>
@@ -346,6 +346,7 @@ export function EditPopup({
                     width={'120px'}
                     fontSize="16px"
                     $filled
+                    cursor
                   >
                     <span>수정</span>
                   </Button>
@@ -423,7 +424,7 @@ const CheckBoxWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-left: 10px;
-  gap: 10px;
+  gap: 5px;
   font-size: 14px;
 `;
 const Textarea = styled.textarea`

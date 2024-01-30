@@ -203,6 +203,7 @@ export function Table({
           list={list as MemberTableType[]}
           handleSingleCheck={handleSingleCheck}
           checkList={checkList}
+          setCheckList={setCheckList}
           btnOnClick={btnOnClick}
         />
       )}
