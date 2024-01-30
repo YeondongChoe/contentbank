@@ -58,6 +58,7 @@ export function EditPopup({
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState<string | undefined>();
   const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
+  //console.log(isEnabled);
 
   const AuthorityList = authorityList.map((el) => {
     return [el.name, el.code];
@@ -252,7 +253,7 @@ export function EditPopup({
                     </Button>
                   </InitButtonWrapper>
                 </InputWrapper>
-                <InputWrapper>
+                <SelectWrapper>
                   <Label width="130px" fontSize="15px" value="* 권한" />
                   <DisableWrapper>
                     <Controller
@@ -273,26 +274,24 @@ export function EditPopup({
                     />
                     {isEnabled ? (
                       <CheckBoxWrapper>
-                        <input
-                          type="checkbox"
-                          style={{ width: '15px', height: '15px' }}
+                        <MdCheckBoxOutlineBlank
+                          style={{ width: '20px', height: '20px' }}
                           onClick={checkEnabled}
-                        ></input>
+                        />
                         <span>비활성화</span>
                       </CheckBoxWrapper>
                     ) : (
                       <CheckBoxWrapper>
-                        <input
-                          type="checkbox"
-                          style={{ width: '15px', height: '15px' }}
+                        <MdIndeterminateCheckBox
+                          style={{ width: '20px', height: '20px' }}
                           onClick={checkEnabled}
-                        ></input>
+                        />
                         <span>비활성화</span>
                       </CheckBoxWrapper>
                     )}
                   </DisableWrapper>
-                </InputWrapper>
-                <InputWrapper>
+                </SelectWrapper>
+                <TextareaWrapper>
                   <Label width="130px" fontSize="15px" value="비고" />
                   <Controller
                     control={control}
@@ -305,7 +304,7 @@ export function EditPopup({
                       ></Textarea>
                     )}
                   />
-                </InputWrapper>
+                </TextareaWrapper>
                 <NoticeWarpper>
                   <Notice>
                     초기 비밀번호는
@@ -335,6 +334,7 @@ export function EditPopup({
                     width={'120px'}
                     fontSize="16px"
                     $border
+                    cursor
                   >
                     <span>취소</span>
                   </Button>
@@ -346,6 +346,7 @@ export function EditPopup({
                     width={'120px'}
                     fontSize="16px"
                     $filled
+                    cursor
                   >
                     <span>수정</span>
                   </Button>
@@ -381,7 +382,7 @@ const Overlay = styled.div`
 
 const Container = styled.div`
   min-width: 700px;
-  height: 650px;
+  height: 700px;
   padding: 30px;
   border: 1px solid ${COLOR.BORDER_GRAY};
   background-color: white;
@@ -407,9 +408,15 @@ const ContentBox = styled.div`
 `;
 const InputWrapper = styled.div`
   width: 680px;
+  height: 84px;
   display: flex;
   justify-content: center;
-  padding-bottom: 20px;
+`;
+const SelectWrapper = styled.div`
+  width: 680px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
 `;
 const InitButtonWrapper = styled.div`
   display: flex;
@@ -423,8 +430,15 @@ const CheckBoxWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-left: 10px;
-  gap: 10px;
+  height: 64px;
+  gap: 5px;
   font-size: 14px;
+`;
+const TextareaWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 680px;
+  height: 200px;
 `;
 const Textarea = styled.textarea`
   width: 450px;

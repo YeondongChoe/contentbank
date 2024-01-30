@@ -16,6 +16,7 @@ type OptionsProps = {
 
 type SelectProps = {
   options?: OptionsProps[];
+  onClick?: () => void;
   onSelect: (
     event: React.MouseEvent<HTMLButtonElement>,
     code: string | undefined,
@@ -31,6 +32,7 @@ type SelectProps = {
 
 export function Select({
   options,
+  onClick,
   onSelect,
   defaultValue,
   width,
@@ -47,6 +49,7 @@ export function Select({
       onMouseLeave={() => {
         setIsOptionShow(false);
       }}
+      onClick={onClick}
     >
       <IconButton
         width={width}

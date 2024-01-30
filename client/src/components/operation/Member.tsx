@@ -32,10 +32,12 @@ export function Member() {
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
   const [checkedList, setCheckedList] = useState<number[]>([]);
+  console.log(memberList);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  console.log(selectedRows);
   const [searchValue, setSearchValue] = useState<string>('');
   // 활성화/비활성화 버튼상태 토글
   const openSubmitAlert = () => {

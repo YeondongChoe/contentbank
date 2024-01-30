@@ -169,7 +169,7 @@ export const putDisableMember = async ({
     .then((response) => {
       handleAuthorizationRenewal(response);
       setIsEnabled(false);
-      window.location.reload();
+      //window.location.reload();
     })
     .catch((error) => {
       alert(error);
@@ -215,7 +215,7 @@ export const putChangeMemberInformation = async ({
       setIsEditer(false);
       setIsNameError(false);
       setIsEditAlertOpen(true);
-      window.location.reload();
+      //window.location.reload();
     })
     .catch((response) => {
       setIsNameError(true);

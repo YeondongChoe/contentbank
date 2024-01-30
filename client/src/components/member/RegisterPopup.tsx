@@ -33,8 +33,10 @@ export function RegisterPopup({
   const [didMount, setDidMount] = useState(false);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
+  const [isAuthorityError, setIsAuthorityError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [idErrorMessage, setIdErrorMessage] = useState('');
+  const [AuthorityErrorMessage, setAuthorityErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
   const [duplicatedId, setduplicatedId] = useState('');
@@ -84,12 +86,20 @@ export function RegisterPopup({
   };
 
   const submitRegister = () => {
-    if (Name === '' || Id === '' || Authority === undefined) {
-      setIsRequired(true);
-      setIsAlertOpen(true);
+    if (Name === '') {
+      setIsNameError(true);
+      setNameErrorMessage('필수 항목을 입력해주세요');
+    }
+    if (Id === '') {
+      setIsIdError(true);
+      setIdErrorMessage('필수 항목을 입력해주세요');
+    }
+    if (Authority === undefined) {
+      setIsAuthorityError(true);
+      setAuthorityErrorMessage('필수 항목을 입력해주세요');
     } else if (duplicatedId !== Id || isDuplicate === false) {
-      setIsRequiredDuplicate(true);
-      setIsAlertOpen(true);
+      setIsIdError(true);
+      setIdErrorMessage('중복확인을 해주세요');
     } else {
       postRegister({
         Id,
@@ -231,33 +241,49 @@ export function RegisterPopup({
                   </Button>
                 </DuplicationButtonWrapper>
               </InputWrapper>
-              <InputWrapper>
-                <Label width="130px" fontSize="15px" value="* 권한" />
-                <Controller
-                  control={control}
-                  name="authority"
-                  render={({ field }) => (
-                    <Select
-                      width="450px"
-                      height="50px"
-                      padding="5px 0px 0px 0px"
-                      defaultValue={'권한을 선택하세요'}
-                      onSelect={(event, code) => {
-                        setAuthorityCode(code);
-                      }}
-                      options={AuthorityOption}
-                    ></Select>
+              <SelectWrapper>
+                <SelectBox>
+                  {isAuthorityError ? (
+                    <Label
+                      width="130px"
+                      fontSize="15px"
+                      type="error"
+                      value="* 권한"
+                    />
+                  ) : (
+                    <Label width="130px" fontSize="15px" value="* 권한" />
                   )}
-                />
-              </InputWrapper>
-              <InputWrapper>
+                  <Controller
+                    control={control}
+                    name="authority"
+                    render={({ field }) => (
+                      <Select
+                        width="450px"
+                        height="50px"
+                        padding="5px 0px 10px 0px"
+                        defaultValue={'권한을 선택하세요'}
+                        onSelect={(event, code) => {
+                          setAuthorityCode(code);
+                        }}
+                        onClick={() => setIsAuthorityError(false)}
+                        options={AuthorityOption}
+                      ></Select>
+                    )}
+                  />
+                </SelectBox>
+                {isAuthorityError && (
+                  <ErrorMessage>{AuthorityErrorMessage}</ErrorMessage>
+                )}
+              </SelectWrapper>
+
+              <TextareaWrapper>
                 <Label width="130px" fontSize="15px" value="비고" />
                 <Textarea
                   onChange={(e) => {
                     setCommentValue(e.target.value);
                   }}
                 ></Textarea>
-              </InputWrapper>
+              </TextareaWrapper>
               <NoticeWarpper>
                 <Notice>
                   초기 비밀번호는
@@ -287,6 +313,7 @@ export function RegisterPopup({
                   width={'120px'}
                   fontSize="16px"
                   $border
+                  cursor
                 >
                   <span>취소</span>
                 </Button>
@@ -298,26 +325,11 @@ export function RegisterPopup({
                   width={'120px'}
                   fontSize="16px"
                   $filled
+                  cursor
                 >
                   <span>등록</span>
                 </Button>
               </ButtonGroup>
-              {isRequired && (
-                <AlertBar
-                  type="warning"
-                  isAlertOpen={isAlertOpen}
-                  closeAlert={closeAlert}
-                  message={'필수 항목을 입력해주세요.'}
-                ></AlertBar>
-              )}
-              {isRequiredDuplicate && (
-                <AlertBar
-                  type="warning"
-                  isAlertOpen={isAlertOpen}
-                  closeAlert={closeAlert}
-                  message={'중복확인을 해주세요.'}
-                ></AlertBar>
-              )}
             </ContentBox>
           </Container>
         </Overlay>
@@ -339,7 +351,7 @@ const Overlay = styled.div`
 `;
 const Container = styled.div`
   min-width: 700px;
-  height: 650px;
+  height: 700px;
   padding: 30px;
   border: 1px solid ${COLOR.BORDER_GRAY};
   background-color: white;
@@ -365,16 +377,35 @@ const InputWrapper = styled.div`
   display: flex;
   justify-content: center;
   width: 680px;
-  padding-bottom: 20px;
+  height: 84px;
 `;
 const InputBox = styled.div``;
+const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+`;
+const SelectBox = styled.div`
+  display: flex;
+`;
 const IdSuccessMessage = styled.p`
   color: ${COLOR.SUCCESS};
+  font-size: 12px;
+`;
+const ErrorMessage = styled.p`
+  color: ${COLOR.ERROR};
+  padding-left: 130px;
   font-size: 12px;
 `;
 const DuplicationButtonWrapper = styled.div`
   display: flex;
   padding-left: 10px;
+`;
+const TextareaWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 680px;
+  height: 200px;
 `;
 const Textarea = styled.textarea`
   width: 450px;
