@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
@@ -46,16 +46,6 @@ export function ContentsList() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-
-  const [isAllchecked, setIsAllChecked] = useState<boolean>(false);
-
-  const handleAllCheck = () => {
-    setIsAllChecked(!isAllchecked);
-  };
-
-  useEffect(() => {
-    setIsAllChecked(false);
-  }, [page]);
 
   // 활성화/비활성화 버튼상태 토글
   const openSubmitAlert = () => {
@@ -103,7 +93,6 @@ export function ContentsList() {
   ];
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // console.log(event.currentTarget.value);
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
   };
@@ -255,10 +244,8 @@ export function ContentsList() {
           height="40px"
         />
       </HeadWrapper>
-      {/* 셀렉트 + 테이블 + 수정 비활성화 버튼 */}
       <TableWrapper>
         {/* 테이블 셀렉트 */}
-        {/* Total 18,293 */}
         <SelectWrapper>
           {selectCategory.map((el) => (
             <Select
@@ -270,7 +257,6 @@ export function ContentsList() {
             />
           ))}
         </SelectWrapper>
-        {/* 테이블 수정 + 활성화 버튼 */}
         <ContentList
           list={questionList}
           onClick={openSubmitAlert}

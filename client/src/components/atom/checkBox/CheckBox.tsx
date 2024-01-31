@@ -1,12 +1,10 @@
 import * as React from 'react';
 
-import { styled, css } from 'styled-components';
-
-import { COLOR } from '../../constants';
+import { styled } from 'styled-components';
 
 type CheckBoxProps = {
   isChecked: boolean;
-  onClick?: () => void;
+  onClick?: (e: any) => void;
 };
 
 export function CheckBox({ isChecked, onClick }: CheckBoxProps) {
