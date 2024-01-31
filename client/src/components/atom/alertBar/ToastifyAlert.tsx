@@ -81,7 +81,7 @@ export function ToastifyAlert() {
     <>
       <StyledToastContainer
         position="top-center"
-        limit={3}
+        limit={2}
         closeButton={false}
         autoClose={1000}
         hideProgressBar
