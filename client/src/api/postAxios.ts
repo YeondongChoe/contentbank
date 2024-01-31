@@ -50,36 +50,36 @@ type postLoginProps = {
 };
 
 /** 로그인 API */
-export const postLogin = async (
-  { navigate, isClicked, Id, setErrorMessage, openAlert }: postLoginProps,
-  data: dataProps,
-) => {
-  await authInstance
-    .post('/auth/login', data)
-    .then((response) => {
-      if (response.status === 200) {
-        setAuthorityCookie('accessToken', response.data.access_token, {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        });
-        if (response.data.initPassword === true) {
-          navigate('/firstlogin');
-        } else {
-          navigate('/contentlist');
-        }
-      }
-      if (isClicked === true) {
-        setAuthorityCookie('userId', Id, { path: '/' });
-      } else {
-        removeAuthorityCookie('userId', { path: '/' });
-      }
-    })
-    .catch((error) => {
-      setErrorMessage(error.response.data.message);
-      openAlert();
-    });
-};
+// export const postLogin = async (
+//   { navigate, isClicked, Id, setErrorMessage, openAlert }: postLoginProps,
+//   data: dataProps,
+// ) => {
+//   await authInstance
+//     .post('/auth/login', data)
+//     .then((response) => {
+//       if (response.status === 200) {
+//         setAuthorityCookie('accessToken', response.data.access_token, {
+//           path: '/',
+//           sameSite: 'strict',
+//           secure: false,
+//         });
+//         if (response.data.initPassword === true) {
+//           navigate('/firstlogin');
+//         } else {
+//           navigate('/contentlist');
+//         }
+//       }
+//       if (isClicked === true) {
+//         setAuthorityCookie('userId', Id, { path: '/' });
+//       } else {
+//         removeAuthorityCookie('userId', { path: '/' });
+//       }
+//     })
+//     .catch((error) => {
+//       setErrorMessage(error.response.data.message);
+//       openAlert();
+//     });
+// };
 
 type postRegisterProps = {
   Id: string;

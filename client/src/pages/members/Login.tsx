@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { authInstance } from '../../api/axios';
-import { postLogin } from '../../api/postAxios';
 import { Input, Label, Button, CheckBox, AlertBar } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import {
@@ -18,18 +17,9 @@ import {
   setAuthorityCookie,
 } from '../../utils/cookies';
 
-type LoginProps = {
+type LoginType = {
   id: string;
   password: string;
-};
-
-type postLoginProps = {
-  isClicked: boolean;
-  Id: string;
-  navigate: (result: string) => void;
-
-  setErrorMessage: (result: string) => void;
-  openAlert: () => void;
 };
 
 export function Login() {
@@ -43,7 +33,7 @@ export function Login() {
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginProps>();
+  } = useForm<LoginType>();
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const openAlert = () => {
@@ -60,20 +50,21 @@ export function Login() {
 
   const navigate = useNavigate();
 
-  //로그인
-  const postLogin = (auth: LoginProps) => {
+  //로그인 api
+  const postLogin = (auth: LoginType) => {
     return authInstance.post('/auth/login', auth);
   };
 
-  const {
-    data: loginPostData,
-    mutate: onLogin,
-    mutateAsync,
-  } = useMutation({
+  const { data: loginPostData, mutate: onLogin } = useMutation({
     mutationFn: postLogin,
     onError: (error) => {
-      console.log('loginPostData error', error);
-      setErrorMessage(error.message);
+      // console.log('loginPostData error', error.message);
+      if (error.message.includes('401')) {
+        setErrorMessage('아이디와 패스워드를 확인하세요');
+      }
+      if (error.message.includes('400')) {
+        setErrorMessage(error.message);
+      }
       openAlert();
     },
     onSuccess: (response) => {
@@ -106,7 +97,7 @@ export function Login() {
     },
   });
 
-  const submitLogin: SubmitHandler<LoginProps> = (data) => {
+  const submitLogin: SubmitHandler<LoginType> = (data) => {
     // console.log('data component', data);
     onLogin(data);
   };
