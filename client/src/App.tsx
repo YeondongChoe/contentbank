@@ -60,7 +60,6 @@ export function App() {
                 location.pathname !== '/createcontentwindow' &&
                 location.pathname !== '/createcontentmain' && <Header />}
               <BodyWrapper>
-                <ToastifyAlert></ToastifyAlert>
                 <ToastifyAlert />
                 <Outlet />
               </BodyWrapper>

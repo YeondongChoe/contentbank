@@ -5,13 +5,7 @@ import styled from 'styled-components';
 
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
-import {
-  Input,
-  Label,
-  Button,
-  AlertBar,
-  ToastifyAlert,
-} from '../../components';
+import { Input, Label, Button } from '../../components';
 import { COLOR } from '../../components/constants';
 import { ChangePassword } from '../../components/password/ChangePassword';
 
@@ -77,7 +71,6 @@ export function Mypage() {
 
   return (
     <Container>
-      <ToastifyAlert />
       <Wrapper>
         <Title>마이페이지</Title>
         <SubTitleWrapper>
