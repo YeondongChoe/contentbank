@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { authInstance } from '../../api/axios';
 // import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
 import { Button, AlertBar } from '../../components/atom';
@@ -104,14 +107,18 @@ export function Member() {
     const enabled =
       tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
 
-    const { isLoading, error, data, isFetching } = useQueryGetMemberList({
-      searchValue,
-      page,
-      size,
-      enabled,
-    });
-    isFetching && setMemberList(data?.data.content);
-    isFetching && setTotalPage(data?.data.data.totalElements);
+    // const { isLoading, error, data, isFetching } = useQueryGetMemberList({
+    //   searchValue,
+    //   page,
+    //   size,
+    //   enabled,
+    // });
+    // isFetching && setMemberList(data?.data.content);
+    // isFetching && setTotalPage(data?.data.data.totalElements);
+    console.log('data00');
+
+    // isFetching && setMemberList(data?.data.content);
+    // isFetching && setTotalPage(data?.data.data.totalElements);
 
     if (tabVeiw === '전체') {
       // getMemberList({
@@ -130,7 +137,32 @@ export function Member() {
       // });
     }
   };
+
+  const { isLoading, error, data, isFetching } = useQuery({
+    queryKey: ['get-memberlist'],
+    queryFn: () => {
+      // try {
+      axios.get(`/v1/account`);
+      // .then((response) => {
+      // handleAuthorizationRenewal(response);
+      //   setTotalPage(response.data.data.totalElements);
+      //   setMemberList(response.data.data.content);
+      // });
+      // return response;
+      // } catch (error) {
+      //   console.log(error);
+      //   throw error;
+      // }
+    },
+    meta: {
+      errorMessage: 'get-memberlist 에러 메세지',
+    },
+  });
+  console.log(data);
+  console.log('data');
+
   useEffect(() => {
+    // loadData();
     setDidMount(true);
   }, []);
 
@@ -138,7 +170,7 @@ export function Member() {
     if (didMount) {
       loadData();
     }
-  }, [didMount, setTabVeiw, tabVeiw, page, setTotalPage, setPage]);
+  }, [didMount]);
 
   const menuList = [
     {
@@ -233,16 +265,16 @@ export function Member() {
           </Button>
         </ButtonWrapper>
         {/*TODO : 전체토탈 데이터로 변경 필요 */}
-        <Table
+        {/* <Table
           list={memberList}
           colWidth={memberColWidth}
           theadList={memberTheadList}
           btnOnClick={openDetailInformationPopup}
           setIsEnabled={setIsEnabled}
           setSelectedRows={setSelectedRows}
-        />
+        /> */}
       </TableWrapper>
-      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+      {/* <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} /> */}
       <Alert
         isAlertOpen={isAlertOpen}
         description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}

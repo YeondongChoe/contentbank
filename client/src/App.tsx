@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import {
+  QueryClientProvider,
+  QueryClient,
+  QueryCache,
+} from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { RecoilRoot, useRecoilValue } from 'recoil';
@@ -12,7 +16,19 @@ import { Navigation } from './components/Navigation';
 import { getAuthorityCookie } from './utils/cookies';
 
 export function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onError: (error, query) => {
+        if (query.meta && query.meta.errorMessage) {
+          // toast.error(query.meta.errorMessage);
+          console.log(`${query.meta.errorMessage}: ${error}`);
+        }
+      },
+      onSuccess: (data, query) => {
+        console.log(`onSuccess: ${data}`);
+      },
+    }),
+  });
   const location = useLocation();
 
   const navigate = useNavigate();
