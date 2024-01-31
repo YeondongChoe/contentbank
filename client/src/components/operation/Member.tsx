@@ -138,7 +138,12 @@ export function Member() {
     }
   };
 
-  const { isLoading, error, data, isFetching } = useQuery({
+  const {
+    isLoading,
+    error,
+    data: memberListData,
+    isFetching,
+  } = useQuery({
     queryKey: ['get-memberlist'],
     queryFn: () => {
       // try {
@@ -158,8 +163,8 @@ export function Member() {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
-  console.log(data);
-  console.log('data');
+  console.log(memberListData);
+  console.log('memberListData');
 
   useEffect(() => {
     // loadData();
