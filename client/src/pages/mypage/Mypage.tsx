@@ -5,7 +5,13 @@ import styled from 'styled-components';
 
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
-import { Input, Label, Button, AlertBar } from '../../components';
+import {
+  Input,
+  Label,
+  Button,
+  AlertBar,
+  ToastifyAlert,
+} from '../../components';
 import { COLOR } from '../../components/constants';
 import { Alert } from '../../components/molecules/alert/Alert';
 import { ChangePassword } from '../../components/password/ChangePassword';
@@ -13,9 +19,6 @@ import { ChangePassword } from '../../components/password/ChangePassword';
 export function Mypage() {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
-  const [message, setMessage] = useState('');
-  const [isError, setIsError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const [nameValue, setNameValue] = useState('');
   const [member, setMember] = useState({
@@ -31,14 +34,6 @@ export function Mypage() {
 
   const [didMount, setDidMount] = useState(false);
 
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeAlert = () => {
-    setIsAlertOpen(false);
-  };
-
   const selectNameEdition = () => {
     setIsNameEdit(!isNameEdit);
     setNameValue('');
@@ -50,11 +45,7 @@ export function Mypage() {
       nameValue,
       isNameEdit,
       setIsNameEdit,
-      setIsError,
-      setIsSuccess,
       setNameValue,
-      setMessage,
-      openAlert,
     });
   };
 
@@ -87,6 +78,7 @@ export function Mypage() {
 
   return (
     <Container>
+      <ToastifyAlert />
       <Wrapper>
         <Title>마이페이지</Title>
         <SubTitleWrapper>
@@ -182,22 +174,6 @@ export function Mypage() {
             </InputWrapper>
           )}
         </InformationForm>
-        {isSuccess && (
-          <AlertBar
-            type="error"
-            isAlertOpen={isAlertOpen}
-            closeAlert={closeAlert}
-            message={message}
-          ></AlertBar>
-        )}
-        {isError && (
-          <AlertBar
-            type="warning"
-            isAlertOpen={isAlertOpen}
-            closeAlert={closeAlert}
-            message={message}
-          ></AlertBar>
-        )}
         {isPasswordEdit && (
           <div>
             <SubTitleWrapper>

@@ -32,7 +32,7 @@ export const openToastifyAlert = ({ type, text }: openToastifyAlertProps) => {
             />
           </svg>
         ),
-        className: 'toast-success', // 클래스 추가
+        className: 'toast-success',
       });
       break;
     case 'warning':
@@ -51,7 +51,7 @@ export const openToastifyAlert = ({ type, text }: openToastifyAlertProps) => {
             />
           </svg>
         ),
-        className: 'toast-warning', // 클래스 추가
+        className: 'toast-warning',
       });
       break;
     case 'error':
@@ -70,7 +70,7 @@ export const openToastifyAlert = ({ type, text }: openToastifyAlertProps) => {
             />
           </svg>
         ),
-        className: 'toast-error', // 클래스 추가
+        className: 'toast-error',
       });
       break;
   }
