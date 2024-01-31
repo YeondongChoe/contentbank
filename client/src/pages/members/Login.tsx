@@ -22,15 +22,6 @@ type LoginType = {
   password: string;
 };
 
-type postLoginProps = {
-  isClicked: boolean;
-  Id: string;
-  navigate: (result: string) => void;
-
-  setErrorMessage: (result: string) => void;
-  openAlert: () => void;
-};
-
 export function Login() {
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('userId') ? true : false,
