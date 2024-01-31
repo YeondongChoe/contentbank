@@ -68,6 +68,7 @@ export function ContentList({ list, onClick }: ContentListProps) {
   const [checkList, setCheckList] = useState<number[]>([]);
 
   const [isAllChecked, setIsAllChecked] = useState<boolean>(false);
+  console.log(isAllChecked);
 
   const handleAllCheck = () => {
     setIsAllChecked((prev) => !prev);
@@ -93,12 +94,14 @@ export function ContentList({ list, onClick }: ContentListProps) {
   };
 
   useEffect(() => {
-    setIsAllChecked(
-      isArraysEqual(
-        checkList,
-        list.map((item) => item.contentSeq),
-      ),
-    );
+    if (checkList.length !== 0 && list.length !== 0) {
+      setIsAllChecked(
+        isArraysEqual(
+          checkList,
+          list.map((item) => item.contentSeq),
+        ),
+      );
+    }
   }, [checkList, list]);
 
   useEffect(() => {
@@ -117,6 +120,7 @@ export function ContentList({ list, onClick }: ContentListProps) {
 
       if (isOutside) {
         setIgnoreChecked(true);
+        setIsAllChecked(false);
       }
     };
 
