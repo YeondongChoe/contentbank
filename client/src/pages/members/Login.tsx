@@ -9,7 +9,13 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { authInstance } from '../../api/axios';
-import { Input, Label, Button, CheckBox, AlertBar } from '../../components';
+import {
+  Input,
+  Label,
+  Button,
+  CheckBox,
+  openToastifyAlert,
+} from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import {
   getAuthorityCookie,
@@ -27,21 +33,12 @@ export function Login() {
     getAuthorityCookie('userId') ? true : false,
   );
 
-  const [errorMessage, setErrorMessage] = useState('');
   const {
     control,
     watch,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginType>();
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeAlert = () => {
-    setIsAlertOpen(false);
-  };
 
   const Id = watch('id', '');
   const Password = watch('password', '');
@@ -60,12 +57,17 @@ export function Login() {
     onError: (error) => {
       // console.log('loginPostData error', error.message);
       if (error.message.includes('401')) {
-        setErrorMessage('아이디와 패스워드를 확인하세요');
+        openToastifyAlert({
+          type: 'error',
+          text: '아이디와 패스워드를 확인하세요',
+        });
       }
       if (error.message.includes('400')) {
-        setErrorMessage(error.message);
+        openToastifyAlert({
+          type: 'error',
+          text: error.message,
+        });
       }
-      openAlert();
     },
     onSuccess: (response) => {
       if (response.status === 200) {
@@ -120,12 +122,6 @@ export function Login() {
 
   return (
     <Container>
-      <AlertBar
-        type="error"
-        isAlertOpen={isAlertOpen}
-        closeAlert={closeAlert}
-        message={errorMessage}
-      ></AlertBar>
       <Wrapper>
         <LogoIconWrapper>
           <MdAccountBalance style={{ fontSize: '50px' }} />
