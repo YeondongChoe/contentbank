@@ -6,8 +6,6 @@ import axios from 'axios';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 
 import { authInstance } from '../../api/axios';
