@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState, useRef } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
