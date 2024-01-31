@@ -73,7 +73,6 @@ export function Login() {
 
   return (
     <Container>
-      <ToastifyAlert />
       <Wrapper>
         <LogoIconWrapper>
           <MdAccountBalance style={{ fontSize: '50px' }} />

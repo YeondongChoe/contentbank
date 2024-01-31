@@ -20,8 +20,8 @@ export const openToastifyAlert = ({ type, text }: openToastifyAlertProps) => {
       toast.success(text, {
         icon: (
           <svg
-            width="17"
-            height="13"
+            width="20"
+            height="20"
             viewBox="0 0 17 13"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -39,8 +39,8 @@ export const openToastifyAlert = ({ type, text }: openToastifyAlertProps) => {
       toast.warning(text, {
         icon: (
           <svg
-            width="17"
-            height="15"
+            width="20"
+            height="20"
             viewBox="0 0 17 15"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +83,7 @@ export function ToastifyAlert() {
         position="top-center"
         limit={3}
         closeButton={false}
-        autoClose={3000}
+        autoClose={1000}
         hideProgressBar
       />
     </>
@@ -92,7 +92,6 @@ export function ToastifyAlert() {
 
 export const StyledToastContainer = styled(ToastContainer)`
   width: 430px;
-  //background-color: black;
   .toast-success {
     background-color: ${COLOR.SUCCESS};
     color: white;

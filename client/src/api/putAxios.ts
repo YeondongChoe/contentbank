@@ -85,8 +85,6 @@ export const putSaveName = async ({
 type putChangePasswordProps = {
   Password: string;
   PasswordConfirm: string;
-  setErrorMessage: (result: string) => void;
-  openAlert: () => void;
   setIsSuccessAlertOpen: (result: boolean) => void;
   setIsRedirect: (result: boolean) => void;
 };
@@ -95,8 +93,6 @@ type putChangePasswordProps = {
 export const putChangePassword = async ({
   Password,
   PasswordConfirm,
-  setErrorMessage,
-  openAlert,
   setIsSuccessAlertOpen,
   setIsRedirect,
 }: putChangePasswordProps) => {
@@ -112,8 +108,10 @@ export const putChangePassword = async ({
       setIsRedirect(true);
     })
     .catch((error) => {
-      setErrorMessage(error.response.data.message);
-      openAlert();
+      openToastifyAlert({
+        type: 'error',
+        text: error.response.data.message,
+      });
     });
 };
 

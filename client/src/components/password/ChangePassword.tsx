@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { putChangePassword } from '../../api/putAxios';
-import { Input, Label, Button, AlertBar, Alert } from '../../components';
+import { Input, Label, Button, Alert } from '../../components';
 import { passwordRegExp } from '../../utils/regExp';
 import { COLOR } from '../constants/COLOR';
 
@@ -51,15 +51,6 @@ export function ChangePassword({
     watch,
     formState: { errors, isValid },
   } = useForm<passwordProps>();
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeAlert = () => {
-    setIsAlertOpen(false);
-  };
 
   const PasswordInputRef = useRef<HTMLInputElement | null>(null);
   const PasswordConfirmInputRef = useRef<HTMLInputElement | null>(null);
@@ -94,8 +85,6 @@ export function ChangePassword({
     putChangePassword({
       Password,
       PasswordConfirm,
-      setErrorMessage,
-      openAlert,
       setIsSuccessAlertOpen,
       setIsRedirect,
     });
@@ -103,12 +92,6 @@ export function ChangePassword({
 
   return (
     <Container>
-      <AlertBar
-        type="error"
-        isAlertOpen={isAlertOpen}
-        closeAlert={closeAlert}
-        message={errorMessage}
-      ></AlertBar>
       {isSuccessAlertOpen && (
         <Alert
           description={
