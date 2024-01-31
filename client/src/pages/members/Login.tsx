@@ -1,17 +1,23 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { postLogin } from '../../api/postAxios';
+import { authInstance } from '../../api/axios';
 import { Input, Label, Button, CheckBox, AlertBar } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
-import { getAuthorityCookie } from '../../utils/cookies';
+import {
+  getAuthorityCookie,
+  removeAuthorityCookie,
+  setAuthorityCookie,
+} from '../../utils/cookies';
 
-type loginProps = {
+type LoginType = {
   id: string;
   password: string;
 };
@@ -27,7 +33,7 @@ export function Login() {
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<loginProps>();
+  } = useForm<LoginType>();
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const openAlert = () => {
@@ -44,8 +50,56 @@ export function Login() {
 
   const navigate = useNavigate();
 
-  const submitLogin: SubmitHandler<loginProps> = async (data) => {
-    postLogin({ navigate, isClicked, Id }, data);
+  //로그인 api
+  const postLogin = (auth: LoginType) => {
+    return authInstance.post('/auth/login', auth);
+  };
+
+  const { data: loginPostData, mutate: onLogin } = useMutation({
+    mutationFn: postLogin,
+    onError: (error) => {
+      // console.log('loginPostData error', error.message);
+      if (error.message.includes('401')) {
+        setErrorMessage('아이디와 패스워드를 확인하세요');
+      }
+      if (error.message.includes('400')) {
+        setErrorMessage(error.message);
+      }
+      openAlert();
+    },
+    onSuccess: (response) => {
+      if (response.status === 200) {
+        // 토큰값 쿠키에 저장
+        setAuthorityCookie('accessToken', response.data.access_token, {
+          path: '/',
+          sameSite: 'strict',
+          secure: false,
+        });
+        // 데이터에서 토큰과 세션을 저장
+
+        // 재로그인 토큰과 세션 만료 확인
+
+        // 아이디 저장 체크박스
+        if (isClicked === true) {
+          setAuthorityCookie('userId', Id, { path: '/' });
+        } else {
+          removeAuthorityCookie('userId', { path: '/' });
+        }
+
+        //첫 로그인시 비밀번호 변경 페이지로
+        if (response.data.initPassword === true) {
+          navigate('/firstlogin');
+        } else {
+          navigate('/contentlist');
+        }
+      }
+      console.log('loginPostData', response);
+    },
+  });
+
+  const submitLogin: SubmitHandler<LoginType> = (data) => {
+    // console.log('data component', data);
+    onLogin(data);
   };
 
   const checkIconselected = () => {
@@ -66,6 +120,12 @@ export function Login() {
 
   return (
     <Container>
+      <AlertBar
+        type="error"
+        isAlertOpen={isAlertOpen}
+        closeAlert={closeAlert}
+        message={errorMessage}
+      ></AlertBar>
       <Wrapper>
         <LogoIconWrapper>
           <MdAccountBalance style={{ fontSize: '50px' }} />
