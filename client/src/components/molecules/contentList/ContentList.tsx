@@ -67,11 +67,12 @@ export function ContentList({ list, onClick }: ContentListProps) {
 
   const [checkList, setCheckList] = useState<number[]>([]);
 
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [isAllChecked, setIsAllChecked] = useState<boolean>(false);
+  console.log(isAllChecked);
 
   const handleAllCheck = () => {
-    setIsChecked(!isChecked);
-    if (isChecked === false) {
+    setIsAllChecked((prev) => !prev);
+    if (isAllChecked === false) {
       setCheckList(list.map((item) => item.contentSeq as number));
       setIsEnabled(false);
     } else {
@@ -80,17 +81,68 @@ export function ContentList({ list, onClick }: ContentListProps) {
     }
   };
 
+  //checkList와 List의 일치 여부를 확인
+  //배열의 순서와 상관없이 length가 일치할때 value 값을 비교하여 같으면 true
+  const isArraysEqual = (arr1: any[], arr2: any[]): boolean => {
+    const sortedArr1 = [...arr1].sort();
+    const sortedArr2 = [...arr2].sort();
+
+    return (
+      sortedArr1.length === sortedArr2.length &&
+      sortedArr1.every((value, index) => value === sortedArr2[index])
+    );
+  };
+
   useEffect(() => {
-    setIsChecked(false);
+    if (checkList.length !== 0 && list.length !== 0) {
+      setIsAllChecked(
+        isArraysEqual(
+          checkList,
+          list.map((item) => item.contentSeq),
+        ),
+      );
+    }
+  }, [checkList, list]);
+
+  useEffect(() => {
+    setIsAllChecked(false);
   }, [page]);
+
+  //체크된 문항 초기화
+  const [ignoreChecked, setIgnoreChecked] = useState(false);
+
+  // 최초 페이지 랜더링 했을 때 handleClickOutside함수를 등록
+  // outside에 해당하는 부분을 클릭했을 때 함수가 실행됨
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetElement = event.target as HTMLElement;
+      const isOutside = !targetElement.closest('.inside');
+
+      if (isOutside) {
+        setIgnoreChecked(true);
+        setIsAllChecked(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    setCheckList([]);
+    setIgnoreChecked(false);
+  }, [ignoreChecked === true, setIgnoreChecked]);
 
   return (
     <>
-      <ButtonWrapper>
+      <ButtonWrapper className="inside">
         <AllCheckButtonWrapper>
           <CheckBox
             onClick={() => handleAllCheck()}
-            isChecked={isChecked}
+            isChecked={isAllChecked}
           ></CheckBox>
           <div>전체선택</div>
         </AllCheckButtonWrapper>
@@ -116,7 +168,7 @@ export function ContentList({ list, onClick }: ContentListProps) {
           </Button>
         </ActionButtonWrapper>
       </ButtonWrapper>
-      <ContentCardWrapper>
+      <ContentCardWrapper className="inside">
         {list.map((content) => (
           <ContentCard
             key={content.questionCode}
@@ -125,6 +177,8 @@ export function ContentList({ list, onClick }: ContentListProps) {
             isEnabled={isEnabled}
             checkList={checkList}
             setCheckList={setCheckList}
+            ignoreChecked={ignoreChecked}
+            setIgnoreChecked={setIgnoreChecked}
           ></ContentCard>
         ))}
       </ContentCardWrapper>
