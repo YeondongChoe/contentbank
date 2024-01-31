@@ -4,10 +4,18 @@ import { useState, useRef } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 
 import { postLogin } from '../../api/postAxios';
-import { Input, Label, Button, CheckBox, AlertBar } from '../../components';
+import {
+  Input,
+  Label,
+  Button,
+  CheckBox,
+  ToastifyAlert,
+} from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import { getAuthorityCookie } from '../../utils/cookies';
 
@@ -21,7 +29,6 @@ export function Login() {
     getAuthorityCookie('userId') ? true : false,
   );
 
-  const [errorMessage, setErrorMessage] = useState('');
   const {
     control,
     watch,
@@ -45,7 +52,7 @@ export function Login() {
   const navigate = useNavigate();
 
   const submitLogin: SubmitHandler<loginProps> = async (data) => {
-    postLogin({ navigate, isClicked, Id, setErrorMessage, openAlert }, data);
+    postLogin({ navigate, isClicked, Id }, data);
   };
 
   const checkIconselected = () => {
@@ -66,12 +73,7 @@ export function Login() {
 
   return (
     <Container>
-      <AlertBar
-        type="error"
-        isAlertOpen={isAlertOpen}
-        closeAlert={closeAlert}
-        message={errorMessage}
-      ></AlertBar>
+      <ToastifyAlert />
       <Wrapper>
         <LogoIconWrapper>
           <MdAccountBalance style={{ fontSize: '50px' }} />
