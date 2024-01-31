@@ -11,6 +11,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { RecoilRoot, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { ToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { getAuthorityCookie } from './utils/cookies';
@@ -62,6 +63,7 @@ export function App() {
                 location.pathname !== '/createcontentwindow' &&
                 location.pathname !== '/createcontentmain' && <Header />}
               <BodyWrapper>
+                <ToastifyAlert />
                 <Outlet />
               </BodyWrapper>
             </MainWrapper>
