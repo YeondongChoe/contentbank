@@ -1,3 +1,5 @@
+import { openToastifyAlert } from '../components';
+
 import {
   questionInstance,
   authInstance,
@@ -44,11 +46,7 @@ type putSaveNameProps = {
   nameValue: string;
   isNameEdit: boolean;
   setIsNameEdit: (result: boolean) => void;
-  setIsError: (result: boolean) => void;
-  setIsSuccess: (result: boolean) => void;
-  openAlert: () => void;
   setNameValue: (result: string) => void;
-  setMessage: (result: string) => void;
 };
 
 /** 이름 변경 API */
@@ -57,11 +55,7 @@ export const putSaveName = async ({
   nameValue,
   isNameEdit,
   setIsNameEdit,
-  setIsError,
-  setIsSuccess,
-  openAlert,
   setNameValue,
-  setMessage,
 }: putSaveNameProps) => {
   const data = {
     authority: member.authority,
@@ -74,26 +68,23 @@ export const putSaveName = async ({
     .then((response) => {
       handleAuthorizationRenewal(response);
       setIsNameEdit(!isNameEdit);
-      setIsError(false);
-      setIsSuccess(true);
-      setMessage(response.data.message);
-      openAlert();
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
       setNameValue('');
     })
     .catch((error) => {
-      setIsError(true);
-      setIsSuccess(false);
-      openAlert();
-      //setMessage(error.response.data.errors.name);
-      setMessage(error.response.data.message);
+      openToastifyAlert({
+        type: 'warning',
+        text: error.response.data.message,
+      });
     });
 };
 
 type putChangePasswordProps = {
   Password: string;
   PasswordConfirm: string;
-  setErrorMessage: (result: string) => void;
-  openAlert: () => void;
   setIsSuccessAlertOpen: (result: boolean) => void;
   setIsRedirect: (result: boolean) => void;
 };
@@ -102,8 +93,6 @@ type putChangePasswordProps = {
 export const putChangePassword = async ({
   Password,
   PasswordConfirm,
-  setErrorMessage,
-  openAlert,
   setIsSuccessAlertOpen,
   setIsRedirect,
 }: putChangePasswordProps) => {
@@ -119,8 +108,10 @@ export const putChangePassword = async ({
       setIsRedirect(true);
     })
     .catch((error) => {
-      setErrorMessage(error.response.data.message);
-      openAlert();
+      openToastifyAlert({
+        type: 'error',
+        text: error.response.data.message,
+      });
     });
 };
 

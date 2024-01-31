@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { AxiosError } from 'axios';
 
+import { openToastifyAlert } from '../components';
 import { setAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
 import {
@@ -44,14 +45,11 @@ type postLoginProps = {
   isClicked: boolean;
   Id: string;
   navigate: (result: string) => void;
-
-  setErrorMessage: (result: string) => void;
-  openAlert: () => void;
 };
 
 /** 로그인 API */
 // export const postLogin = async (
-//   { navigate, isClicked, Id, setErrorMessage, openAlert }: postLoginProps,
+//   { navigate, isClicked, Id }: postLoginProps,
 //   data: dataProps,
 // ) => {
 //   await authInstance
@@ -76,8 +74,10 @@ type postLoginProps = {
 //       }
 //     })
 //     .catch((error) => {
-//       setErrorMessage(error.response.data.message);
-//       openAlert();
+//       openToastifyAlert({
+//         type: 'error',
+//         text: error.response.data.message,
+//       });
 //     });
 // };
 
