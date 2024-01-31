@@ -120,6 +120,12 @@ export function Login() {
 
   return (
     <Container>
+      <AlertBar
+        type="error"
+        isAlertOpen={isAlertOpen}
+        closeAlert={closeAlert}
+        message={errorMessage}
+      ></AlertBar>
       <Wrapper>
         <LogoIconWrapper>
           <MdAccountBalance style={{ fontSize: '50px' }} />
