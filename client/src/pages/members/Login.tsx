@@ -70,13 +70,18 @@ export function Login() {
     },
     onSuccess: (response) => {
       if (response.status === 200) {
-        // 토큰값 쿠키에 저장
+        // 데이터에서 토큰과 세션을 저장
         setAuthorityCookie('accessToken', response.data.access_token, {
           path: '/',
           sameSite: 'strict',
           secure: false,
         });
-        // 데이터에서 토큰과 세션을 저장
+        console.log(response.data);
+        setAuthorityCookie('accessToken', response.data.access_token, {
+          path: '/',
+          sameSite: 'strict',
+          secure: false,
+        });
 
         // 재로그인 토큰과 세션 만료 확인
 
