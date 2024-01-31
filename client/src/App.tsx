@@ -17,15 +17,18 @@ import { Navigation } from './components/Navigation';
 import { getAuthorityCookie } from './utils/cookies';
 
 export function App() {
+  //전역 쿼리캐싱
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
         if (query.meta && query.meta.errorMessage) {
+          //TODO: 에러시 토스트 또는 보이는 처리
           // toast.error(query.meta.errorMessage);
           console.log(`${query.meta.errorMessage}: ${error}`);
         }
       },
       onSuccess: (data, query) => {
+        //데이터 성공시
         console.log(`onSuccess: ${data}`);
       },
     }),
