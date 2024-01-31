@@ -107,14 +107,6 @@ export function Member() {
     const enabled =
       tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
 
-    // const { isLoading, error, data, isFetching } = useQueryGetMemberList({
-    //   searchValue,
-    //   page,
-    //   size,
-    //   enabled,
-    // });
-    // isFetching && setMemberList(data?.data.content);
-    // isFetching && setTotalPage(data?.data.data.totalElements);
     console.log('data00');
 
     // isFetching && setMemberList(data?.data.content);
@@ -146,25 +138,19 @@ export function Member() {
   } = useQuery({
     queryKey: ['get-memberlist'],
     queryFn: () => {
-      // try {
-      axios.get(`/v1/account`);
+      authInstance.get(`/account?menuIdx=${1}`);
       // .then((response) => {
       // handleAuthorizationRenewal(response);
       //   setTotalPage(response.data.data.totalElements);
       //   setMemberList(response.data.data.content);
       // });
       // return response;
-      // } catch (error) {
-      //   console.log(error);
-      //   throw error;
-      // }
     },
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
-  console.log(memberListData);
-  console.log('memberListData');
+  console.log('memberListData', memberListData);
 
   useEffect(() => {
     // loadData();

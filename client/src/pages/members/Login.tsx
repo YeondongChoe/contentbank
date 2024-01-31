@@ -76,13 +76,14 @@ export function Login() {
           sameSite: 'strict',
           secure: false,
         });
-        console.log(response.data);
-        setAuthorityCookie('accessToken', response.data.access_token, {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        });
 
+        // TODO: 현재넘어오는 데이터 없음
+        // setAuthorityCookie('sessionId', response.data.sessionId, {
+        //   path: '/',
+        //   sameSite: 'strict',
+        //   secure: false,
+        // });
+        // console.log(response.data.sessionId);
         // 재로그인 토큰과 세션 만료 확인
 
         // 아이디 저장 체크박스
