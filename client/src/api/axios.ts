@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 
 import { getAuthorityCookie, setAuthorityCookie } from '../utils/cookies';
 
-/** 권한서버 API Instance*/
+/** 인증 서비스 API Instance*/
 export const authInstance = axios.create({
   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
   headers: {
@@ -32,6 +32,16 @@ export const handleAuthorizationRenewal = (response: AxiosResponse) => {
     });
   }
 };
+
+// 유저 서비스
+export const userInstance = axios.create({
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/user-service`,
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
+    'session-id': `${getAuthorityCookie('sessionId')}`,
+  },
+});
 
 // 메뉴 리소스 서비스
 export const resourceInstance = axios.create({
