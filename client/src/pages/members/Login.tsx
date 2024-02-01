@@ -7,7 +7,7 @@ import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { authInstance } from '../../api/axios';
+import { authInstance, handleAuthorizationRenewal } from '../../api/axios';
 import {
   Input,
   Label,
@@ -23,13 +23,13 @@ import {
 } from '../../utils/cookies';
 
 type LoginType = {
-  id: string;
+  username: string;
   password: string;
 };
 
 export function Login() {
   const [isClicked, setIsClicked] = useState(
-    getAuthorityCookie('userId') ? true : false,
+    getAuthorityCookie('username') ? true : false,
   );
 
   const {
@@ -39,7 +39,7 @@ export function Login() {
     formState: { errors },
   } = useForm<LoginType>();
 
-  const Id = watch('id', '');
+  const Id = watch('username', '');
   const Password = watch('password', '');
   const IdInputRef = useRef<HTMLInputElement | null>(null);
   const PasswordInputRef = useRef<HTMLInputElement | null>(null);
@@ -48,65 +48,54 @@ export function Login() {
 
   //로그인 api
   const postLogin = (auth: LoginType) => {
-    return authInstance.post('/auth/login', auth);
+    return authInstance.post('/v1/auth/login', auth);
   };
 
   const { data: loginPostData, mutate: onLogin } = useMutation({
     mutationFn: postLogin,
-    onError: (error) => {
-      // console.log('loginPostData error', error.message);
-      if (error.message.includes('401')) {
-        openToastifyAlert({
-          type: 'error',
-          text: '아이디와 패스워드를 확인하세요',
-        });
-      }
-      if (error.message.includes('400')) {
-        openToastifyAlert({
-          type: 'error',
-          text: error.message,
-        });
-      }
+    onError: (context: { response: { data: { message: string } } }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+
+      // console.log('loginPostData error', context.response.data.message);
     },
     onSuccess: (response) => {
       if (response.status === 200) {
         // 데이터에서 토큰과 세션을 저장
-        setAuthorityCookie('accessToken', response.data.access_token, {
+        setAuthorityCookie('accessToken', response.data.data.accessToken, {
           path: '/',
           sameSite: 'strict',
           secure: false,
         });
+        setAuthorityCookie('sessionId', response.data.data.sessionId, {
+          path: '/',
+          sameSite: 'strict',
+          secure: false,
+        });
+        // console.log('sessionId', response.data.data.sessionId);
 
-        // TODO: 현재넘어오는 데이터 없음
-        // setAuthorityCookie('sessionId', response.data.sessionId, {
-        //   path: '/',
-        //   sameSite: 'strict',
-        //   secure: false,
-        // });
-        // console.log(response.data.sessionId);
-        // 재로그인 토큰과 세션 만료 확인
+        // 재로그인 토큰 만료 확인
+        handleAuthorizationRenewal(response);
 
         // 아이디 저장 체크박스
         if (isClicked === true) {
-          setAuthorityCookie('userId', Id, { path: '/' });
+          setAuthorityCookie('username', Id, { path: '/' });
         } else {
-          removeAuthorityCookie('userId', { path: '/' });
+          removeAuthorityCookie('username', { path: '/' });
         }
 
         //첫 로그인시 비밀번호 변경 페이지로
-        if (response.data.initPassword === true) {
-          navigate('/firstlogin');
-        } else {
-          navigate('/contentlist');
-        }
+        navigate(response.data.link);
       }
       console.log('loginPostData', response);
     },
   });
 
-  const submitLogin: SubmitHandler<LoginType> = (data) => {
-    // console.log('data component', data);
-    onLogin(data);
+  const submitLogin: SubmitHandler<LoginType> = (auth) => {
+    // console.log('auth ', auth);
+    onLogin(auth);
   };
 
   const checkIconselected = () => {
@@ -138,8 +127,8 @@ export function Login() {
               <Label fontSize="14px" value="아이디" onClick={ClickIdLabel} />
               <Controller
                 control={control}
-                name="id"
-                defaultValue={getAuthorityCookie('userId') || ''}
+                name="username"
+                defaultValue={getAuthorityCookie('username') || ''}
                 render={({ field }) => (
                   <Input
                     border="normal"

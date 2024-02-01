@@ -59,7 +59,7 @@ const router = createBrowserRouter([
         element: <Mypage />,
       },
       {
-        path: '/contentlist',
+        path: '/content-create/quiz',
         element: <ContentList />,
       },
       {

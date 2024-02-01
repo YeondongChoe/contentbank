@@ -25,6 +25,7 @@ export function Header() {
   // 사이드메뉴 로그아웃 시
   const removeCookie = () => {
     removeAuthorityCookie('accessToken');
+    removeAuthorityCookie('sessionId');
   };
 
   useEffect(() => {
