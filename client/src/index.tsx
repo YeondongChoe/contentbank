@@ -71,35 +71,35 @@ const router = createBrowserRouter([
         element: <CreateContentMain />,
       },
       {
-        path: '/contentworksheet',
+        path: '/content-create/exam',
         element: <ContentWorksheet />,
       },
       {
-        path: '/createworksheet/step1',
+        path: '/content-create/exam/step1',
         element: <CreateWorksheetStep1 />,
       },
       {
-        path: '/createworksheet/step2',
+        path: '/content-create/exam/step2',
         element: <CreateWorksheetStep2 />,
       },
       {
-        path: '/createworksheet/step3',
+        path: '/content-create/exam/step3',
         element: <CreateWorksheetStep3 />,
       },
       {
-        path: '/managementlist',
+        path: '/content-manage/quiz',
         element: <ManagementList />,
       },
       {
-        path: '/managementtree',
+        path: '/content-manage/classify',
         element: <ManagementTree />,
       },
       {
-        path: '/operationmember',
+        path: '/operation-manage/member',
         element: <OperationMember />,
       },
       {
-        path: '/operationauthority',
+        path: '/operation-manage/authority',
         element: <OperationAuthority />,
       },
     ],

@@ -49,12 +49,12 @@ export function Step1() {
 
   const closePopup = () => {
     // setIsStep1(false);
-    navigate('/contentworksheet');
+    navigate('/content-create/exam');
   };
 
   const moveStep2 = () => {
     // setIsStep2(true);
-    navigate('/createworksheet/step2');
+    navigate('/content-create/exam/step2');
     console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
     console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
   };

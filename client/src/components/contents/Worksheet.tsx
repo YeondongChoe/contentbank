@@ -61,7 +61,7 @@ export function Worksheet() {
     //navigate('createworksheet/step1', { state: 'step1' });
     windowOpenHandler({
       name: 'createworksheetwindow',
-      url: '/createworksheet/step1',
+      url: '/content-create/exam/step1',
     });
   };
 

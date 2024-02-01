@@ -55,9 +55,11 @@ export function App() {
               location.pathname !== '/relogin' &&
               location.pathname !== '/createcontentwindow' &&
               location.pathname !== '/createcontentmain' &&
-              location.pathname !== '/createworksheet/step1' &&
-              location.pathname !== '/createworksheet/step2' &&
-              location.pathname !== '/createworksheet/step3' && <Navigation />}
+              location.pathname !== '/content-create/exam/step1' &&
+              location.pathname !== '/content-create/exam/step2' &&
+              location.pathname !== '/content-create/exam/step3' && (
+                <Navigation />
+              )}
             <MainWrapper>
               {getAuthorityCookie('accessToken') &&
                 location.pathname !== '/login' &&
@@ -65,9 +67,11 @@ export function App() {
                 location.pathname !== '/relogin' &&
                 location.pathname !== '/createcontentwindow' &&
                 location.pathname !== '/createcontentmain' &&
-                location.pathname !== '/createworksheet/step1' &&
-                location.pathname !== '/createworksheet/step2' &&
-                location.pathname !== '/createworksheet/step3' && <Header />}
+                location.pathname !== '/content-create/exam/step1' &&
+                location.pathname !== '/content-create/exam/step2' &&
+                location.pathname !== '/content-create/exam/step3' && (
+                  <Header />
+                )}
               <BodyWrapper>
                 <ToastifyAlert />
                 <Outlet />

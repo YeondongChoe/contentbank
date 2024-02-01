@@ -71,7 +71,7 @@ export function Step3() {
 
   const closePopup = () => {
     // setIsStep1(false);
-    navigate('/contentworksheet');
+    navigate('/content-create/exam');
   };
   const goBackMainPopup = () => {
     // setIsStep2(true);
@@ -82,7 +82,7 @@ export function Step3() {
     // setIsStep1(false);
     // setIsStep2(false);
     // setIsStep3(false);
-    navigate('/contentworksheet');
+    navigate('/content-create/exam');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 

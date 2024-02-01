@@ -77,7 +77,7 @@ export function Navigation() {
                 </svg>
                 <span>문항</span>
               </Link>
-              <Link to={'/contentworksheet'}>
+              <Link to={'/content-create/exam'}>
                 <svg
                   width="22"
                   height="22"
@@ -106,7 +106,7 @@ export function Navigation() {
                 {/* <MdAccountBalance style={{ width: '20px', height: '20px' }} /> */}
                 <Label type="navi" value={'콘텐츠 관리'}></Label>
               </strong>
-              <Link to={'/managementlist'}>
+              <Link to={'/content-manage/quiz'}>
                 <svg
                   width="18"
                   height="18"
@@ -137,7 +137,7 @@ export function Navigation() {
                 </svg>
                 <span>문항</span>
               </Link>
-              <Link to={'/managementtree'}>
+              <Link to={'/content-manage/classify'}>
                 <svg
                   width="20"
                   height="20"
@@ -170,7 +170,7 @@ export function Navigation() {
                 </svg> */}
                 <Label type="navi" value={'운영 관리'}></Label>
               </strong>
-              <Link to={'/operationmember'}>
+              <Link to={'/operation-manage/member'}>
                 <svg
                   width="20"
                   height="20"
@@ -185,7 +185,7 @@ export function Navigation() {
                 </svg>
                 <span>회원 관리</span>
               </Link>
-              <Link to={'/operationauthority'}>
+              <Link to={'/operation-manage/authority'}>
                 <svg
                   width="20"
                   height="20"
@@ -225,7 +225,7 @@ export function Navigation() {
                   />
                 </svg>
               </Link>
-              <Link to={'/contentworksheet'}>
+              <Link to={'/content-create/exam'}>
                 <svg
                   width="22"
                   height="22"
@@ -250,7 +250,7 @@ export function Navigation() {
             </MiniNavigationMenu>
             <MiniNavigationMenu>
               <MdAccountBalance style={{ width: '20px', height: '20px' }} />
-              <Link to={'/managementlist'}>
+              <Link to={'/content-manage/quiz'}>
                 <svg
                   width="18"
                   height="18"
@@ -280,7 +280,7 @@ export function Navigation() {
                   </defs>
                 </svg>
               </Link>
-              <Link to={'/managementtree'}>
+              <Link to={'/content-manage/classify'}>
                 <svg
                   width="20"
                   height="20"
@@ -309,7 +309,7 @@ export function Navigation() {
                   fill="white"
                 />
               </svg>
-              <Link to={'/operationmember'}>
+              <Link to={'/operation-manage/member'}>
                 <svg
                   width="20"
                   height="20"
@@ -323,7 +323,7 @@ export function Navigation() {
                   />
                 </svg>
               </Link>
-              <Link to={'/operationauthority'}>
+              <Link to={'/operation-manage/authority'}>
                 <svg
                   width="20"
                   height="20"

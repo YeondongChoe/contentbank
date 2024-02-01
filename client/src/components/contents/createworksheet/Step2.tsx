@@ -146,12 +146,12 @@ export function Step2() {
 
   const goBackMainPopup = () => {
     //setIsStep2(false);
-    navigate('/createworksheet/step1');
+    navigate('/content-create/exam/step1');
   };
 
   const moveStep3 = () => {
     // setIsStep3(true);
-    navigate('/createworksheet/step3');
+    navigate('/content-create/exam/step3');
     console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
 
