@@ -129,7 +129,7 @@ export function WorksheetTbody({ list }: TbodyProps) {
 const TbodyWrap = styled.tbody`
   font-size: small;
 
-  th {
+  /* th {
     border: 1px solid ${COLOR.SECONDARY};
     color: ${COLOR.SECONDARY};
     font-size: 14px;
@@ -138,9 +138,9 @@ const TbodyWrap = styled.tbody`
     &.padding {
       padding: 10px;
     }
-  }
+  } */
   td {
-    border: 1px solid ${COLOR.SECONDARY};
+    border-bottom: 1px solid ${COLOR.BORDER_GRAY};
     padding: 10px;
     text-align: center;
     font-size: 13px;

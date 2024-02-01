@@ -81,6 +81,7 @@ const Container = styled.div<{ $isOpenNavigation: boolean }>`
   height: 40px;
   padding: 0 20px;
   z-index: 1;
+  background-color: white;
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
 const Wrapper = styled.div`

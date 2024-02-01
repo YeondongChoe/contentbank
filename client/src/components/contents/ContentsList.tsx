@@ -217,7 +217,7 @@ export function ContentsList() {
         <Title>문항</Title>
         <Button
           height={'35px'}
-          width={'110px'}
+          width={'130px'}
           onClick={openWindowCreate}
           fontSize="13px"
           $filled

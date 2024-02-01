@@ -28,6 +28,7 @@ import {
 } from '../../store/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { WorksheetTableType } from '../../types';
+import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR, worksheetColWidth, worksheetTheadList } from '../constants';
 import dummy from '../constants/data.json';
 
@@ -56,11 +57,12 @@ export function Worksheet() {
   // const setIsEditWorksheet = useSetRecoilState(editWorksheetBoolAtom);
 
   // 학습지 만들기 페이지로 이동
-  const openCreateWorksheet = () => {
-    // setIsStep1(true);
-    // setIsStep2(false);
-    // setIsEditWorksheet(false);
-    navigate('/createworksheet/step1', { state: 'step1' });
+  const openWindowCreateWorksheet = () => {
+    //navigate('createworksheet/step1', { state: 'step1' });
+    windowOpenHandler({
+      name: 'createworksheetwindow',
+      url: '/createworksheet/step1',
+    });
   };
 
   const ref = useRef(null);
@@ -118,7 +120,19 @@ export function Worksheet() {
 
   return (
     <Container>
-      <IndexInfo list={['콘텐츠 제작', '학습지', `${tabVeiw}`]} />
+      <TitleWrapper>
+        <Title>문항</Title>
+        <Button
+          height={'35px'}
+          width={'150px'}
+          onClick={openWindowCreateWorksheet}
+          fontSize="13px"
+          $filled
+          cursor
+        >
+          + 학습지 만들기
+        </Button>
+      </TitleWrapper>
       <HeadWrapper>
         <TabMenu
           length={2}
@@ -127,28 +141,16 @@ export function Worksheet() {
           width={'250px'}
           setTabVeiw={setTabVeiw}
         />
-
-        {/* 테이블 상단 검색창 + 문항 업로드 버튼 */}
-        <InputWrapper>
-          <Search
-            value={searchValue}
-            width={'250px'}
-            onClick={() => filterSearchValue()}
-            onKeyDown={(e) => {}}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="학습지명, 학년, 태그, 작성자 검색"
-          />
-          <Button
-            height={'35px'}
-            width={'150px'}
-            $margin={'0 0 0 10px'}
-            onClick={openCreateWorksheet}
-          >
-            학습지 만들기
-          </Button>
-        </InputWrapper>
+        <Search
+          value={searchValue}
+          width={'25%'}
+          height="40px"
+          onClick={() => filterSearchValue()}
+          onKeyDown={(e) => {}}
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder="학습지명, 학년, 태그, 작성자 검색"
+        />
       </HeadWrapper>
-
       <TableWrapper>
         <TabMenu
           length={4}
@@ -157,9 +159,8 @@ export function Worksheet() {
           width={'300px'}
           setTabVeiw={setSubTabVeiw}
           lineStyle
-          $margin={'10px 0'}
+          $margin={'10px 0 20px 0'}
         />
-
         <Table
           list={worksheetList}
           colWidth={worksheetColWidth}
@@ -169,7 +170,6 @@ export function Worksheet() {
         />
       </TableWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
-
       {isPreview && (
         <Overlay>
           <WorksheetBasic />
@@ -180,22 +180,26 @@ export function Worksheet() {
 }
 
 const Container = styled.div`
+  padding: 40px 80px;
   width: 100%;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
+`;
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: 800;
 `;
 const HeadWrapper = styled.div`
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
-const InputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding-bottom: 10px;
 `;
 const TableWrapper = styled.div`
   min-height: 580px;
-  border-top: 1px solid ${COLOR.SECONDARY};
 `;
 const Overlay = styled.div`
   position: fixed;

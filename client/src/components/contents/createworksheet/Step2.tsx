@@ -108,7 +108,8 @@ export function Step2() {
   };
 
   const goBackMainPopup = () => {
-    // setIsStep2(false);
+    //setIsStep2(false);
+    navigate('/createworksheet/step1');
   };
 
   const moveStep3 = () => {
@@ -118,166 +119,151 @@ export function Step2() {
   };
 
   return (
-    <Overlay>
-      <Container>
-        <TitleWrapper>
-          <IconWrapper>
-            <IoIosArrowBack
-              style={{ fontSize: '24px', cursor: 'pointer' }}
-              onClick={goBackMainPopup}
-            />
-          </IconWrapper>
-          <Title>
-            <Span>
-              {/* {!isEditWorksheet && <FrontSpan>STEP 1 -</FrontSpan>} */}
-              STEP 2
-            </Span>
-            학습지 상세 편집
-          </Title>
-          <IoMdClose
-            onClick={closePopup}
-            style={{ fontSize: '22px', cursor: 'pointer' }}
+    <Container>
+      <TitleWrapper>
+        <IconWrapper>
+          <IoIosArrowBack
+            style={{ fontSize: '24px', cursor: 'pointer' }}
+            onClick={goBackMainPopup}
           />
-        </TitleWrapper>
-        <Wrapper>
-          <DiscriptionSection>
-            {isSimilar ? (
-              <SimilarWrapper>
-                <SimilarCloseButtonWrapper>
-                  <IoMdClose
-                    onClick={() => setIsSimilar(false)}
+        </IconWrapper>
+        <Title>
+          <Span>
+            {/* {!isEditWorksheet && <FrontSpan>STEP 1 -</FrontSpan>} */}
+            STEP 2
+          </Span>
+          학습지 상세 편집
+        </Title>
+      </TitleWrapper>
+      <Wrapper>
+        <DiscriptionSection>
+          {isSimilar ? (
+            <SimilarWrapper>
+              <SimilarCloseButtonWrapper>
+                <IoMdClose
+                  onClick={() => setIsSimilar(false)}
+                  style={{ fontSize: '22px', cursor: 'pointer' }}
+                />
+              </SimilarCloseButtonWrapper>
+              <SimilarTitleWrapper>
+                <SimilarTitle>
+                  1번 유사 문항
+                  <SimilarTitleSpan>
+                    문항을 교체하거나, 추가할 수 있습니다.
+                  </SimilarTitleSpan>
+                </SimilarTitle>
+                <RestartWrapper>
+                  <MdOutlineRestartAlt
                     style={{ fontSize: '22px', cursor: 'pointer' }}
                   />
-                </SimilarCloseButtonWrapper>
-                <SimilarTitleWrapper>
-                  <SimilarTitle>
-                    1번 유사 문항
-                    <SimilarTitleSpan>
-                      문항을 교체하거나, 추가할 수 있습니다.
-                    </SimilarTitleSpan>
-                  </SimilarTitle>
-                  <RestartWrapper>
-                    <MdOutlineRestartAlt
-                      style={{ fontSize: '22px', cursor: 'pointer' }}
-                    />
-                    새로 불러오기
-                  </RestartWrapper>
-                </SimilarTitleWrapper>
-                <SimilarContentsWrapper>
-                  <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
-                  <div>문항 뷰어</div>
-                  <div>데이터값으로 받아온 문항 뷰어로 보여주기</div>
-                  <div>교체</div>
-                  <div>+추가</div>
-                </SimilarContentsWrapper>
-              </SimilarWrapper>
-            ) : (
-              <>
-                <TabWrapper>
-                  <TabMenu
-                    length={4}
-                    menu={menuList}
-                    initialValue={'학습지 요약'}
-                    width={'490px'}
-                    lineStyle
-                  />
-                </TabWrapper>
-                <DiscriptionWrapper>
-                  <Label value="문항 통계" fontSize="16px" />
-                  <Discripton>
-                    <DiscriptonOutline>
-                      <div>총 45 문항</div>
-                      <DiscriptonType>객관식 20</DiscriptonType>
-                      <DiscriptonType>주관식 10</DiscriptonType>
-                      <DiscriptonType>서술형 15</DiscriptonType>
-                    </DiscriptonOutline>
-                    <BarChart data={Data}></BarChart>
-                  </Discripton>
-                  <Label value="문항 상세 내용 및 순서 변경" fontSize="16px" />
-                  <ContentsList>
-                    {contentList.map((el, i) => (
-                      <Content
-                        key={i}
-                        onClick={() => {
-                          selectContentCode(el.sort);
-                        }}
-                        $choiced={el.sort === selectedCode}
-                        draggable
-                        onDragStart={(e) => dragStart(e, i)}
-                        onDragEnter={(e) => dragEnter(e, i)}
-                        onDragOver={dragOver}
-                        onDragEnd={drop}
-                      >
-                        {el.code}
-                      </Content>
-                    ))}
-                  </ContentsList>
-                </DiscriptionWrapper>
-              </>
-            )}
-          </DiscriptionSection>
-          <ContentListSection>
-            {list.map((card, i) => (
-              <div
-                key={i}
-                // draggable
-                // onDragStart={(e) => dragStart(e, i)}
-                // onDragEnter={(e) => dragEnter(e, i)}
-                // onDragOver={dragOver}
-                // onDragEnd={drop}
-              >
-                <MathviewerCard
-                  onClick={showSimilarContent}
-                  isSimilar={isSimilar}
-                  index={i}
-                  data={card}
-                  selectedCardIndex={selectedCardIndex}
-                  onSelectCard={setSelectedCardIndex}
-                ></MathviewerCard>
-              </div>
-            ))}
-          </ContentListSection>
-        </Wrapper>
-        <NextStepButtonWrapper>
-          <Button
-            buttonType="button"
-            onClick={moveStep3}
-            $padding="10px"
-            height={'30px'}
-            width={'80px'}
-            fontSize="12px"
-          >
-            <span>다음 단계</span>
-          </Button>
-        </NextStepButtonWrapper>
-      </Container>
-      {/* {isStep3 && <Step3 />} */}
-    </Overlay>
+                  새로 불러오기
+                </RestartWrapper>
+              </SimilarTitleWrapper>
+              <SimilarContentsWrapper>
+                <div>ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
+                <div>문항 뷰어</div>
+                <div>데이터값으로 받아온 문항 뷰어로 보여주기</div>
+                <div>교체</div>
+                <div>+추가</div>
+              </SimilarContentsWrapper>
+            </SimilarWrapper>
+          ) : (
+            <>
+              <TabWrapper>
+                <TabMenu
+                  length={4}
+                  menu={menuList}
+                  initialValue={'학습지 요약'}
+                  width={'490px'}
+                  lineStyle
+                />
+              </TabWrapper>
+              <DiscriptionWrapper>
+                <Label value="문항 통계" fontSize="16px" />
+                <Discripton>
+                  <DiscriptonOutline>
+                    <div>총 45 문항</div>
+                    <DiscriptonType>객관식 20</DiscriptonType>
+                    <DiscriptonType>주관식 10</DiscriptonType>
+                    <DiscriptonType>서술형 15</DiscriptonType>
+                  </DiscriptonOutline>
+                  <BarChart data={Data}></BarChart>
+                </Discripton>
+                <Label value="문항 상세 내용 및 순서 변경" fontSize="16px" />
+                <ContentsList>
+                  {contentList.map((el, i) => (
+                    <Content
+                      key={i}
+                      onClick={() => {
+                        selectContentCode(el.sort);
+                      }}
+                      $choiced={el.sort === selectedCode}
+                      draggable
+                      onDragStart={(e) => dragStart(e, i)}
+                      onDragEnter={(e) => dragEnter(e, i)}
+                      onDragOver={dragOver}
+                      onDragEnd={drop}
+                    >
+                      {el.code}
+                    </Content>
+                  ))}
+                </ContentsList>
+              </DiscriptionWrapper>
+            </>
+          )}
+        </DiscriptionSection>
+        <ContentListSection>
+          {list.map((card, i) => (
+            <div
+              key={i}
+              // draggable
+              // onDragStart={(e) => dragStart(e, i)}
+              // onDragEnter={(e) => dragEnter(e, i)}
+              // onDragOver={dragOver}
+              // onDragEnd={drop}
+            >
+              <MathviewerCard
+                onClick={showSimilarContent}
+                isSimilar={isSimilar}
+                index={i}
+                data={card}
+                selectedCardIndex={selectedCardIndex}
+                onSelectCard={setSelectedCardIndex}
+              ></MathviewerCard>
+            </div>
+          ))}
+        </ContentListSection>
+      </Wrapper>
+      <NextStepButtonWrapper>
+        <Button
+          buttonType="button"
+          onClick={moveStep3}
+          $padding="10px"
+          height={'30px'}
+          width={'80px'}
+          fontSize="12px"
+        >
+          <span>다음 단계</span>
+        </Button>
+      </NextStepButtonWrapper>
+    </Container>
   );
 }
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-`;
-const Container = styled.div`
-  min-width: 1024px;
-  width: 1080px;
-  height: 780px;
-  padding: 20px;
-  border: 1px solid ${COLOR.BORDER_BLUE};
-  background-color: white;
-  border-radius: 5px;
-`;
+// const Overlay = styled.div`
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   z-index: 1;
+// `;
+const Container = styled.div``;
 const TitleWrapper = styled.div`
-  padding: 20px 0px;
+  padding-bottom: 20px;
   display: flex;
   justify-content: space-between;
 `;
@@ -286,26 +272,23 @@ const IconWrapper = styled.div`
   align-items: center;
 `;
 const Title = styled.div`
+  font-size: 30px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   flex: 1 0 0;
   padding-left: 10px;
 `;
-const FrontSpan = styled.span`
-  color: ${COLOR.BORDER_BLUE};
-`;
 const Span = styled.span`
-  color: ${COLOR.SECONDARY};
+  color: #1976d2;
   padding-right: 10px;
 `;
 const Wrapper = styled.div`
-  height: 629px;
   display: flex;
-  justify-content: space-between;
   gap: 20px;
 `;
 const DiscriptionSection = styled.section`
+  min-height: 770px;
   display: flex;
   flex: 1 0 0;
   flex-direction: column;
@@ -314,9 +297,8 @@ const DiscriptionSection = styled.section`
   border-radius: 25px;
 `;
 const TabWrapper = styled.div`
+  width: 100%;
   padding: 10px 0px;
-  display: flex;
-  align-items: center;
 `;
 const DiscriptionWrapper = styled.div`
   width: 100%;
@@ -327,7 +309,7 @@ const DiscriptionWrapper = styled.div`
 const Discripton = styled.div`
   display: flex;
   justify-content: space-between;
-  height: 152px;
+  //height: 152px;
   padding: 0px 30px 30px 0px;
 `;
 const DiscriptonOutline = styled.div`
