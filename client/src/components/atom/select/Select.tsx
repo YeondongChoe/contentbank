@@ -28,6 +28,7 @@ type SelectProps = {
   padding?: string;
   text?: string;
   top?: string;
+  blackMode?: boolean;
 };
 
 export function Select({
@@ -39,6 +40,7 @@ export function Select({
   height = '40px',
   padding,
   text,
+  blackMode,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -59,6 +61,7 @@ export function Select({
         onClick={() => setIsOptionShow(true)}
         textAlign="left"
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
+        blackMode={blackMode}
       >
         {selected || defaultValue}
       </IconButton>
@@ -110,6 +113,7 @@ const SelectOptionsList = styled.ul<{ $top?: string }>`
     border-right: 1px solid ${COLOR.LIGHT_GRAY};
     border-bottom: 1px solid ${COLOR.LIGHT_GRAY};
     background-color: #fff;
+
     &:hover {
       background-color: ${COLOR.HOVER};
     }

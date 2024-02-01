@@ -40,13 +40,12 @@ const Component = styled.div`
   label {
     display: flex;
     justify-content: center;
-    font-size: 12px;
+    font-size: 14px;
   }
 `;
 
 const Bar = styled.div<BarStyleProps>`
   height: ${({ height }) => (height ? ` ${height}px;` : '0px')};
-  width: 30px;
   background-color: ${COLOR.BLUEGREEN};
   margin: 5px 0px;
 `;

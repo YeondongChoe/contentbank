@@ -54,14 +54,20 @@ export function App() {
               location.pathname !== '/init-change-password' &&
               location.pathname !== '/relogin' &&
               location.pathname !== '/createcontentwindow' &&
-              location.pathname !== '/createcontentmain' && <Navigation />}
+              location.pathname !== '/createcontentmain' &&
+              location.pathname !== '/createworksheet/step1' &&
+              location.pathname !== '/createworksheet/step2' &&
+              location.pathname !== '/createworksheet/step3' && <Navigation />}
             <MainWrapper>
               {getAuthorityCookie('accessToken') &&
                 location.pathname !== '/login' &&
                 location.pathname !== '/init-change-password' &&
                 location.pathname !== '/relogin' &&
                 location.pathname !== '/createcontentwindow' &&
-                location.pathname !== '/createcontentmain' && <Header />}
+                location.pathname !== '/createcontentmain' &&
+                location.pathname !== '/createworksheet/step1' &&
+                location.pathname !== '/createworksheet/step2' &&
+                location.pathname !== '/createworksheet/step3' && <Header />}
               <BodyWrapper>
                 <ToastifyAlert />
                 <Outlet />

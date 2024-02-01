@@ -24,6 +24,7 @@ type IconButtonProps = {
   textAlign?: 'center' | 'left' | 'right';
   $borderNone?: boolean;
   $iconOlny?: boolean;
+  blackMode?: boolean;
 };
 
 export function IconButton({
@@ -45,6 +46,7 @@ export function IconButton({
   textAlign,
   $borderNone,
   $iconOlny,
+  blackMode,
 }: IconButtonProps) {
   return (
     <Component
@@ -62,6 +64,7 @@ export function IconButton({
       $textAlign={textAlign}
       $borderNone={$borderNone}
       $iconOlny={$iconOlny}
+      $blackMode={blackMode}
     >
       {leftIconSrc && <LeftIconWrapper>{leftIconSrc}</LeftIconWrapper>}
       <span> {children ? children : text}</span>
@@ -83,6 +86,7 @@ type ButtonStyleProps = {
   leftIconSrc?: boolean;
   rightIconSrc?: boolean;
   $iconOlny?: boolean;
+  $blackMode?: boolean;
 };
 
 const Component = styled.button<ButtonStyleProps>`
@@ -121,6 +125,11 @@ const Component = styled.button<ButtonStyleProps>`
       : `&:focus {
 			border: 1px solid ${COLOR.PRIMARY};
 		};`}
+  ${({ $blackMode }) =>
+    $blackMode &&
+    'background-color: black; color: white; border: none; &:hover {border: none;} &:focus{border: none}'}
+  
+
 
   span {
     width: 100%;
@@ -137,6 +146,7 @@ const RightIconWrapper = styled.span`
   right: 10px;
   display: flex;
   justify-content: flex-end;
+  font-size: 20px;
 `;
 
 const LeftIconWrapper = styled.span`
