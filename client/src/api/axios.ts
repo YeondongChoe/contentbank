@@ -5,20 +5,6 @@ import axios, { AxiosResponse } from 'axios';
 
 import { getAuthorityCookie, setAuthorityCookie } from '../utils/cookies';
 
-/** 문항서버 API Instance*/
-export const questionInstance = axios.create({
-  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/question-service`,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-  },
-});
-
-questionInstance.interceptors.request.use(function (config) {
-  config.headers.Authorization = `Bearer ${getAuthorityCookie('accessToken')}`;
-  return config;
-});
-
 /** 권한서버 API Instance*/
 export const authInstance = axios.create({
   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
@@ -46,5 +32,28 @@ export const handleAuthorizationRenewal = (response: AxiosResponse) => {
     });
   }
 };
+
+// 메뉴 리소스 서비스
+export const resourceInstance = axios.create({
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/resource-service`,
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
+  },
+});
+
+/** 문항서버 API Instance*/
+export const questionInstance = axios.create({
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/question-service`,
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
+  },
+});
+
+questionInstance.interceptors.request.use(function (config) {
+  config.headers.Authorization = `Bearer ${getAuthorityCookie('accessToken')}`;
+  return config;
+});
 
 /** 404 5** 따로 반환 하지 않음 - TODO: 기획 변경시 반영  */

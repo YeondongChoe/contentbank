@@ -51,14 +51,14 @@ export function App() {
           <Container>
             {getAuthorityCookie('accessToken') &&
               location.pathname !== '/login' &&
-              location.pathname !== '/firstlogin' &&
+              location.pathname !== '/init-change-password' &&
               location.pathname !== '/relogin' &&
               location.pathname !== '/createcontentwindow' &&
               location.pathname !== '/createcontentmain' && <Navigation />}
             <MainWrapper>
               {getAuthorityCookie('accessToken') &&
                 location.pathname !== '/login' &&
-                location.pathname !== '/firstlogin' &&
+                location.pathname !== '/init-change-password' &&
                 location.pathname !== '/relogin' &&
                 location.pathname !== '/createcontentwindow' &&
                 location.pathname !== '/createcontentmain' && <Header />}

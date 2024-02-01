@@ -64,7 +64,7 @@ type postLoginProps = {
 //         if (response.data.initPassword === true) {
 //           navigate('/firstlogin');
 //         } else {
-//           navigate('/contentlist');
+//           navigate('/content-create/quiz');
 //         }
 //       }
 //       if (isClicked === true) {

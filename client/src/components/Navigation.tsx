@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { MdAccountBalance } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { resourceInstance } from '../api/axios';
 import { openNaviationBoolAtom } from '../store/utilAtom';
 
 import { Label } from './atom';
@@ -14,14 +16,31 @@ import { COLOR } from './constants';
 export function Navigation() {
   const isOpenNavigation = useRecoilValue(openNaviationBoolAtom);
   const navigate = useNavigate();
+  //[menuType 코드] null: 전체 조회, view: 화면 url만 조회
+  const [menuType, setMenuType] = useState(null);
 
   // if (!isOpenNavigation) {
   //   return null;
   // }
+  // const getMenu = () => {
+  //   return resourceInstance.get(`/v1/menu?menuType=${menuType}`);
+  // };
+  // const { isLoading, isError, data, error } = useQuery({
+  //   queryKey: ['getMenuList'],
+  //   queryFn: getMenu,
+  // });
+  // console.log('getMenuList', data);
 
   const moveMainpage = () => {
-    navigate('/contentlist');
+    navigate('/content-create/quiz');
   };
+
+  // const loadData = async () => {
+  //   await resourceInstance.get(`/v1/menu?menuType=${menuType}`);
+  // };
+  // useEffect(() => {
+  //   loadData();
+  // }, []);
 
   return (
     <>
@@ -39,11 +58,11 @@ export function Navigation() {
           </IconWrapper>
           <NavigationMenuWrapper>
             <NavigationMenu>
-              <div>
-                <MdAccountBalance style={{ width: '20px', height: '20px' }} />
+              <strong>
+                {/* <MdAccountBalance style={{ width: '20px', height: '20px' }} /> */}
                 <Label type="navi" value={'콘텐츠 제작'}></Label>
-              </div>
-              <Link to={'/contentlist'}>
+              </strong>
+              <Link to={'/content-create/quiz'}>
                 <svg
                   width="18"
                   height="18"
@@ -83,10 +102,10 @@ export function Navigation() {
               </Link>
             </NavigationMenu>
             <NavigationMenu>
-              <div>
-                <MdAccountBalance style={{ width: '20px', height: '20px' }} />
+              <strong>
+                {/* <MdAccountBalance style={{ width: '20px', height: '20px' }} /> */}
                 <Label type="navi" value={'콘텐츠 관리'}></Label>
-              </div>
+              </strong>
               <Link to={'/managementlist'}>
                 <svg
                   width="18"
@@ -136,8 +155,8 @@ export function Navigation() {
               </Link>
             </NavigationMenu>
             <NavigationMenu>
-              <div>
-                <svg
+              <strong>
+                {/* <svg
                   width="20"
                   height="20"
                   viewBox="0 0 20 20"
@@ -148,9 +167,9 @@ export function Navigation() {
                     d="M10.0023 13.5C9.04797 13.5 8.13276 13.1313 7.45797 12.4749C6.78318 11.8185 6.40408 10.9283 6.40408 10C6.40408 9.07174 6.78318 8.1815 7.45797 7.52513C8.13276 6.86875 9.04797 6.5 10.0023 6.5C10.9566 6.5 11.8718 6.86875 12.5466 7.52513C13.2214 8.1815 13.6005 9.07174 13.6005 10C13.6005 10.9283 13.2214 11.8185 12.5466 12.4749C11.8718 13.1313 10.9566 13.5 10.0023 13.5ZM17.6407 10.97C17.6818 10.65 17.7127 10.33 17.7127 10C17.7127 9.67 17.6818 9.34 17.6407 9L19.8099 7.37C20.0052 7.22 20.0566 6.95 19.9333 6.73L17.8772 3.27C17.7538 3.05 17.4762 2.96 17.25 3.05L14.6902 4.05C14.1556 3.66 13.6005 3.32 12.9528 3.07L12.5724 0.42C12.5313 0.18 12.3154 0 12.0584 0H7.94616C7.68915 0 7.47326 0.18 7.43214 0.42L7.05176 3.07C6.40408 3.32 5.84894 3.66 5.31435 4.05L2.7545 3.05C2.52832 2.96 2.25075 3.05 2.12738 3.27L0.0712765 6.73C-0.0623704 6.95 -0.000687048 7.22 0.194643 7.37L2.36384 9C2.32271 9.34 2.29187 9.67 2.29187 10C2.29187 10.33 2.32271 10.65 2.36384 10.97L0.194643 12.63C-0.000687048 12.78 -0.0623704 13.05 0.0712765 13.27L2.12738 16.73C2.25075 16.95 2.52832 17.03 2.7545 16.95L5.31435 15.94C5.84894 16.34 6.40408 16.68 7.05176 16.93L7.43214 19.58C7.47326 19.82 7.68915 20 7.94616 20H12.0584C12.3154 20 12.5313 19.82 12.5724 19.58L12.9528 16.93C13.6005 16.67 14.1556 16.34 14.6902 15.94L17.25 16.95C17.4762 17.03 17.7538 16.95 17.8772 16.73L19.9333 13.27C20.0566 13.05 20.0052 12.78 19.8099 12.63L17.6407 10.97Z"
                     fill="white"
                   />
-                </svg>
+                </svg> */}
                 <Label type="navi" value={'운영 관리'}></Label>
-              </div>
+              </strong>
               <Link to={'/operationmember'}>
                 <svg
                   width="20"
@@ -185,16 +204,14 @@ export function Navigation() {
           </NavigationMenuWrapper>
         </Container>
       ) : (
+        // 테블릿 모바일
         <MiniContainer>
-          <MiniIconWrapper onClick={moveMainpage}>
-            <MdAccountBalance
-              style={{ fontSize: '20px', color: 'white', cursor: 'pointer' }}
-            />
-          </MiniIconWrapper>
           <MiniNavigationMenuWrapper>
             <MiniNavigationMenu>
-              <MdAccountBalance style={{ width: '20px', height: '20px' }} />
-              <Link to={'/contentlist'}>
+              <MdAccountBalance
+                style={{ width: '20px', height: '20px', marginTop: '20px' }}
+              />
+              <Link to={'/content-create/quiz'}>
                 <svg
                   width="18"
                   height="18"
@@ -357,10 +374,12 @@ const NavigationMenu = styled.li`
   color: white;
   font-size: 14px;
 
-  div {
+  > strong {
     display: flex;
     align-items: center;
-    gap: 5px;
+    font-weight: 600;
+    margin-left: 10px;
+    margin-top: 10px;
   }
 
   a {

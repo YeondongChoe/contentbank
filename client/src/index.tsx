@@ -47,7 +47,7 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: '/firstlogin',
+        path: '/init-change-password',
         element: <FirstLogin />,
       },
       {
