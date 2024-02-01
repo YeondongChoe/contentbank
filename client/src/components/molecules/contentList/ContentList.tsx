@@ -68,7 +68,7 @@ export function ContentList({ list, onClick }: ContentListProps) {
   const [checkList, setCheckList] = useState<number[]>([]);
 
   const [isAllChecked, setIsAllChecked] = useState<boolean>(false);
-  console.log(isAllChecked);
+  //console.log(isAllChecked);
 
   const handleAllCheck = () => {
     setIsAllChecked((prev) => !prev);

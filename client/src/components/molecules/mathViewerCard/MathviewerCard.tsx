@@ -65,44 +65,61 @@ export function MathviewerCard({
         //onDragEnd={drop}
         $isSimilar={isSimilar}
         $isSelected={index === selectedCardIndex}
-        onClick={() => {
-          onSelectCard(index);
-        }}
       >
-        <div className="numbering">{index}</div>
-        <MathViewer data={data} width="350px"></MathViewer>
+        <div className="leftInfomation">
+          <div className="numbering">{index}</div>
+          <LuBookmarkPlus
+            fontSize={'25px'}
+            style={{ cursor: 'pointer', color: 'gray' }}
+          />
+          <div>중</div>
+          <div>객관식</div>
+        </div>
+        <MathViewer data={data} width="500px"></MathViewer>
         <ButtonWrapper>
           <div className="menuIcon">
             <IoMenuOutline fontSize={'30px'} style={{ cursor: 'grab' }} />
           </div>
           {index === selectedCardIndex && isSimilar ? (
-            <Button
-              buttonType="button"
-              onClick={onClick}
-              $padding="10px"
-              height={'30px'}
-              width={'70px'}
-              fontSize="12px"
-              $margin="0 0 60px 0"
+            <div
+              onClick={() => {
+                onSelectCard(index);
+              }}
             >
-              <span>유사문항</span>
-            </Button>
+              <Button
+                buttonType="button"
+                onClick={onClick}
+                $padding="10px"
+                height={'30px'}
+                width={'70px'}
+                fontSize="12px"
+                $filled
+                cursor
+              >
+                <span>유사문항</span>
+              </Button>
+            </div>
           ) : (
-            <Button
-              buttonType="button"
-              onClick={onClick}
-              $padding="10px"
-              height={'30px'}
-              width={'70px'}
-              fontSize="12px"
-              $margin="0 0 60px 0"
-              $border
+            <div
+              onClick={() => {
+                onSelectCard(index);
+              }}
             >
-              <span>유사문항</span>
-            </Button>
+              <Button
+                buttonType="button"
+                onClick={onClick}
+                $padding="10px"
+                height={'30px'}
+                width={'70px'}
+                fontSize="12px"
+                $normal
+                cursor
+              >
+                <span>유사문항</span>
+              </Button>
+            </div>
           )}
           <div>
-            <LuBookmarkPlus fontSize={'25px'} style={{ cursor: 'pointer' }} />
             <LuSiren
               fontSize={'25px'}
               color="red"
@@ -121,28 +138,33 @@ const Component = styled.div<{
   $isSelected?: boolean;
 }>`
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  min-height: 200px;
+  //justify-content: space-between;
+  min-width: 900px;
+  min-height: 250px;
   background-color: white;
   border-radius: 15px;
-  padding: 10px;
+  padding: 20px;
   border: ${({ $isSelected, $isSimilar }) =>
     $isSimilar && $isSelected
       ? `3px solid ${COLOR.PRIMARY}`
       : '3px solid white'};
-
+  .leftInfomation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding-right: 20px;
+    font-size: 14px;
+  }
   .numbering {
-    padding-right: 10px;
-    font-size: 18px;
+    font-size: 20px;
   }
 `;
 const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
   gap: 10px;
+  padding-left: 220px;
 
   .menuIcon {
     display: flex;
@@ -151,6 +173,7 @@ const ButtonWrapper = styled.div`
 
   div {
     display: flex;
+    justify-content: center;
     gap: 5px;
   }
 `;

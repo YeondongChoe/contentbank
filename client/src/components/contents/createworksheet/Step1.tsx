@@ -508,7 +508,6 @@ const TreeveiwSection = styled.section`
 const TabWrapper = styled.div`
   width: 100%;
   padding: 10px 0px;
-  //gap: 20px;
 `;
 const SelectorGroup = styled.div`
   display: flex;

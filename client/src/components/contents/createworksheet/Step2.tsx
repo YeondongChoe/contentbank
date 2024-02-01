@@ -7,7 +7,14 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, TabMenu, Label, BarChart, MathviewerCard } from '../..';
+import {
+  Button,
+  TabMenu,
+  Label,
+  BarChart,
+  MathviewerCard,
+  Select,
+} from '../..';
 import { COLOR } from '../../constants';
 import Contents2 from '../../mathViewer/test2.json';
 import Contents3 from '../../mathViewer/test3.json';
@@ -56,8 +63,43 @@ export function Step2() {
     Contents3,
     Contents4,
   ];
+  const selectCategory = [
+    {
+      id: '1',
+      label: '사용자 정렬',
+      value: '1',
+      options: [
+        { id: '0', label: '사용자 정렬', value: '0' },
+        { id: '1', label: '객관식 상단배치', value: '1' },
+        { id: '2', label: '무작위 정렬', value: '2' },
+      ],
+    },
+    {
+      id: '2',
+      label: '문제만 보기',
+      value: '2',
+      options: [
+        { id: '0', label: '문제만 보기', value: '0' },
+        { id: '1', label: '문제+정답', value: '1' },
+        { id: '2', label: '문제+정답+해설', value: '2' },
+      ],
+    },
+  ];
+  const [content, setContent] = useState<string[]>([]);
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const value = event.currentTarget.value;
+    setContent((prevContent) => [...prevContent, value]);
+  };
+  console.log(content);
 
-  // const location = useLocation();
+  // const [selectValue, setSelectValue] = useState<string>();
+  // const selectOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   const value = event.currentTarget.value;
+  //   setSelectValue(value);
+  // };
+
+  console.log(content);
+
   const navigate = useNavigate();
   const [isSimilar, setIsSimilar] = useState(false);
   const ContentList = dummy.ContentInfo;
@@ -100,11 +142,6 @@ export function Step2() {
   const selectContentCode = (sort: number) => {
     checkSelectedContentCode(sort);
     console.log('가지고 있는 Info 뿌려주기');
-  };
-
-  const closePopup = () => {
-    // setIsStep1(false);
-    navigate('/contentworksheet');
   };
 
   const goBackMainPopup = () => {
@@ -174,7 +211,7 @@ export function Step2() {
                   length={4}
                   menu={menuList}
                   initialValue={'학습지 요약'}
-                  width={'490px'}
+                  width={'500px'}
                   lineStyle
                 />
               </TabWrapper>
@@ -213,6 +250,21 @@ export function Step2() {
           )}
         </DiscriptionSection>
         <ContentListSection>
+          <ListFilter>
+            <Label value="선택한 문항 목록(총45문항)" fontSize="16px" />
+            <SelectWrapper>
+              {selectCategory.map((el) => (
+                <Select
+                  width={'150px'}
+                  key={el.label}
+                  defaultValue={el.label}
+                  options={el.options}
+                  onSelect={(event) => selectCategoryOption(event)}
+                  blackMode
+                ></Select>
+              ))}
+            </SelectWrapper>
+          </ListFilter>
           {list.map((card, i) => (
             <div
               key={i}
@@ -225,7 +277,7 @@ export function Step2() {
               <MathviewerCard
                 onClick={showSimilarContent}
                 isSimilar={isSimilar}
-                index={i}
+                index={i + 1}
                 data={card}
                 selectedCardIndex={selectedCardIndex}
                 onSelectCard={setSelectedCardIndex}
@@ -239,9 +291,11 @@ export function Step2() {
           buttonType="button"
           onClick={moveStep3}
           $padding="10px"
-          height={'30px'}
-          width={'80px'}
-          fontSize="12px"
+          height={'35px'}
+          width={'100px'}
+          fontSize="13px"
+          $filled
+          cursor
         >
           <span>다음 단계</span>
         </Button>
@@ -250,17 +304,6 @@ export function Step2() {
   );
 }
 
-// const Overlay = styled.div`
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   z-index: 1;
-// `;
 const Container = styled.div``;
 const TitleWrapper = styled.div`
   padding-bottom: 20px;
@@ -290,7 +333,7 @@ const Wrapper = styled.div`
 const DiscriptionSection = styled.section`
   min-height: 770px;
   display: flex;
-  flex: 1 0 0;
+  flex: 1 0 40%;
   flex-direction: column;
   align-items: center;
   border: 1px solid ${COLOR.BORDER_POPUP};
@@ -304,19 +347,17 @@ const DiscriptionWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0px 10px;
+  padding: 0px 20px;
 `;
 const Discripton = styled.div`
   display: flex;
   justify-content: space-between;
-  //height: 152px;
-  padding: 0px 30px 30px 0px;
+  padding: 10px 20px;
 `;
 const DiscriptonOutline = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 0px 0px 10px;
   font-size: 16px;
 `;
 const DiscriptonType = styled.div`
@@ -325,16 +366,15 @@ const DiscriptonType = styled.div`
   color: ${COLOR.TEXT_GRAY};
 `;
 const ContentsList = styled.div`
-  padding: 10px;
+  padding: 10px 20px;
 `;
 const Content = styled.div<{ $choiced?: boolean }>`
-  font-size: 13px;
+  font-size: 14px;
   background-color: ${(props) =>
     props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
   color: ${(props) => (props.$choiced ? 'white' : 'initial')};
   cursor: pointer;
 `;
-
 const SimilarWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -362,16 +402,28 @@ const RestartWrapper = styled.div`
 `;
 const SimilarContentsWrapper = styled.div``;
 const ContentListSection = styled.section`
+  height: 770px;
   display: flex;
-  flex: 1 0 0;
+  flex: 1 0 60%;
   flex-direction: column;
   align-items: center;
-  border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   padding: 10px;
   gap: 10px;
   background-color: black;
   overflow-y: auto;
+`;
+const ListFilter = styled.div`
+  width: 900px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  color: white;
+  gap: 5px;
+`;
+const SelectWrapper = styled.div`
+  display: flex;
+  gap: 5px;
 `;
 const NextStepButtonWrapper = styled.div`
   padding: 10px 0px;

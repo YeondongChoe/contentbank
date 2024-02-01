@@ -46,6 +46,7 @@ export function ContentsList() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  console.log(content);
 
   // 활성화/비활성화 버튼상태 토글
   const openSubmitAlert = () => {
