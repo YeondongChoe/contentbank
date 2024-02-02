@@ -23,20 +23,6 @@ type TabProps = {
   onClickTab?: () => void;
 };
 
-type TabMenuProps = {
-  menu?: MenuProps[];
-  initialValue?: string;
-  length: number;
-  className?: string;
-  setTabVeiw?: (value: string) => void;
-  getTabList?: (value: string) => void;
-  width?: string;
-  height?: string;
-  $margin?: string;
-  lineStyle?: boolean;
-  onClickTab?: () => void;
-};
-
 export function Tab({
   label,
   height,
@@ -65,11 +51,25 @@ export function Tab({
   );
 }
 
+type TabMenuProps = {
+  menu?: MenuProps[];
+  length: number;
+  className?: string;
+  selected: string;
+  setTabVeiw?: (value: string) => void;
+  getTabList?: (value: string) => void;
+  width?: string;
+  height?: string;
+  $margin?: string;
+  lineStyle?: boolean;
+  onClickTab?: () => void;
+};
+
 export function TabMenu({
   menu = [],
-  initialValue = '',
   length,
   className,
+  selected,
   setTabVeiw,
   getTabList,
   width,
@@ -79,7 +79,6 @@ export function TabMenu({
   onClickTab,
 }: TabMenuProps) {
   const [page, setPage] = useRecoilState(pageAtom);
-  const [selected, setSelected] = useState(initialValue);
 
   // 탭메뉴 클릭시 페이지네이션 초기화
   const changeTab = () => {
@@ -87,7 +86,6 @@ export function TabMenu({
   };
 
   const handleChange = (value: string) => {
-    setSelected(value);
     setTabVeiw && setTabVeiw(value);
     getTabList && getTabList(value);
   };
@@ -104,7 +102,7 @@ export function TabMenu({
           className={className}
           key={`${value}+${label}`}
           label={label}
-          selected={selected}
+          selected={selected as string}
           value={value}
           onChange={handleChange}
           height={height}

@@ -231,8 +231,8 @@ export function ContentsList() {
         <TabMenu
           length={2}
           menu={menuList}
-          initialValue={'문항 리스트'}
           width={'250px'}
+          selected={tabVeiw}
           setTabVeiw={setTabVeiw}
         />
         <Search

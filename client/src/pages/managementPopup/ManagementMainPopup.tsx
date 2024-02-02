@@ -39,7 +39,7 @@ export function ManagemantMainPopup({
           <TabMenu
             length={2}
             menu={menuList}
-            initialValue={'바꾸기'}
+            selected={tabVeiw}
             width={'250px'}
             setTabVeiw={setTabVeiw}
           />
