@@ -20,6 +20,7 @@ import {
   BarChart,
   MathviewerCard,
   Select,
+  CheckBox,
 } from '../..';
 import { COLOR } from '../../constants';
 import Contents2 from '../../mathViewer/test2.json';
@@ -70,6 +71,7 @@ export function Step2() {
     Contents3,
     Contents4,
   ];
+  const bookmark: any[] = [];
   const selectCategory = [
     {
       id: '1',
@@ -92,17 +94,33 @@ export function Step2() {
       ],
     },
   ];
-  const [content, setContent] = useState<string[]>([]);
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const [listCategory, setListCategory] = useState<string[]>([]);
+  const selectListCategoryOption = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
+    setListCategory((prevContent) => [...prevContent, value]);
   };
-
-  // const [selectValue, setSelectValue] = useState<string>();
-  // const selectOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   const value = event.currentTarget.value;
-  //   setSelectValue(value);
-  // };
+  const bookmarkSelectCategory = [
+    {
+      id: '1',
+      label: '1000이 10인 수 알아보기',
+      value: '1',
+      options: [
+        { id: '0', label: '1000이 10인 수 알아보기', value: '0' },
+        { id: '1', label: '객관식 상단배치', value: '1' },
+        { id: '2', label: '무작위 정렬', value: '2' },
+      ],
+    },
+  ];
+  const [bookmarkCategory, setBookmarkCategory] = useState<string[]>([]);
+  const selectBookmarkCategoryOption = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    const value = event.currentTarget.value;
+    setBookmarkCategory((prevContent) => [...prevContent, value]);
+  };
+  const [recommend, setRecommend] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const [isSimilar, setIsSimilar] = useState(false);
@@ -250,15 +268,15 @@ export function Step2() {
                   {tabVeiw === '학습지 요약' && (
                     <>
                       <Label value="문항 통계" fontSize="16px" />
-                      <Discripton>
-                        <DiscriptonOutline>
+                      <Discription>
+                        <DiscriptionOutline>
                           <div>총 45 문항</div>
-                          <DiscriptonType>객관식 20</DiscriptonType>
-                          <DiscriptonType>주관식 10</DiscriptonType>
-                          <DiscriptonType>서술형 15</DiscriptonType>
-                        </DiscriptonOutline>
+                          <DiscriptionType>객관식 20</DiscriptionType>
+                          <DiscriptionType>주관식 10</DiscriptionType>
+                          <DiscriptionType>서술형 15</DiscriptionType>
+                        </DiscriptionOutline>
                         <BarChart data={Data}></BarChart>
-                      </Discripton>
+                      </Discription>
                       <Label
                         value="문항 상세 내용 및 순서 변경"
                         fontSize="16px"
@@ -348,7 +366,7 @@ export function Step2() {
                           >
                             <MathviewerCard
                               width="300px"
-                              onClick={showSimilarContent}
+                              onClick={() => {}}
                               isSimilarQuiz={true}
                               index={i + 1}
                               data={card}
@@ -358,43 +376,82 @@ export function Step2() {
                           </div>
                         ))}
                       </AddNewContensWrapper>
-                      {/* <ContentsList>
-                        <ListCategory>
-                          <div className="number">번호</div>
-                          <div className="type">문항타입</div>
-                          <div className="level">난이도</div>
-                          <div className="title">유형명</div>
-                          <div className="icon">순서변경</div>
-                        </ListCategory>
-                        <div>
-                          {contentList.map((el, i) => (
-                            <Content
-                              key={i}
-                              onClick={() => {
-                                selectContentCode(el.sort);
-                              }}
-                              $choiced={el.sort === selectedCode}
+                    </>
+                  )}
+                  {tabVeiw === '즐겨찾는 문항' && (
+                    <>
+                      {bookmark.length !== 0 ? (
+                        <>
+                          <BookmarkContentOption>
+                            <SelectWrapper>
+                              {bookmarkSelectCategory.map((el) => (
+                                <Select
+                                  width={'250px'}
+                                  defaultValue={el.label}
+                                  key={el.label}
+                                  options={el.options}
+                                  onSelect={(event) =>
+                                    selectBookmarkCategoryOption(event)
+                                  }
+                                />
+                              ))}
+                            </SelectWrapper>
+                            <BookmarkContentCheckWrapper>
+                              <CheckBox
+                                isChecked={recommend}
+                                onClick={() => setRecommend(!recommend)}
+                              ></CheckBox>
+                              내 문항 우선 추천
+                            </BookmarkContentCheckWrapper>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {}}
+                              $padding="10px"
+                              height={'30px'}
+                              width={'100px'}
+                              fontSize="13px"
+                              $filled
+                              cursor
                             >
-                              <div className="number">{el.sort}</div>
-                              <div className="type">{el.unitType}</div>
-                              <div className="level">{el.contentLevel}</div>
-                              <div className="title">{el.unitMajor}</div>
+                              <span>+ 전체 추가</span>
+                            </Button>
+                          </BookmarkContentOption>
+                          <BookmarkContensWrapper>
+                            {list.map((card, i) => (
                               <div
-                                className="icon"
-                                draggable={el.sort === selectedCode}
-                                onDragStart={(e) => dragStart(e, i)}
-                                onDragEnter={(e) => dragEnter(e, i)}
-                                onDragOver={dragOver}
-                                onDragEnd={drop}
+                                key={i}
+                                // draggable
+                                // onDragStart={(e) => dragStart(e, i)}
+                                // onDragEnter={(e) => dragEnter(e, i)}
+                                // onDragOver={dragOver}
+                                // onDragEnd={drop}
                               >
-                                <IoMenuOutline
-                                  style={{ cursor: 'grab' }}
-                                ></IoMenuOutline>
+                                <MathviewerCard
+                                  width="300px"
+                                  onClick={() => {}}
+                                  isSimilarQuiz={true}
+                                  index={i + 1}
+                                  data={card}
+                                  selectedCardIndex={selectedCardIndex}
+                                  onSelectCard={setSelectedCardIndex}
+                                ></MathviewerCard>
                               </div>
-                            </Content>
-                          ))}
-                        </div>
-                      </ContentsList> */}
+                            ))}
+                          </BookmarkContensWrapper>
+                        </>
+                      ) : (
+                        <BookmarkContensEmptyWrapper>
+                          <BookmarkContensEmptyDiscription>
+                            즐겨 찾기에 추가된 문항이 없습니다.
+                          </BookmarkContensEmptyDiscription>
+                          <BookmarkContensEmptyDiscription>
+                            마음에 드는 문항을 저장하여 학습지나 교재를
+                          </BookmarkContensEmptyDiscription>
+                          <BookmarkContensEmptyDiscription>
+                            만들 때 활용하세요.
+                          </BookmarkContensEmptyDiscription>
+                        </BookmarkContensEmptyWrapper>
+                      )}
                     </>
                   )}
                 </DiscriptionWrapper>
@@ -412,7 +469,7 @@ export function Step2() {
                     key={el.label}
                     defaultValue={el.label}
                     options={el.options}
-                    onSelect={(event) => selectCategoryOption(event)}
+                    onSelect={(event) => selectListCategoryOption(event)}
                     blackMode
                   ></Select>
                 ))}
@@ -519,20 +576,20 @@ const DiscriptionWrapper = styled.div`
   justify-content: space-around;
   padding: 0px 20px;
 `;
-const Discripton = styled.div`
+const Discription = styled.div`
   display: flex;
   justify-content: space-between;
   //gap: 100px;
   padding: 10px 20px;
 `;
-const DiscriptonOutline = styled.div`
+const DiscriptionOutline = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 16px;
   //padding-right: 30px;
 `;
-const DiscriptonType = styled.div`
+const DiscriptionType = styled.div`
   padding-top: 10px;
   font-size: 14px;
   color: ${COLOR.TEXT_GRAY};
@@ -706,4 +763,36 @@ const AddNewContensWrapper = styled.div`
   align-items: center;
   gap: 10px;
   overflow-y: auto;
+`;
+//즐겨찾는 문항
+const BookmarkContentOption = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  padding: 10px 0;
+`;
+const BookmarkContentCheckWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+const BookmarkContensWrapper = styled.div`
+  height: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  overflow-y: auto;
+`;
+const BookmarkContensEmptyWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+const BookmarkContensEmptyDiscription = styled.div`
+  width: 400px;
+  display: flex;
+  align-items: flex-start;
 `;
