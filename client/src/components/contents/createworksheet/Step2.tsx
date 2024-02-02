@@ -454,11 +454,19 @@ export function Step2() {
                       )}
                     </>
                   )}
+                  {tabVeiw === '개념' && (
+                    <>
+                      <ConceptWrapper>
+                        <ConceptDiscription>
+                          준비중인 기능입니다...
+                        </ConceptDiscription>
+                      </ConceptWrapper>
+                    </>
+                  )}
                 </DiscriptionWrapper>
               </>
             )}
           </DiscriptionSection>
-
           <ContentListSection>
             <ListFilter>
               <Label value="선택한 문항 목록(총45문항)" fontSize="16px" />
@@ -795,4 +803,15 @@ const BookmarkContensEmptyDiscription = styled.div`
   width: 400px;
   display: flex;
   align-items: flex-start;
+`;
+//개념
+const ConceptWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+const ConceptDiscription = styled.div`
+  display: flex;
+  align-items: center;
 `;
