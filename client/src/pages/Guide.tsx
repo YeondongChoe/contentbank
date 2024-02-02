@@ -102,15 +102,15 @@ export function Guide() {
       <TabMenu
         length={2}
         menu={menuList}
-        initialValue={'커스텀 메뉴'}
         width={'250px'}
+        selected={'전체'}
       ></TabMenu>
       <TabMenu
         length={2}
         menu={menuList}
-        initialValue={'커스텀 메뉴'}
         width={'250px'}
         lineStyle
+        selected={'전체'}
       ></TabMenu>
       <h3>select</h3>
       <Select

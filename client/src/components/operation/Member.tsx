@@ -236,7 +236,7 @@ export function Member() {
           <TabMenu
             length={3}
             menu={menuList}
-            initialValue={'전체'}
+            selected={tabVeiw}
             width={'300px'}
             setTabVeiw={setTabVeiw}
             lineStyle

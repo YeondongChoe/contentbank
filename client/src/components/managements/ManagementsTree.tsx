@@ -32,7 +32,7 @@ export function ManagementsTree() {
         <TabMenu
           length={1}
           menu={menuList}
-          initialValue={'히스토리'}
+          selected={tabVeiw}
           width={'125px'}
           setTabVeiw={setTabVeiw}
         />

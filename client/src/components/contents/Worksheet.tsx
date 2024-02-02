@@ -58,10 +58,11 @@ export function Worksheet() {
 
   // 학습지 만들기 페이지로 이동
   const openWindowCreateWorksheet = () => {
-    //navigate('createworksheet/step1', { state: 'step1' });
     windowOpenHandler({
       name: 'createworksheetwindow',
       url: '/content-create/exam/step1',
+      options:
+        'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
     });
   };
 
@@ -137,8 +138,8 @@ export function Worksheet() {
         <TabMenu
           length={2}
           menu={menuList}
-          initialValue={'학습지'}
           width={'250px'}
+          selected={tabVeiw}
           setTabVeiw={setTabVeiw}
         />
         <Search
@@ -155,8 +156,8 @@ export function Worksheet() {
         <TabMenu
           length={4}
           menu={subMenuList}
-          initialValue={'전체'}
           width={'300px'}
+          selected={subTabVeiw}
           setTabVeiw={setSubTabVeiw}
           lineStyle
           $margin={'10px 0 20px 0'}

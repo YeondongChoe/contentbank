@@ -13,7 +13,7 @@ export function CreateWorksheetStep2() {
 }
 
 const Container = styled.div`
-  padding: 0 80px 40px 80px;
+  padding: 0 40px 40px 40px;
   width: 100%;
   height: 100%;
 `;

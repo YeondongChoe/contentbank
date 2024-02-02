@@ -112,7 +112,7 @@ export function CreateContentMain() {
           <TabMenu
             length={3}
             menu={menuList}
-            initialValue={'DT & Editing'}
+            selected={tabVeiw}
             width={'350px'}
             setTabVeiw={setTabVeiw}
           />
