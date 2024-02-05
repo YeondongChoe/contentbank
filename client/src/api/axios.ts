@@ -12,6 +12,7 @@ export const authInstance = axios.create({
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
     'session-id': `${getAuthorityCookie('sessionId')}`,
+    'Accept-Language': `ko_KR`,
   },
 });
 
@@ -21,16 +22,21 @@ authInstance.interceptors.request.use(function (config) {
   return config;
 });
 
-/** Authorization확인 후 갱신하는 로직*/
+/** accessToken 확인 후 갱신하는 로직*/
 export const handleAuthorizationRenewal = (response: AxiosResponse) => {
+  console.log(getAuthorityCookie('accessToken'));
+  console.log(getAuthorityCookie('sessionId'));
+
+  console.log(response);
   if (response.status !== 200) return;
-  if (response.headers['authorization'] !== getAuthorityCookie('accessToken')) {
-    setAuthorityCookie('accessToken', response.headers['authorization'], {
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-    });
-  }
+  // if (response.headers['Access_token'] !== getAuthorityCookie('accessToken')) {
+  // setAuthorityCookie('accessToken', response.headers['accessToken'], {
+  //   path: '/',
+  //   sameSite: 'strict',
+  //   secure: false,
+  // });
+  // }
+  console.log('not 200', response);
 };
 
 // 유저 서비스
@@ -40,6 +46,7 @@ export const userInstance = axios.create({
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
     'session-id': `${getAuthorityCookie('sessionId')}`,
+    'Accept-Language': `ko_KR`,
   },
 });
 
@@ -58,6 +65,7 @@ export const questionInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
+    'Accept-Language': `ko_KR`,
   },
 });
 

@@ -152,7 +152,7 @@ export function Mypage() {
               <Label value="비밀번호" fontSize="16px" width="200px" />
               <ButtonWrapper>
                 <Button
-                  onClick={selectPasswordEdit}
+                  // onClick={selectPasswordEdit}
                   width="80px"
                   height="30px"
                   fontSize="15px"
@@ -216,7 +216,7 @@ export function Mypage() {
                 width="100%"
                 inputwidth="500px"
                 padding="20px 10px"
-                onClick={selectPasswordEdit}
+                // onClick={selectPasswordEdit}
                 btnwidth="80px"
                 height="30px"
                 buttonfontsize="15px"

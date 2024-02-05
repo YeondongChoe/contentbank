@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { SubmitHandler } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { userInstance } from '../../api/axios';
 import { COLOR } from '../../components/constants';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { removeAuthorityCookie } from '../../utils/cookies';
@@ -15,32 +15,15 @@ export function FirstLogin() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const logout = () => {
-    removeAuthorityCookie('userInfo', { path: '/' });
-    removeAuthorityCookie('accessToken', { path: '/' });
-    removeAuthorityCookie('refreshToken', { path: '/' });
-    navigate('/login');
-  };
-
   // 내 계정 조회
-  const getMyInfo = () => {
-    return userInstance.get(`/v1/account/my-info`);
-  };
-  const { isLoading, isError, data, error } = useQuery({
-    queryKey: ['getMyInfo'],
-    queryFn: getMyInfo,
-  });
-  console.log('getMyInfo', data && data.data.userKey);
-
-  // 최초 접근시 파라미터 코드와 사용자에게 부여된 코드가 일치하는지 확인
-  // 일치하지 않으면 403 코드를, 입력하지 않으면 400으로 응답
-  // 화면 처리는 404 페이지를 보여주도록하여 접근하지 못하게 구현 필요
-  useEffect(() => {
-    const urlCode = location.search.split('?code=')[1];
-    console.log('location code : ', urlCode);
-
-    // if(data.data.userKey == urlCode)
-  }, []);
+  // const getMyInfo = () => {
+  //   return userInstance.get(`/v1/account/my-info`);
+  // };
+  // const { isLoading, isError, data, error } = useQuery({
+  //   queryKey: ['getMyInfo'],
+  //   queryFn: getMyInfo,
+  // });
+  // console.log('getMyInfo', data && data.data.userKey);
 
   return (
     <Container>
@@ -57,7 +40,6 @@ export function FirstLogin() {
           </Discription>
         </DiscriptionWrapper>
         <ChangePassword
-          onClick={logout}
           display="space-evenly"
           width="600px"
           inputwidth="400px"

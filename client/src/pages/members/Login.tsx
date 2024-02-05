@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { authInstance, handleAuthorizationRenewal } from '../../api/axios';
@@ -16,6 +17,7 @@ import {
   openToastifyAlert,
 } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
+import { accessTokenAtom, sessionIdAtom } from '../../store/auth';
 import {
   getAuthorityCookie,
   removeAuthorityCookie,
@@ -28,6 +30,8 @@ type LoginType = {
 };
 
 export function Login() {
+  const setAccessToken = useSetRecoilState(accessTokenAtom);
+  const setSessionIdAtom = useSetRecoilState(sessionIdAtom);
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
   );
@@ -48,6 +52,7 @@ export function Login() {
 
   //로그인 api
   const postLogin = (auth: LoginType) => {
+    console.log('postLogin', auth);
     return authInstance.post('/v1/auth/login', auth);
   };
 
@@ -63,7 +68,7 @@ export function Login() {
     },
     onSuccess: (response) => {
       if (response.status === 200) {
-        // 데이터에서 토큰과 세션을 저장
+        // 로컬데이터에서 토큰과 세션을 저장
         setAuthorityCookie('accessToken', response.data.data.accessToken, {
           path: '/',
           sameSite: 'strict',
@@ -74,7 +79,13 @@ export function Login() {
           sameSite: 'strict',
           secure: false,
         });
-        // console.log('sessionId', response.data.data.sessionId);
+
+        console.log('accessToken ----login', response.data.data.accessToken);
+        console.log('sessionId ----login', response.data.data.sessionId);
+
+        // 프론트 전역에 데이터로저장
+        setAccessToken(response.data.data.accessToken);
+        setSessionIdAtom(response.data.data.sessionId);
 
         // 재로그인 토큰 만료 확인
         handleAuthorizationRenewal(response);

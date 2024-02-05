@@ -1,12 +1,21 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-import { Controller, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { authInstance, userInstance } from '../../api/axios';
 import { putChangePassword } from '../../api/putAxios';
-import { Input, Label, Button, Alert } from '../../components';
+import {
+  Input,
+  Label,
+  Button,
+  Alert,
+  openToastifyAlert,
+} from '../../components';
+import { getAuthorityCookie, removeAuthorityCookie } from '../../utils/cookies';
 import { passwordRegExp } from '../../utils/regExp';
 import { COLOR } from '../constants/COLOR';
 
@@ -15,8 +24,13 @@ type passwordProps = {
   password_confirm: string;
 };
 
+type PasswordTpye = {
+  code: string;
+  password: string;
+  passwordConfirm: string;
+};
+
 type ChangePasswordProps = {
-  onClick?: () => void;
   width?: string;
   inputwidth?: string;
   btnwidth?: string;
@@ -29,10 +43,11 @@ type ChangePasswordProps = {
   placeholdersize?: string;
   buttonGroupWidth?: string;
   messageWidth?: string;
+  goLogin?: (password: string) => void;
+  setPassword?: (password: string) => void;
 };
 
 export function ChangePassword({
-  onClick,
   width,
   inputwidth,
   btnwidth,
@@ -45,12 +60,17 @@ export function ChangePassword({
   messageWidth,
   labelfontsize,
   placeholdersize,
+  goLogin,
 }: ChangePasswordProps) {
+  const [disabled, setDisabled] = useState<boolean>(true);
   const {
     control,
     watch,
     formState: { errors, isValid },
   } = useForm<passwordProps>();
+
+  const location = useLocation();
+  const [code, setCode] = useState('');
 
   const PasswordInputRef = useRef<HTMLInputElement | null>(null);
   const PasswordConfirmInputRef = useRef<HTMLInputElement | null>(null);
@@ -81,13 +101,70 @@ export function ChangePassword({
     navigate('/login');
   };
 
+  //패스워드 변경 api
+  const patchPassword = (auth: PasswordTpye) => {
+    return userInstance.patch('/v1/account/init-change-password', auth);
+  };
+  const { data: passwordData, mutate: changePassword } = useMutation({
+    mutationFn: patchPassword,
+    onError: (context: { response: { data: { message: string } } }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response) => {
+      // console.log('passwordData', response);
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      //쿠키 세션 정리
+      removeAuthorityCookie('accessToken', { path: '/' });
+      removeAuthorityCookie('sessionId', { path: '/' });
+
+      navigate('/login');
+    },
+  });
+
+  const submitPassword = (password: string) => {
+    const auth = { code: code, password: password, passwordConfirm: password };
+    // console.log('auth ', auth);
+
+    changePassword(auth);
+  };
+
+  useEffect(() => {
+    const urlCode = location.search.split('?code=')[1];
+    console.log('location code : ', urlCode);
+    setCode(urlCode);
+  }, []);
+
   const submitChangePassword = () => {
-    putChangePassword({
-      Password,
-      PasswordConfirm,
-      setIsSuccessAlertOpen,
-      setIsRedirect,
-    });
+    // console.log(':: getAuthorityCookie', getAuthorityCookie('accessToken'));
+    submitPassword(PasswordConfirm);
+  };
+
+  const changeDisable = () => {
+    if (Password.length >= 8 && Password == PasswordConfirm) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  };
+
+  useEffect(() => {
+    changeDisable();
+  }, [PasswordConfirm, Password]);
+
+  const onCancel = () => {
+    //쿠키 세션 정리
+    removeAuthorityCookie('username', { path: '/' });
+    removeAuthorityCookie('userInfo', { path: '/' });
+    removeAuthorityCookie('accessToken', { path: '/' });
+    removeAuthorityCookie('sessionId', { path: '/' });
+
+    navigate('/login');
   };
 
   return (
@@ -113,6 +190,7 @@ export function ChangePassword({
           isWarning={false}
           notice
           onClose={RedirectLogin}
+          onClick={() => goLogin}
         ></Alert>
       )}
       <form>
@@ -270,7 +348,7 @@ export function ChangePassword({
         >
           <ButtonWapper>
             <Button
-              onClick={onClick}
+              onClick={() => onCancel()}
               width={btnwidth}
               height={height}
               fontSize={buttonfontsize}
@@ -291,6 +369,7 @@ export function ChangePassword({
                 $borderRadius="7px"
                 $filled
                 cursor
+                disabled={disabled}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     openSuccessAlert();
@@ -309,6 +388,8 @@ export function ChangePassword({
                 fontSize={buttonfontsize}
                 $borderRadius="7px"
                 cursor
+                disabled={disabled}
+                $filled
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     submitChangePassword();
