@@ -13,8 +13,7 @@ export function CreateWorksheetStep3() {
 }
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  padding: 0 40px 40px 40px;
+  width: 100%;
+  height: 100%;
 `;

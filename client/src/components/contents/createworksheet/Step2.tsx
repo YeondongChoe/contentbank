@@ -3,14 +3,12 @@ import { useState, useRef } from 'react';
 
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { IoMenuOutline } from 'react-icons/io5';
-import { MdOutlineRestartAlt } from 'react-icons/md';
 import {
   PiArrowClockwiseBold,
   PiArrowCounterClockwiseBold,
 } from 'react-icons/pi';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import {
@@ -27,12 +25,6 @@ import Contents2 from '../../mathViewer/test2.json';
 import Contents3 from '../../mathViewer/test3.json';
 import Contents4 from '../../mathViewer/test4.json';
 import dummy from '../createcontent/data.json';
-// import {
-//   createWorksheetStep1BoolAtom,
-//   createWorksheetStep2BoolAtom,
-//   createWorksheetStep3BoolAtom,
-//   editWorksheetBoolAtom,
-// } from '../../store/creatingWorksheetAtom';
 
 import { Step3 } from './Step3';
 
@@ -167,12 +159,10 @@ export function Step2() {
   };
 
   const goBackMainPopup = () => {
-    //setIsStep2(false);
     navigate('/content-create/exam/step1');
   };
 
   const moveStep3 = () => {
-    // setIsStep3(true);
     navigate('/content-create/exam/step3');
     console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
@@ -602,6 +592,112 @@ const DiscriptionType = styled.div`
   font-size: 14px;
   color: ${COLOR.TEXT_GRAY};
 `;
+//유사문항
+const SimilarCloseButtonWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+  padding-right: 20px;
+`;
+const SimilarWrapper = styled.div`
+  width: 100%;
+  height: 708px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0px 20px;
+`;
+const SimilarTitleWrapper = styled.div`
+  padding: 0 0 20px 0;
+`;
+const SimilarTitle = styled.div``;
+const SimilarTitleSpan = styled.span`
+  font-size: 12px;
+  padding-left: 10px;
+  color: ${COLOR.BORDER_BLUE};
+`;
+const SimilarIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: 20px;
+  gap: 20px;
+`;
+const SimilarIcon = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+const SimilarContentsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  overflow-y: auto;
+`;
+//새 문항 추가
+const AddNewContentOption = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  padding: 10px 0;
+`;
+const AddNewContentIcon = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+const AddNewContensWrapper = styled.div`
+  height: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  overflow-y: auto;
+`;
+//즐겨찾는 문항
+const BookmarkContentOption = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  padding: 10px 0;
+`;
+const BookmarkContentCheckWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+const BookmarkContensWrapper = styled.div`
+  height: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  overflow-y: auto;
+`;
+const BookmarkContensEmptyWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+const BookmarkContensEmptyDiscription = styled.div`
+  width: 400px;
+  display: flex;
+  align-items: flex-start;
+`;
+//개념
+const ConceptWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+const ConceptDiscription = styled.div`
+  display: flex;
+  align-items: center;
+`;
 //오른쪽 section
 const ContentListSection = styled.section`
   flex: 1 0 10%;
@@ -708,110 +804,4 @@ const NextStepButtonWrapper = styled.div`
   padding-top: 20px;
   display: flex;
   justify-content: flex-end;
-`;
-//유사문항
-const SimilarCloseButtonWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 10px;
-  padding-right: 20px;
-`;
-const SimilarWrapper = styled.div`
-  width: 100%;
-  height: 708px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 0px 20px;
-`;
-const SimilarTitleWrapper = styled.div`
-  padding: 0 0 20px 0;
-`;
-const SimilarTitle = styled.div``;
-const SimilarTitleSpan = styled.span`
-  font-size: 12px;
-  padding-left: 10px;
-  color: ${COLOR.BORDER_BLUE};
-`;
-const SimilarIconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-top: 20px;
-  gap: 20px;
-`;
-const SimilarIcon = styled.div`
-  display: flex;
-  gap: 5px;
-`;
-const SimilarContentsWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  overflow-y: auto;
-`;
-//새 문항 추가
-const AddNewContentOption = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 25px;
-  padding: 10px 0;
-`;
-const AddNewContentIcon = styled.div`
-  display: flex;
-  gap: 5px;
-`;
-const AddNewContensWrapper = styled.div`
-  height: 620px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  overflow-y: auto;
-`;
-//즐겨찾는 문항
-const BookmarkContentOption = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 25px;
-  padding: 10px 0;
-`;
-const BookmarkContentCheckWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-`;
-const BookmarkContensWrapper = styled.div`
-  height: 620px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  overflow-y: auto;
-`;
-const BookmarkContensEmptyWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const BookmarkContensEmptyDiscription = styled.div`
-  width: 400px;
-  display: flex;
-  align-items: flex-start;
-`;
-//개념
-const ConceptWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const ConceptDiscription = styled.div`
-  display: flex;
-  align-items: center;
 `;

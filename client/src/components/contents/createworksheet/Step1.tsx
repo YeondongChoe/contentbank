@@ -1,17 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { IoMdClose } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { CheckBox, Button, TabMenu } from '../..';
 import { COLOR } from '../../constants';
-// import {
-//   createWorksheetStep1BoolAtom,
-//   createWorksheetStep2BoolAtom,
-// } from '../../store/creatingWorksheetAtom';
 
 import { Step2 } from './Step2';
 
@@ -31,53 +25,20 @@ export function Step1() {
     },
   ];
 
-  // const location = useLocation();
   const navigate = useNavigate();
 
   const [didMount, setDidMount] = useState(false);
-  // const setIsStep1 = useSetRecoilState(createWorksheetStep1BoolAtom);
-  // const [isStep2, setIsStep2] = useRecoilState(createWorksheetStep2BoolAtom);
-  const [grade, setGrade] = useState('1');
   const [inputValue, setInputValue] = useState('');
-  const [schoolLevel, setSchoolLevel] = useState<string | null>(null);
-  const [schoolYear, setSchoolYear] = useState<string | null>(null);
   const [questionNum, setQuestionNum] = useState<string | null>(null);
   const [questionlevel, setQuestionlevel] = useState<string | null>(null);
   const [questionType, setQuestionType] = useState<string[]>([]);
 
   const [containMock, setContainMock] = useState<string | null>(null);
 
-  const closePopup = () => {
-    // setIsStep1(false);
-    navigate('/content-create/exam');
-  };
-
   const moveStep2 = () => {
-    // setIsStep2(true);
     navigate('/content-create/exam/step2');
     console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
     console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
-  };
-
-  const selectGradeOption = (newValue: string) => {
-    setGrade(newValue);
-    setSchoolYear(null);
-  };
-
-  const selectSchoolLevel = (newValue: string) => {
-    if (schoolLevel === newValue) {
-      setSchoolLevel(null);
-    } else {
-      setSchoolLevel(newValue);
-    }
-  };
-
-  const selectSchoolYear = (newValue: string) => {
-    if (schoolYear === newValue) {
-      setSchoolYear(null);
-    } else {
-      setSchoolYear(newValue);
-    }
   };
 
   const selectQuestionNum = (newValue: string | null) => {
@@ -110,10 +71,6 @@ export function Step1() {
     setContainMock(newValue);
   };
 
-  const spreadTree = () => {
-    console.log('선택된 Tree구조의 이름을 상태 관리');
-  };
-
   const [isOption1, setIsOption1] = useState(false);
   const selectOption1 = () => {
     setIsOption1(!isOption1);
@@ -139,7 +96,7 @@ export function Step1() {
     if (didMount) {
       console.log('schoolLevel, schoolYear이 선택 됐을 때 범위 트리 get API');
     }
-  }, [didMount, schoolLevel, schoolYear]);
+  }, [didMount]);
 
   const [tabVeiw, setTabVeiw] = useState<string>('단원·유형별');
 
