@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
+import { IoMdClose } from 'react-icons/io';
+import { IoSettingsOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { CheckBox, Button, TabMenu } from '../..';
+import { CheckBox, Button, TabMenu, Input, Label } from '../..';
 import { COLOR } from '../../constants';
-
-import { Step2 } from './Step2';
 
 export function Step1() {
   const menuList = [
@@ -60,6 +60,18 @@ export function Step1() {
         return [...prev, newValue];
       }
     });
+  };
+  const [isDifficulty, setIsDifficulty] = useState(false);
+  const openDifficultySetting = () => {
+    setIsDifficulty(true);
+  };
+  const closeDifficultySetting = () => {
+    setIsDifficulty(false);
+  };
+
+  const [isAutoGrading, setIsAutoGrading] = useState(false);
+  const checkAutoGrading = () => {
+    setIsAutoGrading(!isAutoGrading);
   };
 
   const isAllSelected =
@@ -123,9 +135,11 @@ export function Step1() {
             <TreeviewWrapper></TreeviewWrapper>
           </TreeveiwSection>
           <SchoolSelectorSection>
-            <SubTitle>
-              *문항수 <TitleSpan>최대 100문항</TitleSpan>
-            </SubTitle>
+            <SubTitleWrapper>
+              <Label value="*문항수" fontSize="16px" width="60px" />
+              <Label value="최대 100문항" fontSize="12px" width="440px" />
+            </SubTitleWrapper>
+
             <SelectorGroup>
               <SelectorWrapper>
                 <Button
@@ -135,7 +149,7 @@ export function Step1() {
                   }}
                   $padding="10px"
                   height={'34px'}
-                  width={'90px'}
+                  width={'100px'}
                   fontSize="14px"
                   $normal={questionNum !== '25'}
                   $filled={questionNum === '25'}
@@ -150,7 +164,7 @@ export function Step1() {
                   }}
                   $padding="10px"
                   height={'34px'}
-                  width={'90px'}
+                  width={'100px'}
                   fontSize="14px"
                   $normal={questionNum !== '50'}
                   $filled={questionNum === '50'}
@@ -165,7 +179,7 @@ export function Step1() {
                   }}
                   $padding="10px"
                   height={'34px'}
-                  width={'90px'}
+                  width={'100px'}
                   fontSize="14px"
                   $normal={questionNum !== '100'}
                   $filled={questionNum === '100'}
@@ -190,7 +204,17 @@ export function Step1() {
                 문항
               </SelectorWrapper>
             </SelectorGroup>
-            <SubTitle>*난이도</SubTitle>
+
+            <SubTitleWrapper>
+              <Label value="*난이도" fontSize="16px" width="200px" />
+              <AdditionOption>
+                <IoSettingsOutline
+                  onClick={openDifficultySetting}
+                  style={{ cursor: 'pointer' }}
+                />
+                난이도 설정
+              </AdditionOption>
+            </SubTitleWrapper>
             <SelectorGroup>
               <Button
                 buttonType="button"
@@ -199,7 +223,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'92px'}
                 fontSize="14px"
                 $normal={questionlevel !== '하'}
                 $filled={questionlevel === '하'}
@@ -214,7 +238,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'92px'}
                 fontSize="14px"
                 $normal={questionlevel !== '중하'}
                 $filled={questionlevel === '중하'}
@@ -229,7 +253,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'92px'}
                 fontSize="14px"
                 $normal={questionlevel !== '중'}
                 $filled={questionlevel === '중'}
@@ -244,7 +268,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'92px'}
                 fontSize="14px"
                 $normal={questionlevel !== '상'}
                 $filled={questionlevel === '상'}
@@ -259,7 +283,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'93px'}
                 fontSize="14px"
                 $normal={questionlevel !== '최상'}
                 $filled={questionlevel === '최상'}
@@ -268,7 +292,18 @@ export function Step1() {
                 <span>최상</span>
               </Button>
             </SelectorGroup>
-            <SubTitle>*문항 타입</SubTitle>
+            <SubTitleWrapper>
+              <Label value="*문항 타입" fontSize="16px" width="200px" />
+              <AdditionOption>
+                자동 체점
+                <CheckBox
+                  width="16"
+                  height="16"
+                  isChecked={isAutoGrading}
+                  onClick={checkAutoGrading}
+                />
+              </AdditionOption>
+            </SubTitleWrapper>
             <SelectorGroup>
               <Button
                 buttonType="button"
@@ -281,7 +316,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'120px'}
                 fontSize="14px"
                 $normal={!isAllSelected}
                 $filled={isAllSelected}
@@ -296,7 +331,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'117px'}
                 fontSize="14px"
                 $normal={!questionType.includes('객관식')}
                 $filled={questionType.includes('객관식')}
@@ -311,7 +346,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'117px'}
                 fontSize="14px"
                 $normal={!questionType.includes('주관식')}
                 $filled={questionType.includes('주관식')}
@@ -326,7 +361,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'117px'}
                 fontSize="14px"
                 $normal={!questionType.includes('서술형')}
                 $filled={questionType.includes('서술형')}
@@ -335,7 +370,7 @@ export function Step1() {
                 <span>서술형</span>
               </Button>
             </SelectorGroup>
-            <SubTitle>*모의고사 포함 여부</SubTitle>
+            <Label value="*모의고사 포함 여부" fontSize="16px" width="200px" />
             <SelectorGroup>
               <Button
                 buttonType="button"
@@ -344,7 +379,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'161px'}
                 fontSize="14px"
                 $normal={containMock !== '포함'}
                 $filled={containMock === '포함'}
@@ -359,7 +394,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'90px'}
+                width={'160px'}
                 fontSize="14px"
                 $normal={containMock !== '제외'}
                 $filled={containMock === '제외'}
@@ -374,7 +409,7 @@ export function Step1() {
                 }}
                 $padding="10px"
                 height={'34px'}
-                width={'120px'}
+                width={'160px'}
                 fontSize="14px"
                 $normal={containMock !== '모의고사만'}
                 $filled={containMock === '모의고사만'}
@@ -383,28 +418,18 @@ export function Step1() {
                 <span>모의고사만</span>
               </Button>
             </SelectorGroup>
-            <SubTitle>추가 옵션</SubTitle>
-
             <AdditionOptionList>
+              <Label value="추가 옵션" fontSize="16px" width="200px" />
               <AdditionOption>
-                <CheckBox
-                  isChecked={isOption1}
-                  onClick={selectOption1}
-                ></CheckBox>
+                <CheckBox isChecked={isOption1} onClick={selectOption1} />
                 기존 출제 문항 제외
               </AdditionOption>
               <AdditionOption>
-                <CheckBox
-                  isChecked={isOption2}
-                  onClick={selectOption2}
-                ></CheckBox>
+                <CheckBox isChecked={isOption2} onClick={selectOption2} />
                 교육 과정 외 유형 제외
               </AdditionOption>
               <AdditionOption>
-                <CheckBox
-                  isChecked={isOption3}
-                  onClick={selectOption3}
-                ></CheckBox>
+                <CheckBox isChecked={isOption3} onClick={selectOption3} />
                 문항 수 균등 배분
               </AdditionOption>
               <AdditionOption>
@@ -415,8 +440,6 @@ export function Step1() {
                 내 문항 우선 추천
               </AdditionOption>
             </AdditionOptionList>
-
-            <TBD></TBD>
             <Summary>
               학습지 문항수 {inputValue || questionNum} 개 | 유형 3개
             </Summary>
@@ -437,6 +460,513 @@ export function Step1() {
           </Button>
         </NextStepButtonWrapper>
       </Wrapper>
+      {isDifficulty && (
+        <Overlay>
+          <ModalContainer>
+            <ModalWrapper>
+              <ModalTitleWrapper>
+                <ModalTitle>난이도 비율 선택</ModalTitle>
+                <ModalSubTitle>
+                  난이도 별로 출제 비율의 총합은 각각 100이 되어야 합니다.
+                </ModalSubTitle>
+              </ModalTitleWrapper>
+              <IoMdClose
+                onClick={closeDifficultySetting}
+                style={{ fontSize: '25px' }}
+              />
+            </ModalWrapper>
+            <ModalCategory>
+              <ModalCategoryOption>하</ModalCategoryOption>
+              <ModalCategoryOption>중하</ModalCategoryOption>
+              <ModalCategoryOption>중</ModalCategoryOption>
+              <ModalCategoryOption>상</ModalCategoryOption>
+              <ModalCategoryOption>최상</ModalCategoryOption>
+              <ModalCategoryOption>총합</ModalCategoryOption>
+            </ModalCategory>
+            <div>
+              <InputWrapper>
+                <Label value="최상 선택시" fontSize="16px" width="200px" />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+              </InputWrapper>
+              <InputWrapper>
+                <Label value="상 선택시" fontSize="16px" width="200px" />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+              </InputWrapper>
+              <InputWrapper>
+                <Label value="중 선택시" fontSize="16px" width="200px" />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+              </InputWrapper>
+              <InputWrapper>
+                <Label value="중하 선택시" fontSize="16px" width="200px" />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+              </InputWrapper>
+              <InputWrapper>
+                <Label value="하 선택시" fontSize="16px" width="200px" />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+                <Input
+                  width="80px"
+                  height="40px"
+                  padding="10px"
+                  border="normal"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  type="text"
+                  placeholder="0"
+                  placeholderTextAlign
+                  //value={gradeValue}
+                  // onChange={(e) => {
+                  //   setGradeValue(e.target.value);
+                  // }}
+                />
+              </InputWrapper>
+            </div>
+            <ModalButtonWrapper>
+              <Button
+                buttonType="button"
+                onClick={() => {}}
+                $padding="10px"
+                height={'35px'}
+                width={'100px'}
+                fontSize="13px"
+                $filled
+                cursor
+              >
+                <span>저장</span>
+              </Button>
+            </ModalButtonWrapper>
+          </ModalContainer>
+        </Overlay>
+      )}
     </Container>
   );
 }
@@ -476,7 +1006,7 @@ const TabWrapper = styled.div`
 `;
 const SelectorGroup = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
   padding-bottom: 20px;
 `;
@@ -492,22 +1022,23 @@ const TreeviewWrapper = styled.div`
 const SchoolSelectorSection = styled.section`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   border: 1px solid ${COLOR.BORDER_POPUP};
   padding: 20px;
   border-radius: 25px;
   flex: 1 0 0;
+  gap: 10px;
 `;
-const SubTitle = styled.div`
-  font-size: 16px;
-  padding-bottom: 10px;
-`;
-const TitleSpan = styled.span`
-  font-size: 12px;
+const SubTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 14px;
 `;
 const SelectorWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   font-size: 14px;
   span {
     &::after {
@@ -527,7 +1058,7 @@ const SelectorWrapper = styled.div`
   }
 `;
 const NumberInput = styled.input`
-  width: 90px;
+  width: 100px;
   height: 34px;
   border-radius: 5px;
   line-height: normal;
@@ -543,22 +1074,84 @@ const AdditionOptionList = styled.li`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-left: 20px;
+  padding-bottom: 20px;
 `;
 const AdditionOption = styled.div`
   display: flex;
-  gap: 5px;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
 `;
-const TBD = styled.div``;
 const Summary = styled.div`
   font-size: 20px;
-  height: 100%;
   display: flex;
-  align-items: flex-end;
   margin: 0 auto;
 `;
 const NextStepButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   padding-top: 20px;
+`;
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+`;
+const ModalContainer = styled.div`
+  width: 1000px;
+  height: 500px;
+  background-color: white;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  border-radius: 10px;
+  padding: 10px;
+`;
+const ModalWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 40px;
+`;
+const ModalTitleWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+`;
+const ModalTitle = styled.div`
+  font-size: 25px;
+`;
+const ModalSubTitle = styled.div`
+  font-size: 16px;
+`;
+const ModalCategory = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 20px;
+  gap: 88px;
+  border-bottom: 2px solid ${COLOR.BORDER_GRAY};
+  padding: 10px 40px;
+`;
+const ModalCategoryOption = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 45px;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  gap: 53px;
+`;
+const ModalButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+  padding-right: 10px;
 `;

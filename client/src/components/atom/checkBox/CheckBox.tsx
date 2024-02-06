@@ -5,16 +5,18 @@ import { styled } from 'styled-components';
 type CheckBoxProps = {
   isChecked: boolean;
   onClick?: (e: any) => void;
+  width?: string;
+  height?: string;
 };
 
-export function CheckBox({ isChecked, onClick }: CheckBoxProps) {
+export function CheckBox({ isChecked, onClick, width, height }: CheckBoxProps) {
   return (
     <Component>
       {isChecked ? (
         <SvgWrapper>
           <svg
-            width="20"
-            height="20"
+            width={width || '20'}
+            height={height || '20'}
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -30,8 +32,8 @@ export function CheckBox({ isChecked, onClick }: CheckBoxProps) {
       ) : (
         <SvgWrapper>
           <svg
-            width="20"
-            height="20"
+            width={width || '20'}
+            height={height || '20'}
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

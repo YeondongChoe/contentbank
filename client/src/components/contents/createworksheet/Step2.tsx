@@ -126,7 +126,6 @@ export function Step2() {
   };
 
   const [contentList, setContentList] = useState(ContentList);
-  const [selectedCode, setSelectedCode] = useState(null);
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
@@ -150,13 +149,15 @@ export function Step2() {
       setContentList(newList);
     }
   };
-  const checkSelectedContentCode = (sort: any) => {
-    setSelectedCode(sort === selectedCode ? null : sort);
-  };
-  const selectContentCode = (sort: number) => {
-    checkSelectedContentCode(sort);
-    console.log('가지고 있는 Info 뿌려주기');
-  };
+  //클릭했을 때 체크되면서 스타일이 바뀜
+  //const [selectedCode, setSelectedCode] = useState(null);
+  // const checkSelectedContentCode = (sort: any) => {
+  //   setSelectedCode(sort === selectedCode ? null : sort);
+  // };
+  // const selectContentCode = (sort: number) => {
+  //   checkSelectedContentCode(sort);
+  //   console.log('가지고 있는 Info 뿌려주기');
+  // };
 
   const goBackMainPopup = () => {
     navigate('/content-create/exam/step1');
@@ -179,7 +180,7 @@ export function Step2() {
           </IconWrapper>
           <Title>
             <Span>
-              <FrontSpan>STEP 1 - </FrontSpan>
+              <FrontSpan onClick={goBackMainPopup}>STEP 1 - </FrontSpan>
               STEP 2
             </Span>
             학습지 상세 편집
@@ -283,10 +284,10 @@ export function Step2() {
                           {contentList.map((el, i) => (
                             <Content
                               key={i}
-                              onClick={() => {
-                                selectContentCode(el.sort);
-                              }}
-                              $choiced={el.sort === selectedCode}
+                              // onClick={() => {
+                              //   selectContentCode(el.sort);
+                              // }}
+                              //$choiced={el.sort === selectedCode}
                             >
                               <div className="number">{el.sort}</div>
                               <div className="type">{el.unitType}</div>
@@ -294,7 +295,7 @@ export function Step2() {
                               <div className="title">{el.unitMajor}</div>
                               <div
                                 className="icon"
-                                draggable={el.sort === selectedCode}
+                                draggable
                                 onDragStart={(e) => dragStart(e, i)}
                                 onDragEnter={(e) => dragEnter(e, i)}
                                 onDragOver={dragOver}
@@ -538,6 +539,7 @@ const Title = styled.div`
 const FrontSpan = styled.span`
   color: ${COLOR.BORDER_BLUE};
   font-size: 20px;
+  cursor: pointer;
 `;
 const Span = styled.span`
   color: #1976d2;
@@ -754,9 +756,9 @@ const ListCategory = styled.div`
 `;
 const Content = styled.div<{ $choiced?: boolean }>`
   font-size: 14px;
-  background-color: ${(props) =>
+  /* background-color: ${(props) =>
     props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
-  color: ${(props) => (props.$choiced ? 'white' : 'initial')};
+  color: ${(props) => (props.$choiced ? 'white' : 'initial')}; */
   display: flex;
   justify-content: space-around;
   gap: 10px;
