@@ -95,7 +95,7 @@ export function Step3() {
         <WorksheetSettingSection>
           <InputGroup>
             <InputWrapper>
-              <Label value="학습지명" fontSize="16px" width="120px" />
+              <Label value="*학습지명" fontSize="16px" width="120px" />
               <Input
                 width="400px"
                 height="35px"
@@ -113,7 +113,7 @@ export function Step3() {
               />
             </InputWrapper>
             <InputWrapper>
-              <Label value="출제자" fontSize="16px" width="120px" />
+              <Label value="*출제자" fontSize="16px" width="120px" />
               <Input
                 width="400px"
                 height="35px"
@@ -131,7 +131,7 @@ export function Step3() {
               />
             </InputWrapper>
             <InputWrapper>
-              <Label value="학년" fontSize="16px" width="120px" />
+              <Label value="*학년" fontSize="16px" width="120px" />
               <Input
                 width="400px"
                 height="35px"
@@ -150,7 +150,7 @@ export function Step3() {
             </InputWrapper>
           </InputGroup>
           <WorksheetNameWrapper>
-            <Label value="학습지 태그" fontSize="16px" width="120px" />
+            <Label value="*학습지 태그" fontSize="16px" width="120px" />
             <ButtonGroup>
               <Button
                 buttonType="button"
@@ -227,7 +227,7 @@ export function Step3() {
             </ButtonGroup>
           </WorksheetNameWrapper>
           <TemplateWrapper>
-            <Label value="학습지 템플릿" fontSize="16px" width="120px" />
+            <Label value="*학습지 템플릿" fontSize="16px" width="120px" />
             <ColorBox>
               <Label value="색상 및 디자인 선택" fontSize="14px" />
               <ColorOption>
@@ -334,7 +334,7 @@ export function Step3() {
           </TypeOptionWrapper>
           <PositionOption>
             <ColumnOption>
-              <Label value="학습지 단" fontSize="16px" width="130px" />
+              <Label value="*학습지 단" fontSize="16px" width="130px" />
               <ButtonGroup>
                 <Button
                   buttonType="button"
@@ -369,7 +369,7 @@ export function Step3() {
               </ButtonGroup>
             </ColumnOption>
             <ContentQuantity>
-              <Label value="학습지 배치" fontSize="16px" width="130px" />
+              <Label value="*학습지 배치" fontSize="16px" width="130px" />
               <ButtonGroup>
                 <Button
                   buttonType="button"
