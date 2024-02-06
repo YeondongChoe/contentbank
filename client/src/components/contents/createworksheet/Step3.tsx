@@ -78,7 +78,7 @@ export function Step3() {
         </IconWrapper>
         <Title>
           <Span>
-            <FrontSpan>STEP 2 -</FrontSpan>
+            <FrontSpan onClick={goBackMainPopup}>STEP 2 -</FrontSpan>
             STEP 3
           </Span>
           학습지 상세 편집
@@ -508,6 +508,7 @@ const Title = styled.div`
 const FrontSpan = styled.span`
   color: ${COLOR.BORDER_BLUE};
   font-size: 20px;
+  cursor: pointer;
 `;
 const Span = styled.span`
   color: #1976d2;
@@ -523,11 +524,11 @@ const Wrapper = styled.div`
 const WorksheetSettingSection = styled.section`
   display: flex;
   flex-direction: column;
-  flex: 1 0 0;
+  flex: 1 0 35%;
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   padding: 20px;
-  gap: 20px;
+  gap: 40px;
 `;
 const InputGroup = styled.div`
   width: 100%;
@@ -614,7 +615,7 @@ const WorksheetTemplateViewSection = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1 0 0;
+  flex: 1 0 55%;
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   gap: 10px;
