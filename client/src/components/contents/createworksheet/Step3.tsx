@@ -26,6 +26,12 @@ export function Step3() {
   const [gradeValue, setGradeValue] = useState('');
   const [contentAuthor, setContentAuthor] = useState('');
 
+  const [tag, setTag] = useState<string>('');
+
+  const selectTag = (newValue: string) => {
+    setTag(newValue);
+  };
+
   const [colorChoice, setColorChoice] = useState('');
 
   const selectedTheme = (() => {
@@ -47,12 +53,13 @@ export function Step3() {
     }
   })();
 
-  const [column, setColumn] = useState<string>();
+  const [column, setColumn] = useState<string>('2단');
+
   const selectColumn = (newValue: string) => {
     setColumn(newValue);
   };
 
-  const [contentQuantity, setContentQuantity] = useState<string>();
+  const [contentQuantity, setContentQuantity] = useState<string>('최대');
 
   const selectContentQuantity = (newValue: string) => {
     setContentQuantity(newValue);
@@ -88,7 +95,7 @@ export function Step3() {
         <WorksheetSettingSection>
           <InputGroup>
             <InputWrapper>
-              <Label value="학습지명" fontSize="16px" width="120px" />
+              <Label value="*학습지명" fontSize="16px" width="120px" />
               <Input
                 width="400px"
                 height="35px"
@@ -106,7 +113,7 @@ export function Step3() {
               />
             </InputWrapper>
             <InputWrapper>
-              <Label value="출제자" fontSize="16px" width="120px" />
+              <Label value="*출제자" fontSize="16px" width="120px" />
               <Input
                 width="400px"
                 height="35px"
@@ -124,7 +131,7 @@ export function Step3() {
               />
             </InputWrapper>
             <InputWrapper>
-              <Label value="학년" fontSize="16px" width="120px" />
+              <Label value="*학년" fontSize="16px" width="120px" />
               <Input
                 width="400px"
                 height="35px"
@@ -143,55 +150,67 @@ export function Step3() {
             </InputWrapper>
           </InputGroup>
           <WorksheetNameWrapper>
-            <Label value="학습지 태그" fontSize="16px" width="120px" />
+            <Label value="*학습지 태그" fontSize="16px" width="120px" />
             <ButtonGroup>
               <Button
                 buttonType="button"
-                onClick={() => {}}
+                onClick={() => {
+                  selectTag('기본');
+                }}
                 $padding="5px"
                 height={'35px'}
                 width={'80px'}
                 fontSize="14px"
-                $normal
+                $normal={tag !== '기본'}
+                $filled={tag === '기본'}
+                cursor
+              >
+                <span>기본</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectTag('내신대비');
+                }}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal={tag !== '내신대비'}
+                $filled={tag === '내신대비'}
+                cursor
+              >
+                <span>내신대비</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectTag('모의고사');
+                }}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal={tag !== '모의고사'}
+                $filled={tag === '모의고사'}
+                cursor
+              >
+                <span>모의고사</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectTag('연습문항');
+                }}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal={tag !== '연습문항'}
+                $filled={tag === '연습문항'}
                 cursor
               >
                 <span>연습문항</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal
-                cursor
-              >
-                <span>숙제</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal
-                cursor
-              >
-                <span>일일TEST</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal
-                cursor
-              >
-                <span>일일TEST</span>
               </Button>
               <Button
                 buttonType="button"
@@ -208,7 +227,7 @@ export function Step3() {
             </ButtonGroup>
           </WorksheetNameWrapper>
           <TemplateWrapper>
-            <Label value="학습지 템플릿" fontSize="16px" width="120px" />
+            <Label value="*학습지 템플릿" fontSize="16px" width="120px" />
             <ColorBox>
               <Label value="색상 및 디자인 선택" fontSize="14px" />
               <ColorOption>
@@ -315,7 +334,7 @@ export function Step3() {
           </TypeOptionWrapper>
           <PositionOption>
             <ColumnOption>
-              <Label value="학습지 단" fontSize="16px" width="130px" />
+              <Label value="*학습지 단" fontSize="16px" width="130px" />
               <ButtonGroup>
                 <Button
                   buttonType="button"
@@ -326,9 +345,9 @@ export function Step3() {
                   height={'35px'}
                   width={'80px'}
                   fontSize="14px"
-                  $normal
+                  $normal={column !== '2단'}
+                  $filled={column === '2단'}
                   cursor
-                  $border={column !== '2단'}
                 >
                   <span>2단</span>
                 </Button>
@@ -341,16 +360,16 @@ export function Step3() {
                   height={'35px'}
                   width={'80px'}
                   fontSize="14px"
-                  $normal
+                  $normal={column !== '1단'}
+                  $filled={column === '1단'}
                   cursor
-                  $border={column !== '1단'}
                 >
                   <span>1단</span>
                 </Button>
               </ButtonGroup>
             </ColumnOption>
             <ContentQuantity>
-              <Label value="학습지 배치" fontSize="16px" width="130px" />
+              <Label value="*학습지 배치" fontSize="16px" width="130px" />
               <ButtonGroup>
                 <Button
                   buttonType="button"
@@ -361,9 +380,9 @@ export function Step3() {
                   height={'35px'}
                   width={'80px'}
                   fontSize="14px"
-                  $normal
+                  $normal={contentQuantity !== '최대'}
+                  $filled={contentQuantity === '최대'}
                   cursor
-                  $border={contentQuantity !== '최대'}
                 >
                   <span>최대</span>
                 </Button>
@@ -376,9 +395,9 @@ export function Step3() {
                   height={'35px'}
                   width={'80px'}
                   fontSize="14px"
-                  $normal
+                  $normal={contentQuantity !== '2문제'}
+                  $filled={contentQuantity === '2문제'}
                   cursor
-                  $border={contentQuantity !== '2문제'}
                 >
                   <span>2문제</span>
                 </Button>
@@ -391,9 +410,9 @@ export function Step3() {
                   height={'35px'}
                   width={'80px'}
                   fontSize="14px"
-                  $normal
+                  $normal={contentQuantity !== '4문제'}
+                  $filled={contentQuantity === '4문제'}
                   cursor
-                  $border={contentQuantity !== '4문제'}
                 >
                   <span>4문제</span>
                 </Button>
@@ -406,9 +425,9 @@ export function Step3() {
                   height={'35px'}
                   width={'80px'}
                   fontSize="14px"
-                  $normal
+                  $normal={contentQuantity !== '6문제'}
+                  $filled={contentQuantity === '6문제'}
                   cursor
-                  $border={contentQuantity !== '6문제'}
                 >
                   <span>6문제</span>
                 </Button>
