@@ -10,7 +10,6 @@ import {
   ContentList,
   ContentWorksheet,
   CreateContentMain,
-  CreateContentWindow,
   CreateWorksheetStep1,
   CreateWorksheetStep2,
   CreateWorksheetStep3,
@@ -63,10 +62,10 @@ const router = createBrowserRouter([
         path: '/content-create/quiz',
         element: <ContentList />,
       },
-      {
-        path: '/createcontentwindow',
-        element: <CreateContentWindow />,
-      },
+      // {
+      //   path: '/createcontentwindow',
+      //   element: <CreateContentWindow />,
+      // },
       {
         path: '/createcontentmain',
         element: <CreateContentMain />,

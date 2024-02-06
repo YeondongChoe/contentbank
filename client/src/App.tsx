@@ -99,6 +99,7 @@ export function App() {
             </BodyWrapper>
           </MainWrapper>
         </Container>
+
         <ReactQueryDevtools initialIsOpen={true} />
       </QueryClientProvider>
     </>

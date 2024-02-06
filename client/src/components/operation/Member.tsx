@@ -18,7 +18,6 @@ import {
   TabMenu,
   Table,
 } from '../../components/molecules';
-import { useQueryGetMemberList } from '../../hooks/useQueryGet';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { COLOR } from '../constants/COLOR';

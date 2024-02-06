@@ -69,6 +69,14 @@
 				}
 		]
 	},
+	"overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ],
 	"settings": { 
 			"import/parsers": {
 				"@typescript-eslint/parser": [".ts", ".tsx", ".js"] 

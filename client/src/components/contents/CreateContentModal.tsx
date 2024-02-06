@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { MdDriveFolderUpload, MdOutlinePostAdd } from 'react-icons/md';
@@ -7,34 +7,30 @@ import { TbFileUpload } from 'react-icons/tb';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { COLOR } from '../../components/constants';
+import { useModal } from '../../hooks';
+import { windowOpenHandler } from '../../utils/windowHandler';
+import { COLOR } from '../constants';
 
 const styleIcon = {
   width: '10rem',
   height: '10rem',
 };
 
-export function CreateContentWindow() {
+export function CreateContentModal() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { closeModal } = useModal();
 
-  const closePopup = () => {
-    // setIsCreate(false);
-  };
-
+  // 문항 윈도우 열기
   const goToPage = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const target = e.currentTarget.value;
-    let isUploadFile;
-    if (target === 'uploadfile') {
-      isUploadFile = true;
-    }
-    if (target === 'createcontent') {
-      isUploadFile = false;
-    }
+    // 로컬스토리지에 보낼데이터 저장
+    const sendData = { data: target };
+    localStorage.setItem('sendData', JSON.stringify(sendData));
 
-    // console.log('isUploadFile0000', isUploadFile);
-    navigate('/createcontentmain', {
-      state: { isUploadFile: isUploadFile },
+    windowOpenHandler({
+      name: 'createcontentmain',
+      url: '/createcontentmain',
     });
   };
 
@@ -45,6 +41,7 @@ export function CreateContentWindow() {
         <MenuWrapper
           onClick={(e) => {
             goToPage(e);
+            closeModal();
           }}
           value="createcontent"
         >
@@ -58,6 +55,7 @@ export function CreateContentWindow() {
         <MenuWrapper
           onClick={(e) => {
             goToPage(e);
+            closeModal();
           }}
           value="uploadfile"
         >
@@ -72,6 +70,7 @@ export function CreateContentWindow() {
         <MenuWrapper
           onClick={(e) => {
             goToPage(e);
+            closeModal();
           }}
           value="uploadfile"
         >

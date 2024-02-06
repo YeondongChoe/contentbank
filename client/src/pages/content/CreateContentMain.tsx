@@ -9,19 +9,19 @@ import styled from 'styled-components';
 import { TabMenu } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import {
-  ContentCreating,
   Classification,
-  Labeling,
+  ContentCreating,
   FileUploading,
+  Labeling,
 } from '../../components/contents/createcontent';
 
 export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
   const [didMount, setDidMount] = useState<boolean>(false);
-  const [isHide, setIsHide] = useState<boolean>(false);
+  // const [isHide, setIsHide] = useState<boolean>(false);
 
-  const [tabState, setTabState] = useState<boolean>(false);
+  const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
   const goBack = () => {
     navigate(-1);
@@ -54,38 +54,34 @@ export function CreateContentMain() {
   };
 
   // 부모 로컬스토리지에서 데이터 가져오기
-  const getLocalData = useCallback(() => {
+  const getLocalData = () => {
     const data = localStorage.getItem('sendData');
     let sendData;
     if (data) sendData = JSON.parse(data);
 
-    console.log('데이터 조회', sendData);
-    if (sendData !== undefined) {
-      setIsHide(true);
-      setTabState(sendData.data);
+    console.log('데이터 조회', sendData && sendData.data);
+    if (sendData === undefined) setIsUploadFile('createcontent');
+    if (sendData.data === 'createcontent') setIsUploadFile(sendData.data);
+    if (sendData.data === 'uploadfile') setIsUploadFile(sendData.data);
 
-      // 로컬스토리지 값 다받은 뒤 초기화
-      window.opener.localStorage.clear();
-    }
-  }, [tabState]);
+    // 로컬스토리지 값 다받은 뒤 초기화
+    window.opener.localStorage.clear();
+  };
+
+  useEffect(() => {
+    console.log(isUploadFile);
+  }, [isUploadFile]);
 
   useEffect(() => {
     if (didMount) {
       // navigate 이동하며 전달된 데이터 받기
-      if (location?.state?.isUploadFile !== undefined) {
-        setTabState(location.state.isUploadFile);
-      } else {
-        setTabState(false);
-      }
-
+      // if (location?.state?.isUploadFile !== undefined) {
+      //   setIsUploadFile(location.state.isUploadFile);
+      // } else {
+      //   setIsUploadFile(false);
+      // }
       // 윈도우 열릴때 부모윈도우 스토리지 접근
       getLocalData();
-
-      // iframe 데이터 통신 데이터 받기
-      // window.addEventListener('message', receiveMessage, false);
-      // return () => {
-      //   window.removeEventListener('message', receiveMessage);
-      // };
     }
   }, [didMount]);
 
@@ -102,12 +98,12 @@ export function CreateContentMain() {
   return (
     <Container>
       <ButtonWrapper>
-        <IconWrapper className={isHide ? 'hide' : ''}>
+        {/* <IconWrapper className={isHide ? 'hide' : ''}>
           <IoIosArrowBack
             style={{ fontSize: '24px', cursor: 'pointer' }}
             onClick={goBack}
           />
-        </IconWrapper>
+        </IconWrapper> */}
         <TapMenuWrapper>
           <TabMenu
             length={3}
@@ -126,7 +122,11 @@ export function CreateContentMain() {
       </ButtonWrapper>
       {tabVeiw === 'DT & Editing' && (
         <ContentBox>
-          {!tabState ? <ContentCreating /> : <FileUploading />}
+          {isUploadFile && isUploadFile === 'createcontent' ? (
+            <ContentCreating />
+          ) : (
+            <FileUploading />
+          )}
         </ContentBox>
       )}
       {tabVeiw === '문항 분류' && (
@@ -163,7 +163,6 @@ const IconWrapper = styled.div`
 const TapMenuWrapper = styled.div`
   display: flex;
   flex: 1 0 0;
-  margin-left: 40px;
 `;
 const CloseButtonWrapper = styled.div`
   display: flex;

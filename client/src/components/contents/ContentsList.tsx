@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { questionInstance } from '../../api/axios';
+import { getQuestionList } from '../../api/getAxios';
+import { putChangeServiced } from '../../api/putAxios';
 import {
   ContentList,
   Alert,
@@ -17,16 +20,18 @@ import {
   TabMenu,
   Table,
   ContentCard,
-} from '..';
-import { questionInstance } from '../../api/axios';
-import { getQuestionList } from '../../api/getAxios';
-import { putChangeServiced } from '../../api/putAxios';
+  Modal,
+} from '../../components';
+import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
 
+import { CreateContentModal } from './CreateContentModal';
+
 export function ContentsList() {
+  const { openModal } = useModal();
   const [searchValue, setSearchValue] = useState<string>('');
   const [value, setValue] = useState<string>('');
 
@@ -74,12 +79,15 @@ export function ContentsList() {
     setSearchValue(value);
   };
 
-  //문항 생성 윈도우 열기
-  const openWindowCreate = () => {
-    windowOpenHandler({
-      name: 'createcontentwindow',
-      url: '/createcontentwindow',
-    });
+  const modalData = {
+    title: '',
+    content: <CreateContentModal />,
+    callback: () => {},
+  };
+
+  // 모달 연뒤 문항 생성 윈도우 이동
+  const openCreateModal = () => {
+    openModal(modalData);
   };
 
   const menuList = [
@@ -219,7 +227,7 @@ export function ContentsList() {
         <Button
           height={'35px'}
           width={'130px'}
-          onClick={openWindowCreate}
+          onClick={openCreateModal}
           fontSize="13px"
           $filled
           cursor
@@ -246,7 +254,7 @@ export function ContentsList() {
         />
       </HeadWrapper>
       <TableWrapper>
-        {/* 테이블 셀렉트 */}
+        {/* 리스트 셀렉트 */}
         <SelectWrapper>
           {selectCategory.map((el) => (
             <Select
@@ -273,6 +281,7 @@ export function ContentsList() {
         onClick={submitDisabled}
       ></Alert>
       {/* {isCreate && <CreateIconPopup />} */}
+      <Modal />
     </Container>
   );
 }
