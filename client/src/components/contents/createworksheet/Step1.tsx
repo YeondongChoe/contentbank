@@ -40,6 +40,20 @@ export function Step1() {
     console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
     console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
   };
+  const changeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value;
+
+    // 정규표현식을 사용하여 숫자 이외의 문자 제거
+    inputValue = inputValue.replace(/[^0-9]/g, '');
+
+    const parsedValue = parseInt(inputValue, 10);
+
+    if (!isNaN(parsedValue) && parsedValue > 0) {
+      setInputValue(
+        parsedValue < 1 ? '1' : parsedValue >= 100 ? '100' : inputValue,
+      );
+    }
+  };
 
   const selectQuestionNum = (newValue: string | null) => {
     setQuestionNum(newValue);
@@ -190,7 +204,7 @@ export function Step1() {
                 <DivideBar>|</DivideBar>
                 <NumberInput
                   value={inputValue}
-                  maxLength={2}
+                  maxLength={3}
                   onClick={() => selectQuestionNum('')}
                   style={{
                     color: questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
@@ -198,7 +212,7 @@ export function Step1() {
                       questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
                   }}
                   onChange={(e) => {
-                    setInputValue(e.target.value);
+                    changeInputValue(e);
                   }}
                 ></NumberInput>
                 문항
