@@ -138,7 +138,7 @@ export function Member() {
   } = useQuery({
     queryKey: ['get-memberlist'],
     queryFn: () => {
-      authInstance.get(`/account?menuIdx=${1}`);
+      authInstance.get(`/v1/account?menuIdx=${1}`);
       // .then((response) => {
       // handleAuthorizationRenewal(response);
       //   setTotalPage(response.data.data.totalElements);

@@ -3,6 +3,7 @@ import * as React from 'react';
 // eslint-disable-next-line import/order, import/default
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 
 import { App } from './App';
 import {
@@ -111,7 +112,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
-    <GlobalStyle />
+    <RecoilRoot>
+      <RouterProvider router={router} />
+      <GlobalStyle />
+    </RecoilRoot>
   </React.StrictMode>,
 );

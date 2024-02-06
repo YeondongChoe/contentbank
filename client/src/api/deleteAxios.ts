@@ -17,7 +17,7 @@ export const DeleteAuthority = async (
   try {
     const response = await authInstance.delete(`/authority/${code}`);
     if (response.status === 200) {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsAlertOpen(false);
       window.location.reload();
     }

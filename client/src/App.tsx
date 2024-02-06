@@ -8,23 +8,43 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { RecoilRoot, useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { ToastifyAlert } from './components';
+import { authInstance, handleAuthorizationRenewal } from './api/axios';
+import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
-import { getAuthorityCookie } from './utils/cookies';
+import { accessTokenAtom } from './store/auth/accessToken';
+import { getAuthorityCookie, setAuthorityCookie } from './utils/cookies';
 
 export function App() {
+  // const setAccessReTokenAtom = useSetRecoilState(accessTokenAtom);
+  // const accessReTokenAtom = useRecoilValue(accessTokenAtom);
   //전역 쿼리캐싱
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
+        console.log(error);
+
+        // 토큰 만료시 토큰 갱신
+        // TODO: code 변경시 적용
+        if (error.message.includes('401')) {
+          const code = 'e-006';
+          handleAuthorizationRenewal(code);
+        }
+        // setAuthorityCookie('accessToken', accessReTokenAtom, {
+        //   path: '/',
+        //   sameSite: 'strict',
+        //   secure: false,
+        // });
+
         if (query.meta && query.meta.errorMessage) {
-          //TODO: 에러시 토스트 또는 보이는 처리
-          // toast.error(query.meta.errorMessage);
-          console.log(`${query.meta.errorMessage}: ${error}`);
+          openToastifyAlert({
+            type: 'error',
+            text: `${query.meta.errorMessage}: ${error}`,
+          });
+          // console.log(`${query.meta.errorMessage}: ${error}`);
         }
       },
       onSuccess: (data, query) => {
@@ -40,17 +60,17 @@ export function App() {
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
     if (!getAuthorityCookie('accessToken')) {
-      navigate('/login');
+      // navigate('/login');
     }
-  }, []);
+  }, [getAuthorityCookie('accessToken')]);
 
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <RecoilRoot>
-          <Container>
-            {getAuthorityCookie('accessToken') &&
-              location.pathname !== '/login' &&
+        <Container>
+          {
+            // getAuthorityCookie('accessToken') &&
+            location.pathname !== '/login' &&
               location.pathname !== '/init-change-password' &&
               location.pathname !== '/relogin' &&
               location.pathname !== '/createcontentwindow' &&
@@ -59,26 +79,26 @@ export function App() {
               location.pathname !== '/content-create/exam/step2' &&
               location.pathname !== '/content-create/exam/step3' && (
                 <Navigation />
-              )}
-            <MainWrapper>
-              {getAuthorityCookie('accessToken') &&
-                location.pathname !== '/login' &&
+              )
+          }
+          <MainWrapper>
+            {
+              // getAuthorityCookie('accessToken') &&
+              location.pathname !== '/login' &&
                 location.pathname !== '/init-change-password' &&
                 location.pathname !== '/relogin' &&
                 location.pathname !== '/createcontentwindow' &&
                 location.pathname !== '/createcontentmain' &&
                 location.pathname !== '/content-create/exam/step1' &&
                 location.pathname !== '/content-create/exam/step2' &&
-                location.pathname !== '/content-create/exam/step3' && (
-                  <Header />
-                )}
-              <BodyWrapper>
-                <ToastifyAlert />
-                <Outlet />
-              </BodyWrapper>
-            </MainWrapper>
-          </Container>
-        </RecoilRoot>
+                location.pathname !== '/content-create/exam/step3' && <Header />
+            }
+            <BodyWrapper>
+              <ToastifyAlert />
+              <Outlet />
+            </BodyWrapper>
+          </MainWrapper>
+        </Container>
         <ReactQueryDevtools initialIsOpen={true} />
       </QueryClientProvider>
     </>

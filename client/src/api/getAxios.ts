@@ -59,7 +59,7 @@ export const getQuestionList = async ({
       }&page=${page}&size=${size}&menuCode=${MenuCode}`,
     )
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       // console.log(response.data.data.totalElements);
       settotalPage(response.data.data.totalElements);
       const formattedQuestionList = response.data.data.content.map(
@@ -100,7 +100,7 @@ export const getMemberInformation = async ({
   await authInstance
     .get('/auth/my-info')
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setMember({
         id: response?.data?.data?.id,
         name: response?.data?.data?.name,
@@ -123,7 +123,7 @@ export const getIndividualMemberInformation = async ({
   await authInstance
     .get(`/auth/${keyValue}`)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setMember({
         id: response?.data?.data?.id,
         name: response?.data?.data?.name,
@@ -183,7 +183,7 @@ export const getMemberList = async ({
       }&page=${page}&size=${size}&enabledType=${enabled || ''}`,
     )
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setTotalPage(response.data.data.totalElements);
       setMemberList(response.data.data.content);
     })
@@ -212,7 +212,7 @@ export const getAuthorityList = async ({
   await authInstance
     .get('/authority')
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setAuthorityList(response.data.data);
     })
     .catch((err) => {
@@ -268,7 +268,7 @@ export const getMemberAuthority = async (
   await authInstance
     .get(`/authority/${code}/permissions`)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsEditCreateChecked(response.data.data.permissions[0].edited);
       setIsManageCreateChecked(response.data.data.permissions[0].managed);
       setIsEditCreateListChecked(response.data.data.permissions[1].edited);
@@ -344,7 +344,7 @@ export const getAuthorityMenu = async ({
   await authInstance
     .get('/menu')
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setMenuValue(response.data);
     })
     .catch((err) => {

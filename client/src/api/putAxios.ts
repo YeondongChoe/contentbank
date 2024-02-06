@@ -21,7 +21,7 @@ export const putChangeServiced = async ({
   await questionInstance
     .put(`/questions/change-serviced`, { changeServiceds: formattedArray })
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsChangedServiced(true);
     })
     .catch((error) => {
@@ -66,7 +66,7 @@ export const putSaveName = async ({
   await authInstance
     .put(`/auth/${member.key}`, data)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsNameEdit(!isNameEdit);
       openToastifyAlert({
         type: 'success',
@@ -103,7 +103,7 @@ export const putChangePassword = async ({
   await authInstance
     .put('/auth/changed-password', data)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsSuccessAlertOpen(false);
       setIsRedirect(true);
     })
@@ -132,7 +132,7 @@ export const putInitPassword = async ({
   await authInstance
     .put(`/auth/${keyValue}/init-password`, {})
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsInit(true);
       setIsAlertOpen(false);
       setIsSuccessAlertOpen(true);
@@ -158,7 +158,7 @@ export const putDisableMember = async ({
   await authInstance
     .put('/auth/enabled', updatedRows)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsEnabled(false);
       //window.location.reload();
     })
@@ -202,7 +202,7 @@ export const putChangeMemberInformation = async ({
   await authInstance
     .put(`/auth/${keyValue}`, data)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsEditer(false);
       setIsNameError(false);
       setIsEditAlertOpen(true);

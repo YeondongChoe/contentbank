@@ -30,7 +30,7 @@ type LoginType = {
 };
 
 export function Login() {
-  const setAccessToken = useSetRecoilState(accessTokenAtom);
+  const setAccessTokenAtom = useSetRecoilState(accessTokenAtom);
   const setSessionIdAtom = useSetRecoilState(sessionIdAtom);
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
@@ -52,54 +52,64 @@ export function Login() {
 
   //로그인 api
   const postLogin = (auth: LoginType) => {
-    console.log('postLogin', auth);
+    // console.log('postLogin', auth);
     return authInstance.post('/v1/auth/login', auth);
   };
 
   const { data: loginPostData, mutate: onLogin } = useMutation({
     mutationFn: postLogin,
-    onError: (context: { response: { data: { message: string } } }) => {
+    onError: (context: {
+      response: { data: { message: string; code: string }; status: number };
+    }) => {
       openToastifyAlert({
         type: 'error',
         text: context.response.data.message,
       });
+      console.log('loginPostData error', context.response.status);
 
-      // console.log('loginPostData error', context.response.data.message);
+      // 401 인증되지 않음 = e-006
+      if (context.response.data.code === 'E-006') {
+        // 토큰 만료시 갱신
+        handleAuthorizationRenewal(context.response.data.code);
+      }
     },
     onSuccess: (response) => {
-      if (response.status === 200) {
-        // 로컬데이터에서 토큰과 세션을 저장
-        setAuthorityCookie('accessToken', response.data.data.accessToken, {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        });
-        setAuthorityCookie('sessionId', response.data.data.sessionId, {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        });
+      console.log('response', response);
+      // 프론트 전역에 데이터로저장
+      setAccessTokenAtom(response.data.data.refreshToken);
+      setSessionIdAtom(response.data.data.sessionId);
 
-        console.log('accessToken ----login', response.data.data.accessToken);
-        console.log('sessionId ----login', response.data.data.sessionId);
+      // 로컬데이터에서 토큰과 세션을 저장
+      setAuthorityCookie('accessToken', response.data.data.accessToken, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      // refresh
+      setAuthorityCookie('refreshToken', response.data.data.refreshToken, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      setAuthorityCookie('sessionId', response.data.data.sessionId, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
 
-        // 프론트 전역에 데이터로저장
-        setAccessToken(response.data.data.accessToken);
-        setSessionIdAtom(response.data.data.sessionId);
+      console.log('accessToken ----login', response.data.data.accessToken);
+      console.log('accessToken ----login', response.data.data.refreshToken);
+      console.log('sessionId ----login', response.data.data.sessionId);
 
-        // 재로그인 토큰 만료 확인
-        handleAuthorizationRenewal(response);
-
-        // 아이디 저장 체크박스
-        if (isClicked === true) {
-          setAuthorityCookie('username', Id, { path: '/' });
-        } else {
-          removeAuthorityCookie('username', { path: '/' });
-        }
-
-        //첫 로그인시 비밀번호 변경 페이지로
-        navigate(response.data.link);
+      // 아이디 저장 체크박스
+      if (isClicked === true) {
+        setAuthorityCookie('username', Id, { path: '/' });
+      } else {
+        removeAuthorityCookie('username', { path: '/' });
       }
+      //첫 로그인시 비밀번호 변경 페이지로
+      navigate(response.data.link);
+
       console.log('loginPostData', response);
     },
   });

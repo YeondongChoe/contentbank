@@ -16,6 +16,16 @@ export const authInstance = axios.create({
   },
 });
 
+export const tokenInstance = axios.create({
+  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${getAuthorityCookie('refreshToken')}`,
+    'session-id': `${getAuthorityCookie('sessionId')}`,
+    'Accept-Language': `ko_KR`,
+  },
+});
+
 authInstance.interceptors.request.use(function (config) {
   config.headers.Authorization = `Bearer ${getAuthorityCookie('accessToken')}`;
 
@@ -23,20 +33,16 @@ authInstance.interceptors.request.use(function (config) {
 });
 
 /** accessToken 확인 후 갱신하는 로직*/
-export const handleAuthorizationRenewal = (response: AxiosResponse) => {
-  console.log(getAuthorityCookie('accessToken'));
-  console.log(getAuthorityCookie('sessionId'));
+export const handleAuthorizationRenewal = (code: string) => {
+  if (code === 'S-001') return;
 
-  console.log(response);
-  if (response.status !== 200) return;
-  // if (response.headers['Access_token'] !== getAuthorityCookie('accessToken')) {
-  // setAuthorityCookie('accessToken', response.headers['accessToken'], {
-  //   path: '/',
-  //   sameSite: 'strict',
-  //   secure: false,
-  // });
-  // }
-  console.log('not 200', response);
+  tokenInstance.post('/v1/auth/refresh-token').then((res) => {
+    setAuthorityCookie('accessToken', res.data.accessToken, {
+      path: '/',
+      sameSite: 'strict',
+      secure: false,
+    });
+  });
 };
 
 // 유저 서비스

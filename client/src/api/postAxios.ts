@@ -26,7 +26,7 @@ export const postFavoriteQuestion = async (
   await questionInstance
     .post(`/questions/${questionSeq}/favorite`)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsFavorited(!isFavorited);
     })
     .catch((err) => {
@@ -117,7 +117,7 @@ export const postRegister = async ({
       comment: Comment,
     })
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       setIsRegister(false);
       setIsNameError(false);
       setIsSuccessAlertOpen(true);
@@ -154,7 +154,7 @@ export const postDuplicate = async ({
     .post('/auth/checked-id', { id: Id })
     .then((response) => {
       if (response.status === 200) {
-        handleAuthorizationRenewal(response);
+        // handleAuthorizationRenewal(response);
         setduplicatedId(Id);
         setIsDuplicate(true);
         setIsIdError(false);
@@ -279,7 +279,7 @@ export const postCreateAuthority = async ({
   await authInstance
     .post('/authority', data)
     .then((response) => {
-      handleAuthorizationRenewal(response);
+      // handleAuthorizationRenewal(response);
       window.location.reload();
     })
     .catch((error) => {

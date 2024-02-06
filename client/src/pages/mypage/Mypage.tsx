@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { userInstance } from '../../api/axios';
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
 import { Input, Label, Button } from '../../components';
 import { COLOR } from '../../components/constants';
 import { ChangePassword } from '../../components/password/ChangePassword';
+import { getAuthorityCookie } from '../../utils/cookies';
 
 export function Mypage() {
   const [isNameEdit, setIsNameEdit] = useState(false);
@@ -33,13 +36,13 @@ export function Mypage() {
   };
 
   const saveName = async () => {
-    putSaveName({
-      member,
-      nameValue,
-      isNameEdit,
-      setIsNameEdit,
-      setNameValue,
-    });
+    // putSaveName({
+    //   member,
+    //   nameValue,
+    //   isNameEdit,
+    //   setIsNameEdit,
+    //   setNameValue,
+    // });
   };
 
   const [isShow, setIsShow] = useState(false);
@@ -49,9 +52,39 @@ export function Mypage() {
     setIsNameEdit(false);
   };
 
-  const loadData = useCallback(() => {
-    getMemberInformation({ setMember });
-  }, []);
+  const getMyInfo = async () => {
+    console.log(getAuthorityCookie('accessToken'));
+    console.log(getAuthorityCookie('sessionId'));
+    return await userInstance.get(`/v1/account/my-info`);
+  };
+
+  const {
+    isLoading,
+    error,
+    data: myInfoData,
+    isFetching,
+  } = useQuery({
+    queryKey: ['get-myInfo'],
+    queryFn: getMyInfo,
+    meta: {
+      errorMessage: 'get-myInfo 에러 메세지',
+    },
+  });
+  console.log('myInfoData', myInfoData);
+
+  const loadData = () => {
+    // getMyInfo();
+
+    setMember({
+      id: null,
+      name: null,
+      key: null,
+      authority: null,
+      comment: null,
+      enabled: null,
+      authCode: null,
+    });
+  };
 
   useEffect(() => {
     setDidMount(true);

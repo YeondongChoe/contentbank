@@ -1,16 +1,20 @@
 // import { accessToken } from '../store/auth/accessToken';
 
-//TODO 토큰 받아오고 post 하기, 만료시 재발급 요청
+import { useMutation } from '@tanstack/react-query';
+
+import { authInstance } from '../api/axios';
+
+import { setAuthorityCookie } from './cookies';
 
 export const saveRefreshTokenToLocalStorage = (refreshToken: string) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('refreshToken', refreshToken);
-  }
+  // if (typeof window !== 'undefined') {
+  //   localStorage.setItem('refreshToken', refreshToken);
+  // }
 };
 export const getRefreshTokenFromLocalStorage = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('refreshToken') || '';
-  }
+  // if (typeof window !== 'undefined') {
+  //   return localStorage.getItem('refreshToken') || '';
+  // }
 };
 
 export const saveAccessToken = (accessToken: string) => {

@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { authInstance } from '../api/axios';
 import { openNaviationBoolAtom } from '../store/utilAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
@@ -22,19 +23,26 @@ export function Header() {
     setIsOpenNavigation(!isOpenNavigation);
   };
 
+  const logout = async () => {
+    return await authInstance.get('/v1/auth/logout');
+  };
+
   // 사이드메뉴 로그아웃 시
-  const removeCookie = () => {
+  const onLogout = () => {
+    // logout();
+    //500 에러
+    //쿠키 삭제
     removeAuthorityCookie('accessToken');
     removeAuthorityCookie('sessionId');
   };
 
-  useEffect(() => {
-    // 사이드메뉴
-    if (!getAuthorityCookie('accessToken')) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-    }
-  }, []);
+  // useEffect(() => {
+  //   // 사이드메뉴
+  //   if (!getAuthorityCookie('accessToken')) {
+  //     alert('로그인이 필요합니다.');
+  //     navigate('/login');
+  //   }
+  // }, []);
 
   return (
     <Container $isOpenNavigation={isOpenNavigation}>
@@ -61,7 +69,7 @@ export function Header() {
         <Link to="/preparing">가이드</Link>
         <Link to="/preparing">고객센터</Link>
         <Link to="/mypage">마이페이지</Link>
-        <Link to="/login" onClick={removeCookie}>
+        <Link to="/login" onClick={onLogout}>
           로그아웃
         </Link>
       </SideMenuWrapper>

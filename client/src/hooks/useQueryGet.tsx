@@ -16,18 +16,9 @@ export const useQueryGetMemberList = ({
 }) => {
   return useQuery({
     queryKey: ['get-memberlist'],
-    queryFn: async () => {
-      try {
-        const response = await authInstance.get(
-          `/auth?keyword=${
-            searchValue || ''
-          }&page=${page}&size=${size}&enabledType=${enabled || ''}`,
-        );
-        return response;
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
+    queryFn: () => {
+      const response = authInstance.get(`/v1/account`);
+      return response;
     },
   });
 };

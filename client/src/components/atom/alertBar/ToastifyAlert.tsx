@@ -76,14 +76,14 @@ export const openToastifyAlert = ({ type, text }: openToastifyAlertProps) => {
   }
 };
 
-export function ToastifyAlert() {
+export function ToastifyAlert({ time }: { time?: number }) {
   return (
     <>
       <StyledToastContainer
         position="top-center"
         limit={2}
         closeButton={false}
-        autoClose={1000}
+        autoClose={time ? time : 3000}
         hideProgressBar
       />
     </>
