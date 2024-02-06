@@ -3,14 +3,12 @@ import { useState, useRef } from 'react';
 
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { IoMenuOutline } from 'react-icons/io5';
-import { MdOutlineRestartAlt } from 'react-icons/md';
 import {
   PiArrowClockwiseBold,
   PiArrowCounterClockwiseBold,
 } from 'react-icons/pi';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import {
@@ -27,12 +25,6 @@ import Contents2 from '../../mathViewer/test2.json';
 import Contents3 from '../../mathViewer/test3.json';
 import Contents4 from '../../mathViewer/test4.json';
 import dummy from '../createcontent/data.json';
-// import {
-//   createWorksheetStep1BoolAtom,
-//   createWorksheetStep2BoolAtom,
-//   createWorksheetStep3BoolAtom,
-//   editWorksheetBoolAtom,
-// } from '../../store/creatingWorksheetAtom';
 
 import { Step3 } from './Step3';
 
@@ -134,7 +126,6 @@ export function Step2() {
   };
 
   const [contentList, setContentList] = useState(ContentList);
-  const [selectedCode, setSelectedCode] = useState(null);
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
@@ -158,21 +149,21 @@ export function Step2() {
       setContentList(newList);
     }
   };
-  const checkSelectedContentCode = (sort: any) => {
-    setSelectedCode(sort === selectedCode ? null : sort);
-  };
-  const selectContentCode = (sort: number) => {
-    checkSelectedContentCode(sort);
-    console.log('가지고 있는 Info 뿌려주기');
-  };
+  //클릭했을 때 체크되면서 스타일이 바뀜
+  //const [selectedCode, setSelectedCode] = useState(null);
+  // const checkSelectedContentCode = (sort: any) => {
+  //   setSelectedCode(sort === selectedCode ? null : sort);
+  // };
+  // const selectContentCode = (sort: number) => {
+  //   checkSelectedContentCode(sort);
+  //   console.log('가지고 있는 Info 뿌려주기');
+  // };
 
   const goBackMainPopup = () => {
-    //setIsStep2(false);
     navigate('/content-create/exam/step1');
   };
 
   const moveStep3 = () => {
-    // setIsStep3(true);
     navigate('/content-create/exam/step3');
     console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
@@ -189,7 +180,7 @@ export function Step2() {
           </IconWrapper>
           <Title>
             <Span>
-              <FrontSpan>STEP 1 - </FrontSpan>
+              <FrontSpan onClick={goBackMainPopup}>STEP 1 - </FrontSpan>
               STEP 2
             </Span>
             학습지 상세 편집
@@ -293,10 +284,10 @@ export function Step2() {
                           {contentList.map((el, i) => (
                             <Content
                               key={i}
-                              onClick={() => {
-                                selectContentCode(el.sort);
-                              }}
-                              $choiced={el.sort === selectedCode}
+                              // onClick={() => {
+                              //   selectContentCode(el.sort);
+                              // }}
+                              //$choiced={el.sort === selectedCode}
                             >
                               <div className="number">{el.sort}</div>
                               <div className="type">{el.unitType}</div>
@@ -304,7 +295,7 @@ export function Step2() {
                               <div className="title">{el.unitMajor}</div>
                               <div
                                 className="icon"
-                                draggable={el.sort === selectedCode}
+                                draggable
                                 onDragStart={(e) => dragStart(e, i)}
                                 onDragEnter={(e) => dragEnter(e, i)}
                                 onDragOver={dragOver}
@@ -548,6 +539,7 @@ const Title = styled.div`
 const FrontSpan = styled.span`
   color: ${COLOR.BORDER_BLUE};
   font-size: 20px;
+  cursor: pointer;
 `;
 const Span = styled.span`
   color: #1976d2;
@@ -601,113 +593,6 @@ const DiscriptionType = styled.div`
   padding-top: 10px;
   font-size: 14px;
   color: ${COLOR.TEXT_GRAY};
-`;
-//오른쪽 section
-const ContentListSection = styled.section`
-  flex: 1 0 10%;
-  border-radius: 25px;
-  padding: 10px;
-  background-color: black;
-`;
-const ContentListWrapper = styled.div`
-  height: 683px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  overflow-y: auto;
-`;
-const ContentsList = styled.div`
-  padding: 10px 20px;
-  height: 450px;
-  overflow-y: auto;
-`;
-const ListCategory = styled.div`
-  display: flex;
-  justify-content: space-around;
-  font-size: 16px;
-  border-top: 1px solid gray;
-  border-bottom: 1px solid gray;
-  padding: 10px 0;
-
-  .number {
-    display: flex;
-    justify-content: center;
-    width: 40px;
-  }
-  .type {
-    display: flex;
-    justify-content: center;
-    width: 70px;
-  }
-  .level {
-    display: flex;
-    justify-content: center;
-    width: 50px;
-  }
-  .title {
-    display: flex;
-    justify-content: center;
-    width: 200px;
-  }
-  .icon {
-    display: flex;
-    justify-content: center;
-    width: 70px;
-  }
-`;
-const Content = styled.div<{ $choiced?: boolean }>`
-  font-size: 14px;
-  background-color: ${(props) =>
-    props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
-  color: ${(props) => (props.$choiced ? 'white' : 'initial')};
-  display: flex;
-  justify-content: space-around;
-  gap: 10px;
-  border-bottom: 1px solid gray;
-  padding: 10px 0;
-  .number {
-    display: flex;
-    justify-content: center;
-    width: 40px;
-  }
-  .type {
-    display: flex;
-    justify-content: center;
-    width: 70px;
-  }
-  .level {
-    display: flex;
-    justify-content: center;
-    width: 50px;
-  }
-  .title {
-    display: flex;
-    justify-content: center;
-    width: 200px;
-  }
-  .icon {
-    display: flex;
-    justify-content: center;
-    width: 70px;
-  }
-`;
-const ListFilter = styled.div`
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
-  color: white;
-  gap: 5px;
-  padding-bottom: 10px;
-`;
-const SelectWrapper = styled.div`
-  display: flex;
-  gap: 5px;
-`;
-const NextStepButtonWrapper = styled.div`
-  padding-top: 20px;
-  display: flex;
-  justify-content: flex-end;
 `;
 //유사문항
 const SimilarCloseButtonWrapper = styled.div`
@@ -814,4 +699,111 @@ const ConceptWrapper = styled.div`
 const ConceptDiscription = styled.div`
   display: flex;
   align-items: center;
+`;
+//오른쪽 section
+const ContentListSection = styled.section`
+  flex: 1 0 10%;
+  border-radius: 25px;
+  padding: 10px;
+  background-color: black;
+`;
+const ContentListWrapper = styled.div`
+  height: 683px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  overflow-y: auto;
+`;
+const ContentsList = styled.div`
+  padding: 10px 20px;
+  height: 450px;
+  overflow-y: auto;
+`;
+const ListCategory = styled.div`
+  display: flex;
+  justify-content: space-around;
+  font-size: 16px;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  padding: 10px 0;
+
+  .number {
+    display: flex;
+    justify-content: center;
+    width: 40px;
+  }
+  .type {
+    display: flex;
+    justify-content: center;
+    width: 70px;
+  }
+  .level {
+    display: flex;
+    justify-content: center;
+    width: 50px;
+  }
+  .title {
+    display: flex;
+    justify-content: center;
+    width: 200px;
+  }
+  .icon {
+    display: flex;
+    justify-content: center;
+    width: 70px;
+  }
+`;
+const Content = styled.div<{ $choiced?: boolean }>`
+  font-size: 14px;
+  /* background-color: ${(props) =>
+    props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
+  color: ${(props) => (props.$choiced ? 'white' : 'initial')}; */
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  border-bottom: 1px solid gray;
+  padding: 10px 0;
+  .number {
+    display: flex;
+    justify-content: center;
+    width: 40px;
+  }
+  .type {
+    display: flex;
+    justify-content: center;
+    width: 70px;
+  }
+  .level {
+    display: flex;
+    justify-content: center;
+    width: 50px;
+  }
+  .title {
+    display: flex;
+    justify-content: center;
+    width: 200px;
+  }
+  .icon {
+    display: flex;
+    justify-content: center;
+    width: 70px;
+  }
+`;
+const ListFilter = styled.div`
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  color: white;
+  gap: 5px;
+  padding-bottom: 10px;
+`;
+const SelectWrapper = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+const NextStepButtonWrapper = styled.div`
+  padding-top: 20px;
+  display: flex;
+  justify-content: flex-end;
 `;

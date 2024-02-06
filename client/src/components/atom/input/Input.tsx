@@ -9,6 +9,7 @@ type InputProps = {
   type: 'text' | 'password';
   placeholder?: string;
   placeholderSize?: string;
+  placeholderTextAlign?: boolean;
   value?: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   onClick?: () => void;
@@ -32,6 +33,7 @@ export function Input({
   disabled,
   placeholder,
   placeholderSize,
+  placeholderTextAlign,
   value,
   onChange,
   onClick,
@@ -59,6 +61,7 @@ export function Input({
         fontSize={fontSize}
         $padding={padding}
         $placeholderSize={placeholderSize}
+        $placeholderTextAlign={placeholderTextAlign}
         $border={border}
         $borderRadius={borderradius}
         $borderBottom={borderbottom}
@@ -81,6 +84,7 @@ type InputStyleProps = {
   $padding?: string;
   $borderRadius?: string;
   $placeholderSize?: string;
+  $placeholderTextAlign?: boolean;
   $margin?: string;
   disabled?: boolean;
 };
@@ -92,6 +96,8 @@ const Warpper = styled.div`
 const Component = styled.input<InputStyleProps>`
   display: flex;
   align-items: center;
+  ${({ $placeholderTextAlign }) =>
+    $placeholderTextAlign && ' text-align: center;'};
   justify-content: center;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '50px')};
@@ -113,6 +119,8 @@ const Component = styled.input<InputStyleProps>`
   &::placeholder {
     ${({ $placeholderSize }) =>
       $placeholderSize ? `font-size: ${$placeholderSize};` : '16px;'};
+    ${({ $placeholderTextAlign }) =>
+      $placeholderTextAlign && ' text-align: center;'};
   }
   &.success {
     border-color: ${COLOR.SUCCESS};
