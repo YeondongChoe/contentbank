@@ -38,7 +38,7 @@ export type QuestionTableType = {
   enabled?: boolean;
 };
 
-// 더미데이터
+// 더미데이터 학습지
 export type WorksheetTableType = {
   id?: number;
   favorited?: boolean;
@@ -75,6 +75,22 @@ export type WorksheetTableType = {
   lastModifiedBy?: null;
   lastModifiedDate?: string;
   enabled?: boolean;
+};
+
+// 더미데이터 시중교재
+export type TextbookType = {
+  schoolGrade?: string;
+  title?: string;
+  series?: string;
+  publisher?: string;
+  type?: {
+    title: string;
+    page: {
+      seq: number;
+      title: string;
+      content: string[];
+    }[];
+  }[];
 };
 
 export type MemberTableType = {

@@ -7,7 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { CheckBox, Button, TabMenu, Input, Label, Search } from '../..';
+import { TextbookType } from '../../../types';
 import { COLOR } from '../../constants';
+import dummy from '../../constants/data.json';
 
 export function Step1() {
   const menuList = [
@@ -141,6 +143,37 @@ export function Step1() {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
 
+  const textbookList: TextbookType[] = dummy.Textbook;
+
+  const [isSelectTextbook, setIsSelectTextbook] = useState(true);
+  const [selectedTextbook, setSelectedTextbook] = useState<TextbookType>();
+  //console.log(selectedTextbook);
+
+  const [isSelectTextbookContent, setIsSelectTextbookContent] = useState(false);
+
+  const selectTextbook = (book: TextbookType) => {
+    setSelectedTextbook(book);
+    setIsSelectTextbook(false);
+    setIsSelectTextbookContent(true);
+  };
+  const selectOtherTextbook = () => {
+    setIsSelectTextbook(true);
+    setIsSelectTextbookContent(false);
+    setIsChoice(false);
+    setClickedIdx(0);
+  };
+
+  const [isChoice, setIsChoice] = useState(false);
+  const [clickedIdx, setClickedIdx] = useState<number>();
+  console.log(clickedIdx);
+  const choiceType = (
+    idx: number,
+    event?: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
+    //event?.preventDefault();
+    setIsChoice(!isChoice);
+    setClickedIdx(idx);
+  };
   return (
     <Container>
       <Wrapper>
@@ -484,543 +517,972 @@ export function Step1() {
           )}
           {tabVeiw === '시중교재' && (
             <>
-              <CategorySection>
-                <TabWrapper
-                  onClick={() => {
-                    selectSchoolLevel('초');
-                    setgradeLevel('');
-                  }}
-                >
-                  <TabMenu
-                    length={3}
-                    menu={menuList}
-                    width={'350px'}
-                    lineStyle
-                    selected={tabVeiw}
-                    setTabVeiw={setTabVeiw}
-                  />
-                </TabWrapper>
-                <SchoolGradeWrapper>
-                  <SelectorGroup>
-                    <Button
-                      buttonType="button"
+              {isSelectTextbook && (
+                <>
+                  <CategorySection>
+                    <TabWrapper
                       onClick={() => {
                         selectSchoolLevel('초');
-                        selectGradeLevel('');
+                        setgradeLevel('');
                       }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={schoolLevel !== '초'}
-                      $filled={schoolLevel === '초'}
-                      cursor
                     >
-                      <span>초</span>
-                    </Button>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectSchoolLevel('중');
-                        selectGradeLevel('');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={schoolLevel !== '중'}
-                      $filled={schoolLevel === '중'}
-                      cursor
-                    >
-                      <span>중</span>
-                    </Button>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectSchoolLevel('고');
-                        selectGradeLevel('');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={schoolLevel !== '고'}
-                      $filled={schoolLevel === '고'}
-                      cursor
-                    >
-                      <span>고</span>
-                    </Button>
-                    <DivideBar>|</DivideBar>
-                    {schoolLevel === '초' ? (
+                      <TabMenu
+                        length={3}
+                        menu={menuList}
+                        width={'350px'}
+                        lineStyle
+                        selected={tabVeiw}
+                        setTabVeiw={setTabVeiw}
+                      />
+                    </TabWrapper>
+                    <SchoolGradeWrapper>
                       <SelectorGroup>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectGradeLevel('1학년');
+                            selectSchoolLevel('초');
+                            selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
-                          width={'99px'}
+                          width={'97px'}
                           fontSize="14px"
-                          $normal={gradeLevel !== '1학년'}
-                          $filled={gradeLevel === '1학년'}
+                          $normal={schoolLevel !== '초'}
+                          $filled={schoolLevel === '초'}
                           cursor
                         >
-                          <span>1학년</span>
+                          <span>초</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectGradeLevel('2학년');
+                            selectSchoolLevel('중');
+                            selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
-                          width={'99px'}
+                          width={'97px'}
                           fontSize="14px"
-                          $normal={gradeLevel !== '2학년'}
-                          $filled={gradeLevel === '2학년'}
+                          $normal={schoolLevel !== '중'}
+                          $filled={schoolLevel === '중'}
                           cursor
                         >
-                          <span>2학년</span>
+                          <span>중</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectGradeLevel('3학년');
+                            selectSchoolLevel('고');
+                            selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
-                          width={'99px'}
+                          width={'97px'}
                           fontSize="14px"
-                          $normal={gradeLevel !== '3학년'}
-                          $filled={gradeLevel === '3학년'}
+                          $normal={schoolLevel !== '고'}
+                          $filled={schoolLevel === '고'}
                           cursor
                         >
-                          <span>3학년</span>
+                          <span>고</span>
                         </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => {
-                            selectGradeLevel('4학년');
-                          }}
-                          $padding="10px"
-                          height={'34px'}
-                          width={'99px'}
-                          fontSize="14px"
-                          $normal={gradeLevel !== '4학년'}
-                          $filled={gradeLevel === '4학년'}
-                          cursor
-                        >
-                          <span>4학년</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => {
-                            selectGradeLevel('5학년');
-                          }}
-                          $padding="10px"
-                          height={'34px'}
-                          width={'99px'}
-                          fontSize="14px"
-                          $normal={gradeLevel !== '5학년'}
-                          $filled={gradeLevel === '5학년'}
-                          cursor
-                        >
-                          <span>5학년</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => {
-                            selectGradeLevel('6학년');
-                          }}
-                          $padding="10px"
-                          height={'34px'}
-                          width={'99px'}
-                          fontSize="14px"
-                          $normal={gradeLevel !== '6학년'}
-                          $filled={gradeLevel === '6학년'}
-                          cursor
-                        >
-                          <span>6학년</span>
-                        </Button>
+                        <DivideBar>|</DivideBar>
+                        {schoolLevel === '중' || schoolLevel === '고' ? (
+                          <SelectorGroup>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('1학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '1학년'}
+                              $filled={gradeLevel === '1학년'}
+                              cursor
+                            >
+                              <span>1학년</span>
+                            </Button>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('2학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '2학년'}
+                              $filled={gradeLevel === '2학년'}
+                              cursor
+                            >
+                              <span>2학년</span>
+                            </Button>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('3학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '3학년'}
+                              $filled={gradeLevel === '3학년'}
+                              cursor
+                            >
+                              <span>3학년</span>
+                            </Button>
+                          </SelectorGroup>
+                        ) : (
+                          <SelectorGroup>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('1학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '1학년'}
+                              $filled={gradeLevel === '1학년'}
+                              cursor
+                            >
+                              <span>1학년</span>
+                            </Button>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('2학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '2학년'}
+                              $filled={gradeLevel === '2학년'}
+                              cursor
+                            >
+                              <span>2학년</span>
+                            </Button>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('3학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '3학년'}
+                              $filled={gradeLevel === '3학년'}
+                              cursor
+                            >
+                              <span>3학년</span>
+                            </Button>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('4학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '4학년'}
+                              $filled={gradeLevel === '4학년'}
+                              cursor
+                            >
+                              <span>4학년</span>
+                            </Button>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('5학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '5학년'}
+                              $filled={gradeLevel === '5학년'}
+                              cursor
+                            >
+                              <span>5학년</span>
+                            </Button>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {
+                                selectGradeLevel('6학년');
+                              }}
+                              $padding="10px"
+                              height={'34px'}
+                              width={'90px'}
+                              fontSize="14px"
+                              $normal={gradeLevel !== '6학년'}
+                              $filled={gradeLevel === '6학년'}
+                              cursor
+                            >
+                              <span>6학년</span>
+                            </Button>
+                          </SelectorGroup>
+                        )}
                       </SelectorGroup>
-                    ) : (
-                      <SelectorGroup>
+                    </SchoolGradeWrapper>
+                    <SearchWrapper>
+                      <Search
+                        value={searchValue}
+                        width={'50%'}
+                        height="40px"
+                        onClick={() => filterSearchValue()}
+                        onKeyDown={(e) => {}}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        placeholder="교재명 검색"
+                      />
+                    </SearchWrapper>
+                    <ListWrapper>
+                      <ListTitleWrapper>
+                        <ListTitle className="schoolGrade">학교급</ListTitle>
+                        <ListTitle className="title">교재명</ListTitle>
+                        <ListTitle className="series">시리즈</ListTitle>
+                        <ListTitle className="publisher">출판사</ListTitle>
+                      </ListTitleWrapper>
+                      {textbookList.map((book, idx) => (
+                        <TextbookList
+                          key={idx}
+                          onClick={() => selectTextbook(book)}
+                        >
+                          <div className="schoolGrade">{book.schoolGrade}</div>
+                          <div className="title">{book.title}</div>
+                          <div className="series">{book.series}</div>
+                          <div className="publisher">{book.publisher}</div>
+                        </TextbookList>
+                      ))}
+                    </ListWrapper>
+                  </CategorySection>
+                  <SchoolSelectorSection>
+                    <SubTitleWrapper>
+                      <Label value="*문항수" fontSize="16px" width="60px" />
+                      <Label
+                        value="최대 100문항"
+                        fontSize="12px"
+                        width="440px"
+                      />
+                    </SubTitleWrapper>
+                    <SelectorGroup>
+                      <SelectorWrapper>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectGradeLevel('1학년');
+                            selectQuestionNum('25');
                           }}
                           $padding="10px"
                           height={'34px'}
-                          width={'99px'}
+                          width={'100px'}
                           fontSize="14px"
-                          $normal={gradeLevel !== '1학년'}
-                          $filled={gradeLevel === '1학년'}
+                          $normal={questionNum !== '25'}
+                          $filled={questionNum === '25'}
                           cursor
                         >
-                          <span>1학년</span>
+                          <span>25</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectGradeLevel('2학년');
+                            selectQuestionNum('50');
                           }}
                           $padding="10px"
                           height={'34px'}
-                          width={'99px'}
+                          width={'100px'}
                           fontSize="14px"
-                          $normal={gradeLevel !== '2학년'}
-                          $filled={gradeLevel === '2학년'}
+                          $normal={questionNum !== '50'}
+                          $filled={questionNum === '50'}
                           cursor
                         >
-                          <span>2학년</span>
+                          <span>50</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectGradeLevel('3학년');
+                            selectQuestionNum('100');
                           }}
                           $padding="10px"
                           height={'34px'}
-                          width={'99px'}
+                          width={'100px'}
                           fontSize="14px"
-                          $normal={gradeLevel !== '3학년'}
-                          $filled={gradeLevel === '3학년'}
+                          $normal={questionNum !== '100'}
+                          $filled={questionNum === '100'}
                           cursor
                         >
-                          <span>3학년</span>
+                          <span>100</span>
                         </Button>
-                      </SelectorGroup>
-                    )}
-                  </SelectorGroup>
-                </SchoolGradeWrapper>
-                <SearchWrapper>
-                  <Search
-                    value={searchValue}
-                    width={'50%'}
-                    height="40px"
-                    onClick={() => filterSearchValue()}
-                    onKeyDown={(e) => {}}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    placeholder="교재명 검색"
-                  />
-                </SearchWrapper>
-              </CategorySection>
-              <SchoolSelectorSection>
-                <SubTitleWrapper>
-                  <Label value="*문항수" fontSize="16px" width="60px" />
-                  <Label value="최대 100문항" fontSize="12px" width="440px" />
-                </SubTitleWrapper>
-                <SelectorGroup>
-                  <SelectorWrapper>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectQuestionNum('25');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={questionNum !== '25'}
-                      $filled={questionNum === '25'}
-                      cursor
-                    >
-                      <span>25</span>
-                    </Button>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectQuestionNum('50');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={questionNum !== '50'}
-                      $filled={questionNum === '50'}
-                      cursor
-                    >
-                      <span>50</span>
-                    </Button>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectQuestionNum('100');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={questionNum !== '100'}
-                      $filled={questionNum === '100'}
-                      cursor
-                    >
-                      <span>100</span>
-                    </Button>
-                    <DivideBar>|</DivideBar>
-                    <NumberInput
-                      value={inputValue}
-                      maxLength={3}
-                      onClick={() => selectQuestionNum('')}
-                      style={{
-                        color:
-                          questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
-                        backgroundColor:
-                          questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
-                      }}
-                      onChange={(e) => {
-                        changeInputValue(e);
-                      }}
-                    ></NumberInput>
-                    문항
-                  </SelectorWrapper>
-                </SelectorGroup>
+                        <DivideBar>|</DivideBar>
+                        <NumberInput
+                          value={inputValue}
+                          maxLength={3}
+                          onClick={() => selectQuestionNum('')}
+                          style={{
+                            color:
+                              questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
+                            backgroundColor:
+                              questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
+                          }}
+                          onChange={(e) => {
+                            changeInputValue(e);
+                          }}
+                        ></NumberInput>
+                        문항
+                      </SelectorWrapper>
+                    </SelectorGroup>
 
-                <SubTitleWrapper>
-                  <Label value="*난이도" fontSize="16px" width="200px" />
-                  <AdditionOption>
-                    <IoSettingsOutline
-                      onClick={openDifficultySetting}
-                      style={{ cursor: 'pointer' }}
+                    <SubTitleWrapper>
+                      <Label value="*난이도" fontSize="16px" width="200px" />
+                      <AdditionOption>
+                        <IoSettingsOutline
+                          onClick={openDifficultySetting}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        난이도 설정
+                      </AdditionOption>
+                    </SubTitleWrapper>
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('하');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '하'}
+                        $filled={questionLevel === '하'}
+                        cursor
+                      >
+                        <span>하</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('중하');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '중하'}
+                        $filled={questionLevel === '중하'}
+                        cursor
+                      >
+                        <span>중하</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('중');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '중'}
+                        $filled={questionLevel === '중'}
+                        cursor
+                      >
+                        <span>중</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('상');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '상'}
+                        $filled={questionLevel === '상'}
+                        cursor
+                      >
+                        <span>상</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('최상');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'93px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '최상'}
+                        $filled={questionLevel === '최상'}
+                        cursor
+                      >
+                        <span>최상</span>
+                      </Button>
+                    </SelectorGroup>
+                    <SubTitleWrapper>
+                      <Label value="*문항 타입" fontSize="16px" width="200px" />
+                      <AdditionOption>
+                        자동 체점
+                        <CheckBox
+                          width="16"
+                          height="16"
+                          isChecked={isAutoGrading}
+                          onClick={checkAutoGrading}
+                        />
+                      </AdditionOption>
+                    </SubTitleWrapper>
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          if (isAllSelected) {
+                            setQuestionType([]);
+                          } else {
+                            setQuestionType(['객관식', '주관식', '서술형']);
+                          }
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'120px'}
+                        fontSize="14px"
+                        $normal={!isAllSelected}
+                        $filled={isAllSelected}
+                        cursor
+                      >
+                        <span>전체</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionType('객관식');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'117px'}
+                        fontSize="14px"
+                        $normal={!questionType.includes('객관식')}
+                        $filled={questionType.includes('객관식')}
+                        cursor
+                      >
+                        <span>객관식</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionType('주관식');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'117px'}
+                        fontSize="14px"
+                        $normal={!questionType.includes('주관식')}
+                        $filled={questionType.includes('주관식')}
+                        cursor
+                      >
+                        <span>주관식</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionType('서술형');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'117px'}
+                        fontSize="14px"
+                        $normal={!questionType.includes('서술형')}
+                        $filled={questionType.includes('서술형')}
+                        cursor
+                      >
+                        <span>서술형</span>
+                      </Button>
+                    </SelectorGroup>
+                    <Label
+                      value="*모의고사 포함 여부"
+                      fontSize="16px"
+                      width="200px"
                     />
-                    난이도 설정
-                  </AdditionOption>
-                </SubTitleWrapper>
-                <SelectorGroup>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('하');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '하'}
-                    $filled={questionLevel === '하'}
-                    cursor
-                  >
-                    <span>하</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('중하');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '중하'}
-                    $filled={questionLevel === '중하'}
-                    cursor
-                  >
-                    <span>중하</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('중');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '중'}
-                    $filled={questionLevel === '중'}
-                    cursor
-                  >
-                    <span>중</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('상');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '상'}
-                    $filled={questionLevel === '상'}
-                    cursor
-                  >
-                    <span>상</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('최상');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'93px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '최상'}
-                    $filled={questionLevel === '최상'}
-                    cursor
-                  >
-                    <span>최상</span>
-                  </Button>
-                </SelectorGroup>
-                <SubTitleWrapper>
-                  <Label value="*문항 타입" fontSize="16px" width="200px" />
-                  <AdditionOption>
-                    자동 체점
-                    <CheckBox
-                      width="16"
-                      height="16"
-                      isChecked={isAutoGrading}
-                      onClick={checkAutoGrading}
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectContainMock('포함');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'161px'}
+                        fontSize="14px"
+                        $normal={containMock !== '포함'}
+                        $filled={containMock === '포함'}
+                        cursor
+                      >
+                        <span>포함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectContainMock('제외');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'160px'}
+                        fontSize="14px"
+                        $normal={containMock !== '제외'}
+                        $filled={containMock === '제외'}
+                        cursor
+                      >
+                        <span>제외</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectContainMock('모의고사만');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'160px'}
+                        fontSize="14px"
+                        $normal={containMock !== '모의고사만'}
+                        $filled={containMock === '모의고사만'}
+                        cursor
+                      >
+                        <span>모의고사만</span>
+                      </Button>
+                    </SelectorGroup>
+                    <AdditionOptionList>
+                      <Label value="추가 옵션" fontSize="16px" width="200px" />
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption1}
+                          onClick={selectOption1}
+                        />
+                        기존 출제 문항 제외
+                      </AdditionOption>
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption2}
+                          onClick={selectOption2}
+                        />
+                        교육 과정 외 유형 제외
+                      </AdditionOption>
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption3}
+                          onClick={selectOption3}
+                        />
+                        문항 수 균등 배분
+                      </AdditionOption>
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption4}
+                          onClick={selectOption4}
+                        ></CheckBox>
+                        내 문항 우선 추천
+                      </AdditionOption>
+                    </AdditionOptionList>
+                    <Summary>
+                      학습지 문항수 {inputValue || questionNum} 개 | 유형 3개
+                    </Summary>
+                  </SchoolSelectorSection>
+                </>
+              )}
+              {isSelectTextbookContent && (
+                <>
+                  <CategorySection>
+                    <TabWrapper onClick={selectOtherTextbook}>
+                      <TabMenu
+                        length={3}
+                        menu={menuList}
+                        width={'350px'}
+                        lineStyle
+                        selected={tabVeiw}
+                        setTabVeiw={setTabVeiw}
+                      />
+                    </TabWrapper>
+                    <TextbookTitleWrapper>
+                      <Label
+                        value={selectedTextbook?.title as string}
+                        width="500px"
+                        fontSize="15px"
+                      />
+                      <Button
+                        buttonType="button"
+                        onClick={selectOtherTextbook}
+                        $padding="10px"
+                        height={'30px'}
+                        width={'110px'}
+                        fontSize="12px"
+                        $normal
+                        cursor
+                      >
+                        <span>다른 교재 선택</span>
+                      </Button>
+                    </TextbookTitleWrapper>
+                    <TextbookWrapper>
+                      <TextbookLeftWrapper>
+                        {selectedTextbook?.type?.map((types, idx) => (
+                          <TextbookTypeWrapper key={idx}>
+                            <Label value={types.title as string} />
+                            {types.page.map((page) => (
+                              <CheckboxWrapper
+                                key={page.seq}
+                                onClick={() => choiceType(page.seq)}
+                                $isChoice={clickedIdx === page.seq}
+                                $choicedIdx={clickedIdx}
+                              >
+                                <CheckBox
+                                  isChecked={false}
+                                  width="15"
+                                  height="15"
+                                />
+                                <Label value={page.title} />
+                              </CheckboxWrapper>
+                            ))}
+                          </TextbookTypeWrapper>
+                        ))}
+                      </TextbookLeftWrapper>
+                      <TextbookRightWrapper>
+                        <Label value="유형UP" />
+                        <CheckboxWrapper>
+                          <CheckBox isChecked={false} width="15" height="15" />
+                          <Label value={'60번'} />
+                        </CheckboxWrapper>
+                      </TextbookRightWrapper>
+                    </TextbookWrapper>
+                  </CategorySection>
+                  <SchoolSelectorSection>
+                    <SubTitleWrapper>
+                      <Label value="*문항수" fontSize="16px" width="60px" />
+                      <Label
+                        value="최대 100문항"
+                        fontSize="12px"
+                        width="440px"
+                      />
+                    </SubTitleWrapper>
+                    <SelectorGroup>
+                      <SelectorWrapper>
+                        <Button
+                          buttonType="button"
+                          onClick={() => {
+                            selectQuestionNum('25');
+                          }}
+                          $padding="10px"
+                          height={'34px'}
+                          width={'100px'}
+                          fontSize="14px"
+                          $normal={questionNum !== '25'}
+                          $filled={questionNum === '25'}
+                          cursor
+                        >
+                          <span>25</span>
+                        </Button>
+                        <Button
+                          buttonType="button"
+                          onClick={() => {
+                            selectQuestionNum('50');
+                          }}
+                          $padding="10px"
+                          height={'34px'}
+                          width={'100px'}
+                          fontSize="14px"
+                          $normal={questionNum !== '50'}
+                          $filled={questionNum === '50'}
+                          cursor
+                        >
+                          <span>50</span>
+                        </Button>
+                        <Button
+                          buttonType="button"
+                          onClick={() => {
+                            selectQuestionNum('100');
+                          }}
+                          $padding="10px"
+                          height={'34px'}
+                          width={'100px'}
+                          fontSize="14px"
+                          $normal={questionNum !== '100'}
+                          $filled={questionNum === '100'}
+                          cursor
+                        >
+                          <span>100</span>
+                        </Button>
+                        <DivideBar>|</DivideBar>
+                        <NumberInput
+                          value={inputValue}
+                          maxLength={3}
+                          onClick={() => selectQuestionNum('')}
+                          style={{
+                            color:
+                              questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
+                            backgroundColor:
+                              questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
+                          }}
+                          onChange={(e) => {
+                            changeInputValue(e);
+                          }}
+                        ></NumberInput>
+                        문항
+                      </SelectorWrapper>
+                    </SelectorGroup>
+
+                    <SubTitleWrapper>
+                      <Label value="*난이도" fontSize="16px" width="200px" />
+                      <AdditionOption>
+                        <IoSettingsOutline
+                          onClick={openDifficultySetting}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        난이도 설정
+                      </AdditionOption>
+                    </SubTitleWrapper>
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('하');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '하'}
+                        $filled={questionLevel === '하'}
+                        cursor
+                      >
+                        <span>하</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('중하');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '중하'}
+                        $filled={questionLevel === '중하'}
+                        cursor
+                      >
+                        <span>중하</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('중');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '중'}
+                        $filled={questionLevel === '중'}
+                        cursor
+                      >
+                        <span>중</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('상');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'92px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '상'}
+                        $filled={questionLevel === '상'}
+                        cursor
+                      >
+                        <span>상</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('최상');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'93px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '최상'}
+                        $filled={questionLevel === '최상'}
+                        cursor
+                      >
+                        <span>최상</span>
+                      </Button>
+                    </SelectorGroup>
+                    <SubTitleWrapper>
+                      <Label value="*문항 타입" fontSize="16px" width="200px" />
+                      <AdditionOption>
+                        자동 체점
+                        <CheckBox
+                          width="16"
+                          height="16"
+                          isChecked={isAutoGrading}
+                          onClick={checkAutoGrading}
+                        />
+                      </AdditionOption>
+                    </SubTitleWrapper>
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          if (isAllSelected) {
+                            setQuestionType([]);
+                          } else {
+                            setQuestionType(['객관식', '주관식', '서술형']);
+                          }
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'120px'}
+                        fontSize="14px"
+                        $normal={!isAllSelected}
+                        $filled={isAllSelected}
+                        cursor
+                      >
+                        <span>전체</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionType('객관식');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'117px'}
+                        fontSize="14px"
+                        $normal={!questionType.includes('객관식')}
+                        $filled={questionType.includes('객관식')}
+                        cursor
+                      >
+                        <span>객관식</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionType('주관식');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'117px'}
+                        fontSize="14px"
+                        $normal={!questionType.includes('주관식')}
+                        $filled={questionType.includes('주관식')}
+                        cursor
+                      >
+                        <span>주관식</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionType('서술형');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'117px'}
+                        fontSize="14px"
+                        $normal={!questionType.includes('서술형')}
+                        $filled={questionType.includes('서술형')}
+                        cursor
+                      >
+                        <span>서술형</span>
+                      </Button>
+                    </SelectorGroup>
+                    <Label
+                      value="*모의고사 포함 여부"
+                      fontSize="16px"
+                      width="200px"
                     />
-                  </AdditionOption>
-                </SubTitleWrapper>
-                <SelectorGroup>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      if (isAllSelected) {
-                        setQuestionType([]);
-                      } else {
-                        setQuestionType(['객관식', '주관식', '서술형']);
-                      }
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'120px'}
-                    fontSize="14px"
-                    $normal={!isAllSelected}
-                    $filled={isAllSelected}
-                    cursor
-                  >
-                    <span>전체</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionType('객관식');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'117px'}
-                    fontSize="14px"
-                    $normal={!questionType.includes('객관식')}
-                    $filled={questionType.includes('객관식')}
-                    cursor
-                  >
-                    <span>객관식</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionType('주관식');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'117px'}
-                    fontSize="14px"
-                    $normal={!questionType.includes('주관식')}
-                    $filled={questionType.includes('주관식')}
-                    cursor
-                  >
-                    <span>주관식</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionType('서술형');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'117px'}
-                    fontSize="14px"
-                    $normal={!questionType.includes('서술형')}
-                    $filled={questionType.includes('서술형')}
-                    cursor
-                  >
-                    <span>서술형</span>
-                  </Button>
-                </SelectorGroup>
-                <Label
-                  value="*모의고사 포함 여부"
-                  fontSize="16px"
-                  width="200px"
-                />
-                <SelectorGroup>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectContainMock('포함');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'161px'}
-                    fontSize="14px"
-                    $normal={containMock !== '포함'}
-                    $filled={containMock === '포함'}
-                    cursor
-                  >
-                    <span>포함</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectContainMock('제외');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'160px'}
-                    fontSize="14px"
-                    $normal={containMock !== '제외'}
-                    $filled={containMock === '제외'}
-                    cursor
-                  >
-                    <span>제외</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectContainMock('모의고사만');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'160px'}
-                    fontSize="14px"
-                    $normal={containMock !== '모의고사만'}
-                    $filled={containMock === '모의고사만'}
-                    cursor
-                  >
-                    <span>모의고사만</span>
-                  </Button>
-                </SelectorGroup>
-                <AdditionOptionList>
-                  <Label value="추가 옵션" fontSize="16px" width="200px" />
-                  <AdditionOption>
-                    <CheckBox isChecked={isOption1} onClick={selectOption1} />
-                    기존 출제 문항 제외
-                  </AdditionOption>
-                  <AdditionOption>
-                    <CheckBox isChecked={isOption2} onClick={selectOption2} />
-                    교육 과정 외 유형 제외
-                  </AdditionOption>
-                  <AdditionOption>
-                    <CheckBox isChecked={isOption3} onClick={selectOption3} />
-                    문항 수 균등 배분
-                  </AdditionOption>
-                  <AdditionOption>
-                    <CheckBox
-                      isChecked={isOption4}
-                      onClick={selectOption4}
-                    ></CheckBox>
-                    내 문항 우선 추천
-                  </AdditionOption>
-                </AdditionOptionList>
-                <Summary>
-                  학습지 문항수 {inputValue || questionNum} 개 | 유형 3개
-                </Summary>
-              </SchoolSelectorSection>
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectContainMock('포함');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'161px'}
+                        fontSize="14px"
+                        $normal={containMock !== '포함'}
+                        $filled={containMock === '포함'}
+                        cursor
+                      >
+                        <span>포함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectContainMock('제외');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'160px'}
+                        fontSize="14px"
+                        $normal={containMock !== '제외'}
+                        $filled={containMock === '제외'}
+                        cursor
+                      >
+                        <span>제외</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectContainMock('모의고사만');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'160px'}
+                        fontSize="14px"
+                        $normal={containMock !== '모의고사만'}
+                        $filled={containMock === '모의고사만'}
+                        cursor
+                      >
+                        <span>모의고사만</span>
+                      </Button>
+                    </SelectorGroup>
+                    <AdditionOptionList>
+                      <Label value="추가 옵션" fontSize="16px" width="200px" />
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption1}
+                          onClick={selectOption1}
+                        />
+                        기존 출제 문항 제외
+                      </AdditionOption>
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption2}
+                          onClick={selectOption2}
+                        />
+                        교육 과정 외 유형 제외
+                      </AdditionOption>
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption3}
+                          onClick={selectOption3}
+                        />
+                        문항 수 균등 배분
+                      </AdditionOption>
+                      <AdditionOption>
+                        <CheckBox
+                          isChecked={isOption4}
+                          onClick={selectOption4}
+                        ></CheckBox>
+                        내 문항 우선 추천
+                      </AdditionOption>
+                    </AdditionOptionList>
+                    <Summary>
+                      학습지 문항수 {inputValue || questionNum} 개 | 유형 3개
+                    </Summary>
+                  </SchoolSelectorSection>
+                </>
+              )}
             </>
           )}
           {tabVeiw === '수능/모의고사' && (
@@ -1918,7 +2380,6 @@ const SelectorGroup = styled.div`
   display: flex;
   justify-content: flex-start;
   gap: 10px;
-  //padding-bottom: 20px;
 `;
 const DivideBar = styled.div`
   color: ${COLOR.BORDER_BLUE};
@@ -1929,7 +2390,6 @@ const CategoryWrapper = styled.div`
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   padding: 10px;
 `;
-
 const SchoolSelectorSection = styled.section`
   display: flex;
   flex-direction: column;
@@ -2013,6 +2473,108 @@ const SearchWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   padding: 0 10px 10px 0;
+`;
+const ListWrapper = styled.div`
+  width: 100%;
+  min-height: 550px;
+  padding: 0 10px;
+`;
+const ListTitleWrapper = styled.div`
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: ${COLOR.TABLE_GRAY};
+  border-top: 1px solid ${COLOR.BORDER_GRAY};
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+
+  .schoolGrade {
+    min-width: 15%;
+  }
+  .title {
+    min-width: 60%;
+  }
+  .series {
+    min-width: 10%;
+  }
+  .publisher {
+    min-width: 15%;
+  }
+`;
+const ListTitle = styled.div`
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+`;
+const TextbookList = styled.li`
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: white;
+  font-size: 14px;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+
+  .schoolGrade {
+    min-width: 15%;
+    display: flex;
+    justify-content: center;
+  }
+  .title {
+    min-width: 60%;
+    display: flex;
+    justify-content: center;
+  }
+  .series {
+    min-width: 10%;
+    display: flex;
+    justify-content: center;
+  }
+  .publisher {
+    min-width: 15%;
+    display: flex;
+    justify-content: center;
+  }
+`;
+//시중교재 선택 후
+const TextbookTitleWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
+  padding: 10px 20px;
+`;
+const TextbookWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
+`;
+const TextbookLeftWrapper = styled.div`
+  height: 100%;
+  padding: 10px;
+  flex: 1 0 30%;
+`;
+const TextbookRightWrapper = styled.div`
+  height: 100%;
+  border-left: 1px solid ${COLOR.BORDER_BLUE};
+  padding: 10px;
+  flex: 1 0 70%;
+`;
+const TextbookTypeWrapper = styled.div`
+  padding-bottom: 10px;
+`;
+const CheckboxWrapper = styled.div<{
+  $isChoice?: boolean;
+  $choicedIdx?: number;
+}>`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background-color: ${({ $isChoice, $choicedIdx }) =>
+    $isChoice && $choicedIdx ? COLOR.BUTTON_LIGHT_NORMAL : 'white'};
 `;
 
 //학습지 난이도 모달
