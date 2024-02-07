@@ -76,7 +76,7 @@ export function Login() {
     onSuccess: (response) => {
       console.log('response', response);
       // 프론트 전역에 데이터로저장
-      setAccessTokenAtom(response.data.data.refreshToken);
+      setAccessTokenAtom(response.data.data.accessToken);
       setSessionIdAtom(response.data.data.sessionId);
 
       // 로컬데이터에서 토큰과 세션을 저장
@@ -98,7 +98,7 @@ export function Login() {
       });
 
       console.log('accessToken ----login', response.data.data.accessToken);
-      console.log('accessToken ----login', response.data.data.refreshToken);
+      console.log('refreshToken ----login', response.data.data.refreshToken);
       console.log('sessionId ----login', response.data.data.sessionId);
 
       // 아이디 저장 체크박스

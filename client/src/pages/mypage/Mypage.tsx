@@ -4,27 +4,42 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { userInstance } from '../../api/axios';
+import { handleAuthorizationRenewal, userInstance } from '../../api/axios';
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
-import { Input, Label, Button } from '../../components';
+import {
+  Input,
+  Label,
+  Button,
+  Loader,
+  openToastifyAlert,
+} from '../../components';
 import { COLOR } from '../../components/constants';
 import { ChangePassword } from '../../components/password/ChangePassword';
 import { getAuthorityCookie } from '../../utils/cookies';
 
+type MyInfoDataType = {
+  authority?: string | { idx: number; code: string; name: string };
+  createdAt?: string;
+  createdBy?: string;
+  id?: string;
+  idx?: number;
+  isLock?: false;
+  isUse?: true;
+  lastModifiedAt?: string;
+  lastModifiedBy?: string;
+  name?: string;
+  userKey?: string;
+};
 export function Mypage() {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
 
   const [nameValue, setNameValue] = useState('');
   const [member, setMember] = useState({
-    id: null,
-    name: null,
-    key: null,
-    authority: null,
-    comment: null,
-    enabled: null,
-    authCode: null,
+    id: '',
+    name: '',
+    authority: '',
   });
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -35,26 +50,16 @@ export function Mypage() {
     setNameValue('');
   };
 
-  const saveName = async () => {
-    // putSaveName({
-    //   member,
-    //   nameValue,
-    //   isNameEdit,
-    //   setIsNameEdit,
-    //   setNameValue,
-    // });
-  };
-
   const [isShow, setIsShow] = useState(false);
 
-  const selectPasswordEdit = () => {
+  const showPasswordEdit = () => {
     setIsPasswordEdit(!isPasswordEdit);
     setIsNameEdit(false);
   };
 
   const getMyInfo = async () => {
-    console.log(getAuthorityCookie('accessToken'));
-    console.log(getAuthorityCookie('sessionId'));
+    error?.message.includes('401') && handleAuthorizationRenewal(error.message);
+
     return await userInstance.get(`/v1/account/my-info`);
   };
 
@@ -72,35 +77,62 @@ export function Mypage() {
   });
   console.log('myInfoData', myInfoData);
 
-  const loadData = () => {
-    // getMyInfo();
+  const saveName = async () => {
+    const nameData = await userInstance.patch(
+      `/v1/account/change-name`,
+      nameValue,
+    );
 
-    setMember({
-      id: null,
-      name: null,
-      key: null,
-      authority: null,
-      comment: null,
-      enabled: null,
-      authCode: null,
-    });
+    if (nameData.status == 200) {
+      myInfoData &&
+        setMember({
+          id: myInfoData.data.data.id,
+          name: nameValue,
+          authority: myInfoData.data.data.authority.name,
+        });
+      setIsNameEdit(false);
+      openToastifyAlert({
+        type: 'success',
+        text: `이름이 수정되었습니다.`,
+      });
+    }
+    // console.log(nameData);
   };
 
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
+  const submitName = () => {
+    // console.log(getAuthorityCookie('accessToken'));
+
+    // handleAuthorizationRenewal('');
+    // TODO: 이름 형식 확인 필요 //2자 이상 10자 이하로 입력하세요
+    console.log(getAuthorityCookie('accessToken'));
+    saveName();
+  };
+
+  const loadData = useCallback(() => {
+    !isLoading &&
+      myInfoData &&
+      setMember({
+        id: myInfoData.data.data.id,
+        name: myInfoData.data.data.name,
+        authority: myInfoData.data.data.authority.name,
+      });
+  }, [myInfoData]);
 
   useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [isNameEdit, didMount]);
+    loadData();
+  }, [myInfoData]);
 
-  useEffect(() => {
-    if (isNameEdit && nameInputRef.current) {
-      nameInputRef.current.focus();
-    }
-  }, [isNameEdit]);
+  // console.log('member', member);
+  // useEffect(() => {
+  //   handleAuthorizationRenewal('');
+  // }, [error]);
+
+  if (isLoading)
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    );
 
   return (
     <Container>
@@ -128,6 +160,8 @@ export function Mypage() {
                 type="text"
                 placeholder="수정할 이름을 입력하세요."
                 value={nameValue}
+                maxLength={10}
+                minLength={2}
                 onChange={(e) => {
                   setNameValue(e.target.value);
                 }}
@@ -137,7 +171,7 @@ export function Mypage() {
             {!isNameEdit && !isPasswordEdit && (
               <ButtonGroup>
                 <Button
-                  onClick={selectNameEdition}
+                  onClick={() => selectNameEdition()}
                   width="80px"
                   height="30px"
                   fontSize="15px"
@@ -152,7 +186,7 @@ export function Mypage() {
             {isNameEdit && !isPasswordEdit && (
               <ButtonGroup>
                 <Button
-                  onClick={selectNameEdition}
+                  onClick={() => selectNameEdition()}
                   width="80px"
                   height="30px"
                   fontSize="15px"
@@ -163,7 +197,7 @@ export function Mypage() {
                   <span>취소</span>
                 </Button>
                 <Button
-                  onClick={saveName}
+                  onClick={() => submitName()}
                   width="80px"
                   height="30px"
                   fontSize="15px"
@@ -185,7 +219,7 @@ export function Mypage() {
               <Label value="비밀번호" fontSize="16px" width="200px" />
               <ButtonWrapper>
                 <Button
-                  // onClick={selectPasswordEdit}
+                  onClick={showPasswordEdit}
                   width="80px"
                   height="30px"
                   fontSize="15px"
@@ -249,7 +283,7 @@ export function Mypage() {
                 width="100%"
                 inputwidth="500px"
                 padding="20px 10px"
-                // onClick={selectPasswordEdit}
+                setIsPasswordEdit={setIsPasswordEdit}
                 btnwidth="80px"
                 height="30px"
                 buttonfontsize="15px"
@@ -296,6 +330,7 @@ const SubTitleWrapper = styled.div`
   padding-left: 20px;
 `;
 const SubTitle = styled.div`
+  font-weight: bold;
   color: ${COLOR.FONT_BLACK};
   font-size: 16px;
 `;

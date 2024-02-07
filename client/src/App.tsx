@@ -21,15 +21,18 @@ import { getAuthorityCookie, setAuthorityCookie } from './utils/cookies';
 export function App() {
   // const setAccessReTokenAtom = useSetRecoilState(accessTokenAtom);
   // const accessReTokenAtom = useRecoilValue(accessTokenAtom);
+  const location = useLocation();
+  const navigate = useNavigate();
+
   //전역 쿼리캐싱
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
-        console.log(error);
+        // console.log(error);
 
         // 토큰 만료시 토큰 갱신
         // TODO: code 변경시 적용
-        if (error.message.includes('401')) {
+        if (error.message.includes('40')) {
           const code = 'e-006';
           handleAuthorizationRenewal(code);
         }
@@ -44,7 +47,7 @@ export function App() {
             type: 'error',
             text: `${query.meta.errorMessage}: ${error}`,
           });
-          // console.log(`${query.meta.errorMessage}: ${error}`);
+          console.log(`${query.meta.errorMessage}: ${error}`);
         }
       },
       onSuccess: (data, query) => {
@@ -53,46 +56,35 @@ export function App() {
       },
     }),
   });
-  const location = useLocation();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
-    if (!getAuthorityCookie('accessToken')) {
-      // navigate('/login');
-    }
+    if (!getAuthorityCookie('accessToken')) navigate('/login');
   }, [getAuthorityCookie('accessToken')]);
 
   return (
     <>
       <QueryClientProvider client={queryClient}>
         <Container>
-          {
-            // getAuthorityCookie('accessToken') &&
+          {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
+            location.pathname !== '/init-change-password' &&
+            location.pathname !== '/relogin' &&
+            location.pathname !== '/createcontentmain' &&
+            location.pathname !== '/content-create/exam/step1' &&
+            location.pathname !== '/content-create/exam/step2' &&
+            location.pathname !== '/content-create/exam/step3' && (
+              <Navigation />
+            )}
+          <MainWrapper>
+            {getAuthorityCookie('accessToken') &&
+              location.pathname !== '/login' &&
               location.pathname !== '/init-change-password' &&
               location.pathname !== '/relogin' &&
-              location.pathname !== '/createcontentwindow' &&
               location.pathname !== '/createcontentmain' &&
               location.pathname !== '/content-create/exam/step1' &&
               location.pathname !== '/content-create/exam/step2' &&
-              location.pathname !== '/content-create/exam/step3' && (
-                <Navigation />
-              )
-          }
-          <MainWrapper>
-            {
-              // getAuthorityCookie('accessToken') &&
-              location.pathname !== '/login' &&
-                location.pathname !== '/init-change-password' &&
-                location.pathname !== '/relogin' &&
-                location.pathname !== '/createcontentwindow' &&
-                location.pathname !== '/createcontentmain' &&
-                location.pathname !== '/content-create/exam/step1' &&
-                location.pathname !== '/content-create/exam/step2' &&
-                location.pathname !== '/content-create/exam/step3' && <Header />
-            }
+              location.pathname !== '/content-create/exam/step3' && <Header />}
             <BodyWrapper>
               <ToastifyAlert />
               <Outlet />

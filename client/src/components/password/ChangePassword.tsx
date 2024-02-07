@@ -24,10 +24,8 @@ type passwordProps = {
   password_confirm: string;
 };
 
-type PasswordTpye = {
+type CodeTpye = {
   code: string;
-  password: string;
-  passwordConfirm: string;
 };
 
 type ChangePasswordProps = {
@@ -45,6 +43,7 @@ type ChangePasswordProps = {
   messageWidth?: string;
   goLogin?: (password: string) => void;
   setPassword?: (password: string) => void;
+  setIsPasswordEdit?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function ChangePassword({
@@ -61,6 +60,7 @@ export function ChangePassword({
   labelfontsize,
   placeholdersize,
   goLogin,
+  setIsPasswordEdit,
 }: ChangePasswordProps) {
   const [disabled, setDisabled] = useState<boolean>(true);
   const {
@@ -101,9 +101,57 @@ export function ChangePassword({
     navigate('/login');
   };
 
-  //패스워드 변경 api
-  const patchPassword = (auth: PasswordTpye) => {
+  // 초기화 된 코드 검증 TODO: 502 error
+  const getCode = async () => {
+    await userInstance
+      .get('/v1/account/init-change-password', { code: code } as any)
+      .then((res) => {
+        console.log('검증코드 :', res);
+      });
+  };
+
+  // 최초 로그인 패스워드 변경 api
+  const patchPasswordInit = (auth: {
+    code: string;
+    password: string;
+    passwordConfirm: string;
+  }) => {
     return userInstance.patch('/v1/account/init-change-password', auth);
+  };
+  const { data: passwordDataInit, mutate: changePasswordInit } = useMutation({
+    mutationFn: patchPasswordInit,
+    onError: (context: { response: { data: { message: string } } }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response) => {
+      // console.log('passwordDataInit', response);
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      //쿠키 세션 정리
+      removeAuthorityCookie('accessToken', { path: '/' });
+      removeAuthorityCookie('sessionId', { path: '/' });
+
+      navigate('/login');
+    },
+  });
+  const submitPasswordInit = (password: string) => {
+    const auth = { code: code, password: password, passwordConfirm: password };
+    // console.log('auth ', auth);
+    getCode();
+    changePasswordInit(auth);
+  };
+
+  // 마이페이지 패스워드 변경 api
+  const patchPassword = (auth: {
+    password: string;
+    passwordConfirm: string;
+  }) => {
+    return userInstance.patch('/v1/account/change-password', auth);
   };
   const { data: passwordData, mutate: changePassword } = useMutation({
     mutationFn: patchPassword,
@@ -126,10 +174,8 @@ export function ChangePassword({
       navigate('/login');
     },
   });
-
   const submitPassword = (password: string) => {
-    const auth = { code: code, password: password, passwordConfirm: password };
-    // console.log('auth ', auth);
+    const auth = { password: password, passwordConfirm: password };
 
     changePassword(auth);
   };
@@ -142,7 +188,10 @@ export function ChangePassword({
 
   const submitChangePassword = () => {
     // console.log(':: getAuthorityCookie', getAuthorityCookie('accessToken'));
-    submitPassword(PasswordConfirm);
+    //마이페이지 비밀번호 변경
+    if (code === undefined) submitPassword(PasswordConfirm);
+    //최초 비밀번호 변경 code 가 있을시
+    if (code) submitPasswordInit(PasswordConfirm);
   };
 
   const changeDisable = () => {
@@ -158,13 +207,17 @@ export function ChangePassword({
   }, [PasswordConfirm, Password]);
 
   const onCancel = () => {
-    //쿠키 세션 정리
-    removeAuthorityCookie('username', { path: '/' });
-    removeAuthorityCookie('userInfo', { path: '/' });
-    removeAuthorityCookie('accessToken', { path: '/' });
-    removeAuthorityCookie('sessionId', { path: '/' });
-
-    navigate('/login');
+    if (setIsPasswordEdit) {
+      setIsPasswordEdit(false);
+    }
+    if (code !== undefined) {
+      //쿠키 세션 정리
+      removeAuthorityCookie('username', { path: '/' });
+      removeAuthorityCookie('userInfo', { path: '/' });
+      removeAuthorityCookie('accessToken', { path: '/' });
+      removeAuthorityCookie('sessionId', { path: '/' });
+      navigate('/login');
+    }
   };
 
   return (
@@ -223,6 +276,8 @@ export function ChangePassword({
                   placeholderSize={placeholdersize as string}
                   type="password"
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
+                  maxLength={20}
+                  minLength={8}
                   onChange={field.onChange}
                   value={field.value}
                   className={isValid ? 'success' : ''}
@@ -295,6 +350,8 @@ export function ChangePassword({
                   placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
                   onChange={field.onChange}
                   value={field.value}
+                  maxLength={20}
+                  minLength={8}
                   className={
                     PasswordConfirm && Password === PasswordConfirm
                       ? 'passwordMatch'

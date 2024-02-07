@@ -25,6 +25,8 @@ type InputProps = {
   disabled?: boolean;
   errorMessage?: boolean | string;
   innerRef?: React.Ref<HTMLInputElement>;
+  maxLength?: number;
+  minLength?: number;
 };
 
 export function Input({
@@ -47,6 +49,8 @@ export function Input({
   margin,
   errorMessage,
   innerRef,
+  maxLength,
+  minLength,
 }: InputProps) {
   return (
     <Warpper>
@@ -69,6 +73,8 @@ export function Input({
         onClick={onClick}
         onChange={onChange}
         ref={innerRef}
+        maxLength={maxLength}
+        minLength={minLength}
       ></Component>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </Warpper>

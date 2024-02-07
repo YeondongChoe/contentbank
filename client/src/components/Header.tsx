@@ -36,14 +36,6 @@ export function Header() {
     removeAuthorityCookie('sessionId');
   };
 
-  // useEffect(() => {
-  //   // 사이드메뉴
-  //   if (!getAuthorityCookie('accessToken')) {
-  //     alert('로그인이 필요합니다.');
-  //     navigate('/login');
-  //   }
-  // }, []);
-
   return (
     <Container $isOpenNavigation={isOpenNavigation}>
       <Wrapper>
