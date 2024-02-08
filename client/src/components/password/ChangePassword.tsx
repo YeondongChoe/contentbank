@@ -24,10 +24,6 @@ type passwordProps = {
   password_confirm: string;
 };
 
-type CodeTpye = {
-  code: string;
-};
-
 type ChangePasswordProps = {
   width?: string;
   inputwidth?: string;

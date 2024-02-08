@@ -57,12 +57,12 @@ export function Mypage() {
     setIsNameEdit(false);
   };
 
-  const getMyInfo = async () => {
+  // 이름 수정 api
+  const getMyInfo = () => {
     error?.message.includes('401') && handleAuthorizationRenewal(error.message);
 
-    return await userInstance.get(`/v1/account/my-info`);
+    return userInstance.get(`/v1/account/my-info`);
   };
-
   const {
     isLoading,
     error,

@@ -15,16 +15,6 @@ export function FirstLogin() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 내 계정 조회
-  // const getMyInfo = () => {
-  //   return userInstance.get(`/v1/account/my-info`);
-  // };
-  // const { isLoading, isError, data, error } = useQuery({
-  //   queryKey: ['getMyInfo'],
-  //   queryFn: getMyInfo,
-  // });
-  // console.log('getMyInfo', data && data.data.userKey);
-
   return (
     <Container>
       <Wrapper>

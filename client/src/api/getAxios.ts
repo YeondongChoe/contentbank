@@ -44,37 +44,46 @@ export const getQuestionList = async ({
   MenuCode,
   page,
   size,
-}: getQuestionListProps) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}.${month}.${day}`;
-  };
-  await questionInstance
-    .get(
-      `/questions?keyword=${
-        searchValue || ''
-      }&page=${page}&size=${size}&menuCode=${MenuCode}`,
-    )
-    .then((response) => {
-      // handleAuthorizationRenewal(response);
-      // console.log(response.data.data.totalElements);
-      settotalPage(response.data.data.totalElements);
-      const formattedQuestionList = response.data.data.content.map(
-        (content: any) => ({
-          ...content,
-          questionCreatedDate: formatDate(content.questionCreatedDate),
-        }),
-      );
-      setQuestionList(formattedQuestionList);
-      setIsChangedServiced(false);
-    })
-    .catch((err) => {
-      alert(err);
-    });
-};
+}: getQuestionListProps) => {};
+// export const getQuestionList = async ({
+//   setQuestionList,
+//   setIsChangedServiced,
+//   settotalPage,
+//   searchValue,
+//   MenuCode,
+//   page,
+//   size,
+// }: getQuestionListProps) => {
+//   const formatDate = (dateString: string) => {
+//     const date = new Date(dateString);
+//     const year = date.getFullYear();
+//     const month = String(date.getMonth() + 1).padStart(2, '0');
+//     const day = String(date.getDate()).padStart(2, '0');
+//     return `${year}.${month}.${day}`;
+//   };
+//   await questionInstance
+//     .get(
+//       `/questions?keyword=${
+//         searchValue || ''
+//       }&page=${page}&size=${size}&menuCode=${MenuCode}`,
+//     )
+//     .then((response) => {
+//       // handleAuthorizationRenewal(response);
+//       // console.log(response.data.data.totalElements);
+//       settotalPage(response.data.data.totalElements);
+//       const formattedQuestionList = response.data.data.content.map(
+//         (content: any) => ({
+//           ...content,
+//           questionCreatedDate: formatDate(content.questionCreatedDate),
+//         }),
+//       );
+//       setQuestionList(formattedQuestionList);
+//       setIsChangedServiced(false);
+//     })
+//     .catch((err) => {
+//       alert(err);
+//     });
+// };
 
 /** 회원 파트 */
 
