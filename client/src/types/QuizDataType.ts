@@ -1,4 +1,4 @@
-export type quizDataType = {
+export type QuizDataType = {
   idx: number | string;
   code: number | string;
   quiz_type: number | string; // 문항 타입: 객관식/주관식/서술형
