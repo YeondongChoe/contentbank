@@ -35,7 +35,8 @@ export function Header() {
     //500 에러
     //쿠키 삭제
     // queryClient.removeQueries();
-    queryClient.clear();
+    // queryClient.clear();
+    queryClient.getQueryCache().clear;
     removeAuthorityCookie('accessToken');
     removeAuthorityCookie('sessionId');
   };

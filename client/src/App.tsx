@@ -59,11 +59,10 @@ export function App() {
   });
 
   useEffect(() => {
-    if (isAccessTokenAtom !== getAuthorityCookie('accessToken')) {
-      queryClient.getQueryCache().clear;
-
-      setAuthorityCookie('accessToken', isAccessTokenAtom);
-    }
+    // if (isAccessTokenAtom !== getAuthorityCookie('accessToken')) {
+    //
+    //   setAuthorityCookie('accessToken', isAccessTokenAtom);
+    // }
     // console.log('loginPostData', loginPostData?.config.headers.Authorization);
     // console.log(getAuthorityCookie('accessToken'));
   }, []);
