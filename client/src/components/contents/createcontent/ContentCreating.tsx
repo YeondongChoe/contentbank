@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
-import { Button, Select } from '../..';
+import { Button, Modal, Select } from '../..';
+import { useModal } from '../../../hooks';
 import { COLOR } from '../../constants/COLOR';
 
 import {
@@ -11,13 +12,31 @@ import {
   selectCategory2,
   selectCategory3,
 } from './contentCreatingCategory';
+import { SchoolInputModal } from './SchoolInputModal';
 
 export function ContentCreating() {
+  const { openModal } = useModal();
   const [content, setContent] = useState<string[]>([]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
+  };
+
+  const addCategory = () => {
+    console.log('출처 카테고리 추가 API');
+    openCreateModal();
+  };
+
+  const modalData = {
+    title: '',
+    content: <SchoolInputModal />,
+    callback: () => {},
+  };
+
+  // 모달 연뒤
+  const openCreateModal = () => {
+    openModal(modalData);
   };
 
   const submitSave = () => {
@@ -83,6 +102,17 @@ export function ContentCreating() {
                   />
                 ))}
               </SelectWrapper>
+              <Button
+                width={'50px'}
+                height={'30px'}
+                fontSize={'15px'}
+                $padding={'5px'}
+                $filled
+                cursor
+                onClick={() => addCategory()}
+              >
+                +
+              </Button>
             </li>
           </SelectList>
         </SelectListWrap>
@@ -121,6 +151,8 @@ export function ContentCreating() {
           <span>저장</span>
         </Button>
       </ContentListWrap>
+
+      <Modal />
     </Container>
   );
 }
@@ -161,6 +193,12 @@ const SelectListWrap = styled.div`
 `;
 const SelectList = styled.ul`
   padding: 5px 10px;
+
+  li {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
 `;
 const ContentListWrap = styled.div`
   display: flex;

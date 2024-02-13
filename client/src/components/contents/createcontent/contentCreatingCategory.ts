@@ -35,6 +35,17 @@ export const selectCategory2 = [
       { id: '3', label: '2020학년', value: '3' },
     ],
   },
+  // {
+  //   id: '2',
+  //   label: '과목',
+  //   value: '2',
+  //   options: [
+  //     { id: '0', label: '수학', value: '0' },
+  //     { id: '1', label: '초등', value: '1' },
+  //     { id: '2', label: '중등', value: '2' },
+  //     { id: '3', label: '고등', value: '3' },
+  //   ],
+  // },
 ];
 
 export const selectCategory3 = [
