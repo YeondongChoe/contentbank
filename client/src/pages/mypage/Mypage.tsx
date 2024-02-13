@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { handleAuthorizationRenewal, userInstance } from '../../api/axios';
@@ -32,18 +32,18 @@ type MyInfoDataType = {
   userKey?: string;
 };
 export function Mypage() {
+  const queryClient = useQueryClient();
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
 
   const [nameValue, setNameValue] = useState('');
+
   const [member, setMember] = useState({
     id: '',
     name: '',
     authority: '',
   });
   const nameInputRef = useRef<HTMLInputElement | null>(null);
-
-  const [didMount, setDidMount] = useState(false);
 
   const selectNameEdition = () => {
     setIsNameEdit(!isNameEdit);
@@ -57,17 +57,20 @@ export function Mypage() {
     setIsNameEdit(false);
   };
 
-  // 이름 수정 api
-  const getMyInfo = () => {
-    error?.message.includes('401') && handleAuthorizationRenewal(error.message);
+  // 마이페이지 데이터 불러오기 api
+  const getMyInfo = async () => {
+    // error?.message.includes('401') && handleAuthorizationRenewal(error.message);
+    // console.log(getAuthorityCookie('accessToken'));
+    const res = await userInstance.get(`/v1/account/my-info`);
 
-    return userInstance.get(`/v1/account/my-info`);
+    return res;
   };
   const {
     isLoading,
     error,
     data: myInfoData,
     isFetching,
+    refetch,
   } = useQuery({
     queryKey: ['get-myInfo'],
     queryFn: getMyInfo,
@@ -76,7 +79,13 @@ export function Mypage() {
     },
   });
   console.log('myInfoData', myInfoData);
+  // const { data, reset } = useMutation({
+  //   mutationFn: getMyInfo,
+  //   onSuccess: () =>
+  //     queryClient.invalidateQueries({ queryKey: ['get-myInfo'] }),
+  // });
 
+  // 이름 수정 api
   const saveName = async () => {
     const nameData = await userInstance.patch(
       `/v1/account/change-name`,
@@ -95,6 +104,8 @@ export function Mypage() {
         type: 'success',
         text: `이름이 수정되었습니다.`,
       });
+
+      refetch();
     }
     // console.log(nameData);
   };
@@ -103,14 +114,11 @@ export function Mypage() {
     // console.log(getAuthorityCookie('accessToken'));
 
     // handleAuthorizationRenewal('');
-    // TODO: 이름 형식 확인 필요 //2자 이상 10자 이하로 입력하세요
-    console.log(getAuthorityCookie('accessToken'));
     saveName();
   };
 
   const loadData = useCallback(() => {
-    !isLoading &&
-      myInfoData &&
+    myInfoData &&
       setMember({
         id: myInfoData.data.data.id,
         name: myInfoData.data.data.name,
@@ -120,6 +128,8 @@ export function Mypage() {
 
   useEffect(() => {
     loadData();
+    //
+    // mutationCache.clear();
   }, [myInfoData]);
 
   // console.log('member', member);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -98,13 +98,18 @@ export function ChangePassword({
   };
 
   // 초기화 된 코드 검증 TODO: 502 error
-  const getCode = async () => {
-    await userInstance
-      .get('/v1/account/init-change-password', { code: code } as any)
-      .then((res) => {
-        console.log('검증코드 :', res);
-      });
-  };
+  // const getCode = async () => {
+  //   await userInstance
+  //     .get('/v1/account/init-change-password', {
+  //       code: code,
+  //     } as any)
+  //     .then((res) => {
+  //       console.log('검증코드 :', res);
+  //     })
+  //     .catch((error) => {
+  //       console.log('검증코드 error :', error);
+  //     });
+  // };
 
   // 최초 로그인 패스워드 변경 api
   const patchPasswordInit = (auth: {
@@ -123,22 +128,29 @@ export function ChangePassword({
       });
     },
     onSuccess: (response) => {
-      // console.log('passwordDataInit', response);
+      console.log('passwordDataInit', response);
       openToastifyAlert({
         type: 'success',
         text: response.data.message,
       });
+
       //쿠키 세션 정리
       removeAuthorityCookie('accessToken', { path: '/' });
+      removeAuthorityCookie('refreshToken', { path: '/' });
       removeAuthorityCookie('sessionId', { path: '/' });
 
       navigate('/login');
     },
   });
+  // useEffect(() => {
+  //   if (passwordDataInit?.data) {
+  //     console.log(passwordDataInit?.data);
+  //   }
+  // }, [passwordDataInit]);
   const submitPasswordInit = (password: string) => {
     const auth = { code: code, password: password, passwordConfirm: password };
     // console.log('auth ', auth);
-    getCode();
+    // getCode();
     changePasswordInit(auth);
   };
 
@@ -165,6 +177,7 @@ export function ChangePassword({
       });
       //쿠키 세션 정리
       removeAuthorityCookie('accessToken', { path: '/' });
+      removeAuthorityCookie('refreshToken', { path: '/' });
       removeAuthorityCookie('sessionId', { path: '/' });
 
       navigate('/login');
@@ -180,14 +193,16 @@ export function ChangePassword({
     const urlCode = location.search.split('?code=')[1];
     console.log('location code : ', urlCode);
     setCode(urlCode);
+
+    console.log('location.pathname : ', location.pathname);
   }, []);
 
   const submitChangePassword = () => {
     // console.log(':: getAuthorityCookie', getAuthorityCookie('accessToken'));
     //마이페이지 비밀번호 변경
-    if (code === undefined) submitPassword(PasswordConfirm);
+    if (location.pathname == '/mypage') submitPassword(PasswordConfirm);
     //최초 비밀번호 변경 code 가 있을시
-    if (code) submitPasswordInit(PasswordConfirm);
+    if (code !== undefined) submitPasswordInit(PasswordConfirm);
   };
 
   const changeDisable = () => {

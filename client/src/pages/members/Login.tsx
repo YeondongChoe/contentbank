@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +30,7 @@ type LoginType = {
 };
 
 export function Login() {
+  const queryClient = useQueryClient();
   const setAccessTokenAtom = useSetRecoilState(accessTokenAtom);
   const setSessionIdAtom = useSetRecoilState(sessionIdAtom);
   const [isClicked, setIsClicked] = useState(
@@ -111,11 +112,14 @@ export function Login() {
       navigate(response.data.link);
 
       console.log('loginPostData', response);
+      // get쿼리 업데이트
+      queryClient.invalidateQueries({ queryKey: ['get-myInfo'] });
     },
   });
 
   const submitLogin: SubmitHandler<LoginType> = (auth) => {
     // console.log('auth ', auth);
+
     onLogin(auth);
   };
 

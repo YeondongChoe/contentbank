@@ -5,6 +5,7 @@ import {
   QueryClientProvider,
   QueryClient,
   QueryCache,
+  useQueryClient,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -20,7 +21,7 @@ import { getAuthorityCookie, setAuthorityCookie } from './utils/cookies';
 
 export function App() {
   // const setAccessReTokenAtom = useSetRecoilState(accessTokenAtom);
-  // const accessReTokenAtom = useRecoilValue(accessTokenAtom);
+  const isAccessTokenAtom = useRecoilValue(accessTokenAtom);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -36,11 +37,6 @@ export function App() {
           const code = 'e-006';
           handleAuthorizationRenewal(code);
         }
-        // setAuthorityCookie('accessToken', accessReTokenAtom, {
-        //   path: '/',
-        //   sameSite: 'strict',
-        //   secure: false,
-        // });
 
         if (query.meta && query.meta.errorMessage) {
           openToastifyAlert({
@@ -51,11 +47,26 @@ export function App() {
         }
       },
       onSuccess: (data, query) => {
+        // query.fetch();
+        //
         //데이터 성공시
-        console.log(`onSuccess: ${data}`);
+        console.log(`onSuccess: ${data} ${query}`);
+        if (data) {
+          // query.reset();
+        }
       },
     }),
   });
+
+  useEffect(() => {
+    if (isAccessTokenAtom !== getAuthorityCookie('accessToken')) {
+      queryClient.getQueryCache().clear;
+
+      setAuthorityCookie('accessToken', isAccessTokenAtom);
+    }
+    // console.log('loginPostData', loginPostData?.config.headers.Authorization);
+    // console.log(getAuthorityCookie('accessToken'));
+  }, []);
 
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시

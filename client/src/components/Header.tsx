@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -13,6 +14,7 @@ import { IndexInfo } from './atom';
 import { COLOR } from './constants';
 
 export function Header() {
+  const queryClient = useQueryClient();
   const [isOpenNavigation, setIsOpenNavigation] = useRecoilState(
     openNaviationBoolAtom,
   );
@@ -32,6 +34,8 @@ export function Header() {
     // logout();
     //500 에러
     //쿠키 삭제
+    // queryClient.removeQueries();
+    queryClient.clear();
     removeAuthorityCookie('accessToken');
     removeAuthorityCookie('sessionId');
   };

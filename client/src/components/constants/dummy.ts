@@ -2,7 +2,7 @@
 
 export const quizData = {
   idx: '0',
-  code: '545465455451215782021485',
+  code: 'Gsdfs_1234567890',
   // 문항 타입: 객관식/주관식/서술형
   quiz_type: '객관식',
   score: 'url/',

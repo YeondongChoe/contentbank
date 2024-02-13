@@ -40,14 +40,16 @@ authInstance.interceptors.request.use(function (config) {
 export const handleAuthorizationRenewal = (code: string) => {
   if (code !== 'S-001')
     tokenInstance.post('/v1/auth/refresh-token').then((res) => {
-      removeAuthorityCookie('accessToken');
+      // removeAuthorityCookie('accessToken');
       console.log('/refresh-token', res);
 
-      setAuthorityCookie('accessToken', res.data.data.accessToken, {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
+      if (res.data.data.accessToken) {
+        setAuthorityCookie('accessToken', res.data.data.accessToken, {
+          path: '/',
+          sameSite: 'strict',
+          secure: false,
+        });
+      }
     });
 };
 
@@ -64,12 +66,12 @@ export const userInstance = axios.create({
 
 userInstance.interceptors.request.use(function (config) {
   console.log('config', config);
-  console.log(getAuthorityCookie('accessToken'));
-  if (config.headers.Authorization !== getAuthorityCookie('accessToken'))
+  if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
+    handleAuthorizationRenewal('');
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
-
+  }
   return config;
 });
 
