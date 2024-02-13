@@ -23,10 +23,6 @@ export function CreateContentMain() {
 
   const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
-  const goBack = () => {
-    navigate(-1);
-  };
-
   const menuList = [
     {
       label: 'DT & Editing',
@@ -36,10 +32,10 @@ export function CreateContentMain() {
       label: '문항 분류',
       value: '문항 분류',
     },
-    {
-      label: '개체 라벨링',
-      value: '개체 라벨링',
-    },
+    // {
+    //   label: '개체 라벨링',
+    //   value: '개체 라벨링',
+    // },
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('DT & Editing');
 
@@ -98,12 +94,6 @@ export function CreateContentMain() {
   return (
     <Container>
       <ButtonWrapper>
-        {/* <IconWrapper className={isHide ? 'hide' : ''}>
-          <IoIosArrowBack
-            style={{ fontSize: '24px', cursor: 'pointer' }}
-            onClick={goBack}
-          />
-        </IconWrapper> */}
         <TapMenuWrapper>
           <TabMenu
             length={3}
@@ -134,11 +124,11 @@ export function CreateContentMain() {
           <Classification />
         </ContentBox>
       )}
-      {tabVeiw === '개체 라벨링' && (
+      {/* {tabVeiw === '개체 라벨링' && (
         <ContentBox>
           <Labeling />
         </ContentBox>
-      )}
+      )} */}
     </Container>
   );
 }

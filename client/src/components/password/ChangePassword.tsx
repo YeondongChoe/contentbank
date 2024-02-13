@@ -135,9 +135,16 @@ export function ChangePassword({
       });
 
       //쿠키 세션 정리
-      removeAuthorityCookie('accessToken', { path: '/' });
-      removeAuthorityCookie('refreshToken', { path: '/' });
-      removeAuthorityCookie('sessionId', { path: '/' });
+      removeAuthorityCookie('accessToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('sessionId', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
 
       navigate('/login');
     },
@@ -176,9 +183,16 @@ export function ChangePassword({
         text: response.data.message,
       });
       //쿠키 세션 정리
-      removeAuthorityCookie('accessToken', { path: '/' });
-      removeAuthorityCookie('refreshToken', { path: '/' });
-      removeAuthorityCookie('sessionId', { path: '/' });
+      removeAuthorityCookie('accessToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('sessionId', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
 
       navigate('/login');
     },
@@ -224,9 +238,17 @@ export function ChangePassword({
     if (code !== undefined) {
       //쿠키 세션 정리
       removeAuthorityCookie('username', { path: '/' });
-      removeAuthorityCookie('userInfo', { path: '/' });
-      removeAuthorityCookie('accessToken', { path: '/' });
-      removeAuthorityCookie('sessionId', { path: '/' });
+
+      removeAuthorityCookie('accessToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('sessionId', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
       navigate('/login');
     }
   };

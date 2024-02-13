@@ -79,6 +79,8 @@ export function Mypage() {
     },
   });
   console.log('myInfoData', myInfoData);
+
+  // TODO : 이전 캐쉬 데이터 업데이트
   // const { data, reset } = useMutation({
   //   mutationFn: getMyInfo,
   //   onSuccess: () =>

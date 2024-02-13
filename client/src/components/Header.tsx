@@ -37,8 +37,16 @@ export function Header() {
     // queryClient.removeQueries();
     // queryClient.clear();
     queryClient.getQueryCache().clear;
-    removeAuthorityCookie('accessToken');
-    removeAuthorityCookie('sessionId');
+    removeAuthorityCookie('accessToken', {
+      path: '/',
+      sameSite: 'strict',
+      secure: false,
+    });
+    removeAuthorityCookie('sessionId', {
+      path: '/',
+      sameSite: 'strict',
+      secure: false,
+    });
   };
 
   return (

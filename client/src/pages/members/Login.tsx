@@ -87,11 +87,11 @@ export function Login() {
         secure: false,
       });
       // refresh
-      setAuthorityCookie('refreshToken', response.data.data.refreshToken, {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
+      // setAuthorityCookie('refreshToken', response.data.data.refreshToken, {
+      //   path: '/',
+      //   sameSite: 'strict',
+      //   secure: false,
+      // });
       setAuthorityCookie('sessionId', response.data.data.sessionId, {
         path: '/',
         sameSite: 'strict',
