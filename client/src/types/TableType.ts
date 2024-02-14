@@ -83,12 +83,16 @@ export type TextbookType = {
   title?: string;
   series?: string;
   publisher?: string;
-  type?: {
+  type: {
     title: string;
     page: {
       seq: number;
       title: string;
-      content: string[];
+      content: {
+        seq: number;
+        title: string;
+        isChecked?: boolean;
+      }[];
     }[];
   }[];
 };

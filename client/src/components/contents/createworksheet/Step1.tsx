@@ -11,6 +11,63 @@ import { TextbookType } from '../../../types';
 import { COLOR } from '../../constants';
 import dummy from '../../constants/data.json';
 
+// type ArrayType = {
+//   seq: number;
+//   title: string;
+// };
+
+type Content = {
+  seq: number;
+  title: string;
+  isChecked?: boolean;
+  pageSeq: number;
+  pageTitle: string;
+};
+
+type Page = {
+  seq: number;
+  title: string;
+  isChecked?: boolean;
+  content: Content[];
+};
+
+type Type = {
+  title: string;
+  page: Page[];
+};
+
+type ArrayType = {
+  seq: number;
+  title: string;
+  isChecked: boolean;
+};
+
+const addIsCheckedToData = (data: TextbookType): Type => {
+  const newData: Type = {
+    title: data.title || '',
+    page:
+      data.type?.flatMap(
+        (type) =>
+          type.page?.map((page) => ({
+            seq: page.seq || 0,
+            title: page.title || '',
+
+            isChecked: false,
+            content:
+              page.content?.map((content) => ({
+                seq: content.seq || 0,
+                title: content.title || '',
+                isChecked: false,
+                pageSeq: page.seq,
+                pageTitle: page.title,
+              })) || [],
+          })),
+      ) || [],
+  };
+
+  return newData;
+};
+
 export function Step1() {
   const menuList = [
     {
@@ -44,7 +101,7 @@ export function Step1() {
 
   useEffect(() => {
     if (didMount) {
-      console.log('schoolLevel, schoolYear이 선택 됐을 때 범위 트리 get API');
+      //console.log('schoolLevel, schoolYear이 선택 됐을 때 범위 트리 get API');
     }
   }, [didMount]);
 
@@ -144,10 +201,8 @@ export function Step1() {
   };
 
   const textbookList: TextbookType[] = dummy.Textbook;
-
   const [isSelectTextbook, setIsSelectTextbook] = useState(true);
   const [selectedTextbook, setSelectedTextbook] = useState<TextbookType>();
-  //console.log(selectedTextbook);
 
   const [isSelectTextbookContent, setIsSelectTextbookContent] = useState(false);
 
@@ -165,15 +220,85 @@ export function Step1() {
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number>();
-  console.log(clickedIdx);
-  const choiceType = (
-    idx: number,
-    event?: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ) => {
-    //event?.preventDefault();
+  const [clickedTitle, setClickedTitle] = useState<string>();
+
+  const [data, setData] = useState<Type | undefined>();
+
+  useEffect(() => {
+    if (selectedTextbook && selectedTextbook.type) {
+      setData(() => {
+        return addIsCheckedToData(selectedTextbook);
+      });
+    }
+  }, [selectedTextbook]);
+
+  // 선택시 배경색이 나타남
+  const choiceType = (idx: number, title: string) => {
     setIsChoice(!isChoice);
     setClickedIdx(idx);
+    setClickedTitle(title);
   };
+
+  const checkAllToggle = (
+    pageSeq: number,
+    isChecked: boolean,
+    contentSeqs: number[],
+  ) => {
+    setData((prevData) => {
+      if (!prevData) return prevData;
+
+      const targetPage = prevData.page.find((page) => page.seq === pageSeq);
+
+      if (targetPage) {
+        targetPage.isChecked = !isChecked;
+
+        if (contentSeqs.length > 0) {
+          targetPage.content.forEach((content) => {
+            if (contentSeqs.includes(content.seq)) {
+              content.isChecked = !isChecked;
+            }
+          });
+        }
+      }
+
+      return { ...prevData };
+    });
+  };
+
+  //부분 선택
+  const checkPartialToggle = (
+    pageSeq: number,
+    contentSeq: number,
+    isChecked: boolean,
+  ) => {
+    setData((prevData) => {
+      if (!prevData) return prevData;
+
+      const targetPage = prevData.page.find((page) => page.seq === pageSeq);
+
+      if (targetPage) {
+        const targetContent = targetPage.content.find(
+          (content) => content.seq === contentSeq,
+        );
+
+        if (targetContent) {
+          targetContent.isChecked = !isChecked;
+
+          // 모든 컨텐츠가 선택되어 있는지 확인
+          const allContentsChecked = targetPage.content.every(
+            (content) => content.isChecked,
+          );
+
+          // 페이지의 isChecked 업데이트
+          targetPage.isChecked = allContentsChecked;
+        }
+      }
+
+      const newData = { ...prevData, page: [...prevData.page] };
+      return newData;
+    });
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -1123,35 +1248,71 @@ export function Step1() {
                       </Button>
                     </TextbookTitleWrapper>
                     <TextbookWrapper>
-                      <TextbookLeftWrapper>
-                        {selectedTextbook?.type?.map((types, idx) => (
-                          <TextbookTypeWrapper key={idx}>
-                            <Label value={types.title as string} />
-                            {types.page.map((page) => (
-                              <CheckboxWrapper
-                                key={page.seq}
-                                onClick={() => choiceType(page.seq)}
+                      {selectedTextbook?.type?.map((types, idx) => (
+                        <TextbookTypeWrapper key={idx}>
+                          <TextbookTypeTitleWrapper>
+                            <Label
+                              value={types.title as string}
+                              width="167px"
+                            />
+                            <Label
+                              value="유형UP"
+                              width="200px"
+                              padding="5px 10px"
+                            />
+                          </TextbookTypeTitleWrapper>
+
+                          {data?.page.map((page) => (
+                            <SelectWrapper key={page.seq}>
+                              <LeftWrapper
+                                onClick={() => choiceType(page.seq, page.title)}
                                 $isChoice={clickedIdx === page.seq}
                                 $choicedIdx={clickedIdx}
                               >
                                 <CheckBox
-                                  isChecked={false}
+                                  onClick={() =>
+                                    checkAllToggle(
+                                      page.seq,
+                                      page.isChecked as boolean,
+                                      page.content.map((el) => el.seq),
+                                    )
+                                  }
+                                  isChecked={page.isChecked as boolean}
                                   width="15"
                                   height="15"
                                 />
-                                <Label value={page.title} />
-                              </CheckboxWrapper>
-                            ))}
-                          </TextbookTypeWrapper>
-                        ))}
-                      </TextbookLeftWrapper>
-                      <TextbookRightWrapper>
-                        <Label value="유형UP" />
-                        <CheckboxWrapper>
-                          <CheckBox isChecked={false} width="15" height="15" />
-                          <Label value={'60번'} />
-                        </CheckboxWrapper>
-                      </TextbookRightWrapper>
+                                <Label value={page.title} width="100px" />
+                              </LeftWrapper>
+                              <RightWrapper>
+                                {/* <Label value="유형UP" /> */}
+                                {page.content.map(
+                                  (content) =>
+                                    clickedTitle === content.pageTitle && (
+                                      <CheckBoxWrapper key={content.seq}>
+                                        <CheckBox
+                                          onClick={() =>
+                                            checkPartialToggle(
+                                              page.seq,
+                                              content.seq,
+                                              content.isChecked || false,
+                                            )
+                                          }
+                                          isChecked={content.isChecked || false}
+                                          width="15"
+                                          height="15"
+                                        />
+                                        <Label
+                                          value={content.title}
+                                          width="30px"
+                                        />
+                                      </CheckBoxWrapper>
+                                    ),
+                                )}
+                              </RightWrapper>
+                            </SelectWrapper>
+                          ))}
+                        </TextbookTypeWrapper>
+                      ))}
                     </TextbookWrapper>
                   </CategorySection>
                   <SchoolSelectorSection>
@@ -2548,33 +2709,44 @@ const TextbookTitleWrapper = styled.div`
 const TextbookWrapper = styled.div`
   width: 100%;
   height: 100%;
+  padding: 10px;
   display: flex;
   border-top: 1px solid ${COLOR.BORDER_BLUE};
 `;
-const TextbookLeftWrapper = styled.div`
-  height: 100%;
-  padding: 10px;
-  flex: 1 0 30%;
-`;
-const TextbookRightWrapper = styled.div`
-  height: 100%;
-  border-left: 1px solid ${COLOR.BORDER_BLUE};
-  padding: 10px;
-  flex: 1 0 70%;
-`;
 const TextbookTypeWrapper = styled.div`
+  width: 100%;
   padding-bottom: 10px;
 `;
-const CheckboxWrapper = styled.div<{
+const TextbookTypeTitleWrapper = styled.div`
+  display: flex;
+`;
+const SelectWrapper = styled.div`
+  display: flex;
+`;
+const LeftWrapper = styled.div<{
   $isChoice?: boolean;
   $choicedIdx?: number;
 }>`
   display: flex;
   align-items: center;
+  flex: 1 0 0;
   gap: 5px;
   padding: 5px 10px;
   background-color: ${({ $isChoice, $choicedIdx }) =>
     $isChoice && $choicedIdx ? COLOR.BUTTON_LIGHT_NORMAL : 'white'};
+`;
+const RightWrapper = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex: 1 0 50%;
+
+  padding-left: 10px;
+`;
+const CheckBoxWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
 `;
 
 //학습지 난이도 모달
