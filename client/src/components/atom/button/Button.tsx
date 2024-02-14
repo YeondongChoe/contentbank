@@ -8,7 +8,7 @@ type ButtonProps = {
   children?: React.ReactNode;
   text?: string;
   buttonType?: 'button' | 'submit' | 'reset';
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
   $padding?: string;
   $margin?: string;
