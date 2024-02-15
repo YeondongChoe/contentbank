@@ -402,7 +402,7 @@ export function Step1() {
       <Wrapper>
         <TitleWrapper>
           <Title>
-            <Span>STEP 1</Span> 학습지 종류 및 번위 선택
+            <Span>STEP 1</Span> 학습지 종류 및 범위 선택
           </Title>
         </TitleWrapper>
         <MainWrapper>
@@ -2753,7 +2753,8 @@ const MainWrapper = styled.div`
   gap: 20px;
 `;
 const CategorySection = styled.section`
-  flex: 1 0 30%;
+  //flex: 1 0 30%;
+  min-width: 956px;
   display: flex;
   flex-direction: column;
   border: 1px solid ${COLOR.BORDER_POPUP};
@@ -3069,7 +3070,7 @@ const MockExamContentWrapper = styled.div`
 `;
 const MockExamBox = styled.div`
   min-width: 240px;
-  height: 630px;
+  height: 600px;
   overflow-y: auto;
 `;
 const MockExamLabelWrapper = styled.div`
