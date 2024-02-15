@@ -5,7 +5,6 @@ import {
   QueryClientProvider,
   QueryClient,
   QueryCache,
-  useQueryClient,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -29,8 +28,6 @@ export function App() {
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
-        // console.log(error);
-
         // 토큰 만료시 토큰 갱신
         // TODO: code 변경시 적용
         if (error.message.includes('40')) {
@@ -61,7 +58,7 @@ export function App() {
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
     if (!getAuthorityCookie('accessToken')) navigate('/login');
-  }, [getAuthorityCookie('accessToken')]);
+  }, [getAuthorityCookie('accessToken'), isAccessTokenAtom]);
 
   return (
     <>

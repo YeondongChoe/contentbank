@@ -31,8 +31,14 @@ export const tokenInstance = axios.create({
 });
 
 authInstance.interceptors.request.use(function (config) {
-  config.headers.Authorization = `Bearer ${getAuthorityCookie('accessToken')}`;
-
+  if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
+    config.headers.Authorization = `Bearer ${getAuthorityCookie(
+      'accessToken',
+    )}`;
+  }
+  if (config.headers['session-id'] !== getAuthorityCookie('sessionId')) {
+    config.headers['session-id'] = `Bearer ${getAuthorityCookie('sessionId')}`;
+  }
   return config;
 });
 
@@ -70,6 +76,9 @@ userInstance.interceptors.request.use(function (config) {
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
+  }
+  if (config.headers['session-id'] !== getAuthorityCookie('sessionId')) {
+    config.headers['session-id'] = `Bearer ${getAuthorityCookie('sessionId')}`;
   }
   return config;
 });

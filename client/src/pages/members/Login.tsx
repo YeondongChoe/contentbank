@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -54,10 +54,15 @@ export function Login() {
   //로그인 api
   const postLogin = (auth: LoginType) => {
     // console.log('postLogin', auth);
+
     return authInstance.post('/v1/auth/login', auth);
   };
 
-  const { data: loginPostData, mutate: onLogin } = useMutation({
+  const {
+    data: loginPostData,
+    mutate: onLogin,
+    isSuccess,
+  } = useMutation({
     mutationFn: postLogin,
     onError: (context: {
       response: { data: { message: string; code: string }; status: number };
@@ -75,32 +80,23 @@ export function Login() {
       }
     },
     onSuccess: (response) => {
-      console.log('response', response);
-      // 프론트 전역에 데이터로저장
-      setAccessTokenAtom(response.data.data.accessToken);
-      setSessionIdAtom(response.data.data.sessionId);
-
+      console.log('accessToken ----login', response.data.data.accessToken);
+      console.log('refreshToken ----login', response.data.data.refreshToken);
+      console.log('sessionId ----login', response.data.data.sessionId);
       // 로컬데이터에서 토큰과 세션을 저장
       setAuthorityCookie('accessToken', response.data.data.accessToken, {
         path: '/',
         sameSite: 'strict',
         secure: false,
       });
-      // refresh
-      // setAuthorityCookie('refreshToken', response.data.data.refreshToken, {
-      //   path: '/',
-      //   sameSite: 'strict',
-      //   secure: false,
-      // });
-      setAuthorityCookie('sessionId', response.data.data.sessionId, {
+      setAuthorityCookie('sessionId', response?.data.data.sessionId, {
         path: '/',
         sameSite: 'strict',
         secure: false,
       });
-
-      console.log('accessToken ----login', response.data.data.accessToken);
-      console.log('refreshToken ----login', response.data.data.refreshToken);
-      console.log('sessionId ----login', response.data.data.sessionId);
+      // 프론트 전역에 데이터로저장
+      setAccessTokenAtom(response.data.data.accessToken);
+      setSessionIdAtom(response.data.data.sessionId);
 
       // 아이디 저장 체크박스
       if (isClicked === true) {
@@ -108,12 +104,19 @@ export function Login() {
       } else {
         removeAuthorityCookie('username', { path: '/' });
       }
-      //첫 로그인시 비밀번호 변경 페이지로
-      navigate(response.data.link);
+    },
+    onSettled: (response) => {
+      // console.log('onSettled', response);
+      console.log('로그인 onSettled ', getAuthorityCookie('accessToken'));
+      console.log('로그인 onSettled  ', getAuthorityCookie('sessionId'));
 
-      console.log('loginPostData', response);
-      // get쿼리 업데이트
-      queryClient.invalidateQueries({ queryKey: ['get-myInfo'] });
+      //첫 로그인시 비밀번호 변경 페이지로 || 로그인 성공후 메인으로
+      navigate(response?.data.link);
+      if (response?.data.link === '/content-create/quiz') {
+        //TODO: 메인으로 갈시 임시 페이지 리로딩 임시
+        // const cookieData = document.cookie;
+        window.location.reload();
+      }
     },
   });
 
@@ -138,6 +141,11 @@ export function Login() {
   const ClickPasswordLabel = () => {
     PasswordInputRef?.current?.focus();
   };
+
+  useEffect(() => {
+    console.log('isSuccess ::', isSuccess);
+    console.log('loginPostData ::', loginPostData);
+  }, [isSuccess]);
 
   return (
     <Container>

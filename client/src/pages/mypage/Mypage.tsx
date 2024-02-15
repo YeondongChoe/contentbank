@@ -60,7 +60,15 @@ export function Mypage() {
   // 마이페이지 데이터 불러오기 api
   const getMyInfo = async () => {
     // error?.message.includes('401') && handleAuthorizationRenewal(error.message);
-    // console.log(getAuthorityCookie('accessToken'));
+    // console.log(
+    //   '마이페이지 데이터 불러오기 getAuthorityCookie ',
+    //   getAuthorityCookie('accessToken'),
+    // );
+    // console.log(
+    //   '마이페이지 데이터 불러오기 getAuthorityCookie ',
+    //   getAuthorityCookie('sessionId'),
+    // );
+
     const res = await userInstance.get(`/v1/account/my-info`);
 
     return res;
