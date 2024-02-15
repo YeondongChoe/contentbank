@@ -12,6 +12,7 @@ type LabelProps = {
   padding?: string;
   margin?: string;
   onClick?: () => void;
+  cursor?: boolean;
 };
 
 export function Label({
@@ -22,6 +23,7 @@ export function Label({
   padding,
   margin,
   onClick,
+  cursor,
 }: LabelProps) {
   return (
     <Component
@@ -31,6 +33,7 @@ export function Label({
       $padding={padding}
       $margin={margin}
       onClick={onClick}
+      $cursor={cursor}
     >
       <label>{value}</label>
     </Component>
@@ -43,6 +46,7 @@ type LabelStyleProps = {
   fontSize?: string;
   $padding?: string;
   $margin?: string;
+  $cursor?: boolean;
 };
 
 const Component = styled.label<LabelStyleProps>`
@@ -60,4 +64,7 @@ const Component = styled.label<LabelStyleProps>`
       `color: ${COLOR.FONT_BLACK};`;
     }
   }};
+  > label {
+    cursor: ${({ $cursor }) => $cursor && 'pointer;'};
+  }
 `;
