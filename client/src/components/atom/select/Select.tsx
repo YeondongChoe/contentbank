@@ -7,15 +7,43 @@ import { styled } from 'styled-components';
 import { COLOR } from '../../constants';
 import { IconButton } from '../button';
 
-type OptionsProps = {
+type OptionsDepsProps = {
   id?: string;
   label: string;
   value?: number | string;
   code?: string;
+  options?: OptionsProps[];
+};
+
+type OptionsProps = {
+  id?: string;
+  label?: string;
+  value?: number | string;
+  code?: string;
+  type?: string;
+  inputValue?: string;
+  dateValue?: string;
+  options?: OptionsItemProps[];
+};
+
+export type OptionsItemProps = {
+  id?: string | number;
+  label?: string;
+  value?: string | number;
+  type?: string;
+  inputValue?: string;
+  dateValue?: string;
+  options?: ItemProps[];
+};
+
+type ItemProps = {
+  id?: string | number;
+  label?: string;
+  value?: string | number;
 };
 
 type SelectProps = {
-  options?: OptionsProps[];
+  options?: OptionsDepsProps[];
   onClick?: () => void;
   onSelect: (
     event: React.MouseEvent<HTMLButtonElement>,

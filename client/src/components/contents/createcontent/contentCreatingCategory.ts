@@ -31,11 +31,47 @@ export const selectCategory2 = [
         id: '0',
         label: '교재',
         value: '0',
-        options: [
-          { id: 0, value: '0', type: 'select', options: [], label: '교재속성' },
-          { id: 1, value: '0', type: 'select', options: [], label: '출판사' },
-          { id: 2, value: '0', type: 'select', options: [], label: '시리즈' },
-          { id: 3, value: '0', type: 'select', options: [], label: '교재명' },
+        optionsDeps: [
+          {
+            id: 0,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '교재속성',
+          },
+          {
+            id: 1,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '출판사',
+          },
+          {
+            id: 2,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '시리즈',
+          },
+          {
+            id: 3,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '교재명',
+          },
           {
             id: 4,
             value: '0',
@@ -50,19 +86,64 @@ export const selectCategory2 = [
             inputValue: '',
             label: '교재번호',
           },
-          { id: 6, value: '0', type: 'select', options: [], label: '출판년도' },
+          {
+            id: 6,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '출판년도',
+          },
         ],
       },
       {
         id: '1',
         label: '내신',
         value: '1',
-        options: [
-          { id: 0, value: '0', type: 'select', options: [], label: '내신형식' },
+        optionsDeps: [
+          {
+            id: 0,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '내신형식',
+          },
           { id: 1, value: '0', type: 'button', label: '학교명' },
-          { id: 2, value: '0', type: 'select', options: [], label: '내신학제' },
-          { id: 3, value: '0', type: 'select', options: [], label: '내신학년' },
-          { id: 4, value: '0', type: 'select', options: [], label: '학사일정' },
+          {
+            id: 2,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '내신학제',
+          },
+          {
+            id: 3,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '내신학년',
+          },
+          {
+            id: 4,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '학사일정',
+          },
           {
             id: 5,
             value: '0',
@@ -84,14 +165,23 @@ export const selectCategory2 = [
             inputValue: '',
             label: '배점',
           },
-          { id: 8, value: '0', type: 'select', options: [], label: '출제년도' },
+          {
+            id: 8,
+            value: '0',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '출제년도',
+          },
         ],
       },
       {
         id: '2',
         label: '기출',
         value: '2',
-        options: [
+        optionsDeps: [
           { id: 0, value: '0', type: 'select', options: [], label: '기출속성' },
           { id: 1, value: '0', type: 'select', options: [], label: '주관사' },
           { id: 2, value: '0', type: 'select', options: [], label: '기출명' },
@@ -127,8 +217,18 @@ export const selectCategory2 = [
           },
         ],
       },
-      { id: '3', label: '자체제작', value: '3', options: [] },
-      { id: '4', label: '기타', value: '4', options: [] },
+      {
+        id: '3',
+        label: '자체제작',
+        value: '3',
+        optionsDeps: [],
+      },
+      {
+        id: '4',
+        label: '기타',
+        value: '4',
+        optionsDeps: [],
+      },
     ],
   },
   // + 버튼으로 복제시 셀렉트 옵션도 동일하게 복제

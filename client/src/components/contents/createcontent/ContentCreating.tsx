@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
-import { Button, Modal, Select } from '../..';
+import { Button, Modal, OptionsItemProps, Select } from '../..';
 import { useModal } from '../../../hooks';
 import { COLOR } from '../../constants/COLOR';
 
@@ -19,11 +19,38 @@ export function ContentCreating() {
   const [content, setContent] = useState<string[]>([]);
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [count, setCount] = useState(1);
+  const [selectValue, setSelectValue] = useState({
+    idx: 0,
+    value: '',
+  });
+  const [optionList, setOptionList] =
+    useState<{ idx: number | string; options: OptionsItemProps[] }[]>();
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
+    const id =
+      event.currentTarget.parentElement?.parentElement?.parentElement
+        ?.parentElement?.parentElement?.parentElement?.id;
+
     setContent((prevContent) => [...prevContent, value]);
+
+    // 셀렉트 선택이후 옵션에 속한 버튼값보여주기
+    setSelectValue({ idx: Number(id), value: value });
   };
+
+  const showOptionList = () => {
+    console.log(selectValue);
+    const arr = selectCategory2[0]?.options.filter(
+      (el) => el.label === selectValue.value,
+    );
+    // arr[0].optionsDeps && console.log(arr[0].optionsDeps);
+    if (arr[0] && arr[0].optionsDeps)
+      setOptionList([{ idx: selectValue.idx, options: arr[0].optionsDeps }]);
+  };
+  console.log(optionList);
+  useEffect(() => {
+    showOptionList();
+  }, [selectValue]);
 
   const addSourceOptions = () => {
     console.log('출처 카테고리 추가 API');
@@ -41,7 +68,7 @@ export function ContentCreating() {
     setSourceOptions(arr);
   };
 
-  console.log('sourceOptions', sourceOptions);
+  // console.log('sourceOptions', sourceOptions);
 
   const modalData = {
     title: '',
@@ -149,38 +176,35 @@ export function ContentCreating() {
                           onSelect={(event) => selectCategoryOption(event)}
                         />
                       ))}
+                      {selectValue.value !== '' && (
+                        <>
+                          {optionList &&
+                            optionList[index].options !== undefined &&
+                            optionList[index].options.map((el) => (
+                              <div key={`${el.label} el deps`}>
+                                {el.type === 'select' && (
+                                  <>s</>
+                                  // <Select
+                                  //   width={'110px'}
+                                  //   height={'30px'}
+                                  //   defaultValue={el.label}
+                                  //   key={el.label}
+                                  //   options={el.options}
+                                  //   onSelect={(event) =>
+                                  //     selectCategoryOption(event)
+                                  //   }
+                                  // />
+                                )}
+                                {el.type === 'input' && <>i</>}
+                                {el.type === 'datepickup' && <>d</>}
+                              </div>
+                            ))}
+                        </>
+                      )}
                     </SelectWrapper>
                   </li>
                 </SelectList>
               ))}
-
-              {/* <SelectList>
-                <li>
-                  <Button
-                    width={'50px'}
-                    height={'30px'}
-                    fontSize={'15px'}
-                    $padding={'5px'}
-                    $filled
-                    cursor
-                    onClick={() => addCategory()}
-                  >
-                    +
-                  </Button>
-                  <SelectWrapper>
-                    {selectCategory2.map((el) => (
-                      <Select
-                        width={'110px'}
-                        height={'30px'}
-                        defaultValue={el.label}
-                        key={el.label}
-                        options={el.options}
-                        onSelect={(event) => selectCategoryOption(event)}
-                      />
-                    ))}
-                  </SelectWrapper>
-                </li>
-              </SelectList> */}
             </SourceOptionWrap>
           </SelectListWrap>
           <SelectListWrap>
