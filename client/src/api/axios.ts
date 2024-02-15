@@ -67,7 +67,6 @@ export const userInstance = axios.create({
 userInstance.interceptors.request.use(function (config) {
   console.log('config', config);
   if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
-    handleAuthorizationRenewal('');
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
