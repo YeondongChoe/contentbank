@@ -1798,6 +1798,379 @@ export function Step1() {
                       </Button>
                     )}
                   </MockExamSelectWrapper>
+                  {isDropdown && (
+                    <MockExamDropdownWrapper>
+                      <MockExamOptionWrapper>
+                        <MockExamTitleWrapper>
+                          <Label value="학년 선택" fontSize="14px" />
+                          <Label value="복수 선택 가능" fontSize="12px" />
+                        </MockExamTitleWrapper>
+                        <MockExamButtonWrapper>
+                          <Button
+                            buttonType="button"
+                            onClick={() => {
+                              if (isAllSelectedExamGrade) {
+                                setExamGrade([]);
+                              } else {
+                                setExamGrade(['고1', '고2', '고3']);
+                              }
+                            }}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'160px'}
+                            fontSize="13px"
+                            $normal={!isAllSelectedExamGrade}
+                            $filled={isAllSelectedExamGrade}
+                            cursor
+                          >
+                            <span>전체</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamGrade('고1')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'160px'}
+                            fontSize="13px"
+                            $normal={!examGrade.includes('고1')}
+                            $filled={examGrade.includes('고1')}
+                            cursor
+                          >
+                            <span>고1</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamGrade('고2')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'160px'}
+                            fontSize="13px"
+                            $normal={!examGrade.includes('고2')}
+                            $filled={examGrade.includes('고2')}
+                            cursor
+                          >
+                            <span>고2</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamGrade('고3')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'160px'}
+                            fontSize="13px"
+                            $normal={!examGrade.includes('고3')}
+                            $filled={examGrade.includes('고3')}
+                            cursor
+                          >
+                            <span>고3</span>
+                          </Button>
+                        </MockExamButtonWrapper>
+                      </MockExamOptionWrapper>
+                      <MockExamOptionWrapper>
+                        <MockExamTitleWrapper>
+                          <Label value="년도 선택" fontSize="14px" />
+                          <Label value="복수 선택 가능" fontSize="12px" />
+                        </MockExamTitleWrapper>
+                        <MockExamHalfButtonWrapper>
+                          <Button
+                            buttonType="button"
+                            onClick={() => {
+                              if (isAllSelectedExamYear) {
+                                setExamYear([]);
+                              } else {
+                                setExamYear([
+                                  '2024년',
+                                  '2023년',
+                                  '2022년',
+                                  '2021년',
+                                  '2020년',
+                                ]);
+                              }
+                            }}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!isAllSelectedExamYear}
+                            $filled={isAllSelectedExamYear}
+                            cursor
+                          >
+                            <span>전체</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamYear('2024년')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examYear.includes('2024년')}
+                            $filled={examYear.includes('2024년')}
+                            cursor
+                          >
+                            <span>2024년</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamYear('2023년')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examYear.includes('2023년')}
+                            $filled={examYear.includes('2023년')}
+                            cursor
+                          >
+                            <span>2023년</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamYear('2022년')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examYear.includes('2022년')}
+                            $filled={examYear.includes('2022년')}
+                            cursor
+                          >
+                            <span>2022년</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamYear('2021년')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examYear.includes('2021년')}
+                            $filled={examYear.includes('2021년')}
+                            cursor
+                          >
+                            <span>2021년</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamYear('2020년')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examYear.includes('2020년')}
+                            $filled={examYear.includes('2020년')}
+                            cursor
+                          >
+                            <span>2020년</span>
+                          </Button>
+                        </MockExamHalfButtonWrapper>
+                      </MockExamOptionWrapper>
+                      <MockExamOptionWrapper>
+                        <MockExamTitleWrapper>
+                          <Label value="월 선택" fontSize="14px" />
+                          <Label value="복수 선택 가능" fontSize="12px" />
+                        </MockExamTitleWrapper>
+                        <MockExamHalfButtonWrapper>
+                          <Button
+                            buttonType="button"
+                            onClick={() => {
+                              if (isAllSelectedExamMonthly) {
+                                setExamMonthly([]);
+                              } else {
+                                setExamMonthly([
+                                  '3월',
+                                  '4월',
+                                  '5월',
+                                  '6월',
+                                  '7월',
+                                  '9월',
+                                  '10월',
+                                  '11월',
+                                ]);
+                              }
+                            }}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!isAllSelectedExamMonthly}
+                            $filled={isAllSelectedExamMonthly}
+                            cursor
+                          >
+                            <span>전체</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('3월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('3월')}
+                            $filled={examMonthly.includes('3월')}
+                            cursor
+                          >
+                            <span>3월</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('4월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('4월')}
+                            $filled={examMonthly.includes('4월')}
+                            cursor
+                          >
+                            <span>4월</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('5월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('5월')}
+                            $filled={examMonthly.includes('5월')}
+                            cursor
+                          >
+                            <span>5월</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('6월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('6월')}
+                            $filled={examMonthly.includes('6월')}
+                            cursor
+                          >
+                            <span>6월</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('7월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('7월')}
+                            $filled={examMonthly.includes('7월')}
+                            cursor
+                          >
+                            <span>7월</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('9월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('9월')}
+                            $filled={examMonthly.includes('9월')}
+                            cursor
+                          >
+                            <span>9월</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('10월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('10월')}
+                            $filled={examMonthly.includes('10월')}
+                            cursor
+                          >
+                            <span>10월</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamMonthly('11월')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'80px'}
+                            fontSize="13px"
+                            $normal={!examMonthly.includes('11월')}
+                            $filled={examMonthly.includes('11월')}
+                            cursor
+                          >
+                            <span>11월</span>
+                          </Button>
+                        </MockExamHalfButtonWrapper>
+                      </MockExamOptionWrapper>
+                      <MockExamOptionWrapper>
+                        <MockExamSingleTitleWrapper>
+                          <Label
+                            value="문항 추가 옵션"
+                            fontSize="14px"
+                            width="100px"
+                          />
+                        </MockExamSingleTitleWrapper>
+                        <MockExamButtonWrapper>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamOption('문항 번호로 추가')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'160px'}
+                            fontSize="13px"
+                            $normal={examOption !== '문항 번호로 추가'}
+                            $filled={examOption === '문항 번호로 추가'}
+                            cursor
+                          >
+                            <span>문항 번호로 추가</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={() => selectExamOption('단원으로 추가')}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'160px'}
+                            fontSize="13px"
+                            $normal={examOption !== '단원으로 추가'}
+                            $filled={examOption === '단원으로 추가'}
+                            cursor
+                          >
+                            <span>단원으로 추가</span>
+                          </Button>
+                        </MockExamButtonWrapper>
+                      </MockExamOptionWrapper>
+                      <MockExamOptionWrapper>
+                        <MockExamActionButtonWrapper>
+                          <Button
+                            buttonType="button"
+                            onClick={selectExamReset}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'200px'}
+                            fontSize="13px"
+                            $normal
+                            cursor
+                          >
+                            <span>선택 초기화</span>
+                          </Button>
+                          <Button
+                            buttonType="button"
+                            onClick={selectExam}
+                            $padding="10px"
+                            height={'35px'}
+                            width={'200px'}
+                            fontSize="13px"
+                            $normal
+                            cursor
+                          >
+                            <span>선택 완료</span>
+                          </Button>
+                        </MockExamActionButtonWrapper>
+                      </MockExamOptionWrapper>
+                    </MockExamDropdownWrapper>
+                  )}
                   <MockExamContentWrapper>
                     {mockexamList.map((mock) => (
                       <MockExamBox key={mock.seq}>
@@ -1824,379 +2197,6 @@ export function Step1() {
                     ))}
                   </MockExamContentWrapper>
                 </MockExamWrapper>
-                {isDropdown && (
-                  <MockExamDropdownWrapper>
-                    <MockExamOptionWrapper>
-                      <MockExamTitleWrapper>
-                        <Label value="학년 선택" fontSize="14px" />
-                        <Label value="복수 선택 가능" fontSize="12px" />
-                      </MockExamTitleWrapper>
-                      <MockExamButtonWrapper>
-                        <Button
-                          buttonType="button"
-                          onClick={() => {
-                            if (isAllSelectedExamGrade) {
-                              setExamGrade([]);
-                            } else {
-                              setExamGrade(['고1', '고2', '고3']);
-                            }
-                          }}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'160px'}
-                          fontSize="13px"
-                          $normal={!isAllSelectedExamGrade}
-                          $filled={isAllSelectedExamGrade}
-                          cursor
-                        >
-                          <span>전체</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamGrade('고1')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'160px'}
-                          fontSize="13px"
-                          $normal={!examGrade.includes('고1')}
-                          $filled={examGrade.includes('고1')}
-                          cursor
-                        >
-                          <span>고1</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamGrade('고2')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'160px'}
-                          fontSize="13px"
-                          $normal={!examGrade.includes('고2')}
-                          $filled={examGrade.includes('고2')}
-                          cursor
-                        >
-                          <span>고2</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamGrade('고3')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'160px'}
-                          fontSize="13px"
-                          $normal={!examGrade.includes('고3')}
-                          $filled={examGrade.includes('고3')}
-                          cursor
-                        >
-                          <span>고3</span>
-                        </Button>
-                      </MockExamButtonWrapper>
-                    </MockExamOptionWrapper>
-                    <MockExamOptionWrapper>
-                      <MockExamTitleWrapper>
-                        <Label value="년도 선택" fontSize="14px" />
-                        <Label value="복수 선택 가능" fontSize="12px" />
-                      </MockExamTitleWrapper>
-                      <MockExamHalfButtonWrapper>
-                        <Button
-                          buttonType="button"
-                          onClick={() => {
-                            if (isAllSelectedExamYear) {
-                              setExamYear([]);
-                            } else {
-                              setExamYear([
-                                '2024년',
-                                '2023년',
-                                '2022년',
-                                '2021년',
-                                '2020년',
-                              ]);
-                            }
-                          }}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!isAllSelectedExamYear}
-                          $filled={isAllSelectedExamYear}
-                          cursor
-                        >
-                          <span>전체</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamYear('2024년')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examYear.includes('2024년')}
-                          $filled={examYear.includes('2024년')}
-                          cursor
-                        >
-                          <span>2024년</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamYear('2023년')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examYear.includes('2023년')}
-                          $filled={examYear.includes('2023년')}
-                          cursor
-                        >
-                          <span>2023년</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamYear('2022년')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examYear.includes('2022년')}
-                          $filled={examYear.includes('2022년')}
-                          cursor
-                        >
-                          <span>2022년</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamYear('2021년')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examYear.includes('2021년')}
-                          $filled={examYear.includes('2021년')}
-                          cursor
-                        >
-                          <span>2021년</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamYear('2020년')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examYear.includes('2020년')}
-                          $filled={examYear.includes('2020년')}
-                          cursor
-                        >
-                          <span>2020년</span>
-                        </Button>
-                      </MockExamHalfButtonWrapper>
-                    </MockExamOptionWrapper>
-                    <MockExamOptionWrapper>
-                      <MockExamTitleWrapper>
-                        <Label value="월 선택" fontSize="14px" />
-                        <Label value="복수 선택 가능" fontSize="12px" />
-                      </MockExamTitleWrapper>
-                      <MockExamHalfButtonWrapper>
-                        <Button
-                          buttonType="button"
-                          onClick={() => {
-                            if (isAllSelectedExamMonthly) {
-                              setExamMonthly([]);
-                            } else {
-                              setExamMonthly([
-                                '3월',
-                                '4월',
-                                '5월',
-                                '6월',
-                                '7월',
-                                '9월',
-                                '10월',
-                                '11월',
-                              ]);
-                            }
-                          }}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!isAllSelectedExamMonthly}
-                          $filled={isAllSelectedExamMonthly}
-                          cursor
-                        >
-                          <span>전체</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('3월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('3월')}
-                          $filled={examMonthly.includes('3월')}
-                          cursor
-                        >
-                          <span>3월</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('4월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('4월')}
-                          $filled={examMonthly.includes('4월')}
-                          cursor
-                        >
-                          <span>4월</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('5월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('5월')}
-                          $filled={examMonthly.includes('5월')}
-                          cursor
-                        >
-                          <span>5월</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('6월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('6월')}
-                          $filled={examMonthly.includes('6월')}
-                          cursor
-                        >
-                          <span>6월</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('7월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('7월')}
-                          $filled={examMonthly.includes('7월')}
-                          cursor
-                        >
-                          <span>7월</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('9월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('9월')}
-                          $filled={examMonthly.includes('9월')}
-                          cursor
-                        >
-                          <span>9월</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('10월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('10월')}
-                          $filled={examMonthly.includes('10월')}
-                          cursor
-                        >
-                          <span>10월</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamMonthly('11월')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'80px'}
-                          fontSize="13px"
-                          $normal={!examMonthly.includes('11월')}
-                          $filled={examMonthly.includes('11월')}
-                          cursor
-                        >
-                          <span>11월</span>
-                        </Button>
-                      </MockExamHalfButtonWrapper>
-                    </MockExamOptionWrapper>
-                    <MockExamOptionWrapper>
-                      <MockExamSingleTitleWrapper>
-                        <Label
-                          value="문항 추가 옵션"
-                          fontSize="14px"
-                          width="100px"
-                        />
-                      </MockExamSingleTitleWrapper>
-                      <MockExamButtonWrapper>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamOption('문항 번호로 추가')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'160px'}
-                          fontSize="13px"
-                          $normal={examOption !== '문항 번호로 추가'}
-                          $filled={examOption === '문항 번호로 추가'}
-                          cursor
-                        >
-                          <span>문항 번호로 추가</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={() => selectExamOption('단원으로 추가')}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'160px'}
-                          fontSize="13px"
-                          $normal={examOption !== '단원으로 추가'}
-                          $filled={examOption === '단원으로 추가'}
-                          cursor
-                        >
-                          <span>단원으로 추가</span>
-                        </Button>
-                      </MockExamButtonWrapper>
-                    </MockExamOptionWrapper>
-                    <MockExamOptionWrapper>
-                      <MockExamActionButtonWrapper>
-                        <Button
-                          buttonType="button"
-                          onClick={selectExamReset}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'200px'}
-                          fontSize="13px"
-                          $normal
-                          cursor
-                        >
-                          <span>선택 초기화</span>
-                        </Button>
-                        <Button
-                          buttonType="button"
-                          onClick={selectExam}
-                          $padding="10px"
-                          height={'35px'}
-                          width={'200px'}
-                          fontSize="13px"
-                          $normal
-                          cursor
-                        >
-                          <span>선택 완료</span>
-                        </Button>
-                      </MockExamActionButtonWrapper>
-                    </MockExamOptionWrapper>
-                  </MockExamDropdownWrapper>
-                )}
               </CategorySection>
             </>
           )}
@@ -2727,7 +2727,11 @@ export function Step1() {
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
 const TitleWrapper = styled.div`
   padding-bottom: 20px;
   display: flex;
@@ -2991,6 +2995,7 @@ const MockExamWrapper = styled.div`
   border-top: 1px solid ${COLOR.BORDER_BLUE};
 `;
 const MockExamSelectWrapper = styled.div`
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -3003,12 +3008,16 @@ const MockExamSelect = styled.div`
   align-items: center;
 `;
 const MockExamDropdownWrapper = styled.div`
-  width: 100%;
+  position: absolute;
+  width: 1518px;
   height: 350px;
   display: flex;
   justify-content: space-between;
   padding: 20px 40px;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
   border-bottom: 1px solid ${COLOR.BORDER_BLUE};
+  background-color: white;
+  z-index: 2;
 `;
 const MockExamOptionWrapper = styled.div`
   display: flex;
