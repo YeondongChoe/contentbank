@@ -14,6 +14,9 @@ export const COLOR = {
   BUTTON_LIGHT_NORMAL: '#d9d9d9',
   BORDER_BLACK: '#262525',
   BORDER_GRAY: '#D1D1D1',
+  BORDER_BLUE: '#a3aed0',
+
+  SELECT_BLUE: '#a3aed0',
 
   ALERTBAR_ERROR: 'rgba(255, 42, 18, 0.6)',
   ALERTBAR_SUCCESS: '#11C218',
@@ -29,7 +32,6 @@ export const COLOR = {
   TEXT_LIGHT_GRAY: '#bcb3c5',
   RED: '#ff0000',
   BLUEGREEN: '#15979e',
-  BORDER_BLUE: '#a3aed0',
   BORDER_POPUP: '#5f86fc',
   SELECT_HOVER: '#422afb',
 };

@@ -80,8 +80,9 @@ export function TabMenu({
 }: TabMenuProps) {
   const [page, setPage] = useRecoilState(pageAtom);
 
-  // 탭메뉴 클릭시 페이지네이션 초기화
+  // 탭메뉴 클릭시 상태값 초기화
   const changeTab = () => {
+    // 페이지
     setPage(1);
   };
 

@@ -97,6 +97,18 @@ export type TextbookType = {
   }[];
 };
 
+// 더미데이터 _수능/모의고사
+export type MockexamType = {
+  seq: number;
+  grade: string;
+  year: string;
+  month: string;
+  content: {
+    seq: number;
+    title: string;
+  }[];
+};
+
 export type MemberTableType = {
   seq: number;
   authority: {
