@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { CheckBox, Button, TabMenu, Input, Label, Search } from '../..';
-import { TextbookType } from '../../../types';
+import { TextbookType, MockexamType } from '../../../types';
 import { COLOR } from '../../constants';
 import dummy from '../../constants/data.json';
 
@@ -377,6 +377,8 @@ export function Step1() {
   const selectExam = () => {
     setIsDropdown(false);
   };
+
+  const mockexamList: MockexamType[] = dummy.Mockexam;
 
   useEffect(() => {
     //단원 유형별버튼 초기화
@@ -1796,6 +1798,31 @@ export function Step1() {
                       </Button>
                     )}
                   </MockExamSelectWrapper>
+                  <MockExamContentWrapper>
+                    {mockexamList.map((mock) => (
+                      <MockExamBox key={mock.seq}>
+                        <MockExamLabelWrapper>
+                          <Label
+                            value={`${mock.grade} | ${mock.year} ${mock.month}`}
+                            width="150px"
+                          />
+                          X
+                        </MockExamLabelWrapper>
+                        <MockExamContent>
+                          {mock.content.map((el) => (
+                            <CheckBoxWrapper key={el.seq}>
+                              <CheckBox
+                                isChecked={false}
+                                width="15"
+                                height="15"
+                              ></CheckBox>
+                              <Label value={el.title} width="30px" />
+                            </CheckBoxWrapper>
+                          ))}
+                        </MockExamContent>
+                      </MockExamBox>
+                    ))}
+                  </MockExamContentWrapper>
                 </MockExamWrapper>
                 {isDropdown && (
                   <MockExamDropdownWrapper>
@@ -2725,7 +2752,6 @@ const CategorySection = styled.section`
   flex: 1 0 30%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
 `;
@@ -2960,15 +2986,15 @@ const CheckBoxWrapper = styled.div`
 `;
 // 수능/모의고사
 const MockExamWrapper = styled.div`
-  width: 100%;
+  min-width: 1518px;
+  max-width: 1824px;
   border-top: 1px solid ${COLOR.BORDER_BLUE};
-  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
-  padding: 10px;
 `;
 const MockExamSelectWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+  padding: 10px;
 `;
 const MockExamSelect = styled.div`
   width: 100%;
@@ -3022,9 +3048,29 @@ const MockExamActionButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  align-items: flex-end;
-  //padding: 10px;
   gap: 20px;
+`;
+const MockExamContentWrapper = styled.div`
+  display: flex;
+  max-width: 1518px;
+  overflow-x: auto;
+  padding-top: 10px;
+  gap: 10px;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
+`;
+const MockExamBox = styled.div`
+  min-width: 240px;
+  height: 630px;
+  overflow-y: auto;
+`;
+const MockExamLabelWrapper = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #8080806f;
+`;
+const MockExamContent = styled.div`
+  padding: 10px;
 `;
 //학습지 난이도 모달
 const Overlay = styled.div`
