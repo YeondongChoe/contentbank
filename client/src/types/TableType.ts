@@ -103,9 +103,11 @@ export type MockexamType = {
   grade: string;
   year: string;
   month: string;
+  isChecked?: boolean;
   content: {
     seq: number;
     title: string;
+    isChecked?: boolean;
   }[];
 };
 
