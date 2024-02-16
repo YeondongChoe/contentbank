@@ -11,7 +11,7 @@ type LabelProps = {
   fontSize?: string;
   padding?: string;
   margin?: string;
-  onClick?: () => void;
+  onClick?: (event: any) => void;
   cursor?: boolean;
 };
 
