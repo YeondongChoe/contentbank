@@ -337,9 +337,6 @@ export function Step1() {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        console.log(!dropdownRef.current.contains(event.target as Node));
-        console.log(dropdownRef.current);
-        console.log(event.target);
         setIsDropdown(false);
       }
     };
