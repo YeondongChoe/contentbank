@@ -30,12 +30,6 @@ type DataType = {
   page: Page[];
 };
 
-type ArrayType = {
-  seq: number;
-  title: string;
-  isChecked: boolean;
-};
-
 type MockDataType = {
   seq: number;
   grade: string;
@@ -407,6 +401,7 @@ export function Step1() {
   };
 
   const mockexamList: MockexamType[] = dummy.Mockexam;
+  const [mockexam, setMockexam] = useState<MockDataType | undefined>();
 
   useEffect(() => {
     //단원 유형별버튼 초기화
