@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { IoMdClose, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
 import { IoSettingsOutline } from 'react-icons/io5';
@@ -321,10 +321,37 @@ export function Step1() {
   };
 
   // 수능/모의고사
+  // 드롭다운에서 선택한 값으로 더미데이터를 대신해서 넣고 선택 완료를 누르면 서버에 요청해서 값을 저장함
   const [isDropdown, setIsDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
   const openDropdown = () => {
-    setIsDropdown((preState) => !preState);
+    setIsDropdown((prevState) => !prevState);
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      // 클릭된 엘리먼트가 드롭다운 영역 안에 속하지 않으면 드롭다운을 닫습니다.
+      if (
+        //수능/모의고사 선택 화살표
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        console.log(!dropdownRef.current.contains(event.target as Node));
+        console.log(dropdownRef.current);
+        console.log(event.target);
+        setIsDropdown(false);
+      }
+    };
+
+    // document에 클릭 이벤트 리스너를 추가합니다.
+    document.addEventListener('click', handleOutsideClick);
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, []);
 
   const [examGrade, setExamGrade] = useState<string[]>([]);
   const selectExamGrade = (newValue: string) => {
@@ -406,6 +433,10 @@ export function Step1() {
     processMockexam(mockexamList),
   );
   //console.log(processedData);
+
+  const removeMockexam = (seq: number) => {
+    setProcessedData((prevData) => prevData.filter((mock) => mock.seq !== seq));
+  };
 
   // 전체 선택
   const checkAllMockexamToggle = (
@@ -1847,22 +1878,31 @@ export function Step1() {
                 </TabWrapper>
                 <MockExamWrapper>
                   <MockExamSelectWrapper>
-                    <MockExamSelect>
+                    <MockExamSelect ref={dropdownRef}>
                       <Label
                         value="수능/모의고사 선택"
                         padding="5px 10px"
                         width="150px"
                         cursor
-                        onClick={openDropdown}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          openDropdown();
+                        }}
                       />
                       {isDropdown ? (
                         <IoMdArrowDropup
-                          onClick={openDropdown}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            openDropdown();
+                          }}
                           style={{ cursor: 'pointer' }}
                         />
                       ) : (
                         <IoMdArrowDropdown
-                          onClick={openDropdown}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            openDropdown();
+                          }}
                           style={{ cursor: 'pointer' }}
                         />
                       )}
@@ -1886,7 +1926,7 @@ export function Step1() {
                     )}
                   </MockExamSelectWrapper>
                   {isDropdown && (
-                    <MockExamDropdownWrapper>
+                    <MockExamDropdownWrapper ref={dropdownRef}>
                       <MockExamOptionWrapper>
                         <MockExamTitleWrapper>
                           <Label value="학년 선택" fontSize="14px" />
@@ -2281,7 +2321,10 @@ export function Step1() {
                             />
                           </CheckBoxWrapper>
                           <CloseIconWrapper>
-                            <IoMdClose style={{ cursor: 'pointer' }} />
+                            <IoMdClose
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => removeMockexam(mock.seq)}
+                            />
                           </CloseIconWrapper>
                         </MockExamLabelWrapper>
                         <MockExamContent>
@@ -3138,7 +3181,7 @@ const MockExamDropdownWrapper = styled.div`
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   border-bottom: 1px solid ${COLOR.BORDER_BLUE};
   background-color: white;
-  z-index: 2;
+  z-index: 1;
 `;
 const MockExamOptionWrapper = styled.div`
   display: flex;
