@@ -35,8 +35,8 @@ type MockDataType = {
   grade: string;
   year: string;
   month: string;
-  content: MockContent[];
   isChecked?: boolean;
+  content: MockContent[];
 };
 
 type MockContent = {
@@ -70,21 +70,21 @@ const processData = (data: TextbookType): DataType => {
   return newData;
 };
 
-const processMockexam = (data: MockexamType): MockDataType => {
-  const newData: MockDataType = {
-    seq: data.seq,
-    grade: data.grade,
-    year: data.year,
-    month: data.month,
-    isChecked: false,
-    content: data.content.map((contentItem) => ({
-      seq: contentItem.seq,
-      title: contentItem.title,
+const processMockexam = (dataList: MockexamType[]): MockDataType[] => {
+  return dataList.map((data) => {
+    return {
+      seq: data.seq,
+      grade: data.grade,
+      year: data.year,
+      month: data.month,
       isChecked: false,
-    })),
-  };
-
-  return newData;
+      content: data.content.map((contentItem) => ({
+        seq: contentItem.seq,
+        title: contentItem.title,
+        isChecked: false,
+      })),
+    };
+  });
 };
 
 export function Step1() {
@@ -243,7 +243,6 @@ export function Step1() {
   const [clickedTitle, setClickedTitle] = useState<string>();
 
   const [data, setData] = useState<DataType | undefined>();
-  console.log(data);
 
   useEffect(() => {
     if (selectedTextbook && selectedTextbook.type) {
@@ -260,6 +259,7 @@ export function Step1() {
     setClickedTitle(title);
   };
 
+  // 전체 선택
   const checkAllToggle = (
     pageSeq: number,
     isChecked: boolean,
@@ -401,7 +401,68 @@ export function Step1() {
   };
 
   const mockexamList: MockexamType[] = dummy.Mockexam;
-  const [mockexam, setMockexam] = useState<MockDataType | undefined>();
+  //const processedData: MockexamType[] = processMockexam(mockexamList);
+  const [processedData, setProcessedData] = useState(
+    processMockexam(mockexamList),
+  );
+  //console.log(processedData);
+
+  // 전체 선택
+  const checkAllMockexamToggle = (
+    seq: number,
+    isChecked: boolean,
+    contentSeqs: number[],
+  ) => {
+    //setProcessedData에 있는 기존 값을 가져와서 그 값을 순회하며 비교하여 값을 갱신
+    setProcessedData((prevData) => {
+      const newData = prevData.map((mock) => {
+        if (mock.seq === seq) {
+          mock.isChecked = !isChecked;
+
+          if (contentSeqs.length > 0) {
+            mock.content.forEach((content) => {
+              if (contentSeqs.includes(content.seq)) {
+                content.isChecked = !isChecked;
+              }
+            });
+          }
+        }
+        // 갱신된 값을 가져오기
+        return mock;
+      });
+      //가져온 값을 최종적으로 상태값으로 갱신하기
+      return [...newData];
+    });
+  };
+
+  //부분 선택
+  const checkPartialMockexamToggle = (
+    seq: number,
+    contentSeq: number,
+    isChecked: boolean,
+  ) => {
+    setProcessedData((prevData) => {
+      const newData = prevData.map((mock) => {
+        if (mock.seq === seq) {
+          const targetContent = mock.content.find(
+            (content) => content.seq === contentSeq,
+          );
+
+          if (targetContent) {
+            targetContent.isChecked = !isChecked;
+
+            const allContentsChecked = mock.content.every(
+              (content) => content.isChecked,
+            );
+            mock.isChecked = allContentsChecked;
+          }
+        }
+        return mock;
+      });
+
+      return [...newData];
+    });
+  };
 
   useEffect(() => {
     //단원 유형별버튼 초기화
@@ -1007,8 +1068,8 @@ export function Step1() {
                     </ListWrapper>
                   </CategorySection>
                   <SchoolSelectorSection
-                    isSelectTextbookContent={isSelectTextbookContent}
-                    tabVeiw={tabVeiw}
+                    $isSelectTextbookContent={isSelectTextbookContent}
+                    $tabVeiw={tabVeiw}
                   >
                     <SubTitleWrapper>
                       <Label value="*문항수" fontSize="16px" width="60px" />
@@ -2198,22 +2259,45 @@ export function Step1() {
                     </MockExamDropdownWrapper>
                   )}
                   <MockExamContentWrapper>
-                    {mockexamList.map((mock) => (
+                    {processedData.map((mock) => (
                       <MockExamBox key={mock.seq}>
                         <MockExamLabelWrapper>
-                          <Label
-                            value={`${mock.grade} | ${mock.year} ${mock.month}`}
-                            width="150px"
-                          />
-                          X
+                          <CheckBoxWrapper>
+                            <CheckBox
+                              isChecked={mock.isChecked as boolean}
+                              width="15"
+                              height="15"
+                              onClick={() =>
+                                checkAllMockexamToggle(
+                                  mock.seq,
+                                  mock.isChecked as boolean,
+                                  mock.content.map((content) => content.seq),
+                                )
+                              }
+                            ></CheckBox>
+                            <Label
+                              value={`${mock.grade} | ${mock.year} ${mock.month}`}
+                              width="150px"
+                            />
+                          </CheckBoxWrapper>
+                          <CloseIconWrapper>
+                            <IoMdClose style={{ cursor: 'pointer' }} />
+                          </CloseIconWrapper>
                         </MockExamLabelWrapper>
                         <MockExamContent>
                           {mock.content.map((el) => (
                             <CheckBoxWrapper key={el.seq}>
                               <CheckBox
-                                isChecked={false}
+                                isChecked={el.isChecked as boolean}
                                 width="15"
                                 height="15"
+                                onClick={() =>
+                                  checkPartialMockexamToggle(
+                                    mock.seq,
+                                    el.seq,
+                                    el.isChecked as boolean,
+                                  )
+                                }
                               ></CheckBox>
                               <Label value={el.title} width="30px" />
                             </CheckBoxWrapper>
@@ -2805,8 +2889,8 @@ const CategoryWrapper = styled.div`
   padding: 10px;
 `;
 const SchoolSelectorSection = styled.section<{
-  isSelectTextbookContent?: boolean;
-  tabVeiw?: string;
+  $isSelectTextbookContent?: boolean;
+  $tabVeiw?: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -2815,9 +2899,9 @@ const SchoolSelectorSection = styled.section<{
   padding: 20px;
   border-radius: 25px;
   flex: 1 0 0;
-  ${({ isSelectTextbookContent, tabVeiw }) =>
-    !isSelectTextbookContent &&
-    tabVeiw === '시중교재' &&
+  ${({ $isSelectTextbookContent, $tabVeiw }) =>
+    !$isSelectTextbookContent &&
+    $tabVeiw === '시중교재' &&
     'pointer-events: none; opacity: 0.5;'}
 `;
 const SubTitleWrapper = styled.div`
@@ -3115,6 +3199,10 @@ const MockExamLabelWrapper = styled.div`
   align-items: center;
   background-color: #8080806f;
 `;
+const CloseIconWrapper = styled.div`
+  padding-right: 10px;
+`;
+
 const MockExamContent = styled.div`
   padding: 10px;
 `;
