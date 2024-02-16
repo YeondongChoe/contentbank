@@ -11,11 +11,6 @@ import { TextbookType, MockexamType } from '../../../types';
 import { COLOR } from '../../constants';
 import dummy from '../../constants/data.json';
 
-// type ArrayType = {
-//   seq: number;
-//   title: string;
-// };
-
 type Content = {
   seq: number;
   title: string;
@@ -30,7 +25,7 @@ type Page = {
   content: Content[];
 };
 
-type Type = {
+type DataType = {
   title: string;
   page: Page[];
 };
@@ -41,8 +36,23 @@ type ArrayType = {
   isChecked: boolean;
 };
 
-const processData = (data: TextbookType): Type => {
-  const newData: Type = {
+type MockDataType = {
+  seq: number;
+  grade: string;
+  year: string;
+  month: string;
+  content: MockContent[];
+  isChecked?: boolean;
+};
+
+type MockContent = {
+  seq: number;
+  title: string;
+  isChecked?: boolean;
+};
+
+const processData = (data: TextbookType): DataType => {
+  const newData: DataType = {
     title: data.title || '',
     page:
       data.type?.flatMap(
@@ -61,6 +71,23 @@ const processData = (data: TextbookType): Type => {
               })) || [],
           })),
       ) || [],
+  };
+
+  return newData;
+};
+
+const processMockexam = (data: MockexamType): MockDataType => {
+  const newData: MockDataType = {
+    seq: data.seq,
+    grade: data.grade,
+    year: data.year,
+    month: data.month,
+    isChecked: false,
+    content: data.content.map((contentItem) => ({
+      seq: contentItem.seq,
+      title: contentItem.title,
+      isChecked: false,
+    })),
   };
 
   return newData;
@@ -221,7 +248,8 @@ export function Step1() {
   const [clickedIdx, setClickedIdx] = useState<number>();
   const [clickedTitle, setClickedTitle] = useState<string>();
 
-  const [data, setData] = useState<Type | undefined>();
+  const [data, setData] = useState<DataType | undefined>();
+  console.log(data);
 
   useEffect(() => {
     if (selectedTextbook && selectedTextbook.type) {
@@ -1784,18 +1812,21 @@ export function Step1() {
                       )}
                     </MockExamSelect>
                     {!isDropdown && (
-                      <Button
-                        buttonType="button"
-                        onClick={selectExamReset}
-                        $padding="10px"
-                        height={'35px'}
-                        width={'200px'}
-                        fontSize="13px"
-                        $normal
-                        cursor
-                      >
-                        <span>선택 초기화</span>
-                      </Button>
+                      <MockExamSummaryWrapper>
+                        <MockExamSummary>학습지 문항수 {100}개</MockExamSummary>
+                        <Button
+                          buttonType="button"
+                          onClick={selectExamReset}
+                          $padding="10px"
+                          height={'35px'}
+                          width={'200px'}
+                          fontSize="13px"
+                          $normal
+                          cursor
+                        >
+                          <span>선택 초기화</span>
+                        </Button>
+                      </MockExamSummaryWrapper>
                     )}
                   </MockExamSelectWrapper>
                   {isDropdown && (
@@ -3005,6 +3036,16 @@ const MockExamSelectWrapper = styled.div`
 const MockExamSelect = styled.div`
   width: 100%;
   height: 35px;
+  display: flex;
+  align-items: center;
+`;
+const MockExamSummaryWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const MockExamSummary = styled.div`
+  width: 150px;
+  font-size: 15px;
   display: flex;
   align-items: center;
 `;
