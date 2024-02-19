@@ -2288,6 +2288,12 @@ export function Step1() {
                             fontSize="13px"
                             $normal
                             cursor
+                            disabled={
+                              examGrade.length === 0 ||
+                              examYear.length === 0 ||
+                              examMonthly.length === 0 ||
+                              examOption === null
+                            }
                           >
                             <span>선택 완료</span>
                           </Button>

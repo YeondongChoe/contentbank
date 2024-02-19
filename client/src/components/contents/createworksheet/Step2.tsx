@@ -127,10 +127,14 @@ export function Step2() {
 
   const [contentList, setContentList] = useState(ContentList);
 
+  const [selectedIndex, setSelectedIndex] = useState<number>();
+  console.log(selectedIndex);
+
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
-  const dragStart = (e: React.DragEvent, position: number) => {
+  const dragStart = (e: React.DragEvent, position: number, sort: number) => {
+    setSelectedIndex(sort);
     dragItem.current = position;
   };
   const dragEnter = (e: React.DragEvent, position: number) => {
@@ -149,16 +153,6 @@ export function Step2() {
       setContentList(newList);
     }
   };
-  //클릭했을 때 체크되면서 스타일이 바뀜
-  //const [selectedCode, setSelectedCode] = useState(null);
-  // const checkSelectedContentCode = (sort: any) => {
-  //   setSelectedCode(sort === selectedCode ? null : sort);
-  // };
-  // const selectContentCode = (sort: number) => {
-  //   checkSelectedContentCode(sort);
-  //   console.log('가지고 있는 Info 뿌려주기');
-  // };
-
   const goBackMainPopup = () => {
     navigate('/content-create/exam/step1');
   };
@@ -284,23 +278,22 @@ export function Step2() {
                           {contentList.map((el, i) => (
                             <Content
                               key={i}
-                              // onClick={() => {
-                              //   selectContentCode(el.sort);
-                              // }}
-                              //$choiced={el.sort === selectedCode}
+                              $isSelected={el.sort === selectedIndex}
+                              className={
+                                i === dragItem.current ? 'dragging' : ''
+                              }
+                              //onClick={() => setSelectedIndex(el.sort)}
+                              draggable
+                              onDragStart={(e) => dragStart(e, i, el.sort)}
+                              onDragEnter={(e) => dragEnter(e, i)}
+                              onDragOver={dragOver}
+                              onDragEnd={drop}
                             >
                               <div className="number">{el.sort}</div>
                               <div className="type">{el.unitType}</div>
                               <div className="level">{el.contentLevel}</div>
                               <div className="title">{el.unitMajor}</div>
-                              <div
-                                className="icon"
-                                draggable
-                                onDragStart={(e) => dragStart(e, i)}
-                                onDragEnter={(e) => dragEnter(e, i)}
-                                onDragOver={dragOver}
-                                onDragEnd={drop}
-                              >
+                              <div className="icon">
                                 <IoMenuOutline
                                   style={{ cursor: 'grab' }}
                                 ></IoMenuOutline>
@@ -754,11 +747,8 @@ const ListCategory = styled.div`
     width: 70px;
   }
 `;
-const Content = styled.div<{ $choiced?: boolean }>`
+const Content = styled.div<{ $isSelected?: boolean }>`
   font-size: 14px;
-  /* background-color: ${(props) =>
-    props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
-  color: ${(props) => (props.$choiced ? 'white' : 'initial')}; */
   display: flex;
   justify-content: space-around;
   gap: 10px;
@@ -788,6 +778,14 @@ const Content = styled.div<{ $choiced?: boolean }>`
     display: flex;
     justify-content: center;
     width: 70px;
+  }
+
+  &.dragging {
+    transition: transform 0.3s ease-in-out;
+    transform: translate(0, 0);
+    background-color: ${({ $isSelected }) =>
+      $isSelected ? `${COLOR.BORDER_BLUE}` : 'none'};
+    color: ${({ $isSelected }) => ($isSelected ? 'white' : 'none')};
   }
 `;
 const ListFilter = styled.div`
