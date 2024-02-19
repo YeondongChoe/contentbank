@@ -55,14 +55,15 @@ export function Step2() {
     { value: 0, label: '상' },
     { value: 0, label: '최상' },
   ];
-  const list = [
-    Contents2,
-    Contents3,
-    Contents4,
-    Contents2,
-    Contents3,
-    Contents4,
-  ];
+  // const list = [
+  //   Contents2,
+  //   Contents3,
+  //   Contents4,
+  //   Contents2,
+  //   Contents3,
+  //   Contents4,
+  // ];
+  const [list, setList] = useState([Contents2, Contents3, Contents4]);
   const bookmark: any[] = [];
   const selectCategory = [
     {
@@ -153,6 +154,25 @@ export function Step2() {
       setContentList(newList);
     }
   };
+  // const Mathviwerdrop = () => {
+  //   if (dragItem.current !== null && dragOverItem.current !== null) {
+  //     // 가정: contentList의 각 항목이 객체인 경우
+  //     const newList: Array<{
+  //       sort: number;
+  //       contentLevel: string;
+  //       code: string /* ... 추가적인 속성 ... */;
+  //     }> = [...contentList];
+
+  //     const [removed] = newList.splice(dragItem.current, 1);
+
+  //     newList.splice(dragOverItem.current, 0, removed[0]);
+  //     dragItem.current = null;
+  //     dragOverItem.current = null;
+
+  //     // Assuming setList's parameter type is SetStateAction<Array<{ sort: number; contentLevel: string; code: string; /* ... 추가적인 속성 ... */ }>>
+  //     setList(newList);
+  //   }
+  // };
   const goBackMainPopup = () => {
     navigate('/content-create/exam/step1');
   };
@@ -282,7 +302,6 @@ export function Step2() {
                               className={
                                 i === dragItem.current ? 'dragging' : ''
                               }
-                              //onClick={() => setSelectedIndex(el.sort)}
                               draggable
                               onDragStart={(e) => dragStart(e, i, el.sort)}
                               onDragEnter={(e) => dragEnter(e, i)}
@@ -469,25 +488,33 @@ export function Step2() {
             </ListFilter>
             <ContentListWrapper>
               {list.map((card, i) => (
-                <div
+                <MathviewerCardWrapper
                   key={i}
-                  // draggable
-                  // onDragStart={(e) => dragStart(e, i)}
-                  // onDragEnter={(e) => dragEnter(e, i)}
-                  // onDragOver={dragOver}
-                  // onDragEnd={drop}
+                  //$isSelected={i === selectedIndex}
+                  //className={i === dragItem.current ? 'dragging' : ''}
+                  //draggable
+                  //onDragStart={(e) => dragStart(e, i, i)}
+                  //onDragEnter={(e) => dragEnter(e, i)}
+                  //onDragOver={dragOver}
+                  //onDragEnd={drop}
                 >
                   <MathviewerCard
+                    className={i === dragItem.current ? 'dragging' : ''}
                     componentWidth="750px"
                     width="500px"
                     onClick={showSimilarContent}
                     isSimilar={isSimilar}
                     index={i + 1}
                     data={card}
+                    isDragged={i === selectedIndex}
                     selectedCardIndex={selectedCardIndex}
                     onSelectCard={setSelectedCardIndex}
+                    dragStart={() => (e: any) => dragStart(e, i, card.seq)}
+                    dragEnter={() => (e: any) => dragEnter(e, i)}
+                    dragOver={dragOver}
+                    drop={drop}
                   ></MathviewerCard>
-                </div>
+                </MathviewerCardWrapper>
               ))}
             </ContentListWrapper>
           </ContentListSection>
@@ -708,6 +735,16 @@ const ContentListWrapper = styled.div`
   gap: 10px;
   overflow-y: auto;
 `;
+const MathviewerCardWrapper = styled.div<{ $isSelected?: boolean }>`
+  &.dragging {
+    transition: transform 0.3s ease-in-out;
+    transform: translate(0, 0);
+    background-color: ${({ $isSelected }) =>
+      $isSelected ? `${COLOR.BORDER_BLUE}` : 'none'};
+    color: ${({ $isSelected }) => ($isSelected ? 'white' : 'none')};
+  }
+`;
+
 const ContentsList = styled.div`
   padding: 10px 20px;
   height: 450px;
