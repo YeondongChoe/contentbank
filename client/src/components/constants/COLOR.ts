@@ -23,7 +23,7 @@ export const COLOR = {
   ALERTBAR_WARNING: '#FFCC06',
 
   TABLE_GRAY: '#f0f0f0',
-  //
+  //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ//
   HOVER: '#f4f7fe',
   GRAY: '#9a9a9a',
   DARK_GRAY: '#333333',

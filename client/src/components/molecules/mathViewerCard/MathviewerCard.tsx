@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useRef, useState } from 'react';
 
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import { IoMenuOutline } from 'react-icons/io5';
@@ -21,6 +20,12 @@ type MathviewerCardProps = {
   width?: string;
   isSimilarQuiz?: boolean;
   componentWidth?: string;
+  className?: string;
+  dragStart?: React.DragEventHandler<HTMLDivElement> | undefined;
+  dragEnter?: React.DragEventHandler<HTMLDivElement> | undefined;
+  dragOver?: (e: React.DragEvent) => void;
+  drop?: (e: React.DragEvent) => void;
+  isDragged?: boolean;
 };
 
 export function MathviewerCard({
@@ -33,45 +38,26 @@ export function MathviewerCard({
   width,
   isSimilarQuiz,
   componentWidth,
+  className,
+  dragStart,
+  dragEnter,
+  dragOver,
+  drop,
+  isDragged,
 }: MathviewerCardProps) {
-  const [contentList, setContentList] = useState(data);
-  const dragItem = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
-
-  const dragStart = (e: React.DragEvent, position: number) => {
-    dragItem.current = position;
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', '');
-  };
-  const dragEnter = (e: React.DragEvent, position: number) => {
-    dragOverItem.current = position;
-  };
-  const dragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-  // const drop = (e: React.DragEvent) => {
-  //   e.preventDefault();
-  //   if (dragItem.current !== null && dragOverItem.current !== null) {
-  //     const newList = [...contentList];
-  //     const [removed] = newList.splice(dragItem.current, 1);
-  //     newList.splice(dragOverItem.current, 0, removed);
-  //     dragItem.current = null;
-  //     dragOverItem.current = null;
-  //     setContentList(newList);
-  //   }
-  // };
-
   return (
-    <>
+    <div>
       <Component
-        //draggable
-        //onDragStart={(e) => dragStart(e, index)}
-        //onDragEnter={(e) => dragEnter(e, index)}
-        //onDragOver={dragOver}
-        //onDragEnd={drop}
+        className={className}
         $isSimilar={isSimilar}
         $isSelected={index === selectedCardIndex}
         $componentWidth={componentWidth}
+        $isDragged={isDragged}
+        draggable
+        onDragStart={dragStart}
+        onDragEnter={dragEnter}
+        onDragOver={dragOver}
+        onDragEnd={drop}
       >
         <div className="leftInfomation">
           <div className="numbering">{index}</div>
@@ -177,7 +163,7 @@ export function MathviewerCard({
           </ButtonWrapper>
         )}
       </Component>
-    </>
+    </div>
   );
 }
 
@@ -185,6 +171,7 @@ const Component = styled.div<{
   $isSimilar?: boolean;
   $isSelected?: boolean;
   $componentWidth?: string;
+  $isDragged?: boolean;
 }>`
   display: flex;
   //justify-content: space-between;
@@ -212,6 +199,13 @@ const Component = styled.div<{
   .numbering {
     font-size: 20px;
   }
+  ${({ $isDragged }) =>
+    $isDragged &&
+    `
+    transition: transform 0.3s ease-in-out;
+    transform: translate(0, 0);
+    border: 3px solid ${COLOR.PRIMARY};
+  `}
 `;
 const ButtonWrapper = styled.div`
   display: flex;
