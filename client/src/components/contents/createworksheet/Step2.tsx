@@ -271,7 +271,7 @@ export function Step2() {
                           <div className="number">번호</div>
                           <div className="type">문항타입</div>
                           <div className="level">난이도</div>
-                          <div className="title">유형명</div>
+                          <div className="title">유형명명</div>
                           <div className="icon">순서변경</div>
                         </ListCategory>
                         <div>
