@@ -130,7 +130,8 @@ export function Login() {
     setIsClicked(!isClicked);
   };
 
-  const enterLogin = () => {
+  const enterLogin = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     handleSubmit(submitLogin)();
   };
 
@@ -222,7 +223,7 @@ export function Login() {
               cursor
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  enterLogin();
+                  enterLogin(e);
                 }
               }}
             >
