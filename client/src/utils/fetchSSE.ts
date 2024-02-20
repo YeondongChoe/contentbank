@@ -16,6 +16,7 @@ export const fetchSSE = () => {
 
   eventSource.onopen = () => {
     // 연결 시 할 일
+    // 테스트
   };
 
   eventSource.onmessage = async (e) => {
