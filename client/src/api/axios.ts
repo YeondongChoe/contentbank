@@ -37,7 +37,7 @@ authInstance.interceptors.request.use(function (config) {
     )}`;
   }
   if (config.headers['session-id'] !== getAuthorityCookie('sessionId')) {
-    config.headers['session-id'] = `Bearer ${getAuthorityCookie('sessionId')}`;
+    config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
   }
   return config;
 });
@@ -78,7 +78,7 @@ userInstance.interceptors.request.use(function (config) {
     )}`;
   }
   if (config.headers['session-id'] !== getAuthorityCookie('sessionId')) {
-    config.headers['session-id'] = `Bearer ${getAuthorityCookie('sessionId')}`;
+    config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
   }
   return config;
 });
