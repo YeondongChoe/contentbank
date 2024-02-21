@@ -23,8 +23,9 @@ export function ContentCreating() {
     idx: 0,
     value: '',
   });
-  const [optionList, setOptionList] =
-    useState<{ idx: number | string; options: OptionsItemProps[] }[]>();
+  const [optionList, setOptionList] = useState<
+    { idx: number; options: OptionsItemProps[] }[]
+  >([]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
@@ -39,15 +40,34 @@ export function ContentCreating() {
   };
 
   const showOptionList = () => {
-    console.log(selectValue);
     const arr = selectCategory2[0]?.options.filter(
       (el) => el.label === selectValue.value,
     );
-    // arr[0].optionsDeps && console.log(arr[0].optionsDeps);
+    arr[0] && console.log(arr[0], arr[0].optionsDeps, selectValue.idx);
+
     if (arr[0] && arr[0].optionsDeps)
-      setOptionList([{ idx: selectValue.idx, options: arr[0].optionsDeps }]);
+      setOptionList([
+        ...optionList,
+        { idx: selectValue.idx, options: arr[0].optionsDeps },
+      ]);
   };
-  console.log(optionList);
+
+  const removeOptionList = () => {
+    if (optionList.length !== sourceOptions.length) {
+      for (let i = 0; i < optionList.length; i++) {
+        const arr = optionList.filter((el) => el.idx !== optionList[i].idx);
+        console.log(arr);
+        // arr[0] && setOptionList([...optionList, arr[0]]);
+      }
+    }
+  };
+
+  console.log('optionList', optionList);
+  console.log('optionList', sourceOptions);
+  useEffect(() => {
+    removeOptionList();
+  }, [optionList]);
+
   useEffect(() => {
     showOptionList();
   }, [selectValue]);
@@ -176,9 +196,15 @@ export function ContentCreating() {
                           onSelect={(event) => selectCategoryOption(event)}
                         />
                       ))}
-                      {selectValue.value !== '' && (
-                        <>
-                          {optionList &&
+                      {optionList &&
+                        optionList[index] &&
+                        optionList[index].options.length !== 0 && (
+                          <>
+                            {optionList[index].options &&
+                              optionList[index].options.map((el) => (
+                                <p key={`${el.id} ell`}>{el.label}</p>
+                              ))}
+                            {/* {optionList &&
                             optionList[index].options !== undefined &&
                             optionList[index].options.map((el) => (
                               <div key={`${el.label} el deps`}>
@@ -198,9 +224,9 @@ export function ContentCreating() {
                                 {el.type === 'input' && <>i</>}
                                 {el.type === 'datepickup' && <>d</>}
                               </div>
-                            ))}
-                        </>
-                      )}
+                            ))} */}
+                          </>
+                        )}
                     </SelectWrapper>
                   </li>
                 </SelectList>

@@ -9,6 +9,9 @@ import {
   setAuthorityCookie,
 } from '../utils/cookies';
 
+// axios 전역 설정
+axios.defaults.withCredentials = true; // withCredentials 전역 설정
+
 /** 인증 서비스 API Instance*/
 export const authInstance = axios.create({
   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
