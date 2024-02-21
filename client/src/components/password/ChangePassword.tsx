@@ -117,7 +117,9 @@ export function ChangePassword({
     password: string;
     passwordConfirm: string;
   }) => {
-    return userInstance.patch('/v1/account/init-change-password', auth);
+    return userInstance.patch('/v1/account/init-change-password', auth, {
+      withCredentials: true,
+    });
   };
   const { data: passwordDataInit, mutate: changePasswordInit } = useMutation({
     mutationFn: patchPasswordInit,
