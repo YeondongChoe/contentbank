@@ -53,6 +53,7 @@ export function WorksheetBasic() {
   const [heightList, setHeightList] = useState<number[]>([]);
   const [colList, setColList] = useState<ItemQuestionType[]>([]);
   const [colList2, setColList2] = useState<ItemQuestionType[]>([]);
+  const [existList, setExistList] = useState<ItemQuestionType[]>([]);
 
   const loadData = () => {
     // 데이터 불러오기
@@ -65,38 +66,57 @@ export function WorksheetBasic() {
     //기본 A4 넓이에서 - 패딩값
     const width = A4_WIDTH / 2 - 105 + 'px'; // 1col
     const width_2col = A4_WIDTH / 4 - 45 + 'px'; // 2col
-    // console.log('width_2col', width_2col);
+    console.log('width', width);
+    console.log('width_2col', width_2col);
 
     return width_2col;
   }, [colList]);
+
+  const [rowDiv, setRowDiv] = useState<NodeListOf<Element> | null>(null);
+  console.log(rowDiv);
 
   const cardHeight = () => {
     const rowDiv = document.querySelectorAll('.row'); //문항 요소
     //문항 요소들의 높이값
     const rowHeightArr: number[] = [];
-    console.log('rowDiv', rowDiv);
 
     for (let i = 0; i < rowDiv.length; i++) {
       rowHeightArr.push(rowDiv[i].clientHeight);
+      console.log(rowDiv[i].clientHeight);
     }
+    setRowDiv(rowDiv);
     setHeightList(rowHeightArr);
   };
   console.log('heightList', heightList);
 
   const getHeight = () => {
+    if (!rowDiv || rowDiv.length === 0) {
+      // rowDiv가 없거나 빈 배열이면 높이 계산을 하지 않도록 추가
+      return;
+    }
     // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
     let total: number = 0;
-    const sortList = [];
+    const sortList: ItemQuestionType[] = [] || null;
+    const existList: ItemQuestionType[] = [] || null;
     for (let i = 0; i < heightList.length; i++) {
       // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
       const num = (total += heightList[i]); // 문항의 누적 높이
-      if (A4_HEIGHT / 2 - 140 > num) {
+      console.log(num);
+      console.log(A4_HEIGHT / 2 - 150);
+      console.log(A4_HEIGHT / 2 - 150 > num);
+      if (A4_HEIGHT / 2 - 150 < num) {
         sortList.push(list[i]);
+        console.log('작동함');
+      } else {
+        existList.push(list[i]);
       }
     }
-
+    console.log('sortList', sortList);
     setColList2(sortList);
+    console.log('existList', existList);
+    setExistList(existList);
   };
+  console.log('colList', colList);
 
   // const colListArr = useMemo(() => {
   //   // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
@@ -122,21 +142,31 @@ export function WorksheetBasic() {
   }, []);
 
   useEffect(() => {
-    getHeight();
-  }, [colList]);
-
-  useEffect(() => {
     if (didMount) {
-      getHeight();
       cardHeight();
-      console.log('colList2', colList2);
     }
   }, [didMount]);
 
+  useEffect(() => {
+    if (colList.length > 0) {
+      getHeight();
+    }
+  }, [colList]);
+
+  useEffect(() => {
+    getHeight();
+  }, [rowDiv, heightList]);
+
+  // useEffect(() => {
+  //   if (reload) {
+  //     getHeight();
+  //   }
+  // }, [cardHeight]);
+
   return (
     <Container>
-      <MathViewerWrapper>
-        <IconWrapper>
+      <Wrapper>
+        {/* <IconWrapper>
           <ReactToPrint
             trigger={() => (
               <SlPrinter style={{ fontSize: '30px', cursor: 'pointer' }} />
@@ -147,7 +177,7 @@ export function WorksheetBasic() {
             onClick={() => setIsPreview(false)}
             style={{ fontSize: '30px', cursor: 'pointer' }}
           />
-        </IconWrapper>
+        </IconWrapper> */}
 
         <MathViewerContainer ref={printDivRef}>
           {/* <MathViewerHeader>
@@ -178,62 +208,87 @@ export function WorksheetBasic() {
             </HeaderRight>
           </MathViewerHeader> */}
 
-          {colList2.length > 1 && (
-            <MathViewerList ref={containerRef}>
-              {colList2.map((card, i) => (
-                <div
-                  key={card.it_quest + i}
-                  style={{ width: cardWidth }}
-                  // onLoad={(e) => {
-                  //   getItemHeight(e);
-                  // }}
-                  className="row"
-                >
-                  문제 {i + 1}.
-                  <MathViewer
-                    key={i}
-                    data={card}
-                    padding={`10px 15px 30px 0`}
-                    width={cardWidth}
-                  ></MathViewer>
-                </div>
-              ))}
-            </MathViewerList>
-          )}
-
           {/* 첫 랜더링 이후 높이값 지정 돔 */}
-          {colList2.length < 1 && (
-            <MathViewerList ref={containerRef}>
-              {colList.map((card, i) => (
-                <div
-                  key={card.it_quest + i}
-                  style={{ width: cardWidth }}
-                  // onLoad={(e) => {
-                  //   getItemHeight(e);
-                  // }}
-                  className="row"
-                >
-                  문제 {i + 1}.
-                  <MathViewer
-                    key={i}
-                    data={card}
-                    padding={`10px 15px 30px 0`}
+          <MathViewerListWrapper>
+            {existList.length > 1 ? (
+              <MathViewerList ref={containerRef}>
+                {existList.map((card, i) => (
+                  <MathViewerWrapper
+                    key={card.it_quest + i}
                     width={cardWidth}
-                  ></MathViewer>
-                </div>
-              ))}
-            </MathViewerList>
-          )}
+                    // onLoad={(e) => {
+                    //   getItemHeight(e);
+                    // }}
+                    className="row"
+                  >
+                    문제 left{i + 1}.
+                    <MathViewer
+                      key={i}
+                      data={card}
+                      padding={`10px 15px 30px 0`}
+                      width={cardWidth}
+                      //height="150"
+                    ></MathViewer>
+                  </MathViewerWrapper>
+                ))}
+              </MathViewerList>
+            ) : (
+              <MathViewerList ref={containerRef}>
+                {colList.map((card, i) => (
+                  <MathViewerWrapper
+                    key={card.it_quest + i}
+                    width={cardWidth}
+                    // onLoad={(e) => {
+                    //   getItemHeight(e);
+                    // }}
+                    className="row"
+                  >
+                    문제 left{i + 1}.
+                    <MathViewer
+                      key={i}
+                      data={card}
+                      padding={`10px 15px 30px 0`}
+                      width={cardWidth}
+                      //height="150"
+                    ></MathViewer>
+                  </MathViewerWrapper>
+                ))}
+              </MathViewerList>
+            )}
+            {colList2.length > 1 && (
+              <MathViewerList ref={containerRef}>
+                {colList2.map((card, i) => (
+                  <MathViewerWrapper
+                    key={card.it_quest + i}
+                    width={cardWidth}
+                    // onLoad={(e) => {
+                    //   getItemHeight(e);
+                    // }}
+                    className="row"
+                  >
+                    문제right {i + 1 + 10}.
+                    <MathViewer
+                      key={i}
+                      data={card}
+                      padding={`10px 15px 30px 0`}
+                      width={cardWidth}
+                      //height="150"
+                    ></MathViewer>
+                  </MathViewerWrapper>
+                ))}
+              </MathViewerList>
+            )}
+          </MathViewerListWrapper>
         </MathViewerContainer>
-      </MathViewerWrapper>
+      </Wrapper>
     </Container>
   );
 }
 
 const Container = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
+  //position: relative;
+  //width: 100%;
+  //height: 100%;
 `;
 const IconWrapper = styled.div`
   position: absolute;
@@ -246,46 +301,53 @@ const IconWrapper = styled.div`
   gap: 15px;
   color: white;
 `;
-const MathViewerWrapper = styled.div`
-  max-width: ${`${A4_WIDTH}px`};
+const Wrapper = styled.div`
+  //max-width: ${`${A4_WIDTH}px`};
   background-color: white;
-  max-height: 100vh;
+  //max-height: 100vh;
   border: 1px solid ${COLOR.BORDER_POPUP};
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%) scale(0.8);
+  //border-radius: 25px;
+  //position: absolute;
+  //top: 0;
+  //left: 50%;
+  //transform: translateX(0%) scale(1);
 `;
 
 const MathViewerContainer = styled.div`
-  position: absolute;
+  //position: absolute;
   width: ${`${A4_WIDTH / 2}px`};
-  height: ${`${A4_HEIGHT / 2 - 120}px`};
+  height: ${`${A4_HEIGHT / 2 - 150}px`};
   max-height: 100vh;
-  position: relative;
+  //position: relative;
   padding-top: 10px;
   overflow: auto;
 `;
+const MathViewerListWrapper = styled.div`
+  display: flex;
+`;
 
 const MathViewerList = styled.div`
-  position: absolute;
+  //position: absolute;
   overflow: auto;
-  left: 50%;
-  transform: translateX(-50%);
+  //left: 50%;
+  //transform: translateX(-50%);
   padding: 15px;
   width: ${`${A4_WIDTH / 2 - 30}px`};
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  //justify-content: space-between;
   flex-direction: column;
 
-  /* .row {
+  .row {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    //justify-content: space-between;
     flex-direction: column;
- 
-  } */
+  }
+`;
+const MathViewerWrapper = styled.div<{ width: string }>`
+  min-height: 71px;
+  width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
 
 const MathViewerHeader = styled.div`

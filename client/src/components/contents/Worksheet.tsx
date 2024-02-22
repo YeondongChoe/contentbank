@@ -254,11 +254,11 @@ export function Worksheet() {
         ))}
       </ListWrapper>
       <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
-      {isPreview && (
+      {/* {isPreview && (
         <Overlay>
           <WorksheetBasic />
         </Overlay>
-      )}
+      )} */}
     </Container>
   );
 }
