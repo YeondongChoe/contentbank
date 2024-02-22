@@ -113,7 +113,7 @@ export const selectCategory2 = [
             ],
             label: '내신형식',
           },
-          { id: 1, value: '0', type: 'button', label: '학교명' },
+          { id: 1, value: '0', type: 'modal', label: '학교명' },
           {
             id: 2,
             value: '0',

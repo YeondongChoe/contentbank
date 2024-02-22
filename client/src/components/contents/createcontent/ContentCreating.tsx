@@ -1,9 +1,15 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import styled from 'styled-components';
 
-import { Button, Modal, OptionsItemProps, Select } from '../..';
+import {
+  Button,
+  Modal,
+  OptionsDepsProps,
+  OptionsItemProps,
+  Select,
+} from '../..';
 import { useModal } from '../../../hooks';
 import { COLOR } from '../../constants/COLOR';
 
@@ -16,7 +22,7 @@ import { SchoolInputModal } from './SchoolInputModal';
 
 export function ContentCreating() {
   const { openModal } = useModal();
-  const [content, setContent] = useState<string[]>([]);
+  // const [content, setContent] = useState<string[]>([]);
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [count, setCount] = useState(1);
   const [selectValue, setSelectValue] = useState({
@@ -24,7 +30,7 @@ export function ContentCreating() {
     value: '',
   });
   const [optionList, setOptionList] = useState<
-    { idx: number; options: OptionsItemProps[] }[]
+    { idx: number; label: string; options: OptionsItemProps[] }[]
   >([]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -33,40 +39,45 @@ export function ContentCreating() {
       event.currentTarget.parentElement?.parentElement?.parentElement
         ?.parentElement?.parentElement?.parentElement?.id;
 
-    setContent((prevContent) => [...prevContent, value]);
+    // setContent((prevContent) => [...prevContent, value]);
 
     // 셀렉트 선택이후 옵션에 속한 버튼값보여주기
     setSelectValue({ idx: Number(id), value: value });
+
+    // 셀렉트 선택이후 셀렉트에 속한 자식 배열값 보여주기
   };
 
   const showOptionList = () => {
     const arr = selectCategory2[0]?.options.filter(
       (el) => el.label === selectValue.value,
     );
-    arr[0] && console.log(arr[0], arr[0].optionsDeps, selectValue.idx);
+    // arr[0] && console.log(arr[0], arr[0].optionsDeps, selectValue.idx);
+    // console.log(selectValue.value);
 
-    if (arr[0] && arr[0].optionsDeps)
-      setOptionList([
-        ...optionList,
-        { idx: selectValue.idx, options: arr[0].optionsDeps },
-      ]);
-  };
+    if (arr[0] && arr[0].optionsDeps) {
+      // 이미 선택된 셀렉트 값일 경우 중복선택 불가
+      const value = optionList.filter((el) => el.label === selectValue.value);
 
-  const removeOptionList = () => {
-    if (optionList.length !== sourceOptions.length) {
-      for (let i = 0; i < optionList.length; i++) {
-        const arr = optionList.filter((el) => el.idx !== optionList[i].idx);
-        console.log(arr);
-        // arr[0] && setOptionList([...optionList, arr[0]]);
+      // 인덱스가 같은 셀렉트에서 재선택시 덮어씌우기
+      const arrUnique = optionList.filter(
+        (arr, index, callback) =>
+          index === callback.findIndex((t) => t.idx === arr.idx),
+      );
+
+      // console.log('arrUnique', arrUnique);
+
+      if (value.length === 0) {
+        setOptionList([
+          ...arrUnique,
+          {
+            label: arr[0].label,
+            options: arr[0].optionsDeps,
+            idx: selectValue.idx,
+          },
+        ]);
       }
     }
   };
-
-  console.log('optionList', optionList);
-  console.log('optionList', sourceOptions);
-  useEffect(() => {
-    removeOptionList();
-  }, [optionList]);
 
   useEffect(() => {
     showOptionList();
@@ -86,9 +97,16 @@ export function ContentCreating() {
     const id = target.parentElement?.parentElement?.id;
     const arr = sourceOptions.filter((el) => el !== Number(id));
     setSourceOptions(arr);
+
+    // console.log('부모 배열wldnjwlq el', arr);
+    console.log('부모 셀렉트selectValue el', id);
+    // 부모 셀렉트 삭제시 옵션셀렉트도 배열에서 삭제
+    const resetArr = optionList.filter((el) => el.idx !== Number(id));
+    // console.log('자식 셀렉트 삭제시resetArr el', resetArr);
+    setOptionList(resetArr);
   };
 
-  // console.log('sourceOptions', sourceOptions);
+  console.log('전체optionList', optionList);
 
   const modalData = {
     title: '',
@@ -158,7 +176,7 @@ export function ContentCreating() {
             </strong>
             <SourceOptionWrap>
               {sourceOptions.map((index) => (
-                <SelectList key={index} id={index.toString()}>
+                <SelectList key={`${index} select`} id={index.toString()}>
                   <li>
                     {index === 0 ? (
                       <Button
@@ -187,46 +205,72 @@ export function ContentCreating() {
                     )}
                     <SelectWrapper>
                       {selectCategory2.map((el) => (
-                        <Select
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={el.label}
-                          key={el.label}
-                          options={el.options}
-                          onSelect={(event) => selectCategoryOption(event)}
-                        />
+                        <>
+                          <Select
+                            width={'110px'}
+                            height={'30px'}
+                            defaultValue={el.label}
+                            key={el.label}
+                            options={el.options}
+                            onSelect={(event) => selectCategoryOption(event)}
+                          />
+                          <span>|</span>
+                        </>
                       ))}
+
                       {optionList &&
                         optionList[index] &&
-                        optionList[index].options.length !== 0 && (
-                          <>
-                            {optionList[index].options &&
-                              optionList[index].options.map((el) => (
-                                <p key={`${el.id} ell`}>{el.label}</p>
-                              ))}
-                            {/* {optionList &&
-                            optionList[index].options !== undefined &&
-                            optionList[index].options.map((el) => (
-                              <div key={`${el.label} el deps`}>
-                                {el.type === 'select' && (
-                                  <>s</>
-                                  // <Select
-                                  //   width={'110px'}
-                                  //   height={'30px'}
-                                  //   defaultValue={el.label}
-                                  //   key={el.label}
-                                  //   options={el.options}
-                                  //   onSelect={(event) =>
-                                  //     selectCategoryOption(event)
-                                  //   }
-                                  // />
-                                )}
-                                {el.type === 'input' && <>i</>}
-                                {el.type === 'datepickup' && <>d</>}
-                              </div>
-                            ))} */}
-                          </>
-                        )}
+                        optionList[index].options.map((el) => (
+                          <OptionWrap key={`${el.label} optionsDeps`}>
+                            <li>
+                              {el.type === 'input' && (
+                                <input placeholder={`${el.label}`} />
+                              )}
+                            </li>
+                            <li>
+                              {el.type === 'datepickup' && (
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  fontSize="13px"
+                                  $normal
+                                  onClick={() => {}}
+                                  cursor
+                                >
+                                  기출일시
+                                </Button>
+                              )}
+                            </li>
+                            <li>
+                              {el.type === 'modal' && (
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  fontSize="13px"
+                                  $normal
+                                  onClick={() => openCreateModal()}
+                                  cursor
+                                >
+                                  {el.label}
+                                </Button>
+                              )}
+                            </li>
+                            <li>
+                              {el.type === 'select' && (
+                                <Select
+                                  width={'110px'}
+                                  height={'30px'}
+                                  defaultValue={el.label}
+                                  key={el.label}
+                                  options={el.options as OptionsDepsProps[]}
+                                  onSelect={(event) =>
+                                    selectCategoryOption(event)
+                                  }
+                                />
+                              )}
+                            </li>
+                          </OptionWrap>
+                        ))}
                     </SelectWrapper>
                   </li>
                 </SelectList>
@@ -305,6 +349,7 @@ const SelectListWrap = styled.div`
   padding: 0 10px;
 
   strong {
+    min-width: 40px;
     padding-top: 10px;
     /* line-height: 1.2; */
     font-size: 15px;
@@ -336,10 +381,31 @@ const SelectList = styled.ul`
 
   li {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
-    align-items: center;
   }
 `;
+const SelectWrapper = styled.div`
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  color: ${COLOR.GRAY};
+`;
+const OptionWrap = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+
+  input {
+    height: 30px;
+    padding: 10px;
+    width: 120px;
+    border: 1px solid ${COLOR.BORDER_GRAY};
+    border-radius: 5px;
+  }
+`;
+
 const ContentListWrap = styled.div`
   display: flex;
   align-items: center;
@@ -356,11 +422,4 @@ const ContentList = styled.div`
   width: 100%;
   min-height: calc(100vh - 60px - 100px);
   border: 1px solid ${COLOR.BORDER_BLUE};
-`;
-
-const SelectWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 5px;
 `;

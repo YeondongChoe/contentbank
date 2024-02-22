@@ -115,7 +115,7 @@ export function Login() {
       if (response?.data.link === '/content-create/quiz') {
         //TODO: 메인으로 갈시 임시 페이지 리로딩 임시
         // const cookieData = document.cookie;
-        window.location.reload();
+        // window.location.reload();
       }
     },
   });

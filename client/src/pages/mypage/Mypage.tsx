@@ -69,9 +69,7 @@ export function Mypage() {
     //   getAuthorityCookie('sessionId'),
     // );
 
-    const res = await userInstance.get(`/v1/account/my-info`, {
-      withCredentials: true,
-    });
+    const res = await userInstance.get(`/v1/account/my-info`);
 
     return res;
   };
@@ -102,7 +100,6 @@ export function Mypage() {
     const nameData = await userInstance.patch(
       `/v1/account/change-name`,
       nameValue,
-      { withCredentials: true },
     );
 
     if (nameData.status == 200) {

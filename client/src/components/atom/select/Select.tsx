@@ -7,8 +7,8 @@ import { styled } from 'styled-components';
 import { COLOR } from '../../constants';
 import { IconButton } from '../button';
 
-type OptionsDepsProps = {
-  id?: string;
+export type OptionsDepsProps = {
+  id?: string | number;
   label: string;
   value?: number | string;
   code?: string;
@@ -16,7 +16,7 @@ type OptionsDepsProps = {
 };
 
 type OptionsProps = {
-  id?: string;
+  id?: string | number;
   label?: string;
   value?: number | string;
   code?: string;
