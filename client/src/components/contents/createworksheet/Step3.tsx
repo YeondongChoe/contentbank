@@ -1,13 +1,20 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
+import ReactDOM from 'react-dom';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
+import { MdAccountBalance } from 'react-icons/md';
 import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
+import Contents2 from '../../../components/mathViewer/test2.json';
+import Contents3 from '../../../components/mathViewer/test3.json';
+import Contents4 from '../../../components/mathViewer/test4.json';
+import { WorksheetBasic } from '../../../components/worksheet/WorksheetBasic';
+import { ItemQuestionType } from '../../../types';
 import { Input, Label, Button, CheckBox } from '../../atom';
 import { COLOR } from '../../constants';
 import {
@@ -18,8 +25,10 @@ import {
   PurpleTheme,
   GrayTheme,
 } from '../../constants/THEME';
+import { MathViewer } from '../../mathViewer/MathViewer';
 
 export function Step3() {
+  const [didMount, setDidMount] = useState(false);
   const navigate = useNavigate();
 
   const [nameValue, setNameValue] = useState('');
@@ -73,6 +82,136 @@ export function Step3() {
     navigate('/content-create/exam');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
+
+  //오른쪽 템플릿 부분
+  // 더미 데이터
+  const list = [
+    Contents2,
+    Contents3,
+    Contents4,
+    Contents4,
+    Contents3,
+    Contents2,
+  ];
+  const [heightList, setHeightList] = useState<number[]>([]);
+  const [colList, setColList] = useState<ItemQuestionType[]>([]);
+  const [colList2, setColList2] = useState<ItemQuestionType[]>([]);
+  const [existList, setExistList] = useState<ItemQuestionType[]>([]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [done, setDone] = useState<boolean>(false);
+  const [doneAgain, setDoneAgain] = useState<boolean>(false);
+  const doneButton = () => {
+    setDone(true);
+  };
+
+  const cardHeight = () => {
+    const rowDiv = document.querySelectorAll('.row'); //문항 요소
+    //문항 요소들의 높이값
+    const rowHeightArr: number[] = [];
+
+    for (let i = 0; i < rowDiv.length; i++) {
+      const rowElement = rowDiv[i];
+      if (rowElement) {
+        const rowHeight = rowElement.clientHeight; // clientHeight 얻기
+        if (rowHeight !== null && rowHeight !== undefined) {
+          rowHeightArr.push(rowHeight);
+          //console.log(rowHeight);
+          //console.log(rowHeightArr);
+        }
+      }
+    }
+
+    setHeightList(rowHeightArr);
+    setDoneAgain(true);
+    //console.log('rowHeightArr', rowHeightArr);
+    //console.log('doneagain', doneAgain);
+
+    if (doneAgain) {
+      let total: number = 0;
+      const sortList: ItemQuestionType[] = [] || null;
+      const existList: ItemQuestionType[] = [] || null;
+      //console.log('rowHeightArr', rowHeightArr);
+      for (let i = 0; i < rowHeightArr.length; i++) {
+        //console.log('rowHeightArr', rowHeightArr);
+        //const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
+        const num = (total += rowHeightArr[i]); // 문항의 누적 높이
+        //console.log(num);
+        //console.log(750 / 2 - 150);
+        //console.log(750 / 2 - 150 > num);
+        if (900 / 2 - 150 < num) {
+          sortList.push(list[i]);
+          //console.log('작동함');
+        } else {
+          existList.push(list[i]);
+        }
+      }
+      //console.log('sortList', sortList);
+      setColList2(sortList);
+      //console.log('existList', existList);
+      setExistList(existList);
+    } else {
+      //console.error('Element not found.');
+    }
+  };
+  //console.log('heightList', heightList);
+
+  // const getHeight = () => {
+  //   // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
+  //   let total: number = 0;
+  //   const sortList: ItemQuestionType[] = [] || null;
+  //   const existList: ItemQuestionType[] = [] || null;
+  //   console.log('heightList', heightList);
+  //   for (let i = 0; i < heightList.length; i++) {
+  //     // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
+  //     const num = (total += heightList[i]); // 문항의 누적 높이
+  //     console.log(num);
+  //     console.log(750 / 2 - 150);
+  //     console.log(750 / 2 - 150 > num);
+  //     if (750 / 2 - 150 < num) {
+  //       sortList.push(list[i]);
+  //       console.log('작동함');
+  //     } else {
+  //       existList.push(list[i]);
+  //     }
+  //   }
+
+  //   console.log('sortList', sortList);
+  //   setColList2(sortList);
+  //   console.log('existList', existList);
+  //   setExistList(existList);
+  // };
+
+  const loadData = () => {
+    // 데이터 불러오기
+
+    // 리스트 초기화
+    setColList(list);
+    console.log(colList);
+  };
+
+  useEffect(() => {
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (done) {
+      loadData();
+    }
+  }, [done]);
+  //console.log(done);
+  //didMount 아직 안씀
+  useEffect(() => {
+    if (colList) {
+      cardHeight();
+    }
+  }, [colList]);
+
+  // useEffect(() => {
+  //   if (colList && doneAgain && colList.length > 0) {
+  //     console.log('이거는 작동함?');
+  //     getHeight();
+  //   }
+  // }, [colList, doneAgain]);
 
   return (
     <Container>
@@ -444,14 +583,134 @@ export function Step3() {
               <CheckBox isChecked={false} />
               문항 유형명 표시
             </CheckBoxWrapper>
+            <button onClick={doneButton}>버튼</button>
           </AddInformationWrapper>
         </WorksheetSettingSection>
         <WorksheetTemplateViewSection>
           <ThemeProvider theme={selectedTheme}>
             <WorksheetTemplateWrapper>
-              <Label value={'미리보기'} margin="20px"></Label>
+              {/* <Label value={'미리보기'} margin="20px"></Label> */}
               <WorksheetTemplate>
-                <InsideWorksheetTemplate>
+                <MathViewerHeader>
+                  <HeaderLeft>
+                    <TemplateTitleWrapper>
+                      <TemplateTitle>
+                        <span className="tag">기본</span>
+                        <span className="grade">중1-1</span>
+                      </TemplateTitle>
+                      <p className="subTitle">소인수분해</p>
+                    </TemplateTitleWrapper>
+                    <Description>50문항 | 콘텐츠뱅츠</Description>
+                  </HeaderLeft>
+                  <HeaderRight>
+                    <ImageWrapper>
+                      <MdAccountBalance style={{ fontSize: '60px' }} />
+                    </ImageWrapper>
+                    <TemplateInputWrapper>
+                      <Description>2024.01.16 이름</Description>
+                      <Input
+                        type={'text'}
+                        width="100px"
+                        border="black"
+                        height="20px"
+                      />
+                    </TemplateInputWrapper>
+                  </HeaderRight>
+                </MathViewerHeader>
+                <MathViewerListWrapper>
+                  {/* <MathViewerList ref={containerRef}>
+                    {colList.map((card, i) => (
+                      <div
+                        key={card.it_quest + i}
+                        //width={cardWidth}
+                        // onLoad={(e) => {
+                        //   getItemHeight(e);
+                        // }}
+                        className="row"
+                      >
+                        문제 left{i + 1}.
+                        <MathViewer
+                          key={i}
+                          data={card}
+                          padding={`10px 15px 30px 0`}
+                          //width={cardWidth}
+                          //height="150"
+                        ></MathViewer>
+                      </div>
+                    ))}
+                  </MathViewerList> */}
+                  {existList && existList.length > 1 ? (
+                    <MathViewerList ref={containerRef}>
+                      {existList.map((card, i) => (
+                        <div
+                          key={card.it_quest + i}
+                          //width={cardWidth}
+                          // onLoad={(e) => {
+                          //   getItemHeight(e);
+                          // }}
+                          className="row"
+                        >
+                          문제 left{i + 1}.
+                          <MathViewer
+                            key={i}
+                            data={card}
+                            padding={`10px 15px 30px 0`}
+                            //width={cardWidth}
+                            //height="150"
+                          ></MathViewer>
+                        </div>
+                      ))}
+                    </MathViewerList>
+                  ) : (
+                    <MathViewerList ref={containerRef}>
+                      {colList.map((card, i) => (
+                        <div
+                          key={card.it_quest + i}
+                          //width={cardWidth}
+                          // onLoad={(e) => {
+                          //   getItemHeight(e);
+                          // }}
+                          className="row"
+                        >
+                          문제{i + 1}.
+                          <MathViewer
+                            key={i}
+                            data={card}
+                            padding={`10px 15px 30px 0`}
+                            //width={cardWidth}
+                            //height="150"
+                          ></MathViewer>
+                        </div>
+                      ))}
+                    </MathViewerList>
+                  )}
+                  {colList2.length > 1 && (
+                    <MathViewerList ref={containerRef}>
+                      {colList2.map((card, i) => (
+                        <div
+                          key={card.it_quest + i}
+                          //width={cardWidth}
+                          // onLoad={(e) => {
+                          //   getItemHeight(e);
+                          // }}
+                          className="row"
+                        >
+                          문제right {i + 1 + 3}.
+                          <MathViewer
+                            key={i}
+                            data={card}
+                            padding={`10px 15px 30px 0`}
+                            //width={cardWidth}
+                            //height="150"
+                          ></MathViewer>
+                        </div>
+                      ))}
+                    </MathViewerList>
+                  )}
+                </MathViewerListWrapper>
+
+                {/* <WorksheetBasic /> */}
+                {/* <InsideWorksheetTemplate>
                   <Input
                     width="300px"
                     height="30px"
@@ -482,7 +741,7 @@ export function Step3() {
                     type="text"
                     placeholder={contentAuthor || '출제자명'}
                   />
-                </InsideWorksheetTemplate>
+                </InsideWorksheetTemplate> */}
               </WorksheetTemplate>
             </WorksheetTemplateWrapper>
           </ThemeProvider>
@@ -646,12 +905,89 @@ const WorksheetTemplateWrapper = styled.div`
   background-color: ${({ theme }) => theme?.color?.background || 'initial'};
 `;
 const WorksheetTemplate = styled.div`
+  //display: flex;
+  //flex-direction: column;
+  //align-items: center;
+  //justify-content: center;
+  //height: 100%;
+`;
+const MathViewerHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  height: 150px;
+  padding: 20px;
+  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
+`;
+const HeaderLeft = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+  justify-content: space-between;
+  //padding: 20px 10px 10px 20px;
 `;
+const TemplateTitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  .subTitle {
+    color: ${COLOR.TEXT_GRAY};
+    font-weight: 600;
+  }
+`;
+const TemplateTitle = styled.div`
+  display: flex;
+  gap: 5px;
+  font-size: 25px;
+  font-weight: 800;
+  .tag {
+    color: ${COLOR.SECONDARY};
+  }
+`;
+const HeaderRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  //flex: 1 0 0;
+  justify-content: space-between;
+  align-items: flex-start;
+  //padding: 20px 10px 10px 20px;
+`;
+const ImageWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const TemplateInputWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+`;
+const Description = styled.div`
+  font-weight: 800;
+`;
+const MathViewerListWrapper = styled.div`
+  height: 600px;
+  display: flex;
+  justify-content: space-evenly;
+
+  overflow: auto;
+`;
+const MathViewerList = styled.div`
+  padding: 15px;
+  width: ${900 / 2 - 30}px;
+  display: flex;
+  flex-direction: column;
+
+  /* .row {
+    display: flex;
+    flex-wrap: wrap;
+    //justify-content: space-between;
+    flex-direction: column;
+  } */
+`;
+const MathViewerWrapper = styled.div<{ width: string }>`
+  min-height: 71px;
+  width: ${({ width }) => (width ? ` ${width};` : '100%')};
+`;
+
 const InsideWorksheetTemplate = styled.div`
   padding: 10px;
   background-color: white;
