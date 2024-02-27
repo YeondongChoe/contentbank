@@ -95,6 +95,18 @@ export function CreateContentMain() {
     <Container>
       <ButtonWrapper>
         <TapMenuWrapper>
+          {tabVeiw === '문항 분류' && (
+            <BackButtonWrapper>
+              <IoIosArrowBack
+                onClick={() => setTabVeiw('DT & Editing')}
+                style={{
+                  fontSize: '22px',
+                  cursor: 'pointer',
+                  marginTop: '10px',
+                }}
+              />
+            </BackButtonWrapper>
+          )}
           <TabMenu
             length={3}
             menu={menuList}
@@ -103,17 +115,11 @@ export function CreateContentMain() {
             setTabVeiw={setTabVeiw}
           />
         </TapMenuWrapper>
-        {/* <CloseButtonWrapper>
-          <IoMdClose
-            onClick={closePopup}
-            style={{ fontSize: '22px', cursor: 'pointer' }}
-          />
-        </CloseButtonWrapper> */}
       </ButtonWrapper>
       {tabVeiw === 'DT & Editing' && (
         <ContentBox>
           {isUploadFile && isUploadFile === 'createcontent' ? (
-            <ContentCreating />
+            <ContentCreating setTabVeiw={setTabVeiw} />
           ) : (
             <FileUploading />
           )}
@@ -154,7 +160,7 @@ const TapMenuWrapper = styled.div`
   display: flex;
   flex: 1 0 0;
 `;
-const CloseButtonWrapper = styled.div`
+const BackButtonWrapper = styled.div`
   display: flex;
 `;
 const ContentBox = styled.div`

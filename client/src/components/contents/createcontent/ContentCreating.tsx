@@ -9,7 +9,11 @@ import { COLOR } from '../../constants/COLOR';
 import { selectCategory1, selectCategory3 } from './contentCreatingCategory';
 import { OptionList } from './options/OptionList';
 
-export function ContentCreating() {
+export function ContentCreating({
+  setTabVeiw,
+}: {
+  setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
 
@@ -108,10 +112,18 @@ export function ContentCreating() {
           buttonType="button"
           onClick={submitSave}
           height={'40px'}
-          $margin="0px"
+          $filled
           fontSize="12px"
         >
-          <span>저장</span>
+          <span>등록</span>
+        </Button>
+        <Button
+          buttonType="button"
+          onClick={() => setTabVeiw('문항 분류')}
+          height={'40px'}
+          fontSize="12px"
+        >
+          <span>추가 셋팅</span>
         </Button>
       </ContentListWrap>
 
@@ -133,7 +145,7 @@ const EditContainerWrap = styled.div`
 `;
 
 const EditWrap = styled.div`
-  min-height: calc(100vh - 60px - 100px); // 탭 네비 높이, 하단 셀렉트 높이 제외
+  min-height: calc(100vh - 60px - 200px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   margin-bottom: 10px;
@@ -202,11 +214,11 @@ const ContentListWrap = styled.div`
 
   button {
     // 저장 버튼
-    margin: 10px;
+    margin-top: 10px;
   }
 `;
 const ContentList = styled.div`
   width: 100%;
-  min-height: calc(100vh - 60px - 100px);
+  min-height: calc(100vh - 60px - 150px);
   border: 1px solid ${COLOR.BORDER_BLUE};
 `;
