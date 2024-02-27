@@ -114,6 +114,6 @@ ${(props) =>
 
 ${({ disabled }) =>
     disabled &&
-    `border:none; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
+    `border:1px solid #fff; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
 ${({ $cursor, disabled }) => $cursor && !disabled && 'cursor:pointer;'}
 `;

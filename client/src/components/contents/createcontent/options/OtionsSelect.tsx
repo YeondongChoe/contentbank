@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
 
-import { COLOR } from '../../constants';
-import { IconButton } from '../button';
+import { IconButton } from '../../../atom/button';
+import { COLOR } from '../../../constants';
 
 export type OptionsDepsProps = {
   id?: string | number;
@@ -58,9 +58,11 @@ type SelectProps = {
   top?: string;
   blackMode?: boolean;
   disabled?: boolean;
+  selected: any;
+  setSelected: any;
 };
 
-export function Select({
+export function OtionsSelect({
   options,
   onClick,
   onSelect,
@@ -71,10 +73,14 @@ export function Select({
   text,
   blackMode,
   disabled,
+  selected,
+  setSelected,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
-  const [selected, setSelected] = useState<string>();
-
+  const [select, setSelect] = useState<string>();
+  React.useEffect(() => {
+    setSelected(select);
+  }, [select]);
   return (
     <Component
       $padding={padding}
@@ -93,7 +99,7 @@ export function Select({
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
         blackMode={blackMode}
       >
-        {selected || defaultValue}
+        {select || defaultValue}
       </IconButton>
       {isOptionShow && (
         <SelectOptionsList
@@ -110,7 +116,7 @@ export function Select({
                 value={el.label}
                 onClick={(event) => {
                   onSelect(event, el.code),
-                    setSelected(event.currentTarget.value);
+                    setSelect(event.currentTarget.value);
                 }}
               >
                 <span>{el.label}</span>
