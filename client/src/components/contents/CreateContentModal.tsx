@@ -60,14 +60,14 @@ export function CreateContentModal() {
           value="uploadfile"
         >
           <IconWrapper>
-            <TbFileUpload style={styleIcon} />
+            <MdDriveFolderUpload style={styleIcon} />
           </IconWrapper>
           <TextWrapper>
             <MenuName>문항 파일 등록</MenuName>
-            <MenuDiscription>(촬영, 이미지, PDF 등)</MenuDiscription>
+            <MenuDiscription>(PDF, JPG, PNG, HWP 등)</MenuDiscription>
           </TextWrapper>
         </MenuWrapper>
-        <MenuWrapper
+        {/* <MenuWrapper
           onClick={(e) => {
             goToPage(e);
             closeModal();
@@ -75,13 +75,13 @@ export function CreateContentModal() {
           value="uploadfile"
         >
           <IconWrapper>
-            <MdDriveFolderUpload style={styleIcon} />
+            <TbFileUpload style={styleIcon} />
           </IconWrapper>
           <TextWrapper>
             <MenuName>대량 문항 등록</MenuName>
             <MenuDiscription>(hwp, hml, xml)</MenuDiscription>
           </TextWrapper>
-        </MenuWrapper>
+        </MenuWrapper> */}
       </MenuListWrapper>
     </Container>
   );

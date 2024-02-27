@@ -2,16 +2,12 @@ import * as React from 'react';
 
 import styled from 'styled-components';
 
-import {
-  Button,
-  OptionsDepsProps,
-  OptionsItemProps,
-  OptionsProps,
-  Select,
-} from '../../../../components/atom';
+import { Button, Select } from '../../../../components/atom';
 import { useModal } from '../../../../hooks';
 import { COLOR } from '../../../constants/COLOR';
 import { SchoolInputModal } from '../SchoolInputModal';
+
+import { OptionsDepsProps, OptionsItemProps } from './OtionsSelect';
 
 export function Options({ listItem }: { listItem: OptionsItemProps }) {
   const { openModal } = useModal();

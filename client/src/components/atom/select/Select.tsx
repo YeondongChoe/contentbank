@@ -7,35 +7,6 @@ import { styled } from 'styled-components';
 import { COLOR } from '../../constants';
 import { IconButton } from '../button';
 
-export type OptionsDepsProps = {
-  id?: string | number;
-  label: string;
-  value?: number | string;
-  code?: string;
-  options?: OptionsProps[];
-};
-
-export type OptionsProps = {
-  id?: string | number;
-  label?: string;
-  value?: number | string;
-  code?: string;
-  type?: string;
-  inputValue?: string;
-  dateValue?: string;
-  options?: OptionsItemProps[];
-};
-
-export type OptionsItemProps = {
-  id?: string | number;
-  label?: string;
-  value?: string | number;
-  type?: string;
-  inputValue?: string;
-  dateValue?: string;
-  options?: ItemProps[];
-};
-
 type ItemProps = {
   id?: string | number;
   label?: string;
@@ -43,7 +14,7 @@ type ItemProps = {
 };
 
 type SelectProps = {
-  options?: OptionsDepsProps[];
+  options?: ItemProps[];
   onClick?: () => void;
   onSelect: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -109,8 +80,7 @@ export function Select({
                 disabled={disabled}
                 value={el.label}
                 onClick={(event) => {
-                  onSelect(event, el.code),
-                    setSelected(event.currentTarget.value);
+                  setSelected(event.currentTarget.value);
                 }}
               >
                 <span>{el.label}</span>

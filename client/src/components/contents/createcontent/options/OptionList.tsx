@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import styled from 'styled-components';
 
-import { Button, OptionsItemProps, Select } from '../../../atom';
+import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 import { selectCategory2 } from '../contentCreatingCategory';
 
 import { Options } from './Options';
-import { OtionsSelect } from './OtionsSelect';
+import { OtionsSelect, OptionsItemProps } from './OtionsSelect';
 
 export function OptionList() {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
@@ -185,6 +185,7 @@ export function OptionList() {
 
 const Container = styled.div`
   /* padding: 20px; */
+  /* min-height: 150px; */
 `;
 const SelectList = styled.ul`
   padding: 5px 10px;
