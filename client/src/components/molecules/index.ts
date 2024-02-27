@@ -8,3 +8,4 @@ export * from './table';
 export * from './pagination';
 export * from './datePicker';
 export * from './modal';
+export * from './resizeLayout';

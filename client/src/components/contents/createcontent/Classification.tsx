@@ -3,195 +3,31 @@ import { useEffect, useState, useRef } from 'react';
 
 import styled from 'styled-components';
 
-import { MathViewer, Button, Select, Input } from '../..';
+import { MathViewer, Button, Select, Input, ResizeLayout } from '../..';
 import { COLOR } from '../../constants/COLOR';
 import Contents from '../../mathViewer/test1.json';
-import Contents2 from '../../mathViewer/test2.json';
-import Contents3 from '../../mathViewer/test3.json';
-import Contents4 from '../../mathViewer/test4.json';
 
 import dummy from './data.json';
 
 export function Classification() {
   const ContentList = dummy.ContentInfo;
-  const Category1 = dummy.Category;
-  const Category2 = dummy.Category2;
-  const [contentList, setContentList] = useState(ContentList);
-
-  const [didMount, setDidMount] = useState(false);
-  const [selectedCode, setSelectedCode] = useState(null);
-  const [code, setCode] = useState('');
-  const [classificatecode, setClassificatecode] = useState('');
-  const [content, setContent] = useState<string[]>([]);
-
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // console.log(event.currentTarget.value);
-    const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
-  };
-
-  const checkSelectedContentCode = (sort: any) => {
-    setSelectedCode(sort === selectedCode ? null : sort);
-  };
-
-  const selectContentCode = (
-    sort: number,
-    code: string,
-    classificatecode: string,
-  ) => {
-    checkSelectedContentCode(sort);
-    setCode(code);
-    setClassificatecode(classificatecode);
-    console.log('가지고 있는 Info 뿌려주기');
-  };
-
-  const dragItem = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
-
-  const dragStart = (e: any, position: number) => {
-    dragItem.current = position;
-  };
-  const dragEnter = (e: any, position: number) => {
-    dragOverItem.current = position;
-  };
-  const dragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-  const drop = () => {
-    if (dragItem.current !== null && dragOverItem.current !== null) {
-      const newList = [...contentList];
-      const [removed] = newList.splice(dragItem.current, 1);
-      newList.splice(dragOverItem.current, 0, removed);
-      dragItem.current = null;
-      dragOverItem.current = null;
-      setContentList(newList);
-    }
-  };
 
   const submitSave = async () => {
     console.log('항목의 변화가 없으면 버튼 비활성화');
     console.log('변경된 문항Info Put 요청 APi');
   };
 
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
-
-  useEffect(() => {
-    if (didMount) {
-      console.log('Info를 포함한 contentList gey 요청 API');
-    }
-  }, [didMount]);
-
-  useEffect(() => {
-    if (didMount) {
-      // console.log('contentListInfo 불러오는 함수');
-    }
-  }, [code, classificatecode]);
+  useEffect(() => {}, []);
 
   return (
     <Container>
-      <Wrapper>
-        <ContentListWrapper>
-          <Title>문항 선택</Title>
-          <ContentsList>
-            {contentList.map((el, i) => (
-              <Content
-                key={i}
-                onClick={() => {
-                  selectContentCode(el.sort, el.code, el.classificatecode);
-                }}
-                $choiced={el.sort === selectedCode}
-                draggable
-                onDragStart={(e) => dragStart(e, i)}
-                onDragEnter={(e) => dragEnter(e, i)}
-                onDragOver={dragOver}
-                onDragEnd={drop}
-              >
-                {el.code}
-              </Content>
-            ))}
-          </ContentsList>
-        </ContentListWrapper>
-        <ContentViewerWrapper>
-          <Title>문항 뷰어</Title>
-          {/* <ContentViewer>
-            <MathViewer data={Contents} />
-          </ContentViewer> */}
-          {/* <ContentViewer>
-            <MathViewer data={Contents2} />
-          </ContentViewer> */}
-          {/* <ContentViewer>
-            <MathViewer data={Contents3} />
-          </ContentViewer> */}
-          <ContentViewer>
-            <MathViewer data={Contents2} />
-            <MathViewer data={Contents3} />
-            <MathViewer data={Contents4} />
-          </ContentViewer>
-        </ContentViewerWrapper>
-
-        <ContentClassificationWrapper>
-          <form>
-            <Title>문항 분류</Title>
-            <ContentClassificationForm>
-              <Input
-                type="text"
-                disabled
-                placeholder="문항분류코드"
-                border="normal"
-                width="100%"
-                height="40px"
-                padding="15px"
-                fontSize="14px"
-                value={code}
-              />
-              <Input
-                type="text"
-                disabled
-                placeholder="문항코드"
-                border="normal"
-                width="100%"
-                height="40px"
-                padding="15px"
-                fontSize="14px"
-                value={classificatecode}
-              />
-              {Category1.map((el) => (
-                <Select
-                  width={'100%'}
-                  defaultValue={el.label}
-                  key={el.label}
-                  options={el.options}
-                  onSelect={(event) => selectCategoryOption(event)}
-                />
-              ))}
-            </ContentClassificationForm>
-            <ContentClassificationFormBottom>
-              {Category2.map((el) => (
-                <Select
-                  width={'174px'}
-                  defaultValue={el.label}
-                  key={el.label}
-                  options={el.options}
-                  onSelect={(event) => selectCategoryOption(event)}
-                />
-              ))}
-            </ContentClassificationFormBottom>
-            <ButtonWrapper>
-              <Button
-                buttonType="button"
-                onClick={submitSave}
-                height={'25px'}
-                width={'70px'}
-                fontSize="12px"
-              >
-                <span>저장</span>
-              </Button>
-            </ButtonWrapper>
-          </form>
-        </ContentClassificationWrapper>
-      </Wrapper>
+      <ResizeLayout
+        height={'calc(100vh - 100px)'}
+        column={'3rd'}
+        item1={<p>dsa</p>}
+        item2={<p>dsadsa</p>}
+        item3={<p>dsadsa</p>}
+      />
     </Container>
   );
 }
@@ -199,57 +35,4 @@ export function Classification() {
 const Container = styled.div`
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
-`;
-const Wrapper = styled.div`
-  display: flex;
-`;
-const Title = styled.div`
-  font-size: 14px;
-  padding: 10px;
-  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
-`;
-const ContentListWrapper = styled.div`
-  border-right: 1px solid ${COLOR.BORDER_BLUE};
-  flex: 1 0 30%;
-`;
-const ContentsList = styled.div`
-  padding: 10px;
-`;
-const Content = styled.div<{ $choiced: boolean }>`
-  font-size: 13px;
-  background-color: ${(props) =>
-    props.$choiced ? `${COLOR.BORDER_BLUE}` : 'white'};
-  color: ${(props) => (props.$choiced ? 'white' : 'initial')};
-  cursor: pointer;
-`;
-const ContentViewerWrapper = styled.div`
-  border-right: 1px solid ${COLOR.BORDER_BLUE};
-  flex: 1 0 30%;
-`;
-const ContentViewer = styled.div`
-  padding: 10px;
-`;
-const ContentClassificationWrapper = styled.div`
-  flex: 1 0 40%;
-`;
-const ContentClassificationForm = styled.div`
-  padding: 15px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
-`;
-const ContentClassificationFormBottom = styled.div`
-  padding: 15px 10px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
-`;
-const ButtonWrapper = styled.div`
-  height: 40px;
-  padding: 15px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
 `;
