@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import ReactDOM from 'react-dom';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -26,7 +25,7 @@ import {
   GrayTheme,
 } from '../../constants/THEME';
 import { MathViewer } from '../../mathViewer/MathViewer';
-
+//pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 export function Step3() {
   const [didMount, setDidMount] = useState(false);
   const navigate = useNavigate();
@@ -212,6 +211,10 @@ export function Step3() {
   //     getHeight();
   //   }
   // }, [colList, doneAgain]);
+
+  const [numPages, setNumPages] = useState<number | null>(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pdfData, setPdfData] = useState<string | undefined>(undefined);
 
   return (
     <Container>
@@ -583,7 +586,11 @@ export function Step3() {
               <CheckBox isChecked={false} />
               문항 유형명 표시
             </CheckBoxWrapper>
-            <button onClick={doneButton}>버튼</button>
+            <button
+            //onClick={doneButton}
+            >
+              버튼
+            </button>
           </AddInformationWrapper>
         </WorksheetSettingSection>
         <WorksheetTemplateViewSection>
