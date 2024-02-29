@@ -54,7 +54,6 @@ const processData = (data: TextbookType): DataType => {
           type.page?.map((page) => ({
             seq: page.seq || 0,
             title: page.title || '',
-
             isChecked: false,
             content:
               page.content?.map((content) => ({
