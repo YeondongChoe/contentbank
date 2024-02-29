@@ -176,7 +176,7 @@ export function Worksheet() {
               cursor
               onClick={closePdfViewer}
             >
-              닫기
+              닫기.
             </Button>
           </IframeButtonWrapper>
           <iframe
