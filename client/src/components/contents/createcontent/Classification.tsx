@@ -113,6 +113,15 @@ export function Classification() {
         column={'3rd'}
         item1={
           <ScrollWrap>
+            <Title>
+              <CheckBox
+                width={`15px`}
+                $margin={'0 5px 0 0'}
+                isChecked={false}
+                onClick={() => {}}
+              ></CheckBox>
+              <span className="title_top">전체선택</span>
+            </Title>
             <ListWrap>
               <DnDWrapper
                 dragList={initialItems}
@@ -138,8 +147,20 @@ export function Classification() {
             </ListWrap>
           </ScrollWrap>
         }
-        item2={<ScrollWrap>dsadsa</ScrollWrap>}
-        item3={<ScrollWrap>dsaㅇㄴ</ScrollWrap>}
+        item2={
+          <ScrollWrap>
+            <Title>
+              <span className="title_top">문항뷰어</span>
+            </Title>
+          </ScrollWrap>
+        }
+        item3={
+          <ScrollWrap>
+            <Title>
+              <span className="title_top">문항단원분류</span>
+            </Title>
+          </ScrollWrap>
+        }
       />
     </Container>
   );
@@ -154,6 +175,16 @@ const ScrollWrap = styled.div`
   height: calc(100vh - 100px);
   width: 100%;
   background-color: ${COLOR.LIGHT_GRAY};
+`;
+const Title = styled.div`
+  padding: 15px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  .title_top {
+    font-size: 15px;
+    font-weight: bold;
+  }
 `;
 const ListWrap = styled.ul`
   padding: 10px 5px;
