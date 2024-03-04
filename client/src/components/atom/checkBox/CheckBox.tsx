@@ -7,11 +7,18 @@ type CheckBoxProps = {
   onClick?: (e: any) => void;
   width?: string;
   height?: string;
+  $margin?: string;
 };
 
-export function CheckBox({ isChecked, onClick, width, height }: CheckBoxProps) {
+export function CheckBox({
+  isChecked,
+  onClick,
+  width,
+  height,
+  $margin,
+}: CheckBoxProps) {
   return (
-    <Component>
+    <Component $margin={$margin}>
       {isChecked ? (
         <SvgWrapper>
           <svg
@@ -47,11 +54,13 @@ export function CheckBox({ isChecked, onClick, width, height }: CheckBoxProps) {
   );
 }
 
-const Component = styled.div`
+const Component = styled.span<{ $margin?: string }>`
+  display: block;
   width: 20px;
   height: 20px;
   position: relative;
+  margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
 `;
-const SvgWrapper = styled.div`
+const SvgWrapper = styled.span`
   cursor: pointer;
 `;

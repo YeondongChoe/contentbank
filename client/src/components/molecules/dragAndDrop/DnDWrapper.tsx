@@ -19,7 +19,7 @@ interface DnDWrapperPropsType {
 }
 
 interface DraggableItemProps {
-  key: string | number;
+  key?: string | number;
   dragItem: any;
   itemIndex: number; // 항목의 인덱스
   onMove: (dragIndex: number, hoverIndex: number, isFinished: boolean) => void; // 항목이 이동했을 때 호출되는 함수
@@ -87,7 +87,6 @@ export const DnDWrapper = ({
 
 // 드래그 가능한 항목 컴포넌트를 정의
 const DraggableItem = ({
-  key,
   dragItem,
   itemIndex,
   onMove,
