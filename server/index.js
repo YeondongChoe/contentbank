@@ -11,7 +11,7 @@ const port = 5000;
 // 수학 수식 및 출력 경로 설정
 
 app.post("/get-math", async (req, res) => {
-  const { content } = req.body;
+  const { contents } = req.body;
   const mathExpression = "\\frac{a}{b}";
   // 바탕화면의 경로
   const desktopPath = path.join(require("os").homedir(), "Desktop");
