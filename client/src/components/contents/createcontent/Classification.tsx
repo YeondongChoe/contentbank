@@ -5,8 +5,8 @@ import styled from 'styled-components';
 
 import { CheckBox, DnDWrapper, ResizeLayout } from '../..';
 import { COLOR } from '../../constants/COLOR';
-import Contents from '../../mathViewer/test1.json';
 
+import { questionList } from './contentCreatingCategory';
 import dummy from './data.json';
 
 export const list = [
@@ -16,6 +16,7 @@ export const list = [
   { id: 4, name: 'Item 4', column: 'DO_IT' },
 ];
 
+//TODO : 데이터 들어올시 타입도 변경
 export interface TestDnDItem {
   id: string;
   text: string;
@@ -24,72 +25,7 @@ export interface TestDnDItem {
 export function Classification() {
   const ContentList = dummy.ContentInfo;
 
-  const [initialItems, _] = useState<TestDnDItem[]>([
-    {
-      id: 'Gasdv_1234567890',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678901',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678902',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678903',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678904',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678905',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678906',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678907',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678908',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_12345678909',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_123456789010',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_123456789011',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_123456789012',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_123456789013',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_123456789014',
-      text: '수학/수1/내신/객관식',
-    },
-    {
-      id: 'Gasdv_123456789015',
-      text: '수학/수1/내신/객관식',
-    },
-  ]);
+  const [initialItems, _] = useState<TestDnDItem[]>(questionList);
   const whenDragging = (newList: TestDnDItem[]) => {
     // console.log("!드래그중일떄", newList);
   };

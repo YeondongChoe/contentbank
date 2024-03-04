@@ -3,10 +3,15 @@ import { useEffect, useMemo, useState } from 'react';
 
 import styled from 'styled-components';
 
-import { Button, Modal, Select } from '../..';
+import { Button, DnDWrapper, Modal, Select } from '../..';
 import { COLOR } from '../../constants/COLOR';
 
-import { selectCategory1, selectCategory3 } from './contentCreatingCategory';
+import { TestDnDItem } from './Classification';
+import {
+  questionList,
+  selectCategory1,
+  selectCategory3,
+} from './contentCreatingCategory';
 import { OptionList } from './options/OptionList';
 
 export function ContentCreating({
@@ -14,6 +19,7 @@ export function ContentCreating({
 }: {
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const [initialItems, _] = useState<TestDnDItem[]>(questionList);
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
 
@@ -106,7 +112,22 @@ export function ContentCreating({
 
       <ContentListWrap>
         <ContentList>
-          <ul>map</ul>
+          <ListWrap>
+            <DnDWrapper
+              dragList={initialItems}
+              onDragging={() => {}}
+              onDragEnd={() => {}}
+              dragSectionName={'abc'}
+            >
+              {(dragItem, ref, isDragging) => (
+                <li ref={ref} className={` ${isDragging ? 'opacity' : ''}`}>
+                  <p className="title">
+                    <span className="title_id">{dragItem.id}</span>
+                  </p>
+                </li>
+              )}
+            </DnDWrapper>
+          </ListWrap>
         </ContentList>
         <Button
           buttonType="button"
@@ -219,6 +240,54 @@ const ContentListWrap = styled.div`
 `;
 const ContentList = styled.div`
   width: 100%;
-  min-height: calc(100vh - 60px - 150px);
+  overflow-y: auto;
+  height: calc(100vh - 60px - 150px);
   border: 1px solid ${COLOR.BORDER_BLUE};
+`;
+const ListWrap = styled.ul`
+  background-color: ${COLOR.LIGHT_GRAY};
+  padding: 10px 5px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: fit-content;
+
+  li {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    height: fit-content;
+    padding: 10px;
+    border: 1px solid ${COLOR.BORDER_BLUE};
+    background-color: #fff;
+    border-radius: 5px;
+    min-height: 50px;
+    margin-bottom: 10px;
+
+    .title {
+      font-size: 15px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+
+      .title_id {
+        width: calc(100% - 30px);
+        text-overflow: ellipsis;
+        word-break: break-all;
+      }
+    }
+    .sub_title {
+      width: 100%;
+      font-size: 13px;
+      border-top: 1px solid ${COLOR.BORDER_BLUE};
+      text-align: right;
+      margin-top: 5px;
+      color: ${COLOR.PRIMARY};
+    }
+
+    &.opacity {
+      opacity: 0.8;
+    }
+  }
 `;

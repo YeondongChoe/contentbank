@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance } from '../../api/axios';
+import { authInstance, userInstance } from '../../api/axios';
 // import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
 import { Button, AlertBar } from '../../components/atom';
@@ -20,6 +20,7 @@ import {
 } from '../../components/molecules';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
+import { getAuthorityCookie } from '../../utils/cookies';
 import { COLOR } from '../constants/COLOR';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
@@ -106,7 +107,7 @@ export function Member() {
     const enabled =
       tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
 
-    console.log('data00');
+    console.log('loadData');
 
     // isFetching && setMemberList(data?.data.content);
     // isFetching && setTotalPage(data?.data.data.totalElements);
@@ -129,6 +130,21 @@ export function Member() {
     }
   };
 
+  const getUserList = async () => {
+    console.log(
+      `유저리스트 호출시 쿠키 여부`,
+      getAuthorityCookie('accessToken'),
+    );
+    console.log(
+      `유저리스트 호출시 쿠키 여부 sessionId`,
+      getAuthorityCookie('sessionId'),
+    );
+    const res = await userInstance.get(`/v1/account`);
+    console.log(`유저리스트 get 결과값`, res);
+
+    return res;
+  };
+
   const {
     isLoading,
     error,
@@ -136,23 +152,16 @@ export function Member() {
     isFetching,
   } = useQuery({
     queryKey: ['get-memberlist'],
-    queryFn: () => {
-      authInstance.get(`/v1/account?menuIdx=${1}`);
-      // .then((response) => {
-      // handleAuthorizationRenewal(response);
-      //   setTotalPage(response.data.data.totalElements);
-      //   setMemberList(response.data.data.content);
-      // });
-      // return response;
-    },
+    queryFn: getUserList,
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
-  console.log('memberListData', memberListData);
+  console.log('유저리스트 useQuery memberListData', memberListData);
 
   useEffect(() => {
     // loadData();
+    console.log('memberListData', memberListData);
     setDidMount(true);
   }, []);
 

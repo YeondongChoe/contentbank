@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -53,10 +53,32 @@ export function Login() {
 
   //로그인 api
   const postLogin = (auth: LoginType) => {
-    // console.log('postLogin', auth);
+    console.log('postLogin', auth);
 
     return authInstance.post('/v1/auth/login', auth);
   };
+
+  // const getLogin = async () => {
+  //   const res = await authInstance.post('/v1/auth/login', {
+  //     username: 'test',
+  //     password: 'drmath@369',
+  //   });
+
+  //   return res;
+  // };
+  // const {
+  //   isLoading,
+  //   error,
+  //   data: getLoginData,
+  //   isFetching,
+  //   refetch,
+  // } = useQuery({
+  //   queryKey: ['get-myInfo'],
+  //   queryFn: getLogin,
+  //   meta: {
+  //     errorMessage: 'get-myInfo 에러 메세지',
+  //   },
+  // });
 
   const {
     data: loginPostData,
@@ -74,10 +96,10 @@ export function Login() {
       console.log('loginPostData error', context.response.status);
 
       // 401 인증되지 않음 = e-006
-      if (context.response.data.code === 'E-006') {
-        // 토큰 만료시 갱신
-        handleAuthorizationRenewal(context.response.data.code);
-      }
+      // if (context.response.data.code === 'E-006') {
+      //   // 토큰 만료시 갱신
+      //   handleAuthorizationRenewal(context.response.data.code);
+      // }
     },
     onSuccess: (response) => {
       console.log('accessToken ----login', response.data.data.accessToken);
@@ -142,7 +164,7 @@ export function Login() {
   const ClickPasswordLabel = () => {
     PasswordInputRef?.current?.focus();
   };
-
+  // console.log('getLogin', getLoginData);
   useEffect(() => {
     console.log('isSuccess ::', isSuccess);
     console.log('loginPostData ::', loginPostData);
