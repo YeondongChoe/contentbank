@@ -12,7 +12,7 @@ const port = 5000;
 
 app.post("/get-math", async (req, res) => {
   const { content } = req.body;
-  const mathExpression = "\\frac{a}{b}";
+  const mathExpression = "\\frac{a}{ba}";
   // 바탕화면의 경로
   const desktopPath = path.join(require("os").homedir(), "Desktop");
 
