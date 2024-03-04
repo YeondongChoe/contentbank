@@ -49,19 +49,20 @@ const processData = (data: TextbookType): DataType => {
   const newData: DataType = {
     title: data.title || '',
     page:
-      data.type?.flatMap((type) =>
-        type.page?.map((page) => ({
-          seq: page.seq || 0,
-          title: page.title || '',
-          isChecked: false,
-          content:
-            page.content?.map((content) => ({
-              seq: content.seq || 0,
-              title: content.title || '',
-              isChecked: false,
-              pageTitle: page.title,
-            })) || [],
-        })),
+      data.type?.flatMap(
+        (type) =>
+          type.page?.map((page) => ({
+            seq: page.seq || 0,
+            title: page.title || '',
+            isChecked: false,
+            content:
+              page.content?.map((content) => ({
+                seq: content.seq || 0,
+                title: content.title || '',
+                isChecked: false,
+                pageTitle: page.title,
+              })) || [],
+          })),
       ) || [],
   };
 
