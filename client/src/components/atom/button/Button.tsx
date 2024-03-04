@@ -111,9 +111,8 @@ ${(props) =>
     props.$filled &&
     props.$success &&
     `background-color: ${COLOR.SUCCESS}; color: white;`}
-
 ${({ disabled }) =>
     disabled &&
-    `border:1px solid #fff; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
-${({ $cursor, disabled }) => $cursor && !disabled && 'cursor:pointer;'}
+    `border:none; color:${COLOR.GRAY}; background-color:${COLOR.LIGHT_GRAY}; cursor: auto;`}
+${({ $cursor, disabled }) => $cursor && !disabled && 'cursor: pointer;'}
 `;

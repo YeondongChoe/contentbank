@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
+import axios from 'axios';
 import { FaRegBookmark, FaBookmark } from 'react-icons/fa';
 import { IoMdClose } from 'react-icons/io';
 import { LuDownload, LuFileSearch2 } from 'react-icons/lu';
@@ -128,40 +129,97 @@ export function Worksheet() {
   ];
   const worksheetList: WorksheetTableType[] = dummy.Worksheet;
 
+  const [showPdf, setShowPdf] = useState(false);
+
+  const closePdfViewer = () => {
+    setShowPdf(false);
+  };
+
+  const [pdfData, setPdfData] = useState<string | undefined>(undefined);
+
+  const testApi = async () => {
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/get-pdf',
+        {
+          title: 'Sample Title1',
+          content: 'Sample Content1',
+        },
+        {
+          responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
+        },
+      );
+
+      if (response.status === 200) {
+        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        setPdfData(pdfUrl);
+        setShowPdf(true);
+      } else {
+        console.error('Server responded with an error');
+      }
+    } catch (error) {
+      console.error('Failed to fetch PDF data:', error);
+    }
+  };
+
   return (
     <Container>
-      <TitleWrapper>
-        <Title>문항</Title>
-        <Button
-          height={'35px'}
-          width={'150px'}
-          onClick={openWindowCreateWorksheet}
-          fontSize="13px"
-          $filled
-          cursor
-        >
-          + 학습지 만들기
-        </Button>
-      </TitleWrapper>
-      <HeadWrapper>
-        <TabMenu
-          length={2}
-          menu={menuList}
-          width={'250px'}
-          selected={tabVeiw}
-          setTabVeiw={setTabVeiw}
-        />
-        <Search
-          value={searchValue}
-          width={'25%'}
-          height="40px"
-          onClick={() => filterSearchValue()}
-          onKeyDown={(e) => {}}
-          onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="학습지명, 학년, 태그, 작성자 검색"
-        />
-      </HeadWrapper>
-      {/* <TableWrapper>
+      {showPdf ? (
+        <IframeWrapper>
+          <IframeButtonWrapper>
+            <Button
+              height={'30px'}
+              width={'80px'}
+              fontSize="13px"
+              $filled
+              cursor
+              onClick={closePdfViewer}
+            >
+              닫기
+            </Button>
+          </IframeButtonWrapper>
+          <iframe
+            src={pdfData}
+            width="1100"
+            height="750"
+            style={{ border: 'none', borderRadius: 25 }}
+          ></iframe>
+        </IframeWrapper>
+      ) : (
+        <>
+          <TitleWrapper>
+            <Title>문항</Title>
+            <Button
+              height={'35px'}
+              width={'150px'}
+              onClick={openWindowCreateWorksheet}
+              fontSize="13px"
+              $filled
+              cursor
+            >
+              + 학습지 만들기
+            </Button>
+          </TitleWrapper>
+          <HeadWrapper>
+            <TabMenu
+              length={2}
+              menu={menuList}
+              width={'250px'}
+              selected={tabVeiw}
+              setTabVeiw={setTabVeiw}
+            />
+            <Search
+              value={searchValue}
+              width={'25%'}
+              height="40px"
+              onClick={() => filterSearchValue()}
+              onKeyDown={(e) => {}}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder="학습지명, 학년, 태그, 작성자 검색"
+            />
+          </HeadWrapper>
+          {/* <TableWrapper>
         <Table
           list={worksheetList}
           colWidth={worksheetColWidth}
@@ -170,95 +228,90 @@ export function Worksheet() {
           setSelectedRows={() => {}}
         />
       </TableWrapper> */}
-      <TabMenu
-        length={4}
-        menu={subMenuList}
-        width={'300px'}
-        selected={subTabVeiw}
-        setTabVeiw={setSubTabVeiw}
-        lineStyle
-        $margin={'10px 0 20px 0'}
-      />
-      <ListWrapper>
-        <ListTitleWrapper>
-          <ListTitle className="bookmark"></ListTitle>
-          <ListTitle className="grade">학년</ListTitle>
-          <ListTitle className="tag">태그</ListTitle>
-          <ListTitle className="title">학습지명</ListTitle>
-          <ListTitle className="createAt">등록일</ListTitle>
-          <ListTitle className="creater">작성자</ListTitle>
-          <ListTitle className="preview">미리보기</ListTitle>
-          <ListTitle className="setting">설정</ListTitle>
-        </ListTitleWrapper>
-        {worksheetList.map((content) => (
-          <WorksheetList key={content?.id}>
-            <div
-              className="bookmark"
-              onClick={() => {
-                //addFavoriteQuestion(content.questionSeq);
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
-            </div>
-            <div className="grade">{content.schoolLevel}</div>
-            <div className="tag">{content.tag}</div>
-            <div className="title">{content.worksheetName}</div>
-            <div className="createAt">{content.createdAt}</div>
-            <div className="creater">{content.creater}</div>
-            <div className="preview">
-              <LuFileSearch2
-                style={{ fontSize: '22px' }}
-                onClick={() => {
-                  // setIsPreview && setIsPreview(true);
-                }}
-              />
-            </div>
-            <div className="setting">
-              <SettingButton
-                type="button"
-                onClick={(event) => openSettingList(event)}
-                onMouseLeave={(event) => closeSettingList(event)}
-              >
-                <SlOptionsVertical style={{ fontSize: '16px' }} />
-                <SettingList>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        openEditFilePopup();
-                      }}
-                    >
-                      수정
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        openEditFilePopup();
-                      }}
-                    >
-                      복제 후 수정
-                    </button>
-                  </li>
-                  <li>
-                    <button type="button" onClick={(event) => {}}>
-                      삭제
-                    </button>
-                  </li>
-                </SettingList>
-              </SettingButton>
-            </div>
-          </WorksheetList>
-        ))}
-      </ListWrapper>
-      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
-      {/* {isPreview && (
-        <Overlay>
-          <WorksheetBasic />
-        </Overlay>
-      )} */}
+          <TabMenu
+            length={4}
+            menu={subMenuList}
+            width={'300px'}
+            selected={subTabVeiw}
+            setTabVeiw={setSubTabVeiw}
+            lineStyle
+            $margin={'10px 0 20px 0'}
+          />
+          <ListWrapper>
+            <ListTitleWrapper>
+              <ListTitle className="bookmark"></ListTitle>
+              <ListTitle className="grade">학년</ListTitle>
+              <ListTitle className="tag">태그</ListTitle>
+              <ListTitle className="title">학습지명</ListTitle>
+              <ListTitle className="createAt">등록일</ListTitle>
+              <ListTitle className="creater">작성자</ListTitle>
+              <ListTitle className="preview">미리보기</ListTitle>
+              <ListTitle className="setting">설정</ListTitle>
+            </ListTitleWrapper>
+            {worksheetList.map((content) => (
+              <WorksheetList key={content?.id}>
+                <div
+                  className="bookmark"
+                  onClick={() => {
+                    //addFavoriteQuestion(content.questionSeq);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
+                </div>
+                <div className="grade">{content.schoolLevel}</div>
+                <div className="tag">{content.tag}</div>
+                <div className="title">{content.worksheetName}</div>
+                <div className="createAt">{content.createdAt}</div>
+                <div className="creater">{content.creater}</div>
+                <div className="preview">
+                  <LuFileSearch2
+                    style={{ fontSize: '22px', cursor: 'pointer' }}
+                    onClick={testApi}
+                  />
+                </div>
+                <div className="setting">
+                  <SettingButton
+                    type="button"
+                    onClick={(event) => openSettingList(event)}
+                    onMouseLeave={(event) => closeSettingList(event)}
+                  >
+                    <SlOptionsVertical style={{ fontSize: '16px' }} />
+                    <SettingList>
+                      <li>
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            openEditFilePopup();
+                          }}
+                        >
+                          수정
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            openEditFilePopup();
+                          }}
+                        >
+                          복제 후 수정
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" onClick={(event) => {}}>
+                          삭제
+                        </button>
+                      </li>
+                    </SettingList>
+                  </SettingButton>
+                </div>
+              </WorksheetList>
+            ))}
+          </ListWrapper>
+          <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+        </>
+      )}
     </Container>
   );
 }
@@ -266,6 +319,17 @@ export function Worksheet() {
 const Container = styled.div`
   padding: 40px 80px;
   width: 100%;
+`;
+const IframeWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+`;
+const IframeButtonWrapper = styled.div`
+  width: 1100px;
+  display: flex;
+  justify-content: flex-end;
 `;
 const TitleWrapper = styled.div`
   display: flex;
