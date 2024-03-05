@@ -284,7 +284,11 @@ export function Member() {
           // />
           <p>
             {memberListData?.data.data.list.map((list: any) => (
-              <p key={list.id}>{list.id}</p>
+              <div key={list.userKey}>
+                <span>{list.name} /</span>
+                <span>{list.id} /</span>
+                <span>{list.authorityName}</span>
+              </div>
             ))}
           </p>
         )}
