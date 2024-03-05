@@ -144,7 +144,7 @@ export function ContentCreating({
           height={'40px'}
           fontSize="12px"
         >
-          <span>추가 셋팅</span>
+          <span>추가 정보 등록</span>
         </Button>
       </ContentListWrap>
 

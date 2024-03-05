@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 
 import styled from 'styled-components';
 
-import { CheckBox, DnDWrapper, ResizeLayout } from '../..';
+import { CheckBoxI, DnDWrapper, ResizeLayout } from '../..';
 import { COLOR } from '../../constants/COLOR';
 
 import { questionList } from './contentCreatingCategory';
@@ -23,8 +23,8 @@ export interface TestDnDItem {
 }
 
 export function Classification() {
-  const ContentList = dummy.ContentInfo;
-
+  // const ContentList = dummy.ContentInfo;
+  const [checkList, setCheckList] = useState<string[]>([]);
   const [initialItems, _] = useState<TestDnDItem[]>(questionList);
   const whenDragging = (newList: TestDnDItem[]) => {
     // console.log("!드래그중일떄", newList);
@@ -38,6 +38,31 @@ export function Classification() {
     console.log('변경된 문항Info Put 요청 APi');
   };
 
+  // 체크박스 설정
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.currentTarget.checked);
+    if (e.target.checked) {
+      setCheckList(questionList.map((item) => item.id as string));
+      // setIsEnabled(false);
+    } else {
+      setCheckList([]);
+      // setIsEnabled(true);
+    }
+  };
+  const handleSingleCheck = (checked: boolean, id: string) => {
+    if (checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
+    }
+  };
+  useEffect(() => {
+    setCheckList([]);
+  }, [questionList]);
+  useEffect(() => {
+    console.log(checkList);
+  }, [checkList]);
+
   useEffect(() => {
     // 탭 또는 버튼 이동시 이전 단계 저장된 리스트 불러오기
   }, []);
@@ -50,12 +75,16 @@ export function Classification() {
         item1={
           <ScrollWrap>
             <Title>
-              <CheckBox
-                width={`15px`}
+              <CheckBoxI
                 $margin={'0 5px 0 0'}
-                isChecked={false}
-                onClick={() => {}}
-              ></CheckBox>
+                onChange={(e) => handleAllCheck(e)}
+                checked={
+                  checkList.length === questionList.length ? true : false
+                }
+                // checked={true}
+                id={'all check'}
+                value={'all check'}
+              ></CheckBoxI>
               <span className="title_top">전체선택</span>
             </Title>
             <ListWrap>
@@ -68,12 +97,19 @@ export function Classification() {
                 {(dragItem, ref, isDragging) => (
                   <li ref={ref} className={` ${isDragging ? 'opacity' : ''}`}>
                     <p className="title">
-                      <CheckBox
-                        width={`15px`}
+                      <CheckBoxI
                         $margin={'0 5px 0 0'}
-                        isChecked={false}
-                        onClick={() => {}}
-                      ></CheckBox>
+                        onChange={(e) =>
+                          handleSingleCheck(e.target.checked, dragItem.id)
+                        }
+                        checked={
+                          checkList.includes(dragItem.id as string)
+                            ? true
+                            : false
+                        }
+                        id={dragItem.id}
+                        value={dragItem.id}
+                      ></CheckBoxI>
                       <span className="title_id">{dragItem.id}</span>
                     </p>
                     <p className="sub_title">{dragItem.text}</p>

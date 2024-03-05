@@ -129,8 +129,14 @@ export function Login() {
     },
     onSettled: (response) => {
       // console.log('onSettled', response);
-      console.log('로그인 onSettled ', getAuthorityCookie('accessToken'));
-      console.log('로그인 onSettled  ', getAuthorityCookie('sessionId'));
+      console.log(
+        '로그인 onSettled accessToken ',
+        getAuthorityCookie('accessToken'),
+      );
+      console.log(
+        '로그인 onSettled sessionId  ',
+        getAuthorityCookie('sessionId'),
+      );
 
       //첫 로그인시 비밀번호 변경 페이지로 || 로그인 성공후 메인으로
       navigate(response?.data.link);
