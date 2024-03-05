@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { styled } from 'styled-components';
 
-import { pageAtom } from '../../../store/utilAtom';
-import { QuestionTableType } from '../../../types';
-import { COLOR } from '../../constants';
-import { Button } from '../button';
-import { CheckBox } from '../checkBox';
+import { pageAtom } from '../../../../store/utilAtom';
+import { QuestionTableType } from '../../../../types';
+import { Button } from '../../../atom/button';
+import { CheckBox } from '../../../atom/checkBox';
+import { COLOR } from '../../../constants';
 
 type ContentCardProps = {
   content: QuestionTableType;

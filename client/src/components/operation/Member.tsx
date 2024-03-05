@@ -139,7 +139,7 @@ export function Member() {
       `유저리스트 호출시 쿠키 여부 sessionId`,
       getAuthorityCookie('sessionId'),
     );
-    const res = await userInstance.get(`/v1/account`);
+    const res = await userInstance.get(`/v1/account?menuIdx=${9}`);
     console.log(`유저리스트 get 결과값`, res);
 
     return res;
@@ -273,7 +273,10 @@ export function Member() {
           setSelectedRows={setSelectedRows}
         /> */}
       </TableWrapper>
-      {/* <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} /> */}
+      <PaginationBox
+        itemsCountPerPage={memberListData?.data.data.pagination.pageUnit}
+        totalItemsCount={memberListData?.data.data.pagination.totalCount}
+      />
       <Alert
         isAlertOpen={isAlertOpen}
         description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
