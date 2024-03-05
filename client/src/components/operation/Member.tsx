@@ -13,6 +13,7 @@ import { Button, AlertBar } from '../../components/atom';
 import { memberColWidth, memberTheadList } from '../../components/constants';
 import {
   Alert,
+  ContentList,
   PaginationBox,
   Search,
   TabMenu,
@@ -139,7 +140,9 @@ export function Member() {
       `유저리스트 호출시 쿠키 여부 sessionId`,
       getAuthorityCookie('sessionId'),
     );
-    const res = await userInstance.get(`/v1/account?menuIdx=${9}`);
+    const res = await userInstance.get(
+      `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${10}`,
+    );
     console.log(`유저리스트 get 결과값`, res);
 
     return res;
@@ -163,6 +166,8 @@ export function Member() {
     // loadData();
     console.log('memberListData', memberListData);
     setDidMount(true);
+
+    setTotalPage(memberListData?.data.data.pagination.endPage);
   }, []);
 
   useEffect(() => {
@@ -226,7 +231,7 @@ export function Member() {
         </Button>
       </TitleWrapper>
       <InputWrapper>
-        <Total>Total : {totalPage}</Total>
+        <Total>Total : {memberListData?.data.data.pagination.totalCount}</Total>
         <Search
           value={searchValue}
           width={'25%'}
@@ -272,11 +277,24 @@ export function Member() {
           setIsEnabled={setIsEnabled}
           setSelectedRows={setSelectedRows}
         /> */}
+        {memberListData && (
+          // <ContentList
+          //   list={memberListData?.data.data.list}
+          //   onClick={() => {}}
+          // />
+          <p>
+            {memberListData?.data.data.list.map((list: any) => (
+              <p key={list.id}>{list.id}</p>
+            ))}
+          </p>
+        )}
       </TableWrapper>
-      <PaginationBox
-        itemsCountPerPage={memberListData?.data.data.pagination.pageUnit}
-        totalItemsCount={memberListData?.data.data.pagination.totalCount}
-      />
+      {memberListData && (
+        <PaginationBox
+          itemsCountPerPage={memberListData?.data.data.pagination.pageUnit}
+          totalItemsCount={memberListData?.data.data.pagination.pageUnit}
+        />
+      )}
       <Alert
         isAlertOpen={isAlertOpen}
         description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
