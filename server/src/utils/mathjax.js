@@ -1,34 +1,28 @@
-const puppeteer = require("puppeteer");
+const { startup, mathjax } = require("mathjax-full/js/mathjax.js");
 
-async function convertMathToImage(mathExpression, outputFilePath) {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+const mathjaxConfig = {
+  loader: { load: ["input/tex", "output/svg"] },
+  tex: { packages: { "[+]": ["ams"] } },
+};
 
-  // MathJax 스크립트를 삽입한 HTML 페이지 생성
-  const htmlContent = `
-    <html>
-      <head>
-        <script id="MathJax-script" async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>  
-      </head>
-      <body>
-        <div id="mathjax-content">${mathExpression}</div>
-      </body>
-    </html>
-  `;
+const initializeMathJax = async () => {
+  const MathJaxPromise = startup.promise;
+  mathjaxConfig.loader = { ...mathjaxConfig.loader, require: require };
 
-  await page.setContent(htmlContent);
-  //console.log(htmlContent);
+  try {
+    await MathJaxPromise;
+    mathjax.config(mathjaxConfig);
+    mathjax.startup.defaultReady();
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  // 스크린샷 찍기
-  await page.screenshot({ path: outputFilePath });
+const convertToSVG = (mathExpression) => {
+  return mathjax.tex2svg(mathExpression, { display: true });
+};
 
-  await browser.close();
-
-  console.log(`Math expression converted and saved to ${outputFilePath}`);
-}
-
-// 모듈로 내보내기
 module.exports = {
-  convertMathToImage,
+  initializeMathJax,
+  convertToSVG,
 };

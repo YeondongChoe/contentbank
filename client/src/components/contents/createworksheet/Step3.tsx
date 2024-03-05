@@ -212,10 +212,6 @@ export function Step3() {
   //   }
   // }, [colList, doneAgain]);
 
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pdfData, setPdfData] = useState<string | undefined>(undefined);
-
   return (
     <Container>
       <TitleWrapper>
@@ -625,28 +621,7 @@ export function Step3() {
                   </HeaderRight>
                 </MathViewerHeader>
                 <MathViewerListWrapper>
-                  {/* <MathViewerList ref={containerRef}>
-                    {colList.map((card, i) => (
-                      <div
-                        key={card.it_quest + i}
-                        //width={cardWidth}
-                        // onLoad={(e) => {
-                        //   getItemHeight(e);
-                        // }}
-                        className="row"
-                      >
-                        문제 left{i + 1}.
-                        <MathViewer
-                          key={i}
-                          data={card}
-                          padding={`10px 15px 30px 0`}
-                          //width={cardWidth}
-                          //height="150"
-                        ></MathViewer>
-                      </div>
-                    ))}
-                  </MathViewerList> */}
-                  {existList && existList.length > 1 ? (
+                  {/* {existList && existList.length > 1 ? (
                     <MathViewerList ref={containerRef}>
                       {existList.map((card, i) => (
                         <div
@@ -713,7 +688,7 @@ export function Step3() {
                         </div>
                       ))}
                     </MathViewerList>
-                  )}
+                  )} */}
                 </MathViewerListWrapper>
 
                 {/* <WorksheetBasic /> */}

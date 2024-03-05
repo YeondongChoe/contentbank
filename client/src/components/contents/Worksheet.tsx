@@ -19,6 +19,7 @@ import {
   TabMenu,
   Table,
 } from '../../components';
+import Contents2 from '../../components/mathViewer/test2.json';
 import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';
 import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
@@ -136,6 +137,7 @@ export function Worksheet() {
   };
 
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
+  const [imageData, setImageData] = useState<string | undefined>(undefined);
 
   const testApi = async () => {
     try {
@@ -160,6 +162,29 @@ export function Worksheet() {
       }
     } catch (error) {
       console.error('Failed to fetch PDF data:', error);
+    }
+  };
+
+  const mathImage = async () => {
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/get-math-image',
+        {
+          content: Contents2.it_quest,
+        },
+        {
+          responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
+        },
+      );
+
+      if (response.status === 200) {
+        setShowPdf(true);
+        setImageData(response.data);
+      } else {
+        console.error('Server responded with an error');
+      }
+    } catch (error) {
+      console.error('Failed to data:', error);
     }
   };
 
