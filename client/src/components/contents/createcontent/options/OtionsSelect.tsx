@@ -13,6 +13,7 @@ export type OptionsDepsProps = {
   value?: number | string;
   code?: string;
   options?: OptionsProps[];
+  parentValue?: string;
 };
 
 export type OptionsProps = {

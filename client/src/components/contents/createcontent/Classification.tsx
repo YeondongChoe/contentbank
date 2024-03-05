@@ -4,17 +4,14 @@ import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 
 import { CheckBoxI, DnDWrapper, ResizeLayout } from '../..';
+import { ButtonFormatRadio } from '../../../components/molecules';
 import { COLOR } from '../../constants/COLOR';
 
-import { questionList } from './contentCreatingCategory';
-import dummy from './data.json';
-
-export const list = [
-  { id: 1, name: 'Item 1', column: 'DO_IT' },
-  { id: 2, name: 'Item 2', column: 'DO_IT' },
-  { id: 3, name: 'Item 3', column: 'DO_IT' },
-  { id: 4, name: 'Item 4', column: 'DO_IT' },
-];
+import {
+  questionList,
+  selectCategory1,
+  selectCategory2,
+} from './contentCreatingCategory'; // TODO : 더미데이터
 
 //TODO : 데이터 들어올시 타입도 변경
 export interface TestDnDItem {
@@ -25,28 +22,43 @@ export interface TestDnDItem {
 export function Classification() {
   // const ContentList = dummy.ContentInfo;
   const [checkList, setCheckList] = useState<string[]>([]);
+
+  const [radioCheck, setRadioCheck] = useState<
+    { title: string; checkValue: string }[]
+  >([]);
   const [initialItems, _] = useState<TestDnDItem[]>(questionList);
-  const whenDragging = (newList: TestDnDItem[]) => {
-    // console.log("!드래그중일떄", newList);
-  };
+
   const whenDragEnd = (newList: TestDnDItem[]) => {
     console.log('@드래그끝났을떄', newList);
   };
 
   const submitSave = async () => {
-    console.log('항목의 변화가 없으면 버튼 비활성화');
-    console.log('변경된 문항Info Put 요청 APi');
+    // 체크박스 체크후 분류 항목체크시 전송
+  };
+
+  // 라디오 버튼 설정
+  const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.className, e.target.value);
+
+    console.log(
+      e.target.parentElement?.parentElement?.parentElement?.previousSibling
+        ?.textContent,
+    );
+    const titleValue =
+      e.target.parentElement?.parentElement?.parentElement?.previousSibling
+        ?.textContent;
+
+    if (e.target.className === titleValue)
+      setRadioCheck([{ title: titleValue, checkValue: e.target.value }]);
   };
 
   // 체크박스 설정
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.currentTarget.checked);
+    // console.log(e.currentTarget.checked);
     if (e.target.checked) {
       setCheckList(questionList.map((item) => item.id as string));
-      // setIsEnabled(false);
     } else {
       setCheckList([]);
-      // setIsEnabled(true);
     }
   };
   const handleSingleCheck = (checked: boolean, id: string) => {
@@ -59,9 +71,6 @@ export function Classification() {
   useEffect(() => {
     setCheckList([]);
   }, [questionList]);
-  useEffect(() => {
-    console.log(checkList);
-  }, [checkList]);
 
   useEffect(() => {
     // 탭 또는 버튼 이동시 이전 단계 저장된 리스트 불러오기
@@ -90,7 +99,7 @@ export function Classification() {
             <ListWrap>
               <DnDWrapper
                 dragList={initialItems}
-                onDragging={whenDragging}
+                onDragging={() => {}}
                 onDragEnd={whenDragEnd}
                 dragSectionName={'abc'}
               >
@@ -131,6 +140,19 @@ export function Classification() {
             <Title>
               <span className="title_top">문항단원분류</span>
             </Title>
+
+            {selectCategory2[0].options.map((meta, index) => (
+              <div key={`${meta.id}`} className={`${meta.label}`}>
+                <ButtonFormatRadio
+                  titleText={`${meta.label}`}
+                  list={meta.optionsDeps}
+                  onChange={(e) => handleRadioCheck(e)}
+                  // defaultChecked={} //저장된 값 디폴트체크로
+                  checkedInput={radioCheck}
+                  $margin={index === 0 ? `10px 0 0 0` : ''}
+                />
+              </div>
+            ))}
           </ScrollWrap>
         }
       />
