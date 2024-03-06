@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { ChangeEvent } from 'react';
 
 import { IoSearch } from 'react-icons/io5';
 import { styled } from 'styled-components';
@@ -10,7 +9,7 @@ type SearchProps = {
   placeholder?: string;
   value: string;
   onClick: () => void;
-  onChange: (value: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   width?: string;
   height?: string;
@@ -63,6 +62,7 @@ type SearchStyleProps = {
 const Component = styled.div<SearchStyleProps>`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '35px')};
   font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '14px')};
@@ -72,8 +72,8 @@ const Component = styled.div<SearchStyleProps>`
   border: 1px solid ${COLOR.LIGHT_GRAY};
 
   input {
-    width: '100%';
-    flex: 1 0 0;
+    display: flex;
+    flex: 1 0 auto;
     font-size: 14px;
     padding: 6px;
     padding-left: 12px;
@@ -92,6 +92,6 @@ const Component = styled.div<SearchStyleProps>`
   }
 `;
 const ErrorMessage = styled.p`
-  color: #d32f2f;
+  color: ${COLOR.ALERTBAR_WARNING};
   font-size: 12px;
 `;

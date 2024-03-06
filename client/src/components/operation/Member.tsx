@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { authInstance, userInstance } from '../../api/axios';
 // import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
-import { Button, AlertBar } from '../../components/atom';
+import { Button, AlertBar, CheckBoxI } from '../../components/atom';
 import { memberColWidth, memberTheadList } from '../../components/constants';
 import {
   Alert,
@@ -25,6 +25,7 @@ import { getAuthorityCookie } from '../../utils/cookies';
 import { COLOR } from '../constants/COLOR';
 import { EditPopup } from '../member/EditPopup';
 import { RegisterPopup } from '../member/RegisterPopup';
+import { List, ListItem } from '../molecules/list';
 
 export function Member() {
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
@@ -160,7 +161,6 @@ export function Member() {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
-  console.log('유저리스트 useQuery memberListData', memberListData);
 
   useEffect(() => {
     // loadData();
@@ -234,7 +234,7 @@ export function Member() {
         <Total>Total : {memberListData?.data.data.pagination.totalCount}</Total>
         <Search
           value={searchValue}
-          width={'25%'}
+          width={'calc(100% - 60%)'}
           height="40px"
           onClick={() => filterSearchValue()}
           onKeyDown={(e) => filterSearchValueEnter(e)}
@@ -282,20 +282,28 @@ export function Member() {
           //   list={memberListData?.data.data.list}
           //   onClick={() => {}}
           // />
-          <p>
+          <List>
             {memberListData?.data.data.list.map((list: any) => (
-              <div key={list.userKey}>
+              <ListItem key={list.userKey as string} isChecked={false}>
+                <CheckBoxI
+                  id={''}
+                  value={undefined}
+                  checked={false}
+                  $margin={'0 5px 0 0'}
+                />
                 <span>{list.name} /</span>
                 <span>{list.id} /</span>
                 <span>{list.authorityName}</span>
-              </div>
+              </ListItem>
             ))}
-          </p>
+          </List>
         )}
       </TableWrapper>
-      {memberListData && (
+      {memberListData?.data.data.pagination && (
         <PaginationBox
-          itemsCountPerPage={memberListData?.data.data.pagination.pageUnit}
+          itemsCountPerPage={
+            memberListData?.data.data.pagination.totalBlockCount
+          }
           totalItemsCount={memberListData?.data.data.pagination.pageUnit}
         />
       )}
@@ -360,9 +368,10 @@ const TableWrapper = styled.div`
   padding-bottom: 30px;
   //border-top: 1px solid ${COLOR.SECONDARY};
 `;
-const Total = styled.p`
+const Total = styled.span`
   text-align: right;
   font-size: 18px;
+  font-weight: bold;
   color: ${COLOR.FONT_BLACK};
   padding-bottom: 5px;
 `;

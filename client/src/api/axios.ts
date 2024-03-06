@@ -12,6 +12,59 @@ import {
 // axios 전역 설정
 axios.defaults.withCredentials = true; // withCredentials 전역 설정
 
+// 토큰
+// export const tokenInstance = axios.create({
+//   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: `Bearer ${getAuthorityCookie('refreshToken')}`,
+//     'session-id': `${getAuthorityCookie('sessionId')}`,
+//     'Accept-Language': `ko_KR`,
+//   },
+// });
+/* 리프레쉬 토큰 발급 요청 */
+export const handleAuthorizationRenewal = async () => {
+  //만료기간
+  const nowDate = new Date().getTime();
+
+  // if (nowDate === ) {
+  //   await axios
+  //     .post('/v1/auth/refresh-token', {
+  //       baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${getAuthorityCookie('refreshToken')}`, //로그인 데이터의 리프레쉬토큰으로 요청
+  //         'session-id': `${getAuthorityCookie('sessionId')}`,
+  //         'Accept-Language': `ko_KR`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       // removeAuthorityCookie('accessToken');
+  //       console.log('/refresh-token', res);
+
+  //       setAuthorityCookie('accessToken', res.data.data.accessToken, {
+  //         path: '/',
+  //         sameSite: 'strict',
+  //         secure: false,
+  //       });
+  //     });
+  // }
+};
+
+// tokenInstance.interceptors.request.use(function (config) {
+//   console.log('config', config);
+//   handleAuthorizationRenewal();
+//   if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
+//     config.headers.Authorization = `Bearer ${getAuthorityCookie(
+//       'accessToken',
+//     )}`;
+//   }
+//   if (config.headers['session-id'] !== getAuthorityCookie('sessionId')) {
+//     config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
+//   }
+//   return config;
+// });
+
 /** 인증 서비스 API Instance*/
 export const authInstance = axios.create({
   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
@@ -23,18 +76,13 @@ export const authInstance = axios.create({
   },
 });
 
-export const tokenInstance = axios.create({
-  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('refreshToken')}`,
-    'session-id': `${getAuthorityCookie('sessionId')}`,
-    'Accept-Language': `ko_KR`,
-  },
-});
-
 authInstance.interceptors.request.use(function (config) {
-  if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
+  const headerAuth =
+    config.headers.Authorization?.toString().split('Bearer ')[1];
+  console.log('headerAuth--------------- ', headerAuth);
+
+  if (headerAuth !== getAuthorityCookie('accessToken')) {
+    // handleAuthorizationRenewal();
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
@@ -44,23 +92,6 @@ authInstance.interceptors.request.use(function (config) {
   }
   return config;
 });
-
-/** accessToken 확인 후 갱신하는 로직*/
-export const handleAuthorizationRenewal = (code: string) => {
-  if (code !== 'S-001')
-    tokenInstance.post('/v1/auth/refresh-token').then((res) => {
-      // removeAuthorityCookie('accessToken');
-      console.log('/refresh-token', res);
-
-      if (res.data.data.accessToken) {
-        setAuthorityCookie('accessToken', res.data.data.accessToken, {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        });
-      }
-    });
-};
 
 // 유저 서비스
 export const userInstance = axios.create({
@@ -74,8 +105,12 @@ export const userInstance = axios.create({
 });
 
 userInstance.interceptors.request.use(function (config) {
-  console.log('config', config);
-  if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
+  const headerAuth =
+    config.headers.Authorization?.toString().split('Bearer ')[1];
+  console.log('headerAuth--------------- ', headerAuth);
+
+  if (headerAuth !== getAuthorityCookie('accessToken')) {
+    // handleAuthorizationRenewal();
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;

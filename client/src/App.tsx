@@ -27,12 +27,19 @@ export function App() {
   //전역 쿼리캐싱
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
-      onError: (error, query) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      onError: (
+        error: { response: { data: { code: string } } },
+        query: { meta: { errorMessage: any } },
+      ) => {
         // 토큰 만료시 토큰 갱신
         // TODO: code 변경시 적용
-        if (error.message.includes('40')) {
-          const code = 'e-006';
-          handleAuthorizationRenewal(code);
+
+        console.log(error.response.data.code);
+        // console.log(query);
+        if (error.response.data.code === 'GE-003') {
+          // handleAuthorizationRenewal();
         }
 
         if (query.meta && query.meta.errorMessage) {
@@ -43,7 +50,7 @@ export function App() {
           console.log(`${query.meta.errorMessage}: ${error}`);
         }
       },
-      onSuccess: (data, query) => {
+      onSuccess: (data: any, query: any) => {
         // query.fetch();
         //
         //데이터 성공시

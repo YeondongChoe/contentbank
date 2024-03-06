@@ -101,12 +101,25 @@ export function Login() {
       //   handleAuthorizationRenewal(context.response.data.code);
       // }
     },
-    onSuccess: (response) => {
+    onSuccess: (response: {
+      data: {
+        data: {
+          accessToken: string;
+          refreshToken: string;
+          sessionId: string;
+        };
+      };
+    }) => {
       console.log('accessToken ----login', response.data.data.accessToken);
       console.log('refreshToken ----login', response.data.data.refreshToken);
       console.log('sessionId ----login', response.data.data.sessionId);
       // 로컬데이터에서 토큰과 세션을 저장
       setAuthorityCookie('accessToken', response.data.data.accessToken, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      setAuthorityCookie('refreshToken', response.data.data.refreshToken, {
         path: '/',
         sameSite: 'strict',
         secure: false,
@@ -127,17 +140,9 @@ export function Login() {
         removeAuthorityCookie('username', { path: '/' });
       }
     },
-    onSettled: (response) => {
-      // console.log('onSettled', response);
-      console.log(
-        '로그인 onSettled accessToken ',
-        getAuthorityCookie('accessToken'),
-      );
-      console.log(
-        '로그인 onSettled sessionId  ',
-        getAuthorityCookie('sessionId'),
-      );
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    onSettled: (response: { data: { link: string } }) => {
       //첫 로그인시 비밀번호 변경 페이지로 || 로그인 성공후 메인으로
       navigate(response?.data.link);
       if (response?.data.link === '/content-create/quiz') {
