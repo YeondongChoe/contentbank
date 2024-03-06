@@ -12,21 +12,25 @@ import { putDisableMember } from '../../api/putAxios';
 import { Button, AlertBar, CheckBoxI, Icon } from '../../components/atom';
 import {
   Alert,
+  Modal,
   PaginationBox,
   Search,
   TabMenu,
 } from '../../components/molecules';
+import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
 import { getAuthorityCookie } from '../../utils/cookies';
 import { COLOR } from '../constants/COLOR';
-import { EditPopup } from '../member/EditPopup';
-import { RegisterPopup } from '../member/RegisterPopup';
 import { List, ListItem } from '../molecules/list';
 
+import { EditModal } from './member/EditModal';
+import { RegisterModal } from './member/RegisterModal';
+
 export function Member() {
+  const { openModal } = useModal();
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
-  const [isRegister, setIsRegister] = useState(false);
+
   const [isEditer, setIsEditer] = useState(false);
   const [keyValue, setKeyValue] = useState('');
   const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
@@ -44,6 +48,18 @@ export function Member() {
 
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isChecked, setIsChecked] = useState<boolean>(true);
+
+  const modalData = {
+    title: '',
+    content: <RegisterModal />,
+    callback: () => {},
+  };
+
+  const editModalData = {
+    title: '',
+    content: <EditModal />,
+    callback: () => {},
+  };
 
   // 활성화/비활성화 버튼상태 토글
   const openSubmitAlert = () => {
@@ -87,18 +103,14 @@ export function Member() {
     }
   };
 
-  const openRegisterPopup = () => {
-    setIsRegister(true);
-    setSearchValue('');
+  /* 아이디 만들기 모달 열기 */
+  const openCreateModal = () => {
+    openModal(modalData);
   };
-
-  /* 상세정보 보기 버튼*/
-  const openDetailInformationPopup = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
+  /* 상세정보 수정 모달 열기 */
+  const openEditModal = (event: React.MouseEvent<HTMLButtonElement>) => {
     const target = event.currentTarget.value;
-    setKeyValue(target);
-    setIsEditer(true);
+    openModal(editModalData);
   };
 
   // 탭메뉴 클릭시 페이지네이션 초기화
@@ -223,7 +235,7 @@ export function Member() {
         <Button
           height={'35px'}
           width={'130px'}
-          onClick={openRegisterPopup}
+          onClick={openCreateModal}
           fontSize="13px"
           $filled
           cursor
@@ -293,34 +305,44 @@ export function Member() {
                 id={list.userKey}
                 value={list.userKey}
                 checked={isChecked}
-                $margin={'0 5px 0 0'}
+                $margin={`0 5px 0 0`}
                 onChange={(e) => {
                   setIsChecked(!isChecked);
                 }}
               />
-              <span>{list.name} /</span>
-              <span>{list.id} /</span>
-              <span className="tag">{list.authorityName}</span>
-              <span>생성일</span>
-              <span>
-                활성화
-                {list.isUse ? (
-                  <Icon
-                    width={`15px`}
-                    src={`/images/icon/lock_open_${
-                      isChecked ? 'on' : 'off'
-                    }.svg`}
-                    disabled={true}
-                  />
-                ) : (
-                  <Icon
-                    width={`15px`}
-                    src={`/images/icon/lock_${isChecked ? 'on' : 'off'}.svg`}
-                    disabled={true}
-                  />
-                )}
-              </span>
-              <button>수정</button>
+              <ItemLayout>
+                <span>{list.name} </span>
+                <span>{list.id} </span>
+                <span>
+                  <span className="tag">{list.authorityName}</span>
+                </span>
+                <span>2023.11.06/20:20</span>
+              </ItemLayout>
+              {list.isUse ? (
+                <Icon
+                  width={`18px`}
+                  src={`/images/icon/lock_open_${isChecked ? 'on' : 'off'}.svg`}
+                  disabled={true}
+                />
+              ) : (
+                <Icon
+                  width={`18px`}
+                  src={`/images/icon/lock_${isChecked ? 'on' : 'off'}.svg`}
+                  disabled={true}
+                />
+              )}
+              <Button
+                width={`70px`}
+                height={`30px`}
+                fontSize={`13px`}
+                $padding={'0'}
+                $margin={`0 0 0 15px`}
+                cursor
+                $border
+                onClick={(e) => openEditModal(e)}
+              >
+                수정
+              </Button>
             </ListItem>
           ))}
         </List>
@@ -342,25 +364,8 @@ export function Member() {
         onClick={submitDisabled}
         onClose={closeSubmitAlert}
       ></Alert>
-      {isRegister ? (
-        <RegisterPopup
-          isRegister={isRegister}
-          setIsRegister={setIsRegister}
-          setIsSuccessAlertOpen={setIsSuccessAlertOpen}
-        />
-      ) : (
-        ''
-      )}
-      {isEditer ? (
-        <EditPopup
-          keyValue={keyValue}
-          isEditer={isEditer}
-          setIsEditer={setIsEditer}
-          setIsEditAlertOpen={setIsEditAlertOpen}
-        />
-      ) : (
-        ''
-      )}
+
+      <Modal />
     </Container>
   );
 }
@@ -402,4 +407,26 @@ const Total = styled.span`
 const CheckBoxWrap = styled.div`
   display: flex;
   align-items: center;
+`;
+const ItemLayout = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  > span {
+    display: flex;
+    flex: 1 0 0;
+    justify-content: space-around;
+    &::after {
+      content: '';
+      display: flex;
+      border-right: 1px solid ${COLOR.BORDER_GRAY};
+    }
+  }
+  /* .tag {
+    padding: 5px 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+    border-radius: 20px;
+  } */
 `;
