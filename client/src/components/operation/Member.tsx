@@ -6,18 +6,15 @@ import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance, userInstance } from '../../api/axios';
+import { userInstance } from '../../api/axios';
 // import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
-import { Button, AlertBar, CheckBoxI } from '../../components/atom';
-import { memberColWidth, memberTheadList } from '../../components/constants';
+import { Button, AlertBar, CheckBoxI, Icon } from '../../components/atom';
 import {
   Alert,
-  ContentList,
   PaginationBox,
   Search,
   TabMenu,
-  Table,
 } from '../../components/molecules';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { MemberTableType } from '../../types';
@@ -41,9 +38,13 @@ export function Member() {
   // console.log(memberList);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [isEnabled, setIsEnabled] = useState<boolean>(true);
+
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+
+  const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [isChecked, setIsChecked] = useState<boolean>(true);
+
   // 활성화/비활성화 버튼상태 토글
   const openSubmitAlert = () => {
     setIsAlertOpen(true);
@@ -230,8 +231,21 @@ export function Member() {
           + 아이디 만들기
         </Button>
       </TitleWrapper>
+
+      <TabMenu
+        length={3}
+        menu={menuList}
+        selected={tabVeiw}
+        width={'300px'}
+        setTabVeiw={setTabVeiw}
+        lineStyle
+        $margin={'10px 0'}
+        onClickTab={changeTab}
+      />
+
       <InputWrapper>
         <Total>Total : {memberListData?.data.data.pagination.totalCount}</Total>
+
         <Search
           value={searchValue}
           width={'25%'}
@@ -244,39 +258,7 @@ export function Member() {
           placeholder="이름, 권한 검색"
         />
       </InputWrapper>
-      <TableWrapper>
-        <ButtonWrapper>
-          <TabMenu
-            length={3}
-            menu={menuList}
-            selected={tabVeiw}
-            width={'300px'}
-            setTabVeiw={setTabVeiw}
-            lineStyle
-            $margin={'10px 0'}
-            onClickTab={changeTab}
-          />
-          <Button
-            height={'35px'}
-            width={'130px'}
-            onClick={openSubmitAlert}
-            fontSize="15px"
-            $filled
-            disabled={isEnabled}
-            cursor
-          >
-            비활성화
-          </Button>
-        </ButtonWrapper>
-        {/*TODO : 전체토탈 데이터로 변경 필요 */}
-        {/* <Table
-          list={memberList}
-          colWidth={memberColWidth}
-          theadList={memberTheadList}
-          btnOnClick={openDetailInformationPopup}
-          setIsEnabled={setIsEnabled}
-          setSelectedRows={setSelectedRows}
-        /> */}
+      <ButtonWrapper>
         <CheckBoxWrap>
           <CheckBoxI
             $margin={'0 5px 0 0'}
@@ -288,28 +270,62 @@ export function Member() {
           />
           <span className="title_top">전체선택</span>
         </CheckBoxWrap>
-        {memberListData && (
-          // <ContentList
-          //   list={memberListData?.data.data.list}
-          //   onClick={() => {}}
-          // />
-          <List>
-            {memberListData?.data.data.list.map((list: any) => (
-              <ListItem key={list.userKey as string} isChecked={false}>
-                <CheckBoxI
-                  id={list.userKey}
-                  value={list.userKey}
-                  checked={false}
-                  $margin={'0 5px 0 0'}
-                />
-                <span>{list.name} /</span>
-                <span>{list.id} /</span>
-                <span>{list.authorityName}</span>
-              </ListItem>
-            ))}
-          </List>
-        )}
-      </TableWrapper>
+        <Button
+          height={'35px'}
+          width={'130px'}
+          onClick={openSubmitAlert}
+          fontSize="15px"
+          $filled
+          disabled={isEnabled}
+          cursor
+          $margin="5px 0 0 0"
+        >
+          비활성화
+        </Button>
+      </ButtonWrapper>
+      {/* <ContentList list={[{ contentSeq: 0 }]} onClick={() => {}} /> */}
+
+      {memberListData && (
+        <List margin={`10px 0`}>
+          {memberListData?.data.data.list.map((list: any) => (
+            <ListItem key={list.userKey as string} isChecked={isChecked}>
+              <CheckBoxI
+                id={list.userKey}
+                value={list.userKey}
+                checked={isChecked}
+                $margin={'0 5px 0 0'}
+                onChange={(e) => {
+                  setIsChecked(!isChecked);
+                }}
+              />
+              <span>{list.name} /</span>
+              <span>{list.id} /</span>
+              <span className="tag">{list.authorityName}</span>
+              <span>생성일</span>
+              <span>
+                활성화
+                {list.isUse ? (
+                  <Icon
+                    width={`15px`}
+                    src={`/images/icon/lock_open_${
+                      isChecked ? 'on' : 'off'
+                    }.svg`}
+                    disabled={true}
+                  />
+                ) : (
+                  <Icon
+                    width={`15px`}
+                    src={`/images/icon/lock_${isChecked ? 'on' : 'off'}.svg`}
+                    disabled={true}
+                  />
+                )}
+              </span>
+              <button>수정</button>
+            </ListItem>
+          ))}
+        </List>
+      )}
+
       {memberListData?.data.data.pagination && (
         <PaginationBox
           itemsCountPerPage={
@@ -362,31 +378,28 @@ const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
 `;
-const InputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 10px;
-`;
+
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 5px;
 `;
-const TableWrapper = styled.div`
-  min-height: 580px;
-  padding-bottom: 30px;
-  //border-top: 1px solid ${COLOR.SECONDARY};
+
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
 `;
 const Total = styled.span`
   text-align: right;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: bold;
   color: ${COLOR.FONT_BLACK};
   padding-bottom: 5px;
 `;
 const CheckBoxWrap = styled.div`
   display: flex;
-  margin-top: 10px;
+  align-items: center;
 `;
