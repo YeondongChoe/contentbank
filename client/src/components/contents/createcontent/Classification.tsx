@@ -93,7 +93,7 @@ export function Classification() {
                 // checked={true}
                 id={'all check'}
                 value={'all check'}
-              ></CheckBoxI>
+              />
               <span className="title_top">전체선택</span>
             </Title>
             <ListWrap>
@@ -118,7 +118,7 @@ export function Classification() {
                         }
                         id={dragItem.id}
                         value={dragItem.id}
-                      ></CheckBoxI>
+                      />
                       <span className="title_id">{dragItem.id}</span>
                     </p>
                     <p className="sub_title">{dragItem.text}</p>

@@ -70,24 +70,28 @@ const Component = styled.div<SearchStyleProps>`
   background: #fff;
   border-radius: 5px;
   border: 1px solid ${COLOR.LIGHT_GRAY};
+  overflow: hidden;
+  position: relative;
 
   input {
     display: flex;
-    flex: 1 0 auto;
+    flex: 1 0 0;
     font-size: 14px;
     padding: 6px;
     padding-left: 12px;
     padding-right: 0px;
     border-radius: 0px;
     border: none;
-    background-color: transparent;
+    background-color: white;
   }
 
   button {
+    position: absolute;
+    right: 0;
     width: 30px;
     height: 30px;
     border: none;
-    background-color: transparent;
+    background-color: white;
     cursor: pointer;
   }
 `;

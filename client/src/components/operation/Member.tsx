@@ -234,7 +234,7 @@ export function Member() {
         <Total>Total : {memberListData?.data.data.pagination.totalCount}</Total>
         <Search
           value={searchValue}
-          width={'calc(100% - 60%)'}
+          width={'25%'}
           height="40px"
           onClick={() => filterSearchValue()}
           onKeyDown={(e) => filterSearchValueEnter(e)}
@@ -277,6 +277,17 @@ export function Member() {
           setIsEnabled={setIsEnabled}
           setSelectedRows={setSelectedRows}
         /> */}
+        <CheckBoxWrap>
+          <CheckBoxI
+            $margin={'0 5px 0 0'}
+            // onChange={(e) => handleAllCheck(e)}
+            // checked={checkList.length === questionList.length ? true : false}
+            checked={false}
+            id={'all check'}
+            value={'all check'}
+          />
+          <span className="title_top">전체선택</span>
+        </CheckBoxWrap>
         {memberListData && (
           // <ContentList
           //   list={memberListData?.data.data.list}
@@ -286,8 +297,8 @@ export function Member() {
             {memberListData?.data.data.list.map((list: any) => (
               <ListItem key={list.userKey as string} isChecked={false}>
                 <CheckBoxI
-                  id={''}
-                  value={undefined}
+                  id={list.userKey}
+                  value={list.userKey}
                   checked={false}
                   $margin={'0 5px 0 0'}
                 />
@@ -374,4 +385,8 @@ const Total = styled.span`
   font-weight: bold;
   color: ${COLOR.FONT_BLACK};
   padding-bottom: 5px;
+`;
+const CheckBoxWrap = styled.div`
+  display: flex;
+  margin-top: 10px;
 `;
