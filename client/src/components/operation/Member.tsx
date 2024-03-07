@@ -345,7 +345,11 @@ export function Member() {
                 <Icon
                   width={`18px`}
                   src={`/images/icon/lock_open_${
-                    checkList.includes(list.userKey) ? 'on' : 'off'
+                    checkList.length
+                      ? checkList.includes(list.userKey)
+                        ? 'on'
+                        : 'off'
+                      : 'off'
                   }.svg`}
                   disabled={true}
                 />
@@ -353,7 +357,11 @@ export function Member() {
                 <Icon
                   width={`18px`}
                   src={`/images/icon/lock_${
-                    checkList.includes(list.userKey) ? 'on' : 'off'
+                    checkList.length
+                      ? checkList.includes(list.userKey)
+                        ? 'on'
+                        : 'off'
+                      : 'off'
                   }.svg`}
                   disabled={true}
                 />
