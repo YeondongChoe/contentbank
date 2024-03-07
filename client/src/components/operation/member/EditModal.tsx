@@ -10,14 +10,7 @@ import {
 import styled from 'styled-components';
 
 import { Input, Label, AlertBar } from '../..';
-import {
-  getIndividualMemberInformation,
-  getAuthorityList,
-} from '../../../api/getAxios';
-import {
-  putChangeMemberInformation,
-  putInitPassword,
-} from '../../../api/putAxios';
+// import {} from '../../../api/axios';
 import { useModal } from '../../../hooks';
 import { Button } from '../../atom';
 import { Select } from '../../atom/select';
@@ -165,6 +158,9 @@ export function EditModal() {
     setValue,
   ]);
 
+  // 라디오 버튼 설정
+  const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {};
+
   return (
     <Container>
       <AlertBar
@@ -173,22 +169,14 @@ export function EditModal() {
         closeAlert={closeSuccessAlert}
         message={'정상 처리되었습니다.'}
       ></AlertBar>
-      <TitleWrapper>
-        <Title>회원 정보 상세보기</Title>
-      </TitleWrapper>
+
+      <Title>회원 정보 상세보기</Title>
+
       <form>
         <ContentBox>
           <InputWrapper>
-            {isNameError ? (
-              <Label
-                width="130px"
-                type="error"
-                fontSize="15px"
-                value="* 이름"
-              />
-            ) : (
-              <Label width="130px" fontSize="15px" value="* 이름" />
-            )}
+            <Label width="130px" fontSize="15px" value="* 이름" />
+
             <Controller
               control={control}
               name="name"
@@ -198,8 +186,8 @@ export function EditModal() {
                   type="text"
                   placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                   value={field.value}
-                  width="450px"
                   height="38px"
+                  width="100%"
                   fontSize="16px"
                   placeholderSize="12px"
                   margin="0px 0px 10px 0px"
@@ -214,48 +202,51 @@ export function EditModal() {
           </InputWrapper>
           <InputWrapper>
             <Label width="130px" fontSize="15px" value="* 아이디" />
-            <Controller
-              control={control}
-              name="id"
-              defaultValue=""
-              render={({ field }) => (
-                <Input
-                  disabled
-                  type="text"
-                  value={field.value}
-                  width="310px"
-                  height="38px"
-                  fontSize="16px"
-                  margin="0px 0px 10px 0px"
-                  border="black"
-                  onChange={field.onChange}
-                />
-              )}
-            />
-            <InitButtonWrapper>
+            <ButtonWrapper>
+              <Controller
+                control={control}
+                name="id"
+                defaultValue=""
+                render={({ field }) => (
+                  <Input
+                    disabled
+                    type="text"
+                    value={field.value}
+                    width={`100%`}
+                    height="38px"
+                    fontSize="16px"
+                    margin="0px 0px 10px 0px"
+                    border="black"
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+
               <Button
                 buttonType="button"
+                $margin={'0 0 0 10px'}
+                width={`130px`}
                 onClick={openInitPasswordAlert}
-                $padding="10px"
+                $padding={'8px'}
                 height={'38px'}
-                width={'130px'}
                 fontSize="15px"
-                $borderRadius="7px"
                 $filled
+                cursor
               >
                 <span>비밀번호 초기화</span>
               </Button>
-            </InitButtonWrapper>
+            </ButtonWrapper>
           </InputWrapper>
-          <SelectWrapper>
+          <InputWrapper>
             <Label width="130px" fontSize="15px" value="* 권한" />
-            <DisableWrapper>
-              <Controller
-                control={control}
-                name="authority"
-                render={({ field }) => (
+
+            <Controller
+              control={control}
+              name="authority"
+              render={({ field }) => (
+                <SelectWrapper>
                   <Select
-                    width="360px"
+                    width="100%"
                     height="50px"
                     padding="5px 0px 0px 0px"
                     defaultValue={member.authority}
@@ -264,28 +255,21 @@ export function EditModal() {
                     }}
                     options={AuthorityOption}
                   ></Select>
-                )}
-              />
-              {isEnabled ? (
-                <CheckBoxWrapper>
-                  <MdCheckBoxOutlineBlank
-                    style={{ width: '20px', height: '20px' }}
-                    onClick={checkEnabled}
-                  />
-                  <span>비활성화</span>
-                </CheckBoxWrapper>
-              ) : (
-                <CheckBoxWrapper>
-                  <MdIndeterminateCheckBox
-                    style={{ width: '20px', height: '20px' }}
-                    onClick={checkEnabled}
-                  />
-                  <span>비활성화</span>
-                </CheckBoxWrapper>
+                </SelectWrapper>
               )}
-            </DisableWrapper>
-          </SelectWrapper>
-          <TextareaWrapper>
+            />
+          </InputWrapper>
+          <InputWrapper>
+            <Label width="130px" fontSize="15px" value="* 활성화" />
+
+            <ButtonWrapper>
+              <Button width={'calc(50% - 5px)'} $margin={'0 10px 0 0'}>
+                활성화
+              </Button>
+              <Button width={'calc(50% - 5px)'}>비활성화</Button>
+            </ButtonWrapper>
+          </InputWrapper>
+          <InputWrapper>
             <Label width="130px" fontSize="15px" value="비고" />
             <Controller
               control={control}
@@ -298,7 +282,7 @@ export function EditModal() {
                 ></Textarea>
               )}
             />
-          </TextareaWrapper>
+          </InputWrapper>
           <NoticeWarpper>
             <Notice>
               초기 비밀번호는
@@ -325,7 +309,6 @@ export function EditModal() {
               onClick={closePopup}
               $padding="10px"
               height={'40px'}
-              width={'120px'}
               fontSize="16px"
               $border
               cursor
@@ -337,7 +320,6 @@ export function EditModal() {
               onClick={submitEdit}
               $padding="10px"
               height={'40px'}
-              width={'120px'}
               fontSize="16px"
               $filled
               cursor
@@ -360,22 +342,18 @@ export function EditModal() {
 }
 
 const Container = styled.div`
-  min-width: 700px;
-  height: 700px;
+  max-width: 700px;
+  min-width: 600px;
   padding: 30px;
 `;
 
-const TitleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding-bottom: 20px;
-`;
-
-const Title = styled.div`
+const Title = styled.strong`
   font-size: 22px;
-  display: flex;
-  justify-content: center;
-  flex: 1 0 0;
+  width: 100%;
+  display: block;
+  font-weight: normal;
+  text-align: center;
+  padding-bottom: 20px;
 `;
 const ContentBox = styled.div`
   display: flex;
@@ -383,46 +361,33 @@ const ContentBox = styled.div`
   align-items: center;
 `;
 const InputWrapper = styled.div`
-  width: 680px;
-  height: 84px;
+  width: calc(100% - 30px);
+  padding: 10px 0;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+
+  div:has(input) {
+    width: calc(100% - 130px);
+  }
 `;
 const SelectWrapper = styled.div`
-  width: 680px;
-  height: 100px;
-  display: flex;
-  justify-content: center;
+  width: calc(100% - 130px);
+  padding: 10px 0;
 `;
-const InitButtonWrapper = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
-  padding-left: 10px;
+  width: calc(100% - 130px);
+  flex-direction: row;
 `;
-const DisableWrapper = styled.div`
-  min-width: 450px;
-  display: flex;
-`;
-const CheckBoxWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  height: 64px;
-  gap: 5px;
-  font-size: 14px;
-`;
-const TextareaWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 680px;
-  height: 200px;
-`;
+
 const Textarea = styled.textarea`
-  width: 450px;
-  height: 180px;
+  width: calc(100% - 130px);
+  height: 100px;
   font-size: 14px;
   border: 1px solid ${COLOR.BORDER_GRAY};
   padding: 10px;
   resize: none;
+  margin-bottom: 10px;
 `;
 const NoticeWarpper = styled.div`
   width: 100%;
@@ -440,5 +405,6 @@ const Notice = styled.div`
 `;
 const ButtonGroup = styled.div`
   display: flex;
+  width: 100%;
   gap: 10px;
 `;

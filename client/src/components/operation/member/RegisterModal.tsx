@@ -296,7 +296,6 @@ export function RegisterModal() {
             onClick={closePopup}
             $padding="10px"
             height={'40px'}
-            width={'120px'}
             fontSize="16px"
             $border
             cursor
@@ -308,7 +307,6 @@ export function RegisterModal() {
             onClick={submitRegister}
             $padding="10px"
             height={'40px'}
-            width={'120px'}
             fontSize="16px"
             $filled
             cursor
@@ -322,8 +320,7 @@ export function RegisterModal() {
 }
 
 const Container = styled.div`
-  min-width: 700px;
-  height: 700px;
+  max-width: 700px;
   padding: 30px;
 `;
 const TitleWrapper = styled.div`
@@ -352,7 +349,7 @@ const InputBox = styled.div``;
 const SelectWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100px;
+  padding: 10px 0;
 `;
 const SelectBox = styled.div`
   display: flex;
@@ -400,5 +397,6 @@ const Notice = styled.div`
 `;
 const ButtonGroup = styled.div`
   display: flex;
+  width: 100%;
   gap: 10px;
 `;

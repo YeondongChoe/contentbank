@@ -37,6 +37,7 @@ export function App() {
           if (error.toString().includes('50')) {
             return true; //50...으로 시작한 에러일시 재요청o(failureCount 최대4)
           }
+          return false;
         }, // 실패시 재요청(기본3번): bool | number | (failureCount, error) => {}
         /* 설정은 각 페이지 useQuery에서도 각기 셋팅가능 */
         // refetchInterval: 1000, 1초마다 데이터 refetch

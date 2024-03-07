@@ -44,13 +44,10 @@ export function Member() {
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
 
+  const [searchValue, setSearchValue] = useState<string>('');
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [searchValue, setSearchValue] = useState<string>('');
-
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
-  const [isChecked, setIsChecked] = useState<boolean>(true);
 
   const modalData = {
     title: '',
@@ -72,7 +69,7 @@ export function Member() {
     openModal(editModalData);
   };
 
-  // 활성화/비활성화 버튼상태 토글
+  /* 활성화/비활성화 확인 얼럿 */
   const openSubmitAlert = () => {
     setIsAlertOpen(true);
   };
@@ -81,10 +78,10 @@ export function Member() {
   };
   // 활성화/비활성화 데이터 전송
   const submitDisabled = () => {
-    putDisableMember({
-      selectedRows,
-      setIsEnabled,
-    });
+    // putDisableMember({
+    //   selectedRows,
+    //   setIsEnabled,
+    // });
     setIsAlertOpen(false);
   };
   /* 안내 알럿 */
@@ -106,6 +103,7 @@ export function Member() {
     //   page,
     //   size,
     // });
+    // 쿼리 스트링 변경 로직
     setSearchValue('');
   };
   const filterSearchValueEnter = (
@@ -124,6 +122,7 @@ export function Member() {
   };
 
   // 탭메뉴 클릭시 페이지네이션 초기화
+  //              && 리스트 데이터 전송값 변경
   const changeTab = () => {
     setPage(1);
   };
@@ -170,16 +169,27 @@ export function Member() {
       setCheckList(checkList.filter((el) => el !== id));
     }
   };
+  // 활성화 버튼
   useEffect(() => {
+    if (!checkList.length) {
+      setIsEnabled(true);
+    } else {
+      setIsEnabled(false);
+    }
+  }, [checkList]);
+
+  useEffect(() => {
+    // 데이터 바뀔시 초기화
     setCheckList([]);
+    setSearchValue('');
   }, [memberListData]);
 
   useEffect(() => {
     // loadData();
-
+    console.log('memberListData', memberListData);
     setTotalPage(memberListData?.data.data.pagination.endPage);
   }, []);
-  console.log('memberListData', memberListData);
+
   const menuList = [
     {
       label: '전체',
@@ -286,9 +296,7 @@ export function Member() {
           {memberListData?.data.data.list.map((list: any) => (
             <ListItem
               key={list.userKey as string}
-              isChecked={
-                checkList.includes(list.userKey as string) ? true : false
-              }
+              isChecked={checkList.includes(list.userKey) ? true : false}
             >
               <CheckBoxI
                 id={list.userKey}
@@ -297,9 +305,7 @@ export function Member() {
                 onChange={(e) =>
                   handleSingleCheck(e.target.checked, list.userKey)
                 }
-                checked={
-                  checkList.includes(list.userKey as string) ? true : false
-                }
+                checked={checkList.includes(list.userKey) ? true : false}
               />
               <ItemLayout>
                 <span>{list.name} </span>
@@ -312,18 +318,22 @@ export function Member() {
               {list.isUse ? (
                 <Icon
                   width={`18px`}
-                  src={`/images/icon/lock_open_${isChecked ? 'on' : 'off'}.svg`}
+                  src={`/images/icon/lock_open_${
+                    checkList.length ? 'on' : 'off'
+                  }.svg`}
                   disabled={true}
                 />
               ) : (
                 <Icon
                   width={`18px`}
-                  src={`/images/icon/lock_${isChecked ? 'on' : 'off'}.svg`}
+                  src={`/images/icon/lock_${
+                    checkList.length ? 'on' : 'off'
+                  }.svg`}
                   disabled={true}
                 />
               )}
               <Button
-                width={`70px`}
+                width={`100px`}
                 height={`30px`}
                 fontSize={`13px`}
                 $padding={'0'}
@@ -332,7 +342,7 @@ export function Member() {
                 $border
                 onClick={(e) => openEditModal(e)}
               >
-                수정
+                상세 수정
               </Button>
             </ListItem>
           ))}
@@ -351,7 +361,7 @@ export function Member() {
       )}
       <Alert
         isAlertOpen={isAlertOpen}
-        description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
+        description={`비활성화 처리 시 ${checkList.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
         action="확인"
         isWarning={true}
         onClick={submitDisabled}
