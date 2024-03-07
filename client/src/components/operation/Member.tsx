@@ -9,7 +9,13 @@ import styled from 'styled-components';
 import { userInstance } from '../../api/axios';
 // import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
-import { Button, AlertBar, CheckBoxI, Icon } from '../../components/atom';
+import {
+  Button,
+  AlertBar,
+  CheckBoxI,
+  Icon,
+  ValueNone,
+} from '../../components/atom';
 import {
   Alert,
   Modal,
@@ -31,18 +37,15 @@ export function Member() {
   const { openModal } = useModal();
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
 
-  const [isEditer, setIsEditer] = useState(false);
   const [keyValue, setKeyValue] = useState('');
   const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;
   const [didMount, setDidMount] = useState(false);
   const [memberList, setMemberList] = useState<MemberTableType[]>([]);
-  const [checkedList, setCheckedList] = useState<number[]>([]);
-  // console.log(memberList);
 
+  const [checkList, setCheckList] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
 
@@ -54,11 +57,19 @@ export function Member() {
     content: <RegisterModal />,
     callback: () => {},
   };
-
   const editModalData = {
     title: '',
     content: <EditModal />,
     callback: () => {},
+  };
+  /* 아이디 만들기 모달 열기 */
+  const openCreateModal = () => {
+    openModal(modalData);
+  };
+  /* 상세정보 수정 모달 열기 */
+  const openEditModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const target = event.currentTarget.value;
+    openModal(editModalData);
   };
 
   // 활성화/비활성화 버튼상태 토글
@@ -75,6 +86,15 @@ export function Member() {
       setIsEnabled,
     });
     setIsAlertOpen(false);
+  };
+  /* 안내 알럿 */
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+  };
+  const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
+  const closeEditAlert = () => {
+    setIsEditAlertOpen(false);
   };
 
   // 검색 기능 함수
@@ -103,57 +123,12 @@ export function Member() {
     }
   };
 
-  /* 아이디 만들기 모달 열기 */
-  const openCreateModal = () => {
-    openModal(modalData);
-  };
-  /* 상세정보 수정 모달 열기 */
-  const openEditModal = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const target = event.currentTarget.value;
-    openModal(editModalData);
-  };
-
   // 탭메뉴 클릭시 페이지네이션 초기화
   const changeTab = () => {
     setPage(1);
   };
 
-  const loadData = () => {
-    const enabled =
-      tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
-
-    console.log('loadData');
-
-    // isFetching && setMemberList(data?.data.content);
-    // isFetching && setTotalPage(data?.data.data.totalElements);
-
-    if (tabVeiw === '전체') {
-      // getMemberList({
-      //   setMemberList,
-      //   setTotalPage,
-      //   page,
-      //   size,
-      // });
-    } else {
-      // getMemberList({
-      //   setMemberList,
-      //   setTotalPage,
-      //   page,
-      //   size,
-      //   enabled,
-      // });
-    }
-  };
-
   const getUserList = async () => {
-    console.log(
-      `유저리스트 호출시 쿠키 여부`,
-      getAuthorityCookie('accessToken'),
-    );
-    console.log(
-      `유저리스트 호출시 쿠키 여부 sessionId`,
-      getAuthorityCookie('sessionId'),
-    );
     const res = await userInstance.get(
       `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${10}`,
     );
@@ -175,20 +150,36 @@ export function Member() {
     },
   });
 
+  // 체크박스 설정
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.checked);
+    if (e.target.checked) {
+      setCheckList(
+        memberListData?.data.data.list.map(
+          (item: any) => item.userKey as string,
+        ),
+      );
+    } else {
+      setCheckList([]);
+    }
+  };
+  const handleSingleCheck = (checked: boolean, id: string) => {
+    if (checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
+    }
+  };
+  useEffect(() => {
+    setCheckList([]);
+  }, [memberListData]);
+
   useEffect(() => {
     // loadData();
-    console.log('memberListData', memberListData);
-    setDidMount(true);
 
     setTotalPage(memberListData?.data.data.pagination.endPage);
   }, []);
-
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount]);
-
+  console.log('memberListData', memberListData);
   const menuList = [
     {
       label: '전체',
@@ -203,18 +194,6 @@ export function Member() {
       value: '비활성화',
     },
   ];
-
-  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
-
-  const closeSuccessAlert = () => {
-    setIsSuccessAlertOpen(false);
-  };
-
-  const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
-
-  const closeEditAlert = () => {
-    setIsEditAlertOpen(false);
-  };
 
   return (
     <Container>
@@ -256,7 +235,10 @@ export function Member() {
       />
 
       <InputWrapper>
-        <Total>Total : {memberListData?.data.data.pagination.totalCount}</Total>
+        <Total>
+          Total :
+          {memberListData ? memberListData.data.data.pagination.totalCount : 0}
+        </Total>
 
         <Search
           value={searchValue}
@@ -274,9 +256,12 @@ export function Member() {
         <CheckBoxWrap>
           <CheckBoxI
             $margin={'0 5px 0 0'}
-            // onChange={(e) => handleAllCheck(e)}
-            // checked={checkList.length === questionList.length ? true : false}
-            checked={false}
+            onChange={(e) => handleAllCheck(e)}
+            checked={
+              checkList.length === memberListData?.data.data.list.length
+                ? true
+                : false
+            }
             id={'all check'}
             value={'all check'}
           />
@@ -295,20 +280,26 @@ export function Member() {
           비활성화
         </Button>
       </ButtonWrapper>
-      {/* <ContentList list={[{ contentSeq: 0 }]} onClick={() => {}} /> */}
 
-      {memberListData && (
+      {memberListData?.data.data.list.length ? (
         <List margin={`10px 0`}>
           {memberListData?.data.data.list.map((list: any) => (
-            <ListItem key={list.userKey as string} isChecked={isChecked}>
+            <ListItem
+              key={list.userKey as string}
+              isChecked={
+                checkList.includes(list.userKey as string) ? true : false
+              }
+            >
               <CheckBoxI
                 id={list.userKey}
                 value={list.userKey}
-                checked={isChecked}
                 $margin={`0 5px 0 0`}
-                onChange={(e) => {
-                  setIsChecked(!isChecked);
-                }}
+                onChange={(e) =>
+                  handleSingleCheck(e.target.checked, list.userKey)
+                }
+                checked={
+                  checkList.includes(list.userKey as string) ? true : false
+                }
               />
               <ItemLayout>
                 <span>{list.name} </span>
@@ -346,6 +337,8 @@ export function Member() {
             </ListItem>
           ))}
         </List>
+      ) : (
+        <ValueNone />
       )}
 
       {memberListData?.data.data.pagination && (

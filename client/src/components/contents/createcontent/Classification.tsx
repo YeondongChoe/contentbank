@@ -33,17 +33,16 @@ export function Classification() {
   };
 
   const submitSave = async () => {
-    // 체크박스 체크후 분류 항목체크시 전송
+    //TODO :  체크박스 체크후 분류 항목체크시 전송
   };
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.className, e.target.value);
-
-    console.log(
-      e.target.parentElement?.parentElement?.parentElement?.previousSibling
-        ?.textContent,
-    );
+    // console.log(e.target.className, e.target.value);
+    // console.log(
+    //   e.target.parentElement?.parentElement?.parentElement?.previousSibling
+    //     ?.textContent,
+    // );
     const titleValue =
       e.target.parentElement?.parentElement?.parentElement?.previousSibling
         ?.textContent;
