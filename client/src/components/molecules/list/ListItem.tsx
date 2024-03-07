@@ -5,7 +5,6 @@ import { styled } from 'styled-components';
 import { COLOR } from '../../constants';
 
 type ListItemProps = {
-  // onClick: () => void;
   // onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;
   // onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   width?: string;
@@ -14,6 +13,7 @@ type ListItemProps = {
   children: JSX.Element | JSX.Element[];
   key?: string | number;
   isChecked: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 export function ListItem({
@@ -23,6 +23,7 @@ export function ListItem({
   children,
   key,
   isChecked,
+  onClick,
 }: ListItemProps) {
   return (
     <Component
@@ -32,7 +33,9 @@ export function ListItem({
       $margin={margin}
       key={key}
     >
-      <Wrapper className={`${isChecked && 'on'}`}>{children}</Wrapper>
+      <Wrapper className={`${isChecked && 'on'}`} onClick={onClick}>
+        {children}
+      </Wrapper>
     </Component>
   );
 }
@@ -68,6 +71,7 @@ const Wrapper = styled.button`
   border: none;
   background-color: white;
   color: ${COLOR.FONT_BLACK};
+  cursor: pointer;
 
   &.on {
     background-color: ${COLOR.SECONDARY};

@@ -22,7 +22,7 @@ export function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  //전역 쿼리캐싱
+  //전역 쿼리
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {

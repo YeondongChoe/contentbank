@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -36,6 +36,7 @@ import { RegisterModal } from './member/RegisterModal';
 export function Member() {
   const { openModal } = useModal();
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
+  const backgroundRef = useRef<HTMLDivElement>(null);
 
   const [keyValue, setKeyValue] = useState('');
   const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
@@ -61,11 +62,18 @@ export function Member() {
   };
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
+    console.log('dufflsgn ', checkList);
     openModal(modalData);
   };
   /* 상세정보 수정 모달 열기 */
   const openEditModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
     const target = event.currentTarget.value;
+    console.log('target  ', target);
     openModal(editModalData);
   };
 
@@ -162,13 +170,23 @@ export function Member() {
       setCheckList([]);
     }
   };
-  const handleSingleCheck = (checked: boolean, id: string) => {
-    if (checked) {
+  const handleButtonCheck = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+  ) => {
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+    if (!target.checked) {
       setCheckList((prev) => [...prev, id]);
     } else {
       setCheckList(checkList.filter((el) => el !== id));
     }
   };
+  // 체크상태 useMemo
+  // const checkValue = useMemo(() => {
+  //   return false;
+  // }, [checkList]);
+
   // 활성화 버튼
   useEffect(() => {
     if (!checkList.length) {
@@ -205,8 +223,18 @@ export function Member() {
     },
   ];
 
+  // 배경 클릭시 체크리스트 초기화
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      console.log('click', e.target?.toString().includes('Div'));
+      if (e.target?.toString().includes('Div')) setCheckList([]);
+    };
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [backgroundRef]);
+
   return (
-    <Container>
+    <Container ref={backgroundRef}>
       <AlertBar
         type="success"
         isAlertOpen={isSuccessAlertOpen}
@@ -296,16 +324,14 @@ export function Member() {
           {memberListData?.data.data.list.map((list: any) => (
             <ListItem
               key={list.userKey as string}
-              isChecked={checkList.includes(list.userKey) ? true : false}
+              isChecked={checkList.includes(list.userKey)}
+              onClick={(e) => handleButtonCheck(e, list.userKey)}
             >
               <CheckBoxI
                 id={list.userKey}
                 value={list.userKey}
                 $margin={`0 5px 0 0`}
-                onChange={(e) =>
-                  handleSingleCheck(e.target.checked, list.userKey)
-                }
-                checked={checkList.includes(list.userKey) ? true : false}
+                checked={checkList.includes(list.userKey)}
               />
               <ItemLayout>
                 <span>{list.name} </span>
@@ -313,13 +339,13 @@ export function Member() {
                 <span>
                   <span className="tag">{list.authorityName}</span>
                 </span>
-                <span>2023.11.06/20:20</span>
+                <span>{list.createdAt}</span>
               </ItemLayout>
               {list.isUse ? (
                 <Icon
                   width={`18px`}
                   src={`/images/icon/lock_open_${
-                    checkList.length ? 'on' : 'off'
+                    checkList.includes(list.userKey) ? 'on' : 'off'
                   }.svg`}
                   disabled={true}
                 />
@@ -327,7 +353,7 @@ export function Member() {
                 <Icon
                   width={`18px`}
                   src={`/images/icon/lock_${
-                    checkList.length ? 'on' : 'off'
+                    checkList.includes(list.userKey) ? 'on' : 'off'
                   }.svg`}
                   disabled={true}
                 />
