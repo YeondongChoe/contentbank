@@ -2,9 +2,10 @@ import * as React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import styled from 'styled-components';
 
-import { handleAuthorizationRenewal, userInstance } from '../../api/axios';
+import { userInstance } from '../../api/axios';
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
 import {
@@ -88,19 +89,20 @@ export function Mypage() {
   });
   console.log('myInfoData', myInfoData);
 
-  // TODO : 이전 캐쉬 데이터 업데이트
-  // const { data, reset } = useMutation({
-  //   mutationFn: getMyInfo,
-  //   onSuccess: () =>
-  //     queryClient.invalidateQueries({ queryKey: ['get-myInfo'] }),
-  // });
-
+  // type NameDataType = {
+  //   code: string;
+  // };
   // 이름 수정 api
+
+  //TODO : 데이터 응답 코드별로 얼럿분기
   const saveName = async () => {
     const nameData = await userInstance.patch(
       `/v1/account/change-name`,
       nameValue,
     );
+    // .then((res) => {
+    //   console.log(res);
+    // });
 
     if (nameData.status == 200) {
       myInfoData &&
@@ -117,7 +119,6 @@ export function Mypage() {
 
       refetch();
     }
-    // console.log(nameData);
   };
 
   const submitName = () => {

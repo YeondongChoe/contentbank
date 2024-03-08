@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance, handleAuthorizationRenewal } from '../../api/axios';
+import { authInstance } from '../../api/axios';
 import {
   Input,
   Label,
@@ -58,28 +58,6 @@ export function Login() {
     return authInstance.post('/v1/auth/login', auth);
   };
 
-  // const getLogin = async () => {
-  //   const res = await authInstance.post('/v1/auth/login', {
-  //     username: 'test',
-  //     password: 'drmath@369',
-  //   });
-
-  //   return res;
-  // };
-  // const {
-  //   isLoading,
-  //   error,
-  //   data: getLoginData,
-  //   isFetching,
-  //   refetch,
-  // } = useQuery({
-  //   queryKey: ['get-myInfo'],
-  //   queryFn: getLogin,
-  //   meta: {
-  //     errorMessage: 'get-myInfo 에러 메세지',
-  //   },
-  // });
-
   const {
     data: loginPostData,
     mutate: onLogin,
@@ -93,13 +71,7 @@ export function Login() {
         type: 'error',
         text: context.response.data.message,
       });
-      console.log('loginPostData error', context.response.status);
-
-      // 401 인증되지 않음 = e-006
-      // if (context.response.data.code === 'E-006') {
-      //   // 토큰 만료시 갱신
-      //   handleAuthorizationRenewal(context.response.data.code);
-      // }
+      // console.log('loginPostData error', context.response.status);
     },
     onSuccess: (response: {
       data: {
@@ -130,8 +102,8 @@ export function Login() {
         secure: false,
       });
       // 프론트 전역에 데이터로저장
-      setAccessTokenAtom(response.data.data.accessToken);
-      setSessionIdAtom(response.data.data.sessionId);
+      // setAccessTokenAtom(response.data.data.accessToken);
+      // setSessionIdAtom(response.data.data.sessionId);
 
       // 아이디 저장 체크박스
       if (isClicked === true) {

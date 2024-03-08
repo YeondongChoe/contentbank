@@ -1,10 +1,6 @@
 import * as React from 'react';
 
-import {
-  questionInstance,
-  authInstance,
-  handleAuthorizationRenewal,
-} from './axios';
+import { questionInstance, authInstance } from './axios';
 
 type DeleteAuthorityProps = {
   setIsAlertOpen: (result: boolean) => void;

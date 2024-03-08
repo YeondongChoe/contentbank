@@ -5,11 +5,7 @@ import { AxiosError } from 'axios';
 import { openToastifyAlert } from '../components';
 import { setAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
-import {
-  questionInstance,
-  authInstance,
-  handleAuthorizationRenewal,
-} from './axios';
+import { questionInstance, authInstance } from './axios';
 
 /** 문항 파트 */
 

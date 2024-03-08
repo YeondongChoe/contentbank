@@ -11,6 +11,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { tokenInstance } from './api/axios';
 import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
@@ -18,27 +19,33 @@ import { accessTokenAtom } from './store/auth/accessToken';
 import { getAuthorityCookie, setAuthorityCookie } from './utils/cookies';
 
 export function App() {
-  const isAccessTokenAtom = useRecoilValue(accessTokenAtom);
+  // const isAccessTokenAtom = useRecoilValue(accessTokenAtom);
   const location = useLocation();
   const navigate = useNavigate();
 
-  //전역 쿼리
+  //전역 쿼리캐싱
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
         // 전역 쿼리 공통설정
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        retry: (failureCount: number, error: Error) => {
+        retry: (
+          failureCount: number,
+          error: { response: { data: { code: string } } },
+        ) => {
           console.log(`failureCount: ${failureCount} ${error}`);
-          if (error.toString().includes('40')) {
-            return false; // 40...으로 시작한 에러일시 재요청x
+          // 토큰만료시 리프레쉬요청 후 재요청
+          if (error.response.data.code === 'GE-002') {
+            return postRefreshToken();
           }
+
           if (error.toString().includes('50')) {
-            return true; //50...으로 시작한 에러일시 재요청o(failureCount 최대4)
+            return true; //50...으로 시작한 에러일시 재요청(failureCount 최대4)
           }
           return false;
         }, // 실패시 재요청(기본3번): bool | number | (failureCount, error) => {}
+
         /* 설정은 각 페이지 useQuery에서도 각기 셋팅가능 */
         // refetchInterval: 1000, 1초마다 데이터 refetch
         // refetchOnWindowFocus: false, 브라우져 화면 포커스시 리랜더링 여부 (기본 true)
@@ -49,13 +56,18 @@ export function App() {
     queryCache: new QueryCache({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      onError: (error: Error, query: { meta: { errorMessage: unknown } }) => {
-        // console.log(error.toString());
-        // 40...에러시 로그인 페이지로
-        if (error.toString().includes('40')) {
-          navigate('/login');
+      onError: (
+        error: { response: { data: { code: string } } },
+        query: { meta: { errorMessage: unknown } },
+      ) => {
+        console.log(`QueryCache :`, error);
+        // 잘못된 요청(유효하지않은 요청 GE-003, E-004) 일경우
+        // 케이스에 따라 얼럿으로 안내(공통)
+        console.log(error.response);
+        if (error.response.data.code === 'GE-003') {
+          console.log(error.response.data);
         }
-
+        // useQuery get 데이터 통신 후
         // 에러후 에러값이 있을시 토스트알럿에 표시
         if (query.meta && query.meta.errorMessage) {
           openToastifyAlert({
@@ -75,10 +87,41 @@ export function App() {
     }),
   });
 
+  //리프레쉬 토큰 요청 api
+  const postRefreshToken = async () => {
+    const refreshTokenData = await tokenInstance.post(`/v1/auth/refresh-token`);
+    // 재발급 성공시
+    if (refreshTokenData.data.code === 'S-001') {
+      setAuthorityCookie(
+        'accessToken',
+        refreshTokenData.data.data.accessToken,
+        {
+          path: '/',
+          sameSite: 'strict',
+          secure: false,
+        },
+      );
+
+      return 1;
+    }
+    // 리프레쉬 토큰 기간 만료시
+    if (refreshTokenData.data.code === 'GE-002') {
+      navigate('/login');
+      openToastifyAlert({
+        type: 'error',
+        text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
+      });
+      return false;
+    }
+
+    // console.log('refreshTokenData', refreshTokenData.data.data.accessToken);
+    // console.log('refreshTokenData code', refreshTokenData.data.code);
+  };
+
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
     if (!getAuthorityCookie('accessToken')) navigate('/login');
-  }, [getAuthorityCookie('accessToken'), isAccessTokenAtom]);
+  }, [getAuthorityCookie('accessToken')]);
 
   return (
     <>
