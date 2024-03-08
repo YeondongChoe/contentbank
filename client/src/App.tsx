@@ -57,24 +57,29 @@ export function App() {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       onError: (
-        error: { response: { data: { code: string } } },
+        context: { response: { data: { code: string; message: string } } },
         query: { meta: { errorMessage: unknown } },
       ) => {
-        console.log(`QueryCache :`, error);
+        console.log(`QueryCache :`, context);
         // 잘못된 요청(유효하지않은 요청 GE-003, E-004) 일경우
         // 케이스에 따라 얼럿으로 안내(공통)
-        console.log(error.response);
-        if (error.response.data.code === 'GE-003') {
-          console.log(error.response.data);
+        // console.log(error.response);
+        // if (context.response.data.code == 'GE-004') {
+        if (context.response.data.message == 'Login is required.') {
+          navigate('/login');
+          openToastifyAlert({
+            type: 'error',
+            text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
+          });
         }
         // useQuery get 데이터 통신 후
         // 에러후 에러값이 있을시 토스트알럿에 표시
         if (query.meta && query.meta.errorMessage) {
           openToastifyAlert({
             type: 'error',
-            text: `${query.meta.errorMessage}: ${error}`,
+            text: `${query.meta.errorMessage}: ${context}`,
           });
-          console.log(`${query.meta.errorMessage}: ${error}`);
+          console.log(`${query.meta.errorMessage}: ${context}`);
         }
       },
       onSuccess: (data: unknown, query: unknown) => {

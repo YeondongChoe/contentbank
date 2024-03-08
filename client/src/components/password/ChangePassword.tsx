@@ -127,7 +127,7 @@ export function ChangePassword({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response) => {
+    onSuccess: (response: { data: { message: any } }) => {
       console.log('passwordDataInit', response);
       openToastifyAlert({
         type: 'success',
@@ -176,7 +176,7 @@ export function ChangePassword({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response) => {
+    onSuccess: (response: { data: { message: string } }) => {
       // console.log('passwordData', response);
       openToastifyAlert({
         type: 'success',

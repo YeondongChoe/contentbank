@@ -60,7 +60,6 @@ export function Mypage() {
 
   // 마이페이지 데이터 불러오기 api
   const getMyInfo = async () => {
-    // error?.message.includes('401') && handleAuthorizationRenewal(error.message);
     // console.log(
     //   '마이페이지 데이터 불러오기 getAuthorityCookie ',
     //   getAuthorityCookie('accessToken'),
@@ -89,42 +88,40 @@ export function Mypage() {
   });
   console.log('myInfoData', myInfoData);
 
-  // type NameDataType = {
-  //   code: string;
-  // };
-  // 이름 수정 api
-
-  //TODO : 데이터 응답 코드별로 얼럿분기
+  // 이름 수정 api useMutate
   const saveName = async () => {
-    const nameData = await userInstance.patch(
-      `/v1/account/change-name`,
-      nameValue,
-    );
-    // .then((res) => {
-    //   console.log(res);
-    // });
+    await userInstance
+      .patch(`/v1/account/change-name`, nameValue)
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code == 'S-001') {
+          setIsNameEdit(false);
+          openToastifyAlert({
+            type: 'success',
+            text: `이름이 수정되었습니다.`,
+          });
+          myInfoData &&
+            setMember({
+              id: myInfoData.data.data.id,
+              name: nameValue,
+              authority: myInfoData.data.data.authority.name,
+            });
 
-    if (nameData.status == 200) {
-      myInfoData &&
-        setMember({
-          id: myInfoData.data.data.id,
-          name: nameValue,
-          authority: myInfoData.data.data.authority.name,
-        });
-      setIsNameEdit(false);
-      openToastifyAlert({
-        type: 'success',
-        text: `이름이 수정되었습니다.`,
+          refetch();
+        }
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        if (error.response.data.code == 'E-004') {
+          openToastifyAlert({
+            type: 'error',
+            text: `${error.response.data.data.name}`,
+          });
+        }
       });
-
-      refetch();
-    }
   };
 
   const submitName = () => {
-    // console.log(getAuthorityCookie('accessToken'));
-
-    // handleAuthorizationRenewal('');
     saveName();
   };
 
