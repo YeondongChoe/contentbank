@@ -27,7 +27,7 @@ type EditModalProps = {
   setIsEditAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function EditModal({ accountIdx }: { accountIdx: string }) {
+export function EditModal({ accountIdx }: { accountIdx: number }) {
   const { closeModal } = useModal();
   const [member, setMember] = useState({
     id: null,
@@ -117,15 +117,15 @@ export function EditModal({ accountIdx }: { accountIdx: string }) {
   useEffect(() => {
     const data = memberData && memberData.data.data;
     setMember({
-      id: data.id,
-      name: data.name,
-      key: data.userKey,
-      authority: data.authorityCode,
-      comment: data.note,
-      enabled: data.isLock,
-      authCode: data.roleCode,
+      id: data?.id,
+      name: data?.name,
+      key: data?.userKey,
+      authority: data?.authorityCode,
+      comment: data?.note,
+      enabled: data?.isLock,
+      authCode: data?.roleCode,
     });
-  }, []);
+  }, [isFetching]);
 
   useEffect(() => {
     if (member.name) {

@@ -39,21 +39,75 @@ export function Member() {
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
   const backgroundRef = useRef<HTMLDivElement>(null);
 
-  const [keyValue, setKeyValue] = useState('');
-  const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
-  const [page, setPage] = useRecoilState(pageAtom);
-  const [memberList, setMemberList] = useState<MemberType[]>([]);
-
-  const [searchValue, setSearchValue] = useState<string>('');
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
+
+  const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
+  const [page, setPage] = useRecoilState(pageAtom);
+  const [memberList, setMemberList] = useState<MemberType[]>([]);
+  const [searchValue, setSearchValue] = useState<string>('');
+
+  // 유저 리스트 불러오기 api
+  const getUserList = async () => {
+    const res = await userInstance.get(
+      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}
+			`,
+      // &isUseFilter=${''}
+    );
+    console.log(`유저리스트 get 결과값`, res);
+    return res;
+  };
+  const {
+    isLoading,
+    error,
+    data: memberListData,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['get-memberlist'],
+    queryFn: getUserList,
+    meta: {
+      errorMessage: 'get-memberlist 에러 메세지',
+    },
+  });
+
+  // 데이터 받아온후 셋팅
+  useEffect(() => {
+    // console.log(
+    //   'memberListData?.data.data.pagination.currentPage',
+    //   memberListData?.data.data.pagination.totalBlockCount,
+
+    setTotalPage(memberListData?.data.data.pagination.totalBlockCount);
+    // console.log(page, pageIndex);
+    // console.log(totalPage, totalPage);
+    // setTotalPage(10);
+  }, [isFetching]);
+  // 페이지 변경시 리랜더링
+  useEffect(() => {
+    console.log(page, memberListData);
+
+    refetch();
+  }, [page]);
+
+  // 검색 기능 함수
+  const filterSearchValue = () => {
+    // 쿼리 스트링 변경 로직
+    setSearchValue('');
+  };
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === 'Enter') {
+      setSearchValue('');
+    }
+  };
 
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
-    console.log('dufflsgn ', checkList);
+    // console.log('dufflsgn ', checkList);
     openModal({
       title: '',
       content: <RegisterModal />,
@@ -63,16 +117,23 @@ export function Member() {
   /* 상세정보 수정 모달 열기 */
   const openEditModal = (
     event: React.MouseEvent<HTMLButtonElement>,
-    accountIdx: string,
+    accountIdx: number,
   ) => {
     event.stopPropagation();
+    console.log(accountIdx, 'accountIdx');
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
+    // getUser(accountIdx);
     openModal({
       title: '',
       content: <EditModal accountIdx={accountIdx} />,
     });
   };
+  // const getUser = async (accountIdx: number) => {
+  //   const res = await userInstance.get(`/v1/account/${accountIdx}`);
+  //   console.log(`accountIdx get 결과값`, res);
+  //   return res;
+  // };
 
   /* 활성화/비활성화 확인 얼럿 */
   const openSubmitAlert = () => {
@@ -115,54 +176,6 @@ export function Member() {
   const closeEditAlert = () => {
     setIsEditAlertOpen(false);
   };
-
-  // 검색 기능 함수
-  const filterSearchValue = () => {
-    // getMemberList({
-    //   setMemberList,
-    //   setTotalPage,
-    //   searchValue,
-    //   page,
-    //   size,
-    // });
-    // 쿼리 스트링 변경 로직
-    setSearchValue('');
-  };
-  const filterSearchValueEnter = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === 'Enter') {
-      // getMemberList({
-      //   setMemberList,
-      //   setTotalPage,
-      //   searchValue,
-      //   page,
-      //   size,
-      // });
-      setSearchValue('');
-    }
-  };
-
-  // 유저 리스트 불러오기 api
-  const getUserList = async () => {
-    const res = await userInstance.get(
-      `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${10}`,
-    );
-    console.log(`유저리스트 get 결과값`, res);
-    return res;
-  };
-  const {
-    isLoading,
-    error,
-    data: memberListData,
-    isFetching,
-  } = useQuery({
-    queryKey: ['get-memberlist'],
-    queryFn: getUserList,
-    meta: {
-      errorMessage: 'get-memberlist 에러 메세지',
-    },
-  });
 
   // 탭메뉴 클릭시 페이지네이션 초기화
   //              && 리스트 데이터 전송값 변경
@@ -210,12 +223,6 @@ export function Member() {
     setCheckList([]);
     setSearchValue('');
   }, [memberListData]);
-
-  useEffect(() => {
-    // loadData();
-    console.log('memberListData', memberListData);
-    setTotalPage(memberListData?.data.data.pagination.endPage);
-  }, []);
 
   const menuList = [
     {
@@ -395,12 +402,7 @@ export function Member() {
       )}
 
       {memberListData?.data.data.pagination && (
-        <PaginationBox
-          itemsCountPerPage={
-            memberListData?.data.data.pagination.totalBlockCount
-          }
-          totalItemsCount={memberListData?.data.data.pagination.pageUnit}
-        />
+        <PaginationBox itemsCountPerPage={page} totalItemsCount={totalPage} />
       )}
       <Alert
         isAlertOpen={isAlertOpen}
@@ -464,6 +466,7 @@ const ItemLayout = styled.div`
     display: flex;
     flex: 1 0 0;
     justify-content: space-around;
+    flex-wrap: wrap;
     &::after {
       content: '';
       display: flex;

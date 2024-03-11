@@ -42,7 +42,7 @@ export function App() {
             `failureCount: ${failureCount} ${error.response.data.code}`,
           );
           // 토큰만료시 리프레쉬요청 후 재요청
-          if (error.response.data.code === 'GE-002') {
+          if (error.response.data.code == 'GE-002') {
             return postRefreshToken();
           }
 
@@ -94,61 +94,68 @@ export function App() {
 
   //리프레쉬 토큰 요청 api
   const postRefreshToken = async () => {
-    const refreshTokenData = await tokenInstance.post(`/v1/auth/refresh-token`);
+    const refreshTokenData = await tokenInstance
+      .post(`/v1/auth/refresh-token`)
+      .then((res) => {
+        console.log('refreshTokenData ', res);
+        if (res.data.code === 'S-001') {
+          setAuthorityCookie('accessToken', res.data.data.accessToken, {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
+        }
+        return 1;
+      })
+      .catch((error) => {
+        console.log('refreshTokenData error', error);
+        if (error.response.data.code == 'GE-002') {
+          // 리프레쉬 토큰 기간 만료시
+          navigate('/login');
+          // 로그아웃;
+          removeAuthorityCookie('accessToken', {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
+          removeAuthorityCookie('refreshToken', {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
+          removeAuthorityCookie('sessionId', {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
 
-    console.log('refreshTokenData', refreshTokenData);
+          openToastifyAlert({
+            type: 'error',
+            text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
+          });
+
+          return 0;
+        }
+      });
+    // .then((res) => {
+    console.log('refreshTokenData ', refreshTokenData);
     // 재발급 성공시
-    if (refreshTokenData.data.code === 'S-001') {
-      setAuthorityCookie(
-        'accessToken',
-        refreshTokenData.data.data.accessToken,
-        {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        },
-      );
-      return 1;
-    }
-    // 새션정보 만료일시
-    if (refreshTokenData.data.code === 'E-015') {
-      navigate('/login');
-      openToastifyAlert({
-        type: 'error',
-        text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
-      });
-      // 로그아웃
-      return false;
-    }
 
-    // 리프레쉬 토큰 기간 만료시
-    if (refreshTokenData.data.code === 'GE-002') {
-      navigate('/login');
-      // 로그아웃
-      removeAuthorityCookie('accessToken', {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
-      removeAuthorityCookie('refreshToken', {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
-      removeAuthorityCookie('sessionId', {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
+    //   return 1;
+    // }
+    // })
+    // .catch((error) => {
+    //   console.log('refreshTokenData error code', error.response);
 
-      openToastifyAlert({
-        type: 'error',
-        text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
-      });
-      return false;
-    }
+    // if (
+    // refreshTokenData.data.data.code == 'GE-002' ||
+    // refreshTokenData.data.data.code == 'E-015' // 새션정보 만료일시
+    // ) {
 
-    // console.log('refreshTokenData', refreshTokenData.data.data.accessToken);
+    //   return false;
+    // }
+    // });
+
     // console.log('refreshTokenData code', refreshTokenData.data.code);
   };
 

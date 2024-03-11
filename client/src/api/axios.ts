@@ -17,7 +17,8 @@ export const tokenInstance = axios.create({
   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('refreshToken')}`,
+    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
+    refresh: `Bearer ${getAuthorityCookie('refreshToken')}`,
     'session-id': `${getAuthorityCookie('sessionId')}`,
     'Accept-Language': `ko_KR`,
   },
