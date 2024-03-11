@@ -21,9 +21,11 @@
     "cors": "^2.8.5",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
+    "he": "^1.2.0",
     "mathjax": "^3.2.2",
     "mathjax-full": "^3.2.2",
     "mathjax-node": "^2.1.1",
+    "mathml-to-svg": "^1.0.1",
     "node-html-to-image": "^4.0.0",
     "puppeteer": "^22.3.0"
   }
