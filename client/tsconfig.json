@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "*": ["src/*"]
+    },
     "target": "es6",
     "lib": [
       "dom",
@@ -17,11 +21,10 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "jsx": "react-jsx",
-    "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types", "types"]
+    "jsx": "react",
+    "outDir": "build",
+    "typeRoots": ["./node_modules/@types"]
   },
-  "include": [
-    "./src/**/*"
-  ]
+  "include": ["src", "@types/custom.d.ts"],
+  "exclude": ["node_modules", "build"]
 }

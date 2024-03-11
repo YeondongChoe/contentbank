@@ -1,0 +1,981 @@
+import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+import { FaCircle } from 'react-icons/fa';
+import { FaCircleCheck } from 'react-icons/fa6';
+import { IoIosArrowBack } from 'react-icons/io';
+import { MdAccountBalance } from 'react-icons/md';
+import { SlPicture } from 'react-icons/sl';
+import { useNavigate } from 'react-router-dom';
+import styled, { ThemeProvider } from 'styled-components';
+
+import Contents2 from '../../../components/mathViewer/test2.json';
+import Contents3 from '../../../components/mathViewer/test3.json';
+import Contents4 from '../../../components/mathViewer/test4.json';
+import { WorksheetBasic } from '../../../components/worksheet/WorksheetBasic';
+import { ItemQuestionType } from '../../../types';
+import { Input, Label, Button, CheckBox } from '../../atom';
+import { COLOR } from '../../constants';
+import {
+  RedTheme,
+  OrangeTheme,
+  GreenTheme,
+  BlueTheme,
+  PurpleTheme,
+  GrayTheme,
+} from '../../constants/THEME';
+import { MathViewer } from '../../mathViewer/MathViewer';
+//pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+export function Step3() {
+  const [didMount, setDidMount] = useState(false);
+  const navigate = useNavigate();
+
+  const [nameValue, setNameValue] = useState('');
+  const [gradeValue, setGradeValue] = useState('');
+  const [contentAuthor, setContentAuthor] = useState('');
+
+  const [tag, setTag] = useState<string>('');
+
+  const selectTag = (newValue: string) => {
+    setTag(newValue);
+  };
+
+  const [colorChoice, setColorChoice] = useState('');
+
+  const selectedTheme = (() => {
+    switch (colorChoice) {
+      case 'red':
+        return RedTheme;
+      case 'orange':
+        return OrangeTheme;
+      case 'green':
+        return GreenTheme;
+      case 'blue':
+        return BlueTheme;
+      case 'purple':
+        return PurpleTheme;
+      case 'gray':
+        return GrayTheme;
+      default:
+        return {}; // 기본값
+    }
+  })();
+
+  const [column, setColumn] = useState<string>('2단');
+
+  const selectColumn = (newValue: string) => {
+    setColumn(newValue);
+  };
+
+  const [contentQuantity, setContentQuantity] = useState<string>('최대');
+
+  const selectContentQuantity = (newValue: string) => {
+    setContentQuantity(newValue);
+  };
+
+  const goBackMainPopup = () => {
+    navigate('/content-create/exam/step2');
+  };
+
+  const submitCreateWorksheet = () => {
+    navigate('/content-create/exam');
+    console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
+  };
+
+  //오른쪽 템플릿 부분
+  // 더미 데이터
+  const list = [
+    Contents2,
+    Contents3,
+    Contents4,
+    Contents4,
+    Contents3,
+    Contents2,
+  ];
+  const [heightList, setHeightList] = useState<number[]>([]);
+  const [colList, setColList] = useState<ItemQuestionType[]>([]);
+  const [colList2, setColList2] = useState<ItemQuestionType[]>([]);
+  const [existList, setExistList] = useState<ItemQuestionType[]>([]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [done, setDone] = useState<boolean>(false);
+  const [doneAgain, setDoneAgain] = useState<boolean>(false);
+  const doneButton = () => {
+    setDone(true);
+  };
+
+  const cardHeight = () => {
+    const rowDiv = document.querySelectorAll('.row'); //문항 요소
+    //문항 요소들의 높이값
+    const rowHeightArr: number[] = [];
+
+    for (let i = 0; i < rowDiv.length; i++) {
+      const rowElement = rowDiv[i];
+      if (rowElement) {
+        const rowHeight = rowElement.clientHeight; // clientHeight 얻기
+        if (rowHeight !== null && rowHeight !== undefined) {
+          rowHeightArr.push(rowHeight);
+          //console.log(rowHeight);
+          //console.log(rowHeightArr);
+        }
+      }
+    }
+
+    setHeightList(rowHeightArr);
+    setDoneAgain(true);
+    //console.log('rowHeightArr', rowHeightArr);
+    //console.log('doneagain', doneAgain);
+
+    if (doneAgain) {
+      let total: number = 0;
+      const sortList: ItemQuestionType[] = [] || null;
+      const existList: ItemQuestionType[] = [] || null;
+      //console.log('rowHeightArr', rowHeightArr);
+      for (let i = 0; i < rowHeightArr.length; i++) {
+        //console.log('rowHeightArr', rowHeightArr);
+        //const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
+        const num = (total += rowHeightArr[i]); // 문항의 누적 높이
+        //console.log(num);
+        //console.log(750 / 2 - 150);
+        //console.log(750 / 2 - 150 > num);
+        if (900 / 2 - 150 < num) {
+          sortList.push(list[i]);
+          //console.log('작동함');
+        } else {
+          existList.push(list[i]);
+        }
+      }
+      //console.log('sortList', sortList);
+      setColList2(sortList);
+      //console.log('existList', existList);
+      setExistList(existList);
+    } else {
+      //console.error('Element not found.');
+    }
+  };
+  //console.log('heightList', heightList);
+
+  // const getHeight = () => {
+  //   // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
+  //   let total: number = 0;
+  //   const sortList: ItemQuestionType[] = [] || null;
+  //   const existList: ItemQuestionType[] = [] || null;
+  //   console.log('heightList', heightList);
+  //   for (let i = 0; i < heightList.length; i++) {
+  //     // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
+  //     const num = (total += heightList[i]); // 문항의 누적 높이
+  //     console.log(num);
+  //     console.log(750 / 2 - 150);
+  //     console.log(750 / 2 - 150 > num);
+  //     if (750 / 2 - 150 < num) {
+  //       sortList.push(list[i]);
+  //       console.log('작동함');
+  //     } else {
+  //       existList.push(list[i]);
+  //     }
+  //   }
+
+  //   console.log('sortList', sortList);
+  //   setColList2(sortList);
+  //   console.log('existList', existList);
+  //   setExistList(existList);
+  // };
+
+  const loadData = () => {
+    // 데이터 불러오기
+
+    // 리스트 초기화
+    setColList(list);
+    console.log(colList);
+  };
+
+  useEffect(() => {
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (done) {
+      loadData();
+    }
+  }, [done]);
+  //console.log(done);
+  //didMount 아직 안씀
+  useEffect(() => {
+    if (colList) {
+      cardHeight();
+    }
+  }, [colList]);
+
+  // useEffect(() => {
+  //   if (colList && doneAgain && colList.length > 0) {
+  //     console.log('이거는 작동함?');
+  //     getHeight();
+  //   }
+  // }, [colList, doneAgain]);
+
+  return (
+    <Container>
+      <TitleWrapper>
+        <IconWrapper>
+          <IoIosArrowBack
+            style={{ fontSize: '24px', cursor: 'pointer' }}
+            onClick={goBackMainPopup}
+          />
+        </IconWrapper>
+        <Title>
+          <Span>
+            <FrontSpan onClick={goBackMainPopup}>STEP 2 -</FrontSpan>
+            STEP 3
+          </Span>
+          학습지 상세 편집
+        </Title>
+      </TitleWrapper>
+      <Wrapper>
+        <WorksheetSettingSection>
+          <InputGroup>
+            <InputWrapper>
+              <Label value="*학습지명" fontSize="16px" width="120px" />
+              <Input
+                width="400px"
+                height="35px"
+                padding="10px"
+                border="normal"
+                placeholderSize="14px"
+                fontSize="14px"
+                type="text"
+                placeholder="학습지명을 작성해주세요."
+                value={nameValue}
+                onChange={(e) => {
+                  setNameValue(e.target.value);
+                }}
+                //innerRef={nameInputRef}
+              />
+            </InputWrapper>
+            <InputWrapper>
+              <Label value="*출제자" fontSize="16px" width="120px" />
+              <Input
+                width="400px"
+                height="35px"
+                padding="10px"
+                border="normal"
+                placeholderSize="14px"
+                fontSize="14px"
+                type="text"
+                placeholder="출제자명을 작성해주세요."
+                value={contentAuthor}
+                onChange={(e) => {
+                  setContentAuthor(e.target.value);
+                }}
+                //innerRef={nameInputRef}
+              />
+            </InputWrapper>
+            <InputWrapper>
+              <Label value="*학년" fontSize="16px" width="120px" />
+              <Input
+                width="400px"
+                height="35px"
+                padding="10px"
+                border="normal"
+                placeholderSize="14px"
+                fontSize="14px"
+                type="text"
+                placeholder="학년을 작성해주세요."
+                value={gradeValue}
+                onChange={(e) => {
+                  setGradeValue(e.target.value);
+                }}
+                //innerRef={nameInputRef}
+              />
+            </InputWrapper>
+          </InputGroup>
+          <WorksheetNameWrapper>
+            <Label value="*학습지 태그" fontSize="16px" width="120px" />
+            <ButtonGroup>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectTag('기본');
+                }}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal={tag !== '기본'}
+                $filled={tag === '기본'}
+                cursor
+              >
+                <span>기본</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectTag('내신대비');
+                }}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal={tag !== '내신대비'}
+                $filled={tag === '내신대비'}
+                cursor
+              >
+                <span>내신대비</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectTag('모의고사');
+                }}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal={tag !== '모의고사'}
+                $filled={tag === '모의고사'}
+                cursor
+              >
+                <span>모의고사</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {
+                  selectTag('연습문항');
+                }}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal={tag !== '연습문항'}
+                $filled={tag === '연습문항'}
+                cursor
+              >
+                <span>연습문항</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {}}
+                $padding="5px"
+                height={'35px'}
+                width={'80px'}
+                fontSize="14px"
+                $normal
+                cursor
+              >
+                <span>+추가</span>
+              </Button>
+            </ButtonGroup>
+          </WorksheetNameWrapper>
+          <TemplateWrapper>
+            <Label value="*학습지 템플릿" fontSize="16px" width="120px" />
+            <ColorBox>
+              <Label value="색상 및 디자인 선택" fontSize="14px" />
+              <ColorOption>
+                {colorChoice == 'red' ? (
+                  <FaCircleCheck
+                    color="#FA897B"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('')}
+                  />
+                ) : (
+                  <FaCircle
+                    color="#FA897B"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('red')}
+                  />
+                )}
+                {colorChoice == 'orange' ? (
+                  <FaCircleCheck
+                    color="#FFDD94"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('')}
+                  />
+                ) : (
+                  <FaCircle
+                    color="#FFDD94"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('orange')}
+                  />
+                )}
+                {colorChoice == 'green' ? (
+                  <FaCircleCheck
+                    color="#DDE6A5"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('')}
+                  />
+                ) : (
+                  <FaCircle
+                    color="#DDE6A5"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('green')}
+                  />
+                )}
+                {colorChoice == 'blue' ? (
+                  <FaCircleCheck
+                    color="#86E3CE"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('')}
+                  />
+                ) : (
+                  <FaCircle
+                    color="#86E3CE"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('blue')}
+                  />
+                )}
+                {colorChoice == 'purple' ? (
+                  <FaCircleCheck
+                    color="#CCABD8"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('')}
+                  />
+                ) : (
+                  <FaCircle
+                    color="#CCABD8"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('purple')}
+                  />
+                )}
+                {colorChoice == 'gray' ? (
+                  <FaCircleCheck
+                    color="gray"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('')}
+                  />
+                ) : (
+                  <FaCircle
+                    color="gray"
+                    fontSize={20}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setColorChoice('gray')}
+                  />
+                )}
+              </ColorOption>
+            </ColorBox>
+          </TemplateWrapper>
+          <TypeOptionWrapper>
+            <TypeOption>
+              <SlPicture color="gray" fontSize={40} />A Type
+            </TypeOption>
+            <TypeOption>
+              <SlPicture color="gray" fontSize={40} />B Type
+            </TypeOption>
+          </TypeOptionWrapper>
+          <PositionOption>
+            <ColumnOption>
+              <Label value="*학습지 단" fontSize="16px" width="130px" />
+              <ButtonGroup>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectColumn('2단');
+                  }}
+                  $padding="5px"
+                  height={'35px'}
+                  width={'80px'}
+                  fontSize="14px"
+                  $normal={column !== '2단'}
+                  $filled={column === '2단'}
+                  cursor
+                >
+                  <span>2단</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectColumn('1단');
+                  }}
+                  $padding="5px"
+                  height={'35px'}
+                  width={'80px'}
+                  fontSize="14px"
+                  $normal={column !== '1단'}
+                  $filled={column === '1단'}
+                  cursor
+                >
+                  <span>1단</span>
+                </Button>
+              </ButtonGroup>
+            </ColumnOption>
+            <ContentQuantity>
+              <Label value="*학습지 배치" fontSize="16px" width="130px" />
+              <ButtonGroup>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('최대');
+                  }}
+                  $padding="5px"
+                  height={'35px'}
+                  width={'80px'}
+                  fontSize="14px"
+                  $normal={contentQuantity !== '최대'}
+                  $filled={contentQuantity === '최대'}
+                  cursor
+                >
+                  <span>최대</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('2문제');
+                  }}
+                  $padding="5px"
+                  height={'35px'}
+                  width={'80px'}
+                  fontSize="14px"
+                  $normal={contentQuantity !== '2문제'}
+                  $filled={contentQuantity === '2문제'}
+                  cursor
+                >
+                  <span>2문제</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('4문제');
+                  }}
+                  $padding="5px"
+                  height={'35px'}
+                  width={'80px'}
+                  fontSize="14px"
+                  $normal={contentQuantity !== '4문제'}
+                  $filled={contentQuantity === '4문제'}
+                  cursor
+                >
+                  <span>4문제</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    selectContentQuantity('6문제');
+                  }}
+                  $padding="5px"
+                  height={'35px'}
+                  width={'80px'}
+                  fontSize="14px"
+                  $normal={contentQuantity !== '6문제'}
+                  $filled={contentQuantity === '6문제'}
+                  cursor
+                >
+                  <span>6문제</span>
+                </Button>
+              </ButtonGroup>
+            </ContentQuantity>
+          </PositionOption>
+          <AddInformationWrapper>
+            <Label value="추가 정보 표기" fontSize="16px" width="130px" />
+            <CheckBoxWrapper>
+              <CheckBox isChecked={false} />
+              날짜 표시
+            </CheckBoxWrapper>
+            <CheckBoxWrapper>
+              <CheckBox isChecked={false} />
+              문항 유형명 표시
+            </CheckBoxWrapper>
+            <button
+            //onClick={doneButton}
+            >
+              버튼
+            </button>
+          </AddInformationWrapper>
+        </WorksheetSettingSection>
+        <WorksheetTemplateViewSection>
+          <ThemeProvider theme={selectedTheme}>
+            <WorksheetTemplateWrapper>
+              {/* <Label value={'미리보기'} margin="20px"></Label> */}
+              <WorksheetTemplate>
+                <MathViewerHeader>
+                  <HeaderLeft>
+                    <TemplateTitleWrapper>
+                      <TemplateTitle>
+                        <span className="tag">기본</span>
+                        <span className="grade">중1-1</span>
+                      </TemplateTitle>
+                      <p className="subTitle">소인수분해</p>
+                    </TemplateTitleWrapper>
+                    <Description>50문항 | 콘텐츠뱅츠</Description>
+                  </HeaderLeft>
+                  <HeaderRight>
+                    <ImageWrapper>
+                      <MdAccountBalance style={{ fontSize: '60px' }} />
+                    </ImageWrapper>
+                    <TemplateInputWrapper>
+                      <Description>2024.01.16 이름</Description>
+                      <Input
+                        type={'text'}
+                        width="100px"
+                        border="black"
+                        height="20px"
+                      />
+                    </TemplateInputWrapper>
+                  </HeaderRight>
+                </MathViewerHeader>
+                <MathViewerListWrapper>
+                  {/* {existList && existList.length > 1 ? (
+                    <MathViewerList ref={containerRef}>
+                      {existList.map((card, i) => (
+                        <div
+                          key={card.it_quest + i}
+                          //width={cardWidth}
+                          // onLoad={(e) => {
+                          //   getItemHeight(e);
+                          // }}
+                          className="row"
+                        >
+                          문제 left{i + 1}.
+                          <MathViewer
+                            key={i}
+                            data={card}
+                            padding={`10px 15px 30px 0`}
+                            //width={cardWidth}
+                            //height="150"
+                          ></MathViewer>
+                        </div>
+                      ))}
+                    </MathViewerList>
+                  ) : (
+                    <MathViewerList ref={containerRef}>
+                      {colList.map((card, i) => (
+                        <div
+                          key={card.it_quest + i}
+                          //width={cardWidth}
+                          // onLoad={(e) => {
+                          //   getItemHeight(e);
+                          // }}
+                          className="row"
+                        >
+                          문제{i + 1}.
+                          <MathViewer
+                            key={i}
+                            data={card}
+                            padding={`10px 15px 30px 0`}
+                            //width={cardWidth}
+                            //height="150"
+                          ></MathViewer>
+                        </div>
+                      ))}
+                    </MathViewerList>
+                  )}
+                  {colList2.length > 1 && (
+                    <MathViewerList ref={containerRef}>
+                      {colList2.map((card, i) => (
+                        <div
+                          key={card.it_quest + i}
+                          //width={cardWidth}
+                          // onLoad={(e) => {
+                          //   getItemHeight(e);
+                          // }}
+                          className="row"
+                        >
+                          문제right {i + 1 + 3}.
+                          <MathViewer
+                            key={i}
+                            data={card}
+                            padding={`10px 15px 30px 0`}
+                            //width={cardWidth}
+                            //height="150"
+                          ></MathViewer>
+                        </div>
+                      ))}
+                    </MathViewerList>
+                  )} */}
+                </MathViewerListWrapper>
+
+                {/* <WorksheetBasic /> */}
+                {/* <InsideWorksheetTemplate>
+                  <Input
+                    width="300px"
+                    height="30px"
+                    padding="10px"
+                    border="black"
+                    placeholderSize="12px"
+                    fontSize="14px"
+                    type="text"
+                    placeholder={nameValue || '학습지명'}
+                  />
+                  <Input
+                    width="300px"
+                    height="30px"
+                    padding="10px"
+                    border="black"
+                    placeholderSize="12px"
+                    fontSize="14px"
+                    type="text"
+                    placeholder={gradeValue || '학년'}
+                  />
+                  <Input
+                    width="300px"
+                    height="30px"
+                    padding="10px"
+                    border="black"
+                    placeholderSize="12px"
+                    fontSize="14px"
+                    type="text"
+                    placeholder={contentAuthor || '출제자명'}
+                  />
+                </InsideWorksheetTemplate> */}
+              </WorksheetTemplate>
+            </WorksheetTemplateWrapper>
+          </ThemeProvider>
+        </WorksheetTemplateViewSection>
+      </Wrapper>
+      <CreateButtonWrapper>
+        <Button
+          buttonType="button"
+          onClick={submitCreateWorksheet}
+          $padding="10px"
+          height={'35px'}
+          width={'120px'}
+          fontSize="13px"
+          $filled
+          cursor
+        >
+          <span>학습지 만들기</span>
+        </Button>
+      </CreateButtonWrapper>
+    </Container>
+  );
+}
+
+const Container = styled.div``;
+const TitleWrapper = styled.div`
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+`;
+const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const Title = styled.div`
+  font-size: 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1 0 0;
+  padding-left: 10px;
+`;
+const FrontSpan = styled.span`
+  color: ${COLOR.BORDER_BLUE};
+  font-size: 20px;
+  cursor: pointer;
+`;
+const Span = styled.span`
+  color: #1976d2;
+  padding-right: 10px;
+`;
+const Wrapper = styled.div`
+  height: 753px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+`;
+// 왼쪽 section
+const WorksheetSettingSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 35%;
+  border: 1px solid ${COLOR.BORDER_POPUP};
+  border-radius: 25px;
+  padding: 20px;
+  gap: 40px;
+`;
+const InputGroup = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const WorksheetNameWrapper = styled.div`
+  display: flex;
+`;
+const ButtonGroup = styled.div`
+  width: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+`;
+const TemplateWrapper = styled.div`
+  display: flex;
+`;
+const ColorBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: ${COLOR.LIGHT_GRAY};
+  padding: 10px 20px;
+`;
+const ColorOption = styled.div`
+  display: flex;
+  gap: 20px;
+  :hover {
+    border: 1px solid ${COLOR.HOVER};
+    border-radius: 10px;
+  }
+`;
+const TypeOptionWrapper = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+`;
+const TypeOption = styled.div`
+  width: 200px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: ${COLOR.LIGHT_GRAY};
+  border: 1px solid ${COLOR.BORDER_BLUE};
+  font-size: 14px;
+  color: ${COLOR.TEXT_GRAY};
+  cursor: pointer;
+  :hover {
+    font-size: 50px;
+  }
+`;
+const PositionOption = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`;
+const ColumnOption = styled.div`
+  display: flex;
+  padding-right: 10px;
+  //gap: 5px;
+`;
+const ContentQuantity = styled.div`
+  display: flex;
+  //gap: 5px;
+`;
+const AddInformationWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const CheckBoxWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  padding-right: 10px;
+`;
+const WorksheetTemplateViewSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 0 55%;
+  border: 1px solid ${COLOR.BORDER_POPUP};
+  border-radius: 25px;
+  gap: 10px;
+`;
+const WorksheetTemplateWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 25px;
+  background-color: ${({ theme }) => theme?.color?.background || 'initial'};
+`;
+const WorksheetTemplate = styled.div`
+  //display: flex;
+  //flex-direction: column;
+  //align-items: center;
+  //justify-content: center;
+  //height: 100%;
+`;
+const MathViewerHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  height: 150px;
+  padding: 20px;
+  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
+`;
+const HeaderLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  //padding: 20px 10px 10px 20px;
+`;
+const TemplateTitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  .subTitle {
+    color: ${COLOR.TEXT_GRAY};
+    font-weight: 600;
+  }
+`;
+const TemplateTitle = styled.div`
+  display: flex;
+  gap: 5px;
+  font-size: 25px;
+  font-weight: 800;
+  .tag {
+    color: ${COLOR.SECONDARY};
+  }
+`;
+const HeaderRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  //flex: 1 0 0;
+  justify-content: space-between;
+  align-items: flex-start;
+  //padding: 20px 10px 10px 20px;
+`;
+const ImageWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const TemplateInputWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+`;
+const Description = styled.div`
+  font-weight: 800;
+`;
+const MathViewerListWrapper = styled.div`
+  height: 600px;
+  display: flex;
+  justify-content: space-evenly;
+
+  overflow: auto;
+`;
+const MathViewerList = styled.div`
+  padding: 15px;
+  width: ${900 / 2 - 30}px;
+  display: flex;
+  flex-direction: column;
+
+  /* .row {
+    display: flex;
+    flex-wrap: wrap;
+    //justify-content: space-between;
+    flex-direction: column;
+  } */
+`;
+const MathViewerWrapper = styled.div<{ width: string }>`
+  min-height: 71px;
+  width: ${({ width }) => (width ? ` ${width};` : '100%')};
+`;
+
+const InsideWorksheetTemplate = styled.div`
+  padding: 10px;
+  background-color: white;
+`;
+const CreateButtonWrapper = styled.div`
+  padding-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+`;
