@@ -7,7 +7,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { authInstance, userInstance } from '../../api/axios';
-import { putChangePassword } from '../../api/putAxios';
 import {
   Input,
   Label,
@@ -15,7 +14,7 @@ import {
   Alert,
   openToastifyAlert,
 } from '../../components';
-import { getAuthorityCookie, removeAuthorityCookie } from '../../utils/cookies';
+import { removeAuthorityCookie } from '../../utils/cookies';
 import { passwordRegExp } from '../../utils/regExp';
 import { COLOR } from '../constants/COLOR';
 

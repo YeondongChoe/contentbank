@@ -6,7 +6,7 @@ import { styled } from 'styled-components';
 
 import { Loader, ValueNone } from '../../../components';
 import {
-  MemberTableType,
+  MemberType,
   QuestionTableType,
   WorksheetTableType,
 } from '../../../types';
@@ -19,7 +19,7 @@ type TheadItemProps = {
 };
 
 type TableProps = {
-  list: QuestionTableType[] | WorksheetTableType[] | MemberTableType[];
+  list: QuestionTableType[] | WorksheetTableType[] | MemberType[];
   colWidth?: { width: string }[];
   width?: string;
   theadList: TheadItemProps[];
@@ -104,7 +104,7 @@ export function Table({
     if (theadList[3].th[0].title === '학습지명')
       setTbodyType('worksheetTableType');
     //회원 아이디를 가졌을시
-    if (theadList[1].th[0].title === '아이디') setTbodyType('memberTableType');
+    if (theadList[1].th[0].title === '아이디') setTbodyType('MemberType');
   };
 
   useEffect(() => {
@@ -199,9 +199,9 @@ export function Table({
         />
       )}
       {/* 회원관리 tbody */}
-      {tbodyType === 'memberTableType' && (
+      {tbodyType === 'MemberType' && (
         <MemberTbody
-          list={list as MemberTableType[]}
+          list={list as MemberType[]}
           handleSingleCheck={handleSingleCheck}
           checkList={checkList}
           setCheckList={setCheckList}

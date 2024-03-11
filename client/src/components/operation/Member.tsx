@@ -15,6 +15,7 @@ import {
   CheckBoxI,
   Icon,
   ValueNone,
+  openToastifyAlert,
 } from '../../components/atom';
 import {
   Alert,
@@ -25,7 +26,7 @@ import {
 } from '../../components/molecules';
 import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
-import { MemberTableType } from '../../types';
+import { MemberType } from '../../types';
 import { getAuthorityCookie } from '../../utils/cookies';
 import { COLOR } from '../constants/COLOR';
 import { List, ListItem } from '../molecules/list';
@@ -41,40 +42,36 @@ export function Member() {
   const [keyValue, setKeyValue] = useState('');
   const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
-  const size = 10;
-  const [didMount, setDidMount] = useState(false);
-  const [memberList, setMemberList] = useState<MemberTableType[]>([]);
+  const [memberList, setMemberList] = useState<MemberType[]>([]);
 
   const [searchValue, setSearchValue] = useState<string>('');
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
 
-  const modalData = {
-    title: '',
-    content: <RegisterModal />,
-    callback: () => {},
-  };
-  const editModalData = {
-    title: '',
-    content: <EditModal />,
-    callback: () => {},
-  };
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
     console.log('dufflsgn ', checkList);
-    openModal(modalData);
+    openModal({
+      title: '',
+      content: <RegisterModal />,
+    });
   };
+
   /* 상세정보 수정 모달 열기 */
-  const openEditModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const openEditModal = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    accountIdx: string,
+  ) => {
     event.stopPropagation();
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
-    const target = event.currentTarget.value;
-    console.log('target  ', target);
-    openModal(editModalData);
+    openModal({
+      title: '',
+      content: <EditModal accountIdx={accountIdx} />,
+    });
   };
 
   /* 활성화/비활성화 확인 얼럿 */
@@ -85,12 +82,29 @@ export function Member() {
     setIsAlertOpen(false);
   };
   // 활성화/비활성화 데이터 전송
-  const submitDisabled = () => {
-    // putDisableMember({
-    //   selectedRows,
-    //   setIsEnabled,
-    // });
+  const submitChangeUse = () => {
+    patchChangeUse();
     setIsAlertOpen(false);
+  };
+
+  // 활성화/비활성화 api
+  const patchChangeUse = async () => {
+    await userInstance.patch(`/v1/account/change-use`);
+    // .then((res) => {
+    //   console.log('change-use', res);
+    // })
+    // .catch((error) => {
+    //   console.log('change-use error', error);
+    //   if (error.response.data.code == 'GE-002') {
+    //     console.log('change-use error', error);
+    //   }
+    //   if (error.response.data.code == 'E-004') {
+    //     openToastifyAlert({
+    //       type: 'error',
+    //       text: `${error.response.data.data.name}`,
+    //     });
+    //   }
+    // });
   };
   /* 안내 알럿 */
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
@@ -129,21 +143,14 @@ export function Member() {
     }
   };
 
-  // 탭메뉴 클릭시 페이지네이션 초기화
-  //              && 리스트 데이터 전송값 변경
-  const changeTab = () => {
-    setPage(1);
-  };
-
+  // 유저 리스트 불러오기 api
   const getUserList = async () => {
     const res = await userInstance.get(
       `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${10}`,
     );
     console.log(`유저리스트 get 결과값`, res);
-
     return res;
   };
-
   const {
     isLoading,
     error,
@@ -156,6 +163,12 @@ export function Member() {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
+
+  // 탭메뉴 클릭시 페이지네이션 초기화
+  //              && 리스트 데이터 전송값 변경
+  const changeTab = () => {
+    setPage(1);
+  };
 
   // 체크박스 설정
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,10 +195,6 @@ export function Member() {
       setCheckList(checkList.filter((el) => el !== id));
     }
   };
-  // 체크상태 useMemo
-  // const checkValue = useMemo(() => {
-  //   return false;
-  // }, [checkList]);
 
   // 활성화 버튼
   useEffect(() => {
@@ -226,7 +235,7 @@ export function Member() {
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      console.log('click', e.target?.toString().includes('Div'));
+      // console.log('click', e.target?.toString().includes('Div'));
       if (e.target?.toString().includes('Div')) setCheckList([]);
     };
     window.addEventListener('click', handleClick);
@@ -374,7 +383,7 @@ export function Member() {
                 $margin={`0 0 0 15px`}
                 cursor
                 $border
-                onClick={(e) => openEditModal(e)}
+                onClick={(e) => openEditModal(e, list.idx)}
               >
                 상세 수정
               </Button>
@@ -398,7 +407,7 @@ export function Member() {
         description={`비활성화 처리 시 ${checkList.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
         action="확인"
         isWarning={true}
-        onClick={submitDisabled}
+        onClick={submitChangeUse}
         onClose={closeSubmitAlert}
       ></Alert>
 

@@ -16,7 +16,11 @@ import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { accessTokenAtom } from './store/auth/accessToken';
-import { getAuthorityCookie, setAuthorityCookie } from './utils/cookies';
+import {
+  getAuthorityCookie,
+  removeAuthorityCookie,
+  setAuthorityCookie,
+} from './utils/cookies';
 
 export function App() {
   // const isAccessTokenAtom = useRecoilValue(accessTokenAtom);
@@ -34,7 +38,9 @@ export function App() {
           failureCount: number,
           error: { response: { data: { code: string } } },
         ) => {
-          console.log(`failureCount: ${failureCount} ${error}`);
+          console.log(
+            `failureCount: ${failureCount} ${error.response.data.code}`,
+          );
           // 토큰만료시 리프레쉬요청 후 재요청
           if (error.response.data.code === 'GE-002') {
             return postRefreshToken();
@@ -65,13 +71,7 @@ export function App() {
         // 케이스에 따라 얼럿으로 안내(공통)
         // console.log(error.response);
         // if (context.response.data.code == 'GE-004') {
-        if (context.response.data.message == 'Login is required.') {
-          navigate('/login');
-          openToastifyAlert({
-            type: 'error',
-            text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
-          });
-        }
+        // }
         // useQuery get 데이터 통신 후
         // 에러후 에러값이 있을시 토스트알럿에 표시
         if (query.meta && query.meta.errorMessage) {
@@ -95,6 +95,8 @@ export function App() {
   //리프레쉬 토큰 요청 api
   const postRefreshToken = async () => {
     const refreshTokenData = await tokenInstance.post(`/v1/auth/refresh-token`);
+
+    console.log('refreshTokenData', refreshTokenData);
     // 재발급 성공시
     if (refreshTokenData.data.code === 'S-001') {
       setAuthorityCookie(
@@ -106,12 +108,39 @@ export function App() {
           secure: false,
         },
       );
-
       return 1;
     }
+    // 새션정보 만료일시
+    if (refreshTokenData.data.code === 'E-015') {
+      navigate('/login');
+      openToastifyAlert({
+        type: 'error',
+        text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
+      });
+      // 로그아웃
+      return false;
+    }
+
     // 리프레쉬 토큰 기간 만료시
     if (refreshTokenData.data.code === 'GE-002') {
       navigate('/login');
+      // 로그아웃
+      removeAuthorityCookie('accessToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('refreshToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('sessionId', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+
       openToastifyAlert({
         type: 'error',
         text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,

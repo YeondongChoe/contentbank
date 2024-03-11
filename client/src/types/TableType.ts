@@ -111,7 +111,7 @@ export type MockexamType = {
   }[];
 };
 
-export type MemberTableType = {
+export type MemberType = {
   seq: number;
   authority: {
     seq: number;

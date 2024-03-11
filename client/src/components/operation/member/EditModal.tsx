@@ -1,16 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
-import { IoMdClose } from 'react-icons/io';
-import {
-  MdCheckBoxOutlineBlank,
-  MdIndeterminateCheckBox,
-} from 'react-icons/md';
 import styled from 'styled-components';
 
 import { Input, Label, AlertBar } from '../..';
-// import {} from '../../../api/axios';
+import { userInstance } from '../../../api/axios';
 import { useModal } from '../../../hooks';
 import { Button } from '../../atom';
 import { Select } from '../../atom/select';
@@ -31,7 +27,7 @@ type EditModalProps = {
   setIsEditAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function EditModal() {
+export function EditModal({ accountIdx }: { accountIdx: string }) {
   const { closeModal } = useModal();
   const [member, setMember] = useState({
     id: null,
@@ -42,7 +38,6 @@ export function EditModal() {
     enabled: null,
     authCode: null,
   });
-  const [didMount, setDidMount] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
@@ -93,47 +88,44 @@ export function EditModal() {
 
   const clickInitPassword = () => {
     // putInitPassword({
-    //   keyValue,
-    //   setIsInit,
-    //   setIsAlertOpen,
-    //   setIsSuccessAlertOpen,
     // });
   };
 
-  const submitEdit = async () => {
-    // putChangeMemberInformation({
-    //   Authority,
-    //   member,
-    //   Name,
-    //   Comment,
-    //   CheckBox,
-    //   keyValue,
-    //   setIsEditer,
-    //   setIsNameError,
-    //   setNameErrorMessage,
-    //   setIsEditAlertOpen,
-    // });
+  const submitEdit = () => {
+    console.log('memberrrrrrr', member.name);
   };
 
-  const loadData = useCallback(() => {
-    // getIndividualMemberInformation({
-    //   keyValue,
-    //   setMember,
-    // });
-    // getAuthorityList({
-    //   setAuthorityList,
-    // });
-  }, []);
+  // 유저 리스트 불러오기 api
+  const getUser = async () => {
+    const res = await userInstance.get(`/v1/account/${accountIdx}`);
+    console.log(`accountIdx get 결과값`, res);
+    return res;
+  };
+  const {
+    isLoading,
+    error,
+    data: memberData,
+    isFetching,
+  } = useQuery({
+    queryKey: ['get-member'],
+    queryFn: getUser,
+    meta: {
+      errorMessage: 'get-member 에러 메세지',
+    },
+  });
 
   useEffect(() => {
-    setDidMount(true);
+    const data = memberData && memberData.data.data;
+    setMember({
+      id: data.id,
+      name: data.name,
+      key: data.userKey,
+      authority: data.authorityCode,
+      comment: data.note,
+      enabled: data.isLock,
+      authCode: data.roleCode,
+    });
   }, []);
-
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount]);
 
   useEffect(() => {
     if (member.name) {

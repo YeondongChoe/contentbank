@@ -60,18 +60,7 @@ export function Mypage() {
 
   // 마이페이지 데이터 불러오기 api
   const getMyInfo = async () => {
-    // console.log(
-    //   '마이페이지 데이터 불러오기 getAuthorityCookie ',
-    //   getAuthorityCookie('accessToken'),
-    // );
-    // console.log(
-    //   '마이페이지 데이터 불러오기 getAuthorityCookie ',
-    //   getAuthorityCookie('sessionId'),
-    // );
-
-    const res = await userInstance.get(`/v1/account/my-info`);
-
-    return res;
+    return await userInstance.get(`/v1/account/my-info`);
   };
   const {
     isLoading,
@@ -88,7 +77,7 @@ export function Mypage() {
   });
   console.log('myInfoData', myInfoData);
 
-  // 이름 수정 api useMutate
+  // 이름 수정 api
   const saveName = async () => {
     await userInstance
       .patch(`/v1/account/change-name`, nameValue)
@@ -111,7 +100,7 @@ export function Mypage() {
         }
       })
       .catch((error) => {
-        console.log(error.response.data);
+        // console.log(error.response.data);
         if (error.response.data.code == 'E-004') {
           openToastifyAlert({
             type: 'error',
