@@ -160,7 +160,7 @@ export function App() {
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
     if (!getAuthorityCookie('accessToken')) {
-      // navigate('/login');
+      navigate('/login');
       // 전역 초기화
       closeModal();
     }
