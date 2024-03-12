@@ -15,6 +15,7 @@ import { tokenInstance } from './api/axios';
 import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
+import { useModal } from './hooks';
 import { accessTokenAtom } from './store/auth/accessToken';
 import {
   getAuthorityCookie,
@@ -26,6 +27,7 @@ export function App() {
   // const isAccessTokenAtom = useRecoilValue(accessTokenAtom);
   const location = useLocation();
   const navigate = useNavigate();
+  const { closeModal } = useModal();
 
   //전역 쿼리캐싱
   const queryClient = new QueryClient({
@@ -58,6 +60,18 @@ export function App() {
         // staleTime: 50000,//데이터 유통기한 - refetch 기준
         // gcTime: 50000 // 가비지 컬렉션 시간셋팅
       },
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        //TODO : 전역에서 작동하는지 확인
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+      },
     },
     queryCache: new QueryCache({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -72,6 +86,7 @@ export function App() {
         // console.log(error.response);
         // if (context.response.data.code == 'GE-004') {
         // }
+
         // useQuery get 데이터 통신 후
         // 에러후 에러값이 있을시 토스트알럿에 표시
         if (query.meta && query.meta.errorMessage) {
@@ -104,8 +119,9 @@ export function App() {
             sameSite: 'strict',
             secure: false,
           });
+
+          return 1;
         }
-        return 1;
       })
       .catch((error) => {
         console.log('refreshTokenData error', error);
@@ -137,31 +153,17 @@ export function App() {
           return 0;
         }
       });
-    // .then((res) => {
+
     console.log('refreshTokenData ', refreshTokenData);
-    // 재발급 성공시
-
-    //   return 1;
-    // }
-    // })
-    // .catch((error) => {
-    //   console.log('refreshTokenData error code', error.response);
-
-    // if (
-    // refreshTokenData.data.data.code == 'GE-002' ||
-    // refreshTokenData.data.data.code == 'E-015' // 새션정보 만료일시
-    // ) {
-
-    //   return false;
-    // }
-    // });
-
-    // console.log('refreshTokenData code', refreshTokenData.data.code);
   };
 
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
-    if (!getAuthorityCookie('accessToken')) navigate('/login');
+    if (!getAuthorityCookie('accessToken')) {
+      navigate('/login');
+      // 전역 초기화
+      closeModal();
+    }
   }, [getAuthorityCookie('accessToken')]);
 
   return (

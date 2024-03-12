@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { Input, Label, AlertBar } from '../..';
 import { userInstance } from '../../../api/axios';
 import { useModal } from '../../../hooks';
-import { Button } from '../../atom';
+import { Button, openToastifyAlert } from '../../atom';
 import { Select } from '../../atom/select';
 import { COLOR } from '../../constants';
 import { Alert } from '../../molecules/alert/Alert';
@@ -27,7 +27,13 @@ type EditModalProps = {
   setIsEditAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function EditModal({ accountIdx }: { accountIdx: number }) {
+export function EditModal({
+  accountIdx,
+  userKey,
+}: {
+  accountIdx: number;
+  userKey: string;
+}) {
   const { closeModal } = useModal();
   const [member, setMember] = useState({
     id: null,
@@ -73,13 +79,6 @@ export function EditModal({ accountIdx }: { accountIdx: number }) {
     setIsEnabled(!isEnabled);
   };
 
-  const openInitPasswordAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeInitPasswordAlert = () => {
-    setIsAlertOpen(false);
-  };
-
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
 
   const closeSuccessAlert = () => {
@@ -94,6 +93,40 @@ export function EditModal({ accountIdx }: { accountIdx: number }) {
   const submitEdit = () => {
     console.log('memberrrrrrr', member.name);
   };
+  // 비밀번호 초기화
+  const handleInitPassword = () => {
+    setIsAlertOpen(true);
+    patchUserPasswordInit();
+  };
+  const closeInitPasswordAlert = () => {
+    setIsAlertOpen(false);
+  };
+
+  // 유저 비밀번호 초기화 api
+  const patchUserPasswordInit = async () => {
+    return await userInstance
+      .patch(`/v1/account/initialize-password/${userKey}`)
+      .then((res) => {
+        console.log(`'초기화완료' ${userKey}`, res);
+      });
+  };
+  // const { data: userPasswordInit, mutate: changeUserPasswordInit } =
+  //   useMutation({
+  //     mutationFn: patchUserPasswordInit,
+  //     onError: (context: { response: { data: { message: string } } }) => {
+  //       openToastifyAlert({
+  //         type: 'error',
+  //         text: context.response.data.message,
+  //       });
+  //     },
+  //     onSuccess: (response: { data: { message: any } }) => {
+  //       console.log('userPasswordInit', response);
+  //       openToastifyAlert({
+  //         type: 'success',
+  //         text: response.data.message,
+  //       });
+  //     },
+  //   });
 
   // 유저 리스트 불러오기 api
   const getUser = async () => {
@@ -218,7 +251,7 @@ export function EditModal({ accountIdx }: { accountIdx: number }) {
                 buttonType="button"
                 $margin={'0 0 0 10px'}
                 width={`130px`}
-                onClick={openInitPasswordAlert}
+                onClick={handleInitPassword}
                 $padding={'8px'}
                 height={'38px'}
                 fontSize="15px"
@@ -321,11 +354,10 @@ export function EditModal({ accountIdx }: { accountIdx: number }) {
           </ButtonGroup>
           <Alert
             isAlertOpen={isAlertOpen}
-            description="초기화된 아이디는 자동 로그아웃 처리 됩니다."
-            subDescription="비밀번호를 초기화 하시겠습니까?"
-            onClick={clickInitPassword}
+            description="비밀번호가 초기화 되었습니다."
+            subDescription="초기 비밀번호는 drmath@369입니다."
+            notice
             onClose={closeInitPasswordAlert}
-            action="확인"
           />
         </ContentBox>
       </form>

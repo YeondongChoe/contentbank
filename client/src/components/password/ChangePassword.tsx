@@ -14,7 +14,12 @@ import {
   Alert,
   openToastifyAlert,
 } from '../../components';
-import { removeAuthorityCookie } from '../../utils/cookies';
+import { LoginType } from '../../pages/members/Login';
+import {
+  getAuthorityCookie,
+  removeAuthorityCookie,
+  setAuthorityCookie,
+} from '../../utils/cookies';
 import { passwordRegExp } from '../../utils/regExp';
 import { COLOR } from '../constants/COLOR';
 
@@ -65,6 +70,7 @@ export function ChangePassword({
   } = useForm<passwordProps>();
 
   const location = useLocation();
+  const { state } = useLocation();
   const [code, setCode] = useState('');
 
   const PasswordInputRef = useRef<HTMLInputElement | null>(null);
@@ -81,34 +87,7 @@ export function ChangePassword({
   const Password = watch('password', '');
   const PasswordConfirm = watch('password_confirm', '');
 
-  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
-
-  const openSuccessAlert = () => {
-    setIsSuccessAlertOpen(true);
-  };
-  const CloseSuccessAlert = () => {
-    setIsSuccessAlertOpen(false);
-  };
   const navigate = useNavigate();
-  const [isRedirect, setIsRedirect] = useState(false);
-
-  const RedirectLogin = () => {
-    navigate('/login');
-  };
-
-  // 초기화 된 코드 검증 TODO: 502 error
-  // const getCode = async () => {
-  //   await userInstance
-  //     .get('/v1/account/init-change-password', {
-  //       code: code,
-  //     } as any)
-  //     .then((res) => {
-  //       console.log('검증코드 :', res);
-  //     })
-  //     .catch((error) => {
-  //       console.log('검증코드 error :', error);
-  //     });
-  // };
 
   // 최초 로그인 패스워드 변경 api
   const patchPasswordInit = (auth: {
@@ -132,31 +111,23 @@ export function ChangePassword({
         type: 'success',
         text: response.data.message,
       });
-
-      //쿠키 세션 정리
-      removeAuthorityCookie('accessToken', {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
+      // 로그인 후 메인으로 이동 // TODO : 확인 버튼 알럿 또느 모달로 변경
+      postLogin({
+        username: `${state}`,
+        password: `${PasswordConfirm}`,
       });
-      removeAuthorityCookie('sessionId', {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
-
-      navigate('/login');
+      // navigate(`${response.link}`);
+      navigate(`/content-create/quiz`);
     },
   });
-  // useEffect(() => {
-  //   if (passwordDataInit?.data) {
-  //     console.log(passwordDataInit?.data);
-  //   }
-  // }, [passwordDataInit]);
+
+  //로그인 api
+  const postLogin = async (auth: LoginType) => {
+    return await authInstance.post('/v1/auth/login', auth);
+  };
+
   const submitPasswordInit = (password: string) => {
     const auth = { code: code, password: password, passwordConfirm: password };
-    // console.log('auth ', auth);
-    // getCode();
     changePasswordInit(auth);
   };
 
@@ -169,11 +140,16 @@ export function ChangePassword({
   };
   const { data: passwordData, mutate: changePassword } = useMutation({
     mutationFn: patchPassword,
-    onError: (context: { response: { data: { message: string } } }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: context.response.data.message,
-      });
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      //TODO : 전역에서 작동하는지 확인
+      // if (context.response.data.code == 'GE-002') {
+      // }
+      // openToastifyAlert({
+      //   type: 'error',
+      //   text: context.response.data.message,
+      // });
     },
     onSuccess: (response: { data: { message: string } }) => {
       // console.log('passwordData', response);
@@ -181,19 +157,9 @@ export function ChangePassword({
         type: 'success',
         text: response.data.message,
       });
-      //쿠키 세션 정리
-      removeAuthorityCookie('accessToken', {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
-      removeAuthorityCookie('sessionId', {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
 
-      navigate('/login');
+      // setIsPasswordEdit
+      onCancel();
     },
   });
   const submitPassword = (password: string) => {
@@ -202,6 +168,8 @@ export function ChangePassword({
     changePassword(auth);
   };
 
+  // setIsPasswordEdit(false);
+  useEffect(() => {}, []);
   useEffect(() => {
     const urlCode = location.search.split('?code=')[1];
     console.log('location code : ', urlCode);
@@ -211,7 +179,6 @@ export function ChangePassword({
   }, []);
 
   const submitChangePassword = () => {
-    // console.log(':: getAuthorityCookie', getAuthorityCookie('accessToken'));
     //마이페이지 비밀번호 변경
     if (location.pathname == '/mypage') submitPassword(PasswordConfirm);
     //최초 비밀번호 변경 code 가 있을시
@@ -254,7 +221,7 @@ export function ChangePassword({
 
   return (
     <Container>
-      {isSuccessAlertOpen && (
+      {/* {isSuccessAlertOpen && (
         <Alert
           description={
             '비밀번호를 변경하면 로그인한 디바이스에서 모두 로그아웃 처리됩니다. 변경하시겠습니까?'
@@ -265,19 +232,8 @@ export function ChangePassword({
           onClick={submitChangePassword}
           onClose={CloseSuccessAlert}
         ></Alert>
-      )}
-      {isRedirect && (
-        <Alert
-          description="새로운 비밀번호로 변경이 완료되었습니다."
-          subDescription="로그인 페이지로 이동합니다."
-          isAlertOpen={isRedirect}
-          action="확인"
-          isWarning={false}
-          notice
-          onClose={RedirectLogin}
-          onClick={() => goLogin}
-        ></Alert>
-      )}
+      )} */}
+
       <form>
         <InputSection width={width as string}>
           <InputWapper width={width as string}>
@@ -448,47 +404,26 @@ export function ChangePassword({
               <span>취소</span>
             </Button>
           </ButtonWapper>
-          {PasswordConfirm && isValid ? (
-            <ButtonWapper>
-              <Button
-                onClick={openSuccessAlert}
-                width={btnwidth}
-                height={height}
-                fontSize={buttonfontsize}
-                $borderRadius="7px"
-                $filled
-                cursor
-                disabled={disabled}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    openSuccessAlert();
-                  }
-                }}
-              >
-                <span>변경</span>
-              </Button>
-            </ButtonWapper>
-          ) : (
-            <ButtonWapper>
-              <Button
-                onClick={submitChangePassword}
-                width={btnwidth}
-                height={height}
-                fontSize={buttonfontsize}
-                $borderRadius="7px"
-                cursor
-                disabled={disabled}
-                $filled
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    submitChangePassword();
-                  }
-                }}
-              >
-                <span>변경</span>
-              </Button>
-            </ButtonWapper>
-          )}
+
+          <ButtonWapper>
+            <Button
+              onClick={submitChangePassword}
+              width={btnwidth}
+              height={height}
+              fontSize={buttonfontsize}
+              $borderRadius="7px"
+              $filled
+              cursor
+              disabled={disabled}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  submitChangePassword();
+                }
+              }}
+            >
+              <span>변경</span>
+            </Button>
+          </ButtonWapper>
         </ButtonGroup>
       </form>
     </Container>

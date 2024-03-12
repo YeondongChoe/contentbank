@@ -118,15 +118,16 @@ export function Member() {
   const openEditModal = (
     event: React.MouseEvent<HTMLButtonElement>,
     accountIdx: number,
+    userKey: string,
   ) => {
     event.stopPropagation();
-    console.log(accountIdx, 'accountIdx');
+    // console.log(accountIdx, 'accountIdx');
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
     // getUser(accountIdx);
     openModal({
       title: '',
-      content: <EditModal accountIdx={accountIdx} />,
+      content: <EditModal accountIdx={accountIdx} userKey={userKey} />,
     });
   };
   // const getUser = async (accountIdx: number) => {
@@ -390,7 +391,7 @@ export function Member() {
                 $margin={`0 0 0 15px`}
                 cursor
                 $border
-                onClick={(e) => openEditModal(e, list.idx)}
+                onClick={(e) => openEditModal(e, list.idx, list.userKey)}
               >
                 상세 수정
               </Button>

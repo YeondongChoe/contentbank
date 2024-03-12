@@ -24,7 +24,7 @@ import {
   setAuthorityCookie,
 } from '../../utils/cookies';
 
-type LoginType = {
+export type LoginType = {
   username: string;
   password: string;
 };
@@ -116,7 +116,7 @@ export function Login() {
     // @ts-ignore
     onSettled: (response: { data: { link: string } }) => {
       //첫 로그인시 비밀번호 변경 페이지로 || 로그인 성공후 메인으로
-      navigate(response?.data.link);
+      navigate(response?.data.link, { state: Id });
       if (response?.data.link === '/content-create/quiz') {
         //TODO: 메인으로 갈시 임시 페이지 리로딩 임시
         // const cookieData = document.cookie;
