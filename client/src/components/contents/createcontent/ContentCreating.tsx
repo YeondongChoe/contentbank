@@ -55,7 +55,7 @@ export function ContentCreating({
       <EditContainerWrap>
         <EditWrap>EditWrap</EditWrap>
 
-        <ScrollWrap>
+        <BackgroundWrap>
           <SelectListWrap>
             <strong>
               과목<span>*</span>
@@ -65,6 +65,7 @@ export function ContentCreating({
                 <SelectWrapper>
                   {selectCategory1.map((el) => (
                     <Select
+                      $positionTop
                       width={'110px'}
                       height={'30px'}
                       defaultValue={el.label}
@@ -95,6 +96,7 @@ export function ContentCreating({
                 <SelectWrapper>
                   {selectCategory3.map((el) => (
                     <Select
+                      $positionTop
                       width={'110px'}
                       height={'30px'}
                       defaultValue={el.label}
@@ -107,7 +109,27 @@ export function ContentCreating({
               </li>
             </SelectList>
           </SelectListWrap>
-        </ScrollWrap>
+          <SelectListWrap>
+            <strong>난이도</strong>
+            <SelectList>
+              <li>
+                <SelectWrapper>
+                  {selectCategory3.map((el) => (
+                    <Select
+                      $positionTop
+                      width={'110px'}
+                      height={'30px'}
+                      defaultValue={el.label}
+                      key={el.label}
+                      options={el.options}
+                      onSelect={(event) => selectCategoryOption(event)}
+                    />
+                  ))}
+                </SelectWrapper>
+              </li>
+            </SelectList>
+          </SelectListWrap>
+        </BackgroundWrap>
       </EditContainerWrap>
 
       <ContentListWrap>
@@ -171,9 +193,8 @@ const EditWrap = styled.div`
   border-top: none;
   margin-bottom: 10px;
 `;
-const ScrollWrap = styled.div`
-  overflow: auto;
-  background-color: ${COLOR.LIGHT_GRAY};
+const BackgroundWrap = styled.div`
+  background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
 `;
 const SelectListWrap = styled.div`
   display: flex;

@@ -29,6 +29,7 @@ type SelectProps = {
   top?: string;
   blackMode?: boolean;
   disabled?: boolean;
+  $positionTop?: boolean;
 };
 
 export function Select({
@@ -42,6 +43,7 @@ export function Select({
   text,
   blackMode,
   disabled,
+  $positionTop,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -73,6 +75,8 @@ export function Select({
             setIsOptionShow(false);
           }}
           $top={height}
+          $positionTop={$positionTop}
+          height={height}
         >
           {options?.map((el) => (
             <li key={el.id}>
@@ -97,16 +101,26 @@ const Component = styled.div<{ $padding?: string }>`
   position: relative;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
-const SelectOptionsList = styled.ul<{ $top?: string }>`
+const SelectOptionsList = styled.ul<{
+  $top?: string;
+  $positionTop?: boolean;
+  height?: string;
+}>`
   padding-top: 5px;
   position: absolute;
   top: ${({ $top }) => ($top ? `${$top};` : '40px')};
+  margin-bottom: ${({ height, $positionTop }) =>
+    height && $positionTop ? `${height};` : '0px'};
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 1;
   width: 100%;
   height: 100%;
+  ${({ $positionTop }) =>
+    $positionTop
+      ? `top: auto; bottom: 0; left: 0; right: 0; padding-bottom: 5px;padding-top: 0;height: fit-content;`
+      : ''};
 
   li {
     width: 100%;

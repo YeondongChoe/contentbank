@@ -158,6 +158,7 @@ export function OptionList() {
                   id={`${index.toString()}SelectMapWrap`}
                 >
                   <OtionsSelect
+                    $positionTop
                     width={'110px'}
                     height={'30px'}
                     defaultValue={el.label}
