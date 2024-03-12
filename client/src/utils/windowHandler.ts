@@ -7,14 +7,18 @@ export const windowOpenHandler = ({
   name = '_blank',
   url,
   options = '', // sendData = '',
+  $height = 800,
+  $width = 1200,
 }: {
   name?: string;
   url: string;
   options?: string;
+  $width?: number;
+  $height?: number;
   // sendData?: unknown;
 }) => {
-  const windowWidth = 1200;
-  const windowHeight = 800;
+  const windowWidth = $width;
+  const windowHeight = $height;
   const left = Math.round(window.screen.width / 2 - windowWidth / 2);
   const top = Math.round(window.screen.height / 2 - windowHeight / 2);
 

@@ -31,6 +31,8 @@ export function CreateContentModal() {
     windowOpenHandler({
       name: 'createcontentmain',
       url: '/createcontentmain',
+      $height: 850,
+      $width: 1250,
     });
   };
 
