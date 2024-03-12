@@ -12,3 +12,4 @@ export * from './resizeLayout';
 export * from './dragAndDrop';
 export * from './buttonFormatRadio';
 export * from './list';
+export * from './tooltip';

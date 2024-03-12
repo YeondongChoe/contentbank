@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 
 import styled from 'styled-components';
 
-import { CheckBoxI, DnDWrapper, Icon } from '../../..';
+import { CheckBoxI, DnDWrapper, Icon, Tooltip } from '../../..';
 import { COLOR } from '../../../constants/COLOR';
 
 //TODO : 데이터 들어올시 타입도 변경
@@ -75,6 +75,17 @@ export function QuizList({
     }
   };
 
+  const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    const target = e.currentTarget.children[1];
+    console.log(target.classList);
+    target.classList.add('on');
+  };
+  const hideTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    const target = e.currentTarget.children[1];
+    console.log(target.classList);
+    target.classList.remove('on');
+  };
+
   useEffect(() => {
     setCheckList([]);
   }, [questionList]);
@@ -140,8 +151,15 @@ export function QuizList({
                     <span className="title_tag">{`객관식`}</span>
                   </span>
                 )}
-                <MetaGroup>
+                <MetaGroup
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
                   <span className="sub_title ellipsis">{dragItem.text}</span>
+
+                  <Tooltip>
+                    <span>{dragItem.text}</span>
+                  </Tooltip>
                 </MetaGroup>
                 {showViewAllButton && (
                   <ViewAllButton>
@@ -261,6 +279,9 @@ const ListWrap = styled.ul`
   }
 `;
 const MetaGroup = styled.span`
+  border: none;
+  background-color: transparent;
+  position: relative;
   display: flex;
   width: 100%;
 
