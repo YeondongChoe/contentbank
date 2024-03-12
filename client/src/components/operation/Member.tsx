@@ -1,155 +1,69 @@
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance, userInstance } from '../../api/axios';
+import { userInstance } from '../../api/axios';
 // import { getMemberList } from '../../api/getAxios';
 import { putDisableMember } from '../../api/putAxios';
-import { Button, AlertBar } from '../../components/atom';
-import { memberColWidth, memberTheadList } from '../../components/constants';
+import {
+  Button,
+  AlertBar,
+  CheckBoxI,
+  Icon,
+  ValueNone,
+  openToastifyAlert,
+} from '../../components/atom';
 import {
   Alert,
+  Modal,
   PaginationBox,
   Search,
   TabMenu,
-  Table,
 } from '../../components/molecules';
+import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
-import { MemberTableType } from '../../types';
+import { MemberType } from '../../types';
 import { getAuthorityCookie } from '../../utils/cookies';
 import { COLOR } from '../constants/COLOR';
-import { EditPopup } from '../member/EditPopup';
-import { RegisterPopup } from '../member/RegisterPopup';
+import { List, ListItem } from '../molecules/list';
+
+import { EditModal } from './member/EditModal';
+import { RegisterModal } from './member/RegisterModal';
 
 export function Member() {
+  const { openModal } = useModal();
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
-  const [isRegister, setIsRegister] = useState(false);
-  const [isEditer, setIsEditer] = useState(false);
-  const [keyValue, setKeyValue] = useState('');
-  const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
-  const [page, setPage] = useRecoilState(pageAtom);
-  const size = 10;
-  const [didMount, setDidMount] = useState(false);
-  const [memberList, setMemberList] = useState<MemberTableType[]>([]);
-  const [checkedList, setCheckedList] = useState<number[]>([]);
-  // console.log(memberList);
+  const backgroundRef = useRef<HTMLDivElement>(null);
 
+  const [checkList, setCheckList] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
+  const [page, setPage] = useRecoilState(pageAtom);
+  const [memberList, setMemberList] = useState<MemberType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  // 활성화/비활성화 버튼상태 토글
-  const openSubmitAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeSubmitAlert = () => {
-    setIsAlertOpen(false);
-  };
-  // 활성화/비활성화 데이터 전송
-  const submitDisabled = () => {
-    putDisableMember({
-      selectedRows,
-      setIsEnabled,
-    });
-    setIsAlertOpen(false);
-  };
 
-  // 검색 기능 함수
-  const filterSearchValue = () => {
-    // getMemberList({
-    //   setMemberList,
-    //   setTotalPage,
-    //   searchValue,
-    //   page,
-    //   size,
-    // });
-    setSearchValue('');
-  };
-  const filterSearchValueEnter = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === 'Enter') {
-      // getMemberList({
-      //   setMemberList,
-      //   setTotalPage,
-      //   searchValue,
-      //   page,
-      //   size,
-      // });
-      setSearchValue('');
-    }
-  };
-
-  const openRegisterPopup = () => {
-    setIsRegister(true);
-    setSearchValue('');
-  };
-
-  /* 상세정보 보기 버튼*/
-  const openDetailInformationPopup = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    const target = event.currentTarget.value;
-    setKeyValue(target);
-    setIsEditer(true);
-  };
-
-  // 탭메뉴 클릭시 페이지네이션 초기화
-  const changeTab = () => {
-    setPage(1);
-  };
-
-  const loadData = () => {
-    const enabled =
-      tabVeiw === '활성화' ? 'Y' : tabVeiw === '비활성화' ? 'N' : '';
-
-    console.log('loadData');
-
-    // isFetching && setMemberList(data?.data.content);
-    // isFetching && setTotalPage(data?.data.data.totalElements);
-
-    if (tabVeiw === '전체') {
-      // getMemberList({
-      //   setMemberList,
-      //   setTotalPage,
-      //   page,
-      //   size,
-      // });
-    } else {
-      // getMemberList({
-      //   setMemberList,
-      //   setTotalPage,
-      //   page,
-      //   size,
-      //   enabled,
-      // });
-    }
-  };
-
+  // 유저 리스트 불러오기 api
   const getUserList = async () => {
-    console.log(
-      `유저리스트 호출시 쿠키 여부`,
-      getAuthorityCookie('accessToken'),
+    const res = await userInstance.get(
+      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}
+			`,
+      // &isUseFilter=${''}
     );
-    console.log(
-      `유저리스트 호출시 쿠키 여부 sessionId`,
-      getAuthorityCookie('sessionId'),
-    );
-    const res = await userInstance.get(`/v1/account`);
     console.log(`유저리스트 get 결과값`, res);
-
     return res;
   };
-
   const {
     isLoading,
     error,
     data: memberListData,
     isFetching,
+    refetch,
   } = useQuery({
     queryKey: ['get-memberlist'],
     queryFn: getUserList,
@@ -157,19 +71,158 @@ export function Member() {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
-  console.log('유저리스트 useQuery memberListData', memberListData);
 
+  // 데이터 받아온후 셋팅
   useEffect(() => {
-    // loadData();
-    console.log('memberListData', memberListData);
-    setDidMount(true);
-  }, []);
+    // console.log(
+    //   'memberListData?.data.data.pagination.currentPage',
+    //   memberListData?.data.data.pagination.totalBlockCount,
 
+    setTotalPage(memberListData?.data.data.pagination.totalBlockCount);
+    // console.log(page, pageIndex);
+    // console.log(totalPage, totalPage);
+    // setTotalPage(10);
+  }, [isFetching]);
+  // 페이지 변경시 리랜더링
   useEffect(() => {
-    if (didMount) {
-      loadData();
+    console.log(page, memberListData);
+
+    refetch();
+  }, [page]);
+
+  // 검색 기능 함수
+  const filterSearchValue = () => {
+    // 쿼리 스트링 변경 로직
+    setSearchValue('');
+  };
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === 'Enter') {
+      setSearchValue('');
     }
-  }, [didMount]);
+  };
+
+  /* 아이디 만들기 모달 열기 */
+  const openCreateModal = () => {
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
+    // console.log('dufflsgn ', checkList);
+    openModal({
+      title: '',
+      content: <RegisterModal />,
+    });
+  };
+
+  /* 상세정보 수정 모달 열기 */
+  const openEditModal = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    accountIdx: number,
+  ) => {
+    event.stopPropagation();
+    console.log(accountIdx, 'accountIdx');
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
+    // getUser(accountIdx);
+    openModal({
+      title: '',
+      content: <EditModal accountIdx={accountIdx} />,
+    });
+  };
+  // const getUser = async (accountIdx: number) => {
+  //   const res = await userInstance.get(`/v1/account/${accountIdx}`);
+  //   console.log(`accountIdx get 결과값`, res);
+  //   return res;
+  // };
+
+  /* 활성화/비활성화 확인 얼럿 */
+  const openSubmitAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
+  };
+  // 활성화/비활성화 데이터 전송
+  const submitChangeUse = () => {
+    patchChangeUse();
+    setIsAlertOpen(false);
+  };
+
+  // 활성화/비활성화 api
+  const patchChangeUse = async () => {
+    await userInstance.patch(`/v1/account/change-use`);
+    // .then((res) => {
+    //   console.log('change-use', res);
+    // })
+    // .catch((error) => {
+    //   console.log('change-use error', error);
+    //   if (error.response.data.code == 'GE-002') {
+    //     console.log('change-use error', error);
+    //   }
+    //   if (error.response.data.code == 'E-004') {
+    //     openToastifyAlert({
+    //       type: 'error',
+    //       text: `${error.response.data.data.name}`,
+    //     });
+    //   }
+    // });
+  };
+  /* 안내 알럿 */
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+  };
+  const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
+  const closeEditAlert = () => {
+    setIsEditAlertOpen(false);
+  };
+
+  // 탭메뉴 클릭시 페이지네이션 초기화
+  //              && 리스트 데이터 전송값 변경
+  const changeTab = () => {
+    setPage(1);
+  };
+
+  // 체크박스 설정
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.checked);
+    if (e.target.checked) {
+      setCheckList(
+        memberListData?.data.data.list.map(
+          (item: any) => item.userKey as string,
+        ),
+      );
+    } else {
+      setCheckList([]);
+    }
+  };
+  const handleButtonCheck = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+  ) => {
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+    if (!target.checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
+    }
+  };
+
+  // 활성화 버튼
+  useEffect(() => {
+    if (!checkList.length) {
+      setIsEnabled(true);
+    } else {
+      setIsEnabled(false);
+    }
+  }, [checkList]);
+
+  useEffect(() => {
+    // 데이터 바뀔시 초기화
+    setCheckList([]);
+    setSearchValue('');
+  }, [memberListData]);
 
   const menuList = [
     {
@@ -186,20 +239,18 @@ export function Member() {
     },
   ];
 
-  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
-
-  const closeSuccessAlert = () => {
-    setIsSuccessAlertOpen(false);
-  };
-
-  const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
-
-  const closeEditAlert = () => {
-    setIsEditAlertOpen(false);
-  };
+  // 배경 클릭시 체크리스트 초기화
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      // console.log('click', e.target?.toString().includes('Div'));
+      if (e.target?.toString().includes('Div')) setCheckList([]);
+    };
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [backgroundRef]);
 
   return (
-    <Container>
+    <Container ref={backgroundRef}>
       <AlertBar
         type="success"
         isAlertOpen={isSuccessAlertOpen}
@@ -217,7 +268,7 @@ export function Member() {
         <Button
           height={'35px'}
           width={'130px'}
-          onClick={openRegisterPopup}
+          onClick={openCreateModal}
           fontSize="13px"
           $filled
           cursor
@@ -225,8 +276,24 @@ export function Member() {
           + 아이디 만들기
         </Button>
       </TitleWrapper>
+
+      <TabMenu
+        length={3}
+        menu={menuList}
+        selected={tabVeiw}
+        width={'300px'}
+        setTabVeiw={setTabVeiw}
+        lineStyle
+        $margin={'10px 0'}
+        onClickTab={changeTab}
+      />
+
       <InputWrapper>
-        <Total>Total : {totalPage}</Total>
+        <Total>
+          Total :
+          {memberListData ? memberListData.data.data.pagination.totalCount : 0}
+        </Total>
+
         <Search
           value={searchValue}
           width={'25%'}
@@ -239,68 +306,114 @@ export function Member() {
           placeholder="이름, 권한 검색"
         />
       </InputWrapper>
-      <TableWrapper>
-        <ButtonWrapper>
-          <TabMenu
-            length={3}
-            menu={menuList}
-            selected={tabVeiw}
-            width={'300px'}
-            setTabVeiw={setTabVeiw}
-            lineStyle
-            $margin={'10px 0'}
-            onClickTab={changeTab}
+      <ButtonWrapper>
+        <CheckBoxWrap>
+          <CheckBoxI
+            $margin={'0 5px 0 0'}
+            onChange={(e) => handleAllCheck(e)}
+            checked={
+              checkList.length === memberListData?.data.data.list.length
+                ? true
+                : false
+            }
+            id={'all check'}
+            value={'all check'}
           />
-          <Button
-            height={'35px'}
-            width={'130px'}
-            onClick={openSubmitAlert}
-            fontSize="15px"
-            $filled
-            disabled={isEnabled}
-            cursor
-          >
-            비활성화
-          </Button>
-        </ButtonWrapper>
-        {/*TODO : 전체토탈 데이터로 변경 필요 */}
-        {/* <Table
-          list={memberList}
-          colWidth={memberColWidth}
-          theadList={memberTheadList}
-          btnOnClick={openDetailInformationPopup}
-          setIsEnabled={setIsEnabled}
-          setSelectedRows={setSelectedRows}
-        /> */}
-      </TableWrapper>
-      {/* <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} /> */}
+          <span className="title_top">전체선택</span>
+        </CheckBoxWrap>
+        <Button
+          height={'35px'}
+          width={'130px'}
+          onClick={openSubmitAlert}
+          fontSize="15px"
+          $filled
+          disabled={isEnabled}
+          cursor
+          $margin="5px 0 0 0"
+        >
+          비활성화
+        </Button>
+      </ButtonWrapper>
+
+      {memberListData?.data.data.list.length ? (
+        <List margin={`10px 0`}>
+          {memberListData?.data.data.list.map((list: any) => (
+            <ListItem
+              key={list.userKey as string}
+              isChecked={checkList.includes(list.userKey)}
+              onClick={(e) => handleButtonCheck(e, list.userKey)}
+            >
+              <CheckBoxI
+                id={list.userKey}
+                value={list.userKey}
+                $margin={`0 5px 0 0`}
+                checked={checkList.includes(list.userKey)}
+              />
+              <ItemLayout>
+                <span>{list.name} </span>
+                <span>{list.id} </span>
+                <span>
+                  <span className="tag">{list.authorityName}</span>
+                </span>
+                <span>{list.createdAt}</span>
+              </ItemLayout>
+              {list.isUse ? (
+                <Icon
+                  width={`18px`}
+                  src={`/images/icon/lock_open_${
+                    checkList.length
+                      ? checkList.includes(list.userKey)
+                        ? 'on'
+                        : 'off'
+                      : 'off'
+                  }.svg`}
+                  disabled={true}
+                />
+              ) : (
+                <Icon
+                  width={`18px`}
+                  src={`/images/icon/lock_${
+                    checkList.length
+                      ? checkList.includes(list.userKey)
+                        ? 'on'
+                        : 'off'
+                      : 'off'
+                  }.svg`}
+                  disabled={true}
+                />
+              )}
+              <Button
+                width={`100px`}
+                height={`30px`}
+                fontSize={`13px`}
+                $padding={'0'}
+                $margin={`0 0 0 15px`}
+                cursor
+                $border
+                onClick={(e) => openEditModal(e, list.idx)}
+              >
+                상세 수정
+              </Button>
+            </ListItem>
+          ))}
+        </List>
+      ) : (
+        <ValueNone />
+      )}
+
+      {memberListData?.data.data.pagination && (
+        <PaginationBox itemsCountPerPage={page} totalItemsCount={totalPage} />
+      )}
       <Alert
         isAlertOpen={isAlertOpen}
-        description={`비활성화 처리 시 ${selectedRows.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
+        description={`비활성화 처리 시 ${checkList.length}명의 회원은 로그인이 불가합니다. 비활성화 처리 하시겠습니까?`}
         action="확인"
         isWarning={true}
-        onClick={submitDisabled}
+        onClick={submitChangeUse}
         onClose={closeSubmitAlert}
       ></Alert>
-      {isRegister ? (
-        <RegisterPopup
-          isRegister={isRegister}
-          setIsRegister={setIsRegister}
-          setIsSuccessAlertOpen={setIsSuccessAlertOpen}
-        />
-      ) : (
-        ''
-      )}
-      {isEditer ? (
-        <EditPopup
-          keyValue={keyValue}
-          isEditer={isEditer}
-          setIsEditer={setIsEditer}
-          setIsEditAlertOpen={setIsEditAlertOpen}
-        />
-      ) : (
-        ''
-      )}
+
+      <Modal />
     </Container>
   );
 }
@@ -318,26 +431,51 @@ const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
 `;
-const InputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 10px;
-`;
+
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 5px;
 `;
-const TableWrapper = styled.div`
-  min-height: 580px;
-  padding-bottom: 30px;
-  //border-top: 1px solid ${COLOR.SECONDARY};
+
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
 `;
-const Total = styled.p`
+const Total = styled.span`
   text-align: right;
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: bold;
   color: ${COLOR.FONT_BLACK};
   padding-bottom: 5px;
+`;
+const CheckBoxWrap = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const ItemLayout = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  > span {
+    display: flex;
+    flex: 1 0 0;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    &::after {
+      content: '';
+      display: flex;
+      border-right: 1px solid ${COLOR.BORDER_GRAY};
+    }
+  }
+  /* .tag {
+    padding: 5px 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+    border-radius: 20px;
+  } */
 `;

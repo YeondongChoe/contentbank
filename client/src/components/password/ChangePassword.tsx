@@ -7,7 +7,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { authInstance, userInstance } from '../../api/axios';
-import { putChangePassword } from '../../api/putAxios';
 import {
   Input,
   Label,
@@ -15,7 +14,7 @@ import {
   Alert,
   openToastifyAlert,
 } from '../../components';
-import { getAuthorityCookie, removeAuthorityCookie } from '../../utils/cookies';
+import { removeAuthorityCookie } from '../../utils/cookies';
 import { passwordRegExp } from '../../utils/regExp';
 import { COLOR } from '../constants/COLOR';
 
@@ -127,7 +126,7 @@ export function ChangePassword({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response) => {
+    onSuccess: (response: { data: { message: any } }) => {
       console.log('passwordDataInit', response);
       openToastifyAlert({
         type: 'success',
@@ -176,7 +175,7 @@ export function ChangePassword({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response) => {
+    onSuccess: (response: { data: { message: string } }) => {
       // console.log('passwordData', response);
       openToastifyAlert({
         type: 'success',

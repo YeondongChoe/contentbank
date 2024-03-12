@@ -31,13 +31,16 @@ export function Header() {
 
   // 사이드메뉴 로그아웃 시
   const onLogout = () => {
-    // logout();
-    //500 에러
     //쿠키 삭제
     // queryClient.removeQueries();
     // queryClient.clear();
     queryClient.getQueryCache().clear;
     removeAuthorityCookie('accessToken', {
+      path: '/',
+      sameSite: 'strict',
+      secure: false,
+    });
+    removeAuthorityCookie('refreshToken', {
       path: '/',
       sameSite: 'strict',
       secure: false,

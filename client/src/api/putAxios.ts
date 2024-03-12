@@ -1,10 +1,6 @@
 import { openToastifyAlert } from '../components';
 
-import {
-  questionInstance,
-  authInstance,
-  handleAuthorizationRenewal,
-} from './axios';
+import { questionInstance, authInstance } from './axios';
 
 /** 콘텐츠 파트 */
 

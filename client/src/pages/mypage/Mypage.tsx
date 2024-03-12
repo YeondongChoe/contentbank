@@ -2,9 +2,10 @@ import * as React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import styled from 'styled-components';
 
-import { handleAuthorizationRenewal, userInstance } from '../../api/axios';
+import { userInstance } from '../../api/axios';
 import { getMemberInformation } from '../../api/getAxios';
 import { putSaveName } from '../../api/putAxios';
 import {
@@ -59,19 +60,7 @@ export function Mypage() {
 
   // 마이페이지 데이터 불러오기 api
   const getMyInfo = async () => {
-    // error?.message.includes('401') && handleAuthorizationRenewal(error.message);
-    // console.log(
-    //   '마이페이지 데이터 불러오기 getAuthorityCookie ',
-    //   getAuthorityCookie('accessToken'),
-    // );
-    // console.log(
-    //   '마이페이지 데이터 불러오기 getAuthorityCookie ',
-    //   getAuthorityCookie('sessionId'),
-    // );
-
-    const res = await userInstance.get(`/v1/account/my-info`);
-
-    return res;
+    return await userInstance.get(`/v1/account/my-info`);
   };
   const {
     isLoading,
@@ -88,42 +77,40 @@ export function Mypage() {
   });
   console.log('myInfoData', myInfoData);
 
-  // TODO : 이전 캐쉬 데이터 업데이트
-  // const { data, reset } = useMutation({
-  //   mutationFn: getMyInfo,
-  //   onSuccess: () =>
-  //     queryClient.invalidateQueries({ queryKey: ['get-myInfo'] }),
-  // });
-
   // 이름 수정 api
   const saveName = async () => {
-    const nameData = await userInstance.patch(
-      `/v1/account/change-name`,
-      nameValue,
-    );
+    await userInstance
+      .patch(`/v1/account/change-name`, nameValue)
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code == 'S-001') {
+          setIsNameEdit(false);
+          openToastifyAlert({
+            type: 'success',
+            text: `이름이 수정되었습니다.`,
+          });
+          myInfoData &&
+            setMember({
+              id: myInfoData.data.data.id,
+              name: nameValue,
+              authority: myInfoData.data.data.authority.name,
+            });
 
-    if (nameData.status == 200) {
-      myInfoData &&
-        setMember({
-          id: myInfoData.data.data.id,
-          name: nameValue,
-          authority: myInfoData.data.data.authority.name,
-        });
-      setIsNameEdit(false);
-      openToastifyAlert({
-        type: 'success',
-        text: `이름이 수정되었습니다.`,
+          refetch();
+        }
+      })
+      .catch((error) => {
+        // console.log(error.response.data);
+        if (error.response.data.code == 'E-004') {
+          openToastifyAlert({
+            type: 'error',
+            text: `${error.response.data.data.name}`,
+          });
+        }
       });
-
-      refetch();
-    }
-    // console.log(nameData);
   };
 
   const submitName = () => {
-    // console.log(getAuthorityCookie('accessToken'));
-
-    // handleAuthorizationRenewal('');
     saveName();
   };
 

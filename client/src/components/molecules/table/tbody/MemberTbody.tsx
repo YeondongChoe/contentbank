@@ -3,11 +3,11 @@ import * as React from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { MemberTableType } from '../../../../types';
+import { MemberType } from '../../../../types';
 import { COLOR } from '../../../constants';
 
 type TbodyProps = {
-  list: MemberTableType[];
+  list: MemberType[];
   handleSingleCheck: (checked: boolean, seq: number) => void;
   checkList: number[];
   setCheckList: React.Dispatch<React.SetStateAction<number[]>>;
