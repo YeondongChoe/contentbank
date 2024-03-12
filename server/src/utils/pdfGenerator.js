@@ -4,6 +4,7 @@ const puppeteer = require("puppeteer");
 async function generatePDF(data) {
   const title = data.title;
   const content = data.content;
+  const column = data.column;
 
   const cssStyles = `
     @page {
@@ -43,6 +44,13 @@ async function generatePDF(data) {
       box-sizing: border-box;
       padding: 20px;
     }
+    .center {
+      display: flex;
+      justify-content: center;
+      flex: 1;
+      box-sizing: border-box;
+      padding: 20px;
+    }
   `;
 
   const html = ejs.render(
@@ -78,12 +86,18 @@ async function generatePDF(data) {
           </div>
         </div>
         <div class="viewer">
-          <div class="left">
-            ${title}
-          </div>
-          <div class="right">
-            ${content}
-          </div>
+        ${
+          column === 1
+            ? `<div class="center">
+                 ${content}
+               </div>`
+            : `<div class="left">
+                ${content}
+               </div>
+               <div class="right">
+                 ${content}
+               </div>`
+        }
         </div>
       </div>
     </body>

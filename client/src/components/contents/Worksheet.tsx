@@ -19,6 +19,7 @@ import {
   TabMenu,
   Table,
 } from '../../components';
+import Contents2 from '../../components/mathViewer/test2.json';
 import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';
 import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
@@ -137,13 +138,13 @@ export function Worksheet() {
 
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
 
-  const testApi = async () => {
+  const getPdf = async () => {
     try {
       const response = await axios.post(
         'http://localhost:5000/get-pdf',
         {
-          title: 'Sample Title1',
           content: 'Sample Content1',
+          column: 2,
         },
         {
           responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
@@ -267,7 +268,7 @@ export function Worksheet() {
                 <div className="preview">
                   <LuFileSearch2
                     style={{ fontSize: '22px', cursor: 'pointer' }}
-                    onClick={testApi}
+                    onClick={getPdf}
                   />
                 </div>
                 <div className="setting">
