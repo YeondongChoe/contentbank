@@ -14,20 +14,27 @@ export function ResizeLayout({
   item2,
   item3,
   height,
+  item3Width = 250,
+  item1Width = 250,
 }: {
   column: '2nd' | '3rd';
   item1?: React.ReactNode;
   item2?: React.ReactNode;
   item3?: React.ReactNode;
   height: string;
+  item3Width?: number;
+  item1Width?: number;
 }) {
+  const item1InitWidth = item1Width;
+  const item3InitWidth = item3Width;
+
   const {
     isDragging: isFirstDragging,
     position: firstW,
     splitterProps: firstDragBarProps,
   } = useResizable({
     axis: 'x',
-    initial: 250,
+    initial: item1InitWidth,
     min: 50,
   });
 
@@ -37,7 +44,7 @@ export function ResizeLayout({
     splitterProps: secondDragBarProps,
   } = useResizable({
     axis: 'x',
-    initial: 200,
+    initial: item3InitWidth,
     min: 50,
     reverse: true,
   });

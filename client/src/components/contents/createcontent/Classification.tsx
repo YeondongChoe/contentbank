@@ -134,6 +134,7 @@ export function Classification() {
             </Title>
           </ScrollWrap>
         }
+        item3Width={600}
         item3={
           <ScrollWrap>
             <Title>
