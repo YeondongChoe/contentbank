@@ -137,9 +137,8 @@ export function Worksheet() {
   };
 
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
-  const [imageData, setImageData] = useState<string | undefined>(undefined);
 
-  const testApi = async () => {
+  const getPdf = async () => {
     try {
       const response = await axios.post(
         'http://localhost:5000/get-pdf',
@@ -165,71 +164,6 @@ export function Worksheet() {
     }
   };
 
-  // const mathImage = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       'http://localhost:5000/get-math-image',
-  //       {
-  //         content: Contents2.it_quest,
-  //       },
-  //       {
-  //         responseType: 'text', // 서버로부터 문자열 형태의 응답 받기
-  //       },
-  //     );
-
-  //     if (response.status === 200) {
-  //       setShowPdf(true);
-  //       setImageData(response.data);
-  //     } else {
-  //       console.error('Server responded with an error:', response.status);
-  //       // 사용자에게 메시지를 표시하거나 다른 적절한 조치를 취할 수 있습니다.
-  //     }
-  //   } catch (error) {
-  //     console.error('Failed to fetch data:', error);
-  //     // 사용자에게 메시지를 표시하거나 다른 적절한 조치를 취할 수 있습니다.
-  //   }
-  // };
-  const [renderedMath, setRenderedMath] = useState('');
-  console.log(renderedMath);
-
-  const exampleMathML = `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-<mi>x</mi> <mo>=</mo>
-  <mrow>
-    <mfrac>
-      <mrow>
-        <mo>−</mo>
-        <mi>b</mi>
-        <mo>±</mo>
-        <msqrt>
-          <msup><mi>b</mi><mn>2</mn></msup>
-          <mo>−</mo>
-          <mn>4</mn><mi>a</mi><mi>c</mi>
-        </msqrt>
-      </mrow>
-      <mrow> <mn>2</mn><mi>a</mi> </mrow>
-    </mfrac>
-  </mrow>
-  <mtext>.</mtext>
-</math>`;
-
-  const renderMath = async () => {
-    try {
-      // Send MathML to the server for rendering
-      const response = await axios.post('http://localhost:5000/render-math', {
-        mathml: Contents2.it_quest,
-      });
-      if (response.status === 200) {
-        // Display the rendered MathML
-        setShowPdf(true);
-        setRenderedMath(response.data);
-      } else {
-        console.error('Failed to render MathML:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error rendering MathML:', error);
-    }
-  };
-
   return (
     <Container>
       {showPdf ? (
@@ -246,7 +180,6 @@ export function Worksheet() {
               닫기
             </Button>
           </IframeButtonWrapper>
-          <div dangerouslySetInnerHTML={{ __html: renderedMath }}></div>
           <iframe
             src={pdfData}
             width="1100"
@@ -335,8 +268,7 @@ export function Worksheet() {
                 <div className="preview">
                   <LuFileSearch2
                     style={{ fontSize: '22px', cursor: 'pointer' }}
-                    //onClick={testApi}
-                    onClick={renderMath}
+                    onClick={getPdf}
                   />
                 </div>
                 <div className="setting">
