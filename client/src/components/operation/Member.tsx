@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
 // import { getMemberList } from '../../api/getAxios';
-import { putDisableMember } from '../../api/putAxios';
+// import { putDisableMember } from '../../api/putAxios';
 import {
   Button,
   AlertBar,
@@ -51,7 +51,7 @@ export function Member() {
   // 유저 리스트 불러오기 api
   const getUserList = async () => {
     const res = await userInstance.get(
-      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}
+      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${10}
 			`,
       // &isUseFilter=${''}
     );
@@ -349,6 +349,7 @@ export function Member() {
                 value={list.userKey}
                 $margin={`0 5px 0 0`}
                 checked={checkList.includes(list.userKey)}
+                readOnly
               />
               <ItemLayout>
                 <span>{list.name} </span>
@@ -403,7 +404,10 @@ export function Member() {
       )}
 
       {memberListData?.data.data.pagination && (
-        <PaginationBox itemsCountPerPage={page} totalItemsCount={totalPage} />
+        <PaginationBox
+          itemsCountPerPage={page}
+          totalItemsCount={totalPage && totalPage}
+        />
       )}
       <Alert
         isAlertOpen={isAlertOpen}

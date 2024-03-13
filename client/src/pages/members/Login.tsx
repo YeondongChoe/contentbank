@@ -84,7 +84,10 @@ export function Login() {
     }) => {
       console.log('accessToken ----login', response.data.data.accessToken);
       console.log('refreshToken ----login', response.data.data.refreshToken);
-      console.log('sessionId ----login', response.data.data.sessionId);
+      console.log(
+        'sessionId ---------------------login',
+        response.data.data.sessionId,
+      );
       // 로컬데이터에서 토큰과 세션을 저장
       setAuthorityCookie('accessToken', response.data.data.accessToken, {
         path: '/',

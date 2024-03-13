@@ -11,7 +11,7 @@ type ListItemProps = {
   height?: string;
   margin?: string;
   children: JSX.Element | JSX.Element[];
-  key?: string | number;
+  key?: string;
   isChecked: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
@@ -33,7 +33,11 @@ export function ListItem({
       $margin={margin}
       key={key}
     >
-      <Wrapper className={`${isChecked && 'on'}`} onClick={onClick}>
+      <Wrapper
+        className={`${isChecked && 'on'}`}
+        onClick={onClick}
+        type="button"
+      >
         {children}
       </Wrapper>
     </Component>

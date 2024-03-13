@@ -301,6 +301,26 @@ export const selectCategory3 = [
   },
 ];
 
+export const selectCategory4 = [
+  {
+    id: '1',
+    label: '교육과정',
+    value: '1',
+    options: [
+      { id: '0', label: '1차', value: '0' },
+      { id: '1', label: '2차', value: '1' },
+      { id: '2', label: '3차', value: '2' },
+      { id: '3', label: '4차', value: '3' },
+      { id: '4', label: '5차', value: '4' },
+      { id: '5', label: '6차', value: '5' },
+      { id: '6', label: '7차', value: '6' },
+      { id: '7', label: '8차', value: '7' },
+      { id: '8', label: '9차', value: '8' },
+      { id: '9', label: '10차', value: '9' },
+    ],
+  },
+];
+
 export const questionList = [
   {
     id: 'Gasdv_1234567890',

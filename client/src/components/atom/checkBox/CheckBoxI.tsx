@@ -25,6 +25,7 @@ type CheckboxProps = {
   disabled?: boolean;
   width?: string;
   height?: string;
+  readOnly?: boolean;
 };
 
 export const CheckBoxI = ({

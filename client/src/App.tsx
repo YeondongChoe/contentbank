@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 
+import { time } from 'console';
+
 import {
   QueryClientProvider,
   QueryClient,
@@ -63,10 +65,10 @@ export function App() {
       onError: (context: {
         response: { data: { message: string; code: string } };
       }) => {
-        //TODO : 전역에서 작동하는지 확인
-        if (context.response.data.code == 'GE-002') {
-          postRefreshToken();
-        }
+        //TODO : 전역에서 작동하는지 확인 // code 값에 따른 분기 처리
+        // if (context.response.data.code == 'GE-002') {
+        //   postRefreshToken();
+        // }
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
@@ -128,22 +130,6 @@ export function App() {
         if (error.response.data.code == 'GE-002') {
           // 리프레쉬 토큰 기간 만료시
           navigate('/login');
-          // 로그아웃;
-          removeAuthorityCookie('accessToken', {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-          removeAuthorityCookie('refreshToken', {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-          removeAuthorityCookie('sessionId', {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
 
           openToastifyAlert({
             type: 'error',
@@ -156,15 +142,16 @@ export function App() {
 
     console.log('refreshTokenData ', refreshTokenData);
   };
-
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
     if (!getAuthorityCookie('accessToken')) {
       navigate('/login');
-      // 전역 초기화
-      closeModal();
     }
   }, [getAuthorityCookie('accessToken')]);
+  useEffect(() => {
+    // 전역 초기화
+    if (location.pathname === '/login') closeModal();
+  }, [location]);
 
   return (
     <>

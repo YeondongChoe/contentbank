@@ -8,30 +8,26 @@ import { OptionsDepsProps } from '../../../components/contents/createcontent/opt
 import { COLOR } from '../../constants';
 
 type ButtonFormatRadioProps = {
-  list: OptionsDepsProps[];
+  list: any[]; //TODO : 임시타입
   titleText?: string;
   $margin?: string;
   defaultChecked?: boolean;
   checkedInput: { title: string; checkValue: string }[];
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  selected: string;
+  key?: string;
 };
 
 export function ButtonFormatRadio({
-  onChange,
   list,
   titleText,
   defaultChecked,
-  checkedInput,
   $margin,
+  onChange,
+  selected,
+  key,
 }: ButtonFormatRadioProps) {
-  const handleCheck = (parentValue: string, value: string) => {
-    const checkValue = checkedInput.filter(
-      (meta) => meta.title === parentValue,
-    );
-    // if()
-    return false;
-  };
   return (
     <Component $margin={$margin}>
       {list.length !== 0 || list == null ? (
@@ -49,18 +45,11 @@ export function ButtonFormatRadio({
                     id={item.label as string}
                     value={item.label}
                     onChange={onChange}
-                    checked={handleCheck(
-                      item.parentValue as string,
-                      item.label,
-                    )}
+                    checked={selected === item.label}
                     className={item.parentValue}
                   />
                   <span
-                    className={`label ${
-                      handleCheck(item.parentValue as string, item.label)
-                        ? 'on'
-                        : ''
-                    }`}
+                    className={`label ${selected === item.label ? 'on' : ''}`}
                   >
                     {item.label}
                   </span>
@@ -84,6 +73,7 @@ type ButtonFormatRadioListStyleProps = {
 const Component = styled.div<{ $margin?: string }>`
   padding: 5px 10px;
   display: flex;
+  flex-wrap: wrap;
   margin: ${({ $margin }) => $margin || '0px'};
 
   strong {
@@ -98,13 +88,14 @@ const Component = styled.div<{ $margin?: string }>`
 const ButtonFormatRadioList = styled.ul<ButtonFormatRadioListStyleProps>`
   display: flex;
   flex-wrap: wrap;
-
-  input {
-    appearance: none;
-  }
+  flex: 1 0 0;
   li {
     padding: 2px;
   }
+  input {
+    appearance: none;
+  }
+
   label {
     display: flex;
   }

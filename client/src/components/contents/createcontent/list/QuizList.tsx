@@ -77,12 +77,12 @@ export function QuizList({
 
   const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     const target = e.currentTarget.children[1];
-    console.log(target.classList);
+    // console.log(target.classList);
     target.classList.add('on');
   };
   const hideTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     const target = e.currentTarget.children[1];
-    console.log(target.classList);
+    // console.log(target.classList);
     target.classList.remove('on');
   };
 
