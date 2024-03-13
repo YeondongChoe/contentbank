@@ -6,8 +6,6 @@ import { AxiosResponse } from 'axios';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
-import { getMemberInformation } from '../../api/getAxios';
-import { putSaveName } from '../../api/putAxios';
 import {
   Input,
   Label,

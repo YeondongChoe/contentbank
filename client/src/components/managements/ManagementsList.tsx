@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { getQuestionList } from '../../api/getAxios';
 import { putChangeServiced } from '../../api/putAxios';
 import {
   Alert,
@@ -24,13 +23,13 @@ import {
   contentTheadList,
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
-import { totalPageAtom, pageAtom } from '../../store/utilAtom';
+import { pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function ManagementsList() {
   const [didMount, setDidMount] = useState(false);
-  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
+  // // // const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const size = 10;
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
@@ -205,35 +204,35 @@ export function ManagementsList() {
     },
   ];
 
-  const loadData = useCallback(() => {
-    getQuestionList({
-      setQuestionList,
-      setIsChangedServiced,
-      settotalPage,
-      searchValue,
-      MenuCode,
-      page,
-      size,
-    });
-  }, [
-    page,
-    MenuCode,
-    searchValue,
-    setQuestionList,
-    settotalPage,
-    setIsChangedServiced,
-  ]);
+  // const loadData = useCallback(() => {
+  //   getQuestionList({
+  //     setQuestionList,
+  //     setIsChangedServiced,
+  //     // settotalPage,
+  //     searchValue,
+  //     MenuCode,
+  //     page,
+  //     size,
+  //   });
+  // }, [
+  //   page,
+  //   MenuCode,
+  //   searchValue,
+  //   setQuestionList,
+  //   // settotalPage,
+  //   setIsChangedServiced,
+  // ]);
 
   useEffect(() => {
     setPage(1);
     setDidMount(true);
   }, []);
 
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount, page, isChangedServiced]);
+  // useEffect(() => {
+  //   if (didMount) {
+  //     loadData();
+  //   }
+  // }, [didMount, page, isChangedServiced]);
 
   return (
     <Container>
@@ -340,7 +339,7 @@ export function ManagementsList() {
         onClick={submitDisabled}
       ></Alert>
 
-      <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} />
+      {/* <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} /> */}
       {isOpenPopup && <ManagemantMainPopup setIsOpenPopup={setIsOpenPopup} />}
     </Container>
   );

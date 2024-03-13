@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { Input, Label, AlertBar } from '../..';
-import { getAuthorityList } from '../../../api/getAxios';
+// import { getAuthorityList } from '../../../api/getAxios';
 import { postRegister, postDuplicate } from '../../../api/postAxios';
 import { useModal } from '../../../hooks';
 import { Button } from '../../atom';
@@ -112,21 +112,21 @@ export function RegisterModal() {
     }
   };
 
-  const loadData = useCallback(() => {
-    getAuthorityList({
-      setAuthorityList,
-    });
-  }, []);
+  // const loadData = useCallback(() => {
+  //   getAuthorityList({
+  //     setAuthorityList,
+  //   });
+  // }, []);
 
   useEffect(() => {
     setDidMount(true);
   }, []);
 
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount]);
+  // useEffect(() => {
+  //   if (didMount) {
+  //     loadData();
+  //   }
+  // }, [didMount]);
 
   useEffect(() => {
     if (Id === '') {

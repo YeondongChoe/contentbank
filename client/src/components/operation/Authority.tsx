@@ -6,7 +6,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { DeleteAuthority } from '../../api/deleteAxios';
-import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
+// import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
 import { Button, IndexInfo } from '../../components/atom';

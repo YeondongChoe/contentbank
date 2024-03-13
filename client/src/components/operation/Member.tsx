@@ -25,7 +25,7 @@ import {
   TabMenu,
 } from '../../components/molecules';
 import { useModal } from '../../hooks';
-import { pageAtom, totalPageAtom } from '../../store/utilAtom';
+import { pageAtom } from '../../store/utilAtom';
 import { MemberType } from '../../types';
 import { getAuthorityCookie } from '../../utils/cookies';
 import { COLOR } from '../constants/COLOR';
@@ -43,7 +43,6 @@ export function Member() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
 
-  const [totalPage, setTotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const [memberList, setMemberList] = useState<MemberType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -51,7 +50,7 @@ export function Member() {
   // 유저 리스트 불러오기 api
   const getUserList = async () => {
     const res = await userInstance.get(
-      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${10}
+      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}
 			`,
       // &isUseFilter=${''}
     );
@@ -77,12 +76,10 @@ export function Member() {
     // console.log(
     //   'memberListData?.data.data.pagination.currentPage',
     //   memberListData?.data.data.pagination.totalBlockCount,
-
-    setTotalPage(memberListData?.data.data.pagination.totalBlockCount);
     // console.log(page, pageIndex);
     // console.log(totalPage, totalPage);
     // setTotalPage(10);
-  }, [isFetching]);
+  }, [memberListData]);
   // 페이지 변경시 리랜더링
   useEffect(() => {
     console.log(page, memberListData);
@@ -405,8 +402,8 @@ export function Member() {
 
       {memberListData?.data.data.pagination && (
         <PaginationBox
-          itemsCountPerPage={page}
-          totalItemsCount={totalPage && totalPage}
+          itemsCountPerPage={memberListData?.data.data.pagination.pageUnit}
+          totalItemsCount={memberListData?.data.data.pagination.totalCount}
         />
       )}
       <Alert

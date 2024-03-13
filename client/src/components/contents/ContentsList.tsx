@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { questionInstance } from '../../api/axios';
-import { getQuestionList } from '../../api/getAxios';
+// import { getQuestionList } from '../../api/getAxios';
 import { putChangeServiced } from '../../api/putAxios';
 import {
   ContentList,
@@ -190,35 +190,35 @@ export function ContentsList() {
     },
   ];
 
-  const loadData = useCallback(() => {
-    getQuestionList({
-      setQuestionList,
-      setIsChangedServiced,
-      settotalPage,
-      searchValue,
-      MenuCode,
-      page,
-      size,
-    });
-  }, [
-    page,
-    MenuCode,
-    searchValue,
-    setQuestionList,
-    settotalPage,
-    setIsChangedServiced,
-  ]);
+  // const loadData = useCallback(() => {
+  //   getQuestionList({
+  //     setQuestionList,
+  //     setIsChangedServiced,
+  //     settotalPage,
+  //     searchValue,
+  //     MenuCode,
+  //     page,
+  //     size,
+  //   });
+  // }, [
+  //   page,
+  //   MenuCode,
+  //   searchValue,
+  //   setQuestionList,
+  //   settotalPage,
+  //   setIsChangedServiced,
+  // ]);
 
   // 검색이나 셀렉트로 특정지어진 데이터 담은 후 보여주기 변경값이 있을때 마다 랜더링
   useEffect(() => {
     setDidMount(true);
   }, []);
 
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount, page, isChangedServiced]);
+  // useEffect(() => {
+  //   if (didMount) {
+  //     loadData();
+  //   }
+  // }, [didMount, page, isChangedServiced]);
 
   return (
     <Container>
