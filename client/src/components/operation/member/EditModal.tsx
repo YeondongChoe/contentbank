@@ -131,7 +131,7 @@ export function EditModal({
   // 유저 리스트 불러오기 api
   const getUser = async () => {
     const res = await userInstance.get(`/v1/account/${accountIdx}`);
-    console.log(`accountIdx get 결과값`, res);
+    // console.log(`accountIdx get 결과값`, res);
     return res;
   };
   const {

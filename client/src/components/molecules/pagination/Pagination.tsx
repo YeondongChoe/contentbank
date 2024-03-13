@@ -35,8 +35,8 @@ export function PaginationBox({
     <Wrapper>
       <Pagination
         activePage={page}
-        itemsCountPerPage={itemsCountPerPage}
-        totalItemsCount={totalItemsCount}
+        itemsCountPerPage={itemsCountPerPage} // 한페이지에서 보일 아이템 갯수
+        totalItemsCount={totalItemsCount} // 페이지리스트 전체 아이템 갯수
         pageRangeDisplayed={pageRangeDisplay()}
         prevPageText={'<'}
         nextPageText={'>'}

@@ -8,13 +8,14 @@ import { COLOR } from '../constants';
 type ValueNoneProps = {
   width?: string;
   height?: string;
+  info?: string;
 };
 
-export function ValueNone({ width, height }: ValueNoneProps) {
+export function ValueNone({ width, height, info }: ValueNoneProps) {
   return (
     <Component width={width} height={height}>
       <RxValueNone color={`${COLOR.PRIMARY}`} size={40} />
-      <p>해당 데이터는 없습니다</p>
+      {info ? <p>{info}</p> : <p>등록된 데이터가 아직 없습니다.</p>}
     </Component>
   );
 }

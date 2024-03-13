@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { Input, Label, AlertBar } from '../..';
-// import { getAuthorityList } from '../../../api/getAxios';
+import { userInstance } from '../../../api/axios';
 import { postRegister, postDuplicate } from '../../../api/postAxios';
 import { useModal } from '../../../hooks';
 import { Button } from '../../atom';
@@ -13,11 +14,22 @@ import { Select } from '../../atom/select';
 import { COLOR } from '../../constants';
 import { Alert } from '../../molecules/alert/Alert';
 
-type authorityListProps = {
-  seq: number;
+type authorityType = {
+  idx: number;
   code: string;
   name: string;
   sort: number;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+};
+
+type authoritySelectType = {
+  id: number;
+  label: string;
+  code: string;
+  value: string;
 };
 
 type RegisterModalProps = {
@@ -29,7 +41,6 @@ type RegisterModalProps = {
 export function RegisterModal() {
   const { closeModal } = useModal();
 
-  const [didMount, setDidMount] = useState(false);
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
   const [isAuthorityError, setIsAuthorityError] = useState(false);
@@ -37,27 +48,25 @@ export function RegisterModal() {
   const [idErrorMessage, setIdErrorMessage] = useState('');
   const [AuthorityErrorMessage, setAuthorityErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [authorityList, setAuthorityList] = useState<authorityListProps[]>([]);
+
   const [duplicatedId, setduplicatedId] = useState('');
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [commentValue, setCommentValue] = useState('');
 
   const [isRequired, setIsRequired] = useState(false);
-  const [isRequiredDuplicate, setIsRequiredDuplicate] = useState(false);
+  const [isRequiredDuplicate, setIsRequiedDuplicate] = useState(false);
 
   const { control, watch } = useForm();
 
   const [authorityCode, setAuthorityCode] = useState<string>();
 
-  const AuthorityList = authorityList.map((el) => {
-    return [el.name, el.code];
+  const [authoritySelectList, setAuthoritySelectList] = useState<
+    authoritySelectType[]
+  >([]);
+
+  const AuthorityList = authoritySelectList.map((el) => {
+    return [el.label, el.code];
   });
-  const AuthorityOption = AuthorityList.map((item, index) => ({
-    id: `${index + 1}`,
-    label: item[0],
-    code: item[1],
-    value: index + 1,
-  }));
 
   const Authority = authorityCode;
   const Name = watch('name');
@@ -112,22 +121,49 @@ export function RegisterModal() {
     }
   };
 
-  // const loadData = useCallback(() => {
-  //   getAuthorityList({
-  //     setAuthorityList,
-  //   });
-  // }, []);
+  // 권한 불러오기 api
+  const getAuthority = async () => {
+    const res = await userInstance.get(`/v1/authority?menuIdx=${9}`);
+    console.log(`get authority 결과값`, res);
+    return res;
+  };
+  const {
+    isLoading,
+    error,
+    data: authorityData,
+    isFetching,
+  } = useQuery({
+    queryKey: ['get-authority'],
+    queryFn: getAuthority,
+    meta: {
+      errorMessage: 'get-authority 에러 메세지',
+    },
+  });
 
   useEffect(() => {
-    setDidMount(true);
-  }, []);
+    // console.log('authorityData', authorityData && authorityData);
+    if (authorityData && authorityData.data.data.authorityList) {
+      const list: authoritySelectType[] =
+        authorityData.data.data.authorityList.map((item: authorityType) => ({
+          id: item.idx,
+          label: item.name,
+          code: item.code,
+          value: item.name,
+        }));
+      setAuthoritySelectList([...list]);
+    } else {
+      setAuthoritySelectList([
+        {
+          id: 0,
+          label: 'none',
+          code: 'none',
+          value: 'none',
+        },
+      ]);
+    }
+  }, [isFetching]);
 
-  // useEffect(() => {
-  //   if (didMount) {
-  //     loadData();
-  //   }
-  // }, [didMount]);
-
+  // console.log('authorityData', authorityData);
   useEffect(() => {
     if (Id === '') {
       setIsDuplicate(false);
@@ -240,6 +276,7 @@ export function RegisterModal() {
             ) : (
               <Label width="130px" fontSize="15px" value="* 권한" />
             )}
+
             <Controller
               control={control}
               name="authority"
@@ -253,7 +290,7 @@ export function RegisterModal() {
                     setAuthorityCode(code);
                   }}
                   onClick={() => setIsAuthorityError(false)}
-                  options={AuthorityOption}
+                  options={authoritySelectList}
                 ></Select>
               )}
             />
