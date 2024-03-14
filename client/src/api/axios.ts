@@ -62,7 +62,12 @@ export const userInstance = axios.create({
 userInstance.interceptors.request.use(function (config) {
   const headerAuth =
     config.headers.Authorization?.toString().split('Bearer ')[1];
-  console.log('headerAuth--------------- ', headerAuth);
+  console.log(
+    'headerAuth--------------- ',
+    headerAuth,
+    'getAuthorityCookie(sessionId)',
+    getAuthorityCookie('sessionId'),
+  );
 
   if (headerAuth !== getAuthorityCookie('accessToken')) {
     config.headers.Authorization = `Bearer ${getAuthorityCookie(

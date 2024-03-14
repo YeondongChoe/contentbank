@@ -58,6 +58,7 @@ export function Mypage() {
 
   // 마이페이지 데이터 불러오기 api
   const getMyInfo = async () => {
+    console.log('getMyInfo sessionId', getAuthorityCookie('sessionId'));
     return await userInstance.get(`/v1/account/my-info`);
   };
   const {

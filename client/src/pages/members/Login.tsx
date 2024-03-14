@@ -99,7 +99,7 @@ export function Login() {
         sameSite: 'strict',
         secure: false,
       });
-      setAuthorityCookie('sessionId', response?.data.data.sessionId, {
+      setAuthorityCookie('sessionId', response.data.data.sessionId, {
         path: '/',
         sameSite: 'strict',
         secure: false,
