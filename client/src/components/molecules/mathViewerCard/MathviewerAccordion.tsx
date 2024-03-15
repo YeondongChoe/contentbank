@@ -19,6 +19,8 @@ type AccordionProps = {
   dragOver?: (e: React.DragEvent) => void;
   drop?: (e: React.DragEvent) => void;
   componentWidth?: string;
+  isSimilar?: boolean;
+  isSelected?: boolean;
 };
 
 function Accordion({
@@ -29,6 +31,8 @@ function Accordion({
   dragOver,
   drop,
   componentWidth,
+  isSimilar,
+  isSelected,
 }: AccordionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -44,6 +48,8 @@ function Accordion({
       onDragOver={dragOver}
       onDragEnd={drop}
       $componentWidth={componentWidth}
+      $isSimilar={isSimilar}
+      $isSelected={isSelected}
     >
       <AccordionHeader onClick={toggleAccordion}>
         <span>{title}</span>
@@ -97,14 +103,10 @@ export function MathviewerAccordion({
       dragOver={dragOver}
       drop={drop}
       componentWidth={componentWidth}
+      isSimilar={isSimilar}
+      isSelected={index === selectedCardIndex}
     >
-      <Component
-        className={className}
-        $isSimilar={isSimilar}
-        $isSelected={index === selectedCardIndex}
-        $componentWidth={componentWidth}
-        $isDragged={isDragged}
-      >
+      <Component className={className} $isDragged={isDragged}>
         <div className="leftInfomation">
           <div className="numbering">{index}</div>
           <LuBookmarkPlus
@@ -152,9 +154,9 @@ export function MathviewerAccordion({
           </SimilarButtonWrapper>
         ) : (
           <ButtonWrapper>
-            <div className="menuIcon">
+            {/* <div className="menuIcon">
               <IoMenuOutline fontSize={'30px'} style={{ cursor: 'grab' }} />
-            </div>
+            </div> */}
 
             {index === selectedCardIndex && isSimilar ? (
               <div
@@ -214,22 +216,14 @@ export function MathviewerAccordion({
 }
 
 const Component = styled.div<{
-  $isSimilar?: boolean;
-  $isSelected?: boolean;
-  $componentWidth?: string;
   $isDragged?: boolean;
 }>`
   display: flex;
-  width: ${({ $componentWidth }) =>
-    $componentWidth ? ` ${$componentWidth};` : '600px'};
   min-height: 250px;
   background-color: white;
-  padding: ${({ $componentWidth }) => ($componentWidth ? '20px;' : '10px')};
-  border: ${({ $isSelected, $isSimilar }) =>
-    $isSimilar && $isSelected
-      ? `3px solid ${COLOR.PRIMARY}`
-      : '3px solid white'};
-  border: ${({ $componentWidth }) => !$componentWidth && `1px solid gray`};
+  padding: 10px;
+  border-radius: 15px;
+
   .leftInfomation {
     width: 70px;
     display: flex;
@@ -288,7 +282,11 @@ const AccordionContainer = styled.div<{
 }>`
   width: ${({ $componentWidth }) =>
     $componentWidth ? ` ${$componentWidth};` : '600px'};
-  //margin-bottom: 10px;
+  border: ${({ $isSelected, $isSimilar }) =>
+    $isSimilar && $isSelected
+      ? `3px solid ${COLOR.PRIMARY}`
+      : '3px solid white'};
+  background-color: white;
   border-radius: 15px;
 `;
 
@@ -296,16 +294,15 @@ const AccordionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  //border-top-right-radius: 15px;
-  //border-top-left-radius: 15px;
   padding: 10px;
   background-color: white;
+  border: 3px solid white;
+  width: 100%;
   cursor: pointer;
+  border-radius: 15px;
 `;
 
 const AccordionContent = styled.div`
-  //border-bottom-right-radius: 15px;
-  //border-bottom-left-radius: 15px;
-  //padding: 10px;
-  //border-top: none;
+  //border: 1px solid red;
+  border-radius: 15px;
 `;

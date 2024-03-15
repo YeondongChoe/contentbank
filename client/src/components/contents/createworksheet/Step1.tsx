@@ -652,125 +652,6 @@ export function Step1() {
                 <CategoryWrapper></CategoryWrapper>
               </CategorySection>
               <SchoolSelectorSection>
-                {isEqualScoreModal && (
-                  <Overlay>
-                    <EqualScoreModalContainer>
-                      <EqualScoreModalWrapper>
-                        <EqualScoreModalTitleWrapper>
-                          <Label
-                            value={`총 ${questionNum || inputValue} 문항`}
-                            fontSize="25px"
-                            width="160px"
-                          />
-                          <EqualScoreModalOptionWrapper>
-                            <Label
-                              value="총 배점"
-                              fontSize="25px"
-                              width="89px"
-                            />
-                            <Input
-                              width="50px"
-                              height="34px"
-                              border="black"
-                              placeholderSize="16px"
-                              padding="10px"
-                              fontSize="16px"
-                              type="text"
-                              value={equalInputValue}
-                              maxLength={10}
-                              minLength={2}
-                              onClick={() => {
-                                setEqualInputValue('');
-                                setIsSaveEqualValue(false);
-                              }}
-                              onChange={(e) => {
-                                changeEqualInputValue(e);
-                              }}
-                            ></Input>
-                            <Button
-                              buttonType="button"
-                              onClick={saveEqualInputValue}
-                              $padding="10px"
-                              height={'34px'}
-                              width={'100px'}
-                              fontSize="13px"
-                              $filled
-                              cursor
-                            >
-                              <span>저장</span>
-                            </Button>
-                          </EqualScoreModalOptionWrapper>
-                        </EqualScoreModalTitleWrapper>
-                        <EqualScoreModalScript>
-                          {remainder === 0 ||
-                          (remainder === null && isSaveEqualValue) ? (
-                            <>
-                              {/* 나머지가 없는경우 */}
-                              <div>
-                                01번 문항부터 {questionNum || inputValue}번
-                                문항까지
-                                {quotient || 0}점
-                              </div>
-                              {isSaveEqualValue ? (
-                                <div className="pointsPerQuestion">
-                                  문항당 배점 {minQuotient}점 ~ {quotient + 1}점
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {/* 나머지가 있는경우 */}
-                              <div>
-                                01번 문항부터 {remainderContent}번 문항까지{' '}
-                                {quotient || 0}점
-                              </div>
-                              <div>
-                                {nextRemainderContent}번 문항부터{' '}
-                                {questionNum || inputValue}번 문항까지{' '}
-                                {quotient + 1 || 0}점
-                              </div>
-                              {isSaveEqualValue ? (
-                                <div className="pointsPerQuestion">
-                                  문항당 배점 {minQuotient}점 ~ {maxQuotient}점
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-                            </>
-                          )}
-                        </EqualScoreModalScript>
-                        <EqualScoreModalButtonWrapper>
-                          <Button
-                            buttonType="button"
-                            onClick={closeEqualScoreSettingModal}
-                            $padding="10px"
-                            height={'100%'}
-                            width={'100%'}
-                            fontSize="13px"
-                            $normal
-                            cursor
-                          >
-                            <span>취소</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={saveEqualScoreSettingModal}
-                            $padding="10px"
-                            height={'100%'}
-                            width={'100%'}
-                            fontSize="13px"
-                            $filled
-                            cursor
-                          >
-                            <span>확인</span>
-                          </Button>
-                        </EqualScoreModalButtonWrapper>
-                      </EqualScoreModalWrapper>
-                    </EqualScoreModalContainer>
-                  </Overlay>
-                )}
                 <SubTitleWrapper>
                   <Label value="*문항수" fontSize="16px" width="60px" />
                   <Label value="최대 100문항" fontSize="12px" width="440px" />
@@ -855,11 +736,26 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
+                      selectQuestionLevel('선택안함');
+                    }}
+                    $padding="10px"
+                    height={'34px'}
+                    width={'81px'}
+                    fontSize="14px"
+                    $normal={questionLevel !== '선택안함'}
+                    $filled={questionLevel === '선택안함'}
+                    cursor
+                  >
+                    <span>선택안함</span>
+                  </Button>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {
                       selectQuestionLevel('하');
                     }}
                     $padding="10px"
                     height={'34px'}
-                    width={'92px'}
+                    width={'74px'}
                     fontSize="14px"
                     $normal={questionLevel !== '하'}
                     $filled={questionLevel === '하'}
@@ -874,7 +770,7 @@ export function Step1() {
                     }}
                     $padding="10px"
                     height={'34px'}
-                    width={'92px'}
+                    width={'74px'}
                     fontSize="14px"
                     $normal={questionLevel !== '중하'}
                     $filled={questionLevel === '중하'}
@@ -889,7 +785,7 @@ export function Step1() {
                     }}
                     $padding="10px"
                     height={'34px'}
-                    width={'92px'}
+                    width={'74px'}
                     fontSize="14px"
                     $normal={questionLevel !== '중'}
                     $filled={questionLevel === '중'}
@@ -904,7 +800,7 @@ export function Step1() {
                     }}
                     $padding="10px"
                     height={'34px'}
-                    width={'92px'}
+                    width={'74px'}
                     fontSize="14px"
                     $normal={questionLevel !== '상'}
                     $filled={questionLevel === '상'}
@@ -919,7 +815,7 @@ export function Step1() {
                     }}
                     $padding="10px"
                     height={'34px'}
-                    width={'93px'}
+                    width={'74px'}
                     fontSize="14px"
                     $normal={questionLevel !== '최상'}
                     $filled={questionLevel === '최상'}
@@ -1455,11 +1351,26 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
+                          selectQuestionLevel('선택안함');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'81px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '선택안함'}
+                        $filled={questionLevel === '선택안함'}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
                           selectQuestionLevel('하');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '하'}
                         $filled={questionLevel === '하'}
@@ -1474,7 +1385,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '중하'}
                         $filled={questionLevel === '중하'}
@@ -1489,7 +1400,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '중'}
                         $filled={questionLevel === '중'}
@@ -1504,7 +1415,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '상'}
                         $filled={questionLevel === '상'}
@@ -1519,7 +1430,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'93px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '최상'}
                         $filled={questionLevel === '최상'}
@@ -1530,15 +1441,6 @@ export function Step1() {
                     </SelectorGroup>
                     <SubTitleWrapper>
                       <Label value="*문항 타입" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        자동 체점
-                        <CheckBox
-                          width="16"
-                          height="16"
-                          isChecked={isAutoGrading}
-                          onClick={checkAutoGrading}
-                        />
-                      </AdditionOption>
                     </SubTitleWrapper>
                     <SelectorGroup>
                       <Button
@@ -1658,22 +1560,39 @@ export function Step1() {
                         <span>모의고사만</span>
                       </Button>
                     </SelectorGroup>
+                    <Label value="*배점" fontSize="16px" width="200px" />
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectEqualScore('선택안함');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'246px'}
+                        fontSize="14px"
+                        $normal={equalScore !== '선택안함'}
+                        $filled={equalScore === '선택안함'}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={openEqualScoreSettingModal}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'245px'}
+                        fontSize="14px"
+                        $normal={equalScore !== '균등배점'}
+                        $filled={equalScore === '균등배점'}
+                        cursor
+                      >
+                        <span>균등 배점</span>
+                      </Button>
+                    </SelectorGroup>
                     <AdditionOptionList>
                       <Label value="추가 옵션" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption1}
-                          onClick={selectOption1}
-                        />
-                        기존 출제 문항 제외
-                      </AdditionOption>
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption2}
-                          onClick={selectOption2}
-                        />
-                        교육 과정 외 유형 제외
-                      </AdditionOption>
                       <AdditionOption>
                         <CheckBox
                           isChecked={isOption3}
@@ -1886,11 +1805,26 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
+                          selectQuestionLevel('선택안함');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'81px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== '선택안함'}
+                        $filled={questionLevel === '선택안함'}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
                           selectQuestionLevel('하');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '하'}
                         $filled={questionLevel === '하'}
@@ -1905,7 +1839,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '중하'}
                         $filled={questionLevel === '중하'}
@@ -1920,7 +1854,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '중'}
                         $filled={questionLevel === '중'}
@@ -1935,7 +1869,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '상'}
                         $filled={questionLevel === '상'}
@@ -1950,7 +1884,7 @@ export function Step1() {
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'93px'}
+                        width={'74px'}
                         fontSize="14px"
                         $normal={questionLevel !== '최상'}
                         $filled={questionLevel === '최상'}
@@ -1961,15 +1895,6 @@ export function Step1() {
                     </SelectorGroup>
                     <SubTitleWrapper>
                       <Label value="*문항 타입" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        자동 체점
-                        <CheckBox
-                          width="16"
-                          height="16"
-                          isChecked={isAutoGrading}
-                          onClick={checkAutoGrading}
-                        />
-                      </AdditionOption>
                     </SubTitleWrapper>
                     <SelectorGroup>
                       <Button
@@ -2089,22 +2014,39 @@ export function Step1() {
                         <span>모의고사만</span>
                       </Button>
                     </SelectorGroup>
+                    <Label value="*배점" fontSize="16px" width="200px" />
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectEqualScore('선택안함');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'246px'}
+                        fontSize="14px"
+                        $normal={equalScore !== '선택안함'}
+                        $filled={equalScore === '선택안함'}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={openEqualScoreSettingModal}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'245px'}
+                        fontSize="14px"
+                        $normal={equalScore !== '균등배점'}
+                        $filled={equalScore === '균등배점'}
+                        cursor
+                      >
+                        <span>균등 배점</span>
+                      </Button>
+                    </SelectorGroup>
                     <AdditionOptionList>
                       <Label value="추가 옵션" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption1}
-                          onClick={selectOption1}
-                        />
-                        기존 출제 문항 제외
-                      </AdditionOption>
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption2}
-                          onClick={selectOption2}
-                        />
-                        교육 과정 외 유형 제외
-                      </AdditionOption>
                       <AdditionOption>
                         <CheckBox
                           isChecked={isOption3}
@@ -2120,9 +2062,9 @@ export function Step1() {
                         내 문항 우선 추천
                       </AdditionOption>
                     </AdditionOptionList>
-                    <Summary>
+                    {/* <Summary>
                       학습지 문항수 {inputValue || questionNum} 개
-                    </Summary>
+                    </Summary> */}
                   </SchoolSelectorSection>
                 </>
               )}
@@ -3145,6 +3087,119 @@ export function Step1() {
               </Button>
             </ModalButtonWrapper>
           </ModalContainer>
+        </Overlay>
+      )}
+      {isEqualScoreModal && (
+        <Overlay>
+          <EqualScoreModalContainer>
+            <EqualScoreModalWrapper>
+              <EqualScoreModalTitleWrapper>
+                <Label
+                  value={`총 ${questionNum || inputValue} 문항`}
+                  fontSize="25px"
+                  width="160px"
+                />
+                <EqualScoreModalOptionWrapper>
+                  <Label value="총 배점" fontSize="25px" width="89px" />
+                  <Input
+                    width="50px"
+                    height="34px"
+                    border="black"
+                    placeholderSize="16px"
+                    padding="10px"
+                    fontSize="16px"
+                    type="text"
+                    value={equalInputValue}
+                    maxLength={10}
+                    minLength={2}
+                    onClick={() => {
+                      setEqualInputValue('');
+                      setIsSaveEqualValue(false);
+                    }}
+                    onChange={(e) => {
+                      changeEqualInputValue(e);
+                    }}
+                  ></Input>
+                  <Button
+                    buttonType="button"
+                    onClick={saveEqualInputValue}
+                    $padding="10px"
+                    height={'34px'}
+                    width={'100px'}
+                    fontSize="13px"
+                    $filled
+                    cursor
+                  >
+                    <span>저장</span>
+                  </Button>
+                </EqualScoreModalOptionWrapper>
+              </EqualScoreModalTitleWrapper>
+              <EqualScoreModalScript>
+                {remainder === 0 || (remainder === null && isSaveEqualValue) ? (
+                  <>
+                    {/* 나머지가 없는경우 */}
+                    <div>
+                      01번 문항부터 {questionNum || inputValue}번 문항까지
+                      {quotient || 0}점
+                    </div>
+                    {isSaveEqualValue ? (
+                      <div className="pointsPerQuestion">
+                        문항당 배점 {minQuotient}점 ~ {quotient + 1}점
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* 나머지가 있는경우 */}
+                    <div>
+                      01번 문항부터 {remainderContent}번 문항까지{' '}
+                      {quotient || 0}점
+                    </div>
+                    <div>
+                      {nextRemainderContent}번 문항부터{' '}
+                      {questionNum || inputValue}번 문항까지 {quotient + 1 || 0}
+                      점
+                    </div>
+                    {isSaveEqualValue ? (
+                      <div className="pointsPerQuestion">
+                        문항당 배점 {minQuotient}점 ~ {maxQuotient}점
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                )}
+              </EqualScoreModalScript>
+              <EqualScoreModalButtonWrapper>
+                <Button
+                  buttonType="button"
+                  onClick={closeEqualScoreSettingModal}
+                  $padding="10px"
+                  height={'100%'}
+                  width={'100%'}
+                  fontSize="13px"
+                  $normal
+                  cursor
+                >
+                  <span>취소</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={saveEqualScoreSettingModal}
+                  $padding="10px"
+                  height={'100%'}
+                  width={'100%'}
+                  fontSize="13px"
+                  $filled
+                  cursor
+                >
+                  <span>확인</span>
+                </Button>
+              </EqualScoreModalButtonWrapper>
+            </EqualScoreModalWrapper>
+          </EqualScoreModalContainer>
         </Overlay>
       )}
     </Container>
