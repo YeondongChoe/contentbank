@@ -17,6 +17,7 @@ import {
   Label,
   BarChart,
   MathviewerCard,
+  MathviewerAccordion,
   Select,
   CheckBox,
 } from '../..';
@@ -498,7 +499,7 @@ export function Step2() {
                   //onDragOver={dragOver}
                   //onDragEnd={drop}
                 >
-                  <MathviewerCard
+                  {/* <MathviewerCard
                     className={i === dragItem.current ? 'dragging' : ''}
                     componentWidth="750px"
                     width="500px"
@@ -513,7 +514,23 @@ export function Step2() {
                     dragEnter={() => (e: any) => dragEnter(e, i)}
                     dragOver={dragOver}
                     drop={drop}
-                  ></MathviewerCard>
+                  ></MathviewerCard> */}
+                  <MathviewerAccordion
+                    className={i === dragItem.current ? 'dragging' : ''}
+                    componentWidth="750px"
+                    width="500px"
+                    onClick={showSimilarContent}
+                    isSimilar={isSimilar}
+                    index={i + 1}
+                    data={card}
+                    isDragged={i === selectedIndex}
+                    selectedCardIndex={selectedCardIndex}
+                    onSelectCard={setSelectedCardIndex}
+                    dragStart={() => (e: any) => dragStart(e, i, card.seq)}
+                    dragEnter={() => (e: any) => dragEnter(e, i)}
+                    dragOver={dragOver}
+                    drop={drop}
+                  ></MathviewerAccordion>
                 </MathviewerCardWrapper>
               ))}
             </ContentListWrapper>
