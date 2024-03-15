@@ -170,6 +170,44 @@ export function Step1() {
       }
     });
   };
+  const [difficultyTotalValue, setDifficultyTotalValue] = useState({
+    best: {
+      lower: '0',
+      lowerMiddle: '0',
+      middle: '30',
+      upper: '30',
+      best: '40',
+    },
+    upper: {
+      lower: '0',
+      lowerMiddle: '20',
+      middle: '30',
+      upper: '30',
+      best: '20',
+    },
+    middle: {
+      lower: '10',
+      lowerMiddle: '20',
+      middle: '40',
+      upper: '20',
+      best: '10',
+    },
+    lowerMiddle: {
+      lower: '20',
+      lowerMiddle: '40',
+      middle: '30',
+      upper: '10',
+      best: '0',
+    },
+    lower: {
+      lower: '40',
+      lowerMiddle: ' 40',
+      middle: '20',
+      upper: '0',
+      best: '0',
+    },
+  });
+
   const [isDifficulty, setIsDifficulty] = useState(false);
   const openDifficultySetting = () => {
     setIsDifficulty(true);
@@ -212,6 +250,7 @@ export function Step1() {
   };
   const [equalInputValue, setEqualInputValue] = useState('0');
   const [isSaveEqualValue, setIsSaveEqualValue] = useState<boolean>(false);
+
   //나머지 시작 컨텐츠
   const [remainderContent, setRemainderContent] = useState<number>();
   //나머지 시작 전 컨텐츠
@@ -219,7 +258,7 @@ export function Step1() {
   //문항당 배점
   const [quotient, setQuotient] = useState<number>(0);
   const [remainder, setRemainder] = useState<number>();
-  console.log(remainder);
+
   const closeEqualScoreSettingModal = () => {
     setIsEqualScoreModal(false);
     setEqualInputValue('0');
@@ -227,6 +266,7 @@ export function Step1() {
   const saveEqualScoreSettingModal = () => {
     if (isSaveEqualValue) {
       setIsEqualScoreModal(false);
+      closeEqualScoreSettingModal();
     } else {
       if (equalInputValue) {
         openToastifyAlert({
@@ -239,7 +279,6 @@ export function Step1() {
           text: '배점을 입력해주세요.',
         });
       }
-      setIsEqualScoreModal(true);
     }
   };
 
@@ -270,7 +309,7 @@ export function Step1() {
         text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
       });
       setEqualInputValue(questionNum || inputValue);
-      setIsSaveEqualValue(true);
+      setIsSaveEqualValue(false);
     } else {
       openToastifyAlert({
         type: 'success',
@@ -280,8 +319,10 @@ export function Step1() {
       setIsSaveEqualValue(true);
     }
   };
+
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
+  // console.log(minQuotient);
 
   useEffect(() => {
     const parsedValue = parseInt(equalInputValue, 10);
@@ -293,7 +334,7 @@ export function Step1() {
       const remainder = parsedValue % questionNumValue;
       setQuotient(quotient);
       setRemainder(remainder);
-      if (remainder) {
+      if (quotient || remainder) {
         const remainderContent = questionNumValue - remainder;
         const minQuotient = quotient - 1;
         const maxQuotient = quotient + 2;
@@ -543,11 +584,9 @@ export function Step1() {
   };
 
   const mockexamList: MockexamType[] = dummy.Mockexam;
-  //const processedData: MockexamType[] = processMockexam(mockexamList);
   const [processedData, setProcessedData] = useState(
     processMockexam(mockexamList),
   );
-  //console.log(processedData);
 
   const removeMockexam = (seq: number) => {
     setProcessedData((prevData) => prevData.filter((mock) => mock.seq !== seq));
@@ -627,6 +666,7 @@ export function Step1() {
     setExamMonthly([]);
     setExamOption(null);
   }, [tabVeiw]);
+
   return (
     <Container>
       <Wrapper>
@@ -2608,6 +2648,26 @@ export function Step1() {
             <div>
               <InputWrapper>
                 <Label value="최상 선택시" fontSize="16px" width="200px" />
+                {Object.entries(difficultyTotalValue.best).map(
+                  ([key, value]) => (
+                    <Input
+                      key={key}
+                      width="80px"
+                      height="40px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="14px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder="0"
+                      placeholderTextAlign
+                      value={value}
+                      // onChange={(e) => {
+                      //   setGradeValue(e.target.value);
+                      // }}
+                    />
+                  ),
+                )}
                 <Input
                   width="80px"
                   height="40px"
@@ -2618,82 +2678,7 @@ export function Step1() {
                   type="text"
                   placeholder="0"
                   placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
+                  //value={difficulty.best}
                   // onChange={(e) => {
                   //   setGradeValue(e.target.value);
                   // }}
@@ -2701,6 +2686,26 @@ export function Step1() {
               </InputWrapper>
               <InputWrapper>
                 <Label value="상 선택시" fontSize="16px" width="200px" />
+                {Object.entries(difficultyTotalValue.upper).map(
+                  ([key, value]) => (
+                    <Input
+                      key={key}
+                      width="80px"
+                      height="40px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="14px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder="0"
+                      placeholderTextAlign
+                      value={value}
+                      // onChange={(e) => {
+                      //   setGradeValue(e.target.value);
+                      // }}
+                    />
+                  ),
+                )}
                 <Input
                   width="80px"
                   height="40px"
@@ -2711,82 +2716,7 @@ export function Step1() {
                   type="text"
                   placeholder="0"
                   placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
+                  //value={difficulty.best}
                   // onChange={(e) => {
                   //   setGradeValue(e.target.value);
                   // }}
@@ -2794,6 +2724,26 @@ export function Step1() {
               </InputWrapper>
               <InputWrapper>
                 <Label value="중 선택시" fontSize="16px" width="200px" />
+                {Object.entries(difficultyTotalValue.middle).map(
+                  ([key, value]) => (
+                    <Input
+                      key={key}
+                      width="80px"
+                      height="40px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="14px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder="0"
+                      placeholderTextAlign
+                      value={value}
+                      // onChange={(e) => {
+                      //   setGradeValue(e.target.value);
+                      // }}
+                    />
+                  ),
+                )}
                 <Input
                   width="80px"
                   height="40px"
@@ -2804,82 +2754,7 @@ export function Step1() {
                   type="text"
                   placeholder="0"
                   placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
+                  //value={difficulty.best}
                   // onChange={(e) => {
                   //   setGradeValue(e.target.value);
                   // }}
@@ -2887,6 +2762,26 @@ export function Step1() {
               </InputWrapper>
               <InputWrapper>
                 <Label value="중하 선택시" fontSize="16px" width="200px" />
+                {Object.entries(difficultyTotalValue.lowerMiddle).map(
+                  ([key, value]) => (
+                    <Input
+                      key={key}
+                      width="80px"
+                      height="40px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="14px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder="0"
+                      placeholderTextAlign
+                      value={value}
+                      // onChange={(e) => {
+                      //   setGradeValue(e.target.value);
+                      // }}
+                    />
+                  ),
+                )}
                 <Input
                   width="80px"
                   height="40px"
@@ -2897,82 +2792,7 @@ export function Step1() {
                   type="text"
                   placeholder="0"
                   placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
+                  //value={difficulty.best}
                   // onChange={(e) => {
                   //   setGradeValue(e.target.value);
                   // }}
@@ -2980,6 +2800,26 @@ export function Step1() {
               </InputWrapper>
               <InputWrapper>
                 <Label value="하 선택시" fontSize="16px" width="200px" />
+                {Object.entries(difficultyTotalValue.lower).map(
+                  ([key, value]) => (
+                    <Input
+                      key={key}
+                      width="80px"
+                      height="40px"
+                      padding="10px"
+                      border="normal"
+                      placeholderSize="14px"
+                      fontSize="14px"
+                      type="text"
+                      placeholder="0"
+                      placeholderTextAlign
+                      value={value}
+                      // onChange={(e) => {
+                      //   setGradeValue(e.target.value);
+                      // }}
+                    />
+                  ),
+                )}
                 <Input
                   width="80px"
                   height="40px"
@@ -2990,82 +2830,7 @@ export function Step1() {
                   type="text"
                   placeholder="0"
                   placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
+                  //value={difficulty.best}
                   // onChange={(e) => {
                   //   setGradeValue(e.target.value);
                   // }}
