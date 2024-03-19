@@ -1,6 +1,11 @@
-export const RedTheme = {
+export const BlueTheme = {
   color: {
-    background: '#FA897B',
+    background: '#86E3CE',
+  },
+};
+export const GreenTheme = {
+  color: {
+    background: '#D0E6A5',
   },
 };
 export const OrangeTheme = {
@@ -8,23 +13,13 @@ export const OrangeTheme = {
     background: '#FFDD94',
   },
 };
-export const GreenTheme = {
+export const RedTheme = {
   color: {
-    background: '#DDE6A5',
-  },
-};
-export const BlueTheme = {
-  color: {
-    background: '#86E3CE',
+    background: '#FA8978',
   },
 };
 export const PurpleTheme = {
   color: {
     background: '#CCABD8',
-  },
-};
-export const GrayTheme = {
-  color: {
-    background: 'gray',
   },
 };

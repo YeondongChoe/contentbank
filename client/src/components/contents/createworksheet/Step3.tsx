@@ -21,9 +21,9 @@ import {
   GreenTheme,
   BlueTheme,
   PurpleTheme,
-  GrayTheme,
 } from '../../constants/THEME';
 import { MathViewer } from '../../mathViewer/MathViewer';
+import { TypeA, TypeB } from '../worksheetType';
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 export function Step3() {
   const [didMount, setDidMount] = useState(false);
@@ -49,18 +49,16 @@ export function Step3() {
 
   const selectedTheme = (() => {
     switch (colorChoice) {
-      case 'red':
-        return RedTheme;
-      case 'orange':
-        return OrangeTheme;
-      case 'green':
-        return GreenTheme;
       case 'blue':
         return BlueTheme;
+      case 'green':
+        return GreenTheme;
+      case 'orange':
+        return OrangeTheme;
+      case 'red':
+        return RedTheme;
       case 'purple':
         return PurpleTheme;
-      case 'gray':
-        return GrayTheme;
       default:
         return {}; // 기본값
     }
@@ -76,6 +74,14 @@ export function Step3() {
 
   const selectContentQuantity = (newValue: string) => {
     setContentQuantity(newValue);
+  };
+  const [isWeather, setIsWeather] = useState(false);
+  const selectWeather = () => {
+    setIsWeather(!isWeather);
+  };
+  const [isContentTypeTitle, setIsContentTypeTitle] = useState(false);
+  const selectContentTypeTitle = () => {
+    setIsContentTypeTitle(!isContentTypeTitle);
   };
 
   const goBackMainPopup = () => {
@@ -618,11 +624,19 @@ export function Step3() {
               flexEnd
             />
             <CheckBoxWrapper>
-              <CheckBox isChecked={false} />
+              <CheckBox
+                height="15px"
+                isChecked={isWeather}
+                onClick={selectWeather}
+              />
               날짜 표시
             </CheckBoxWrapper>
             <CheckBoxWrapper>
-              <CheckBox isChecked={false} />
+              <CheckBox
+                height="15px"
+                isChecked={isContentTypeTitle}
+                onClick={selectContentTypeTitle}
+              />
               문항 유형명 표시
             </CheckBoxWrapper>
           </AddInformationWrapper>
@@ -699,11 +713,29 @@ export function Step3() {
           </AnswerCommentaryWrapper>
         </WorksheetSettingSection>
         <WorksheetTemplateViewSection>
-          <ThemeProvider theme={selectedTheme}>
-            <WorksheetTemplateWrapper>
-              <Label value={'미리보기'}></Label>
-              <WorksheetTemplate>
-                <MathViewerHeader>
+          {/* <TypeA
+            title={nameValue}
+            grade={gradeValue}
+            tag={tag}
+            isWeather={isWeather}
+            isContentTypeTitle={isContentTypeTitle}
+            theme={selectedTheme}
+          ></TypeA> */}
+
+          <TypeB
+            title={nameValue}
+            grade={gradeValue}
+            tag={tag}
+            isWeather={isWeather}
+            isContentTypeTitle={isContentTypeTitle}
+            theme={selectedTheme}
+          ></TypeB>
+
+          {/* <ThemeProvider theme={selectedTheme}> */}
+          {/* <WorksheetTemplateWrapper> */}
+          {/* <Label value={'미리보기'}></Label> */}
+          {/* <WorksheetTemplate> */}
+          {/* <MathViewerHeader>
                   <HeaderLeft>
                     <TemplateTitleWrapper>
                       <TemplateTitle>
@@ -728,9 +760,9 @@ export function Step3() {
                       />
                     </TemplateInputWrapper>
                   </HeaderRight>
-                </MathViewerHeader>
-                <MathViewerListWrapper>
-                  {/* {existList && existList.length > 1 ? (
+                </MathViewerHeader> */}
+          {/* <MathViewerListWrapper> */}
+          {/* {existList && existList.length > 1 ? (
                     <MathViewerList ref={containerRef}>
                       {existList.map((card, i) => (
                         <div
@@ -798,10 +830,10 @@ export function Step3() {
                       ))}
                     </MathViewerList>
                   )} */}
-                </MathViewerListWrapper>
+          {/* </MathViewerListWrapper> */}
 
-                {/* <WorksheetBasic /> */}
-                {/* <InsideWorksheetTemplate>
+          {/* <WorksheetBasic /> */}
+          {/* <InsideWorksheetTemplate>
                   <Input
                     width="300px"
                     height="30px"
@@ -833,9 +865,9 @@ export function Step3() {
                     placeholder={contentAuthor || '출제자명'}
                   />
                 </InsideWorksheetTemplate> */}
-              </WorksheetTemplate>
-            </WorksheetTemplateWrapper>
-          </ThemeProvider>
+          {/* </WorksheetTemplate> */}
+          {/* </WorksheetTemplateWrapper> */}
+          {/* </ThemeProvider> */}
         </WorksheetTemplateViewSection>
       </Wrapper>
       <CreateButtonWrapper>
@@ -986,7 +1018,7 @@ const AddInformationWrapper = styled.div`
 `;
 const CheckBoxWrapper = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 2px;
   padding-right: 10px;
 `;
 const WorksheetTemplateViewSection = styled.section`
