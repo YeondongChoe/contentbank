@@ -5,13 +5,13 @@ import { useRecoilValue } from 'recoil';
 import { styled } from 'styled-components';
 
 import { pageAtom } from '../../../../store/utilAtom';
-import { QuestionTableType } from '../../../../types';
+// import { QuestionTableType } from '../../../../types';
 import { Button } from '../../../atom/button';
 import { CheckBox } from '../../../atom/checkBox';
 import { COLOR } from '../../../constants';
 
 type ContentCardProps = {
-  content: QuestionTableType;
+  content: any;
   setIsEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   isEnabled: boolean;
   checkList: number[];

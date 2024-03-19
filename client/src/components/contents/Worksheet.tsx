@@ -17,7 +17,6 @@ import {
   PaginationBox,
   Search,
   TabMenu,
-  Table,
 } from '../../components';
 import Contents2 from '../../components/mathViewer/test2.json';
 import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';

@@ -11,11 +11,9 @@ import {
   DropDown,
   DropDownItemProps,
   IndexInfo,
-  PaginationBox,
   Search,
   Select,
   TabMenu,
-  Table,
 } from '../../components';
 import {
   COLOR,
@@ -24,7 +22,7 @@ import {
 } from '../../components/constants';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { pageAtom } from '../../store/utilAtom';
-import { QuestionTableType } from '../../types';
+// import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function ManagementsList() {
@@ -35,7 +33,7 @@ export function ManagementsList() {
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
+  // const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -315,13 +313,13 @@ export function ManagementsList() {
             </Button>
           </ButtonWrapper>
         </InputWrapper>
-        <Table
+        {/* <Table
           list={questionList}
           colWidth={contentColWidth}
           theadList={contentTheadList}
           setIsEnabled={setIsEnabled}
           setSelectedRows={setSelectedRows}
-        />
+        /> */}
       </TableWrapper>
       <Alert
         isAlertOpen={isAlertOpen}

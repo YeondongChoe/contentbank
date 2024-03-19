@@ -66,10 +66,10 @@ export function EditModal({
 
   const { control, setValue, watch } = useForm();
 
-  const Authority = authorityCode;
-  const Name = watch('name');
-  const Comment = watch('comment');
-  const CheckBox = isEnabled;
+  // const Authority = authorityCode;
+  // const Name = watch('name');
+  // const Comment = watch('comment');
+  // const CheckBox = isEnabled;
 
   const closePopup = () => {
     closeModal();
@@ -104,29 +104,27 @@ export function EditModal({
 
   // 유저 비밀번호 초기화 api
   const patchUserPasswordInit = async () => {
-    return await userInstance
-      .patch(`/v1/account/initialize-password/${userKey}`)
-      .then((res) => {
-        console.log(`'초기화완료' ${userKey}`, res);
-      });
+    return await userInstance.patch(
+      `/v1/account/initialize-password/${userKey}`,
+    );
   };
-  // const { data: userPasswordInit, mutate: changeUserPasswordInit } =
-  //   useMutation({
-  //     mutationFn: patchUserPasswordInit,
-  //     onError: (context: { response: { data: { message: string } } }) => {
-  //       openToastifyAlert({
-  //         type: 'error',
-  //         text: context.response.data.message,
-  //       });
-  //     },
-  //     onSuccess: (response: { data: { message: any } }) => {
-  //       console.log('userPasswordInit', response);
-  //       openToastifyAlert({
-  //         type: 'success',
-  //         text: response.data.message,
-  //       });
-  //     },
-  //   });
+  const { data: userPasswordInit, mutate: changeUserPasswordInit } =
+    useMutation({
+      mutationFn: patchUserPasswordInit,
+      onError: (context: { response: { data: { message: string } } }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+      },
+      onSuccess: (response: { data: { message: string } }) => {
+        console.log('userPasswordInit', response);
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+      },
+    });
 
   // 유저 리스트 불러오기 api
   const getUser = async () => {
@@ -183,6 +181,16 @@ export function EditModal({
     setValue,
   ]);
 
+  //필수 항목 에러처리
+  useEffect(() => {
+    if (member.name === 0) {
+      setIsNameError(true);
+      setNameErrorMessage('필수 항목을 입력해주세요');
+
+      //버튼 disable 처리
+    }
+  }, [member.name]);
+
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
@@ -193,14 +201,23 @@ export function EditModal({
         isAlertOpen={isSuccessAlertOpen}
         closeAlert={closeSuccessAlert}
         message={'정상 처리되었습니다.'}
-      ></AlertBar>
+      />
 
       <Title>회원 정보 상세보기</Title>
 
       <form>
         <ContentBox>
           <InputWrapper>
-            <Label width="130px" fontSize="15px" value="* 이름" />
+            {isNameError ? (
+              <Label
+                width="130px"
+                type="error"
+                fontSize="15px"
+                value="* 이름"
+              />
+            ) : (
+              <Label width="130px" fontSize="15px" value="* 이름" />
+            )}
 
             <Controller
               control={control}

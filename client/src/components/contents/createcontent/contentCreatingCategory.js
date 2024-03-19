@@ -103,6 +103,17 @@ export const selectCategory2 = [
             ],
             label: '출판년도',
           },
+          {
+            id: 7,
+            value: '0',
+            parentValue: '교재',
+            type: 'select',
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
+            label: '교재난이도',
+          },
         ],
       },
       {
