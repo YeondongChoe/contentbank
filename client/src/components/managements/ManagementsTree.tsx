@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { TabMenu, IndexInfo } from '../../components';
+import { TabMenu } from '../../components';
 import { Button } from '../../components/atom';
 import { COLOR } from '../../components/constants';
 import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
@@ -26,8 +26,6 @@ export function ManagementsTree() {
 
   return (
     <Container>
-      <IndexInfo list={['콘텐츠 관리', '문항 트리 구조', `${tabVeiw}`]} />
-
       {/* <HeadWrapper>
         <TabMenu
           length={1}

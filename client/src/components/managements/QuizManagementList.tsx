@@ -10,7 +10,6 @@ import {
   ContentList,
   DropDown,
   DropDownItemProps,
-  IndexInfo,
   Modal,
   PaginationBox,
   Search,

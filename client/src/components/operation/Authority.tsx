@@ -9,7 +9,7 @@ import { DeleteAuthority } from '../../api/deleteAxios';
 // import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
 import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
-import { Button, IndexInfo } from '../../components/atom';
+import { Button } from '../../components/atom';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
@@ -570,7 +570,6 @@ export function Authority() {
 
   return (
     <Container>
-      <IndexInfo list={['운영관리', '권한관리']} />
       <Wrapper>
         {/* <strong>권한 관리</strong> */}
         <InputWrapper>
