@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import {
+  DifficultyRate,
   openToastifyAlert,
   CheckBox,
   Button,
@@ -170,43 +171,6 @@ export function Step1() {
       }
     });
   };
-  const [difficultyTotalValue, setDifficultyTotalValue] = useState({
-    best: {
-      lower: '0',
-      lowerMiddle: '0',
-      middle: '30',
-      upper: '30',
-      best: '40',
-    },
-    upper: {
-      lower: '0',
-      lowerMiddle: '20',
-      middle: '30',
-      upper: '30',
-      best: '20',
-    },
-    middle: {
-      lower: '10',
-      lowerMiddle: '20',
-      middle: '40',
-      upper: '20',
-      best: '10',
-    },
-    lowerMiddle: {
-      lower: '20',
-      lowerMiddle: '40',
-      middle: '30',
-      upper: '10',
-      best: '0',
-    },
-    lower: {
-      lower: '40',
-      lowerMiddle: ' 40',
-      middle: '20',
-      upper: '0',
-      best: '0',
-    },
-  });
 
   const [isDifficulty, setIsDifficulty] = useState(false);
   const openDifficultySetting = () => {
@@ -2624,234 +2588,7 @@ export function Step1() {
       </Wrapper>
       {isDifficulty && (
         <Overlay>
-          <ModalContainer>
-            <ModalWrapper>
-              <ModalTitleWrapper>
-                <Label value="난이도 비율 선택" fontSize="25px" width="210px" />
-                <ModalSubTitle>
-                  난이도 별로 출제 비율의 총합은 각각 100이 되어야 합니다.
-                </ModalSubTitle>
-              </ModalTitleWrapper>
-              <IoMdClose
-                onClick={closeDifficultySetting}
-                style={{ fontSize: '25px' }}
-              />
-            </ModalWrapper>
-            <ModalCategory>
-              <ModalCategoryOption>하</ModalCategoryOption>
-              <ModalCategoryOption>중하</ModalCategoryOption>
-              <ModalCategoryOption>중</ModalCategoryOption>
-              <ModalCategoryOption>상</ModalCategoryOption>
-              <ModalCategoryOption>최상</ModalCategoryOption>
-              <ModalCategoryOption>총합</ModalCategoryOption>
-            </ModalCategory>
-            <div>
-              <InputWrapper>
-                <Label value="최상 선택시" fontSize="16px" width="200px" />
-                {Object.entries(difficultyTotalValue.best).map(
-                  ([key, value]) => (
-                    <Input
-                      key={key}
-                      width="80px"
-                      height="40px"
-                      padding="10px"
-                      border="normal"
-                      placeholderSize="14px"
-                      fontSize="14px"
-                      type="text"
-                      placeholder="0"
-                      placeholderTextAlign
-                      value={value}
-                      // onChange={(e) => {
-                      //   setGradeValue(e.target.value);
-                      // }}
-                    />
-                  ),
-                )}
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={difficulty.best}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="상 선택시" fontSize="16px" width="200px" />
-                {Object.entries(difficultyTotalValue.upper).map(
-                  ([key, value]) => (
-                    <Input
-                      key={key}
-                      width="80px"
-                      height="40px"
-                      padding="10px"
-                      border="normal"
-                      placeholderSize="14px"
-                      fontSize="14px"
-                      type="text"
-                      placeholder="0"
-                      placeholderTextAlign
-                      value={value}
-                      // onChange={(e) => {
-                      //   setGradeValue(e.target.value);
-                      // }}
-                    />
-                  ),
-                )}
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={difficulty.best}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="중 선택시" fontSize="16px" width="200px" />
-                {Object.entries(difficultyTotalValue.middle).map(
-                  ([key, value]) => (
-                    <Input
-                      key={key}
-                      width="80px"
-                      height="40px"
-                      padding="10px"
-                      border="normal"
-                      placeholderSize="14px"
-                      fontSize="14px"
-                      type="text"
-                      placeholder="0"
-                      placeholderTextAlign
-                      value={value}
-                      // onChange={(e) => {
-                      //   setGradeValue(e.target.value);
-                      // }}
-                    />
-                  ),
-                )}
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={difficulty.best}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="중하 선택시" fontSize="16px" width="200px" />
-                {Object.entries(difficultyTotalValue.lowerMiddle).map(
-                  ([key, value]) => (
-                    <Input
-                      key={key}
-                      width="80px"
-                      height="40px"
-                      padding="10px"
-                      border="normal"
-                      placeholderSize="14px"
-                      fontSize="14px"
-                      type="text"
-                      placeholder="0"
-                      placeholderTextAlign
-                      value={value}
-                      // onChange={(e) => {
-                      //   setGradeValue(e.target.value);
-                      // }}
-                    />
-                  ),
-                )}
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={difficulty.best}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="하 선택시" fontSize="16px" width="200px" />
-                {Object.entries(difficultyTotalValue.lower).map(
-                  ([key, value]) => (
-                    <Input
-                      key={key}
-                      width="80px"
-                      height="40px"
-                      padding="10px"
-                      border="normal"
-                      placeholderSize="14px"
-                      fontSize="14px"
-                      type="text"
-                      placeholder="0"
-                      placeholderTextAlign
-                      value={value}
-                      // onChange={(e) => {
-                      //   setGradeValue(e.target.value);
-                      // }}
-                    />
-                  ),
-                )}
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={difficulty.best}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-            </div>
-            <ModalButtonWrapper>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="10px"
-                height={'35px'}
-                width={'100px'}
-                fontSize="13px"
-                $filled
-                cursor
-              >
-                <span>저장</span>
-              </Button>
-            </ModalButtonWrapper>
-          </ModalContainer>
+          <DifficultyRate onClose={closeDifficultySetting} />
         </Overlay>
       )}
       {isEqualScoreModal && (
@@ -3340,7 +3077,6 @@ const CloseIconWrapper = styled.div`
 const MockExamContent = styled.div`
   padding: 10px;
 `;
-//학습지 난이도 모달
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -3353,53 +3089,6 @@ const Overlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1;
-`;
-const ModalContainer = styled.div`
-  width: 1000px;
-  height: 500px;
-  background-color: white;
-  border: 1px solid ${COLOR.BORDER_GRAY};
-  border-radius: 10px;
-  padding: 10px;
-`;
-const ModalWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 40px;
-`;
-const ModalTitleWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-`;
-const ModalSubTitle = styled.div`
-  font-size: 16px;
-`;
-const ModalCategory = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  font-size: 20px;
-  gap: 88px;
-  border-bottom: 2px solid ${COLOR.BORDER_GRAY};
-  padding: 10px 40px;
-`;
-const ModalCategoryOption = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 45px;
-`;
-const InputWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px 20px;
-  gap: 53px;
-`;
-const ModalButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 10px;
-  padding-right: 10px;
 `;
 //균등 배점 모달
 const EqualScoreModalContainer = styled.div`
