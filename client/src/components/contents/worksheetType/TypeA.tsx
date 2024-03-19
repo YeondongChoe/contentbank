@@ -16,6 +16,7 @@ type TypeAProps = {
   title?: string;
   grade?: string;
   tag?: string;
+  contentQuantity?: string;
   isWeather?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
@@ -25,11 +26,27 @@ export const TypeA = ({
   title,
   grade,
   tag,
+  contentQuantity,
   isWeather,
   isContentTypeTitle,
   theme,
 }: TypeAProps) => {
-  const [list, setList] = useState([Contents1, Contents2, Contents3]);
+  const [list, setList] = useState<ItemQuestionType[]>([]);
+
+  useEffect(() => {
+    if (contentQuantity === '최대') {
+      setList([Contents1, Contents2, Contents3, Contents4]);
+    }
+    if (contentQuantity === '6문제') {
+      setList([Contents1, Contents2, Contents3]);
+    }
+    if (contentQuantity === '4문제') {
+      setList([Contents1, Contents2]);
+    }
+    if (contentQuantity === '2문제') {
+      setList([Contents1]);
+    }
+  }, [contentQuantity]);
 
   return (
     <Container>
@@ -70,7 +87,15 @@ export const TypeA = ({
             {list.map((card, i) => (
               <MathViewerWrapper key={i}>
                 <strong>{i + 1}.</strong>
-                <MathViewer data={card} width="330px"></MathViewer>
+                <MathViewer
+                  data={card}
+                  width="330px"
+                  height={
+                    contentQuantity === '6문제' || contentQuantity === '최대'
+                      ? '0px'
+                      : '300px'
+                  }
+                ></MathViewer>
               </MathViewerWrapper>
             ))}
           </WorksheetBodyLeft>
@@ -78,7 +103,15 @@ export const TypeA = ({
             {list.map((card, i) => (
               <MathViewerWrapper key={i}>
                 <strong>{i + 1}.</strong>
-                <MathViewer data={card} width="330px"></MathViewer>
+                <MathViewer
+                  data={card}
+                  width="330px"
+                  height={
+                    contentQuantity === '6문제' || contentQuantity === '최대'
+                      ? '0px'
+                      : '300px'
+                  }
+                ></MathViewer>
               </MathViewerWrapper>
             ))}
           </WorksheetBodyRight>

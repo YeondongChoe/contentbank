@@ -64,6 +64,11 @@ export function Step3() {
     }
   })();
 
+  const [templateType, setTemplateType] = useState('A');
+  const selectTemplateType = (newValue: string) => {
+    setTemplateType(newValue);
+  };
+
   const [column, setColumn] = useState<string>('2단');
 
   const selectColumn = (newValue: string) => {
@@ -492,10 +497,18 @@ export function Step3() {
                 </ColorOption>
               </ColorBox>
               <TypeOptionWrapper>
-                <TypeOption>
+                <TypeOption
+                  onClick={() => {
+                    selectTemplateType('A');
+                  }}
+                >
                   <SlPicture color="gray" fontSize={40} />A Type
                 </TypeOption>
-                <TypeOption>
+                <TypeOption
+                  onClick={() => {
+                    selectTemplateType('B');
+                  }}
+                >
                   <SlPicture color="gray" fontSize={40} />B Type
                 </TypeOption>
               </TypeOptionWrapper>
@@ -713,24 +726,27 @@ export function Step3() {
           </AnswerCommentaryWrapper>
         </WorksheetSettingSection>
         <WorksheetTemplateViewSection>
-          {/* <TypeA
-            title={nameValue}
-            grade={gradeValue}
-            tag={tag}
-            isWeather={isWeather}
-            isContentTypeTitle={isContentTypeTitle}
-            theme={selectedTheme}
-          ></TypeA> */}
-
-          <TypeB
-            title={nameValue}
-            grade={gradeValue}
-            tag={tag}
-            isWeather={isWeather}
-            isContentTypeTitle={isContentTypeTitle}
-            theme={selectedTheme}
-          ></TypeB>
-
+          {templateType === 'A' && (
+            <TypeA
+              title={nameValue}
+              grade={gradeValue}
+              tag={tag}
+              contentQuantity={contentQuantity}
+              isWeather={isWeather}
+              isContentTypeTitle={isContentTypeTitle}
+              theme={selectedTheme}
+            ></TypeA>
+          )}
+          {templateType === 'B' && (
+            <TypeB
+              title={nameValue}
+              grade={gradeValue}
+              tag={tag}
+              isWeather={isWeather}
+              isContentTypeTitle={isContentTypeTitle}
+              theme={selectedTheme}
+            ></TypeB>
+          )}
           {/* <ThemeProvider theme={selectedTheme}> */}
           {/* <WorksheetTemplateWrapper> */}
           {/* <Label value={'미리보기'}></Label> */}
