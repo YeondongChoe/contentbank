@@ -12,3 +12,4 @@ export * from './dragAndDrop';
 export * from './buttonFormatRadio';
 export * from './list';
 export * from './tooltip';
+export * from './accordion';

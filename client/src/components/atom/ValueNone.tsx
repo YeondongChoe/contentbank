@@ -9,12 +9,14 @@ type ValueNoneProps = {
   width?: string;
   height?: string;
   info?: string;
+  textOnly?: boolean;
 };
 
-export function ValueNone({ width, height, info }: ValueNoneProps) {
+export function ValueNone({ width, height, info, textOnly }: ValueNoneProps) {
   return (
     <Component width={width} height={height}>
-      <RxValueNone color={`${COLOR.PRIMARY}`} size={40} />
+      {textOnly ? <></> : <RxValueNone color={`${COLOR.PRIMARY}`} size={40} />}
+
       {info ? <p>{info}</p> : <p>등록된 데이터가 아직 없습니다.</p>}
     </Component>
   );

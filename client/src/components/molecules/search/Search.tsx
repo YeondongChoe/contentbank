@@ -69,7 +69,7 @@ const Component = styled.div<SearchStyleProps>`
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   background: #fff;
   border-radius: 5px;
-  border: 1px solid ${COLOR.LIGHT_GRAY};
+  border: 1px solid ${COLOR.POINT_GRAY};
   overflow: hidden;
   position: relative;
 
