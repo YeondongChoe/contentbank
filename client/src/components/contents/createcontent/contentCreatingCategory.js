@@ -1,3 +1,16 @@
+export const selectCategory0 = [
+  {
+    id: '1',
+    label: '교과',
+    value: '1',
+    options: [
+      { id: '0', label: '2022학년', value: '0' },
+      { id: '1', label: '2015학년', value: '1' },
+      { id: '2', label: '2018학년', value: '2' },
+      { id: '3', label: '2020학년', value: '3' },
+    ],
+  },
+];
 export const selectCategory1 = [
   {
     id: '1',
