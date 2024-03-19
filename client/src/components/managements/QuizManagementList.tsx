@@ -4,33 +4,36 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { putChangeServiced } from '../../api/putAxios';
 import {
   Alert,
   Button,
+  ContentList,
   DropDown,
   DropDownItemProps,
   IndexInfo,
   Modal,
+  PaginationBox,
   Search,
   Select,
   TabMenu,
-} from '../../components';
-import {
-  COLOR,
-  contentColWidth,
-  contentTheadList,
-} from '../../components/constants';
+  ValueNone,
+} from '..';
+import { putChangeServiced } from '../../api/putAxios';
 import { useModal } from '../../hooks';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { pageAtom } from '../../store/utilAtom';
+import { QuestionTableType } from '../../types';
 // import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
+import { COLOR } from '../constants';
 
-export function ManagementsList() {
+export function QuizManagementList() {
   // // // const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const { openModal } = useModal();
+  // 페이지네이션 index에 맞는 전체 데이터 불러오기
+  const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
+
   const size = 10;
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
@@ -71,10 +74,18 @@ export function ManagementsList() {
   };
 
   const openEditModal = () => {
-    openModal({
-      title: '',
-      content: <Modal />,
-    });
+    // openModal({
+    //   title: '',
+    //   content: (
+    //     <ManagemantMainPopup
+    //       setIsOpenPopup={function (
+    //         value: React.SetStateAction<boolean>,
+    //       ): void {
+    //         throw new Error('Function not implemented.');
+    //       }}
+    //     />
+    //   ),
+    // });
   };
 
   const menuList = [
@@ -205,38 +216,25 @@ export function ManagementsList() {
     },
   ];
 
-  // const loadData = useCallback(() => {
-  //   getQuestionList({
-  //     setQuestionList,
-  //     setIsChangedServiced,
-  //     // settotalPage,
-  //     searchValue,
-  //     MenuCode,
-  //     page,
-  //     size,
-  //   });
-  // }, [
-  //   page,
-  //   MenuCode,
-  //   searchValue,
-  //   setQuestionList,
-  //   // settotalPage,
-  //   setIsChangedServiced,
-  // ]);
-
   useEffect(() => {
     setPage(1);
   }, []);
 
-  // useEffect(() => {
-  //   if (didMount) {
-  //     loadData();
-  //   }
-  // }, [didMount, page, isChangedServiced]);
-
   return (
     <Container>
-      <IndexInfo list={['콘텐츠 관리', '문항', `${tabVeiw}`]} />
+      <TitleWrapper>
+        <Title>문항 관리</Title>
+        <Button
+          height={'35px'}
+          width={'130px'}
+          onClick={openEditModal}
+          fontSize="13px"
+          $filled
+          cursor
+        >
+          문항 일괄 편집
+        </Button>
+      </TitleWrapper>
       <HeadWrapper>
         <TabMenu
           length={2}
@@ -246,14 +244,15 @@ export function ManagementsList() {
           setTabVeiw={setTabVeiw}
         />
 
-        <Button
-          height={'35px'}
-          width={'150px'}
-          $margin={'0 0 0 10px'}
-          onClick={openEditModal}
-        >
-          문항 일괄 편집
-        </Button>
+        <Search
+          value={searchValue}
+          onClick={() => filterSearchValue()}
+          onKeyDown={(e) => {}}
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder="문항코드, 중단원, 담당자 검색"
+          width={'25%'}
+          height="40px"
+        />
       </HeadWrapper>
 
       {/* 셀렉트 + 테이블 + 수정 비활성화 버튼 */}
@@ -270,58 +269,19 @@ export function ManagementsList() {
             />
           ))}
         </SelectWrapper>
-        {/* 테이블 수정 + 활성화 버튼 */}
-        <InputWrapper>
-          <Search
-            value={searchValue}
-            onClick={() => filterSearchValue()}
-            onKeyDown={(e) => {}}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="문항코드, 중분류, 담당자 검색"
-            margin={'0 20px 0 0'}
-            width={'50%'}
-          />
-          <ButtonWrapper>
-            <Button
-              width="100px"
-              height="35px"
-              fontSize="14px"
-              //$border
-              onClick={() => {
-                submitChangingService();
-              }}
-              disabled={isEnabled}
-            >
-              삭제
-            </Button>
-            <DropDown
-              list={dropDownList}
-              buttonText={'수정'}
-              showDropDown={showDropDown}
-              setShowDropDown={setShowDropDown}
-              disabled={isEnabled}
-            ></DropDown>
-            <Button
-              width="150px"
-              height="35px"
-              fontSize="14px"
-              $border
-              onClick={() => {
-                submitChangingService();
-              }}
-              disabled={isEnabled}
-            >
-              활성화 / 비활성화
-            </Button>
-          </ButtonWrapper>
-        </InputWrapper>
-        {/* <Table
-          list={questionList}
-          colWidth={contentColWidth}
-          theadList={contentTheadList}
-          setIsEnabled={setIsEnabled}
-          setSelectedRows={setSelectedRows}
-        /> */}
+
+        {questionList.length > 1 ? (
+          <ContentList
+            list={questionList}
+            deleteBtn
+            ondeleteClick={() => {}}
+            onClick={() => {}}
+          ></ContentList>
+        ) : (
+          <ValueNoneWrap>
+            <ValueNone />
+          </ValueNoneWrap>
+        )}
       </TableWrapper>
       <Alert
         isAlertOpen={isAlertOpen}
@@ -339,7 +299,7 @@ export function ManagementsList() {
         onClick={submitDisabled}
       ></Alert>
 
-      {/* <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} /> */}
+      <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
 
       <Modal />
     </Container>
@@ -347,20 +307,31 @@ export function ManagementsList() {
 }
 
 const Container = styled.div`
+  padding: 40px;
   width: 100%;
 `;
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
+`;
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: 800;
+`;
 const HeadWrapper = styled.div`
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-bottom: 10px;
 `;
 
 const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 5px;
-  padding: 10px;
+  padding-bottom: 20px;
 `;
 
 const ButtonWrapper = styled.div`
@@ -378,7 +349,7 @@ const InputWrapper = styled.div`
   padding-top: 0;
 `;
 
-const TableWrapper = styled.div`
-  min-height: 580px;
-  border-top: 1px solid ${COLOR.SECONDARY};
+const TableWrapper = styled.div``;
+const ValueNoneWrap = styled.div`
+  padding: 100px 0;
 `;

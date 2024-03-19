@@ -194,6 +194,7 @@ const Container = styled.div`
 `;
 const MainWrapper = styled.div`
   width: 100%;
+  display: flex;
 `;
 const BodyWrapper = styled.div`
   padding-top: 40px;
