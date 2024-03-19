@@ -105,7 +105,7 @@ export function ChangePassword({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response: { data: { message: any } }) => {
+    onSuccess: (response: { data: { message: string } }) => {
       console.log('passwordDataInit', response);
       openToastifyAlert({
         type: 'success',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
@@ -10,13 +10,14 @@ import { IconButton } from '../button';
 type ItemProps = {
   id?: string | number;
   label?: string;
+  code?: string;
   value?: string | number;
 };
 
 type SelectProps = {
   options?: ItemProps[];
   onClick?: () => void;
-  onSelect: (
+  onSelect?: (
     event: React.MouseEvent<HTMLButtonElement>,
     code: string | undefined,
   ) => void;
@@ -30,6 +31,7 @@ type SelectProps = {
   blackMode?: boolean;
   disabled?: boolean;
   $positionTop?: boolean;
+  setSelectedValue?: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export function Select({
@@ -44,9 +46,15 @@ export function Select({
   blackMode,
   disabled,
   $positionTop,
+  setSelectedValue,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
+  const [code, setCode] = useState<string>();
+
+  if (setSelectedValue !== undefined && selected && code) {
+    setSelectedValue(code);
+  }
 
   return (
     <Component
@@ -83,8 +91,10 @@ export function Select({
               <button
                 disabled={disabled}
                 value={el.label}
+                className={el.code}
                 onClick={(event) => {
                   setSelected(event.currentTarget.value);
+                  setCode(event.currentTarget.classList[0]);
                 }}
               >
                 <span>{el.label}</span>

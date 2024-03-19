@@ -12,11 +12,11 @@ import {
   CheckBox,
 } from '../../../components';
 import { pageAtom } from '../../../store/utilAtom';
-import { QuestionTableType } from '../../../types';
+// import { QuestionTableType } from '../../../types';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 
 type ContentListProps = {
-  list: QuestionTableType[];
+  list: any[];
   onClick: () => void;
 };
 

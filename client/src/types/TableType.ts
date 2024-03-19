@@ -111,7 +111,7 @@ export type MockexamType = {
   }[];
 };
 
-export type MemberType = {
+export type MemberTypeB = {
   seq: number;
   authority: {
     seq: number;

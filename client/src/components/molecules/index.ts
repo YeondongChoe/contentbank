@@ -4,7 +4,6 @@ export * from './tapMenu';
 export * from './dropDown';
 export * from './contentList';
 export * from './mathViewerCard';
-export * from './table';
 export * from './pagination';
 export * from './datePicker';
 export * from './modal';

@@ -7,8 +7,6 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
-// import { getMemberList } from '../../api/getAxios';
-// import { putDisableMember } from '../../api/putAxios';
 import {
   Button,
   AlertBar,
@@ -45,7 +43,7 @@ export function Member() {
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
 
   const [page, setPage] = useRecoilState(pageAtom);
-  const [memberList, setMemberList] = useState<MemberType[]>([]);
+  const [totalMemberList, settotalMemberList] = useState<MemberType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
 
   // 유저 리스트 불러오기 api
@@ -58,6 +56,7 @@ export function Member() {
     console.log(`유저리스트 get 결과값`, res);
     return res;
   };
+
   const {
     isLoading,
     error,
@@ -72,15 +71,6 @@ export function Member() {
     },
   });
 
-  // 데이터 받아온후 셋팅
-  useEffect(() => {
-    // console.log(
-    //   'memberListData?.data.data.pagination.currentPage',
-    //   memberListData?.data.data.pagination.totalBlockCount,
-    // console.log(page, pageIndex);
-    // console.log(totalPage, totalPage);
-    // setTotalPage(10);
-  }, [memberListData]);
   // 페이지 변경시 리랜더링
   useEffect(() => {
     console.log(page, memberListData);
@@ -101,14 +91,28 @@ export function Member() {
     }
   };
 
+  // 아이디 중복 확인용 데이터 리스트 조회
+  const getTotalId = async () => {
+    return await userInstance
+      .get(
+        `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${memberListData?.data.data.pagination.totalCount}
+				`,
+      )
+      .then((res) => {
+        settotalMemberList(res.data.data.list);
+      });
+  };
+
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
-    // console.log('dufflsgn ', checkList);
+
+    getTotalId();
+    console.log('memberList', totalMemberList);
     openModal({
       title: '',
-      content: <RegisterModal />,
+      content: <RegisterModal memberList={totalMemberList} />,
     });
   };
 
