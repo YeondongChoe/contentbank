@@ -7,16 +7,16 @@ import { RecoilRoot } from 'recoil';
 
 import { App } from './App';
 import {
-  ContentList,
   ContentWorksheet,
   CreateContentMain,
   CreateWorksheetStep1,
   CreateWorksheetStep2,
   CreateWorksheetStep3,
+  QuizCreateListPage,
 } from './pages/content';
 import { Guide } from './pages/Guide';
-import { ManagementList } from './pages/management/ManagementList';
 import { ManagementTree } from './pages/management/ManagementTree';
+import { QuizManagementListPage } from './pages/management/QuizManagementList';
 import { FirstLogin } from './pages/members/FirstLogin';
 import { Login } from './pages/members/Login';
 import { Relogin } from './pages/members/Relogin';
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <Notfound />,
     children: [
-      { index: true, path: '/', element: <ContentList /> },
+      { index: true, path: '/', element: <QuizCreateListPage /> },
       {
         path: 'dev/v1/guide',
         element: <Guide />,
@@ -60,7 +60,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/content-create/quiz',
-        element: <ContentList />,
+        element: <QuizCreateListPage />,
       },
       // {
       //   path: '/createcontentwindow',
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/content-manage/quiz',
-        element: <ManagementList />,
+        element: <QuizManagementListPage />,
       },
       {
         path: '/content-manage/classify',

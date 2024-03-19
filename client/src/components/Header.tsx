@@ -25,10 +25,6 @@ export function Header() {
     setIsOpenNavigation(!isOpenNavigation);
   };
 
-  const logout = async () => {
-    return await authInstance.get('/v1/auth/logout');
-  };
-
   // 사이드메뉴 로그아웃 시
   const onLogout = () => {
     //쿠키 삭제

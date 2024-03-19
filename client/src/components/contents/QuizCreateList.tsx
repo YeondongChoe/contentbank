@@ -4,9 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { questionInstance } from '../../api/axios';
-// import { getQuestionList } from '../../api/getAxios';
-import { putChangeServiced } from '../../api/putAxios';
 import {
   ContentList,
   Alert,
@@ -16,7 +13,11 @@ import {
   Select,
   TabMenu,
   Modal,
-} from '../../components';
+  ValueNone,
+} from '..';
+import { questionInstance } from '../../api/axios';
+// import { getQuestionList } from '../../api/getAxios';
+import { putChangeServiced } from '../../api/putAxios';
 import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
@@ -25,7 +26,7 @@ import { COLOR } from '../constants';
 
 import { CreateContentModal } from './CreateContentModal';
 
-export function ContentsList() {
+export function QuizCreateList() {
   const { openModal } = useModal();
   const [searchValue, setSearchValue] = useState<string>('');
   const [value, setValue] = useState<string>('');
@@ -218,7 +219,7 @@ export function ContentsList() {
   return (
     <Container>
       <TitleWrapper>
-        <Title>문항</Title>
+        <Title>문항 제작</Title>
         <Button
           height={'35px'}
           width={'130px'}
@@ -261,10 +262,16 @@ export function ContentsList() {
             />
           ))}
         </SelectWrapper>
-        <ContentList
-          list={questionList}
-          onClick={openSubmitAlert}
-        ></ContentList>
+        {questionList.length > 1 ? (
+          <ContentList
+            list={questionList}
+            onClick={openSubmitAlert}
+          ></ContentList>
+        ) : (
+          <ValueNoneWrap>
+            <ValueNone />
+          </ValueNoneWrap>
+        )}
       </TableWrapper>
       <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
       <Alert
@@ -275,14 +282,14 @@ export function ContentsList() {
         onClose={closeSubmitAlert}
         onClick={submitDisabled}
       ></Alert>
-      {/* {isCreate && <CreateIconPopup />} */}
+
       <Modal />
     </Container>
   );
 }
 
 const Container = styled.div`
-  padding: 40px 80px;
+  padding: 40px;
   width: 100%;
 `;
 const TitleWrapper = styled.div`
@@ -310,4 +317,8 @@ const SelectWrapper = styled.div`
 
 const TableWrapper = styled.div`
   //min-height: 670px;
+`;
+
+const ValueNoneWrap = styled.div`
+  padding: 100px 0;
 `;

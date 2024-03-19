@@ -18,9 +18,16 @@ import { windowOpenHandler } from '../../../utils/windowHandler';
 type ContentListProps = {
   list: any[];
   onClick: () => void;
+  deleteBtn?: boolean;
+  ondeleteClick?: () => void;
 };
 
-export function ContentList({ list, onClick }: ContentListProps) {
+export function ContentList({
+  list,
+  onClick,
+  deleteBtn,
+  ondeleteClick,
+}: ContentListProps) {
   const page = useRecoilValue(pageAtom);
 
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -147,6 +154,21 @@ export function ContentList({ list, onClick }: ContentListProps) {
           <div>전체선택</div>
         </AllCheckButtonWrapper>
         <ActionButtonWrapper>
+          {deleteBtn && (
+            <Button
+              width="100px"
+              height="35px"
+              fontSize="14px"
+              $borderRadius="7px"
+              onClick={ondeleteClick}
+              $filled
+              $warning
+              disabled={isEnabled}
+              cursor
+            >
+              삭제
+            </Button>
+          )}
           <DropDown
             list={dropDownList}
             buttonText={'수정'}
@@ -161,6 +183,7 @@ export function ContentList({ list, onClick }: ContentListProps) {
             $borderRadius="7px"
             onClick={onClick}
             $filled
+            $success
             disabled={isEnabled}
             cursor
           >

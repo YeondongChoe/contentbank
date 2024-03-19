@@ -1,4 +1,4 @@
-export * from './ContentList';
+export * from './QuizCreateList';
 export * from './ContentWorksheet';
 
 export * from './CreateContentMain';

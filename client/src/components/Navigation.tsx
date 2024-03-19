@@ -75,7 +75,7 @@ export function Navigation() {
                     fill="white"
                   />
                 </svg>
-                <span>문항</span>
+                <span>문항 제작</span>
               </Link>
               <Link to={'/content-create/exam'}>
                 <svg
@@ -135,7 +135,7 @@ export function Navigation() {
                     </clipPath>
                   </defs>
                 </svg>
-                <span>문항</span>
+                <span>문항 관리</span>
               </Link>
               <Link to={'/content-manage/classify'}>
                 <svg

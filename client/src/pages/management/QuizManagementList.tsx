@@ -2,12 +2,12 @@ import * as React from 'react';
 
 import styled from 'styled-components';
 
-import { ManagementsList } from '../../components/managements/ManagementsList';
+import { QuizManagementList } from '../../components/managements/QuizManagementList';
 
-export function ManagementList() {
+export function QuizManagementListPage() {
   return (
     <Container>
-      <ManagementsList />
+      <QuizManagementList />
     </Container>
   );
 }

@@ -2,12 +2,12 @@ import * as React from 'react';
 
 import styled from 'styled-components';
 
-import { ContentsList } from '../../components/contents/ContentsList';
+import { QuizCreateList } from '../../components/contents/QuizCreateList';
 
-export function ContentList() {
+export function QuizCreateListPage() {
   return (
     <Container>
-      <ContentsList />
+      <QuizCreateList />
     </Container>
   );
 }

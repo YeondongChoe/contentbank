@@ -28,7 +28,7 @@ export function ManagementsTree() {
     <Container>
       <IndexInfo list={['콘텐츠 관리', '문항 트리 구조', `${tabVeiw}`]} />
 
-      <HeadWrapper>
+      {/* <HeadWrapper>
         <TabMenu
           length={1}
           menu={menuList}
@@ -48,7 +48,7 @@ export function ManagementsTree() {
         </Button>
       </HeadWrapper>
       <TableWrapper></TableWrapper>
-      {isOpenPopup && <ManagemantTreePopup setIsOpenPopup={setIsOpenPopup} />}
+      {isOpenPopup && <ManagemantTreePopup setIsOpenPopup={setIsOpenPopup} />} */}
     </Container>
   );
 }
