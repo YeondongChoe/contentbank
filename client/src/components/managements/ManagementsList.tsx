@@ -11,6 +11,7 @@ import {
   DropDown,
   DropDownItemProps,
   IndexInfo,
+  Modal,
   Search,
   Select,
   TabMenu,
@@ -20,15 +21,16 @@ import {
   contentColWidth,
   contentTheadList,
 } from '../../components/constants';
+import { useModal } from '../../hooks';
 import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { pageAtom } from '../../store/utilAtom';
 // import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function ManagementsList() {
-  const [didMount, setDidMount] = useState(false);
   // // // const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
+  const { openModal } = useModal();
   const size = 10;
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
@@ -68,10 +70,11 @@ export function ManagementsList() {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
 
-  const [isOpenPopup, setIsOpenPopup] = useState(false);
-
-  const openPopup = () => {
-    setIsOpenPopup(true);
+  const openEditModal = () => {
+    openModal({
+      title: '',
+      content: <Modal />,
+    });
   };
 
   const menuList = [
@@ -223,7 +226,6 @@ export function ManagementsList() {
 
   useEffect(() => {
     setPage(1);
-    setDidMount(true);
   }, []);
 
   // useEffect(() => {
@@ -248,9 +250,9 @@ export function ManagementsList() {
           height={'35px'}
           width={'150px'}
           $margin={'0 0 0 10px'}
-          onClick={openPopup}
+          onClick={openEditModal}
         >
-          상세 검색
+          문항 일괄 편집
         </Button>
       </HeadWrapper>
 
@@ -338,7 +340,8 @@ export function ManagementsList() {
       ></Alert>
 
       {/* <PaginationBox itemsCountPerPage={10} totalItemsCount={totalPage} /> */}
-      {isOpenPopup && <ManagemantMainPopup setIsOpenPopup={setIsOpenPopup} />}
+
+      <Modal />
     </Container>
   );
 }

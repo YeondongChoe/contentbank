@@ -25,6 +25,10 @@ export function ManagemantMainPopup({
       label: '문항 분류 바꾸기',
       value: '문항 분류 바꾸기',
     },
+    {
+      label: '히스토리',
+      value: '히스토리',
+    },
   ];
   const [tabVeiw, setTabVeiw] = useState<string>('바꾸기');
 
@@ -32,43 +36,30 @@ export function ManagemantMainPopup({
     setIsOpenPopup(false);
   };
   return (
-    <Overlay>
-      <Container>
-        <IndexInfo list={['콘텐츠 관리', '상세검색', `${tabVeiw}`]} />
-        <TapWrapper>
-          <TabMenu
-            length={2}
-            menu={menuList}
-            selected={tabVeiw}
-            width={'250px'}
-            setTabVeiw={setTabVeiw}
+    <Container>
+      <IndexInfo list={['콘텐츠 관리', '상세검색', `${tabVeiw}`]} />
+      <TapWrapper>
+        <TabMenu
+          length={2}
+          menu={menuList}
+          selected={tabVeiw}
+          width={'250px'}
+          setTabVeiw={setTabVeiw}
+        />
+        <CloseButtonWrapper>
+          <IoMdClose
+            onClick={closePopup}
+            style={{ fontSize: '22px', cursor: 'pointer' }}
           />
-          <CloseButtonWrapper>
-            <IoMdClose
-              onClick={closePopup}
-              style={{ fontSize: '22px', cursor: 'pointer' }}
-            />
-          </CloseButtonWrapper>
-        </TapWrapper>
-        {tabVeiw === '바꾸기' && <ContentInformationChange />}
-        {tabVeiw === '문항 분류 바꾸기' && <ContentCategoryChange />}
-      </Container>
-    </Overlay>
+        </CloseButtonWrapper>
+      </TapWrapper>
+      {tabVeiw === '바꾸기' && <ContentInformationChange />}
+      {tabVeiw === '문항 분류 바꾸기' && <ContentCategoryChange />}
+      {tabVeiw === '히스토리' && <></>}
+    </Container>
   );
 }
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-`;
 const Container = styled.div`
   max-width: 1024px;
   width: 100%;
