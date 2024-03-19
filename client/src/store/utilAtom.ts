@@ -16,3 +16,9 @@ export const openNaviationBoolAtom = atom({
   key: 'openNaviationBoolAtom',
   default: true,
 });
+
+// 해더 IndexInfo 인덱스 텍스트 아톰
+export const pageIndexAtom = atom({
+  key: 'pageIndexAtom',
+  default: ['콘텐츠 제작', '문항 제작'],
+});

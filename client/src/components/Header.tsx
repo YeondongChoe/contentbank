@@ -3,11 +3,10 @@ import { useEffect } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance } from '../api/axios';
-import { openNaviationBoolAtom } from '../store/utilAtom';
+import { openNaviationBoolAtom, pageIndexAtom } from '../store/utilAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
 import { IndexInfo } from './atom';
@@ -18,6 +17,7 @@ export function Header() {
   const [isOpenNavigation, setIsOpenNavigation] = useRecoilState(
     openNaviationBoolAtom,
   );
+  const pageIndexValue = useRecoilValue(pageIndexAtom);
 
   const navigate = useNavigate();
 
@@ -65,7 +65,7 @@ export function Header() {
             />
           </svg>
         </IconWrapper>
-        <IndexInfo list={['콘텐츠 제작', '문항']} />
+        <IndexInfo list={pageIndexValue} />
       </Wrapper>
 
       {/* 사이드메뉴 */}

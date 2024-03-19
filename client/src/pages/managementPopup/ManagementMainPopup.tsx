@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import styled from 'styled-components';
 
-import { IndexInfo, TabMenu } from '../../components';
+import { TabMenu } from '../../components';
 
 import { ContentCategoryChange } from './ContentCategoryChange';
 import { ContentInformationChange } from './ContentInformationChange';
@@ -37,7 +37,6 @@ export function ManagemantMainPopup({
   };
   return (
     <Container>
-      <IndexInfo list={['콘텐츠 관리', '상세검색', `${tabVeiw}`]} />
       <TapWrapper>
         <TabMenu
           length={2}
