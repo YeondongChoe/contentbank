@@ -34,7 +34,7 @@ export function Classification() {
   const [selected2des, setSelected2des] = useState<string>('');
   const [selected3des, setSelected3des] = useState<string>('');
   const [selected4des, setSelected4des] = useState<string>('');
-
+  const [checkedList, setCheckedList] = useState<string[]>([]);
   // 라디오 버튼 설정
   const handleRadioCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -88,6 +88,7 @@ export function Classification() {
             showTitle
             showCheckBox
             fontBold
+            setCheckedList={setCheckedList}
           />
         }
         item2={
