@@ -16,6 +16,8 @@ export function ResizeLayout({
   height,
   item3Width = 250,
   item1Width = 250,
+  minWidth = 130,
+  maxWidth = Infinity,
 }: {
   column: '2nd' | '3rd';
   item1?: React.ReactNode;
@@ -24,9 +26,13 @@ export function ResizeLayout({
   height: string;
   item3Width?: number;
   item1Width?: number;
+  minWidth?: number;
+  maxWidth?: number;
 }) {
   const item1InitWidth = item1Width;
   const item3InitWidth = item3Width;
+  const minInitWidth = minWidth;
+  const maxInitWidth = maxWidth;
 
   const {
     isDragging: isFirstDragging,
@@ -35,7 +41,8 @@ export function ResizeLayout({
   } = useResizable({
     axis: 'x',
     initial: item1InitWidth,
-    min: 50,
+    min: minInitWidth,
+    max: maxInitWidth,
   });
 
   const {
@@ -45,7 +52,8 @@ export function ResizeLayout({
   } = useResizable({
     axis: 'x',
     initial: item3InitWidth,
-    min: 50,
+    min: minInitWidth,
+    max: maxInitWidth,
     reverse: true,
   });
 

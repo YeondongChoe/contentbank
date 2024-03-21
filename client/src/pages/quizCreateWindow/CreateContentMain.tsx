@@ -147,15 +147,7 @@ const Container = styled.div`
 const ButtonWrapper = styled.div`
   padding: 10px 20px;
 `;
-const IconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 15px;
-  &.hide {
-    display: none;
-  }
-`;
+
 const TapMenuWrapper = styled.div`
   display: flex;
   flex: 1 0 0;

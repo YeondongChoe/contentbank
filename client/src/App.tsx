@@ -162,6 +162,7 @@ export function App() {
             location.pathname !== '/init-change-password' &&
             location.pathname !== '/relogin' &&
             location.pathname !== '/createcontentmain' &&
+            location.pathname !== '/managementEditMain' &&
             location.pathname !== '/content-create/exam/step1' &&
             location.pathname !== '/content-create/exam/step2' &&
             location.pathname !== '/content-create/exam/step3' && (
@@ -173,6 +174,7 @@ export function App() {
               location.pathname !== '/init-change-password' &&
               location.pathname !== '/relogin' &&
               location.pathname !== '/createcontentmain' &&
+              location.pathname !== '/managementEditMain' &&
               location.pathname !== '/content-create/exam/step1' &&
               location.pathname !== '/content-create/exam/step2' &&
               location.pathname !== '/content-create/exam/step3' && <Header />}
@@ -194,7 +196,6 @@ const Container = styled.div`
 `;
 const MainWrapper = styled.div`
   width: 100%;
-  display: flex;
 `;
 const BodyWrapper = styled.div`
   padding-top: 40px;

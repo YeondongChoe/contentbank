@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import { TabMenu } from '../../components';
 import { Button } from '../../components/atom';
 import { COLOR } from '../../components/constants';
-import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
 
 export function ManagementsTree() {
   const menuList = [
