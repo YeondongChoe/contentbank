@@ -8,7 +8,6 @@ import { RecoilRoot } from 'recoil';
 import { App } from './App';
 import {
   ContentWorksheet,
-  CreateContentMain,
   CreateWorksheetStep1,
   CreateWorksheetStep2,
   CreateWorksheetStep3,
@@ -17,6 +16,7 @@ import {
 import { Guide } from './pages/Guide';
 import { ManagementTree } from './pages/management/ManagementTree';
 import { QuizManagementListPage } from './pages/management/QuizManagementList';
+import { ManagementEditMain } from './pages/managementWindow';
 import { FirstLogin } from './pages/members/FirstLogin';
 import { Login } from './pages/members/Login';
 import { Relogin } from './pages/members/Relogin';
@@ -25,7 +25,9 @@ import { Notfound } from './pages/Notfound';
 import { OperationAuthority } from './pages/operate/OperationAuthority';
 import { OperationMember } from './pages/operate/OperationMember';
 import { Preparing } from './pages/Preparing';
+import { CreateContentMain } from './pages/quizCreateWindow';
 import GlobalStyle from './styles/GlobalStyle';
+import 'react-perfect-scrollbar/dist/css/styles.css';
 
 const router = createBrowserRouter([
   {
@@ -91,9 +93,14 @@ const router = createBrowserRouter([
         element: <QuizManagementListPage />,
       },
       {
+        path: '/managementEditMain',
+        element: <ManagementEditMain />,
+      },
+      {
         path: '/content-manage/classify',
         element: <ManagementTree />,
       },
+
       {
         path: '/operation-manage/member',
         element: <OperationMember />,

@@ -5,13 +5,11 @@ import styled from 'styled-components';
 
 import { Button } from '../../components/atom';
 
-type ManagemantTreePopupProps = {
+type ManagemantTreeProps = {
   setIsOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function ManagemantTreePopup({
-  setIsOpenPopup,
-}: ManagemantTreePopupProps) {
+export function ManagemantTree({ setIsOpenPopup }: ManagemantTreeProps) {
   const closePopup = () => {
     setIsOpenPopup(false);
   };

@@ -10,16 +10,12 @@ import {
   ContentList,
   DropDown,
   DropDownItemProps,
-  Modal,
   PaginationBox,
   Search,
   Select,
   TabMenu,
   ValueNone,
 } from '..';
-import { putChangeServiced } from '../../api/putAxios';
-import { useModal } from '../../hooks';
-import { ManagemantMainPopup } from '../../pages/managementPopup/ManagementMainPopup';
 import { pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 // import { QuestionTableType } from '../../types';
@@ -27,9 +23,8 @@ import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
 
 export function QuizManagementList() {
-  // // // const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
-  const { openModal } = useModal();
+
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
@@ -37,7 +32,6 @@ export function QuizManagementList() {
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  // const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -45,10 +39,7 @@ export function QuizManagementList() {
     setIsAlertOpen(false);
   };
 
-  const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const MenuCode = 'CNC_Q';
-  const [isChangedServiced, setIsChangedServiced] = useState(false);
   // 활성화/비활성화 버튼상태 토글
   const submitChangingService = () => {
     setIsAlertOpen(true);
@@ -63,28 +54,13 @@ export function QuizManagementList() {
     for (let i = 0; i < selectedRows.length; i += 1) {
       formattedArray.push({ contentSeq: selectedRows[i] });
     }
-    putChangeServiced({ formattedArray, setIsChangedServiced });
+    // putChangeServiced({ formattedArray, setIsChangedServiced });
 
     setIsAlertOpen(false);
   };
 
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
-  };
-
-  const openEditModal = () => {
-    // openModal({
-    //   title: '',
-    //   content: (
-    //     <ManagemantMainPopup
-    //       setIsOpenPopup={function (
-    //         value: React.SetStateAction<boolean>,
-    //       ): void {
-    //         throw new Error('Function not implemented.');
-    //       }}
-    //     />
-    //   ),
-    // });
   };
 
   const menuList = [
@@ -194,6 +170,19 @@ export function QuizManagementList() {
     });
   };
 
+  // 모달 연뒤 문항 일괄편집 윈도우 이동
+  const openEditManagemantWindow = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.preventDefault();
+    windowOpenHandler({
+      name: 'managementEditMain',
+      url: '/managementEditMain',
+      // $height: 850,
+      // $width: 1250,
+    });
+  };
+
   // 드롭다운 버튼 기본 값설정
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const dropDownList: DropDownItemProps[] = [
@@ -226,7 +215,7 @@ export function QuizManagementList() {
         <Button
           height={'35px'}
           width={'130px'}
-          onClick={openEditModal}
+          onClick={(e) => openEditManagemantWindow(e)}
           fontSize="13px"
           $filled
           cursor
@@ -300,7 +289,7 @@ export function QuizManagementList() {
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
 
-      <Modal />
+      {/* <Modal /> */}
     </Container>
   );
 }

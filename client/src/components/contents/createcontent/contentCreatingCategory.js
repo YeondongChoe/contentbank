@@ -411,3 +411,114 @@ export const questionList = [
     text: '수학/수1/내신/객관식',
   },
 ];
+
+export const metaList = [
+  {
+    data: [
+      {
+        id: '1',
+        label: '교육과정',
+        value: '1',
+        options: [
+          { id: '0', label: '1차', value: '1차0' },
+          { id: '1', label: '2차', value: '2차1' },
+          { id: '2', label: '3차', value: '3차2' },
+          { id: '3', label: '4차', value: '4차3' },
+          { id: '4', label: '5차', value: '5차4' },
+          { id: '5', label: '6차', value: '6차5' },
+          { id: '6', label: '7차', value: '7차6' },
+          { id: '7', label: '8차', value: '8차7' },
+          { id: '8', label: '9차', value: '9차8' },
+          { id: '9', label: '10차', value: '10차9' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: '2',
+        label: '학교급',
+        value: '2',
+        options: [
+          { id: '0', label: '초등', value: '초등0' },
+          { id: '1', label: '중등', value: '중등1' },
+          { id: '2', label: '고등', value: '고등2' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: '3',
+        label: '학년',
+        value: '3',
+        options: [
+          { id: '0', label: '전체', value: '전체0' },
+          { id: '1', label: '1학년', value: '1학년1' },
+          { id: '2', label: '2학년', value: '2학년2' },
+          { id: '3', label: '3학년', value: '3학년3' },
+          { id: '4', label: '4학년', value: '4학년4' },
+          { id: '5', label: '5학년', value: '5학년5' },
+          { id: '6', label: '6학년', value: '6학년6' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: '4',
+        label: '학기',
+        value: '4',
+        options: [
+          { id: '0', label: '전체', value: '전체0' },
+          { id: '1', label: '1학기', value: '1학기1' },
+          { id: '2', label: '2학기', value: '2학기2' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: '5',
+        label: '교과',
+        value: '5',
+        options: [
+          { id: '0', label: '수학', value: '수학0' },
+          { id: '1', label: '영어', value: '영어1' },
+          { id: '2', label: '국어', value: '국어2' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: '6',
+        label: '과목',
+        value: '6',
+        options: [
+          { id: '0', label: '공통수학', value: '공통수학0' },
+          { id: '1', label: 'Grammar', value: 'Grammar1' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: '7',
+        label: '오픈여부',
+        value: '7',
+        options: [
+          { id: '0', label: '전체', value: '전체0' },
+          { id: '1', label: '활성화', value: '활성화1' },
+          { id: '2', label: '비활성화', value: '비활성화2' },
+        ],
+      },
+    ],
+  },
+];

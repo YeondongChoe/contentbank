@@ -10,11 +10,18 @@ type AccordionProps = {
   id: string;
   children: JSX.Element;
   $margin?: string;
+  $backgroundColor?: string;
 };
 
-export function Accordion({ title, id, children, $margin }: AccordionProps) {
+export function Accordion({
+  title,
+  id,
+  children,
+  $margin,
+  $backgroundColor,
+}: AccordionProps) {
   return (
-    <Container $margin={$margin}>
+    <Container $margin={$margin} $backgroundColor={$backgroundColor}>
       <div className="accordion">
         <input type="checkbox" name={id} id={id} />
         <label htmlFor={id} className="accordion_label">
@@ -26,7 +33,7 @@ export function Accordion({ title, id, children, $margin }: AccordionProps) {
   );
 }
 
-const Container = styled.div<{ $margin?: string }>`
+const Container = styled.div<{ $margin?: string; $backgroundColor?: string }>`
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   color: ${COLOR.DARK_GRAY};
   overflow: hidden;
@@ -82,7 +89,8 @@ const Container = styled.div<{ $margin?: string }>`
   .accordion_label,
   .accordion_close {
     color: #fff;
-    background: ${COLOR.BLUEGREEN};
+    background-color: ${({ $backgroundColor }) =>
+      $backgroundColor ? `${$backgroundColor};` : `${COLOR.BLUEGREEN}`};
   }
 
   .accordion__close {

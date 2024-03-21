@@ -250,7 +250,6 @@ const ContentListWrap = styled.div`
 `;
 const ContentList = styled.div`
   width: 100%;
-  overflow: hidden;
-  /* height: calc(100vh - 60px - 150px); */
+  /* overflow: hidden; */
   border: 1px solid ${COLOR.BORDER_BLUE};
 `;
