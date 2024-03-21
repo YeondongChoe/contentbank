@@ -19,6 +19,7 @@ export function ContentCreating({
 }: {
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const [checkedList, setCheckedList] = useState<string[]>([]);
   const [initialItems, _] = useState<TestDnDItem[]>(questionList);
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
@@ -138,6 +139,7 @@ export function ContentCreating({
             questionList={questionList}
             $height={`calc(100vh - 60px - 150px)`}
             showViewAllButton
+            setCheckedList={setCheckedList}
           />
         </ContentList>
         <Button

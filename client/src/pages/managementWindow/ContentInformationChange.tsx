@@ -42,6 +42,8 @@ export function ContentInformationChange() {
   >([]);
 
   const [searchValue, setSearchValue] = useState<string>('');
+  const [changeValue, setChangeValue] = useState<string>('');
+  const [checkedList, setCheckedList] = useState<string[]>([]);
 
   // 라디오 버튼 설정
   const handleRadioCheck = (
@@ -295,16 +297,25 @@ export function ContentInformationChange() {
                 <span className="point_text">STEP2</span> 문항 선택
               </span>
             </Title>
-            <QuizList
-              questionList={questionList}
-              $height={`calc(100vh - 220px)`}
-              showTitle
-              showCheckBox
-              showViewAllButton
-            />
-            <ButtonWrap className="pagination">
-              <PaginationBox itemsCountPerPage={7} totalItemsCount={100} />
-            </ButtonWrap>
+            {questionList.length ? (
+              <>
+                <QuizList
+                  questionList={questionList}
+                  $height={`calc(100vh - 220px)`}
+                  showTitle
+                  showCheckBox
+                  showViewAllButton
+                  setCheckedList={setCheckedList}
+                />
+                <ButtonWrap className="pagination">
+                  <PaginationBox itemsCountPerPage={7} totalItemsCount={100} />
+                </ButtonWrap>
+              </>
+            ) : (
+              <ValueNoneWrap>
+                <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
+              </ValueNoneWrap>
+            )}
           </QuizListWrap>
         }
         item3Width={400}
@@ -315,40 +326,79 @@ export function ContentInformationChange() {
                 <span className="point_text">STEP3</span> 바꿀 내용 입력
               </span>
             </Title>
-            <ScrollWrap>
-              <PerfectScrollbar>
-                {/* TODO: 메타데이터 변경 */}
+            {checkedList.length ? (
+              <>
+                <ScrollWrap>
+                  <PerfectScrollbar>
+                    {/* TODO: 메타데이터 변경 */}
 
-                <p className="line"></p>
-              </PerfectScrollbar>
-            </ScrollWrap>
-            <ButtonWrap>
-              <InputWrap>
-                <input
-                  type="text"
-                  value={''}
-                  onChange={() => {}}
-                  placeholder="변경값을 입력해주세요"
-                />
-                <Button
-                  width={'80px'}
-                  height={'35px'}
-                  fontSize={'14px'}
-                  $margin={'0 0 0 5px'}
-                  cursor
-                  $filled
-                  $success
-                  onClick={() => {}}
-                >
-                  수식
-                </Button>
-              </InputWrap>
-              <Button $filled cursor disabled={true} onClick={() => {}}>
-                <span>
-                  바꾸기 <MdPublishedWithChanges />
-                </span>
-              </Button>
-            </ButtonWrap>
+                    <ChangeInfoWrap>
+                      <p className="info_total">
+                        선택한 문항 총 {checkedList.length} 건
+                      </p>
+                      <div className="info_box">
+                        {checkedList.length && (
+                          <p>
+                            총
+                            <span className="strong">{checkedList.length}</span>
+                            건
+                          </p>
+                        )}
+                        {searchValue && (
+                          <p>
+                            <span className="strong">{searchValue}</span>
+                            를(을)
+                          </p>
+                        )}
+                        {changeValue && (
+                          <p>
+                            <span className="strong">{changeValue}</span>로 변경
+                            하시겠습니까?
+                          </p>
+                        )}
+                      </div>
+                    </ChangeInfoWrap>
+                  </PerfectScrollbar>
+                </ScrollWrap>
+                <ButtonWrap>
+                  <InputWrap>
+                    <input
+                      type="text"
+                      minLength={2}
+                      value={changeValue}
+                      onChange={(e) => setChangeValue(e.target.value)}
+                      placeholder="변경값을 입력해주세요"
+                    />
+                    <Button
+                      width={'80px'}
+                      height={'35px'}
+                      fontSize={'14px'}
+                      $margin={'0 0 0 5px'}
+                      cursor
+                      $filled
+                      $success
+                      onClick={() => {}}
+                    >
+                      수식
+                    </Button>
+                  </InputWrap>
+                  <Button
+                    $filled
+                    cursor
+                    disabled={changeValue.length < 2}
+                    onClick={() => {}}
+                  >
+                    <span>
+                      바꾸기 <MdPublishedWithChanges />
+                    </span>
+                  </Button>
+                </ButtonWrap>
+              </>
+            ) : (
+              <ValueNoneWrap>
+                <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
+              </ValueNoneWrap>
+            )}
           </PositionWrap>
         }
       />
@@ -452,5 +502,50 @@ const ButtonWrap = styled.div`
 
   .pagination {
     padding-bottom: 12px;
+  }
+`;
+const ValueNoneWrap = styled.div`
+  background-color: ${COLOR.LIGHT_GRAY};
+  display: flex;
+  height: 100%;
+`;
+const ChangeInfoWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  .info_total {
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    background-color: ${COLOR.SELECT_BLUE};
+  }
+  .info_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+    color: ${COLOR.SECONDARY};
+    /* font-weight: bold; */
+    position: absolute;
+    top: calc(50% - 60px);
+    padding: 20px;
+
+    p {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 2px;
+    }
+  }
+
+  .strong {
+    background-color: ${COLOR.SELECT_BLUE};
+    color: #fff;
+    padding: 2px;
   }
 `;

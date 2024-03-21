@@ -20,6 +20,7 @@ export function QuizList({
   showCheckBox,
   showViewAllButton,
   fontBold,
+  setCheckedList,
 }: {
   questionList: TestDnDItem[];
   showTitle?: boolean;
@@ -27,6 +28,7 @@ export function QuizList({
   showViewAllButton?: boolean;
   $height?: string;
   fontBold?: boolean;
+  setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
 }) {
   // const ContentList = dummy.ContentInfo;
   const [checkList, setCheckList] = useState<string[]>([]);
@@ -88,6 +90,10 @@ export function QuizList({
     // console.log(target.classList);
     target.classList.remove('on');
   };
+
+  useEffect(() => {
+    setCheckedList(checkList);
+  }, [checkList]);
 
   useEffect(() => {
     setCheckList([]);
