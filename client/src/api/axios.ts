@@ -19,6 +19,22 @@ export const tokenInstance = axios.create({
     'Accept-Language': `ko_KR`,
   },
 });
+tokenInstance.interceptors.request.use(function (config) {
+  const headerAuth =
+    config.headers.Authorization?.toString().split('Bearer ')[1];
+  const headerSessionId = config.headers['session-id'];
+
+  if (headerAuth !== getAuthorityCookie('accessToken')) {
+    config.headers.Authorization = `Bearer ${getAuthorityCookie(
+      'accessToken',
+    )}`;
+  }
+  if (headerSessionId !== getAuthorityCookie('sessionId')) {
+    config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
+  }
+
+  return config;
+});
 
 /* 인증 서비스 API Instance */
 export const authInstance = axios.create({

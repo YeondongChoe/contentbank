@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { authInstance, userInstance } from '../../api/axios';
@@ -14,7 +15,11 @@ import {
   Alert,
   openToastifyAlert,
 } from '../../components';
-import { LoginType } from '../../pages/members/Login';
+import {
+  accessTokenAtom,
+  refreshTokenAtom,
+  sessionIdAtom,
+} from '../../store/auth';
 import {
   getAuthorityCookie,
   removeAuthorityCookie,
@@ -62,6 +67,9 @@ export function ChangePassword({
   goLogin,
   setIsPasswordEdit,
 }: ChangePasswordProps) {
+  const accessTokenValue = useRecoilValue(accessTokenAtom);
+  const refreshTokenValue = useRecoilValue(refreshTokenAtom);
+  const sessionIdValue = useRecoilValue(sessionIdAtom);
   const [disabled, setDisabled] = useState<boolean>(true);
   const {
     control,
@@ -111,20 +119,26 @@ export function ChangePassword({
         type: 'success',
         text: response.data.message,
       });
-      // 로그인 후 메인으로 이동 // TODO : 확인 버튼 알럿 또느 모달로 변경
-      postLogin({
-        username: `${state}`,
-        password: `${PasswordConfirm}`,
+      // 로컬데이터에서 토큰과 세션을 저장
+      setAuthorityCookie('accessToken', accessTokenValue, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
       });
-      // navigate(`${response.link}`);
+      setAuthorityCookie('refreshToken', refreshTokenValue, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      setAuthorityCookie('sessionId', sessionIdValue, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+
       navigate(`/content-create/quiz`);
     },
   });
-
-  //로그인 api
-  const postLogin = async (auth: LoginType) => {
-    return await authInstance.post('/v1/auth/login', auth);
-  };
 
   const submitPasswordInit = (password: string) => {
     const auth = { code: code, password: password, passwordConfirm: password };
@@ -168,10 +182,9 @@ export function ChangePassword({
     changePassword(auth);
   };
 
-  // setIsPasswordEdit(false);
   useEffect(() => {}, []);
   useEffect(() => {
-    const urlCode = location.search.split('?code=')[1];
+    const urlCode = location.search.split('?code=')[1]; // TODO : 로그인시 분기 되어 link가 아닌 데이터로 들어올수있음
     console.log('location code : ', urlCode);
     setCode(urlCode);
 

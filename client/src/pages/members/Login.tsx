@@ -17,7 +17,11 @@ import {
   openToastifyAlert,
 } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
-import { accessTokenAtom, sessionIdAtom } from '../../store/auth';
+import {
+  accessTokenAtom,
+  refreshTokenAtom,
+  sessionIdAtom,
+} from '../../store/auth';
 import {
   getAuthorityCookie,
   removeAuthorityCookie,
@@ -32,6 +36,7 @@ export type LoginType = {
 export function Login() {
   const queryClient = useQueryClient();
   const setAccessTokenAtom = useSetRecoilState(accessTokenAtom);
+  const setRefreshTokenAtom = useSetRecoilState(refreshTokenAtom);
   const setSessionIdAtom = useSetRecoilState(sessionIdAtom);
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
@@ -105,8 +110,9 @@ export function Login() {
         secure: false,
       });
       // 프론트 전역에 데이터로저장
-      // setAccessTokenAtom(response.data.data.accessToken);
-      // setSessionIdAtom(response.data.data.sessionId);
+      setAccessTokenAtom(response.data.data.accessToken);
+      setRefreshTokenAtom(response.data.data.refreshToken);
+      setSessionIdAtom(response.data.data.sessionId);
 
       // 아이디 저장 체크박스
       if (isClicked === true) {
@@ -119,12 +125,7 @@ export function Login() {
     // @ts-ignore
     onSettled: (response: { data: { link: string } }) => {
       //첫 로그인시 비밀번호 변경 페이지로 || 로그인 성공후 메인으로
-      navigate(response?.data.link, { state: Id });
-      if (response?.data.link === '/content-create/quiz') {
-        //TODO: 메인으로 갈시 임시 페이지 리로딩 임시
-        // const cookieData = document.cookie;
-        // window.location.reload();
-      }
+      navigate(response?.data.link, { state: Id }); //link 제거 code값으로 분기
     },
   });
 
