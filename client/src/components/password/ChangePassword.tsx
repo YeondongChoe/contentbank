@@ -120,21 +120,21 @@ export function ChangePassword({
         text: response.data.message,
       });
       // 로컬데이터에서 토큰과 세션을 저장
-      setAuthorityCookie('accessToken', accessTokenValue, {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
-      setAuthorityCookie('refreshToken', refreshTokenValue, {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
-      setAuthorityCookie('sessionId', sessionIdValue, {
-        path: '/',
-        sameSite: 'strict',
-        secure: false,
-      });
+      // setAuthorityCookie('accessToken', accessTokenValue, {
+      //   path: '/',
+      //   sameSite: 'strict',
+      //   secure: false,
+      // });
+      // setAuthorityCookie('refreshToken', refreshTokenValue, {
+      //   path: '/',
+      //   sameSite: 'strict',
+      //   secure: false,
+      // });
+      // setAuthorityCookie('sessionId', sessionIdValue, {
+      //   path: '/',
+      //   sameSite: 'strict',
+      //   secure: false,
+      // });
 
       navigate(`/content-create/quiz`);
     },
@@ -171,9 +171,6 @@ export function ChangePassword({
         type: 'success',
         text: response.data.message,
       });
-
-      // setIsPasswordEdit
-      onCancel();
     },
   });
   const submitPassword = (password: string) => {
