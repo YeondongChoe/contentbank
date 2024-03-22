@@ -67,9 +67,6 @@ export function ChangePassword({
   goLogin,
   setIsPasswordEdit,
 }: ChangePasswordProps) {
-  const accessTokenValue = useRecoilValue(accessTokenAtom);
-  const refreshTokenValue = useRecoilValue(refreshTokenAtom);
-  const sessionIdValue = useRecoilValue(sessionIdAtom);
   const [disabled, setDisabled] = useState<boolean>(true);
   const {
     control,
@@ -78,7 +75,6 @@ export function ChangePassword({
   } = useForm<passwordProps>();
 
   const location = useLocation();
-  const { state } = useLocation();
   const [code, setCode] = useState('');
 
   const PasswordInputRef = useRef<HTMLInputElement | null>(null);
@@ -119,22 +115,6 @@ export function ChangePassword({
         type: 'success',
         text: response.data.message,
       });
-      // 로컬데이터에서 토큰과 세션을 저장
-      // setAuthorityCookie('accessToken', accessTokenValue, {
-      //   path: '/',
-      //   sameSite: 'strict',
-      //   secure: false,
-      // });
-      // setAuthorityCookie('refreshToken', refreshTokenValue, {
-      //   path: '/',
-      //   sameSite: 'strict',
-      //   secure: false,
-      // });
-      // setAuthorityCookie('sessionId', sessionIdValue, {
-      //   path: '/',
-      //   sameSite: 'strict',
-      //   secure: false,
-      // });
 
       navigate(`/content-create/quiz`);
     },
@@ -165,11 +145,24 @@ export function ChangePassword({
       //   text: context.response.data.message,
       // });
     },
-    onSuccess: (response: { data: { message: string } }) => {
-      // console.log('passwordData', response);
+    onSuccess: (response: {
+      data: {
+        message: string;
+        data: {
+          newAccessToken: string;
+        };
+      };
+    }) => {
+      console.log('passwordData', response);
       openToastifyAlert({
         type: 'success',
         text: response.data.message,
+      });
+      // 변경 후 토큰값도 재배치
+      setAuthorityCookie('accessToken', response.data.data.newAccessToken, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
       });
     },
   });
@@ -179,20 +172,17 @@ export function ChangePassword({
     changePassword(auth);
   };
 
-  useEffect(() => {}, []);
   useEffect(() => {
-    const urlCode = location.search.split('?code=')[1]; // TODO : 로그인시 분기 되어 link가 아닌 데이터로 들어올수있음
-    console.log('location code : ', urlCode);
-    setCode(urlCode);
-
-    console.log('location.pathname : ', location.pathname);
+    const initCode = location.state;
+    console.log('location code : ', initCode);
+    setCode(initCode);
   }, []);
 
   const submitChangePassword = () => {
     //마이페이지 비밀번호 변경
     if (location.pathname == '/mypage') submitPassword(PasswordConfirm);
     //최초 비밀번호 변경 code 가 있을시
-    if (code !== undefined) submitPasswordInit(PasswordConfirm);
+    if (code !== null) submitPasswordInit(PasswordConfirm);
   };
 
   const changeDisable = () => {
@@ -211,11 +201,16 @@ export function ChangePassword({
     if (setIsPasswordEdit) {
       setIsPasswordEdit(false);
     }
-    if (code !== undefined) {
+    if (code !== null) {
       //쿠키 세션 정리
       removeAuthorityCookie('username', { path: '/' });
 
       removeAuthorityCookie('accessToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('refreshToken', {
         path: '/',
         sameSite: 'strict',
         secure: false,

@@ -243,8 +243,52 @@ export function ContentInformationChange() {
                           $margin={`0`}
                         >
                           <>
-                            <DepthBlock item={''} key={''}>
-                              <CheckBoxI id={''} value={''} />
+                            <DepthBlock
+                              item={''}
+                              key={''}
+                              classNameList={'depth-0'}
+                              $margin={'8px 0 0 0'}
+                              id={''}
+                              name={''}
+                              value={''}
+                              checked={false}
+                            >
+                              <span>{'dsa'}</span>
+                            </DepthBlock>
+                            <DepthBlock
+                              item={''}
+                              key={''}
+                              classNameList={'depth-1'}
+                              id={''}
+                              name={''}
+                              value={''}
+                              checked={false}
+                            >
+                              <span>{'dsa'}</span>
+                            </DepthBlock>
+                            <DepthBlock
+                              item={''}
+                              key={''}
+                              classNameList={'depth-2'}
+                              id={''}
+                              name={''}
+                              value={''}
+                              checked={false}
+                            >
+                              {/* <CheckBoxI id={''} value={''} /> */}
+                              <span>{'dsa'}</span>
+                            </DepthBlock>
+                            <DepthBlock
+                              item={''}
+                              key={''}
+                              classNameList={'depth-3'}
+                              $margin={'0 0 8px 0'}
+                              id={''}
+                              name={''}
+                              value={''}
+                              checked={false}
+                            >
+                              {/* <CheckBoxI id={''} value={''} /> */}
                               <span>{'dsa'}</span>
                             </DepthBlock>
                           </>

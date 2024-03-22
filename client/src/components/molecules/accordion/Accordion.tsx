@@ -41,7 +41,7 @@ const Container = styled.div<{ $margin?: string; $backgroundColor?: string }>`
   border-radius: 5px;
   border: 1px solid ${COLOR.POINT_GRAY};
 
-  .accordion input {
+  .accordion > input {
     position: absolute;
     opacity: 0;
     z-index: -1;
@@ -55,7 +55,7 @@ const Container = styled.div<{ $margin?: string; $backgroundColor?: string }>`
     max-height: 10rem;
   }
 
-  .accordion label {
+  .accordion > label {
     display: flex;
     padding: 10px;
     padding-right: 50px;
