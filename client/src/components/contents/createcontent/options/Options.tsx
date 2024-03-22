@@ -7,7 +7,7 @@ import { useModal } from '../../../../hooks';
 import { COLOR } from '../../../constants/COLOR';
 import { SchoolInputModal } from '../SchoolInputModal';
 
-import { OptionsDepsProps, OptionsItemProps } from './OtionsSelect';
+import { OptionsdepthProps, OptionsItemProps } from './OtionsSelect';
 
 export function Options({ listItem }: { listItem: OptionsItemProps }) {
   const { openModal } = useModal();
@@ -70,7 +70,7 @@ export function Options({ listItem }: { listItem: OptionsItemProps }) {
             height={'30px'}
             defaultValue={listItem.label}
             key={listItem.label}
-            options={listItem.options as OptionsDepsProps[]}
+            options={listItem.options as OptionsdepthProps[]}
             onSelect={(event) => selectCategoryOption(event)}
           />
         )}

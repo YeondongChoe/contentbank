@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { styled } from 'styled-components';
 
 import { Button } from '../../../components';
-import { OptionsDepsProps } from '../../../components/contents/createcontent/options/OtionsSelect'; // TODO : 더미 데이터
+import { OptionsdepthProps } from '../../../components/contents/createcontent/options/OtionsSelect'; // TODO : 더미 데이터
 import { COLOR } from '../../constants';
 
 type ButtonFormatRadioProps = {

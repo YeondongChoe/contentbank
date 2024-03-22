@@ -144,10 +144,13 @@ export function App() {
   };
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
-    if (!getAuthorityCookie('accessToken')) {
+    if (
+      !getAuthorityCookie('accessToken') ||
+      !getAuthorityCookie('sessionId')
+    ) {
       navigate('/login');
     }
-  }, [getAuthorityCookie('accessToken')]);
+  }, [getAuthorityCookie('accessToken'), getAuthorityCookie('sessionId')]);
   useEffect(() => {
     // 전역 초기화
     if (location.pathname === '/login') closeModal();

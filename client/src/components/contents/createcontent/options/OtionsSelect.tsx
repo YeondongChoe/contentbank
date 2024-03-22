@@ -7,7 +7,7 @@ import { styled } from 'styled-components';
 import { IconButton } from '../../../atom/button';
 import { COLOR } from '../../../constants';
 
-export type OptionsDepsProps = {
+export type OptionsdepthProps = {
   id?: string | number;
   label: string;
   value?: number | string;
@@ -44,7 +44,7 @@ type ItemProps = {
 };
 
 type SelectProps = {
-  options?: OptionsDepsProps[];
+  options?: OptionsdepthProps[];
   onClick?: () => void;
   onSelect: (
     event: React.MouseEvent<HTMLButtonElement>,

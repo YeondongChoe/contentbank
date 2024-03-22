@@ -44,7 +44,7 @@ export const selectCategory2 = [
         id: '0',
         label: '교재',
         value: '교재',
-        optionsDeps: [
+        optionsdepth: [
           {
             id: 0,
             value: '0',
@@ -133,7 +133,7 @@ export const selectCategory2 = [
         id: '1',
         label: '내신',
         value: '내신',
-        optionsDeps: [
+        optionsdepth: [
           {
             id: 0,
             value: '0',
@@ -220,7 +220,7 @@ export const selectCategory2 = [
         id: '2',
         label: '기출',
         value: '기출',
-        optionsDeps: [
+        optionsdepth: [
           {
             id: 0,
             value: '0',
@@ -299,13 +299,13 @@ export const selectCategory2 = [
         id: '3',
         label: '자체제작',
         value: '자체제작',
-        optionsDeps: [],
+        optionsdepth: [],
       },
       {
         id: '4',
         label: '기타',
         value: '기타',
-        optionsDeps: [],
+        optionsdepth: [],
       },
     ],
   },
