@@ -12,6 +12,8 @@ import {
   Accordion,
   Button,
   ButtonFormatRadio,
+  CheckBoxI,
+  DepthBlock,
   Input,
   MathViewer,
   PaginationBox,
@@ -29,13 +31,13 @@ import { QuizList } from '../../components/contents/createcontent/list';
 import { QuestionTableType } from '../../types';
 
 export function ContentInformationChange() {
-  const [selected1des, setSelected1des] = useState<string>('');
-  const [selected2des, setSelected2des] = useState<string>('');
-  const [selected3des, setSelected3des] = useState<string>('');
-  const [selected4des, setSelected4des] = useState<string>('');
-  const [selected5des, setSelected5des] = useState<string>('');
-  const [selected6des, setSelected6des] = useState<string>('');
-  const [selected7des, setSelected7des] = useState<string>('');
+  const [selected1depth, setSelected1depth] = useState<string>('');
+  const [selected2depth, setSelected2depth] = useState<string>('');
+  const [selected3depth, setSelected3depth] = useState<string>('');
+  const [selected4depth, setSelected4depth] = useState<string>('');
+  const [selected5depth, setSelected5depth] = useState<string>('');
+  const [selected6depth, setSelected6depth] = useState<string>('');
+  const [selected7depth, setSelected7depth] = useState<string>('');
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -50,31 +52,31 @@ export function ContentInformationChange() {
     e: React.ChangeEvent<HTMLInputElement>,
     titleValue: string,
   ) => {
-    const deps =
+    const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
 
-    switch (deps) {
-      case '1deps':
-        setSelected1des(e.currentTarget.value);
+    switch (depth) {
+      case '1depth':
+        setSelected1depth(e.currentTarget.value);
         break;
-      case '2deps':
-        setSelected2des(e.currentTarget.value);
+      case '2depth':
+        setSelected2depth(e.currentTarget.value);
         break;
-      case '3deps':
-        setSelected3des(e.currentTarget.value);
+      case '3depth':
+        setSelected3depth(e.currentTarget.value);
         break;
-      case '4deps':
-        setSelected4des(e.currentTarget.value);
+      case '4depth':
+        setSelected4depth(e.currentTarget.value);
         break;
-      case '5deps':
-        setSelected5des(e.currentTarget.value);
+      case '5depth':
+        setSelected5depth(e.currentTarget.value);
         break;
-      case '6deps':
-        setSelected6des(e.currentTarget.value);
+      case '6depth':
+        setSelected6depth(e.currentTarget.value);
         break;
-      case '7deps':
-        setSelected7des(e.currentTarget.value);
+      case '7depth':
+        setSelected7depth(e.currentTarget.value);
         break;
     }
 
@@ -90,13 +92,13 @@ export function ContentInformationChange() {
   const buttonDisabled = useMemo(() => {
     if (
       searchValue.length > 1 && //2글자 이상
-      selected1des.length &&
-      selected2des.length &&
-      selected3des.length &&
-      selected4des.length &&
-      selected5des.length &&
-      selected6des.length &&
-      selected7des.length
+      selected1depth.length &&
+      selected2depth.length &&
+      selected3depth.length &&
+      selected4depth.length &&
+      selected5depth.length &&
+      selected6depth.length &&
+      selected7depth.length
     ) {
       return false;
     } else {
@@ -104,13 +106,13 @@ export function ContentInformationChange() {
     }
   }, [
     searchValue,
-    selected1des,
-    selected2des,
-    selected3des,
-    selected4des,
-    selected5des,
-    selected6des,
-    selected7des,
+    selected1depth,
+    selected2depth,
+    selected3depth,
+    selected4depth,
+    selected5depth,
+    selected6depth,
+    selected7depth,
   ]);
 
   return (
@@ -131,13 +133,13 @@ export function ContentInformationChange() {
             <ScrollWrap>
               <PerfectScrollbar>
                 <div className="meta_radio_select">
-                  <div className="1deps">
+                  <div className="1depth">
                     {metaList[0].data.map((meta, index) => (
                       <ButtonFormatRadio
                         key={`${meta.id}`}
                         titleText={`${meta.label}`}
                         list={meta.options}
-                        selected={selected1des}
+                        selected={selected1depth}
                         onChange={(e) => handleRadioCheck(e, meta.label)}
                         // defaultChecked={}
                         checkedInput={radioCheck}
@@ -145,78 +147,78 @@ export function ContentInformationChange() {
                       />
                     ))}
                   </div>
-                  <div className="2deps">
+                  <div className="2depth">
                     {metaList[1].data.map((meta, index) => (
                       <ButtonFormatRadio
                         key={`${meta.id}`}
                         titleText={`${meta.label}`}
                         list={meta.options}
-                        selected={selected2des}
+                        selected={selected2depth}
                         onChange={(e) => handleRadioCheck(e, meta.label)}
                         // defaultChecked={}
                         checkedInput={radioCheck}
                       />
                     ))}
                   </div>
-                  <div className="3deps">
+                  <div className="3depth">
                     {metaList[2].data.map((meta, index) => (
                       <ButtonFormatRadio
                         key={`${meta.id}`}
                         titleText={`${meta.label}`}
                         list={meta.options}
-                        selected={selected3des}
+                        selected={selected3depth}
                         onChange={(e) => handleRadioCheck(e, meta.label)}
                         // defaultChecked={}
                         checkedInput={radioCheck}
                       />
                     ))}
                   </div>
-                  <div className="4deps">
+                  <div className="4depth">
                     {metaList[3].data.map((meta, index) => (
                       <ButtonFormatRadio
                         key={`${meta.id}`}
                         titleText={`${meta.label}`}
                         list={meta.options}
-                        selected={selected4des}
+                        selected={selected4depth}
                         onChange={(e) => handleRadioCheck(e, meta.label)}
                         // defaultChecked={}
                         checkedInput={radioCheck}
                       />
                     ))}
                   </div>
-                  <div className="5deps">
+                  <div className="5depth">
                     {metaList[4].data.map((meta, index) => (
                       <ButtonFormatRadio
                         key={`${meta.id}`}
                         titleText={`${meta.label}`}
                         list={meta.options}
-                        selected={selected5des}
+                        selected={selected5depth}
                         onChange={(e) => handleRadioCheck(e, meta.label)}
                         // defaultChecked={}
                         checkedInput={radioCheck}
                       />
                     ))}
                   </div>
-                  <div className="6deps">
+                  <div className="6depth">
                     {metaList[5].data.map((meta, index) => (
                       <ButtonFormatRadio
                         key={`${meta.id}`}
                         titleText={`${meta.label}`}
                         list={meta.options}
-                        selected={selected6des}
+                        selected={selected6depth}
                         onChange={(e) => handleRadioCheck(e, meta.label)}
                         // defaultChecked={}
                         checkedInput={radioCheck}
                       />
                     ))}
                   </div>
-                  <div className="7deps">
+                  <div className="7depth">
                     {metaList[6].data.map((meta, index) => (
                       <ButtonFormatRadio
                         key={`${meta.id}`}
                         titleText={`${meta.label}`}
                         list={meta.options}
-                        selected={selected7des}
+                        selected={selected7depth}
                         onChange={(e) => handleRadioCheck(e, meta.label)}
                         // defaultChecked={}
                         checkedInput={radioCheck}
@@ -225,29 +227,26 @@ export function ContentInformationChange() {
                   </div>
                 </div>
                 <div className="meta_accordion_select">
-                  {selected1des &&
-                    selected2des &&
-                    selected3des &&
-                    selected4des &&
-                    selected5des &&
-                    selected6des &&
-                    selected7des && (
+                  {selected1depth &&
+                    selected2depth &&
+                    selected3depth &&
+                    selected4depth &&
+                    selected5depth &&
+                    selected6depth &&
+                    selected7depth && (
                       <>
                         <strong>세부 검색조건</strong>
                         <Accordion
                           $backgroundColor={`${COLOR.GRAY}`}
-                          title={`${selected1des}`}
-                          id={`세부 검색조건 ${selected1des}`}
+                          title={`${selected1depth}`}
+                          id={`세부 검색조건 ${selected1depth}`}
                           $margin={`0`}
                         >
                           <>
-                            <p>ㅇdsada</p>
-                            <p>ㅇdsada</p>
-                            <p>ㅇdsada</p>
-                            <p>ㅇdsada</p>
-                            <p>ㅇdsada</p>
-                            <p>ㅇdsada</p>
-                            <p>ㅇdsada</p>
+                            <DepthBlock item={''} key={''}>
+                              <CheckBoxI id={''} value={''} />
+                              <span>{'dsa'}</span>
+                            </DepthBlock>
                           </>
                         </Accordion>
                       </>

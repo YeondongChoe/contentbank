@@ -55,9 +55,9 @@ export function OptionList() {
       (el) => el.label === selectValue.value,
     );
     //선택한 셀렉트 라벨값과 같은 라벨을 가진 배열값 동적으로 붙여주기
-    arr[0] && console.log(arr[0], arr[0].optionsDeps);
+    arr[0] && console.log(arr[0], arr[0].optionsdepth);
 
-    if (arr[0] && arr[0].optionsDeps) {
+    if (arr[0] && arr[0].optionsdepth) {
       // 이미 선택된 셀렉트 값일 경우 중복선택 불가
       const value = optionList.filter((el) => el.label === selectValue.value);
       // 인덱스가 같은 셀렉트에서 재선택시 덮어씌우기
@@ -71,7 +71,7 @@ export function OptionList() {
           ...arrUnique,
           {
             label: arr[0].label,
-            options: arr[0].optionsDeps,
+            options: arr[0].optionsdepth,
             idx: selectValue.idx,
           },
         ]);
@@ -174,7 +174,7 @@ export function OptionList() {
               {optionList &&
                 optionList[index] &&
                 optionList[index].options.map((el) => (
-                  <Options listItem={el} key={`${el.label} optionsDeps`} />
+                  <Options listItem={el} key={`${el.label} optionsdepth`} />
                 ))}
             </SelectWrapper>
           </li>

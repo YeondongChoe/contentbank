@@ -3,11 +3,7 @@ import * as React from 'react';
 
 import axios, { AxiosResponse } from 'axios';
 
-import {
-  getAuthorityCookie,
-  removeAuthorityCookie,
-  setAuthorityCookie,
-} from '../utils/cookies';
+import { getAuthorityCookie } from '../utils/cookies';
 
 // axios 전역 설정
 axios.defaults.withCredentials = true; // withCredentials 전역 설정
@@ -38,13 +34,23 @@ export const authInstance = axios.create({
 authInstance.interceptors.request.use(function (config) {
   const headerAuth =
     config.headers.Authorization?.toString().split('Bearer ')[1];
-  console.log('headerAuth--------------- ', headerAuth);
+  const headerSessionId = config.headers['session-id'];
 
+  // console.log(
+  //   'headerAuth--------  getAuthorityCookie(sessionId)------- ',
+  //   headerSessionId,
+  //   getAuthorityCookie('sessionId'),
+  // );
+  // console.log('headerAuth--------------- ', headerAuth);
   if (headerAuth !== getAuthorityCookie('accessToken')) {
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
   }
+  if (headerSessionId !== getAuthorityCookie('sessionId')) {
+    config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
+  }
+
   return config;
 });
 
@@ -62,17 +68,21 @@ export const userInstance = axios.create({
 userInstance.interceptors.request.use(function (config) {
   const headerAuth =
     config.headers.Authorization?.toString().split('Bearer ')[1];
-  console.log(
-    'headerAuth--------------- ',
-    headerAuth,
-    'getAuthorityCookie(sessionId)',
-    getAuthorityCookie('sessionId'),
-  );
+  const headerSessionId = config.headers['session-id'];
 
+  // console.log(
+  //   'headerAuth--------  getAuthorityCookie(sessionId)------- ',
+  //   headerSessionId,
+  //   getAuthorityCookie('sessionId'),
+  // );
+  // console.log('headerAuth--------------- ', headerAuth);
   if (headerAuth !== getAuthorityCookie('accessToken')) {
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
+  }
+  if (headerSessionId !== getAuthorityCookie('sessionId')) {
+    config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
   }
 
   return config;

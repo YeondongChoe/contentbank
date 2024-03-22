@@ -30,10 +30,10 @@ export function Classification() {
     { title: string; checkValue: string }[]
   >([]);
   // const [targetValue, setTargetValue] = useState('');
-  const [selected1des, setSelected1des] = useState<string>('');
-  const [selected2des, setSelected2des] = useState<string>('');
-  const [selected3des, setSelected3des] = useState<string>('');
-  const [selected4des, setSelected4des] = useState<string>('');
+  const [selected1depth, setSelected1depth] = useState<string>('');
+  const [selected2depth, setSelected2depth] = useState<string>('');
+  const [selected3depth, setSelected3depth] = useState<string>('');
+  const [selected4depth, setSelected4depth] = useState<string>('');
   const [checkedList, setCheckedList] = useState<string[]>([]);
   // 라디오 버튼 설정
   const handleRadioCheck = (
@@ -44,21 +44,21 @@ export function Classification() {
     //   e.target.parentElement?.parentElement?.parentElement?.parentElement
     //     ?.parentElement?.classList[0],
     // );
-    const deps =
+    const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
-    switch (deps) {
-      case '1deps':
-        setSelected1des(e.currentTarget.value);
+    switch (depth) {
+      case '1depth':
+        setSelected1depth(e.currentTarget.value);
         break;
-      case '2deps':
-        setSelected2des(e.currentTarget.value);
+      case '2depth':
+        setSelected2depth(e.currentTarget.value);
         break;
-      case '3deps':
-        setSelected3des(e.currentTarget.value);
+      case '3depth':
+        setSelected3depth(e.currentTarget.value);
         break;
-      case '4deps':
-        setSelected4des(e.currentTarget.value);
+      case '4depth':
+        setSelected4depth(e.currentTarget.value);
         break;
     }
 
@@ -110,13 +110,13 @@ export function Classification() {
                 <span className="title_top">문항단원분류</span>
               </Title>
               {/* TODO: 메타데이터 변경 */}
-              <div className="1deps">
+              <div className="1depth">
                 {selectCategory0.map((meta, index) => (
                   <ButtonFormatRadio
                     key={`${meta.id}`}
                     titleText={`${meta.label}`}
                     list={meta.options}
-                    selected={selected1des}
+                    selected={selected1depth}
                     onChange={(e) => handleRadioCheck(e, meta.label)}
                     // defaultChecked={} //저장된 값 디폴트체크로
                     checkedInput={radioCheck}
@@ -124,8 +124,8 @@ export function Classification() {
                   />
                 ))}
               </div>
-              <div className="2deps">
-                {selected1des.length === 0 ? (
+              <div className="2depth">
+                {selected1depth.length === 0 ? (
                   <></>
                 ) : (
                   selectCategory2.map((meta) => (
@@ -133,7 +133,7 @@ export function Classification() {
                       key={`${meta.id}`}
                       titleText={`${meta.label}`}
                       list={meta.options}
-                      selected={selected2des}
+                      selected={selected2depth}
                       onChange={(e) => handleRadioCheck(e, meta.label)}
                       // defaultChecked={} //저장된 값 디폴트체크로
                       checkedInput={radioCheck}
@@ -141,8 +141,8 @@ export function Classification() {
                   ))
                 )}
               </div>
-              <div className="3deps">
-                {selected2des.length === 0 ? (
+              <div className="3depth">
+                {selected2depth.length === 0 ? (
                   <></>
                 ) : (
                   selectCategory3.map((meta) => (
@@ -150,7 +150,7 @@ export function Classification() {
                       key={`${meta.id}`}
                       titleText={`${meta.label}`}
                       list={meta.options}
-                      selected={selected3des}
+                      selected={selected3depth}
                       onChange={(e) => handleRadioCheck(e, meta.label)}
                       // defaultChecked={} //저장된 값 디폴트체크로
                       checkedInput={radioCheck}
@@ -158,8 +158,8 @@ export function Classification() {
                   ))
                 )}
               </div>
-              <div className="4deps">
-                {selected3des.length === 0 ? (
+              <div className="4depth">
+                {selected3depth.length === 0 ? (
                   <></>
                 ) : (
                   selectCategory4.map((meta) => (
@@ -167,7 +167,7 @@ export function Classification() {
                       key={`${meta.id}`}
                       titleText={`${meta.label}`}
                       list={meta.options}
-                      selected={selected4des}
+                      selected={selected4depth}
                       onChange={(e) => handleRadioCheck(e, meta.label)}
                       // defaultChecked={} //저장된 값 디폴트체크로
                       checkedInput={radioCheck}

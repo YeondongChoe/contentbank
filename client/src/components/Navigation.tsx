@@ -42,12 +42,12 @@ export function Navigation() {
   //   loadData();
   // }, []);
   const clickLink = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const deps1Value =
+    const depth1Value =
       e.currentTarget.parentElement?.children[0].children[0].children[0];
-    const deps2Value = e.currentTarget.children[0].children[1];
-    // console.log('---------------', deps1Value?.innerHTML);
-    if (deps1Value)
-      setpageIndexValue([deps1Value.innerHTML, deps2Value.innerHTML]);
+    const depth2Value = e.currentTarget.children[0].children[1];
+    // console.log('---------------', depth1Value?.innerHTML);
+    if (depth1Value)
+      setpageIndexValue([depth1Value.innerHTML, depth2Value.innerHTML]);
   };
   return (
     <>

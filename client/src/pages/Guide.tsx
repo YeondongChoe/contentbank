@@ -94,7 +94,7 @@ export function Guide() {
         <span>border 커스텀 버튼</span>
       </Button>
       <h3>index info</h3>
-      <IndexInfo list={['1deps', '2deps', '3deps']}></IndexInfo>
+      <IndexInfo list={['1depth', '2depth', '3depth']}></IndexInfo>
       <h3>label</h3>
       <Label value="커스텀 라벨"></Label>
       <Label type="error" value="커스텀 라벨"></Label>
