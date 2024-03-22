@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -34,10 +34,8 @@ export type LoginType = {
 };
 
 export function Login() {
-  const queryClient = useQueryClient();
-  const setAccessTokenAtom = useSetRecoilState(accessTokenAtom);
-  const setRefreshTokenAtom = useSetRecoilState(refreshTokenAtom);
-  const setSessionIdAtom = useSetRecoilState(sessionIdAtom);
+  // const setAccessTokenAtom = useSetRecoilState(accessTokenAtom);
+
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
   );
@@ -80,19 +78,18 @@ export function Login() {
     },
     onSuccess: (response: {
       data: {
+        code: string;
         data: {
           accessToken: string;
           refreshToken: string;
           sessionId: string;
+          initPasswordCode: string | null;
         };
       };
     }) => {
       console.log('accessToken ----login', response.data.data.accessToken);
       console.log('refreshToken ----login', response.data.data.refreshToken);
-      console.log(
-        'sessionId ---------------------login',
-        response.data.data.sessionId,
-      );
+      console.log('sessionId -----login', response.data.data.sessionId);
       // 로컬데이터에서 토큰과 세션을 저장
       setAuthorityCookie('accessToken', response.data.data.accessToken, {
         path: '/',
@@ -109,10 +106,6 @@ export function Login() {
         sameSite: 'strict',
         secure: false,
       });
-      // 프론트 전역에 데이터로저장
-      setAccessTokenAtom(response.data.data.accessToken);
-      setRefreshTokenAtom(response.data.data.refreshToken);
-      setSessionIdAtom(response.data.data.sessionId);
 
       // 아이디 저장 체크박스
       if (isClicked === true) {
@@ -120,18 +113,25 @@ export function Login() {
       } else {
         removeAuthorityCookie('username', { path: '/' });
       }
-    },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    onSettled: (response: { data: { link: string } }) => {
-      //첫 로그인시 비밀번호 변경 페이지로 || 로그인 성공후 메인으로
-      navigate(response?.data.link, { state: Id }); //link 제거 code값으로 분기
+
+      // console.log(
+      //   'response.data=== ',
+      //   response.data.code,
+      //   response.data.data.initPasswordCode,
+      // );
+      // 코드값 S-005 일시 최초 비번등록 페이지로
+      if (response.data.code == 'S-005') {
+        navigate(`/init-change-password`, {
+          state: response.data.data.initPasswordCode,
+        });
+      }
+      if (response.data.code == 'S-001') {
+        navigate(`/content-create/quiz`);
+      }
     },
   });
 
   const submitLogin: SubmitHandler<LoginType> = (auth) => {
-    // console.log('auth ', auth);
-
     onLogin(auth);
   };
 
@@ -152,10 +152,6 @@ export function Login() {
     PasswordInputRef?.current?.focus();
   };
   // console.log('getLogin', getLoginData);
-  useEffect(() => {
-    console.log('isSuccess ::', isSuccess);
-    console.log('loginPostData ::', loginPostData);
-  }, [isSuccess]);
 
   return (
     <Container>
