@@ -595,3 +595,24 @@ export const depthBlockList = [
     name: '10',
   },
 ];
+
+export const selectCategoryEtc1 = [
+  {
+    id: '1',
+    label: '행동요소1',
+    value: '1',
+    options: [
+      { id: '0', label: '계산', value: '0' },
+      { id: '1', label: '이해', value: '1' },
+      { id: '2', label: '추론', value: '2' },
+    ],
+  },
+];
+export const selectCategoryEtc2 = [
+  {
+    id: '1',
+    label: '행동요소2',
+    value: '1',
+    options: [{ id: '0', label: '문제해결', value: '0' }],
+  },
+];

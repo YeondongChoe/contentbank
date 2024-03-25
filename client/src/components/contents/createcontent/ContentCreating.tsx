@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { Button, DnDWrapper, Modal, Select } from '../..';
@@ -42,7 +43,8 @@ export function ContentCreating({
   }, []);
   return (
     <Container>
-      {/* <iframe
+      <ContentsWrap>
+        {/* <iframe
         width="100%"
         height="672"
         //src="http://43.201.205.140:40031"
@@ -53,139 +55,152 @@ export function ContentCreating({
         //referrerPolicy="no-referrer"
       ></iframe> */}
 
-      <EditContainerWrap>
-        <EditWrap>EditWrap</EditWrap>
+        <EditContainerWrap>
+          <PerfectScrollbar>
+            <EditWrap>EditWrap</EditWrap>
 
-        <BackgroundWrap>
-          <SelectListWrap>
-            <strong>
-              과목<span>*</span>
-            </strong>
-            <SelectList>
-              <li>
-                <SelectWrapper>
-                  {selectCategory1.map((el) => (
-                    <Select
-                      $positionTop
-                      width={'110px'}
-                      height={'30px'}
-                      defaultValue={el.label}
-                      key={el.label}
-                      options={el.options}
-                      onSelect={(event) => selectCategoryOption(event)}
-                    />
-                  ))}
-                </SelectWrapper>
-              </li>
-            </SelectList>
-          </SelectListWrap>
-          <SelectListWrap>
-            <strong>
-              출처<span>*</span>
-            </strong>
-            <SourceOptionWrap>
-              {/* 옵션 리스트 셀렉트 컴포넌트 */}
-              <OptionList />
-            </SourceOptionWrap>
-          </SelectListWrap>
-          <SelectListWrap>
-            <strong>
-              문항타입<span>*</span>
-            </strong>
-            <SelectList>
-              <li>
-                <SelectWrapper>
-                  {selectCategory3.map((el) => (
-                    <Select
-                      $positionTop
-                      width={'110px'}
-                      height={'30px'}
-                      defaultValue={el.label}
-                      key={el.label}
-                      options={el.options}
-                      onSelect={(event) => selectCategoryOption(event)}
-                    />
-                  ))}
-                </SelectWrapper>
-              </li>
-            </SelectList>
-          </SelectListWrap>
-          <SelectListWrap>
-            <strong>난이도</strong>
-            <SelectList>
-              <li>
-                <SelectWrapper>
-                  {selectCategory3.map((el) => (
-                    <Select
-                      $positionTop
-                      width={'110px'}
-                      height={'30px'}
-                      defaultValue={el.label}
-                      key={el.label}
-                      options={el.options}
-                      onSelect={(event) => selectCategoryOption(event)}
-                    />
-                  ))}
-                </SelectWrapper>
-              </li>
-            </SelectList>
-          </SelectListWrap>
-        </BackgroundWrap>
-      </EditContainerWrap>
+            <BackgroundWrap>
+              <SelectListWrap>
+                <strong>
+                  과목<span>*</span>
+                </strong>
+                <SelectList>
+                  <li>
+                    <SelectWrapper>
+                      {selectCategory1.map((el) => (
+                        <Select
+                          $positionTop
+                          width={'110px'}
+                          height={'30px'}
+                          defaultValue={el.label}
+                          key={el.label}
+                          options={el.options}
+                          onSelect={(event) => selectCategoryOption(event)}
+                        />
+                      ))}
+                    </SelectWrapper>
+                  </li>
+                </SelectList>
+              </SelectListWrap>
+              <SelectListWrap>
+                <strong>
+                  출처<span>*</span>
+                </strong>
+                <SourceOptionWrap>
+                  {/* 옵션 리스트 셀렉트 컴포넌트 */}
+                  <OptionList />
+                </SourceOptionWrap>
+              </SelectListWrap>
+              <SelectListWrap>
+                <strong>
+                  문항타입<span>*</span>
+                </strong>
+                <SelectList>
+                  <li>
+                    <SelectWrapper>
+                      {selectCategory3.map((el) => (
+                        <Select
+                          $positionTop
+                          width={'110px'}
+                          height={'30px'}
+                          defaultValue={el.label}
+                          key={el.label}
+                          options={el.options}
+                          onSelect={(event) => selectCategoryOption(event)}
+                        />
+                      ))}
+                    </SelectWrapper>
+                  </li>
+                </SelectList>
+              </SelectListWrap>
+              <SelectListWrap>
+                <strong>난이도</strong>
+                <SelectList>
+                  <li>
+                    <SelectWrapper>
+                      {selectCategory3.map((el) => (
+                        <Select
+                          $positionTop
+                          width={'110px'}
+                          height={'30px'}
+                          defaultValue={el.label}
+                          key={el.label}
+                          options={el.options}
+                          onSelect={(event) => selectCategoryOption(event)}
+                        />
+                      ))}
+                    </SelectWrapper>
+                  </li>
+                </SelectList>
+              </SelectListWrap>
+            </BackgroundWrap>
+          </PerfectScrollbar>
+        </EditContainerWrap>
 
-      <ContentListWrap>
-        <ContentList>
-          <QuizList
-            questionList={questionList}
-            $height={`calc(100vh - 60px - 150px)`}
-            showViewAllButton
-            setCheckedList={setCheckedList}
-          />
-        </ContentList>
-        <Button
-          buttonType="button"
-          onClick={submitSave}
-          height={'40px'}
-          $filled
-          fontSize="12px"
-        >
-          <span>등록</span>
-        </Button>
-        <Button
-          buttonType="button"
-          onClick={() => setTabVeiw('문항 분류')}
-          height={'40px'}
-          fontSize="12px"
-        >
-          <span>추가 정보 등록</span>
-        </Button>
-      </ContentListWrap>
+        <ContentListWrap>
+          <ContentList>
+            <QuizList
+              questionList={questionList}
+              $height={`calc(100vh - 100px)`}
+              showViewAllButton
+              setCheckedList={setCheckedList}
+            />
+          </ContentList>
+        </ContentListWrap>
 
-      <Modal />
+        <Modal />
+      </ContentsWrap>
+      <BorderWrap>
+        <SubmitButtonWrap>
+          <Button
+            buttonType="button"
+            onClick={submitSave}
+            width={'calc(50% - 5px)'}
+            $margin={'0 10px 0 0'}
+            $filled
+            cursor
+          >
+            <span>등록</span>
+          </Button>
+          <Button
+            buttonType="button"
+            onClick={() => setTabVeiw('문항 분류')}
+            width={'calc(50% - 5px)'}
+            cursor
+          >
+            <span>추가 정보 등록</span>
+          </Button>
+        </SubmitButtonWrap>
+      </BorderWrap>
     </Container>
   );
 }
 
 const Container = styled.div`
+  position: relative;
+`;
+
+const ContentsWrap = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   width: 100%;
+  height: calc(100vh - 200px);
 `;
 
 const EditContainerWrap = styled.div`
-  flex: 1 1 0;
-  margin-bottom: 20px;
+  flex: 1 0 0;
 `;
 
 const EditWrap = styled.div`
-  min-height: calc(100vh - 60px - 200px); // 탭 네비 높이, 하단 셀렉트 높이 제외
+  height: calc(100vh - 300px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   margin-bottom: 10px;
 `;
 const BackgroundWrap = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
+  margin-bottom: 70px;
 `;
 const SelectListWrap = styled.div`
   display: flex;
@@ -231,7 +246,7 @@ const SelectList = styled.ul`
 `;
 const SelectWrapper = styled.div`
   display: flex;
-  flex: 1 1 0;
+  flex: 1 0 0;
   flex-wrap: wrap;
   gap: 5px;
   align-items: center;
@@ -239,19 +254,36 @@ const SelectWrapper = styled.div`
 `;
 
 const ContentListWrap = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
   width: 25%;
-  padding: 10px;
-
-  > button {
-    // 저장 버튼
-    margin-top: 10px;
-  }
+  padding: 0 10px;
 `;
 const ContentList = styled.div`
+  height: 100%;
   width: 100%;
   /* overflow: hidden; */
+
   border: 1px solid ${COLOR.BORDER_BLUE};
+  border-top: none;
+  background-color: ${COLOR.LIGHT_GRAY};
+`;
+
+const BorderWrap = styled.div`
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
+  position: fixed;
+  bottom: 0px;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: #fff;
+`;
+const SubmitButtonWrap = styled.div`
+  position: absolute;
+  right: 30px;
+  left: auto;
+  top: 10px;
+  bottom: 0px;
+  display: flex;
+  flex-direction: row;
+  width: 50%;
 `;
