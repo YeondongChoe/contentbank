@@ -522,3 +522,76 @@ export const metaList = [
     ],
   },
 ];
+
+export const depthBlockList = [
+  {
+    id: '1',
+    label: '교육과정',
+    value: '1',
+    depth: 0,
+    name: '1',
+  },
+  {
+    id: '2',
+    label: '교육과정',
+    value: '2',
+    depth: 1,
+    name: '2',
+  },
+  {
+    id: '3',
+    label: '교육과정',
+    value: '3',
+    depth: 2,
+    name: '3',
+  },
+  {
+    id: '4',
+    label: '교육과정',
+    value: '4',
+    depth: 3,
+    name: '4',
+  },
+  {
+    id: '5',
+    label: '교육과정',
+    value: '5',
+    depth: 4,
+    name: '5',
+  },
+  {
+    id: '6',
+    label: '교육과정',
+    value: '6',
+    depth: 5,
+    name: '6',
+  },
+  {
+    id: '7',
+    label: '교육과정',
+    value: '7',
+    depth: 5,
+    name: '7',
+  },
+  {
+    id: '8',
+    label: '교육과정',
+    value: '8',
+    depth: 5,
+    name: '8',
+  },
+  {
+    id: '9',
+    label: '교육과정',
+    value: '9',
+    depth: 0,
+    name: '9',
+  },
+  {
+    id: '10',
+    label: '교육과정',
+    value: '10',
+    depth: 0,
+    name: '10',
+  },
+];
