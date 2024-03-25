@@ -29,27 +29,27 @@ export function ButtonFormatRadio({
   key,
 }: ButtonFormatRadioProps) {
   return (
-    <Component $margin={$margin}>
+    <Component $margin={$margin} key={key}>
       {list.length !== 0 || list == null ? (
         <>
           {titleText && <strong>{titleText}</strong>}
 
           <ButtonFormatRadioList>
             {list.map((item) => (
-              <li key={item.label}>
-                <label htmlFor={item.label as string}>
+              <li key={item.value}>
+                <label htmlFor={item.value as string}>
                   <input
                     type="radio"
                     defaultChecked={defaultChecked}
                     name={item.label as string}
-                    id={item.label as string}
-                    value={item.label}
+                    id={item.value as string}
+                    value={item.value}
                     onChange={onChange}
-                    checked={selected === item.label}
+                    checked={selected === item.value}
                     className={item.parentValue}
                   />
                   <span
-                    className={`label ${selected === item.label ? 'on' : ''}`}
+                    className={`label ${selected === item.value ? 'on' : ''}`}
                   >
                     {item.label}
                   </span>

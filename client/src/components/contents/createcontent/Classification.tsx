@@ -135,7 +135,7 @@ export function Classification() {
                   <span className="title_top">문항단원분류</span>
                 </Title>
                 {/* 추가된 단원분류 리스트 최대5개 저장 */}
-                <>ㅇ</>
+                <p>교과 리스트 블록</p>
                 {/* TODO: 메타데이터 변경 */}
                 <div className="1depth">
                   {selectCategory0.map((meta, index) => (

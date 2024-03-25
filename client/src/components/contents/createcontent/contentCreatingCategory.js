@@ -522,6 +522,128 @@ export const metaList = [
     ],
   },
 ];
+export const metaListChange = [
+  {
+    data: [
+      {
+        id: 'changeValue1',
+        label: '교육과정',
+        value: 'changeValue1',
+        options: [
+          { id: 'changeValue0', label: '1차', value: 'changeValue1차0' },
+          { id: 'changeValue1', label: '2차', value: 'changeValue2차1' },
+          { id: 'changeValue2', label: '3차', value: 'changeValue3차2' },
+          { id: 'changeValue3', label: '4차', value: 'changeValue4차3' },
+          { id: 'changeValue4', label: '5차', value: 'changeValue5차4' },
+          { id: 'changeValue5', label: '6차', value: 'changeValue6차5' },
+          { id: 'changeValue6', label: '7차', value: 'changeValue7차6' },
+          { id: 'changeValue7', label: '8차', value: 'changeValue8차7' },
+          { id: 'changeValue8', label: '9차', value: 'changeValue9차8' },
+          { id: 'changeValue9', label: '10차', value: 'changeValue10차9' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: 'changeValue2',
+        label: '학교급',
+        value: 'changeValue2',
+        options: [
+          { id: 'changeValue0', label: '초등', value: 'changeValue초등0' },
+          { id: 'changeValue1', label: '중등', value: 'changeValue중등1' },
+          { id: 'changeValue2', label: '고등', value: 'changeValue고등2' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: 'changeValue3',
+        label: '학년',
+        value: 'changeValue3',
+        options: [
+          { id: 'changeValue0', label: '전체', value: 'changeValue전체0' },
+          { id: 'changeValue1', label: '1학년', value: 'changeValue1학년1' },
+          { id: 'changeValue2', label: '2학년', value: 'changeValue2학년2' },
+          { id: 'changeValue3', label: '3학년', value: 'changeValue3학년3' },
+          { id: 'changeValue4', label: '4학년', value: 'changeValue4학년4' },
+          { id: 'changeValue5', label: '5학년', value: 'changeValue5학년5' },
+          { id: 'changeValue6', label: '6학년', value: 'changeValue6학년6' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: 'changeValue4',
+        label: '학기',
+        value: 'changeValue4',
+        options: [
+          { id: 'changeValue0', label: '전체', value: 'changeValue전체0' },
+          { id: 'changeValue1', label: '1학기', value: 'changeValue1학기1' },
+          { id: 'changeValue2', label: '2학기', value: 'changeValue2학기2' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: 'changeValue5',
+        label: '교과',
+        value: 'changeValue5',
+        options: [
+          { id: 'changeValue0', label: '수학', value: 'changeValue수학0' },
+          { id: 'changeValue1', label: '영어', value: 'changeValue영어1' },
+          { id: 'changeValue2', label: '국어', value: 'changeValue국어2' },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: 'changeValue6',
+        label: '과목',
+        value: 'changeValue6',
+        options: [
+          {
+            id: 'changeValue0',
+            label: '공통수학',
+            value: 'changeValue공통수학0',
+          },
+          {
+            id: 'changeValue1',
+            label: 'Grammar',
+            value: 'changeValueGrammar1',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    data: [
+      {
+        id: 'changeValue7',
+        label: '오픈여부',
+        value: 'changeValue7',
+        options: [
+          { id: 'changeValue0', label: '전체', value: 'changeValue전체0' },
+          { id: 'changeValue1', label: '활성화', value: 'changeValue활성화1' },
+          {
+            id: 'changeValue2',
+            label: '비활성화',
+            value: 'changeValue비활성화2',
+          },
+        ],
+      },
+    ],
+  },
+];
 
 export const depthBlockList = [
   {
