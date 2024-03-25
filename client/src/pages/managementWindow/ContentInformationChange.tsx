@@ -26,6 +26,7 @@ import { COLOR } from '../../components/constants';
 import {
   questionList,
   metaList,
+  depthBlockList,
 } from '../../components/contents/createcontent/contentCreatingCategory';
 import { QuizList } from '../../components/contents/createcontent/list';
 import { QuestionTableType } from '../../types';
@@ -38,7 +39,6 @@ export function ContentInformationChange() {
   const [selected5depth, setSelected5depth] = useState<string>('');
   const [selected6depth, setSelected6depth] = useState<string>('');
   const [selected7depth, setSelected7depth] = useState<string>('');
-
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
   >([]);
@@ -46,6 +46,7 @@ export function ContentInformationChange() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [changeValue, setChangeValue] = useState<string>('');
   const [checkedList, setCheckedList] = useState<string[]>([]);
+  const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
 
   // 라디오 버튼 설정
   const handleRadioCheck = (
@@ -87,6 +88,17 @@ export function ContentInformationChange() {
         checkValue: e.currentTarget.value,
       },
     ]);
+  };
+
+  // 깊이가 있는 리스트 체크박스
+  const handleSingleCheck = (checked: boolean, id: string) => {
+    // console.log('click');
+
+    if (checked) {
+      setCheckedDepthList((prev) => [...prev, id]);
+    } else {
+      setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
+    }
   };
 
   const buttonDisabled = useMemo(() => {
@@ -243,54 +255,25 @@ export function ContentInformationChange() {
                           $margin={`0`}
                         >
                           <>
-                            <DepthBlock
-                              item={''}
-                              key={''}
-                              classNameList={'depth-0'}
-                              $margin={'8px 0 0 0'}
-                              id={''}
-                              name={''}
-                              value={''}
-                              checked={false}
-                            >
-                              <span>{'dsa'}</span>
-                            </DepthBlock>
-                            <DepthBlock
-                              item={''}
-                              key={''}
-                              classNameList={'depth-1'}
-                              id={''}
-                              name={''}
-                              value={''}
-                              checked={false}
-                            >
-                              <span>{'dsa'}</span>
-                            </DepthBlock>
-                            <DepthBlock
-                              item={''}
-                              key={''}
-                              classNameList={'depth-2'}
-                              id={''}
-                              name={''}
-                              value={''}
-                              checked={false}
-                            >
-                              {/* <CheckBoxI id={''} value={''} /> */}
-                              <span>{'dsa'}</span>
-                            </DepthBlock>
-                            <DepthBlock
-                              item={''}
-                              key={''}
-                              classNameList={'depth-3'}
-                              $margin={'0 0 8px 0'}
-                              id={''}
-                              name={''}
-                              value={''}
-                              checked={false}
-                            >
-                              {/* <CheckBoxI id={''} value={''} /> */}
-                              <span>{'dsa'}</span>
-                            </DepthBlock>
+                            {depthBlockList.map((item) => (
+                              <DepthBlock
+                                key={`depthList${item.id}`}
+                                classNameList={`depth-${item.depth}`}
+                                id={item.id}
+                                name={item.name}
+                                value={item.value}
+                                onChange={(e) =>
+                                  handleSingleCheck(e.target.checked, item.id)
+                                }
+                                checked={
+                                  checkedDepthList.includes(item.id as string)
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <span>{item.label}</span>
+                              </DepthBlock>
+                            ))}
                           </>
                         </Accordion>
                       </>
@@ -563,7 +546,7 @@ const ChangeInfoWrap = styled.div`
     padding: 10px;
     margin: 10px;
     border-radius: 5px;
-    background-color: ${COLOR.SELECT_BLUE};
+    background-color: ${COLOR.FONT_NAVI};
   }
   .info_box {
     display: flex;
@@ -587,7 +570,7 @@ const ChangeInfoWrap = styled.div`
   }
 
   .strong {
-    background-color: ${COLOR.SELECT_BLUE};
+    background-color: ${COLOR.FONT_NAVI};
     color: #fff;
     padding: 2px;
   }

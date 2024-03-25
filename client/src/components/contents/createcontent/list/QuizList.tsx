@@ -57,8 +57,6 @@ export function QuizList({
     }
   };
   const handleSingleCheck = (checked: boolean, id: string) => {
-    console.log('click');
-
     if (checked) {
       setCheckList((prev) => [...prev, id]);
     } else {

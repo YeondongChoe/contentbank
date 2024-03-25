@@ -8,6 +8,7 @@ import { ResizeLayout, ValueNone } from '../..';
 import {
   Accordion,
   ButtonFormatRadio,
+  DepthBlock,
   Search,
 } from '../../../components/molecules';
 import { COLOR } from '../../constants/COLOR';
@@ -19,6 +20,7 @@ import {
   selectCategory2,
   selectCategory3,
   selectCategory4,
+  depthBlockList,
 } from './contentCreatingCategory'; // TODO : 더미데이터
 import { QuizList } from './list';
 
@@ -35,6 +37,7 @@ export function Classification() {
   const [selected3depth, setSelected3depth] = useState<string>('');
   const [selected4depth, setSelected4depth] = useState<string>('');
   const [checkedList, setCheckedList] = useState<string[]>([]);
+  const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
   // 라디오 버튼 설정
   const handleRadioCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -69,6 +72,17 @@ export function Classification() {
         checkValue: e.currentTarget.value,
       },
     ]);
+  };
+
+  // 깊이가 있는 리스트 체크박스
+  const handleSingleCheck = (checked: boolean, id: string) => {
+    // console.log('click');
+
+    if (checked) {
+      setCheckedDepthList((prev) => [...prev, id]);
+    } else {
+      setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
+    }
   };
 
   useEffect(() => {
@@ -192,10 +206,30 @@ export function Classification() {
                         onChange={() => {}}
                         onKeyDown={() => {}}
                       />
-                      {/* TODO : 분류 데이터 리스트   */}
-                      <ul>
-                        <li></li>
-                      </ul>
+                      <p className="line"></p>
+                      <DepthBlockScrollWrap>
+                        <PerfectScrollbar>
+                          {depthBlockList.map((item) => (
+                            <DepthBlock
+                              key={`depthList${item.id}`}
+                              classNameList={`depth-${item.depth}`}
+                              id={item.id}
+                              name={item.name}
+                              value={item.value}
+                              onChange={(e) =>
+                                handleSingleCheck(e.target.checked, item.id)
+                              }
+                              checked={
+                                checkedDepthList.includes(item.id as string)
+                                  ? true
+                                  : false
+                              }
+                            >
+                              <span>{item.label}</span>
+                            </DepthBlock>
+                          ))}
+                        </PerfectScrollbar>
+                      </DepthBlockScrollWrap>
                     </RowListWrap>
                   </Accordion>
 
@@ -241,6 +275,11 @@ const ScrollWrap = styled.div`
     border-top: 1px solid ${COLOR.BORDER_GRAY};
     margin: 10px 0;
   }
+`;
+const DepthBlockScrollWrap = styled.div`
+  overflow-y: auto;
+  height: 200px;
+  width: 100%;
 `;
 const Title = styled.div`
   padding: 15px;
