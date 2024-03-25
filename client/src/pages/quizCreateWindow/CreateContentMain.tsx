@@ -143,9 +143,15 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: -40px;
+  position: relative;
 `;
 const ButtonWrapper = styled.div`
   padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
+  z-index: 5;
 `;
 
 const TapMenuWrapper = styled.div`
@@ -159,5 +165,4 @@ const ContentBox = styled.div`
   width: 100%;
   padding: 0 20px;
   min-height: 700px;
-  border-top: 1px solid ${COLOR.BORDER_BLUE};
 `;
