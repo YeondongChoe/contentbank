@@ -386,45 +386,45 @@ export function ContentInformationChange() {
                     </ChangeInfoWrap>
                   </PerfectScrollbar>
                 </ScrollWrap>
-                <ButtonWrap>
-                  <InputWrap>
-                    <input
-                      type="text"
-                      minLength={2}
-                      value={changeValue}
-                      onChange={(e) => setChangeValue(e.target.value)}
-                      placeholder="변경값을 입력해주세요"
-                    />
-                    <Button
-                      width={'80px'}
-                      height={'35px'}
-                      fontSize={'14px'}
-                      $margin={'0 0 0 5px'}
-                      cursor
-                      $filled
-                      $success
-                      onClick={() => {}}
-                    >
-                      수식
-                    </Button>
-                  </InputWrap>
-                  <Button
-                    $filled
-                    cursor
-                    disabled={changeValue.length < 2}
-                    onClick={() => {}}
-                  >
-                    <span>
-                      바꾸기 <MdPublishedWithChanges />
-                    </span>
-                  </Button>
-                </ButtonWrap>
               </>
             ) : (
               <ValueNoneWrap>
                 <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
               </ValueNoneWrap>
             )}
+            <ButtonWrap>
+              <InputWrap>
+                <input
+                  type="text"
+                  minLength={2}
+                  value={changeValue}
+                  onChange={(e) => setChangeValue(e.target.value)}
+                  placeholder="변경값을 입력해주세요"
+                />
+                <Button
+                  width={'80px'}
+                  height={'35px'}
+                  fontSize={'14px'}
+                  $margin={'0 0 0 5px'}
+                  cursor
+                  $filled
+                  $success
+                  onClick={() => {}}
+                >
+                  수식
+                </Button>
+              </InputWrap>
+              <Button
+                $filled
+                cursor
+                disabled={changeValue.length < 2}
+                onClick={() => {}}
+              >
+                <span>
+                  바꾸기 <MdPublishedWithChanges />
+                </span>
+              </Button>
+            </ButtonWrap>
           </PositionWrap>
         }
       />
