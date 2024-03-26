@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import styled, { ThemeProvider } from 'styled-components';
+import styled, { ThemeProvider, css } from 'styled-components';
 
 import { Label } from '../../../components/atom';
 import { MathViewer } from '../../../components/mathViewer';
@@ -32,13 +32,15 @@ export const TypeA = ({
   theme,
 }: TypeAProps) => {
   const [list, setList] = useState<ItemQuestionType[]>([]);
+  const [list1, setList1] = useState<ItemQuestionType[]>([]);
 
   useEffect(() => {
     if (contentQuantity === '최대') {
-      setList([Contents1, Contents2, Contents3, Contents4]);
+      setList([Contents2, Contents2, Contents3, Contents4]);
+      setList1([Contents2, Contents3, Contents4]);
     }
     if (contentQuantity === '6문제') {
-      setList([Contents1, Contents2, Contents3]);
+      setList([Contents2, Contents2, Contents3]);
     }
     if (contentQuantity === '4문제') {
       setList([Contents1, Contents2]);
@@ -51,7 +53,7 @@ export const TypeA = ({
   return (
     <Container>
       <LabelWrapper>
-        <Label value="미리보기"></Label>
+        <Label value="미리보기 화면은 실제 학습지와 약간의 차이가 있습니다."></Label>
       </LabelWrapper>
       <Wrapper>
         <ThemeProvider theme={theme as object}>
@@ -60,60 +62,86 @@ export const TypeA = ({
               <div>
                 <Label
                   value={(grade as string) || '학교급/대상 학년'}
-                  fontSize="16px"
+                  fontSize="12px"
                 />
                 <Label
                   value={(title as string) || '학습지명'}
-                  fontSize="20px"
+                  fontSize="14px"
                 />
               </div>
               <div>
                 <Label
                   value={(tag as string) || '학습지 태그'}
-                  fontSize="16px"
+                  fontSize="12px"
                 />
-                {isWeather && <span>2024/03/19</span>}
+                {isWeather && (
+                  <Label value="2024/03/19" fontSize="12px"></Label>
+                )}
               </div>
             </TextWrapper>
-            {isContentTypeTitle && (
+            {isContentTypeTitle ? (
               <p>
-                <Label value="문항 유형명" fontSize="20px" />
+                <Label value="문항 유형명" fontSize="14px" />
               </p>
+            ) : (
+              <p></p>
             )}
           </WorksheetHeader>
         </ThemeProvider>
         <WorksheetBody>
           <WorksheetBodyLeft>
             {list.map((card, i) => (
-              <MathViewerWrapper key={i}>
+              <MathViewerWrapper key={card.it_quest + i}>
                 <strong>{i + 1}.</strong>
                 <MathViewer
                   data={card}
-                  width="330px"
-                  height={
-                    contentQuantity === '6문제' || contentQuantity === '최대'
-                      ? '0px'
-                      : '300px'
+                  padding={
+                    contentQuantity === '4문제'
+                      ? '0 0 60px 0'
+                      : contentQuantity === '6문제'
+                        ? '0 0 60px 0'
+                        : contentQuantity === '최대'
+                          ? '0 0 50px 0'
+                          : '0'
                   }
                 ></MathViewer>
               </MathViewerWrapper>
             ))}
           </WorksheetBodyLeft>
           <WorksheetBodyRight>
-            {list.map((card, i) => (
-              <MathViewerWrapper key={i}>
-                <strong>{i + 1}.</strong>
-                <MathViewer
-                  data={card}
-                  width="330px"
-                  height={
-                    contentQuantity === '6문제' || contentQuantity === '최대'
-                      ? '0px'
-                      : '300px'
-                  }
-                ></MathViewer>
-              </MathViewerWrapper>
-            ))}
+            {contentQuantity === '최대' ? (
+              <>
+                {list1.map((card, i) => (
+                  <MathViewerWrapper key={i}>
+                    <strong>{i + 5}.</strong>
+                    <MathViewer
+                      data={card}
+                      padding={contentQuantity === '최대' ? '0 0 80px 0' : '0'}
+                    ></MathViewer>
+                  </MathViewerWrapper>
+                ))}
+              </>
+            ) : (
+              <>
+                {list.map((card, i) => (
+                  <MathViewerWrapper key={i}>
+                    <strong>{i + 3}.</strong>
+                    <MathViewer
+                      data={card}
+                      padding={
+                        contentQuantity === '4문제'
+                          ? '0 0 60px 0'
+                          : contentQuantity === '6문제'
+                            ? '0 0 60px 0'
+                            : contentQuantity === '최대'
+                              ? '0 0 50px 0'
+                              : '0'
+                      }
+                    ></MathViewer>
+                  </MathViewerWrapper>
+                ))}
+              </>
+            )}
           </WorksheetBodyRight>
         </WorksheetBody>
         <WorksheetAdditionalInformation>
@@ -126,7 +154,8 @@ export const TypeA = ({
 
 const Container = styled.div`
   width: 100%;
-  max-height: 100%;
+  height: 100%;
+  display: block;
   border-radius: 25px;
   display: flex;
   flex-direction: column;
@@ -139,19 +168,19 @@ const LabelWrapper = styled.div`
   color: white;
 `;
 const Wrapper = styled.div`
-  height: 92%;
   background-color: white;
+  aspect-ratio: 210/297;
   overflow-y: auto;
 `;
+
 const WorksheetHeader = styled.div`
-  width: 95%;
-  height: 20%;
   margin: 0 auto;
   border-bottom: 1px solid black;
   padding: 10px;
   p {
     display: flex;
     text-align: center;
+    height: 30px;
   }
   label {
     color: ${({ theme }) => theme?.color?.background || 'initial'};
@@ -161,45 +190,41 @@ const TextWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   div {
     display: flex;
     flex-direction: column;
   }
 `;
 const WorksheetBody = styled.div`
-  width: 210mm;
-  height: 297mm;
+  height: calc(100% - 130px);
   margin: 0 auto;
   display: flex;
 `;
 const MathViewerWrapper = styled.div`
+  height: 100%;
   display: flex;
   gap: 2px;
+  font-size: 12px;
 `;
 const WorksheetBodyLeft = styled.div`
   flex: 1 0 0;
-  padding-top: 10px;
-  padding-bottom: 100px;
+  padding: 10px 20px 0px 20px;
   border-right: 1px solid black;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
 `;
 const WorksheetBodyRight = styled.div`
   flex: 1 0 0;
-  padding-top: 10px;
-  padding-bottom: 100px;
+  padding: 10px 20px 0px 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
 `;
 const WorksheetAdditionalInformation = styled.div`
   display: flex;
   justify-content: flex-end;
   padding: 0 20px;
   span {
-    font-size: 16px;
+    font-size: 12px;
   }
 `;

@@ -722,6 +722,7 @@ export function Step3() {
               >
                 <span>문제+해설(같이)</span>
               </Button>
+              <button onClick={doneButton}>버튼</button>
             </ButtonGroup>
           </AnswerCommentaryWrapper>
         </WorksheetSettingSection>
@@ -742,16 +743,17 @@ export function Step3() {
               title={nameValue}
               grade={gradeValue}
               tag={tag}
+              contentQuantity={contentQuantity}
               isWeather={isWeather}
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
             ></TypeB>
           )}
-          {/* <ThemeProvider theme={selectedTheme}> */}
-          {/* <WorksheetTemplateWrapper> */}
-          {/* <Label value={'미리보기'}></Label> */}
-          {/* <WorksheetTemplate> */}
-          {/* <MathViewerHeader>
+          {/* <ThemeProvider theme={selectedTheme}>
+            <WorksheetTemplateWrapper>
+              <Label value={'미리보기'}></Label>
+              <WorksheetTemplate>
+                <MathViewerHeader>
                   <HeaderLeft>
                     <TemplateTitleWrapper>
                       <TemplateTitle>
@@ -776,9 +778,9 @@ export function Step3() {
                       />
                     </TemplateInputWrapper>
                   </HeaderRight>
-                </MathViewerHeader> */}
-          {/* <MathViewerListWrapper> */}
-          {/* {existList && existList.length > 1 ? (
+                </MathViewerHeader>
+                <MathViewerListWrapper>
+                  {existList && existList.length > 1 ? (
                     <MathViewerList ref={containerRef}>
                       {existList.map((card, i) => (
                         <div
@@ -845,45 +847,11 @@ export function Step3() {
                         </div>
                       ))}
                     </MathViewerList>
-                  )} */}
-          {/* </MathViewerListWrapper> */}
-
-          {/* <WorksheetBasic /> */}
-          {/* <InsideWorksheetTemplate>
-                  <Input
-                    width="300px"
-                    height="30px"
-                    padding="10px"
-                    border="black"
-                    placeholderSize="12px"
-                    fontSize="14px"
-                    type="text"
-                    placeholder={nameValue || '학습지명'}
-                  />
-                  <Input
-                    width="300px"
-                    height="30px"
-                    padding="10px"
-                    border="black"
-                    placeholderSize="12px"
-                    fontSize="14px"
-                    type="text"
-                    placeholder={gradeValue || '학년'}
-                  />
-                  <Input
-                    width="300px"
-                    height="30px"
-                    padding="10px"
-                    border="black"
-                    placeholderSize="12px"
-                    fontSize="14px"
-                    type="text"
-                    placeholder={contentAuthor || '출제자명'}
-                  />
-                </InsideWorksheetTemplate> */}
-          {/* </WorksheetTemplate> */}
-          {/* </WorksheetTemplateWrapper> */}
-          {/* </ThemeProvider> */}
+                  )}
+                </MathViewerListWrapper>
+              </WorksheetTemplate>
+            </WorksheetTemplateWrapper>
+          </ThemeProvider> */}
         </WorksheetTemplateViewSection>
       </Wrapper>
       <CreateButtonWrapper>
@@ -1038,6 +1006,8 @@ const CheckBoxWrapper = styled.div`
   padding-right: 10px;
 `;
 const WorksheetTemplateViewSection = styled.section`
+  /* width: 900px;
+  height: 751px; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1118,7 +1088,6 @@ const MathViewerListWrapper = styled.div`
   height: 600px;
   display: flex;
   justify-content: space-evenly;
-
   overflow: auto;
 `;
 const MathViewerList = styled.div`
