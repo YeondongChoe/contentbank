@@ -215,7 +215,7 @@ export function Guide() {
         setShowDropDown={() => setShowDropDown(!showDropDown)}
       ></DropDown>
       <h3>date picker</h3>
-      <CommonDate></CommonDate>
+
       <h3>barchart</h3>
       <BarChart data={Data}></BarChart>
       <h3>mathviewer</h3>

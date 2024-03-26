@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { userInstance } from '../../api/axios';
 import {
   Button,
+  CommonDate,
   IconButton,
   List,
   ListItem,
@@ -26,7 +27,8 @@ export function ChangeHistory() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [value, setValue] = useState<string>('');
   const [page, setPage] = useRecoilState(pageAtom);
-
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   //TODO: 임시 가다 데이터
   const [changesList, setChangesList] = useState([
     {
@@ -40,7 +42,7 @@ export function ChangeHistory() {
       totalItem: '203',
     },
     {
-      id: 'dsadasdsds',
+      id: 'dsadasssssdsds',
       num: '13',
       manager: '담당d자',
       changeAt: '2023.11.11 05:05:55',
@@ -180,25 +182,41 @@ export function ChangeHistory() {
     <Container>
       <InputWrapper>
         <SelectWrapper>
-          <IconButton
-            width={'100px'}
-            height={'40px'}
-            fontSize={'14px'}
-            onClick={() => {}}
-          >
-            <span className="btn_title">시작일</span>
-            <GrPlan />
-          </IconButton>
+          <CommonDate
+            setDate={setStartDate}
+            $button={
+              <IconButton
+                width={'140px'}
+                height={'40px'}
+                fontSize={'14px'}
+                onClick={() => {}}
+              >
+                <span className="btn_title">
+                  {startDate === '' ? `시작일` : `${startDate}`}
+                </span>
+                <GrPlan />
+              </IconButton>
+            }
+          />
+
           <span> ~ </span>
-          <IconButton
-            width={'100px'}
-            height={'40px'}
-            fontSize={'14px'}
-            onClick={() => {}}
-          >
-            <span className="btn_title">종료일</span>
-            <GrPlan />
-          </IconButton>
+          <CommonDate
+            setDate={setEndDate}
+            $button={
+              <IconButton
+                width={'140px'}
+                height={'40px'}
+                fontSize={'14px'}
+                onClick={() => {}}
+              >
+                <span className="btn_title">
+                  {endDate === '' ? `종료일` : `${endDate}`}
+                </span>
+                <GrPlan />
+              </IconButton>
+            }
+          />
+
           {selectCategory.map((el) => (
             <Select
               width={'150px'}
@@ -232,6 +250,14 @@ export function ChangeHistory() {
       <ListWrapper>
         <Total> Total : {changesList.length}</Total>
 
+        <ListTitle>
+          <strong className="width_10px">NO</strong>
+          <strong>담당자</strong>
+          <strong>변경일시</strong>
+          <strong>변경영역</strong>
+          <strong className="width_40">변경사항</strong>
+          <strong>건수</strong>
+        </ListTitle>
         <ScrollWrapper>
           <PerfectScrollbar>
             <List margin={`10px 0`}>
@@ -315,8 +341,11 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
 
+  > div,
+  > span {
+    margin-right: 10px;
+  }
   .btn_title {
     padding-right: 5px;
   }
@@ -332,14 +361,49 @@ const ListWrapper = styled.div`
   height: calc(100vh - 200px);
 `;
 const ScrollWrapper = styled.div`
-  overflow-y: auto;
-  height: calc(100vh - 250px);
+  /* overflow-y: auto; */
+  height: calc(100vh - 300px);
   width: 100%;
   border-top: 1px solid ${COLOR.BORDER_GRAY};
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
-  margin-top: 5px;
-  padding: 15px;
+  /* margin-top: 5px; */
+  padding: 0 15px;
+  padding-bottom: 15px;
   background-color: #eee;
+`;
+const ListTitle = styled.p`
+  padding: 15px 40px;
+  background-color: #eee;
+  border-top: 1px solid ${COLOR.BORDER_GRAY};
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  > strong {
+    font-size: 14px;
+    justify-content: space-around;
+    /* flex-wrap: nowrap;
+    word-break: break-all; */
+    text-align: center;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    /* background-color: ${COLOR.BORDER_GRAY}; */
+  }
+
+  .width_10px {
+    width: 10px;
+  }
+  .width_20px {
+    width: 20px;
+  }
+  .width_40 {
+    width: 45%;
+  }
 `;
 
 const ItemLayout = styled.div`
