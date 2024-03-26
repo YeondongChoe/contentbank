@@ -136,13 +136,13 @@ export function ContentInformationChange() {
         minWidth={330}
         maxWidth={1000}
         item1={
-          <PositionWrap>
+          <PositionWrapper>
             <Title>
               <span className="title_top">
                 <span className="point_text">STEP1</span> 찾을 내용 입력
               </span>
             </Title>
-            <ScrollWrap>
+            <ScrollWrapper>
               <PerfectScrollbar>
                 <div className="meta_radio_select">
                   <div className="1depth">
@@ -280,9 +280,9 @@ export function ContentInformationChange() {
                     )}
                 </div>
               </PerfectScrollbar>
-            </ScrollWrap>
-            <ButtonWrap>
-              <InputWrap>
+            </ScrollWrapper>
+            <ButtonWrapper>
+              <InputWrapper>
                 <input
                   type="text"
                   minLength={2}
@@ -302,7 +302,7 @@ export function ContentInformationChange() {
                 >
                   수식
                 </Button>
-              </InputWrap>
+              </InputWrapper>
               <Button
                 $filled
                 cursor
@@ -313,11 +313,11 @@ export function ContentInformationChange() {
                   찾기 <IoSearch />
                 </span>
               </Button>
-            </ButtonWrap>
-          </PositionWrap>
+            </ButtonWrapper>
+          </PositionWrapper>
         }
         item2={
-          <QuizListWrap>
+          <QuizListWrapper>
             <Title>
               <span className="title_top">
                 <span className="point_text">STEP2</span> 문항 선택
@@ -333,20 +333,20 @@ export function ContentInformationChange() {
                   showViewAllButton
                   setCheckedList={setCheckedList}
                 />
-                <ButtonWrap className="pagination">
+                <ButtonWrapper className="pagination">
                   <PaginationBox itemsCountPerPage={7} totalItemsCount={100} />
-                </ButtonWrap>
+                </ButtonWrapper>
               </>
             ) : (
-              <ValueNoneWrap>
+              <ValueNoneWrapper>
                 <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
-              </ValueNoneWrap>
+              </ValueNoneWrapper>
             )}
-          </QuizListWrap>
+          </QuizListWrapper>
         }
         item3Width={400}
         item3={
-          <PositionWrap>
+          <PositionWrapper>
             <Title>
               <span className="title_top">
                 <span className="point_text">STEP3</span> 바꿀 내용 입력
@@ -354,11 +354,11 @@ export function ContentInformationChange() {
             </Title>
             {checkedList.length ? (
               <>
-                <ScrollWrap>
+                <ScrollWrapper>
                   <PerfectScrollbar>
                     {/* TODO: 메타데이터 변경 */}
 
-                    <ChangeInfoWrap>
+                    <ChangeInfoWrapper>
                       <p className="info_total">
                         선택한 문항 총 {checkedList.length} 건
                       </p>
@@ -383,17 +383,17 @@ export function ContentInformationChange() {
                           </p>
                         )}
                       </div>
-                    </ChangeInfoWrap>
+                    </ChangeInfoWrapper>
                   </PerfectScrollbar>
-                </ScrollWrap>
+                </ScrollWrapper>
               </>
             ) : (
-              <ValueNoneWrap>
+              <ValueNoneWrapper>
                 <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
-              </ValueNoneWrap>
+              </ValueNoneWrapper>
             )}
-            <ButtonWrap>
-              <InputWrap>
+            <ButtonWrapper>
+              <InputWrapper>
                 <input
                   type="text"
                   minLength={2}
@@ -413,7 +413,7 @@ export function ContentInformationChange() {
                 >
                   수식
                 </Button>
-              </InputWrap>
+              </InputWrapper>
               <Button
                 $filled
                 cursor
@@ -424,8 +424,8 @@ export function ContentInformationChange() {
                   바꾸기 <MdPublishedWithChanges />
                 </span>
               </Button>
-            </ButtonWrap>
-          </PositionWrap>
+            </ButtonWrapper>
+          </PositionWrapper>
         }
       />
     </Container>
@@ -435,13 +435,13 @@ const Container = styled.div`
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
 `;
-const PositionWrap = styled.div`
+const PositionWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   height: 100%;
 `;
-const ScrollWrap = styled.div`
+const ScrollWrapper = styled.div`
   overflow-y: auto;
   height: calc(100vh - 280px);
   width: 100%;
@@ -463,7 +463,7 @@ const ScrollWrap = styled.div`
     }
   }
 `;
-const QuizListWrap = styled.div`
+const QuizListWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -494,7 +494,7 @@ const Title = styled.div`
 // const Span = styled.span`
 //   color: #1976d2;
 // `;
-const InputWrap = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 5px;
@@ -512,7 +512,7 @@ const InputWrap = styled.div`
     text-overflow: ellipsis;
   }
 `;
-const ButtonWrap = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -530,12 +530,12 @@ const ButtonWrap = styled.div`
     padding-bottom: 12px;
   }
 `;
-const ValueNoneWrap = styled.div`
+const ValueNoneWrapper = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
   display: flex;
   height: 100%;
 `;
-const ChangeInfoWrap = styled.div`
+const ChangeInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;

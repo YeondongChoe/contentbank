@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { TabMenu } from '../../components';
 import { COLOR } from '../../components/constants';
 
+import { ChangeHistory } from './ChangeHistory';
 import { ContentCategoryChange } from './ContentCategoryChange';
 import { ContentInformationChange } from './ContentInformationChange';
 
@@ -54,7 +55,11 @@ export function ManagementEditMain() {
           <ContentCategoryChange />
         </ContentBox>
       )}
-      {tabVeiw === '히스토리' && <ContentBox></ContentBox>}
+      {tabVeiw === '히스토리' && (
+        <ContentBox>
+          <ChangeHistory />
+        </ContentBox>
+      )}
     </Container>
   );
 }

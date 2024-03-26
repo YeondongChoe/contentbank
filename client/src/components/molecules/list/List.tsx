@@ -14,7 +14,7 @@ type ListProps = {
   width?: string;
   height?: string;
   margin?: string;
-  children: JSX.Element;
+  children: JSX.Element | JSX.Element[];
 };
 
 export function List({ width, height, margin, children }: ListProps) {

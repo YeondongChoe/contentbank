@@ -43,7 +43,7 @@ export function ContentCreating({
   }, []);
   return (
     <Container>
-      <ContentsWrap>
+      <ContentsWrapper>
         {/* <iframe
         width="100%"
         height="672"
@@ -55,12 +55,12 @@ export function ContentCreating({
         //referrerPolicy="no-referrer"
       ></iframe> */}
 
-        <EditContainerWrap>
+        <EditContainerWrapper>
           <PerfectScrollbar>
-            <EditWrap>EditWrap</EditWrap>
+            <EditWrapper>EditWrap</EditWrapper>
 
-            <BackgroundWrap>
-              <SelectListWrap>
+            <BackgroundWrapper>
+              <SelectListWrapper>
                 <strong>
                   과목<span>*</span>
                 </strong>
@@ -81,17 +81,17 @@ export function ContentCreating({
                     </SelectWrapper>
                   </li>
                 </SelectList>
-              </SelectListWrap>
-              <SelectListWrap>
+              </SelectListWrapper>
+              <SelectListWrapper>
                 <strong>
                   출처<span>*</span>
                 </strong>
-                <SourceOptionWrap>
+                <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
                   <OptionList />
-                </SourceOptionWrap>
-              </SelectListWrap>
-              <SelectListWrap>
+                </SourceOptionWrapper>
+              </SelectListWrapper>
+              <SelectListWrapper>
                 <strong>
                   문항타입<span>*</span>
                 </strong>
@@ -112,8 +112,8 @@ export function ContentCreating({
                     </SelectWrapper>
                   </li>
                 </SelectList>
-              </SelectListWrap>
-              <SelectListWrap>
+              </SelectListWrapper>
+              <SelectListWrapper>
                 <strong>난이도</strong>
                 <SelectList>
                   <li>
@@ -132,12 +132,12 @@ export function ContentCreating({
                     </SelectWrapper>
                   </li>
                 </SelectList>
-              </SelectListWrap>
-            </BackgroundWrap>
+              </SelectListWrapper>
+            </BackgroundWrapper>
           </PerfectScrollbar>
-        </EditContainerWrap>
+        </EditContainerWrapper>
 
-        <ContentListWrap>
+        <ContentListWrapper>
           <ContentList>
             <QuizList
               questionList={questionList}
@@ -146,12 +146,12 @@ export function ContentCreating({
               setCheckedList={setCheckedList}
             />
           </ContentList>
-        </ContentListWrap>
+        </ContentListWrapper>
 
         <Modal />
-      </ContentsWrap>
-      <BorderWrap>
-        <SubmitButtonWrap>
+      </ContentsWrapper>
+      <BorderWrapper>
+        <SubmitButtonWrapper>
           <Button
             buttonType="button"
             onClick={submitSave}
@@ -170,8 +170,8 @@ export function ContentCreating({
           >
             <span>추가 정보 등록</span>
           </Button>
-        </SubmitButtonWrap>
-      </BorderWrap>
+        </SubmitButtonWrapper>
+      </BorderWrapper>
     </Container>
   );
 }
@@ -180,7 +180,7 @@ const Container = styled.div`
   position: relative;
 `;
 
-const ContentsWrap = styled.div`
+const ContentsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -188,21 +188,21 @@ const ContentsWrap = styled.div`
   height: calc(100vh - 200px);
 `;
 
-const EditContainerWrap = styled.div`
+const EditContainerWrapper = styled.div`
   flex: 1 0 0;
 `;
 
-const EditWrap = styled.div`
+const EditWrapper = styled.div`
   height: calc(100vh - 300px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   margin-bottom: 10px;
 `;
-const BackgroundWrap = styled.div`
+const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
   margin-bottom: 70px;
 `;
-const SelectListWrap = styled.div`
+const SelectListWrapper = styled.div`
   display: flex;
   /* align-items: center; */
   padding: 0 15px;
@@ -231,7 +231,7 @@ const SelectListWrap = styled.div`
   }
 `;
 
-const SourceOptionWrap = styled.div`
+const SourceOptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -253,7 +253,7 @@ const SelectWrapper = styled.div`
   color: ${COLOR.GRAY};
 `;
 
-const ContentListWrap = styled.div`
+const ContentListWrapper = styled.div`
   width: 25%;
   padding: 0 10px;
 `;
@@ -267,7 +267,7 @@ const ContentList = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
 `;
 
-const BorderWrap = styled.div`
+const BorderWrapper = styled.div`
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   position: fixed;
   bottom: 0px;
@@ -277,7 +277,7 @@ const BorderWrap = styled.div`
   height: 70px;
   background-color: #fff;
 `;
-const SubmitButtonWrap = styled.div`
+const SubmitButtonWrapper = styled.div`
   position: absolute;
   right: 30px;
   left: auto;

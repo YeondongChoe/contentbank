@@ -153,7 +153,7 @@ export function OptionList() {
             )}
             <SelectWrapper>
               {selectCategory2.map((el) => (
-                <SelectMapWrap
+                <SelectMapWrapper
                   key={`${el.label} SelectMapWrap`}
                   id={`${index.toString()}SelectMapWrap`}
                 >
@@ -168,7 +168,7 @@ export function OptionList() {
                     selected={selected}
                     setSelected={setSelected}
                   />
-                </SelectMapWrap>
+                </SelectMapWrapper>
               ))}
 
               {optionList &&
@@ -205,7 +205,7 @@ const SelectWrapper = styled.div`
   align-items: center;
   color: ${COLOR.GRAY};
 `;
-const SelectMapWrap = styled.div`
+const SelectMapWrapper = styled.div`
   padding-right: 15px;
   position: relative;
   &::after {

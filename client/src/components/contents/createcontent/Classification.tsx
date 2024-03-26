@@ -102,7 +102,7 @@ export function Classification() {
 
   return (
     <Container>
-      <ResizeLayoutWrap>
+      <ResizeLayoutWrapper>
         <ResizeLayout
           height={'calc(100vh - 100px)'}
           column={'3rd'}
@@ -117,19 +117,19 @@ export function Classification() {
             />
           }
           item2={
-            <ScrollWrap>
+            <ScrollWrapper>
               <PerfectScrollbar>
-                <ViewerWrap>
+                <ViewerWrapper>
                   <Title>
                     <span className="title_top">문항뷰어</span>
                   </Title>
-                </ViewerWrap>
+                </ViewerWrapper>
               </PerfectScrollbar>
-            </ScrollWrap>
+            </ScrollWrapper>
           }
           item3Width={600}
           item3={
-            <ScrollWrap>
+            <ScrollWrapper>
               <PerfectScrollbar>
                 <Title>
                   <span className="title_top">문항단원분류</span>
@@ -206,12 +206,12 @@ export function Classification() {
 
                 {/* 아코디언 리스트  */}
                 {radioCheck.length > 3 ? (
-                  <AccordionWrap>
+                  <AccordionWrapper>
                     <Accordion
                       title={`${radioCheck[0].checkValue}/${radioCheck[1].checkValue}/${radioCheck[2].checkValue}/${radioCheck[3].checkValue}`}
                       id={`${radioCheck[0].checkValue}/${radioCheck[1].checkValue}/${radioCheck[2].checkValue}/${radioCheck[3].checkValue}`}
                     >
-                      <RowListWrap>
+                      <RowListWrapper>
                         <Search
                           value={''}
                           height={'30px'}
@@ -220,7 +220,7 @@ export function Classification() {
                           onKeyDown={() => {}}
                         />
                         <p className="line bottom_text">Total : {`${0}`}</p>
-                        <DepthBlockScrollWrap>
+                        <DepthBlockScrollWrapper>
                           <PerfectScrollbar>
                             {depthBlockList.map((item) => (
                               <DepthBlock
@@ -242,8 +242,8 @@ export function Classification() {
                               </DepthBlock>
                             ))}
                           </PerfectScrollbar>
-                        </DepthBlockScrollWrap>
-                      </RowListWrap>
+                        </DepthBlockScrollWrapper>
+                      </RowListWrapper>
                     </Accordion>
 
                     <Accordion
@@ -251,7 +251,7 @@ export function Classification() {
                       id={'추가정보'}
                       $margin={'4px 0 0 0 '}
                     >
-                      <RowListWrap>
+                      <RowListWrapper>
                         <div className="etc1">
                           {selectCategoryEtc1.map((meta) => (
                             <ButtonFormatRadio
@@ -278,24 +278,24 @@ export function Classification() {
                             />
                           ))}
                         </div>
-                      </RowListWrap>
+                      </RowListWrapper>
                     </Accordion>
-                  </AccordionWrap>
+                  </AccordionWrapper>
                 ) : (
-                  <ValueNoneWrap>
+                  <ValueNoneWrapper>
                     <ValueNone
                       textOnly
                       info="교육과정, 학교급, 학년, 학기를 선택해주세요"
                     />
-                  </ValueNoneWrap>
+                  </ValueNoneWrapper>
                 )}
               </PerfectScrollbar>
-            </ScrollWrap>
+            </ScrollWrapper>
           }
         />
-      </ResizeLayoutWrap>
-      <BorderWrap>
-        <SubmitButtonWrap>
+      </ResizeLayoutWrapper>
+      <BorderWrapper>
+        <SubmitButtonWrapper>
           <Button
             $filled
             disabled={false}
@@ -315,8 +315,8 @@ export function Classification() {
           >
             저장
           </Button>
-        </SubmitButtonWrap>
-      </BorderWrap>
+        </SubmitButtonWrapper>
+      </BorderWrapper>
     </Container>
   );
 }
@@ -324,12 +324,12 @@ export function Classification() {
 const Container = styled.div`
   position: relative;
 `;
-const ResizeLayoutWrap = styled.div`
+const ResizeLayoutWrapper = styled.div`
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   height: calc(100vh - 100px);
 `;
-const ScrollWrap = styled.div`
+const ScrollWrapper = styled.div`
   overflow-y: auto;
   height: calc(100vh - 100px);
   width: 100%;
@@ -345,7 +345,7 @@ const ScrollWrap = styled.div`
     }
   }
 `;
-const DepthBlockScrollWrap = styled.div`
+const DepthBlockScrollWrapper = styled.div`
   overflow-y: auto;
   /* height: 300px; */
   width: 100%;
@@ -360,20 +360,20 @@ const Title = styled.div`
     font-weight: bold;
   }
 `;
-const AccordionWrap = styled.div`
+const AccordionWrapper = styled.div`
   margin: 10px;
 `;
-const RowListWrap = styled.div`
+const RowListWrapper = styled.div`
   padding: 10px;
 `;
-const ValueNoneWrap = styled.div`
+const ValueNoneWrapper = styled.div`
   display: flex;
 `;
-const ViewerWrap = styled.div`
+const ViewerWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const BorderWrap = styled.div`
+const BorderWrapper = styled.div`
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   position: sticky;
   bottom: 0px;
@@ -381,7 +381,7 @@ const BorderWrap = styled.div`
   height: 70px;
   background-color: #fff;
 `;
-const SubmitButtonWrap = styled.div`
+const SubmitButtonWrapper = styled.div`
   position: absolute;
   right: 10px;
   left: auto;

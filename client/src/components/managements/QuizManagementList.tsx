@@ -266,9 +266,9 @@ export function QuizManagementList() {
             onClick={() => {}}
           ></ContentList>
         ) : (
-          <ValueNoneWrap>
+          <ValueNoneWrapper>
             <ValueNone />
-          </ValueNoneWrap>
+          </ValueNoneWrapper>
         )}
       </TableWrapper>
       <Alert
@@ -338,6 +338,6 @@ const InputWrapper = styled.div`
 `;
 
 const TableWrapper = styled.div``;
-const ValueNoneWrap = styled.div`
+const ValueNoneWrapper = styled.div`
   padding: 100px 0;
 `;

@@ -103,7 +103,7 @@ export function QuizList({
 
   return (
     <Container>
-      <ScrollWrap $height={$height}>
+      <ScrollWrapper $height={$height}>
         <PerfectScrollbar>
           {showTitle && (
             <Title>
@@ -124,7 +124,7 @@ export function QuizList({
               </span>
             </Title>
           )}
-          <ListWrap>
+          <ListWrapper>
             <DnDWrapper
               dragList={initialItems}
               onDragging={() => {}}
@@ -152,7 +152,7 @@ export function QuizList({
                             : false
                         }
                         id={dragItem.id}
-                        value={dragItem.id}
+                        value={dragItem.value}
                       />
                       <span className="title_id">{dragItem.id}</span>
                       <span className="title_tag">{`객관식`}</span>
@@ -189,9 +189,9 @@ export function QuizList({
                 </li>
               )}
             </DnDWrapper>
-          </ListWrap>
+          </ListWrapper>
         </PerfectScrollbar>
-      </ScrollWrap>
+      </ScrollWrapper>
     </Container>
   );
 }
@@ -202,7 +202,7 @@ const Container = styled.div<{ $height?: string }>`
   width: 100%;
   height: fit-content;
 `;
-const ScrollWrap = styled.div<{ $height?: string }>`
+const ScrollWrapper = styled.div<{ $height?: string }>`
   /* overflow-y: auto; */
   width: 100%;
   height: ${({ $height }) => ($height ? ` ${$height}` : `calc(100vh - 100px)`)};
@@ -221,7 +221,7 @@ const Title = styled.div`
     font-weight: bold;
   }
 `;
-const ListWrap = styled.ul`
+const ListWrapper = styled.ul`
   padding: 10px 5px;
   width: 100%;
   display: flex;

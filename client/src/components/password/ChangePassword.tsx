@@ -241,7 +241,7 @@ export function ChangePassword({
 
       <form>
         <InputSection width={width as string}>
-          <InputWapper width={width as string}>
+          <InputWrapper width={width as string}>
             <Label
               value="새 비밀번호"
               fontSize={labelfontsize || '16px'}
@@ -278,7 +278,7 @@ export function ChangePassword({
                 />
               )}
             />
-          </InputWapper>
+          </InputWrapper>
           {Password && isValid && (
             <SuccessMessage $messageWidth={messageWidth as string}>
               사용가능
@@ -313,7 +313,7 @@ export function ChangePassword({
               </svg>
             </ErrorMessage>
           )}
-          <InputWapper width={width as string}>
+          <InputWrapper width={width as string}>
             <Label
               value="새 비밀번호 재확인"
               fontSize={labelfontsize || '16px'}
@@ -354,7 +354,7 @@ export function ChangePassword({
                 />
               )}
             />
-          </InputWapper>
+          </InputWrapper>
           {PasswordConfirm && Password === PasswordConfirm && (
             <SuccessMessage $messageWidth={messageWidth as string}>
               비밀번호 일치
@@ -396,7 +396,7 @@ export function ChangePassword({
           $padding={padding as string}
           $buttonGroupWidth={buttonGroupWidth as string}
         >
-          <ButtonWapper>
+          <ButtonWrapper>
             <Button
               onClick={() => onCancel()}
               width={btnwidth}
@@ -408,9 +408,9 @@ export function ChangePassword({
             >
               <span>취소</span>
             </Button>
-          </ButtonWapper>
+          </ButtonWrapper>
 
-          <ButtonWapper>
+          <ButtonWrapper>
             <Button
               onClick={submitChangePassword}
               width={btnwidth}
@@ -428,7 +428,7 @@ export function ChangePassword({
             >
               <span>변경</span>
             </Button>
-          </ButtonWapper>
+          </ButtonWrapper>
         </ButtonGroup>
       </form>
     </Container>
@@ -441,7 +441,7 @@ const InputSection = styled.section<{ width: string }>`
   flex-direction: column;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
-const InputWapper = styled.div<{ width: string }>`
+const InputWrapper = styled.div<{ width: string }>`
   height: 50px;
   display: flex;
   align-items: center;
@@ -485,7 +485,7 @@ const ButtonGroup = styled.div<{
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
 
-const ButtonWapper = styled.div`
+const ButtonWrapper = styled.div`
   border: none;
   background-color: transparent;
 `;

@@ -12,13 +12,9 @@ import {
   Accordion,
   Button,
   ButtonFormatRadio,
-  CheckBoxI,
   DepthBlock,
-  Input,
-  MathViewer,
   PaginationBox,
   ResizeLayout,
-  Search,
   ValueNone,
 } from '../../components';
 import { COLOR } from '../../components/constants';
@@ -58,12 +54,11 @@ export function ContentCategoryChange() {
   // 라디오 버튼 설정
   const handleRadioCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
-    titleValue: string,
+    value: string,
   ) => {
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
-    // console.log('depth', e.target, depth);
 
     switch (depth) {
       case '1depth':
@@ -92,19 +87,20 @@ export function ContentCategoryChange() {
     setRadioCheck([
       ...radioCheck,
       {
-        title: titleValue,
-        checkValue: e.currentTarget.value,
+        title: e.currentTarget.attributes[1].value,
+        checkValue: value,
       },
     ]);
   };
   const handleRadioChangeValueCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
-    titleValue: string,
+    value: string,
   ) => {
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
-    console.log('depth', e);
+
+    // console.log(e.currentTarget.attributes[1].value);
 
     switch (depth) {
       case '1depthChangeValue':
@@ -130,8 +126,8 @@ export function ContentCategoryChange() {
     setRadioChangeCheck([
       ...radioChangeCheck,
       {
-        title: titleValue,
-        checkValue: e.currentTarget.value,
+        title: e.currentTarget.attributes[1].value,
+        checkValue: value,
       },
     ]);
   };
@@ -202,13 +198,13 @@ export function ContentCategoryChange() {
         minWidth={330}
         maxWidth={1000}
         item1={
-          <PositionWrap>
+          <PositionWrapper>
             <Title>
               <span className="title_top">
                 <span className="point_text">STEP1</span> 찾을 분류 선택
               </span>
             </Title>
-            <ScrollWrap>
+            <ScrollWrapper>
               <PerfectScrollbar>
                 <div className="meta_radio_select">
                   <div className="1depth">
@@ -346,8 +342,8 @@ export function ContentCategoryChange() {
                     )}
                 </div>
               </PerfectScrollbar>
-            </ScrollWrap>
-            <ButtonWrap>
+            </ScrollWrapper>
+            <ButtonWrapper>
               <Button
                 $filled
                 cursor
@@ -358,11 +354,11 @@ export function ContentCategoryChange() {
                   찾기 <IoSearch />
                 </span>
               </Button>
-            </ButtonWrap>
-          </PositionWrap>
+            </ButtonWrapper>
+          </PositionWrapper>
         }
         item2={
-          <QuizListWrap>
+          <QuizListWrapper>
             <Title>
               <span className="title_top">
                 <span className="point_text">STEP2</span> 문항 선택
@@ -378,29 +374,29 @@ export function ContentCategoryChange() {
                   showViewAllButton
                   setCheckedList={setCheckedList}
                 />
-                <ButtonWrap className="pagination">
+                <ButtonWrapper className="pagination">
                   <PaginationBox itemsCountPerPage={7} totalItemsCount={100} />
-                </ButtonWrap>
+                </ButtonWrapper>
               </>
             ) : (
-              <ValueNoneWrap>
+              <ValueNoneWrapper>
                 <ValueNone textOnly info={'STEP1 찾을 분류를 선택해주세요'} />
-              </ValueNoneWrap>
+              </ValueNoneWrapper>
             )}
-          </QuizListWrap>
+          </QuizListWrapper>
         }
         item3Width={400}
         item3={
-          <PositionWrap>
+          <PositionWrapper>
             <Title>
               <span className="title_top">
                 <span className="point_text">STEP3</span> 바꿀 분류 선택
               </span>
             </Title>
             {checkedList.length ? (
-              <ScrollWrap>
+              <ScrollWrapper>
                 <PerfectScrollbar>
-                  <ChangeInfoWrap>
+                  <ChangeInfoWrapper>
                     <p className="info_total">
                       선택한 문항 총 {checkedList.length} 건
                     </p>
@@ -498,45 +494,47 @@ export function ContentCategoryChange() {
                       </div>
                     </div>
                     <div className="meta_accordion_select">
-                      <strong>세부 검색조건</strong>
-                      <Accordion
-                        $backgroundColor={`${COLOR.GRAY}`}
-                        title={`${changeVlaue1depth}`}
-                        id={`세부 검색조건 ${changeVlaue1depth}`}
-                        $margin={`0 0 170px 0`}
-                      >
-                        <>
-                          {depthBlockList.map((item) => (
-                            <DepthBlock
-                              key={`depthList${item.id}`}
-                              classNameList={`depth-${item.depth}`}
-                              id={item.id}
-                              name={item.name}
-                              value={item.value}
-                              onChange={(e) =>
-                                handleSingleCheck(e.target.checked, item.id)
-                              }
-                              checked={
-                                checkedDepthList.includes(item.id as string)
-                                  ? true
-                                  : false
-                              }
-                            >
-                              <span>{item.label}</span>
-                            </DepthBlock>
-                          ))}
-                        </>
-                      </Accordion>
+                      {/* <strong>세부 검색조건</strong> */}
+                      {radioChangeCheck[0] && (
+                        <Accordion
+                          $backgroundColor={`${COLOR.GRAY}`}
+                          title={`${radioChangeCheck[0].title}`}
+                          id={`세부 검색조건 ${radioChangeCheck[0].title}`}
+                          $margin={`0 0 170px 0`}
+                        >
+                          <>
+                            {depthBlockList.map((item) => (
+                              <DepthBlock
+                                key={`depthList${item.id}`}
+                                classNameList={`depth-${item.depth}`}
+                                id={item.id}
+                                name={item.name}
+                                value={item.value}
+                                onChange={(e) =>
+                                  handleSingleCheck(e.target.checked, item.id)
+                                }
+                                checked={
+                                  checkedDepthList.includes(item.id as string)
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <span>{item.label}</span>
+                              </DepthBlock>
+                            ))}
+                          </>
+                        </Accordion>
+                      )}
                     </div>
-                  </ChangeInfoWrap>
+                  </ChangeInfoWrapper>
                 </PerfectScrollbar>
-              </ScrollWrap>
+              </ScrollWrapper>
             ) : (
-              <ValueNoneWrap>
+              <ValueNoneWrapper>
                 <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
-              </ValueNoneWrap>
+              </ValueNoneWrapper>
             )}
-            <ButtonWrap>
+            <ButtonWrapper>
               <Button
                 $filled
                 cursor
@@ -547,8 +545,8 @@ export function ContentCategoryChange() {
                   바꾸기 <MdPublishedWithChanges />
                 </span>
               </Button>
-            </ButtonWrap>
-          </PositionWrap>
+            </ButtonWrapper>
+          </PositionWrapper>
         }
       />
     </Container>
@@ -558,13 +556,13 @@ const Container = styled.div`
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
 `;
-const PositionWrap = styled.div`
+const PositionWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   height: 100%;
 `;
-const ScrollWrap = styled.div`
+const ScrollWrapper = styled.div`
   overflow-y: auto;
   height: calc(100vh - 70px);
   width: 100%;
@@ -586,7 +584,7 @@ const ScrollWrap = styled.div`
     }
   }
 `;
-const QuizListWrap = styled.div`
+const QuizListWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -615,7 +613,7 @@ const Title = styled.div`
   }
 `;
 
-const ChangeInfoWrap = styled.div`
+const ChangeInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -630,7 +628,7 @@ const ChangeInfoWrap = styled.div`
   }
 `;
 
-const ButtonWrap = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -648,7 +646,7 @@ const ButtonWrap = styled.div`
     padding-bottom: 12px;
   }
 `;
-const ValueNoneWrap = styled.div`
+const ValueNoneWrapper = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
   display: flex;
   height: 100%;

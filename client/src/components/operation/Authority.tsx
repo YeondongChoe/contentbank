@@ -622,7 +622,7 @@ export function Authority() {
           </Button>
         </InputWrapper>
 
-        <ListWrap>
+        <ListWrapper>
           <TableWrapper>
             <table>
               <thead>
@@ -920,7 +920,7 @@ export function Authority() {
               </AuthorityWrapper>
             ))} */}
           </AuthorityListWrapper>
-        </ListWrap>
+        </ListWrapper>
       </Wrapper>
       {isDeleteAuthority && (
         <Alert
@@ -964,7 +964,7 @@ const Wrapper = styled.div`
   border-top: 1px solid ${COLOR.SECONDARY};
   padding-top: 10px;
 `;
-const ListWrap = styled.div`
+const ListWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;

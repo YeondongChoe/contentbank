@@ -263,14 +263,11 @@ export function QuizCreateList() {
           ))}
         </SelectWrapper>
         {questionList.length > 1 ? (
-          <ContentList
-            list={questionList}
-            onClick={openSubmitAlert}
-          ></ContentList>
+          <ContentList list={questionList} onClick={openSubmitAlert} />
         ) : (
-          <ValueNoneWrap>
+          <ValueNoneWrapper>
             <ValueNone />
-          </ValueNoneWrap>
+          </ValueNoneWrapper>
         )}
       </TableWrapper>
       <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
@@ -319,6 +316,6 @@ const TableWrapper = styled.div`
   //min-height: 670px;
 `;
 
-const ValueNoneWrap = styled.div`
+const ValueNoneWrapper = styled.div`
   padding: 100px 0;
 `;

@@ -29,7 +29,7 @@ export function Options({ listItem }: { listItem: OptionsItemProps }) {
   };
 
   return (
-    <OptionWrap>
+    <OptionWrapper>
       <li>
         {listItem?.type === 'input' && (
           <input placeholder={`${listItem.label}`} />
@@ -75,11 +75,11 @@ export function Options({ listItem }: { listItem: OptionsItemProps }) {
           />
         )}
       </li>
-    </OptionWrap>
+    </OptionWrapper>
   );
 }
 
-const OptionWrap = styled.ul`
+const OptionWrapper = styled.ul`
   display: flex;
   flex-wrap: wrap;
 

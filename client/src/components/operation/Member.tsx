@@ -315,7 +315,7 @@ export function Member() {
       {memberListData?.data.data.list.length ? (
         <>
           <ButtonWrapper>
-            <CheckBoxWrap>
+            <CheckBoxWrapper>
               <CheckBoxI
                 $margin={'0 5px 0 0'}
                 onChange={(e) => handleAllCheck(e)}
@@ -328,7 +328,7 @@ export function Member() {
                 value={'all check'}
               />
               <span className="title_top">전체선택</span>
-            </CheckBoxWrap>
+            </CheckBoxWrapper>
             <Button
               height={'35px'}
               width={'130px'}
@@ -344,12 +344,13 @@ export function Member() {
           </ButtonWrapper>
 
           {isLoading && (
-            <LoaderWrap>
+            <LoaderWrapper>
               <Loader width="50px" />
-            </LoaderWrap>
+            </LoaderWrapper>
           )}
 
           <List margin={`10px 0`}>
+            {/* TODO: 데이터 타입 정의 */}
             {memberListData?.data.data.list.map((list: any) => (
               <ListItem
                 key={list.userKey as string}
@@ -365,15 +366,19 @@ export function Member() {
                 />
                 <ItemLayout>
                   <span>{list.name} </span>
+                  <div className="line"></div>
                   <span>{list.id} </span>
+                  <div className="line"></div>
                   <span>
                     <span className="tag">{list.authorityName}</span>
                   </span>
+                  <div className="line"></div>
                   <span>{list.createdAt}</span>
                 </ItemLayout>
                 {list.isUse ? (
                   <Icon
                     width={`18px`}
+                    $margin={'0 0 0 12px'}
                     src={`/images/icon/lock_open_${
                       checkList.length
                         ? checkList.includes(list.userKey)
@@ -386,6 +391,7 @@ export function Member() {
                 ) : (
                   <Icon
                     width={`18px`}
+                    $margin={'0 0 0 12px'}
                     src={`/images/icon/lock_${
                       checkList.length
                         ? checkList.includes(list.userKey)
@@ -470,7 +476,7 @@ const Total = styled.span`
   color: ${COLOR.FONT_BLACK};
   padding-bottom: 5px;
 `;
-const CheckBoxWrap = styled.div`
+const CheckBoxWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
@@ -482,14 +488,20 @@ const ItemLayout = styled.div`
 
   > span {
     display: flex;
-    flex: 1 0 0;
+    min-width: 20%;
     justify-content: space-around;
     flex-wrap: wrap;
-    &::after {
+    word-break: break-all;
+    /* &::after {
       content: '';
       display: flex;
       border-right: 1px solid ${COLOR.BORDER_GRAY};
-    }
+    } */
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    background-color: ${COLOR.BORDER_GRAY};
   }
   /* .tag {
     padding: 5px 15px;
@@ -497,7 +509,7 @@ const ItemLayout = styled.div`
     border-radius: 20px;
   } */
 `;
-const LoaderWrap = styled.div`
+const LoaderWrapper = styled.div`
   display: flex;
   width: 100%;
   padding-top: 30px;
