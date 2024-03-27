@@ -125,6 +125,7 @@ export function Authority() {
     //   isEditAuthorityChecked,
     //   isManageAuthorityChecked,
     // });
+    setIsAlertOpen(false);
   };
 
   // 권한관리 체크박스 핸들러
@@ -499,24 +500,24 @@ export function Authority() {
         setCheckList([...onList]);
         return;
       }
-      if (Number(target.value) === 15 || Number(target.value) === 17) {
-        if (target.checked === false) {
-          onList.splice(13, 1, {
-            key: checkList[13].key,
-            checked: false,
-          });
-          setCheckList([...onList]);
-          return;
-        }
-        if (checkList[15].checked && checkList[17].checked) {
-          onList.splice(13, 1, {
-            key: checkList[13].key,
-            checked: true,
-          });
-          setCheckList([...onList]);
-          return;
-        }
-      }
+      // if (Number(target.value) === 15 || Number(target.value) === 17) {
+      //   if (target.checked === false) {
+      //     onList.splice(13, 1, {
+      //       key: checkList[13].key,
+      //       checked: false,
+      //     });
+      //     setCheckList([...onList]);
+      //     return;
+      //   }
+      //   if (checkList[15].checked && checkList[17].checked) {
+      //     onList.splice(13, 1, {
+      //       key: checkList[13].key,
+      //       checked: true,
+      //     });
+      //     setCheckList([...onList]);
+      //     return;
+      //   }
+      // }
     }
     // console.log(onList);
   };
@@ -570,31 +571,9 @@ export function Authority() {
 
   return (
     <Container>
+      <Title>권한 관리</Title>
       <Wrapper>
-        {/* <strong>권한 관리</strong> */}
         <InputWrapper>
-          {/* <Controller
-            control={control}
-            name="input"
-            defaultValue=""
-            render={({ field }) => (
-              <Input
-                width="100%"
-                height="30px"
-                padding="5px"
-                placeholderSize="14px"
-                fontSize="14px"
-                borderradius="5px"
-                type="text"
-                placeholder="권한명을 작성해주세요."
-                value={field.value || inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value);
-                  setIsClickedName(false);
-                }}
-              />
-            )}
-          /> */}
           <Input
             height="40px"
             padding="5px"
@@ -612,11 +591,12 @@ export function Authority() {
           <Button
             buttonType="button"
             onClick={openUpdateAlert}
+            cursor
             $padding="10px"
             height={'40px'}
             width={'100px'}
             fontSize="12px"
-            $border
+            $filled
           >
             <span>{isClickedName ? '수정' : '저장'}</span>
           </Button>
@@ -813,8 +793,9 @@ export function Authority() {
                         name={'isEditOperationChecked'}
                         id={'isEditOperationChecked'}
                         value={12}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[12].checked}
+                        // onChange={(e) => handleChecked(e)}
+                        // checked={checkList[12].checked}
+                        disabled
                       />
                     </label>
                   </td>
@@ -826,7 +807,7 @@ export function Authority() {
                         id={'isManageOperationChecked'}
                         value={13}
                         onChange={(e) => handleChecked(e)}
-                        disabled={!checkList[12].checked}
+                        // disabled={!checkList[12].checked}
                         checked={checkList[13].checked}
                       />
                     </label>
@@ -841,8 +822,9 @@ export function Authority() {
                         name={'isEditMemberChecked'}
                         id={'isEditMemberChecked'}
                         value={14}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[14].checked}
+                        // onChange={(e) => handleChecked(e)}
+                        // checked={checkList[14].checked}
+                        disabled
                       />
                     </label>
                   </td>
@@ -854,7 +836,7 @@ export function Authority() {
                         id={'isManageMemberChecked'}
                         value={15}
                         onChange={(e) => handleChecked(e)}
-                        disabled={!checkList[14].checked}
+                        // disabled={!checkList[14].checked}
                         checked={checkList[15].checked}
                       />
                     </label>
@@ -869,8 +851,9 @@ export function Authority() {
                         name={'isEditAuthorityChecked'}
                         id={'isEditAuthorityChecked'}
                         value={16}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[16].checked}
+                        // onChange={(e) => handleChecked(e)}
+                        // checked={checkList[16].checked}
+                        disabled
                       />
                     </label>
                   </td>
@@ -882,7 +865,7 @@ export function Authority() {
                         id={'isManageAuthorityChecked'}
                         value={17}
                         onChange={(e) => handleChecked(e)}
-                        disabled={!checkList[16].checked}
+                        // disabled={!checkList[16].checked}
                         checked={checkList[17].checked}
                       />
                     </label>
@@ -939,7 +922,8 @@ export function Authority() {
               : '권한을 생성 하시겠습니까?'
           }
           action={isClickedName ? '수정' : '생성'}
-          onClick={submitAuthority}
+          onClick={() => submitAuthority()}
+          onClose={() => setIsAlertOpen(false)}
         />
       )}
       {isCreateNameError && (
@@ -947,6 +931,7 @@ export function Authority() {
           isAlertOpen={isAlertOpen}
           notice
           description="권한명을 작성해주세요."
+          onClose={() => setIsAlertOpen(false)}
         />
       )}
     </Container>
@@ -954,15 +939,21 @@ export function Authority() {
 }
 
 const Container = styled.div`
+  padding: 40px;
   width: 100%;
 `;
 const Wrapper = styled.div`
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  border-top: 1px solid ${COLOR.SECONDARY};
   padding-top: 10px;
+`;
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: 800;
+  width: 100%;
+  text-align: left;
 `;
 const ListWrapper = styled.div`
   display: flex;
@@ -974,10 +965,13 @@ const ListWrapper = styled.div`
 `;
 
 const InputWrapper = styled.div`
+  border: 1px solid ${COLOR.SECONDARY};
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  border-radius: 5px;
+  padding: 5px;
   > div {
     width: 100%;
     margin-right: 10px;

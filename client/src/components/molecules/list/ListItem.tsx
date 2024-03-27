@@ -11,7 +11,7 @@ type ListItemProps = {
   height?: string;
   margin?: string;
   children: JSX.Element | JSX.Element[];
-  key?: string;
+  key: string;
   isChecked: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };

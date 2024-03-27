@@ -443,7 +443,7 @@ export function Member() {
 }
 
 const Container = styled.div`
-  padding: 40px 80px;
+  padding: 40px;
   width: 100%;
 `;
 const TitleWrapper = styled.div`

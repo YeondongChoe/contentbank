@@ -102,7 +102,7 @@ export function OtionsSelect({
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
         blackMode={blackMode}
       >
-        {select || defaultValue}
+        <span>{selected || defaultValue}</span>
       </IconButton>
       {isOptionShow && (
         <SelectOptionsList
