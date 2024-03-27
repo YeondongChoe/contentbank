@@ -195,7 +195,7 @@ export function App() {
 }
 const Container = styled.div`
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
 `;
 const MainWrapper = styled.div`
   width: 100%;

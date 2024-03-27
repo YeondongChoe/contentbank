@@ -384,7 +384,6 @@ const ListTitle = styled.p`
 
   > strong {
     font-size: 14px;
-    justify-content: space-around;
     /* flex-wrap: nowrap;
     word-break: break-all; */
     text-align: center;
@@ -419,11 +418,6 @@ const ItemLayout = styled.div`
     justify-content: space-around;
     flex-wrap: wrap;
     word-break: break-all;
-    /* &::after {
-      content: '';
-      display: flex;
-      border-right: 1px solid ${COLOR.BORDER_GRAY};
-    } */
   }
   .line {
     width: 1px;
@@ -442,10 +436,4 @@ const ItemLayout = styled.div`
   .width_50 {
     width: 50%;
   }
-
-  /* .tag {
-    padding: 5px 15px;
-    background-color: ${COLOR.BORDER_GRAY};
-    border-radius: 20px;
-  } */
 `;

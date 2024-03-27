@@ -60,6 +60,7 @@ const Component = styled.li<ListItemStyleProps>`
   border: 1px solid ${COLOR.BORDER_GRAY};
   border-radius: 10px;
   margin-bottom: 10px;
+  position: relative;
 
   &.on {
     border: 1px solid transparent;

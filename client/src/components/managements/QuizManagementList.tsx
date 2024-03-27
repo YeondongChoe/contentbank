@@ -1,32 +1,105 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
+import { GrPlan } from 'react-icons/gr';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import {
+  Accordion,
   Alert,
   Button,
+  CommonDate,
   ContentList,
-  DropDown,
-  DropDownItemProps,
+  IconButton,
+  List,
+  ListItem,
+  Modal,
   PaginationBox,
   Search,
   Select,
   TabMenu,
   ValueNone,
 } from '..';
+import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
-// import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
 
-export function QuizManagementList() {
-  const [page, setPage] = useRecoilState(pageAtom);
+import { ReportProcessModal } from './ReportProcessModal';
 
-  // 페이지네이션 index에 맞는 전체 데이터 불러오기
+export function QuizManagementList() {
+  const { openModal } = useModal();
+  const [page, setPage] = useRecoilState(pageAtom);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  // TODO: 임시 데이터
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
+  const [reportQuestionList, setReportQuestionList] = useState([
+    {
+      id: 'ds1215515',
+      num: '12',
+      source: '교재, 자체제작',
+      curriculum_th: '6차, 8차',
+      level: '학교급',
+      grade: '학년',
+      semester: '학기',
+      curriculum: '교과',
+      subject: '과목',
+      denouement: 'denouement',
+      questionType: '주관식',
+      manager: '담당자',
+      changeAt: '2023.11.11 05:05:55',
+      activate: '활성화',
+      state: '처리대기',
+      report: {
+        reportAt: '신고일자',
+        manager: '신고자',
+        type: '신고유형ㄹㄹㄹㄹㄹ',
+        details:
+          '신고내용 신고내용 신고내용신고내용신고내용신고내용신고내용신고내용신고내용신고내용 신고내용 신고내용',
+      },
+      processed: {
+        changeAt: null,
+        manager: null,
+        type: null,
+        details: null,
+      },
+    },
+    {
+      id: 'ds1255515515',
+      num: '12',
+      source: '교재, 자체제작',
+      curriculum_th: '6차, 8차',
+      level: '학교급',
+      grade: '학년',
+      semester: '학기',
+      curriculum: '교과',
+      subject: '과목',
+      denouement: 'denouement',
+      questionType: '주관식',
+      manager: '담당자',
+      changeAt: '2023.11.11 05:05:55',
+      activate: '활성화',
+      state: '처리완료',
+      report: {
+        reportAt: '신고일자',
+        manager: '신고자',
+        type: '신고유형ㄹㄹㄹㄹㄹ',
+        details:
+          '신고내용 신고내용 신고내용신고내용신고내용신고내용신고내용신고내용신고내용신고내용 신고내용 신고내용',
+      },
+      processed: {
+        changeAt: '2023.11.11 05:05:55',
+        manager: '담당자',
+        type: '신고유형ㄹㄹㄹㄹㄹ',
+        details:
+          '처리 내용 처리 내용 처리 내용 처리 내용 처리 내용ㅍ 처리 내용처리 내용처리 내용처리 내용 처리 내용처리 내용처리 내용',
+      },
+    },
+  ]);
 
   const size = 10;
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
@@ -162,6 +235,15 @@ export function QuizManagementList() {
       ],
     },
   ];
+  const selectReportCategory = [];
+  //신고리스트 처리완료 버튼
+  const openReportProcess = () => {
+    openModal({
+      title: '',
+      content: <ReportProcessModal />,
+      callback: () => {},
+    });
+  };
 
   const openCreateEditWindow = () => {
     windowOpenHandler({
@@ -182,27 +264,6 @@ export function QuizManagementList() {
       // $width: 1250,
     });
   };
-
-  // 드롭다운 버튼 기본 값설정
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const dropDownList: DropDownItemProps[] = [
-    {
-      key: 'ListTabl/d수정',
-      title: '수정',
-      onClick: () => {
-        openCreateEditWindow();
-        setShowDropDown(false);
-      },
-    },
-    {
-      key: 'ListTable/DropDownList복제 후 수정',
-      title: '복제 후 수정',
-      onClick: () => {
-        openCreateEditWindow();
-        setShowDropDown(false);
-      },
-    },
-  ];
 
   useEffect(() => {
     setPage(1);
@@ -249,26 +310,259 @@ export function QuizManagementList() {
         <SelectWrapper>
           {selectCategory.map((el) => (
             <Select
-              width={'130px'}
+              width={'120px'}
               defaultValue={el.label}
               key={el.label}
               options={el.options}
               onSelect={(event) => selectCategoryOption(event)}
             />
           ))}
+          <CommonDate
+            setDate={setStartDate}
+            $button={
+              <IconButton
+                width={'125px'}
+                height={'40px'}
+                fontSize={'14px'}
+                onClick={() => {}}
+              >
+                <span className="btn_title">
+                  {startDate === '' ? `시작일` : `${startDate}`}
+                </span>
+                <GrPlan />
+              </IconButton>
+            }
+          />
+
+          <span> ~ </span>
+          <CommonDate
+            setDate={setEndDate}
+            $button={
+              <IconButton
+                width={'125px'}
+                height={'40px'}
+                fontSize={'14px'}
+                onClick={() => {}}
+              >
+                <span className="btn_title">
+                  {endDate === '' ? `종료일` : `${endDate}`}
+                </span>
+                <GrPlan />
+              </IconButton>
+            }
+          />
         </SelectWrapper>
 
-        {questionList.length > 1 ? (
-          <ContentList
-            list={questionList}
-            deleteBtn
-            ondeleteClick={() => {}}
-            onClick={() => {}}
-          ></ContentList>
-        ) : (
-          <ValueNoneWrapper>
-            <ValueNone />
-          </ValueNoneWrapper>
+        {tabVeiw === '문항 리스트' && (
+          <>
+            {questionList.length > 0 ? (
+              <ContentList
+                list={questionList}
+                deleteBtn
+                ondeleteClick={() => {}}
+                onClick={() => {}}
+              />
+            ) : (
+              <ValueNoneWrapper>
+                <ValueNone />
+              </ValueNoneWrapper>
+            )}
+          </>
+        )}
+        {tabVeiw === '신고 문항' && (
+          <>
+            <Total> Total : {reportQuestionList.length}</Total>
+
+            <ListTitle>
+              <strong className="width_30px">NO</strong>
+              <strong>출처</strong>
+              <strong>교육과정</strong>
+              <strong>학교급</strong>
+              <strong>학년</strong>
+              <strong>학기</strong>
+              <strong>교과</strong>
+              <strong>과목</strong>
+              <strong>대단원</strong>
+              <strong>문항타입</strong>
+              <strong>담당자</strong>
+              <strong>일자</strong>
+              <strong>오픈여부</strong>
+            </ListTitle>
+            <ScrollWrapper>
+              <PerfectScrollbar>
+                {reportQuestionList.length > 0 ? (
+                  <List margin={`10px 0`}>
+                    {reportQuestionList.map(
+                      (item: {
+                        id: string;
+                        num: string;
+                        source: string;
+                        curriculum_th: string;
+                        level: string;
+                        grade: string;
+                        semester: string;
+                        curriculum: string;
+                        subject: string;
+                        denouement: string;
+                        questionType: string;
+                        manager: string;
+                        changeAt: string;
+                        activate: string;
+                        state: string;
+                        report: {
+                          reportAt: string;
+                          manager: string;
+                          type: string;
+                          details: string;
+                        };
+                        processed: {
+                          changeAt: null | string;
+                          manager: null | string;
+                          type: null | string;
+                          details: null | string;
+                        };
+                      }) => (
+                        <ListItem
+                          height={'fit-content'}
+                          key={item.id as string}
+                          isChecked={false}
+                          onClick={() => {}}
+                        >
+                          <AccordionWrapper>
+                            <ItemLayout>
+                              <span className="width_40px">{item.num} </span>
+                              <div className="line"></div>
+                              <span>{item.source} </span>
+                              <div className="line"></div>
+                              <span>{item.curriculum_th} </span>
+                              <div className="line"></div>
+                              <span>{item.level} </span>
+                              <div className="line"></div>
+                              <span>{item.grade} </span>
+                              <div className="line"></div>
+                              <span>{item.semester} </span>
+                              <div className="line"></div>
+                              <span>{item.curriculum} </span>
+                              <div className="line"></div>
+                              <span>{item.subject} </span>
+                              <div className="line"></div>
+                              <span>{item.denouement} </span>
+                              <div className="line"></div>
+                              <span>{item.questionType} </span>
+                              <div className="line"></div>
+                              <span>{item.manager} </span>
+                              <div className="line"></div>
+                              <span>{item.changeAt} </span>
+                              <div className="line"></div>
+                              <span>{item.activate} </span>
+                            </ItemLayout>
+
+                            <Accordion
+                              $backgroundColor={`${item.state == '처리대기' ? `${COLOR.GRAY}` : `${COLOR.BLUEGREEN}`}`}
+                              title={`${item.state == '처리대기' ? '처리대기' : '처리완료'}`}
+                              id={`${item.id}`}
+                            >
+                              <AccordionItemLayout>
+                                <div className="text_wrapper">
+                                  <strong className="title">신고일자</strong>
+                                  <span className="text">
+                                    {item.report.reportAt}
+                                  </span>
+                                </div>
+                                <div className="text_wrapper">
+                                  <strong className="title">신고자</strong>
+                                  <span className="text">
+                                    {item.report.manager}
+                                  </span>
+                                </div>
+                                <div className="text_wrapper">
+                                  <strong className="title">신고유형</strong>
+                                  <span className="text">
+                                    {item.report.type}
+                                  </span>
+                                </div>
+                                <div className="text_wrapper">
+                                  <strong className="title">신고내용</strong>
+                                  <span className="text">
+                                    {item.report.details}
+                                  </span>
+                                </div>
+                                <div className="process_wrapper">
+                                  {item.state !== '처리대기' ? (
+                                    <div className="processed">
+                                      <div className="text_wrapper">
+                                        <strong className="title">
+                                          처리일자
+                                        </strong>
+                                        <span className="text">
+                                          {item.processed.changeAt}
+                                        </span>
+                                      </div>
+                                      <div className="text_wrapper">
+                                        <strong className="title">
+                                          처리자
+                                        </strong>
+                                        <span className="text">
+                                          {item.processed.manager}
+                                        </span>
+                                      </div>
+                                      <div className="text_wrapper">
+                                        <strong className="title">
+                                          처리유형
+                                        </strong>
+                                        <span className="text">
+                                          {item.processed.type}
+                                        </span>
+                                      </div>
+                                      <div className="text_wrapper">
+                                        <strong className="title">
+                                          처리내용
+                                        </strong>
+                                        <span className="text">
+                                          {item.processed.details}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="button_wrapper">
+                                      <Button
+                                        $filled
+                                        height={'35px'}
+                                        fontSize={'13px'}
+                                        cursor
+                                        onClick={() => {
+                                          openCreateEditWindow();
+                                        }}
+                                      >
+                                        문항 수정하러가기
+                                      </Button>
+                                      <Button
+                                        $filled
+                                        height={'35px'}
+                                        fontSize={'13px'}
+                                        cursor
+                                        onClick={() => openReportProcess()}
+                                      >
+                                        처리 완료
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </AccordionItemLayout>
+                            </Accordion>
+                          </AccordionWrapper>
+                        </ListItem>
+                      ),
+                    )}
+                  </List>
+                ) : (
+                  <ValueNoneWrapper>
+                    <ValueNone />
+                  </ValueNoneWrapper>
+                )}
+              </PerfectScrollbar>
+            </ScrollWrapper>
+          </>
         )}
       </TableWrapper>
       <Alert
@@ -289,7 +583,7 @@ export function QuizManagementList() {
 
       <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
 
-      {/* <Modal /> */}
+      <Modal />
     </Container>
   );
 }
@@ -307,6 +601,13 @@ const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
 `;
+const Total = styled.span`
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: ${COLOR.FONT_BLACK};
+  padding: 10px;
+`;
 const HeadWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -318,23 +619,127 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 5px;
-  padding-bottom: 20px;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 5px;
+  padding-bottom: 10px;
+  .btn_title {
+    padding-right: 5px;
+  }
 `;
-
-const InputWrapper = styled.div`
+const ScrollWrapper = styled.div`
+  /* overflow-y: auto; */
+  height: calc(100vh - 450px);
+  width: 100%;
+  border-top: 1px solid ${COLOR.BORDER_GRAY};
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+  /* margin-top: 5px; */
+  padding: 0 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+`;
+const ListTitle = styled.p`
+  padding: 15px 40px;
+  background-color: #eee;
+  border-top: 1px solid ${COLOR.BORDER_GRAY};
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+  margin-top: 5px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 10px;
-  padding-top: 0;
+  align-items: center;
+  flex-wrap: wrap;
+
+  > strong {
+    display: flex;
+    font-size: 14px;
+    width: calc(100% / 13);
+    word-break: break-all;
+    justify-content: center;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    /* background-color: ${COLOR.BORDER_GRAY}; */
+  }
+
+  .width_30px {
+    width: 30px;
+  }
+`;
+
+const ItemLayout = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+
+  > span {
+    width: calc(100% / 13);
+    padding: 0 5px;
+    display: flex;
+    /* flex: 1 0 0; */
+    justify-content: space-around;
+    flex-wrap: wrap;
+    word-break: break-all;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+  }
+
+  .width_40px {
+    width: 40px;
+  }
+
+  /* .tag {
+    padding: 5px 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+    border-radius: 20px;
+  } */
+`;
+const AccordionWrapper = styled.div`
+  width: 100%;
+  flex: 1 0 0;
+`;
+const AccordionItemLayout = styled.div`
+  padding: 15px;
+  .text_wrapper {
+    display: flex;
+    align-items: flex-start;
+    padding-bottom: 5px;
+  }
+  .title {
+    width: 65px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &::after {
+      content: '';
+      display: block;
+      height: 10px;
+      width: 1px;
+      background-color: ${COLOR.BORDER_GRAY};
+    }
+  }
+  .text {
+    width: calc(100% - 65px);
+    text-align: left;
+    text-indent: 10px;
+  }
+  .process_wrapper {
+    padding: 10px;
+    .processed {
+      padding: 15px 20px;
+      background-color: ${COLOR.LIGHT_GRAY};
+    }
+    .button_wrapper {
+      padding: 0 20px;
+      display: flex;
+      gap: 10px;
+    }
+  }
 `;
 
 const TableWrapper = styled.div``;

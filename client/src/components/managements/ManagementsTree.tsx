@@ -25,6 +25,7 @@ export function ManagementsTree() {
 
   return (
     <Container>
+      <div>준비중인 페이지입니다....</div>
       {/* <HeadWrapper>
         <TabMenu
           length={1}
@@ -54,6 +55,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
 `;
 const HeadWrapper = styled.div`
   width: 100%;

@@ -428,6 +428,7 @@ const Textarea = styled.textarea`
   border: 1px solid ${COLOR.BORDER_GRAY};
   padding: 10px;
   resize: none;
+  border-radius: 5px;
   margin-bottom: 10px;
 `;
 const NoticeWarpper = styled.div`

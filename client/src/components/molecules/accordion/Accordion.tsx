@@ -8,7 +8,7 @@ import { Button } from '../../atom';
 type AccordionProps = {
   title: string;
   id: string;
-  children: JSX.Element;
+  children: JSX.Element | JSX.Element[];
   $margin?: string;
   $backgroundColor?: string;
 };
@@ -40,6 +40,7 @@ const Container = styled.div<{ $margin?: string; $backgroundColor?: string }>`
   background-color: #fff;
   border-radius: 5px;
   border: 1px solid ${COLOR.POINT_GRAY};
+  transition: all 0.3s;
 
   .accordion > input {
     position: absolute;
