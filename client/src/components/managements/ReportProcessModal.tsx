@@ -108,9 +108,11 @@ const Container = styled.div`
   width: 100%;
   min-width: 400px;
 `;
-const Title = styled.p`
-  font-size: 24px;
-  font-weight: 800;
+const Title = styled.strong`
+  font-size: 22px;
+  width: 100%;
+  display: block;
+  font-weight: normal;
   text-align: center;
   padding-bottom: 20px;
 `;

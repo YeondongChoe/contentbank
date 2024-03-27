@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 type IconProps = {
   onClick?: () => void;
-  src: string;
+  src: any;
   $margin?: string;
   width?: string;
   height?: string;
@@ -30,6 +30,7 @@ export function Icon({
     >
       <Image
         src={src}
+        loading="lazy"
         // src={`/images/settings/ic-bookmark-${active ? 'on' : 'off'}.svg`}
       />
     </Container>

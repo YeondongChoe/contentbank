@@ -7,26 +7,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance, userInstance } from '../../api/axios';
-import {
-  Input,
-  Label,
-  Button,
-  Alert,
-  openToastifyAlert,
-} from '../../components';
+import { Input, Label, Button, Alert, openToastifyAlert } from '../..';
+import { authInstance, userInstance } from '../../../api/axios';
 import {
   accessTokenAtom,
   refreshTokenAtom,
   sessionIdAtom,
-} from '../../store/auth';
+} from '../../../store/auth';
 import {
   getAuthorityCookie,
   removeAuthorityCookie,
   setAuthorityCookie,
-} from '../../utils/cookies';
-import { passwordRegExp } from '../../utils/regExp';
-import { COLOR } from '../constants/COLOR';
+} from '../../../utils/cookies';
+import { passwordRegExp } from '../../../utils/regExp';
+import { COLOR } from '../../constants/COLOR';
 
 type passwordProps = {
   password: string;

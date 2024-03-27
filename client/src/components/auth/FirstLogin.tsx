@@ -8,8 +8,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { COLOR } from '../../components/constants';
-import { ChangePassword } from '../../components/password/ChangePassword';
 import { removeAuthorityCookie } from '../../utils/cookies';
+
+import { ChangePassword } from './password/ChangePassword';
 
 export function FirstLogin() {
   const navigate = useNavigate();

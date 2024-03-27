@@ -1,4 +1,4 @@
-export * from './QuizCreateList';
+export * from './QuizCreateListPage';
 export * from './ContentWorksheet';
 
 export * from './Step1';

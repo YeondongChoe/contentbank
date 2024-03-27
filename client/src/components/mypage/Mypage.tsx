@@ -14,8 +14,8 @@ import {
   openToastifyAlert,
 } from '../../components';
 import { COLOR } from '../../components/constants';
-import { ChangePassword } from '../../components/password/ChangePassword';
 import { getAuthorityCookie } from '../../utils/cookies';
+import { ChangePassword } from '../auth/password/ChangePassword';
 
 type MyInfoDataType = {
   authority?: string | { idx: number; code: string; name: string };
@@ -30,7 +30,7 @@ type MyInfoDataType = {
   name?: string;
   userKey?: string;
 };
-export function Mypage() {
+export function Mypage(): JSX.Element {
   const queryClient = useQueryClient();
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
