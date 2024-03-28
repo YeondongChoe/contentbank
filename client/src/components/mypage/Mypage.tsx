@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
@@ -12,30 +11,20 @@ import {
   Button,
   Loader,
   openToastifyAlert,
+  Tooltip,
+  Icon,
 } from '../../components';
-import { COLOR } from '../../components/constants';
+import { COLOR, nameRegex } from '../../components/constants';
 import { getAuthorityCookie } from '../../utils/cookies';
 import { ChangePassword } from '../auth/password/ChangePassword';
 
-type MyInfoDataType = {
-  authority?: string | { idx: number; code: string; name: string };
-  createdAt?: string;
-  createdBy?: string;
-  id?: string;
-  idx?: number;
-  isLock?: false;
-  isUse?: true;
-  lastModifiedAt?: string;
-  lastModifiedBy?: string;
-  name?: string;
-  userKey?: string;
-};
-export function Mypage(): JSX.Element {
-  const queryClient = useQueryClient();
+export function Mypage() {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
 
   const [nameValue, setNameValue] = useState('');
+  const [nameErrorMessage, setNameErrorMessage] = useState('');
+  const [isNameError, setIsNameError] = useState(false);
 
   const [member, setMember] = useState({
     id: '',
@@ -63,9 +52,7 @@ export function Mypage(): JSX.Element {
   };
   const {
     isLoading,
-    error,
     data: myInfoData,
-    isFetching,
     refetch,
   } = useQuery({
     queryKey: ['get-myInfo'],
@@ -74,7 +61,6 @@ export function Mypage(): JSX.Element {
       errorMessage: 'get-myInfo 에러 메세지',
     },
   });
-  console.log('myInfoData', myInfoData);
 
   // 이름 수정 api
   const saveName = async () => {
@@ -110,7 +96,15 @@ export function Mypage(): JSX.Element {
   };
 
   const submitName = () => {
-    saveName();
+    if (!nameRegex.test(nameValue)) {
+      setIsNameError(true);
+      setNameErrorMessage('띄워쓰기 없이 한글, 영문, 숫자만 입력');
+      return;
+    } else {
+      saveName();
+      setIsNameError(false);
+      setNameErrorMessage('');
+    }
   };
 
   const loadData = useCallback(() => {
@@ -149,22 +143,22 @@ export function Mypage(): JSX.Element {
         </SubTitleWrapper>
         <InformationForm>
           <InputWrapper>
-            <Label value="아이디" fontSize="16px" width="200px" />
+            <Label value="아이디" fontSize="16px" width="150px" />
             <Information>{member.id}</Information>
           </InputWrapper>
           <InputWrapper>
-            <Label value="이름" fontSize="16px" width="200px" />
+            <Label value="이름" fontSize="16px" width="150px" />
             {!isNameEdit && <Information>{member.name}</Information>}
             {isNameEdit && (
               <Input
-                width="300px"
+                width={`calc(100%)`}
                 height="30px"
                 border="black"
                 placeholderSize="16px"
-                padding="0 20px"
+                padding="0 5px"
                 fontSize="16px"
                 type="text"
-                placeholder="수정할 이름을 입력하세요."
+                placeholder="수정할 이름을 입력해 주세요"
                 value={nameValue}
                 maxLength={10}
                 minLength={2}
@@ -172,6 +166,9 @@ export function Mypage(): JSX.Element {
                   setNameValue(e.target.value);
                 }}
                 innerRef={nameInputRef}
+                onClick={() => setIsNameError(false)}
+                borderbottom={isNameError && true}
+                errorMessage={isNameError && nameErrorMessage}
               />
             )}
             {!isNameEdit && !isPasswordEdit && (
@@ -217,38 +214,30 @@ export function Mypage(): JSX.Element {
             )}
           </InputWrapper>
           <InputWrapper>
-            <Label value="권한" fontSize="16px" width="200px" />
+            <Label value="권한" fontSize="16px" width="150px" />
             <Information>{member.authority}</Information>
           </InputWrapper>
           {!isPasswordEdit && (
             <InputWrapper>
-              <Label value="비밀번호" fontSize="16px" width="200px" />
-              <ButtonWrapper>
-                <Button
-                  onClick={showPasswordEdit}
-                  width="80px"
-                  height="30px"
-                  fontSize="15px"
-                  $borderRadius="7px"
-                  $normal
-                  cursor
-                >
-                  <span>재설정</span>
-                </Button>
-              </ButtonWrapper>
+              <Label value="비밀번호" fontSize="16px" width="150px" />
+              <Button
+                onClick={showPasswordEdit}
+                width="80px"
+                height="30px"
+                fontSize="15px"
+                $borderRadius="7px"
+                $normal
+                cursor
+              >
+                <span>재설정</span>
+              </Button>
             </InputWrapper>
           )}
         </InformationForm>
         {isPasswordEdit && (
           <div>
             <SubTitleWrapper>
-              <SubTitle>비밀번호 변경</SubTitle>
-              <svg
-                width="18"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+              <TooltipWrapper
                 onMouseEnter={() => {
                   setIsShow(true);
                 }}
@@ -256,48 +245,40 @@ export function Mypage(): JSX.Element {
                   setIsShow(false);
                 }}
               >
-                <circle cx="7" cy="7" r="7" fill="black" />
-                <path
-                  d="M6.13335 10.1937H7.4521V11.375H6.13335V10.1937ZM7.01252 3.5C9.3643 3.58663 10.3885 5.71288 8.99066 7.30756C8.6258 7.70131 8.03675 7.96119 7.74663 8.29194C7.4521 8.61875 7.4521 9.0125 7.4521 9.40625H6.13335C6.13335 8.74869 6.13335 8.1935 6.42787 7.79975C6.71799 7.406 7.30704 7.17369 7.6719 6.91381C8.7357 6.03181 8.47194 4.78362 7.01252 4.68125C6.66276 4.68125 6.32733 4.8057 6.08001 5.02723C5.8327 5.24876 5.69376 5.54921 5.69376 5.8625H4.375C4.375 5.23593 4.65288 4.63501 5.14751 4.19196C5.64214 3.74891 6.313 3.5 7.01252 3.5Z"
-                  fill="white"
-                />
-              </svg>
-              {isShow && (
-                <TooltipWrapper>
-                  <svg
-                    width="7"
-                    height="12"
-                    viewBox="0 0 7 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M0 5.99996L6.5625 0.695557V11.3044L0 5.99996Z"
-                      fill="black"
-                      fillOpacity="0.9"
-                    />
-                  </svg>
-                  <Tooltip>
-                    비밀번호는 영문과 숫자, 특수문자(~,!,@,#,$,%,^,&,*,(,),_,-
-                    만 사용가능)를 조합하여 8~20자 이내로 설정해야 합니다.
-                  </Tooltip>
-                </TooltipWrapper>
-              )}
+                <SubTitle>
+                  비밀번호 변경
+                  <Icon
+                    $margin={'0 0 0 5px'}
+                    width={`14px`}
+                    src={`/images/icon/ictooltip.svg`}
+                    disabled={true}
+                  />
+                  {isShow && (
+                    <Tooltip className="on toolTip">
+                      <span>
+                        비밀번호는 영문과 숫자,
+                        특수문자(~,!,@,#,$,%,^,&,*,(,),_,- 만 사용가능)를
+                        조합하여 8~20자 이내로 설정해야 합니다.
+                      </span>
+                    </Tooltip>
+                  )}
+                </SubTitle>
+              </TooltipWrapper>
             </SubTitleWrapper>
             <PasswordWrapper>
               <ChangePassword
-                width="100%"
-                inputwidth="500px"
+                width={`100%`}
+                // inputwidth={``}
                 padding="20px 10px"
                 setIsPasswordEdit={setIsPasswordEdit}
-                btnwidth="80px"
+                btnwidth="10em"
                 height="30px"
                 buttonfontsize="15px"
                 labelfontsize="16px"
                 placeholdersize="15px"
-                display="flex-end"
-                buttonGroupWidth="700px"
-                messageWidth="700px"
+                display="center"
+                buttonGroupWidth="100%"
+                messageWidth="100%"
               />
             </PasswordWrapper>
           </div>
@@ -332,26 +313,26 @@ const SubTitleWrapper = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 8px;
   padding-left: 20px;
 `;
-const SubTitle = styled.div`
+const SubTitle = styled.span`
   font-weight: bold;
   color: ${COLOR.FONT_BLACK};
   font-size: 16px;
-`;
-const TooltipWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
-const Tooltip = styled.div`
-  width: 250px;
-  height: 60px;
-  background-color: black;
-  color: white;
-  padding: 10px;
-  font-size: 10px;
+const TooltipWrapper = styled.div`
+  position: relative;
+
+  .toolTip {
+    position: absolute;
+    width: 350px;
+    left: 105px;
+    bottom: 0;
+  }
 `;
+
 const InformationForm = styled.div`
   display: flex;
   flex-direction: column;
@@ -359,11 +340,15 @@ const InformationForm = styled.div`
   gap: 30px;
 `;
 const InputWrapper = styled.div`
-  height: 20px;
+  width: 100%;
   display: flex;
   align-items: center;
   &:last-of-type {
     margin-bottom: 20px;
+  }
+  div:has(input) {
+    width: calc(100% - 500px);
+    max-width: 500px;
   }
 `;
 const Information = styled.p`
@@ -378,9 +363,6 @@ const ButtonGroup = styled.div`
   border: none;
   background-color: transparent;
   display: flex;
-  gap: 10px;
-  padding-left: 30px;
-`;
-const ButtonWrapper = styled.div`
-  margin-left: -15px;
+  gap: 5px;
+  padding-left: 10px;
 `;

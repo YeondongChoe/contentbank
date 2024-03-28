@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import * as React from 'react';
 
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 import { getAuthorityCookie } from '../utils/cookies';
 

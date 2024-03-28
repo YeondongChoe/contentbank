@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 
 import { styled } from 'styled-components';
 
@@ -12,6 +12,7 @@ type InputProps = {
   placeholderTextAlign?: boolean;
   value?: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onKeyUp?: React.KeyboardEventHandler<HTMLInputElement>;
   onClick?: () => void;
   padding?: string;
   width?: string;
@@ -24,6 +25,7 @@ type InputProps = {
   margin?: string;
   disabled?: boolean;
   errorMessage?: boolean | string;
+  successMessage?: boolean | string;
   innerRef?: React.Ref<HTMLInputElement>;
   maxLength?: number;
   minLength?: number;
@@ -48,10 +50,13 @@ export function Input({
   borderbottom,
   margin,
   errorMessage,
+  successMessage,
   innerRef,
   maxLength,
   minLength,
+  onKeyUp,
 }: InputProps) {
+  useEffect(() => {}, [errorMessage]);
   return (
     <Warpper>
       <Component
@@ -75,8 +80,10 @@ export function Input({
         ref={innerRef}
         maxLength={maxLength}
         minLength={minLength}
+        onKeyUp={onKeyUp}
       ></Component>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </Warpper>
   );
 }
@@ -102,6 +109,7 @@ const Warpper = styled.div`
 const Component = styled.input<InputStyleProps>`
   display: flex;
   align-items: center;
+  text-overflow: ellipsis;
   ${({ $placeholderTextAlign }) =>
     $placeholderTextAlign && ' text-align: center;'};
   justify-content: center;
@@ -137,5 +145,9 @@ const Component = styled.input<InputStyleProps>`
 `;
 const ErrorMessage = styled.p`
   color: ${COLOR.ERROR};
+  font-size: 12px;
+`;
+const SuccessMessage = styled.p`
+  color: ${COLOR.SUCCESS};
   font-size: 12px;
 `;

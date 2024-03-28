@@ -10,11 +10,23 @@ type TooltiptProps = {
   height?: string;
   margin?: string;
   children: JSX.Element;
+  className?: string;
 };
 
-export function Tooltip({ width, height, margin, children }: TooltiptProps) {
+export function Tooltip({
+  width,
+  height,
+  margin,
+  children,
+  className,
+}: TooltiptProps) {
   return (
-    <Component width={width} height={height} $margin={margin} className="">
+    <Component
+      width={width}
+      height={height}
+      $margin={margin}
+      className={` ${className}`}
+    >
       <TooltipText>{children}</TooltipText>
     </Component>
   );

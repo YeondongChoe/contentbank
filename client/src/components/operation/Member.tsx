@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
@@ -13,7 +12,6 @@ import {
   CheckBoxI,
   Icon,
   ValueNone,
-  openToastifyAlert,
   Loader,
 } from '../../components/atom';
 import {
@@ -22,13 +20,13 @@ import {
   PaginationBox,
   Search,
   TabMenu,
+  List,
+  ListItem,
 } from '../../components/molecules';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { MemberType } from '../../types';
-import { getAuthorityCookie } from '../../utils/cookies';
 import { COLOR } from '../constants/COLOR';
-import { List, ListItem } from '../molecules/list';
 
 import { EditModal } from './member/EditModal';
 import { RegisterModal } from './member/RegisterModal';
@@ -53,13 +51,12 @@ export function Member() {
 			`,
       // &isUseFilter=${''}
     );
-    console.log(`유저리스트 get 결과값`, res);
+    // console.log(`유저리스트 get 결과값`, res);
     return res;
   };
 
   const {
     isLoading,
-    error,
     data: memberListData,
     isFetching,
     refetch,
@@ -70,11 +67,11 @@ export function Member() {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
+  // data 디렉토리
+  const memberList = memberListData?.data.data;
 
   // 페이지 변경시 리랜더링
   useEffect(() => {
-    console.log(page, memberListData);
-
     refetch();
   }, [page]);
 
@@ -91,11 +88,11 @@ export function Member() {
     }
   };
 
-  // 아이디 중복 확인용 데이터 리스트 조회
+  // 아이디 중복 확인 && 토탈 유저 수
   const getTotalId = async () => {
     return await userInstance
       .get(
-        `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${memberListData?.data.data.pagination.totalCount}
+        `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${memberList.pagination.totalCount}
 				`,
       )
       .then((res) => {
@@ -107,12 +104,11 @@ export function Member() {
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
-
     getTotalId();
-    console.log('memberList', totalMemberList);
+    // console.log('memberList', totalMemberList);
     openModal({
       title: '',
-      content: <RegisterModal memberList={totalMemberList} />,
+      content: <RegisterModal memberList={totalMemberList} refetch={refetch} />,
     });
   };
 
@@ -191,9 +187,7 @@ export function Member() {
     // console.log(e.currentTarget.checked);
     if (e.target.checked) {
       setCheckList(
-        memberListData?.data.data.list.map(
-          (item: any) => item.userKey as string,
-        ),
+        memberList.list.map((item: MemberType) => item.userKey as string),
       );
     } else {
       setCheckList([]);
@@ -252,8 +246,6 @@ export function Member() {
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
 
-  // if(isLoading) return ()
-
   return (
     <Container ref={backgroundRef}>
       <AlertBar
@@ -295,8 +287,7 @@ export function Member() {
 
       <InputWrapper>
         <Total>
-          Total :
-          {memberListData ? memberListData.data.data.pagination.totalCount : 0}
+          Total :{memberListData ? memberList.pagination.totalCount : 0}
         </Total>
 
         <Search
@@ -312,7 +303,7 @@ export function Member() {
         />
       </InputWrapper>
 
-      {memberListData?.data.data.list.length ? (
+      {memberListData ? (
         <>
           <ButtonWrapper>
             <CheckBoxWrapper>
@@ -320,9 +311,7 @@ export function Member() {
                 $margin={'0 5px 0 0'}
                 onChange={(e) => handleAllCheck(e)}
                 checked={
-                  checkList.length === memberListData?.data.data.list.length
-                    ? true
-                    : false
+                  checkList.length === memberList.list.length ? true : false
                 }
                 id={'all check'}
                 value={'all check'}
@@ -350,8 +339,7 @@ export function Member() {
           )}
 
           <List margin={`10px 0`}>
-            {/* TODO: 데이터 타입 정의 */}
-            {memberListData?.data.data.list.map((list: any) => (
+            {memberList.list.map((list: MemberType) => (
               <ListItem
                 key={list.userKey as string}
                 isChecked={checkList.includes(list.userKey)}
@@ -422,10 +410,10 @@ export function Member() {
         <>{!isLoading && <ValueNone />}</>
       )}
 
-      {memberListData?.data.data.pagination && (
+      {memberListData && (
         <PaginationBox
-          itemsCountPerPage={memberListData?.data.data.pagination.pageUnit}
-          totalItemsCount={memberListData?.data.data.pagination.totalCount}
+          itemsCountPerPage={memberList.pagination.pageUnit}
+          totalItemsCount={memberList.pagination.totalCount}
         />
       )}
       <Alert
@@ -492,22 +480,12 @@ const ItemLayout = styled.div`
     justify-content: space-around;
     flex-wrap: wrap;
     word-break: break-all;
-    /* &::after {
-      content: '';
-      display: flex;
-      border-right: 1px solid ${COLOR.BORDER_GRAY};
-    } */
   }
   .line {
     width: 1px;
     height: 15px;
     background-color: ${COLOR.BORDER_GRAY};
   }
-  /* .tag {
-    padding: 5px 15px;
-    background-color: ${COLOR.BORDER_GRAY};
-    border-radius: 20px;
-  } */
 `;
 const LoaderWrapper = styled.div`
   display: flex;

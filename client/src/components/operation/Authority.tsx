@@ -5,9 +5,6 @@ import { BiSolidTrashAlt } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { DeleteAuthority } from '../../api/deleteAxios';
-// import { getAuthorityList, getMemberAuthority } from '../../api/getAxios';
-import { postCreateAuthority } from '../../api/postAxios';
 import { Input } from '../../components';
 import { Button } from '../../components/atom';
 import { COLOR } from '../constants';

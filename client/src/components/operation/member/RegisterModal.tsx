@@ -1,19 +1,16 @@
 import * as React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { MutationFunction, useMutation, useQuery } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
-import { Input, Label, AlertBar } from '../..';
+import { Input, Label } from '../..';
 import { userInstance } from '../../../api/axios';
-import { postRegister, postDuplicate } from '../../../api/postAxios';
+import { idRegex, COLOR, nameRegex } from '../../../components/constants';
 import { useModal } from '../../../hooks';
 import { MemberType } from '../../../types';
-import { Button, openToastifyAlert } from '../../atom';
-import { Select } from '../../atom/select';
-import { COLOR } from '../../constants';
-import { Alert } from '../../molecules/alert/Alert';
+import { Button, openToastifyAlert, Select } from '../../atom';
 
 type authorityType = {
   idx: number;
@@ -33,60 +30,61 @@ type authoritySelectType = {
   value: string;
 };
 
-type RegisterModalProps = {
-  isRegister: boolean;
-  setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsSuccessAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
+export function RegisterModal({
+  memberList,
+  refetch,
+}: {
+  memberList?: MemberType[];
+  refetch: () => void;
+}) {
   const { closeModal } = useModal();
 
   const [isIdError, setIsIdError] = useState(false);
   const [isNameError, setIsNameError] = useState(false);
-  const [isAuthorityError, setIsAuthorityError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
-  const [idErrorMessage, setIdErrorMessage] = useState('');
+  const [isAuthorityError, setIsAuthorityError] = useState(false);
   const [AuthorityErrorMessage, setAuthorityErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
-  const [duplicatedId, setduplicatedId] = useState('');
-
-  const [isDuplicate, setIsDuplicate] = useState(false);
+  const [isDuplicate, setIsDuplicate] = useState<boolean>(true);
+  const [idErrorMessage, setIdErrorMessage] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
   const [commentValue, setCommentValue] = useState('');
-  // const [authorityCode, setAuthorityCode] = useState<string>();
   const [authoritySelectList, setAuthoritySelectList] = useState<
     authoritySelectType[]
   >([]);
   const { control, watch } = useForm();
 
-  // const AuthorityList = authoritySelectList.map((el) => {
-  //   return [el.label, el.code];
-  // });
-
-  // const Authority = authorityCode;
   const Name = watch('name');
   const Id = watch('id');
   const Comment = commentValue;
-
-  const closePopup = () => {
-    // setIsRegister(false);
-    closeModal();
-  };
+  // 정규식 조건
+  const isRegexp = idRegex.test(Id);
 
   // 아이디 중복 확인
-  const checkDuplicate = () => {
-    if (memberList) {
-      // console.log('memberList', memberList);
-      const idDuplicate = memberList.filter((el) => el.id === Id);
-      // console.log('idDuplicate', Boolean(idDuplicate.length));
-      setIsDuplicate(Boolean(idDuplicate.length));
+  const checkDuplicate = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.preventDefault();
+    if (memberList && Name !== '') {
+      const idDuplicate = memberList.filter((el) => el.id == Id);
+      const isOn = Boolean(idDuplicate.length);
+      setIsDuplicate(isOn);
+
+      if (!isRegexp || isOn) {
+        setIsIdError(true);
+        setIdErrorMessage('사용 불가능한 아이디 입니다');
+      } else {
+        setIsIdError(false);
+        setIdErrorMessage('');
+      }
     }
   };
 
   // 계정 등록하기 api
-  const postCreateAccount = async () => {
+  const postCreateAccount: MutationFunction<
+    { data: { code: string; message: string } },
+    void
+  > = () => {
     const account = {
       id: Id,
       name: Name,
@@ -94,49 +92,50 @@ export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
       note: Comment,
     };
     // console.log('account', account);
-    const res = await userInstance.post(`/v1/account`, account);
-    // console.log('res.data.code', res.data);
-    const code = res.data.code;
-    // 등록 에러시 메세지 토스트
-    if (code !== 'S-002') {
+    return userInstance.post(`/v1/account`, account);
+  };
+
+  const { data: createAccountData, mutate: onCreateAccount } = useMutation({
+    mutationFn: postCreateAccount,
+    onError: (context: {
+      response: {
+        data: { code: string; message: string; data: { id: string } };
+      };
+    }) => {
+      //TODO : 데이터 구조 통일 요청 // 에러시 message로
       openToastifyAlert({
         type: 'error',
-        text: res.data.message,
+        text: context.response.data.data.id,
       });
-    }
-    // 정상 등록시 메세지 토스트
-    if (code === 'S-002') {
-      openToastifyAlert({
-        type: 'success',
-        text: res.data.message,
-      });
-      closeModal();
-    }
-  };
-  // const { data: createAccount, mutate: changeCreateAccount } = useMutation({
-  //   mutationFn: postCreateAccount,
-  //   onError: (context: { response: { data: { message: string } } }) => {
-  //     openToastifyAlert({
-  //       type: 'error',
-  //       text: context.response.data.message,
-  //     });
-  //   },
-  //   onSuccess: (response: { data: { message: string } }) => {
-  //     console.log('createAccount', response);
-  //     openToastifyAlert({
-  //       type: 'success',
-  //       text: response.data.message,
-  //     });
-
-  //     console.log('createAccount', createAccount && createAccount);
-  //   },
-  // });
+    },
+    onSuccess: (response: { data: { code: string; message: string } }) => {
+      if (response.data.code !== 'S-002') {
+        openToastifyAlert({
+          type: 'error',
+          text: response.data.message,
+        });
+      }
+      if (response.data.code == 'S-002') {
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+        closeModal();
+        refetch();
+      }
+    },
+  });
 
   const submitRegister = () => {
     //필수 항목 에러처리
     if (Name === '') {
       setIsNameError(true);
       setNameErrorMessage('필수 항목을 입력해주세요');
+      return;
+    }
+    if (!nameRegex.test(Name)) {
+      setIsNameError(true);
+      setNameErrorMessage('이름 형식을 맞춰주세요');
       return;
     }
     if (Id === '') {
@@ -149,13 +148,8 @@ export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
       setAuthorityErrorMessage('필수 항목을 입력해주세요');
       return;
     }
-    if (isDuplicate === true) {
-      setIsIdError(true);
-      setIdErrorMessage('사용 불가능한 아이디 입니다');
-      return;
-    }
-    postCreateAccount();
 
+    onCreateAccount();
     //버튼 disable 처리
   };
 
@@ -165,12 +159,7 @@ export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
     // console.log(`get authority 결과값`, res);
     return res;
   };
-  const {
-    isLoading,
-    error,
-    data: authorityData,
-    isFetching,
-  } = useQuery({
+  const { data: authorityData, isFetching } = useQuery({
     queryKey: ['get-authority'],
     queryFn: getAuthority,
     meta: {
@@ -201,12 +190,6 @@ export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
       ]);
     }
   }, [isFetching]);
-
-  useEffect(() => {
-    if (Id === '') {
-      setIsDuplicate(false);
-    }
-  }, [Id]);
 
   return (
     <Container>
@@ -288,22 +271,26 @@ export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
                     onChange={field.onChange}
                     onClick={() => {
                       setIsIdError(false);
+                      setIsDuplicate(true);
                     }}
                     errorMessage={isIdError && idErrorMessage}
-                    className={Id && isDuplicate ? 'success' : ''}
+                    successMessage={
+                      Id &&
+                      !isDuplicate &&
+                      isRegexp &&
+                      '사용가능한 아이디 입니다'
+                    }
+                    className={Id && !isDuplicate && isRegexp ? 'success' : ''}
                     borderbottom={isIdError}
                   />
                 )}
               />
-              {Id && isDuplicate && (
-                <IdSuccessMessage>{successMessage}</IdSuccessMessage>
-              )}
 
               <Button
                 buttonType="button"
                 $margin={'0 0 0 10px'}
                 width={`130px`}
-                onClick={checkDuplicate}
+                onClick={(e) => checkDuplicate(e)}
                 $padding={'8px'}
                 height={'38px'}
                 fontSize="15px"
@@ -381,7 +368,7 @@ export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
           <ButtonGroup>
             <Button
               buttonType="button"
-              onClick={closePopup}
+              onClick={() => closeModal()}
               $padding="10px"
               height={'40px'}
               fontSize="16px"
@@ -392,7 +379,7 @@ export function RegisterModal({ memberList }: { memberList?: MemberType[] }) {
             </Button>
             <Button
               buttonType="button"
-              onClick={submitRegister}
+              onClick={() => submitRegister()}
               $padding="10px"
               height={'40px'}
               fontSize="16px"
@@ -477,11 +464,6 @@ const ButtonGroup = styled.div`
   gap: 10px;
 `;
 
-const IdSuccessMessage = styled.p`
-  color: ${COLOR.SUCCESS};
-  font-size: 12px;
-  position: absolute;
-`;
 const ErrorMessage = styled.p`
   color: ${COLOR.ERROR};
   padding-left: 130px;

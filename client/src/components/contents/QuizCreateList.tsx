@@ -17,7 +17,6 @@ import {
 } from '..';
 import { questionInstance } from '../../api/axios';
 // import { getQuestionList } from '../../api/getAxios';
-import { putChangeServiced } from '../../api/putAxios';
 import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
@@ -65,7 +64,7 @@ export function QuizCreateList() {
     for (let i = 0; i < selectedRows.length; i += 1) {
       formattedArray.push({ contentSeq: selectedRows[i] });
     }
-    putChangeServiced({ formattedArray, setIsChangedServiced });
+    // putChangeServiced({ formattedArray, setIsChangedServiced });
 
     setIsAlertOpen(false);
   };

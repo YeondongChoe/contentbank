@@ -1,25 +1,18 @@
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
+import { Controller, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { Input, Label, Button, Alert, openToastifyAlert } from '../..';
-import { authInstance, userInstance } from '../../../api/axios';
+import { userInstance } from '../../../api/axios';
+import { passwordRegex } from '../../../components/constants';
 import {
-  accessTokenAtom,
-  refreshTokenAtom,
-  sessionIdAtom,
-} from '../../../store/auth';
-import {
-  getAuthorityCookie,
   removeAuthorityCookie,
   setAuthorityCookie,
 } from '../../../utils/cookies';
-import { passwordRegExp } from '../../../utils/regExp';
 import { COLOR } from '../../constants/COLOR';
 
 type passwordProps = {
@@ -180,6 +173,8 @@ export function ChangePassword({
   };
 
   const changeDisable = () => {
+    console.log('dsdsds', passwordRegex.test(Password));
+
     if (Password.length >= 8 && Password == PasswordConfirm) {
       setDisabled(false);
     } else {
@@ -218,8 +213,10 @@ export function ChangePassword({
     }
   };
 
+  const handleOnInput = (e: React.KeyboardEvent<HTMLInputElement>) => {};
+
   return (
-    <Container>
+    <Container width={width as string}>
       {/* {isSuccessAlertOpen && (
         <Alert
           description={
@@ -233,214 +230,218 @@ export function ChangePassword({
         ></Alert>
       )} */}
 
-      <form>
-        <InputSection width={width as string}>
-          <InputWrapper width={width as string}>
-            <Label
-              value="새 비밀번호"
-              fontSize={labelfontsize || '16px'}
-              width="150px"
-              onClick={ClickPasswordLabel}
+      <InputWrapper width={width as string}>
+        <Label
+          value="새 비밀번호"
+          fontSize={labelfontsize || '16px'}
+          width="150px"
+          onClick={ClickPasswordLabel}
+        />
+        <Controller
+          control={control}
+          name="password"
+          defaultValue=""
+          rules={{
+            required: '비밀번호를 입력해주세요.',
+            pattern: {
+              value: passwordRegex,
+              message: '사용불가능',
+            },
+          }}
+          render={({ field }) => (
+            <Input
+              borderbottom
+              width={inputwidth as string}
+              height="30px"
+              padding="10px 20px"
+              fontSize="15px"
+              placeholderSize={placeholdersize as string}
+              type="password"
+              placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
+              onKeyUp={(e) => handleOnInput(e)}
+              maxLength={20}
+              minLength={8}
+              onChange={field.onChange}
+              value={field.value}
+              className={isValid ? 'success' : ''}
+              innerRef={PasswordInputRef}
             />
-            <Controller
-              control={control}
-              name="password"
-              defaultValue=""
-              rules={{
-                required: '비밀번호를 입력해주세요.',
-                pattern: {
-                  value: passwordRegExp,
-                  message: '사용불가능',
-                },
-              }}
-              render={({ field }) => (
-                <Input
-                  borderbottom
-                  width={inputwidth as string}
-                  height="30px"
-                  padding="10px 20px"
-                  fontSize="15px"
-                  placeholderSize={placeholdersize as string}
-                  type="password"
-                  placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
-                  maxLength={20}
-                  minLength={8}
-                  onChange={field.onChange}
-                  value={field.value}
-                  className={isValid ? 'success' : ''}
-                  innerRef={PasswordInputRef}
-                />
-              )}
+          )}
+        />
+      </InputWrapper>
+      {Password && isValid && (
+        <SuccessMessage $messageWidth={messageWidth as string}>
+          사용가능
+          <svg
+            width="18"
+            height="15"
+            viewBox="0 0 18 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+              fill="#11C218"
             />
-          </InputWrapper>
-          {Password && isValid && (
-            <SuccessMessage $messageWidth={messageWidth as string}>
-              사용가능
-              <svg
-                width="18"
-                height="15"
-                viewBox="0 0 18 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
-                  fill="#11C218"
-                />
-              </svg>
-            </SuccessMessage>
-          )}
-          {Password && !isValid && !PasswordConfirm && (
-            <ErrorMessage $messageWidth={messageWidth as string}>
-              사용 불가능
-              <svg
-                width="18"
-                height="15"
-                viewBox="0 0 18 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
-                  fill="#FF523E"
-                />
-              </svg>
-            </ErrorMessage>
-          )}
-          <InputWrapper width={width as string}>
-            <Label
-              value="새 비밀번호 재확인"
-              fontSize={labelfontsize || '16px'}
-              width="150px"
-              onClick={ClickPasswordConfirmLabel}
+          </svg>
+        </SuccessMessage>
+      )}
+      {Password && !isValid && !PasswordConfirm && (
+        <ErrorMessage $messageWidth={messageWidth as string}>
+          사용 불가능
+          <svg
+            width="18"
+            height="15"
+            viewBox="0 0 18 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+              fill="#FF523E"
             />
-            <Controller
-              control={control}
-              name="password_confirm"
-              defaultValue=""
-              rules={{
-                required: false,
-                pattern: {
-                  value: passwordRegExp,
-                  message: '비밀번호 불일치',
-                },
-              }}
-              render={({ field }) => (
-                <Input
-                  borderbottom
-                  width={inputwidth as string}
-                  height="30px"
-                  padding="10px 20px"
-                  fontSize="15px"
-                  placeholderSize={placeholdersize as string}
-                  type="password"
-                  placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
-                  onChange={field.onChange}
-                  value={field.value}
-                  maxLength={20}
-                  minLength={8}
-                  className={
-                    PasswordConfirm && Password === PasswordConfirm
-                      ? 'passwordMatch'
-                      : ''
-                  }
-                  innerRef={PasswordConfirmInputRef}
-                />
-              )}
+          </svg>
+        </ErrorMessage>
+      )}
+      <InputWrapper width={width as string}>
+        <Label
+          value="새 비밀번호 재확인"
+          fontSize={labelfontsize || '16px'}
+          width="150px"
+          onClick={ClickPasswordConfirmLabel}
+        />
+        <Controller
+          control={control}
+          name="password_confirm"
+          // width={inputwidth as string}
+          defaultValue=""
+          rules={{
+            required: false,
+            pattern: {
+              value: passwordRegex,
+              message: '비밀번호 불일치',
+            },
+          }}
+          render={({ field }) => (
+            <Input
+              borderbottom
+              width={inputwidth as string}
+              height="30px"
+              padding="10px 20px"
+              fontSize="15px"
+              placeholderSize={placeholdersize as string}
+              type="password"
+              placeholder="영문, 숫자, 특수문자 혼용 8자리 이상"
+              onChange={field.onChange}
+              value={field.value}
+              maxLength={20}
+              minLength={8}
+              className={
+                PasswordConfirm && Password === PasswordConfirm
+                  ? 'passwordMatch'
+                  : ''
+              }
+              innerRef={PasswordConfirmInputRef}
             />
-          </InputWrapper>
-          {PasswordConfirm && Password === PasswordConfirm && (
-            <SuccessMessage $messageWidth={messageWidth as string}>
-              비밀번호 일치
-              <svg
-                width="18"
-                height="15"
-                viewBox="0 0 18 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
-                  fill="#11C218"
-                />
-              </svg>
-            </SuccessMessage>
           )}
-          {PasswordConfirm && Password !== PasswordConfirm && (
-            <ErrorMessage $messageWidth={messageWidth as string}>
-              비밀번호 불일치
-              <svg
-                width="18"
-                height="15"
-                viewBox="0 0 18 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
-                  fill="#FF523E"
-                />
-              </svg>
-            </ErrorMessage>
-          )}
-        </InputSection>
-        <ButtonGroup
-          display={display as string}
-          marginLeft={marginleft as string}
-          $padding={padding as string}
-          $buttonGroupWidth={buttonGroupWidth as string}
-        >
-          <ButtonWrapper>
-            <Button
-              onClick={() => onCancel()}
-              width={btnwidth}
-              height={height}
-              fontSize={buttonfontsize}
-              $borderRadius="7px"
-              $border
-              cursor
-            >
-              <span>취소</span>
-            </Button>
-          </ButtonWrapper>
+        />
+      </InputWrapper>
+      {PasswordConfirm && Password === PasswordConfirm && (
+        <SuccessMessage $messageWidth={messageWidth as string}>
+          비밀번호 일치
+          <svg
+            width="18"
+            height="15"
+            viewBox="0 0 18 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+              fill="#11C218"
+            />
+          </svg>
+        </SuccessMessage>
+      )}
+      {PasswordConfirm && Password !== PasswordConfirm && (
+        <ErrorMessage $messageWidth={messageWidth as string}>
+          비밀번호 불일치
+          <svg
+            width="18"
+            height="15"
+            viewBox="0 0 18 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 2.20492L6 14.2049L0.5 8.70492L1.91 7.29492L6 11.3749L16.59 0.794922L18 2.20492Z"
+              fill="#FF523E"
+            />
+          </svg>
+        </ErrorMessage>
+      )}
 
-          <ButtonWrapper>
-            <Button
-              onClick={submitChangePassword}
-              width={btnwidth}
-              height={height}
-              fontSize={buttonfontsize}
-              $borderRadius="7px"
-              $filled
-              cursor
-              disabled={disabled}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  submitChangePassword();
-                }
-              }}
-            >
-              <span>변경</span>
-            </Button>
-          </ButtonWrapper>
-        </ButtonGroup>
-      </form>
+      <ButtonGroup
+        display={display as string}
+        marginLeft={marginleft as string}
+        $padding={padding as string}
+        $buttonGroupWidth={buttonGroupWidth as string}
+      >
+        <ButtonWrapper>
+          <Button
+            onClick={() => onCancel()}
+            width={btnwidth}
+            height={height}
+            fontSize={buttonfontsize}
+            $borderRadius="7px"
+            $border
+            cursor
+          >
+            <span>취소</span>
+          </Button>
+        </ButtonWrapper>
+
+        <ButtonWrapper>
+          <Button
+            onClick={submitChangePassword}
+            width={btnwidth}
+            height={height}
+            fontSize={buttonfontsize}
+            $borderRadius="7px"
+            $filled
+            cursor
+            disabled={disabled}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                submitChangePassword();
+              }
+            }}
+          >
+            <span>변경</span>
+          </Button>
+        </ButtonWrapper>
+      </ButtonGroup>
     </Container>
   );
 }
 
-const Container = styled.div``;
-const InputSection = styled.section<{ width: string }>`
+const Container = styled.form<{ width: string }>`
   display: flex;
   flex-direction: column;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
 `;
-const InputWrapper = styled.div<{ width: string }>`
+
+const InputWrapper = styled.div<{ width: string; inputwidth?: string }>`
   height: 50px;
   display: flex;
   align-items: center;
   gap: 40px;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
+
+  > div:has(input) {
+    width: ${({ inputwidth }) =>
+      inputwidth ? ` ${inputwidth};` : 'calc(100% - 200px)'};
+  }
 `;
 const SuccessMessage = styled.div<{ $messageWidth: string }>`
   width: ${({ $messageWidth }) =>

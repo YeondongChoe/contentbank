@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 
-import { time } from 'console';
-
 import {
   QueryClientProvider,
   QueryClient,
@@ -10,7 +8,6 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { tokenInstance } from './api/axios';
@@ -18,15 +15,9 @@ import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { useModal } from './hooks';
-import { accessTokenAtom } from './store/auth/accessToken';
-import {
-  getAuthorityCookie,
-  removeAuthorityCookie,
-  setAuthorityCookie,
-} from './utils/cookies';
+import { getAuthorityCookie, setAuthorityCookie } from './utils/cookies';
 
 export function App() {
-  // const isAccessTokenAtom = useRecoilValue(accessTokenAtom);
   const location = useLocation();
   const navigate = useNavigate();
   const { closeModal } = useModal();
@@ -55,20 +46,10 @@ export function App() {
           }
           return false;
         }, // 실패시 재요청(기본3번): bool | number | (failureCount, error) => {}
-
-        /* 설정은 각 페이지 useQuery에서도 각기 셋팅가능 */
-        // refetchInterval: 1000, 1초마다 데이터 refetch
-        // refetchOnWindowFocus: false, 브라우져 화면 포커스시 리랜더링 여부 (기본 true)
-        // staleTime: 50000,//데이터 유통기한 - refetch 기준
-        // gcTime: 50000 // 가비지 컬렉션 시간셋팅
       },
       onError: (context: {
         response: { data: { message: string; code: string } };
       }) => {
-        //TODO : 전역에서 작동하는지 확인 // code 값에 따른 분기 처리
-        // if (context.response.data.code == 'GE-002') {
-        //   postRefreshToken();
-        // }
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
@@ -82,13 +63,6 @@ export function App() {
         context: { response: { data: { code: string; message: string } } },
         query: { meta: { errorMessage: unknown } },
       ) => {
-        console.log(`QueryCache :`, context);
-        // 잘못된 요청(유효하지않은 요청 GE-003, E-004) 일경우
-        // 케이스에 따라 얼럿으로 안내(공통)
-        // console.log(error.response);
-        // if (context.response.data.code == 'GE-004') {
-        // }
-
         // useQuery get 데이터 통신 후
         // 에러후 에러값이 있을시 토스트알럿에 표시
         if (query.meta && query.meta.errorMessage) {
@@ -99,13 +73,7 @@ export function App() {
           console.log(`${query.meta.errorMessage}: ${context}`);
         }
       },
-      onSuccess: (data: unknown, query: unknown) => {
-        //데이터 성공시
-        console.log(`onSuccess: ${data} ${query}`);
-        if (data) {
-          // query.reset();
-        }
-      },
+      onSuccess: (data: unknown, query: unknown) => {},
     }),
   });
 
@@ -114,14 +82,13 @@ export function App() {
     const refreshTokenData = await tokenInstance
       .post(`/v1/auth/refresh-token`)
       .then((res) => {
-        console.log('refreshTokenData ', res);
+        // console.log('refreshTokenData ', res);
         if (res.data.code === 'S-001') {
           setAuthorityCookie('accessToken', res.data.data.accessToken, {
             path: '/',
             sameSite: 'strict',
             secure: false,
           });
-
           return 1;
         }
       })
@@ -130,16 +97,13 @@ export function App() {
         if (error.response.data.code == 'GE-002') {
           // 리프레쉬 토큰 기간 만료시
           navigate('/login');
-
           openToastifyAlert({
             type: 'error',
             text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
           });
-
           return 0;
         }
       });
-
     console.log('refreshTokenData ', refreshTokenData);
   };
   useEffect(() => {
@@ -157,9 +121,18 @@ export function App() {
   }, [location]);
 
   return (
-    <>
-      <QueryClientProvider client={queryClient}>
-        <Container>
+    <QueryClientProvider client={queryClient}>
+      <Container>
+        {getAuthorityCookie('accessToken') &&
+          location.pathname !== '/login' &&
+          location.pathname !== '/init-change-password' &&
+          location.pathname !== '/relogin' &&
+          location.pathname !== '/createcontentmain' &&
+          location.pathname !== '/managementEditMain' &&
+          location.pathname !== '/content-create/exam/step1' &&
+          location.pathname !== '/content-create/exam/step2' &&
+          location.pathname !== '/content-create/exam/step3' && <Navigation />}
+        <MainWrapper>
           {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
             location.pathname !== '/init-change-password' &&
@@ -168,29 +141,16 @@ export function App() {
             location.pathname !== '/managementEditMain' &&
             location.pathname !== '/content-create/exam/step1' &&
             location.pathname !== '/content-create/exam/step2' &&
-            location.pathname !== '/content-create/exam/step3' && (
-              <Navigation />
-            )}
-          <MainWrapper>
-            {getAuthorityCookie('accessToken') &&
-              location.pathname !== '/login' &&
-              location.pathname !== '/init-change-password' &&
-              location.pathname !== '/relogin' &&
-              location.pathname !== '/createcontentmain' &&
-              location.pathname !== '/managementEditMain' &&
-              location.pathname !== '/content-create/exam/step1' &&
-              location.pathname !== '/content-create/exam/step2' &&
-              location.pathname !== '/content-create/exam/step3' && <Header />}
-            <BodyWrapper>
-              <ToastifyAlert />
-              <Outlet />
-            </BodyWrapper>
-          </MainWrapper>
-        </Container>
+            location.pathname !== '/content-create/exam/step3' && <Header />}
+          <BodyWrapper>
+            <ToastifyAlert />
+            <Outlet />
+          </BodyWrapper>
+        </MainWrapper>
+      </Container>
 
-        <ReactQueryDevtools initialIsOpen={true} />
-      </QueryClientProvider>
-    </>
+      <ReactQueryDevtools initialIsOpen={true} />
+    </QueryClientProvider>
   );
 }
 const Container = styled.div`
@@ -199,7 +159,6 @@ const Container = styled.div`
 `;
 const MainWrapper = styled.div`
   width: 100%;
-  //display: flex;
 `;
 const BodyWrapper = styled.div`
   padding-top: 40px;
