@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
@@ -28,6 +28,7 @@ export type OptionsProps = {
 };
 
 export type OptionsItemProps = {
+  optionsdepth: any[];
   id?: string | number;
   label?: string;
   value?: string | number;
@@ -53,14 +54,13 @@ type SelectProps = {
   defaultValue?: null | string;
   width?: string;
   height?: string;
-  children?: string;
   padding?: string;
   text?: string;
   top?: string;
   blackMode?: boolean;
   disabled?: boolean;
-  selected: any;
-  setSelected: any;
+  selected: string;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
   $positionTop?: boolean;
 };
 
@@ -75,15 +75,17 @@ export function OtionsSelect({
   text,
   blackMode,
   disabled,
-  selected,
+  // selected,
   setSelected,
   $positionTop,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
-  const [select, setSelect] = useState<string>();
-  React.useEffect(() => {
+
+  const [select, setSelect] = useState<string>('');
+  useEffect(() => {
     setSelected(select);
   }, [select]);
+
   return (
     <Component
       $padding={padding}
@@ -102,11 +104,13 @@ export function OtionsSelect({
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
         blackMode={blackMode}
       >
-        <span>{selected || defaultValue}</span>
+        <span>{select || defaultValue}</span>
       </IconButton>
       {isOptionShow && (
         <SelectOptionsList
-          onClick={() => setIsOptionShow(false)}
+          onClick={() => {
+            setIsOptionShow(false);
+          }}
           onMouseLeave={() => {
             setIsOptionShow(false);
           }}
