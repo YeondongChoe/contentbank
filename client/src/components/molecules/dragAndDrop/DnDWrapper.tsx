@@ -16,6 +16,9 @@ interface DnDWrapperPropsType {
     isDragging: boolean,
   ) => React.ReactNode; // 각 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름(각  드래그리스트는 섹션 이름을 다르게 해야 각 섹션 아이템간 이동이 불가)
+  doubleDnD?: boolean; // 한페이지 드래그 2개일때(Cannot have two HTML5 backends at the same time 해결)
+  isStartDnD?: boolean;
+  setIsStartDnd?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface DraggableItemProps {
@@ -38,9 +41,11 @@ export const DnDWrapper = ({
   onDragEnd,
   children,
   dragSectionName,
+  doubleDnD,
+  isStartDnD,
+  setIsStartDnd,
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
-
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
     dragIndex: number,
@@ -59,29 +64,53 @@ export const DnDWrapper = ({
     } else {
       onDragging && onDragging(newItems); // 항목이 드래그 중일 때 콜백 함수를 호출.
     }
+    setIsStartDnd?.(true);
   };
+  console.log(isStartDnD);
+
   useEffect(() => {
     setCurrentItems(dragList);
   }, [dragList]);
 
   // 각 항목을 랜더링.
   return (
-    <DndProvider backend={HTML5Backend}>
-      {currentItems.length !== 0 ? (
-        currentItems.map((item, idx) => (
-          <DraggableItem
-            key={item.id}
-            dragItem={item}
-            itemIndex={idx}
-            onMove={handleItemMove}
-            itemRenderer={children}
-            dragSectionName={dragSectionName}
-          />
-        ))
+    <>
+      {doubleDnD ? (
+        <>
+          {currentItems.length !== 0 ? (
+            currentItems.map((item, idx) => (
+              <DraggableItem
+                key={item.id}
+                dragItem={item}
+                itemIndex={idx}
+                onMove={handleItemMove}
+                itemRenderer={children}
+                dragSectionName={dragSectionName}
+              />
+            ))
+          ) : (
+            <></>
+          )}
+        </>
       ) : (
-        <></>
+        <DndProvider backend={HTML5Backend}>
+          {currentItems.length !== 0 ? (
+            currentItems.map((item, idx) => (
+              <DraggableItem
+                key={item.id}
+                dragItem={item}
+                itemIndex={idx}
+                onMove={handleItemMove}
+                itemRenderer={children}
+                dragSectionName={dragSectionName}
+              />
+            ))
+          ) : (
+            <></>
+          )}
+        </DndProvider>
       )}
-    </DndProvider>
+    </>
   );
 };
 

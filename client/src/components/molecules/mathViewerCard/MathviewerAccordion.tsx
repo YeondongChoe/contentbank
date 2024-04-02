@@ -14,10 +14,6 @@ import { MathViewer } from '../../mathViewer/MathViewer';
 type AccordionProps = {
   title: string;
   children: React.ReactNode;
-  dragStart?: React.DragEventHandler<HTMLDivElement> | undefined;
-  dragEnter?: React.DragEventHandler<HTMLDivElement> | undefined;
-  dragOver?: (e: React.DragEvent) => void;
-  drop?: (e: React.DragEvent) => void;
   componentWidth?: string;
   isSimilar?: boolean;
   isSelected?: boolean;
@@ -26,10 +22,6 @@ type AccordionProps = {
 function Accordion({
   title,
   children,
-  dragStart,
-  dragEnter,
-  dragOver,
-  drop,
   componentWidth,
   isSimilar,
   isSelected,
@@ -42,11 +34,6 @@ function Accordion({
 
   return (
     <AccordionContainer
-      draggable
-      onDragStart={dragStart}
-      onDragEnter={dragEnter}
-      onDragOver={dragOver}
-      onDragEnd={drop}
       $componentWidth={componentWidth}
       $isSimilar={isSimilar}
       $isSelected={isSelected}
@@ -71,11 +58,6 @@ type MathviewerCardProps = {
   isSimilarQuiz?: boolean;
   componentWidth?: string;
   className?: string;
-  dragStart?: React.DragEventHandler<HTMLDivElement> | undefined;
-  dragEnter?: React.DragEventHandler<HTMLDivElement> | undefined;
-  dragOver?: (e: React.DragEvent) => void;
-  drop?: (e: React.DragEvent) => void;
-  isDragged?: boolean;
 };
 
 export function MathviewerAccordion({
@@ -89,24 +71,15 @@ export function MathviewerAccordion({
   isSimilarQuiz,
   componentWidth,
   className,
-  dragStart,
-  dragEnter,
-  dragOver,
-  drop,
-  isDragged,
 }: MathviewerCardProps) {
   return (
     <Accordion
       title={`Question ${index}`}
-      dragStart={dragStart}
-      dragEnter={dragEnter}
-      dragOver={dragOver}
-      drop={drop}
       componentWidth={componentWidth}
       isSimilar={isSimilar}
       isSelected={index === selectedCardIndex}
     >
-      <Component className={className} $isDragged={isDragged}>
+      <Component className={className}>
         <div className="leftInfomation">
           <div className="numbering">{index}</div>
           <LuBookmarkPlus
