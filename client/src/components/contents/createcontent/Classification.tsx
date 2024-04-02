@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
-import { Button, ResizeLayout, ValueNone } from '../..';
+import { Button, Icon, IconButton, ResizeLayout, ValueNone } from '../..';
 import {
   Accordion,
   ButtonFormatRadio,
@@ -42,6 +42,8 @@ export function Classification() {
   const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string>('');
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
+
+  const [unitClassificationList, setUnitClassificationList] = useState([]);
   // 라디오 버튼 설정
   const handleRadioCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -136,7 +138,48 @@ export function Classification() {
                   <span className="title_top">문항단원분류</span>
                 </Title>
                 {/* 추가된 단원분류 리스트 최대5개 저장 */}
-                <p>교과 리스트 블록</p>
+                <UnitClassifications>
+                  {unitClassificationList.length > 0 ? (
+                    <>
+                      {unitClassificationList.map((el) => (
+                        <IconButtonWrapper key={`${el} idx`}>
+                          <IconButton
+                            width={`calc(100% - 25px)`}
+                            fontSize="14px"
+                            height="35px"
+                            textAlign="left"
+                            $padding="0 50px 0 10px"
+                            rightIconSrc={
+                              <IconWrapper>
+                                <button
+                                  type="button"
+                                  className="icon_button primery"
+                                >
+                                  수정
+                                </button>
+                              </IconWrapper>
+                            }
+                            onClick={() => {}}
+                          >
+                            <span>{`${`저장된 분류리스트값 저장된 분류리스트값 저장된 분류리스트값 저장된 분류리스트값`}`}</span>
+                          </IconButton>
+
+                          <Icon
+                            onClick={() => {}}
+                            $margin={'0 0 0 2px'}
+                            width={`15px`}
+                            src={`/images/icon/icoclose.svg`}
+                          />
+                        </IconButtonWrapper>
+                      ))}
+                    </>
+                  ) : (
+                    <p className="info">
+                      교과정보는 최대 5개 까지 저장 가능합니다
+                    </p>
+                  )}
+                </UnitClassifications>
+
                 {/* TODO: 메타데이터 변경 */}
                 <div className="1depth">
                   {selectCategory0.map((meta, index) => (
@@ -299,7 +342,7 @@ export function Classification() {
         <SubmitButtonWrapper>
           <Button
             $filled
-            disabled={false}
+            disabled={unitClassificationList.length <= 5 ? false : true}
             cursor
             width={'calc(50% - 5px)'}
             $margin={'0 10px 0 0'}
@@ -309,7 +352,7 @@ export function Classification() {
           </Button>
           <Button
             $filled
-            disabled={true}
+            disabled={unitClassificationList.length !== 0 ? false : true}
             cursor
             width={'calc(50% - 5px)'}
             onClick={() => {}}
@@ -359,6 +402,39 @@ const Title = styled.div`
   .title_top {
     font-size: 15px;
     font-weight: bold;
+  }
+`;
+const IconWrapper = styled.div`
+  .icon_button {
+    padding: 5px;
+    border: none;
+    font-size: 13px;
+    font-weight: bold;
+    color: ${COLOR.SECONDARY};
+    background-color: transparent;
+    cursor: pointer;
+    color: ${COLOR.PRIMARY};
+  }
+`;
+const IconButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  img {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+`;
+const UnitClassifications = styled.div`
+  padding: 10px 20px;
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  background-color: ${COLOR.IS_HAVE_DATA};
+  .info {
+    color: ${COLOR.FONT_NAVI};
   }
 `;
 const AccordionWrapper = styled.div`

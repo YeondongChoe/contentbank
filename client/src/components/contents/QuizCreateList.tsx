@@ -15,8 +15,6 @@ import {
   Modal,
   ValueNone,
 } from '..';
-import { questionInstance } from '../../api/axios';
-// import { getQuestionList } from '../../api/getAxios';
 import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
