@@ -73,8 +73,11 @@ export const selectCategory2 = [
             parentValue: '교재',
             type: 'select',
             options: [
-              { id: '0', label: '수학', value: '0' },
-              { id: '1', label: '과학', value: '1' },
+              { id: '0', label: '1', value: '0' },
+              { id: '1', label: '2', value: '1' },
+              { id: '2', label: '3', value: '2' },
+              { id: '3', label: '4', value: '3' },
+              { id: '4', label: '5', value: '4' },
             ],
             label: '시리즈',
           },
@@ -111,8 +114,11 @@ export const selectCategory2 = [
             parentValue: '교재',
             type: 'select',
             options: [
-              { id: '0', label: '수학', value: '0' },
-              { id: '1', label: '과학', value: '1' },
+              { id: '0', label: '1', value: '0' },
+              { id: '1', label: '2', value: '1' },
+              { id: '2', label: '3', value: '2' },
+              { id: '3', label: '4', value: '3' },
+              { id: '4', label: '5', value: '4' },
             ],
             label: '출판년도',
           },
@@ -122,8 +128,11 @@ export const selectCategory2 = [
             parentValue: '교재',
             type: 'select',
             options: [
-              { id: '0', label: '수학', value: '0' },
-              { id: '1', label: '과학', value: '1' },
+              { id: '0', label: '1', value: '0' },
+              { id: '1', label: '2', value: '1' },
+              { id: '2', label: '3', value: '2' },
+              { id: '3', label: '4', value: '3' },
+              { id: '4', label: '5', value: '4' },
             ],
             label: '교재난이도',
           },
@@ -226,7 +235,10 @@ export const selectCategory2 = [
             value: '0',
             parentValue: '기출',
             type: 'select',
-            options: [],
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
             label: '기출속성',
           },
           {
@@ -234,7 +246,10 @@ export const selectCategory2 = [
             value: '0',
             parentValue: '기출',
             type: 'select',
-            options: [],
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
             label: '주관사',
           },
           {
@@ -242,7 +257,10 @@ export const selectCategory2 = [
             value: '0',
             parentValue: '기출',
             type: 'select',
-            options: [],
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
             label: '기출명',
           },
           {
@@ -250,7 +268,10 @@ export const selectCategory2 = [
             value: '0',
             parentValue: '기출',
             type: 'select',
-            options: [],
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
             label: '시행학제',
           },
           {
@@ -258,7 +279,10 @@ export const selectCategory2 = [
             value: '0',
             parentValue: '기출',
             type: 'select',
-            options: [],
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
             label: '시행학년',
           },
           {
@@ -266,7 +290,10 @@ export const selectCategory2 = [
             value: '0',
             parentValue: '기출',
             type: 'select',
-            options: [],
+            options: [
+              { id: '0', label: '수학', value: '0' },
+              { id: '1', label: '과학', value: '1' },
+            ],
             label: '시험지타입',
           },
           {

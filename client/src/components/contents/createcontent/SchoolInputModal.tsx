@@ -26,6 +26,7 @@ export function SchoolInputModal({
   const { closeModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
   const [nameValue, setNameValue] = useState('');
+  const [submitNameValue, setSubmitNameValue] = useState('');
   const [searchValue, setSearchValue] = useState<string>('');
   const [content, setContent] = useState<string[]>([]);
   const [schoolList, setSchoolList] = useState([
@@ -69,7 +70,7 @@ export function SchoolInputModal({
     setContent((prevContent) => [...prevContent, value]);
   };
   const submitSchoolData = () => {
-    setSchoolNameValue(nameValue);
+    setSchoolNameValue(submitNameValue);
     // console.log(nameValue);
     closeModal();
   };
@@ -105,6 +106,9 @@ export function SchoolInputModal({
                     key={`${school.id}listItem`}
                     isChecked={false}
                     $padding="10px"
+                    onClick={() => {
+                      setSubmitNameValue(school.name);
+                    }}
                   >
                     <ItemLayout>
                       <span className="ellipsis">{school.city}</span>
@@ -118,7 +122,9 @@ export function SchoolInputModal({
                         fontSize="13px"
                         $border
                         cursor
-                        onClick={() => {}}
+                        onClick={() => {
+                          setSubmitNameValue(school.name);
+                        }}
                       >
                         선택
                       </Button>
@@ -152,7 +158,10 @@ export function SchoolInputModal({
                 type="text"
                 minLength={2}
                 value={nameValue}
-                onChange={(e) => setNameValue(e.target.value)}
+                onChange={(e) => {
+                  setNameValue(e.target.value);
+                  setSubmitNameValue(e.target.value);
+                }}
                 placeholder="등록할 이름을 입력해 주세요"
               />
               <Button
@@ -170,7 +179,9 @@ export function SchoolInputModal({
           </>
         </SelectWrapper>
       </InputWarpper>
-      <SubTitle className="center">등록될 학교 명: {`${nameValue}`}</SubTitle>
+      <SubTitle className="center">
+        등록될 학교 명: {`${submitNameValue}`}
+      </SubTitle>
       <ButtonWrapper>
         <Button
           buttonType="button"
