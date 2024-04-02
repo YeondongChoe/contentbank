@@ -4,10 +4,10 @@ export const selectCategory0 = [
     label: '교과',
     value: '1',
     options: [
-      { id: '0', label: '2022학년', value: '0' },
-      { id: '1', label: '2015학년', value: '1' },
-      { id: '2', label: '2018학년', value: '2' },
-      { id: '3', label: '2020학년', value: '3' },
+      { id: '20220', label: '2022학년', value: '20220' },
+      { id: '20151', label: '2015학년', value: '20151' },
+      { id: '20182', label: '2018학년', value: '20182' },
+      { id: '20203', label: '2020학년', value: '20203' },
     ],
   },
 ];
@@ -345,9 +345,9 @@ export const selectCategory3 = [
     label: '문항타입',
     value: '1',
     options: [
-      { id: '0', label: '주관식', value: '0' },
-      { id: '1', label: '객관식', value: '1' },
-      { id: '2', label: '서술형', value: '2' },
+      { id: '주관식0', label: '주관식', value: '주관식0' },
+      { id: '객관식1', label: '객관식', value: '객관식1' },
+      { id: '서술형2', label: '서술형', value: '서술형2' },
     ],
   },
 ];
@@ -358,16 +358,16 @@ export const selectCategory4 = [
     label: '교육과정',
     value: '1',
     options: [
-      { id: '0', label: '1차', value: '0' },
-      { id: '1', label: '2차', value: '1' },
-      { id: '2', label: '3차', value: '2' },
-      { id: '3', label: '4차', value: '3' },
-      { id: '4', label: '5차', value: '4' },
-      { id: '5', label: '6차', value: '5' },
-      { id: '6', label: '7차', value: '6' },
-      { id: '7', label: '8차', value: '7' },
-      { id: '8', label: '9차', value: '8' },
-      { id: '9', label: '10차', value: '9' },
+      { id: '1차', label: '1차', value: '1차' },
+      { id: '2차', label: '2차', value: '2차' },
+      { id: '3차', label: '3차', value: '3차' },
+      { id: '4차', label: '4차', value: '4차' },
+      { id: '5차', label: '5차', value: '5차' },
+      { id: '6차', label: '6차', value: '6차' },
+      { id: '7차', label: '7차', value: '7차' },
+      { id: '8차', label: '8차', value: '8차' },
+      { id: '9차', label: '9차', value: '9차' },
+      { id: '10차', label: '10차', value: '10차' },
     ],
   },
 ];
@@ -376,66 +376,82 @@ export const questionList = [
   {
     id: 'Gasdv_1234567890',
     text: '수학/수1/내신/객관식',
+    classificationData: ['qnsfb', 'epdlxj'],
   },
   {
     id: 'Gasdv_12345678901',
     text: '수학/수1/내신/객관식',
+    classificationData: ['qnsfb', 'epdlxj'],
   },
   {
     id: 'Gasdv_12345678902',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_12345678903',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_12345678904',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_12345678905',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_12345678906',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_12345678907',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_12345678908',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_12345678909',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_123456789010',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_123456789011',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_123456789012',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_123456789013',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_123456789014',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
   {
     id: 'Gasdv_123456789015',
     text: '수학/수1/내신/객관식',
+    classificationData: [],
   },
 ];
 

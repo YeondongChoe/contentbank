@@ -114,6 +114,7 @@ export function Classification() {
               showCheckBox
               fontBold
               setCheckedList={setCheckedList}
+              isDataColor
             />
           }
           item2={

@@ -11,6 +11,7 @@ import { COLOR } from '../../../constants/COLOR';
 export interface TestDnDItem {
   id: string;
   text: string;
+  classificationData: any[];
 }
 
 export function QuizList({
@@ -21,6 +22,7 @@ export function QuizList({
   showViewAllButton,
   fontBold,
   setCheckedList,
+  isDataColor,
 }: {
   questionList: TestDnDItem[];
   showTitle?: boolean;
@@ -29,6 +31,7 @@ export function QuizList({
   $height?: string;
   fontBold?: boolean;
   setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
+  isDataColor?: boolean;
 }) {
   // const ContentList = dummy.ContentInfo;
   const [checkList, setCheckList] = useState<string[]>([]);
@@ -132,7 +135,10 @@ export function QuizList({
               dragSectionName={'abc'}
             >
               {(dragItem, ref, isDragging) => (
-                <li ref={ref} className={` ${isDragging ? 'opacity' : ''}`}>
+                <ListItem
+                  ref={ref}
+                  className={`${isDataColor && dragItem.classificationData.length && `on`} ${isDragging ? 'opacity' : ''}`}
+                >
                   {showCheckBox ? (
                     <button
                       type="button"
@@ -186,7 +192,7 @@ export function QuizList({
                       </button>
                     </ViewAllButton>
                   )}
-                </li>
+                </ListItem>
               )}
             </DnDWrapper>
           </ListWrapper>
@@ -228,73 +234,80 @@ const ListWrapper = styled.ul`
   flex-direction: column;
   min-height: 100%;
   height: fit-content;
+`;
 
-  li {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    height: fit-content;
-    padding: 10px;
-    border: 1px solid ${COLOR.BORDER_BLUE};
-    background-color: #fff;
-    border-radius: 5px;
-    min-height: 50px;
-    margin-bottom: 10px;
+const ListItem = styled.li`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  height: fit-content;
+  padding: 10px;
+  border: 1px solid ${COLOR.BORDER_BLUE};
+  background-color: #fff;
+  border-radius: 5px;
+  min-height: 50px;
+  margin-bottom: 10px;
 
+  &.on {
+    background-color: ${COLOR.IS_HAVE_DATA};
     button.title {
-      font-size: 15px;
-      width: 100%;
-      padding-bottom: 5px;
-      display: flex;
-      flex-wrap: wrap;
-      /* align-items: center; */
-      border: none;
-      background-color: #fff;
-      cursor: pointer;
-
-      .title_id {
-        flex: 1 0 0;
-        text-overflow: ellipsis;
-        word-break: break-all;
-        text-align: left;
-        color: ${COLOR.PRIMARY};
-        /* padding-top: 1px; */
-      }
-      .title_tag {
-        width: 40px;
-        text-align: left;
-        font-size: 13px;
-        font-weight: bold;
-        color: ${COLOR.ALERTBAR_SUCCESS};
-      }
-    }
-    span.title {
-      display: flex;
-      flex-wrap: wrap;
-      /* align-items: center; */
-      padding-bottom: 5px;
-      width: 100%;
-
-      span.title_id {
-        text-overflow: ellipsis;
-        word-break: break-all;
-        color: ${COLOR.PRIMARY};
-        width: calc(100% - 40px);
-      }
-      .title_tag {
-        width: 40px;
-        text-align: right;
-        font-size: 13px;
-        font-weight: bold;
-        color: ${COLOR.ALERTBAR_ERROR};
-      }
-    }
-
-    &.opacity {
-      opacity: 0.8;
+      background-color: ${COLOR.IS_HAVE_DATA};
     }
   }
+  button.title {
+    font-size: 15px;
+    width: 100%;
+    padding-bottom: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    /* align-items: center; */
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
+
+    .title_id {
+      flex: 1 0 0;
+      text-overflow: ellipsis;
+      word-break: break-all;
+      text-align: left;
+      color: ${COLOR.PRIMARY};
+      /* padding-top: 1px; */
+    }
+    .title_tag {
+      width: 40px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: bold;
+      color: ${COLOR.ALERTBAR_SUCCESS};
+    }
+  }
+  span.title {
+    display: flex;
+    flex-wrap: wrap;
+    /* align-items: center; */
+    padding-bottom: 5px;
+    width: 100%;
+
+    span.title_id {
+      text-overflow: ellipsis;
+      word-break: break-all;
+      color: ${COLOR.PRIMARY};
+      width: calc(100% - 40px);
+    }
+    .title_tag {
+      width: 40px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: bold;
+      color: ${COLOR.ALERTBAR_ERROR};
+    }
+  }
+
+  &.opacity {
+    opacity: 0.8;
+  }
 `;
+
 const MetaGroup = styled.span`
   border: none;
   background-color: transparent;
