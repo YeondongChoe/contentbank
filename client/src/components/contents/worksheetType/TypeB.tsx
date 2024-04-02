@@ -164,6 +164,7 @@ const LabelWrapper = styled.div`
   color: white;
 `;
 const Wrapper = styled.div`
+  //height: 90%;
   background-color: white;
   aspect-ratio: 210 / 297;
   overflow-y: auto;

@@ -8,6 +8,10 @@ const app = express();
 app.use(bodyParser.json());
 const port = 5000;
 
+app.get("/", (req, res) => {
+  res.send("Hello world\n");
+});
+
 app.use(
   cors({
     origin: "http://localhost:3000", // 클라이언트의 주소로 변경
