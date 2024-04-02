@@ -289,7 +289,7 @@ export const selectCategory2 = [
             id: 8,
             value: '0',
             parentValue: '기출',
-            type: 'datepickup',
+            type: 'datepicker',
             dateValue: '',
             label: '기출일시',
           },

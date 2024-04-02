@@ -126,7 +126,9 @@ export function OptionList() {
         <SelectList key={`${index}selectList el`} id={index.toString()}>
           <li>
             {index === 0 && optionsList1 == undefined && (
-              <p className="info">출처는 최대 5개까지만 추가 가능</p>
+              <p className="info_hight">
+                <p className="info">출처는 최대 5개까지만 추가 가능</p>
+              </p>
             )}
             {index === 0 ? (
               <Button
@@ -218,14 +220,18 @@ const SelectList = styled.ul`
   li {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
     gap: 5px;
     position: relative;
 
+    .info_hight {
+      height: 50px;
+    }
     .info {
       position: absolute;
       color: ${COLOR.GRAY};
-      left: 180px;
-      top: 6px;
+      left: 0;
+      top: 35px;
       width: 240px;
       font-size: 13px;
     }

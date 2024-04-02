@@ -9,7 +9,8 @@ type ListItemProps = {
   // onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   width?: string;
   height?: string;
-  margin?: string;
+  $margin?: string;
+  $padding?: string;
   children: JSX.Element | JSX.Element[];
   key: string;
   isChecked: boolean;
@@ -19,7 +20,8 @@ type ListItemProps = {
 export function ListItem({
   width,
   height,
-  margin,
+  $margin,
+  $padding,
   children,
   key,
   isChecked,
@@ -30,13 +32,14 @@ export function ListItem({
       className={`${isChecked && 'on'}`}
       width={width}
       height={height}
-      $margin={margin}
+      $margin={$margin}
       key={key}
     >
       <Wrapper
         className={`${isChecked && 'on'}`}
         onClick={onClick}
         type="button"
+        $padding={$padding}
       >
         {children}
       </Wrapper>
@@ -67,9 +70,9 @@ const Component = styled.li<ListItemStyleProps>`
   }
 `;
 
-const Wrapper = styled.button`
+const Wrapper = styled.button<{ $padding?: string }>`
   width: 100%;
-  padding: 20px;
+  padding: ${({ $padding }) => ($padding ? `${$padding};` : '20px')};
   display: flex;
   align-items: center;
   border-radius: 10px;

@@ -5,7 +5,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, ResizeLayout, Select } from '../..';
+import { Button, Modal, ResizeLayout, Select } from '../..';
 import { COLOR } from '../../../components/constants';
 
 import {
@@ -174,6 +174,7 @@ export function FileUploading({
           </Button>
         </SubmitButtonWrapper>
       </BorderWrapper>
+      <Modal />
     </Container>
   );
 }

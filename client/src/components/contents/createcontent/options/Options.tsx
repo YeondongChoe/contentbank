@@ -1,8 +1,11 @@
 import * as React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { GrPlan } from 'react-icons/gr';
 import styled from 'styled-components';
 
-import { Button, Select } from '../../../../components/atom';
+import { Button, IconButton, Select } from '../../../../components/atom';
+import { CommonDate, Modal } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
 import { COLOR } from '../../../constants/COLOR';
 import { SchoolInputModal } from '../SchoolInputModal';
@@ -11,14 +14,19 @@ import { OptionsdepthProps, OptionsItemProps } from './OtionsSelect';
 
 export function Options({ listItem }: { listItem: OptionsItemProps }) {
   const { openModal } = useModal();
+  const [startDate, setStartDate] = useState<string>('');
+  const [schoolNameValue, setSchoolNameValue] = useState('');
   const modalData = {
     title: '',
-    content: <SchoolInputModal />,
+    content: <SchoolInputModal setSchoolNameValue={setSchoolNameValue} />,
     callback: () => {},
   };
 
   // 모달 연뒤
-  const openCreateModal = () => {
+  const openCreateModal = (
+    e: React.MouseEvent<HTMLInputElement, MouseEvent>,
+  ) => {
+    e.preventDefault();
     openModal(modalData);
   };
 
@@ -28,6 +36,14 @@ export function Options({ listItem }: { listItem: OptionsItemProps }) {
     // setContent((prevContent) => [...prevContent, value]);
   };
 
+  const schoolName = useMemo(() => {
+    if (schoolNameValue !== '') {
+      return schoolNameValue;
+    } else {
+      return '학교명';
+    }
+  }, [schoolNameValue]);
+
   return (
     <OptionWrapper>
       <li>
@@ -36,31 +52,34 @@ export function Options({ listItem }: { listItem: OptionsItemProps }) {
         )}
       </li>
       <li>
-        {listItem?.type === 'datepickup' && (
-          <Button
-            width="90px"
-            height="30px"
-            fontSize="13px"
-            $normal
-            onClick={() => {}}
-            cursor
-          >
-            기출일시
-          </Button>
+        {listItem?.type === 'datepicker' && (
+          <CommonDate
+            setDate={setStartDate}
+            $button={
+              <IconButton
+                width={'130px'}
+                height={'30px'}
+                fontSize={'14px'}
+                onClick={() => {}}
+              >
+                <span className="btn_title">
+                  {startDate === '' ? `기출일시` : `${startDate}`}
+                </span>
+                <GrPlan />
+              </IconButton>
+            }
+          />
         )}
       </li>
       <li>
         {listItem?.type === 'modal' && (
-          <Button
-            width="90px"
-            height="30px"
-            fontSize="13px"
-            $normal
-            onClick={() => openCreateModal()}
-            cursor
-          >
-            {listItem.label}
-          </Button>
+          <input
+            className="modal_input"
+            readOnly
+            placeholder={`${listItem.label}`}
+            onClick={(e) => openCreateModal(e)}
+            value={schoolName}
+          />
         )}
       </li>
       <li>
@@ -89,5 +108,11 @@ const OptionWrapper = styled.ul`
     width: 120px;
     border: 1px solid ${COLOR.BORDER_GRAY};
     border-radius: 5px;
+    text-overflow: ellipsis;
+
+    &.modal_input {
+      border: 1px solid ${COLOR.PRIMARY};
+      cursor: pointer;
+    }
   }
 `;

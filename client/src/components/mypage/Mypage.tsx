@@ -151,7 +151,7 @@ export function Mypage() {
             {!isNameEdit && <Information>{member.name}</Information>}
             {isNameEdit && (
               <Input
-                width={`calc(100%)`}
+                // width={`calc(100%)`}
                 height="30px"
                 border="black"
                 placeholderSize="16px"
