@@ -1,10 +1,18 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Input, Select, ValueNone } from '../../../components/atom';
+import { classificationInstance } from '../../../api/axios';
+import {
+  Button,
+  Input,
+  Loader,
+  Select,
+  ValueNone,
+} from '../../../components/atom';
 import {
   List,
   ListItem,
@@ -13,6 +21,7 @@ import {
 } from '../../../components/molecules';
 import { useModal } from '../../../hooks';
 import { pageAtom } from '../../../store/utilAtom';
+import { ItemSchoolType } from '../../../types';
 import { COLOR } from '../../constants';
 
 //TODO : 임시 데이터
@@ -29,42 +38,38 @@ export function SchoolInputModal({
   const [submitNameValue, setSubmitNameValue] = useState('');
   const [searchValue, setSearchValue] = useState<string>('');
   const [content, setContent] = useState<string[]>([]);
-  const [schoolList, setSchoolList] = useState([
-    {
-      id: 'dsaa',
-      name: '경북특수고등학교',
-      city: '서울특별시',
-      district: '동작구',
-    },
-    {
-      id: 'dsda',
-      name: '뎡주직업 전문학교 뎡주직업 전문학교ss ssss dsads dsad s dsadsa dsaad sdsadsad',
-      city: '서울특별시',
-      district: '동작구',
-    },
-    { id: 'dsfa', name: '경일중학교', city: '서울특별시', district: '동작구' },
-    {
-      id: 'dsga',
-      name: '디지털고등학교',
-      city: '서울특별시',
-      district: '동작구',
-    },
-  ]);
 
-  // 검색 기능 함수
-  const filterSearchValue = () => {
-    // 쿼리 스트링 변경 로직
-    setSearchValue('');
+  // 유저 리스트 불러오기 api
+  const getSchoolList = async () => {
+    const res = await classificationInstance.get(
+      `/v1/school?pageIndex=${page}&pageUnit=${4}&searchKeyword=${searchValue}`,
+    );
+    console.log(`classificationInstance 결과값`, res);
+    return res;
   };
-  const filterSearchValueEnter = (
-    event: React.KeyboardEvent<HTMLInputElement>,
+  const { data, isFetching, isLoading, refetch } = useQuery({
+    queryKey: ['get-schoolList'],
+    queryFn: getSchoolList,
+    meta: {
+      errorMessage: 'get-schoolList 에러 메세지',
+    },
+  });
+  const schoolListData = data && data?.data.data;
+
+  // 검색 기능
+  const filterSearchValue = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
-    if (event.key === 'Enter') {
-      setSearchValue('');
+    // 쿼리 스트링 변경 로직
+    setSearchValue(e.currentTarget.value);
+  };
+  const filterSearchValueEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchValue(e.currentTarget.value);
     }
   };
 
-  //
+  // 셀렉트 기능
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
@@ -75,6 +80,9 @@ export function SchoolInputModal({
     closeModal();
   };
 
+  useEffect(() => {
+    refetch();
+  }, [page, searchValue]);
   return (
     <Container>
       <Title>출처 학교 등록</Title>
@@ -83,7 +91,7 @@ export function SchoolInputModal({
         <SubTitle>출처 학교 검색</SubTitle>
         <Search
           value={searchValue}
-          onClick={() => filterSearchValue()}
+          onClick={(e) => filterSearchValue(e)}
           onKeyDown={(e) => filterSearchValueEnter(e)}
           onChange={(e) => {
             setSearchValue(e.target.value);
@@ -92,51 +100,69 @@ export function SchoolInputModal({
         />
       </SearchWarpper>
       <ListWrapper>
-        {schoolList.length > 0 ? (
+        {searchValue !== '' ? (
           <>
-            <List>
-              {schoolList.map(
-                (school: {
-                  id: string;
-                  name: string;
-                  city: string;
-                  district: string;
-                }) => (
-                  <ListItem
-                    key={`${school.id}listItem`}
-                    isChecked={false}
-                    $padding="10px"
-                    onClick={() => {
-                      setSubmitNameValue(school.name);
-                    }}
-                  >
-                    <ItemLayout>
-                      <span className="ellipsis">{school.city}</span>
-                      <div className="line"></div>
-                      <span className="ellipsis">{school.district} </span>
-                      <div className="line"></div>
-                      <span className="width_50 ellipsis">{school.name} </span>
-                      <Button
-                        width="100px"
-                        height="30px"
-                        fontSize="13px"
-                        $border
-                        cursor
-                        onClick={() => {
-                          setSubmitNameValue(school.name);
-                        }}
-                      >
-                        선택
-                      </Button>
-                    </ItemLayout>
-                  </ListItem>
-                ),
-              )}
-            </List>
-            <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
+            {!isLoading && schoolListData.schoolList ? (
+              <>
+                <Total> Total : {schoolListData.pagination.totalCount}</Total>
+                {schoolListData.schoolList.length == 0 ? (
+                  <ValueNoneWrapper>
+                    <ValueNone info={`검색된 데이터가 없습니다`} textOnly />
+                  </ValueNoneWrapper>
+                ) : (
+                  <>
+                    <List>
+                      {schoolListData.schoolList.map(
+                        (school: ItemSchoolType) => (
+                          <ListItem
+                            key={`${school.idx} schoollistItem`}
+                            isChecked={false}
+                            $padding="10px"
+                            onClick={() => {
+                              setSubmitNameValue(school.schoolName);
+                            }}
+                          >
+                            <ItemLayout>
+                              <span className="ellipsis">{school.country}</span>
+                              <div className="line"></div>
+                              <span className="ellipsis">{school.city}</span>
+                              <div className="line"></div>
+                              <span className="width_50 ellipsis">
+                                {school.schoolName}
+                              </span>
+                              <Button
+                                width="100px"
+                                height="30px"
+                                fontSize="13px"
+                                $border
+                                cursor
+                                onClick={() => {
+                                  setSubmitNameValue(school.schoolName);
+                                }}
+                              >
+                                선택
+                              </Button>
+                            </ItemLayout>
+                          </ListItem>
+                        ),
+                      )}
+                    </List>
+
+                    <PaginationBox
+                      itemsCountPerPage={4}
+                      totalItemsCount={schoolListData.pagination.totalCount}
+                    />
+                  </>
+                )}
+              </>
+            ) : (
+              <Loader />
+            )}
           </>
         ) : (
-          <ValueNone info={`검색된 데이터가 없습니다`} textOnly />
+          <ValueNoneWrapper>
+            <ValueNone info={`학교명을 검색해 주세요`} textOnly />
+          </ValueNoneWrapper>
         )}
       </ListWrapper>
 
@@ -229,10 +255,14 @@ const SubTitle = styled.span`
 `;
 
 const SearchWarpper = styled.div`
-  padding: 10px 0;
+  padding: 5px 0;
 `;
 const ListWrapper = styled.div`
+  background-color: ${COLOR.LIGHT_GRAY};
   padding: 0 10px;
+`;
+const ValueNoneWrapper = styled.div`
+  background-color: ${COLOR.LIGHT_GRAY};
 `;
 const InputWarpper = styled.div`
   padding: 10px 0;
@@ -297,4 +327,11 @@ const ItemLayout = styled.div`
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
+`;
+const Total = styled.span`
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  color: ${COLOR.FONT_BLACK};
+  padding: 5px;
 `;

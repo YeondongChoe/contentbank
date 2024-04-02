@@ -8,7 +8,7 @@ import { COLOR } from '../../constants';
 type SearchProps = {
   placeholder?: string;
   value: string;
-  onClick: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   width?: string;
