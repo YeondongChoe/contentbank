@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
 import { IoMenuOutline } from 'react-icons/io5';
 import {
@@ -20,6 +22,7 @@ import {
   MathviewerAccordion,
   Select,
   CheckBox,
+  DnDWrapper,
 } from '../..';
 import { COLOR } from '../../constants';
 import Contents2 from '../../mathViewer/test2.json';
@@ -28,6 +31,13 @@ import Contents4 from '../../mathViewer/test4.json';
 import dummy from '../createcontent/data.json';
 
 import { Step3 } from './Step3';
+
+type ContentListType = {
+  sort: number;
+  unitType: string;
+  contentLevel: string;
+  unitMajor: string;
+};
 
 export function Step2() {
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
@@ -56,15 +66,7 @@ export function Step2() {
     { value: 0, label: '상' },
     { value: 0, label: '최상' },
   ];
-  // const list = [
-  //   Contents2,
-  //   Contents3,
-  //   Contents4,
-  //   Contents2,
-  //   Contents3,
-  //   Contents4,
-  // ];
-  const [list, setList] = useState([Contents2, Contents3, Contents4]);
+  //const [list, setList] = useState<ContentListType[]>();
   const bookmark: any[] = [];
   const selectCategory = [
     {
@@ -123,17 +125,35 @@ export function Step2() {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
 
   const showSimilarContent = () => {
-    setIsSimilar(true);
+    setIsSimilar(!isSimilar);
     console.log('어떤 데이터 값으로 호출?');
   };
 
   const [contentList, setContentList] = useState(ContentList);
 
   const [selectedIndex, setSelectedIndex] = useState<number>();
-  console.log(selectedIndex);
+
+  const [initialItems, setInitialItems] =
+    useState<ContentListType[]>(ContentList);
+
+  const whenDragEnd = (newList: ContentListType[]) => {
+    setInitialItems(newList);
+    console.log('@드래그끝났을떄', newList);
+  };
+
+  const handleButtonCheck = (
+    e: React.MouseEvent<HTMLDivElement>,
+    id: string,
+  ) => {
+    e.preventDefault();
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+  };
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+  const [isStartDnD, setIsStartDnd] = useState(false);
+  console.log(isStartDnD);
 
   const dragStart = (e: React.DragEvent, position: number, sort: number) => {
     setSelectedIndex(sort);
@@ -184,58 +204,59 @@ export function Step2() {
   };
 
   return (
-    <Container>
-      <Wrapper>
-        <TitleWrapper>
-          <IconWrapper>
-            <IoIosArrowBack
-              style={{ fontSize: '24px', cursor: 'pointer' }}
-              onClick={goBackMainPopup}
-            />
-          </IconWrapper>
-          <Title>
-            <Span>
-              <FrontSpan onClick={goBackMainPopup}>STEP 1 - </FrontSpan>
-              STEP 2
-            </Span>
-            학습지 상세 편집
-          </Title>
-        </TitleWrapper>
-        <MainWrapper>
-          <DiscriptionSection>
-            {isSimilar ? (
-              <>
-                <SimilarCloseButtonWrapper>
-                  <IoMdClose
-                    onClick={() => setIsSimilar(false)}
-                    style={{ fontSize: '22px', cursor: 'pointer' }}
-                  />
-                </SimilarCloseButtonWrapper>
-                <SimilarWrapper>
-                  <SimilarTitleWrapper>
-                    <SimilarTitle>
-                      1번 유사 문항
-                      <SimilarTitleSpan>
-                        문항을 교체하거나, 추가할 수 있습니다.
-                      </SimilarTitleSpan>
-                    </SimilarTitle>
-                    <SimilarIconWrapper>
-                      <SimilarIcon>
-                        <PiArrowCounterClockwiseBold
-                          style={{ fontSize: '22px', cursor: 'pointer' }}
-                        />
-                        이전 불러오기
-                      </SimilarIcon>
-                      <SimilarIcon>
-                        <PiArrowClockwiseBold
-                          style={{ fontSize: '22px', cursor: 'pointer' }}
-                        />
-                        새로 불러오기
-                      </SimilarIcon>
-                    </SimilarIconWrapper>
-                  </SimilarTitleWrapper>
-                  <SimilarContentsWrapper>
-                    {list.map((card, i) => (
+    <DndProvider backend={HTML5Backend}>
+      <Container>
+        <Wrapper>
+          <TitleWrapper>
+            <IconWrapper>
+              <IoIosArrowBack
+                style={{ fontSize: '24px', cursor: 'pointer' }}
+                onClick={goBackMainPopup}
+              />
+            </IconWrapper>
+            <Title>
+              <Span style={{ paddingRight: '10px' }}>
+                <FrontSpan onClick={goBackMainPopup}>STEP 1 - </FrontSpan>
+                STEP 2
+              </Span>
+              학습지 상세 편집
+            </Title>
+          </TitleWrapper>
+          <MainWrapper>
+            <DiscriptionSection>
+              {isSimilar ? (
+                <>
+                  <SimilarCloseButtonWrapper>
+                    <IoMdClose
+                      onClick={() => setIsSimilar(false)}
+                      style={{ fontSize: '22px', cursor: 'pointer' }}
+                    />
+                  </SimilarCloseButtonWrapper>
+                  <SimilarWrapper>
+                    <SimilarTitleWrapper>
+                      <SimilarTitle>
+                        1번 유사 문항
+                        <SimilarTitleSpan>
+                          문항을 교체하거나, 추가할 수 있습니다.
+                        </SimilarTitleSpan>
+                      </SimilarTitle>
+                      <SimilarIconWrapper>
+                        <SimilarIcon>
+                          <PiArrowCounterClockwiseBold
+                            style={{ fontSize: '22px', cursor: 'pointer' }}
+                          />
+                          이전 불러오기
+                        </SimilarIcon>
+                        <SimilarIcon>
+                          <PiArrowClockwiseBold
+                            style={{ fontSize: '22px', cursor: 'pointer' }}
+                          />
+                          새로 불러오기
+                        </SimilarIcon>
+                      </SimilarIconWrapper>
+                    </SimilarTitleWrapper>
+                    <SimilarContentsWrapper>
+                      {/* {list.map((card, i) => (
                       <div
                         key={i}
                         // draggable
@@ -254,112 +275,122 @@ export function Step2() {
                           onSelectCard={setSelectedCardIndex}
                         ></MathviewerCard>
                       </div>
-                    ))}
-                  </SimilarContentsWrapper>
-                </SimilarWrapper>
-              </>
-            ) : (
-              <>
-                <TabWrapper>
-                  <TabMenu
-                    length={4}
-                    menu={menuList}
-                    width={'500px'}
-                    lineStyle
-                    selected={tabVeiw}
-                    setTabVeiw={setTabVeiw}
-                  />
-                </TabWrapper>
-                <DiscriptionWrapper>
-                  {tabVeiw === '학습지 요약' && (
-                    <>
-                      <Label value="문항 통계" fontSize="16px" />
-                      <Discription>
-                        <DiscriptionOutline>
-                          <div>총 45 문항</div>
-                          <DiscriptionType>객관식 20</DiscriptionType>
-                          <DiscriptionType>주관식 10</DiscriptionType>
-                          <DiscriptionType>서술형 15</DiscriptionType>
-                        </DiscriptionOutline>
-                        <BarChart data={Data}></BarChart>
-                      </Discription>
-                      <Label
-                        value="문항 상세 내용 및 순서 변경"
-                        fontSize="16px"
-                      />
-                      <ContentsList>
-                        <ListCategory>
-                          <div className="number">번호</div>
-                          <div className="type">문항타입</div>
-                          <div className="level">난이도</div>
-                          <div className="title">유형명명</div>
-                          <div className="icon">순서변경</div>
-                        </ListCategory>
-                        <div>
-                          {contentList.map((el, i) => (
-                            <Content
-                              key={i}
-                              $isSelected={el.sort === selectedIndex}
-                              className={
-                                i === dragItem.current ? 'dragging' : ''
-                              }
-                              draggable
-                              onDragStart={(e) => dragStart(e, i, el.sort)}
-                              onDragEnter={(e) => dragEnter(e, i)}
-                              onDragOver={dragOver}
-                              onDragEnd={drop}
-                            >
-                              <div className="number">{el.sort}</div>
-                              <div className="type">{el.unitType}</div>
-                              <div className="level">{el.contentLevel}</div>
-                              <div className="title">{el.unitMajor}</div>
-                              <div className="icon">
-                                <IoMenuOutline
-                                  style={{ cursor: 'grab' }}
-                                ></IoMenuOutline>
-                              </div>
-                            </Content>
-                          ))}
-                        </div>
-                      </ContentsList>
-                    </>
-                  )}
-                  {tabVeiw === '새 문항 추가' && (
-                    <>
-                      <AddNewContentOption>
-                        <AddNewContentIcon>
-                          <RiListSettingsLine
-                            style={{ fontSize: '22px', cursor: 'pointer' }}
-                          />
-                          범위 변경
-                        </AddNewContentIcon>
-                        <AddNewContentIcon>
-                          <PiArrowCounterClockwiseBold
-                            style={{ fontSize: '22px', cursor: 'pointer' }}
-                          />
-                          이전 불러오기
-                        </AddNewContentIcon>
-                        <AddNewContentIcon>
-                          <PiArrowClockwiseBold
-                            style={{ fontSize: '22px', cursor: 'pointer' }}
-                          />
-                          새로 불러오기
-                        </AddNewContentIcon>
-                        <Button
-                          buttonType="button"
-                          onClick={() => {}}
-                          $padding="10px"
-                          height={'30px'}
-                          width={'100px'}
-                          fontSize="13px"
-                          $filled
-                          cursor
-                        >
-                          <span>+ 전체 추가</span>
-                        </Button>
-                      </AddNewContentOption>
-                      <AddNewContensWrapper>
-                        {list.map((card, i) => (
+                    ))} */}
+                    </SimilarContentsWrapper>
+                  </SimilarWrapper>
+                </>
+              ) : (
+                <>
+                  <TabWrapper>
+                    <TabMenu
+                      length={4}
+                      menu={menuList}
+                      width={'500px'}
+                      lineStyle
+                      selected={tabVeiw}
+                      setTabVeiw={setTabVeiw}
+                    />
+                  </TabWrapper>
+                  <DiscriptionWrapper>
+                    {tabVeiw === '학습지 요약' && (
+                      <>
+                        <Label value="문항 통계" fontSize="16px" />
+                        <Discription>
+                          <DiscriptionOutline>
+                            <div>총 45 문항</div>
+                            <DiscriptionType>객관식 20</DiscriptionType>
+                            <DiscriptionType>주관식 10</DiscriptionType>
+                            <DiscriptionType>서술형 15</DiscriptionType>
+                          </DiscriptionOutline>
+                          <BarChart data={Data}></BarChart>
+                        </Discription>
+                        <Label
+                          value="문항 상세 내용 및 순서 변경"
+                          fontSize="16px"
+                        />
+                        <ContentsList>
+                          <ListCategory>
+                            <div className="number">번호</div>
+                            <div className="type">문항타입</div>
+                            <div className="level">난이도</div>
+                            <div className="title">유형명명</div>
+                            <div className="icon">순서변경</div>
+                          </ListCategory>
+                          <DnDWrapper
+                            dragList={initialItems}
+                            onDragging={() => {}}
+                            onDragEnd={whenDragEnd}
+                            dragSectionName={'학습지요약'}
+                            doubleDnD
+                          >
+                            {(dragItem, ref, isDragging) => (
+                              <li
+                                ref={ref}
+                                className={`${isDragging ? 'opacity' : ''}`}
+                              >
+                                <Content
+                                  onClick={(e) => {
+                                    handleButtonCheck(e, dragItem.id);
+                                  }}
+                                >
+                                  <div className="number">{dragItem.sort}</div>
+                                  <div className="type">
+                                    {dragItem.unitType}
+                                  </div>
+                                  <div className="level">
+                                    {dragItem.contentLevel}
+                                  </div>
+                                  <div className="title">
+                                    {dragItem.unitMajor}
+                                  </div>
+                                  <div className="icon">
+                                    <IoMenuOutline
+                                      style={{ cursor: 'grab' }}
+                                    ></IoMenuOutline>
+                                  </div>
+                                </Content>
+                              </li>
+                            )}
+                          </DnDWrapper>
+                        </ContentsList>
+                      </>
+                    )}
+                    {tabVeiw === '새 문항 추가' && (
+                      <>
+                        <AddNewContentOption>
+                          <AddNewContentIcon>
+                            <RiListSettingsLine
+                              style={{ fontSize: '22px', cursor: 'pointer' }}
+                            />
+                            범위 변경
+                          </AddNewContentIcon>
+                          <AddNewContentIcon>
+                            <PiArrowCounterClockwiseBold
+                              style={{ fontSize: '22px', cursor: 'pointer' }}
+                            />
+                            이전 불러오기
+                          </AddNewContentIcon>
+                          <AddNewContentIcon>
+                            <PiArrowClockwiseBold
+                              style={{ fontSize: '22px', cursor: 'pointer' }}
+                            />
+                            새로 불러오기
+                          </AddNewContentIcon>
+                          <Button
+                            buttonType="button"
+                            onClick={() => {}}
+                            $padding="10px"
+                            height={'30px'}
+                            width={'100px'}
+                            fontSize="13px"
+                            $filled
+                            cursor
+                          >
+                            <span>+ 전체 추가</span>
+                          </Button>
+                        </AddNewContentOption>
+                        <AddNewContensWrapper>
+                          {/* {list.map((card, i) => (
                           <div
                             key={i}
                             // draggable
@@ -378,50 +409,50 @@ export function Step2() {
                               onSelectCard={setSelectedCardIndex}
                             ></MathviewerCard>
                           </div>
-                        ))}
-                      </AddNewContensWrapper>
-                    </>
-                  )}
-                  {tabVeiw === '즐겨찾는 문항' && (
-                    <>
-                      {bookmark.length !== 0 ? (
-                        <>
-                          <BookmarkContentOption>
-                            <SelectWrapper>
-                              {bookmarkSelectCategory.map((el) => (
-                                <Select
-                                  width={'250px'}
-                                  defaultValue={el.label}
-                                  key={el.label}
-                                  options={el.options}
-                                  onSelect={(event) =>
-                                    selectBookmarkCategoryOption(event)
-                                  }
-                                />
-                              ))}
-                            </SelectWrapper>
-                            <BookmarkContentCheckWrapper>
-                              <CheckBox
-                                isChecked={recommend}
-                                onClick={() => setRecommend(!recommend)}
-                              ></CheckBox>
-                              내 문항 우선 추천
-                            </BookmarkContentCheckWrapper>
-                            <Button
-                              buttonType="button"
-                              onClick={() => {}}
-                              $padding="10px"
-                              height={'30px'}
-                              width={'100px'}
-                              fontSize="13px"
-                              $filled
-                              cursor
-                            >
-                              <span>+ 전체 추가</span>
-                            </Button>
-                          </BookmarkContentOption>
-                          <BookmarkContensWrapper>
-                            {list.map((card, i) => (
+                        ))} */}
+                        </AddNewContensWrapper>
+                      </>
+                    )}
+                    {tabVeiw === '즐겨찾는 문항' && (
+                      <>
+                        {bookmark.length !== 0 ? (
+                          <>
+                            <BookmarkContentOption>
+                              <SelectWrapper>
+                                {bookmarkSelectCategory.map((el) => (
+                                  <Select
+                                    width={'250px'}
+                                    defaultValue={el.label}
+                                    key={el.label}
+                                    options={el.options}
+                                    onSelect={(event) =>
+                                      selectBookmarkCategoryOption(event)
+                                    }
+                                  />
+                                ))}
+                              </SelectWrapper>
+                              <BookmarkContentCheckWrapper>
+                                <CheckBox
+                                  isChecked={recommend}
+                                  onClick={() => setRecommend(!recommend)}
+                                ></CheckBox>
+                                내 문항 우선 추천
+                              </BookmarkContentCheckWrapper>
+                              <Button
+                                buttonType="button"
+                                onClick={() => {}}
+                                $padding="10px"
+                                height={'30px'}
+                                width={'100px'}
+                                fontSize="13px"
+                                $filled
+                                cursor
+                              >
+                                <span>+ 전체 추가</span>
+                              </Button>
+                            </BookmarkContentOption>
+                            <BookmarkContensWrapper>
+                              {/* {list.map((card, i) => (
                               <div
                                 key={i}
                                 // draggable
@@ -440,120 +471,137 @@ export function Step2() {
                                   onSelectCard={setSelectedCardIndex}
                                 ></MathviewerCard>
                               </div>
-                            ))}
-                          </BookmarkContensWrapper>
-                        </>
-                      ) : (
-                        <BookmarkContensEmptyWrapper>
-                          <BookmarkContensEmptyDiscription>
-                            즐겨 찾기에 추가된 문항이 없습니다.
-                          </BookmarkContensEmptyDiscription>
-                          <BookmarkContensEmptyDiscription>
-                            마음에 드는 문항을 저장하여 학습지나 교재를
-                          </BookmarkContensEmptyDiscription>
-                          <BookmarkContensEmptyDiscription>
-                            만들 때 활용하세요.
-                          </BookmarkContensEmptyDiscription>
-                        </BookmarkContensEmptyWrapper>
-                      )}
-                    </>
-                  )}
-                  {tabVeiw === '개념' && (
-                    <>
-                      <ConceptWrapper>
-                        <ConceptDiscription>
-                          준비중인 기능입니다...
-                        </ConceptDiscription>
-                      </ConceptWrapper>
-                    </>
-                  )}
-                </DiscriptionWrapper>
-              </>
-            )}
-          </DiscriptionSection>
-          <ContentListSection>
-            <ListFilter>
-              <Label value="선택한 문항 목록(총45문항)" fontSize="16px" />
-              <SelectWrapper>
-                {selectCategory.map((el) => (
-                  <Select
-                    width={'150px'}
-                    key={el.label}
-                    defaultValue={el.label}
-                    options={el.options}
-                    onSelect={(event) => selectListCategoryOption(event)}
-                    blackMode
-                  ></Select>
-                ))}
-              </SelectWrapper>
-            </ListFilter>
-            <ContentListWrapper>
-              {list.map((card, i) => (
-                <MathviewerCardWrapper
-                  key={i}
-                  //$isSelected={i === selectedIndex}
-                  //className={i === dragItem.current ? 'dragging' : ''}
-                  //draggable
-                  //onDragStart={(e) => dragStart(e, i, i)}
-                  //onDragEnter={(e) => dragEnter(e, i)}
-                  //onDragOver={dragOver}
-                  //onDragEnd={drop}
+                            ))} */}
+                            </BookmarkContensWrapper>
+                          </>
+                        ) : (
+                          <BookmarkContensEmptyWrapper>
+                            <BookmarkContensEmptyDiscription>
+                              즐겨 찾기에 추가된 문항이 없습니다.
+                            </BookmarkContensEmptyDiscription>
+                            <BookmarkContensEmptyDiscription>
+                              마음에 드는 문항을 저장하여 학습지나 교재를
+                            </BookmarkContensEmptyDiscription>
+                            <BookmarkContensEmptyDiscription>
+                              만들 때 활용하세요.
+                            </BookmarkContensEmptyDiscription>
+                          </BookmarkContensEmptyWrapper>
+                        )}
+                      </>
+                    )}
+                    {tabVeiw === '개념' && (
+                      <>
+                        <ConceptWrapper>
+                          <ConceptDiscription>
+                            준비중인 기능입니다...
+                          </ConceptDiscription>
+                        </ConceptWrapper>
+                      </>
+                    )}
+                  </DiscriptionWrapper>
+                </>
+              )}
+            </DiscriptionSection>
+            <ContentListSection>
+              <ListFilter>
+                <Label value="선택한 문항 목록(총45문항)" fontSize="16px" />
+                <SelectWrapper>
+                  {selectCategory.map((el) => (
+                    <Select
+                      width={'150px'}
+                      key={el.label}
+                      defaultValue={el.label}
+                      options={el.options}
+                      onSelect={(event) => selectListCategoryOption(event)}
+                      blackMode
+                    ></Select>
+                  ))}
+                </SelectWrapper>
+              </ListFilter>
+              <ContentListWrapper>
+                <DnDWrapper
+                  dragList={initialItems}
+                  onDragging={() => {}}
+                  onDragEnd={whenDragEnd}
+                  dragSectionName={'미리보기'}
+                  doubleDnD
+                  isStartDnD={isStartDnD}
+                  setIsStartDnd={setIsStartDnd}
                 >
-                  {/* <MathviewerCard
-                    className={i === dragItem.current ? 'dragging' : ''}
-                    componentWidth="750px"
-                    width="500px"
-                    onClick={showSimilarContent}
-                    isSimilar={isSimilar}
-                    index={i + 1}
-                    data={card}
-                    isDragged={i === selectedIndex}
-                    selectedCardIndex={selectedCardIndex}
-                    onSelectCard={setSelectedCardIndex}
-                    dragStart={() => (e: any) => dragStart(e, i, card.seq)}
-                    dragEnter={() => (e: any) => dragEnter(e, i)}
-                    dragOver={dragOver}
-                    drop={drop}
-                  ></MathviewerCard> */}
-                  <MathviewerAccordion
-                    className={i === dragItem.current ? 'dragging' : ''}
-                    componentWidth="750px"
-                    width="500px"
-                    onClick={showSimilarContent}
-                    isSimilar={isSimilar}
-                    index={i + 1}
-                    data={card}
-                    isDragged={i === selectedIndex}
-                    selectedCardIndex={selectedCardIndex}
-                    onSelectCard={setSelectedCardIndex}
-                    dragStart={() => (e: any) => dragStart(e, i, card.seq)}
-                    dragEnter={() => (e: any) => dragEnter(e, i)}
-                    dragOver={dragOver}
-                    drop={drop}
-                  ></MathviewerAccordion>
-                </MathviewerCardWrapper>
-              ))}
-            </ContentListWrapper>
-          </ContentListSection>
-        </MainWrapper>
-        <NextStepButtonWrapper>
-          <Button
-            buttonType="button"
-            onClick={moveStep3}
-            $padding="10px"
-            height={'35px'}
-            width={'100px'}
-            fontSize="13px"
-            $filled
-            cursor
-          >
-            <span>다음 단계</span>
-          </Button>
-        </NextStepButtonWrapper>
-      </Wrapper>
-    </Container>
+                  {(dragItem, ref, isDragging) => (
+                    <li ref={ref} className={`${isDragging ? 'opacity' : ''}`}>
+                      <MathviewerAccordion
+                        componentWidth="750px"
+                        width="500px"
+                        onClick={showSimilarContent}
+                        isSimilar={isSimilar}
+                        data={dragItem}
+                        index={dragItem.sort}
+                        selectedCardIndex={selectedCardIndex}
+                        onSelectCard={setSelectedCardIndex}
+                        //isStartDnD={isStartDnD}
+                      ></MathviewerAccordion>
+                    </li>
+                  )}
+                </DnDWrapper>
+              </ContentListWrapper>
+            </ContentListSection>
+          </MainWrapper>
+          <NextStepButtonWrapper>
+            <p>
+              총 배점: <Span>100점</Span>/<Span>100점</Span>
+            </p>
+            <Button
+              buttonType="button"
+              onClick={() => {}}
+              $padding="10px"
+              height={'35px'}
+              width={'100px'}
+              fontSize="13px"
+              $normal
+              cursor
+            >
+              <span>임시저장</span>
+            </Button>
+            <Button
+              buttonType="button"
+              onClick={moveStep3}
+              $padding="10px"
+              height={'35px'}
+              width={'100px'}
+              fontSize="13px"
+              $filled
+              cursor
+            >
+              <span>다음 단계</span>
+            </Button>
+          </NextStepButtonWrapper>
+        </Wrapper>
+      </Container>
+    </DndProvider>
   );
 }
+
+// {list.map((card, i) => (
+//   <MathviewerCardWrapper key={i}>
+//     <MathviewerAccordion
+//       className={i === dragItem.current ? 'dragging' : ''}
+//       componentWidth="750px"
+//       width="500px"
+//       onClick={showSimilarContent}
+//       isSimilar={isSimilar}
+//       index={i + 1}
+//       data={card}
+//       isDragged={i === selectedIndex}
+//       selectedCardIndex={selectedCardIndex}
+//       onSelectCard={setSelectedCardIndex}
+//       dragStart={() => (e: any) => dragStart(e, i, card.seq)}
+//       dragEnter={() => (e: any) => dragEnter(e, i)}
+//       dragOver={dragOver}
+//       drop={drop}
+//     ></MathviewerAccordion>
+//   </MathviewerCardWrapper>
+// ))}
 
 const Container = styled.div``;
 const TitleWrapper = styled.div`
@@ -574,13 +622,12 @@ const Title = styled.div`
   padding-left: 10px;
 `;
 const FrontSpan = styled.span`
-  color: ${COLOR.BORDER_BLUE};
+  color: ${COLOR.SPAN_LIGHT_BLUE};
   font-size: 20px;
   cursor: pointer;
 `;
 const Span = styled.span`
-  color: #1976d2;
-  padding-right: 10px;
+  color: ${COLOR.SPAN_BlUE};
 `;
 const Wrapper = styled.div`
   display: flex;
@@ -858,4 +905,10 @@ const NextStepButtonWrapper = styled.div`
   padding-top: 20px;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  p {
+    display: flex;
+    font-weight: bold;
+  }
 `;

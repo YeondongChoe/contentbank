@@ -9,6 +9,8 @@ export const COLOR = {
   FONT_BLACK: '#252525',
   FONT_NAVI: '#8299D4',
   LIGHT_GRAY: '#eeeeee',
+  SPAN_BlUE: '#1976d2',
+  SPAN_LIGHT_BLUE: '#a3aed0',
 
   BUTTON_NORMAL: '#d9d9d9',
   BUTTON_LIGHT_NORMAL: '#d9d9d9',
