@@ -95,8 +95,9 @@ export function Member() {
 
   // 아이디 중복 확인 && 토탈 유저 수
   const getTotalMemberList = async () => {
+    const totalCount = memberList.pagination.totalCount;
     const res = await userInstance.get(
-      `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${memberList.pagination.totalCount}
+      `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${totalCount}
 				`,
     );
     setTotalMemberList(res.data.data.list);
@@ -227,7 +228,7 @@ export function Member() {
     // 데이터 바뀔시 초기화
     setCheckList([]);
     // 비활성화 이후 토탈 멤버 api 재호출
-    getTotalMemberList();
+    if (memberListData) getTotalMemberList();
   }, [memberListData]);
 
   const tabMenuList = [
@@ -308,7 +309,7 @@ export function Member() {
 
           <InputWrapper>
             <Total>
-              Total :{memberListData ? memberList.pagination.totalCount : 0}
+              Total :{memberList ? memberList.pagination.totalCount : 0}
             </Total>
 
             <Search
