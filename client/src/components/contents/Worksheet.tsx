@@ -244,7 +244,7 @@ export function Worksheet() {
           <ListWrapper>
             <ListTitleWrapper>
               <ListTitle className="bookmark"></ListTitle>
-              <ListTitle className="grade">학년.</ListTitle>
+              <ListTitle className="grade">학년</ListTitle>
               <ListTitle className="tag">태그</ListTitle>
               <ListTitle className="title">학습지명</ListTitle>
               <ListTitle className="createAt">등록일</ListTitle>
