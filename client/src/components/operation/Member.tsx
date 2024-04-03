@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
@@ -48,13 +48,18 @@ export function Member() {
   // 유저 리스트 불러오기 api
   const getUserList = async () => {
     const res = await userInstance.get(
-      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}
+      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
 			`,
-      // &isUseFilter=${''}
     );
     // console.log(`유저리스트 get 결과값`, res);
     return res;
   };
+
+  const isUseFilter = useMemo(() => {
+    if (tabVeiw === '전체') return '';
+    if (tabVeiw === '활성화') return 'Y';
+    if (tabVeiw === '비활성화') return 'N';
+  }, [tabVeiw]);
 
   const {
     isLoading,
@@ -73,7 +78,7 @@ export function Member() {
   // 페이지 변경시 리랜더링
   useEffect(() => {
     refetch();
-  }, [page, memberList, searchKeywordValue]);
+  }, [page, memberList, searchKeywordValue, isUseFilter]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -221,7 +226,7 @@ export function Member() {
     setCheckList([]);
   }, [memberListData]);
 
-  const menuList = [
+  const tabMenuList = [
     {
       label: '전체',
       value: '전체',
@@ -283,7 +288,7 @@ export function Member() {
         <>
           <TabMenu
             length={3}
-            menu={menuList}
+            menu={tabMenuList}
             selected={tabVeiw}
             width={'300px'}
             setTabVeiw={setTabVeiw}
