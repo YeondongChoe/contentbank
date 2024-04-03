@@ -41,8 +41,8 @@ export function Member() {
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
 
   const [page, setPage] = useRecoilState(pageAtom);
-  const [totalMemberList, settotalMemberList] = useState<MemberType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [totalMemberList, setTotalMemberList] = useState();
 
   // 유저 리스트 불러오기 api
   const getUserList = async () => {
@@ -58,7 +58,6 @@ export function Member() {
   const {
     isLoading,
     data: memberListData,
-    isFetching,
     refetch,
   } = useQuery({
     queryKey: ['get-memberlist'],
@@ -73,7 +72,7 @@ export function Member() {
   // 페이지 변경시 리랜더링
   useEffect(() => {
     refetch();
-  }, [page]);
+  }, [page, memberList]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -89,23 +88,19 @@ export function Member() {
   };
 
   // 아이디 중복 확인 && 토탈 유저 수
-  const getTotalId = async () => {
-    return await userInstance
-      .get(
-        `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${memberList.pagination.totalCount}
+  const getTotalMemberList = async () => {
+    const res = await userInstance.get(
+      `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${memberList.pagination.totalCount}
 				`,
-      )
-      .then((res) => {
-        settotalMemberList(res.data.data.list);
-      });
+    );
+    setTotalMemberList(res.data.data.list);
   };
 
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
-    getTotalId();
-    // console.log('memberList', totalMemberList);
+    getTotalMemberList();
     openModal({
       title: '',
       content: <RegisterModal memberList={totalMemberList} refetch={refetch} />,

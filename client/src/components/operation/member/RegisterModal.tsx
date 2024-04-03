@@ -1,7 +1,14 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { MutationFunction, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  MutationFunction,
+  QueryObserverResult,
+  RefetchOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
@@ -17,7 +24,9 @@ export function RegisterModal({
   refetch,
 }: {
   memberList?: MemberType[];
-  refetch: () => void;
+  refetch: (
+    options?: RefetchOptions | undefined,
+  ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
 }) {
   const { closeModal } = useModal();
 
@@ -29,7 +38,7 @@ export function RegisterModal({
 
   const [isDuplicate, setIsDuplicate] = useState<boolean>(true);
   const [idErrorMessage, setIdErrorMessage] = useState('');
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedAuthority, setSelectedAuthority] = useState('');
   const [commentValue, setCommentValue] = useState('');
   const [authoritySelectList, setAuthoritySelectList] = useState<
     ItemSelectProps[]
@@ -70,7 +79,7 @@ export function RegisterModal({
     const account = {
       id: Id,
       name: Name,
-      authorityCode: selectedValue,
+      authorityCode: selectedAuthority,
       note: Comment,
     };
     // console.log('account', account);
@@ -125,7 +134,7 @@ export function RegisterModal({
       setIdErrorMessage('필수 항목을 입력해주세요');
       return;
     }
-    if (selectedValue === '') {
+    if (selectedAuthority === '') {
       setIsAuthorityError(true);
       setAuthorityErrorMessage('필수 항목을 입력해주세요');
       return;
@@ -138,7 +147,6 @@ export function RegisterModal({
   // 권한 불러오기 api
   const getAuthority = async () => {
     const res = await userInstance.get(`/v1/authority?menuIdx=${9}`);
-    // console.log(`get authority 결과값`, res);
     return res;
   };
   const { data: authorityData, isFetching } = useQuery({
@@ -309,7 +317,7 @@ export function RegisterModal({
                     defaultValue={'권한을 선택하세요'}
                     onClick={() => setIsAuthorityError(false)}
                     options={authoritySelectList}
-                    setSelectedValue={setSelectedValue}
+                    setSelectedValue={setSelectedAuthority}
                   ></Select>
                 </SelectWrapper>
               )}

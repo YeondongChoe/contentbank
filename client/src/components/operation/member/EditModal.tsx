@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
@@ -21,7 +27,9 @@ export function EditModal({
 }: {
   accountIdx: number;
   userKey: string;
-  refetch: () => void;
+  refetch: (
+    options?: RefetchOptions | undefined,
+  ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
 }) {
   const { closeModal } = useModal();
   const [member, setMember] = useState<{
@@ -63,8 +71,7 @@ export function EditModal({
     note: string;
     isUseNot: string;
   }) => {
-    // console.log('userInfo', userInfo);
-    return await userInstance.put(`/v1/account/${userKey}`, userInfo);
+    return await userInstance.put(`/v1/account/${accountIdx}`, userInfo);
   };
 
   const { data: changeUserInfo, mutate: mutateChangeUserInfo } = useMutation({
@@ -82,7 +89,7 @@ export function EditModal({
         text: response.data.message,
       });
       refetch();
-      // closeModal();
+      closeModal();
     },
   });
 
@@ -200,6 +207,7 @@ export function EditModal({
       enabled: memberDatas?.isLock,
       authCode: memberDatas?.roleCode,
     });
+    setAuthorityCode(memberDatas?.authorityCode);
   }, [memberData]);
 
   useEffect(() => {
