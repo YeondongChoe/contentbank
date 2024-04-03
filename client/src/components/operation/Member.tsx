@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -13,6 +13,7 @@ import {
   Icon,
   ValueNone,
   Loader,
+  openToastifyAlert,
 } from '../../components/atom';
 import {
   Alert,
@@ -36,7 +37,7 @@ export function Member() {
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
   const backgroundRef = useRef<HTMLDivElement>(null);
 
-  const [checkList, setCheckList] = useState<string[]>([]);
+  const [checkList, setCheckList] = useState<number[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
 
@@ -74,11 +75,6 @@ export function Member() {
   });
   // data 디렉토리
   const memberList = memberListData?.data.data;
-
-  // 페이지 변경시 리랜더링
-  useEffect(() => {
-    refetch();
-  }, [page, memberList, searchKeywordValue, isUseFilter]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -149,29 +145,37 @@ export function Member() {
   };
   // 활성화/비활성화 데이터 전송
   const submitChangeUse = () => {
-    patchChangeUse();
+    // console.log('checkList :', checkList);
+    mutateChangeUse();
     setIsAlertOpen(false);
   };
 
   // 활성화/비활성화 api
   const patchChangeUse = async () => {
-    await userInstance.patch(`/v1/account/change-use`);
-    // .then((res) => {
-    //   console.log('change-use', res);
-    // })
-    // .catch((error) => {
-    //   console.log('change-use error', error);
-    //   if (error.response.data.code == 'GE-002') {
-    //     console.log('change-use error', error);
-    //   }
-    //   if (error.response.data.code == 'E-004') {
-    //     openToastifyAlert({
-    //       type: 'error',
-    //       text: `${error.response.data.data.name}`,
-    //     });
-    //   }
-    // });
+    return await userInstance.patch(`/v1/account/change-use`, {
+      idxList: checkList,
+    });
   };
+  const {
+    data: changeUse,
+    mutate: mutateChangeUse,
+    isPending: isPendingChangeUse,
+  } = useMutation({
+    mutationFn: patchChangeUse,
+    onError: (context: { response: { data: { message: string } } }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
+
   /* 안내 알럿 */
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
@@ -192,16 +196,14 @@ export function Member() {
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.currentTarget.checked);
     if (e.target.checked) {
-      setCheckList(
-        memberList.list.map((item: MemberType) => item.userKey as string),
-      );
+      setCheckList(memberList.list.map((item: MemberType) => item.idx));
     } else {
       setCheckList([]);
     }
   };
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
-    id: string,
+    id: number,
   ) => {
     const target = e.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
@@ -224,6 +226,8 @@ export function Member() {
   useEffect(() => {
     // 데이터 바뀔시 초기화
     setCheckList([]);
+    // 비활성화 이후 토탈 멤버 api 재호출
+    getTotalMemberList();
   }, [memberListData]);
 
   const tabMenuList = [
@@ -250,6 +254,11 @@ export function Member() {
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
+
+  // 대이터 변경시 리랜더링
+  useEffect(() => {
+    refetch();
+  }, [page, memberList, searchKeywordValue, isUseFilter, changeUse]);
 
   return (
     <Container ref={backgroundRef}>
@@ -314,119 +323,131 @@ export function Member() {
               placeholder="이름, 권한 검색"
             />
           </InputWrapper>
-          {memberList.list.length > 0 ? (
-            <>
-              <ButtonWrapper>
-                <CheckBoxWrapper>
-                  <CheckBoxI
-                    $margin={'0 5px 0 0'}
-                    onChange={(e) => handleAllCheck(e)}
-                    checked={
-                      checkList.length === memberList.list.length ? true : false
-                    }
-                    id={'all check'}
-                    value={'all check'}
-                  />
-                  <span className="title_top">전체선택</span>
-                </CheckBoxWrapper>
-                <Button
-                  height={'35px'}
-                  width={'130px'}
-                  onClick={openSubmitAlert}
-                  fontSize="15px"
-                  $filled
-                  disabled={isEnabled}
-                  cursor
-                  $margin="5px 0 0 0"
-                >
-                  비활성화
-                </Button>
-              </ButtonWrapper>
-
-              <List margin={`10px 0`}>
-                {memberList.list.map((list: MemberType) => (
-                  <ListItem
-                    key={list.userKey as string}
-                    isChecked={checkList.includes(list.userKey)}
-                    onClick={(e) => handleButtonCheck(e, list.userKey)}
-                  >
-                    <CheckBoxI
-                      id={list.userKey}
-                      value={list.userKey}
-                      $margin={`0 5px 0 0`}
-                      checked={checkList.includes(list.userKey)}
-                      readOnly
-                    />
-                    <ItemLayout>
-                      <span>{list.name} </span>
-                      <div className="line"></div>
-                      <span>{list.id} </span>
-                      <div className="line"></div>
-                      <span>
-                        <span className="tag">{list.authorityName}</span>
-                      </span>
-                      <div className="line"></div>
-                      <span>{list.createdAt}</span>
-                    </ItemLayout>
-                    {list.isUse ? (
-                      <Icon
-                        width={`18px`}
-                        $margin={'0 0 0 12px'}
-                        src={`/images/icon/lock_open_${
-                          checkList.length
-                            ? checkList.includes(list.userKey)
-                              ? 'on'
-                              : 'off'
-                            : 'off'
-                        }.svg`}
-                        disabled={true}
-                      />
-                    ) : (
-                      <Icon
-                        width={`18px`}
-                        $margin={'0 0 0 12px'}
-                        src={`/images/icon/lock_${
-                          checkList.length
-                            ? checkList.includes(list.userKey)
-                              ? 'on'
-                              : 'off'
-                            : 'off'
-                        }.svg`}
-                        disabled={true}
-                      />
-                    )}
-                    <Button
-                      width={`100px`}
-                      height={`30px`}
-                      fontSize={`13px`}
-                      $padding={'0'}
-                      $margin={`0 0 0 15px`}
-                      cursor
-                      $border
-                      onClick={(e) => openEditModal(e, list.idx, list.userKey)}
-                    >
-                      상세 수정
-                    </Button>
-                  </ListItem>
-                ))}
-              </List>
-              <PaginationBox
-                itemsCountPerPage={memberList.pagination.pageUnit}
-                totalItemsCount={memberList.pagination.totalCount}
-              />
-            </>
+          {isPendingChangeUse ? (
+            <LoaderWrapper>
+              <Loader width="50px" />
+            </LoaderWrapper>
           ) : (
             <>
-              {searchKeywordValue ? (
-                <ValueNoneWrapper>
-                  <ValueNone
-                    info={`${searchKeywordValue}로 검색결과 데이터가 없습니다`}
+              {totalMemberList && totalMemberList.length > 0 ? (
+                <>
+                  <ButtonWrapper>
+                    <CheckBoxWrapper>
+                      <CheckBoxI
+                        $margin={'0 5px 0 0'}
+                        onChange={(e) => handleAllCheck(e)}
+                        checked={
+                          checkList.length === memberList.list.length
+                            ? true
+                            : false
+                        }
+                        id={'all check'}
+                        value={'all check'}
+                      />
+                      <span className="title_top">전체선택</span>
+                    </CheckBoxWrapper>
+                    <Button
+                      height={'35px'}
+                      width={'130px'}
+                      onClick={openSubmitAlert}
+                      fontSize="15px"
+                      $filled
+                      disabled={isEnabled}
+                      cursor
+                      $margin="5px 0 0 0"
+                    >
+                      비활성화
+                    </Button>
+                  </ButtonWrapper>
+
+                  <List margin={`10px 0`}>
+                    {memberList.list.map((list: MemberType) => (
+                      <ListItem
+                        key={list.userKey as string}
+                        isChecked={checkList.includes(list.idx)}
+                        onClick={(e) => handleButtonCheck(e, list.idx)}
+                      >
+                        <CheckBoxI
+                          id={list.userKey}
+                          value={list.idx}
+                          $margin={`0 5px 0 0`}
+                          checked={checkList.includes(list.idx)}
+                          readOnly
+                        />
+                        <ItemLayout>
+                          <span>{list.name} </span>
+                          <div className="line"></div>
+                          <span>{list.id} </span>
+                          <div className="line"></div>
+                          <span>
+                            <span className="tag">{list.authorityName}</span>
+                          </span>
+                          <div className="line"></div>
+                          <span>{list.createdAt}</span>
+                        </ItemLayout>
+                        {list.isUse ? (
+                          <Icon
+                            width={`18px`}
+                            $margin={'0 0 0 12px'}
+                            src={`/images/icon/lock_open_${
+                              checkList.length
+                                ? checkList.includes(list.idx)
+                                  ? 'on'
+                                  : 'off'
+                                : 'off'
+                            }.svg`}
+                            disabled={true}
+                          />
+                        ) : (
+                          <Icon
+                            width={`18px`}
+                            $margin={'0 0 0 12px'}
+                            src={`/images/icon/lock_${
+                              checkList.length
+                                ? checkList.includes(list.idx)
+                                  ? 'on'
+                                  : 'off'
+                                : 'off'
+                            }.svg`}
+                            disabled={true}
+                          />
+                        )}
+                        <Button
+                          width={`100px`}
+                          height={`30px`}
+                          fontSize={`13px`}
+                          $padding={'0'}
+                          $margin={`0 0 0 15px`}
+                          cursor
+                          $border
+                          onClick={(e) =>
+                            openEditModal(e, list.idx, list.userKey)
+                          }
+                        >
+                          상세 수정
+                        </Button>
+                      </ListItem>
+                    ))}
+                  </List>
+                  <PaginationBox
+                    itemsCountPerPage={memberList.pagination.pageUnit}
+                    totalItemsCount={memberList.pagination.totalCount}
                   />
-                </ValueNoneWrapper>
+                </>
               ) : (
-                <ValueNoneWrapper>
-                  <ValueNone info={`등록된 데이터가 없습니다`} />
-                </ValueNoneWrapper>
+                <>
+                  {searchKeywordValue ? (
+                    <ValueNoneWrapper>
+                      <ValueNone
+                        info={`${searchKeywordValue}로 검색결과 데이터가 없습니다`}
+                      />
+                    </ValueNoneWrapper>
+                  ) : (
+                    <ValueNoneWrapper>
+                      <ValueNone info={`등록된 데이터가 없습니다`} />
+                    </ValueNoneWrapper>
+                  )}
+                </>
               )}
             </>
           )}
