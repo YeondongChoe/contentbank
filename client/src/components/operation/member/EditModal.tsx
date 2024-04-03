@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
@@ -8,34 +8,31 @@ import styled from 'styled-components';
 import { Input, Label, AlertBar } from '../..';
 import { userInstance } from '../../../api/axios';
 import { useModal } from '../../../hooks';
+import { ItemAuthorityType } from '../../../types';
 import { Button, openToastifyAlert } from '../../atom';
-import { Select } from '../../atom/select';
+import { ItemSelectProps, Select } from '../../atom/select';
 import { COLOR } from '../../constants';
 import { Alert } from '../../molecules/alert/Alert';
-
-type authorityProps = {
-  seq: number;
-  code: string;
-  name: string;
-  sort: number;
-};
-
-type EditModalProps = {
-  isEditer: boolean;
-  keyValue: string;
-  setIsEditer: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsEditAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
 
 export function EditModal({
   accountIdx,
   userKey,
+  refetch,
 }: {
   accountIdx: number;
   userKey: string;
+  refetch: () => void;
 }) {
   const { closeModal } = useModal();
-  const [member, setMember] = useState({
+  const [member, setMember] = useState<{
+    id: null | string;
+    name: null | string;
+    key: null | string;
+    authority: null | string;
+    comment: null | string;
+    enabled: null | boolean;
+    authCode: null | string;
+  }>({
     id: null,
     name: null,
     key: null,
@@ -46,60 +43,72 @@ export function EditModal({
   });
   const [isNameError, setIsNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState('');
-  const [authorityList, setAuthorityList] = useState<authorityProps[]>([]);
-  const [authorityCode, setAuthorityCode] = useState<string | undefined>();
-  const [isEnabled, setIsEnabled] = useState(member.enabled as boolean | null);
-  //console.log(isEnabled);
-
-  const AuthorityList = authorityList.map((el) => {
-    return [el.name, el.code];
-  });
-  const AuthorityOption = AuthorityList.map((item, index) => ({
-    id: `${index + 1}`,
-    label: item[0],
-    code: item[1],
-    value: index + 1,
-  }));
-
+  const [authorityList, setAuthorityList] = useState<ItemSelectProps[]>([]);
+  const [authorityCode, setAuthorityCode] = useState<string>('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [isInit, setIsInit] = useState(false);
 
   const { control, setValue, watch } = useForm();
-
-  // const Authority = authorityCode;
-  // const Name = watch('name');
-  // const Comment = watch('comment');
-  // const CheckBox = isEnabled;
-
-  const closePopup = () => {
-    closeModal();
-  };
-
-  const checkEnabled = () => {
-    setIsEnabled(!isEnabled);
-  };
+  const Name = watch('name');
+  const Comment = watch('comment');
 
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
 
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
   };
-
-  const clickInitPassword = () => {
-    // putInitPassword({
-    // });
+  // 유저 정보 변경 api
+  const putChangeUserInfo = async (userInfo: {
+    name: string;
+    authorityCode: string;
+    note: string;
+    isUseNot: string;
+  }) => {
+    // console.log('userInfo', userInfo);
+    return await userInstance.put(`/v1/account/${userKey}`, userInfo);
   };
 
+  const { data: changeUserInfo, mutate: mutateChangeUserInfo } = useMutation({
+    mutationFn: putChangeUserInfo,
+    onError: (context: { response: { data: { message: string } } }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      console.log('changeUserInfo', response);
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      refetch();
+      // closeModal();
+    },
+  });
+
+  // 유저 정보 변경 버튼
   const submitEdit = () => {
-    console.log('memberrrrrrr', member.name);
-  };
-  // 비밀번호 초기화
-  const handleInitPassword = () => {
-    setIsAlertOpen(true);
-    patchUserPasswordInit();
-  };
-  const closeInitPasswordAlert = () => {
-    setIsAlertOpen(false);
+    if (Name == '') {
+      setIsNameError(true);
+      setNameErrorMessage('필수 항목을 입력해주세요');
+      return;
+    }
+    if (authorityCode && memberData) {
+      console.log(
+        'userInfo',
+        Name,
+        Comment,
+        authorityCode,
+        memberDatas?.isLock,
+      );
+      const userInfo = {
+        name: Name as string,
+        authorityCode: authorityCode,
+        note: Comment as string,
+        isUseNot: memberDatas?.isLock ? 'Y' : 'N',
+      };
+      mutateChangeUserInfo(userInfo);
+    }
   };
 
   // 유저 비밀번호 초기화 api
@@ -108,7 +117,7 @@ export function EditModal({
       `/v1/account/initialize-password/${userKey}`,
     );
   };
-  const { data: userPasswordInit, mutate: changeUserPasswordInit } =
+  const { data: userPasswordInit, mutate: mutateUserPasswordInit } =
     useMutation({
       mutationFn: patchUserPasswordInit,
       onError: (context: { response: { data: { message: string } } }) => {
@@ -118,45 +127,80 @@ export function EditModal({
         });
       },
       onSuccess: (response: { data: { message: string } }) => {
-        console.log('userPasswordInit', response);
+        // console.log('userPasswordInit', response);
         openToastifyAlert({
           type: 'success',
           text: response.data.message,
         });
       },
     });
+  // 비밀번호 초기화 버튼
+  const handleInitPassword = () => {
+    setIsAlertOpen(true);
+    patchUserPasswordInit();
+  };
+  const closeInitPasswordAlert = () => {
+    setIsAlertOpen(false);
+  };
+
+  // 권한 셀렉트 불러오기 api
+  const getAuthorityList = async () => {
+    const res = await userInstance.get(`/v1/authority?menuIdx=${9}`);
+    console.log(`getAuthorityList 결과값`, res);
+    return res;
+  };
+  const { data: authorityListData } = useQuery({
+    queryKey: ['get-authorityList'],
+    queryFn: getAuthorityList,
+    meta: {
+      errorMessage: 'get-authorityList 에러 메세지',
+    },
+  });
+
+  const updateAuthorityList = () => {
+    if (authorityListData) {
+      const authority: ItemSelectProps[] = [];
+      authorityListData.data.data.authorityList.map((el: ItemAuthorityType) => {
+        authority.push({
+          id: `${el.idx} ${el.name}`,
+          label: `${el.name}`,
+          code: `${el.code}`,
+          value: `${el.name} ${el.name}`,
+        });
+      });
+      setAuthorityList([...authority]);
+    }
+  };
+  useEffect(() => {
+    updateAuthorityList();
+  }, [authorityListData]);
 
   // 유저 리스트 불러오기 api
   const getUser = async () => {
     const res = await userInstance.get(`/v1/account/${accountIdx}`);
-    // console.log(`accountIdx get 결과값`, res);
+    // console.log(`accountIdx get 결과값`, accountIdx, res);
     return res;
   };
-  const {
-    isLoading,
-    error,
-    data: memberData,
-    isFetching,
-  } = useQuery({
+  const { data: memberData } = useQuery({
     queryKey: ['get-member'],
     queryFn: getUser,
     meta: {
       errorMessage: 'get-member 에러 메세지',
     },
   });
+  const memberDatas = memberData && memberData.data.data;
 
   useEffect(() => {
-    const data = memberData && memberData.data.data;
     setMember({
-      id: data?.id,
-      name: data?.name,
-      key: data?.userKey,
-      authority: data?.authorityCode,
-      comment: data?.note,
-      enabled: data?.isLock,
-      authCode: data?.roleCode,
+      id: memberDatas?.id,
+      name: memberDatas?.name,
+      key: memberDatas?.userKey,
+      authority: memberDatas?.authorityCode,
+      comment: memberDatas?.note,
+      enabled: memberDatas?.isLock,
+      authCode: memberDatas?.roleCode,
     });
-  }, [isFetching]);
+  }, [memberData]);
 
   useEffect(() => {
     if (member.name) {
@@ -171,7 +215,9 @@ export function EditModal({
     if (member.comment) {
       setValue('comment', member.comment);
     }
-    setIsEnabled(member.enabled);
+    if (member.enabled) {
+      setValue('enabled', member.enabled);
+    }
   }, [
     member.name,
     member.id,
@@ -180,19 +226,6 @@ export function EditModal({
     member.enabled,
     setValue,
   ]);
-
-  //필수 항목 에러처리
-  useEffect(() => {
-    if (member.name === 0) {
-      setIsNameError(true);
-      setNameErrorMessage('필수 항목을 입력해주세요');
-
-      //버튼 disable 처리
-    }
-  }, [member.name]);
-
-  // 라디오 버튼 설정
-  const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
   return (
     <Container>
@@ -292,10 +325,8 @@ export function EditModal({
                     height="50px"
                     padding="5px 0px 0px 0px"
                     defaultValue={member.authority}
-                    onSelect={(event, code) => {
-                      setAuthorityCode(code);
-                    }}
-                    options={AuthorityOption}
+                    setSelectedValue={setAuthorityCode}
+                    options={authorityList}
                   ></Select>
                 </SelectWrapper>
               )}
@@ -303,12 +334,21 @@ export function EditModal({
           </InputWrapper>
           <InputWrapper>
             <Label width="130px" fontSize="15px" value="* 활성화" />
-
             <ButtonWrapper>
-              <Button width={'calc(50% - 5px)'} $margin={'0 10px 0 0'}>
+              <button
+                type="button"
+                onClick={() => {}}
+                className={`${!member.enabled && `isActive`} isActive_btn`}
+              >
                 활성화
-              </Button>
-              <Button width={'calc(50% - 5px)'}>비활성화</Button>
+              </button>
+              <button
+                type="button"
+                onClick={() => {}}
+                className={`${member.enabled && `isActive`} isActive_btn`}
+              >
+                비활성화
+              </button>
             </ButtonWrapper>
           </InputWrapper>
           <InputWrapper>
@@ -348,7 +388,7 @@ export function EditModal({
           <ButtonGroup>
             <Button
               buttonType="button"
-              onClick={closePopup}
+              onClick={() => closeModal()}
               $padding="10px"
               height={'40px'}
               fontSize="16px"
@@ -419,6 +459,25 @@ const ButtonWrapper = styled.div`
   display: flex;
   width: calc(100% - 130px);
   flex-direction: row;
+  gap: 5px;
+
+  .isActive_btn {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: ${COLOR.BUTTON_NORMAL};
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 10px;
+    font-weight: bold;
+    color: ${COLOR.FONT_BLACK};
+  }
+  .isActive {
+    background-color: ${COLOR.PRIMARY};
+    color: #fff;
+  }
 `;
 
 const Textarea = styled.textarea`

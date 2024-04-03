@@ -15,7 +15,11 @@ import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { useModal } from './hooks';
-import { getAuthorityCookie, setAuthorityCookie } from './utils/cookies';
+import {
+  getAuthorityCookie,
+  removeAuthorityCookie,
+  setAuthorityCookie,
+} from './utils/cookies';
 
 export function App() {
   const location = useLocation();
@@ -94,13 +98,31 @@ export function App() {
       })
       .catch((error) => {
         console.log('refreshTokenData error', error);
-        if (error.response.data.code == 'GE-002') {
+        if (
+          error.response.data.code == 'GE-002'
+          //|| error.response.data.code == 'E-006'
+        ) {
           // 리프레쉬 토큰 기간 만료시
-          navigate('/login');
+          removeAuthorityCookie('accessToken', {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
+          removeAuthorityCookie('refreshToken', {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
+          removeAuthorityCookie('sessionId', {
+            path: '/',
+            sameSite: 'strict',
+            secure: false,
+          });
           openToastifyAlert({
             type: 'error',
             text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
           });
+          navigate('/login');
           return 0;
         }
       });

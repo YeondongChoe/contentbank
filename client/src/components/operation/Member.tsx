@@ -125,7 +125,13 @@ export function Member() {
     // getUser(accountIdx);
     openModal({
       title: '',
-      content: <EditModal accountIdx={accountIdx} userKey={userKey} />,
+      content: (
+        <EditModal
+          accountIdx={accountIdx}
+          userKey={userKey}
+          refetch={refetch}
+        />
+      ),
     });
   };
   // const getUser = async (accountIdx: number) => {

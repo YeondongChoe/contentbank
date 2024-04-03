@@ -28,8 +28,6 @@ export function Header() {
   // 사이드메뉴 로그아웃 시
   const onLogout = () => {
     //쿠키 삭제
-    // queryClient.removeQueries();
-    // queryClient.clear();
     queryClient.getQueryCache().clear;
     removeAuthorityCookie('accessToken', {
       path: '/',

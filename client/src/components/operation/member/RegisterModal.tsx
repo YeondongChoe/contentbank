@@ -9,26 +9,8 @@ import { Input, Label } from '../..';
 import { userInstance } from '../../../api/axios';
 import { idRegex, COLOR, nameRegex } from '../../../components/constants';
 import { useModal } from '../../../hooks';
-import { MemberType } from '../../../types';
-import { Button, openToastifyAlert, Select } from '../../atom';
-
-type authorityType = {
-  idx: number;
-  code: string;
-  name: string;
-  sort: number;
-  createdBy: string;
-  createdAt: string;
-  lastModifiedBy: string;
-  lastModifiedAt: string;
-};
-
-type authoritySelectType = {
-  id: number;
-  label: string;
-  code: string;
-  value: string;
-};
+import { ItemAuthorityType, MemberType } from '../../../types';
+import { Button, ItemSelectProps, openToastifyAlert, Select } from '../../atom';
 
 export function RegisterModal({
   memberList,
@@ -50,7 +32,7 @@ export function RegisterModal({
   const [selectedValue, setSelectedValue] = useState('');
   const [commentValue, setCommentValue] = useState('');
   const [authoritySelectList, setAuthoritySelectList] = useState<
-    authoritySelectType[]
+    ItemSelectProps[]
   >([]);
   const { control, watch } = useForm();
 
@@ -171,13 +153,14 @@ export function RegisterModal({
   useEffect(() => {
     // console.log('authorityData', authorityData && authorityData);
     if (authorityData && authorityData.data.data.authorityList) {
-      const list: authoritySelectType[] =
-        authorityData.data.data.authorityList.map((item: authorityType) => ({
+      const list: ItemSelectProps[] = authorityData.data.data.authorityList.map(
+        (item: ItemAuthorityType) => ({
           id: item.idx,
           label: item.name,
           code: item.code,
           value: item.name,
-        }));
+        }),
+      );
       setAuthoritySelectList([...list]);
     } else {
       setAuthoritySelectList([

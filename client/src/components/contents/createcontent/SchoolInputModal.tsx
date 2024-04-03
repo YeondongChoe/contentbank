@@ -44,7 +44,7 @@ export function SchoolInputModal({
     const res = await classificationInstance.get(
       `/v1/school?pageIndex=${page}&pageUnit=${4}&searchKeyword=${searchValue}`,
     );
-    console.log(`classificationInstance 결과값`, res);
+    // console.log(`getSchoolList 결과값`, res);
     return res;
   };
   const { data, isFetching, isLoading, refetch } = useQuery({
@@ -74,10 +74,10 @@ export function SchoolInputModal({
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
   };
+
+  //직접 입력 인풋에 등록시
   const submitSchoolData = () => {
-    setSchoolNameValue(submitNameValue);
-    // console.log(nameValue);
-    closeModal();
+    // console.log(submitNameValue);
   };
 
   useEffect(() => {
@@ -197,7 +197,7 @@ export function SchoolInputModal({
                 $margin={'0 0 0 5px'}
                 cursor
                 $border
-                onClick={() => {}}
+                onClick={() => submitSchoolData()}
               >
                 등록
               </Button>
@@ -211,7 +211,11 @@ export function SchoolInputModal({
       <ButtonWrapper>
         <Button
           buttonType="button"
-          onClick={() => submitSchoolData()}
+          onClick={() => {
+            setSchoolNameValue(submitNameValue);
+            // console.log(nameValue);
+            closeModal();
+          }}
           height={'40px'}
           fontSize="16px"
           $filled

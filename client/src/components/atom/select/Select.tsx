@@ -7,7 +7,7 @@ import { styled } from 'styled-components';
 import { COLOR } from '../../constants';
 import { IconButton } from '../button';
 
-type ItemProps = {
+export type ItemSelectProps = {
   id?: string | number;
   label?: string;
   code?: string;
@@ -15,7 +15,7 @@ type ItemProps = {
 };
 
 type SelectProps = {
-  options?: ItemProps[];
+  options?: ItemSelectProps[];
   onClick?: () => void;
   onSelect?: (
     event: React.MouseEvent<HTMLButtonElement>,
