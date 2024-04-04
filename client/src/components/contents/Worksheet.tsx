@@ -150,7 +150,11 @@ export function Worksheet() {
           column: 2,
         },
         {
+          headers: {
+            'Content-Type': 'application/json',
+          },
           responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
+          withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
         },
       );
 
