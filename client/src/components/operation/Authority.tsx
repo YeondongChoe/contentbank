@@ -1,21 +1,17 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
-import { useRecoilState } from 'recoil';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
+import { userInstance } from '../../api/axios';
 import { Input } from '../../components';
 import { Button } from '../../components/atom';
+import { ItemAuthorityType } from '../../types';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
-
-type AuthorityListProps = {
-  seq: number;
-  code: string;
-  name: string;
-  sort: number;
-};
 
 export const defaultPermissions = [
   { key: 'isEditCreateChecked', checked: false },
@@ -39,10 +35,7 @@ export const defaultPermissions = [
 ];
 
 export function Authority() {
-  // const [checked, setChecked] = useState<boolean[]>([false]);
-
-  // const { control } = useForm();
-  const [authorityList, setAuthorityList] = useState<AuthorityListProps[]>([]);
+  const [authorityList, setAuthorityList] = useState<ItemAuthorityType[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
@@ -53,14 +46,47 @@ export function Authority() {
   const [isPutNameError, setIsPutNameError] = useState(false);
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
-  const [didMount, setDidMount] = useState(false);
-
   const [checkList, setCheckList] = useState<
     {
       key: string;
       checked: boolean;
     }[]
   >(defaultPermissions);
+
+  // 권한 셀렉트 불러오기 api
+  const getAuthorityList = async () => {
+    const res = await userInstance.get(`/v1/authority?menuIdx=${9}`);
+    console.log(`getAuthorityList 결과값`, res);
+    return res;
+  };
+  const { data: authorityListData } = useQuery({
+    queryKey: ['get-authorityList'],
+    queryFn: getAuthorityList,
+    meta: {
+      errorMessage: 'get-authorityList 에러 메세지',
+    },
+  });
+  const updateAuthorityList = () => {
+    if (authorityListData) {
+      const authority: ItemAuthorityType[] = [];
+      authorityListData.data.data.authorityList.map((el: ItemAuthorityType) => {
+        authority.push({
+          idx: el.idx,
+          code: el.code,
+          name: el.name,
+          sort: el.sort,
+          createdBy: el.createdBy,
+          createdAt: el.createdAt,
+          lastModifiedBy: el.lastModifiedBy,
+          lastModifiedAt: el.lastModifiedAt,
+        });
+      });
+      setAuthorityList([...authority]);
+    }
+  };
+  useEffect(() => {
+    updateAuthorityList();
+  }, [authorityListData]);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
@@ -522,7 +548,7 @@ export function Authority() {
   useEffect(() => {
     if (isClickedName === true) {
       // isClickedName상태값이 수정이고 데이터가 있을시 해당 데이터로
-      loadData();
+      // loadData();
       // 불러온 체크박스 배열값넣기
       // setCheckList();
     }
@@ -533,34 +559,9 @@ export function Authority() {
     }
   }, [isClickedName]);
 
-  // const openDeleteAlert = (code: string) => {
-  //   setCodeValue(code);
-  //   setIsUpdateAuthority(false);
-  //   setIsCreateNameError(false);
-  //   setIsPutAuthority(false);
-  //   setIsAlertOpen(true);
-  //   setIsDeleteAuthority(true);
-  // };
-
   const submitDelete = (code: string) => {
     // DeleteAuthority({ setIsAlertOpen }, code);
   };
-
-  const loadData = useCallback(() => {
-    // getAuthorityList({
-    //   setAuthorityList,
-    // });
-  }, [setAuthorityList]);
-
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
-  // 저장된 권한리스트 데이터 불러오기
-  useEffect(() => {
-    if (didMount) {
-      loadData();
-    }
-  }, [didMount]);
 
   useEffect(() => {
     console.log(checkList);
@@ -570,36 +571,27 @@ export function Authority() {
     <Container>
       <Title>권한 관리</Title>
       <Wrapper>
-        <InputWrapper>
-          <Input
-            height="40px"
-            padding="5px"
-            placeholderSize="14px"
-            fontSize="14px"
-            borderradius="5px"
-            type="text"
-            placeholder="권한명을 작성해주세요."
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setIsClickedName(false);
-            }}
-          />
-          <Button
-            buttonType="button"
-            onClick={openUpdateAlert}
-            cursor
-            $padding="10px"
-            height={'40px'}
-            width={'100px'}
-            fontSize="12px"
-            $filled
-          >
-            <span>{isClickedName ? '수정' : '저장'}</span>
-          </Button>
-        </InputWrapper>
-
         <ListWrapper>
+          <SubTitleWrapper>
+            <SubTitle>권한 {isClickedName ? '수정' : '등록'}</SubTitle>
+            <InputWrapper>
+              <Input
+                height="35px"
+                padding="5px"
+                placeholderSize="14px"
+                fontSize="14px"
+                borderradius="5px"
+                type="text"
+                maxLength={20}
+                placeholder="권한명을 작성해주세요."
+                value={inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setIsClickedName(false);
+                }}
+              />
+            </InputWrapper>
+          </SubTitleWrapper>
           <TableWrapper>
             <table>
               <thead>
@@ -871,36 +863,73 @@ export function Authority() {
               </tbody>
             </table>
           </TableWrapper>
-          <AuthorityListWrapper>
-            {/* {authorityList?.map((el, i) => (
-              <AuthorityWrapper
-                key={i}
+          <ButtonWrapper>
+            <Button
+              buttonType="button"
+              onClick={openUpdateAlert}
+              cursor
+              $padding="10px"
+              $margin="10px 0 0 0"
+              height={'40px'}
+              fontSize="14px"
+              $filled
+            >
+              <span>{isClickedName ? '수정' : '저장'}</span>
+            </Button>
+            {isClickedName && (
+              <Button
+                buttonType="button"
                 onClick={() => {
-                  // clickMemberAuthority(el.code);
-                  setInputValue(el.name);
-                  setIsClickedName(true);
+                  setIsClickedName(false);
+                  setInputValue('');
                 }}
+                cursor
+                $padding="10px"
+                $margin="10px 0 0 0"
+                height={'40px'}
+                fontSize="14px"
               >
-                <AuthorityName
-                  onClick={() => {
-                    // clickMemberAuthority(el.code);
-                    setInputValue(el.name);
-                    setIsClickedName(true);
-                  }}
-                >
-                  {el.name}
-                </AuthorityName>
-                <DeleteIconWrapper>
-                  <BiSolidTrashAlt
-                    onClick={() => {
-                      // openDeleteAlert(el.code);
-                    }}
-                  />
-                </DeleteIconWrapper>
-              </AuthorityWrapper>
-            ))} */}
-          </AuthorityListWrapper>
+                <span>취소</span>
+              </Button>
+            )}
+          </ButtonWrapper>
         </ListWrapper>
+
+        <ScrollWrapper>
+          <PerfectScrollbar>
+            <SubTitle className="center">등록 된 권한 목록</SubTitle>
+            <AuthorityListWrapper>
+              {authorityListData &&
+                authorityList.map((el) => (
+                  <AuthorityWrapper
+                    key={`${el.idx} ${el.code} ${el.name}`}
+                    onClick={() => {
+                      // clickMemberAuthority(el.code);
+                      setInputValue(el.name);
+                      setIsClickedName(true);
+                    }}
+                  >
+                    <AuthorityName
+                      onClick={() => {
+                        // clickMemberAuthority(el.code);
+                        setInputValue(el.name);
+                        setIsClickedName(true);
+                      }}
+                    >
+                      <span className="ellipsis">{el.name}</span>
+                    </AuthorityName>
+                    <DeleteIconWrapper>
+                      <BiSolidTrashAlt
+                        onClick={() => {
+                          // openDeleteAlert(el.code);
+                        }}
+                      />
+                    </DeleteIconWrapper>
+                  </AuthorityWrapper>
+                ))}
+            </AuthorityListWrapper>
+          </PerfectScrollbar>
+        </ScrollWrapper>
       </Wrapper>
       {isDeleteAuthority && (
         <Alert
@@ -940,11 +969,32 @@ const Container = styled.div`
   width: 100%;
 `;
 const Wrapper = styled.div`
-  margin-top: 20px;
+  margin-top: 30px;
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1000px;
+`;
+const ListWrapper = styled.div`
+  display: flex;
   flex-direction: column;
-  padding-top: 10px;
+  width: calc(50% - 20px);
+  position: relative;
+  &::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 300px;
+    background-color: ${COLOR.BORDER_BLUE};
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  gap: 5px;
 `;
 const Title = styled.div`
   font-size: 24px;
@@ -952,33 +1002,45 @@ const Title = styled.div`
   width: 100%;
   text-align: left;
 `;
-const ListWrapper = styled.div`
+const SubTitle = styled.span`
+  font-weight: bold;
+  color: ${COLOR.FONT_BLACK};
+  font-size: 16px;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: space-around;
-  width: 100%;
+  padding: 0 10px;
   padding-top: 10px;
-`;
 
+  &.center {
+    padding: 10px 0;
+    width: 100%;
+    justify-content: center;
+  }
+`;
+const SubTitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+
+  > span {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    margin-right: 15px;
+  }
+`;
 const InputWrapper = styled.div`
   border: 1px solid ${COLOR.SECONDARY};
-  width: 100%;
+  width: calc(100% - 100px);
+  height: 40px;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
   border-radius: 5px;
   padding: 5px;
-  > div {
-    width: 100%;
-    margin-right: 10px;
-  }
 `;
 
 const TableWrapper = styled.div`
-  width: calc(50% - 20px);
-  height: 500px;
-
   table {
     width: 100%;
     border-collapse: collapse;
@@ -1006,28 +1068,88 @@ const TableWrapper = styled.div`
     }
   }
 `;
+const ScrollWrapper = styled.div`
+  width: calc(50% - 20px);
+  height: 580px;
+  background-color: ${COLOR.LIGHT_GRAY};
+`;
 
 const AuthorityListWrapper = styled.div`
-  width: calc(50% - 20px);
-  height: 500px;
-  border: 1px solid ${COLOR.SECONDARY};
-  background-color: white;
+  width: 100%;
+  height: fit-content;
+  /* border-left: 1px solid ${COLOR.SECONDARY}; */
   display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
   flex-direction: column;
+  background-color: ${COLOR.LIGHT_GRAY};
+  padding: 10px;
 `;
+
 const AuthorityWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+`;
+const AuthorityName = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  padding-right: 50px;
+  border-radius: 5px;
+  background-color: white;
+  border: none;
+  margin-right: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  position: relative;
+  &::after {
+    content: '| 수정';
+    display: flex;
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    color: ${COLOR.SELECT_BLUE};
+  }
+
   &:hover {
-    background-color: ${COLOR.SELECT_HOVER};
+    background-color: ${COLOR.SELECT_BLUE};
     color: white;
+    &::after {
+      content: '| 수정';
+      color: ${COLOR.LIGHT_GRAY};
+    }
+  }
+  > span {
+    display: flex;
+    text-align: left;
+    width: 100%;
+  }
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 `;
-const AuthorityName = styled.div`
-  //cursor: pointer;
-`;
-const DeleteIconWrapper = styled.div`
-  font-size: 17px;
+const DeleteIconWrapper = styled.button`
+  font-size: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: ${COLOR.FONT_BLACK};
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  border: none;
+  color: #fff;
+  /* background-color: transparent; */
+  &:hover {
+    background: ${COLOR.RED};
+  }
 `;
