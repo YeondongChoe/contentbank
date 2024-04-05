@@ -71,16 +71,16 @@ export function Authority() {
   // 권한 셀렉트 불러오기 api
   const getAuthorityList = async () => {
     const res = await userInstance.get(`/v1/authority?idx=${9}`);
-    // console.log(`getAuthorityList 결과값`, res);
     return res;
   };
-  const { data: authorityListData } = useQuery({
-    queryKey: ['get-authorityList'],
-    queryFn: getAuthorityList,
-    meta: {
-      errorMessage: 'get-authorityList 에러 메세지',
-    },
-  });
+  const { data: authorityListData, refetch: authorityListDataRefetch } =
+    useQuery({
+      queryKey: ['get-authorityList'],
+      queryFn: getAuthorityList,
+      meta: {
+        errorMessage: 'get-authorityList 에러 메세지',
+      },
+    });
   const updateAuthorityList = () => {
     if (authorityListData) {
       const authority: ItemAuthorityType[] = [];
@@ -134,7 +134,6 @@ export function Authority() {
   //등록된 권한 이름 버튼
   const clickMemberAuthority = (code: string) => {
     setIsClickedName(true);
-    // getAuthority(code);
     setCodeValue(code);
   };
 
@@ -323,7 +322,7 @@ export function Authority() {
     return Object.values(onListItem).sort((a, b) => a.idx - b.idx);
   };
 
-  // 수정 버튼
+  // 등록 && 수정 버튼
   const submitAuthority = () => {
     const permissionList: {
       idx: number;
@@ -333,7 +332,14 @@ export function Authority() {
     setCodeUpdateList(permissionList);
     // console.log(permissionList);
 
-    mutateChangeAuthority();
+    if (isClickedName) {
+      mutateChangeAuthority();
+      return;
+    }
+    if (!isClickedName) {
+      mutateCreateAuthority();
+      return;
+    }
   };
 
   // 선택된 권한 수정하기 api
@@ -347,7 +353,6 @@ export function Authority() {
     console.log('fdsfdsf', res);
     return res;
   };
-
   const { data: changeAuthorityData, mutate: mutateChangeAuthority } =
     useMutation({
       mutationFn: putChangeAuthority,
@@ -363,8 +368,43 @@ export function Authority() {
           text: response.data.message,
         });
         setIsAlertOpen(false);
+        authorityListDataRefetch();
       },
     });
+  // 선택된 권한 생성하기 api
+  const postCreateAuthority = async () => {
+    const data = {
+      name: inputValue,
+      permissionList: codeUpdateList,
+    };
+    const res = await userInstance.post(`/v1/authority`, data);
+    return res;
+  };
+  const { data: createAuthorityData, mutate: mutateCreateAuthority } =
+    useMutation({
+      mutationFn: postCreateAuthority,
+      onError: (context: { response: { data: { message: string } } }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+      },
+      onSuccess: (response: { data: { message: string } }) => {
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+        setIsAlertOpen(false);
+        authorityListDataRefetch();
+      },
+    });
+
+  useEffect(() => {}, [changeAuthorityData, createAuthorityData]);
+
+  const submitDelete = () => {
+    // DeleteAuthority({ setIsAlertOpen }, codeValue);
+    // codeValue
+  };
 
   // 권한관리 체크박스 핸들러
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -818,23 +858,11 @@ export function Authority() {
   };
 
   useEffect(() => {
-    if (isClickedName === true) {
-      // isClickedName상태값이 수정이고 데이터가 있을시 해당 데이터로
-      // loadData();
-      // 불러온 체크박스 배열값넣기
-      // setCheckList();
-    }
-
     if (isClickedName === false) {
       // isClickedName상태값이 저장일시 defaultPermissions 로
       setCheckList([...defaultPermissions]);
     }
   }, [isClickedName]);
-
-  const submitDelete = (code: string) => {
-    // DeleteAuthority({ setIsAlertOpen }, code);
-  };
-
   useEffect(() => {
     //페이지 변경시 초기화
     setCheckList([...defaultPermissions]);
@@ -1246,7 +1274,7 @@ export function Authority() {
           isAlertOpen={isAlertOpen}
           description="권한을 삭제할 경우, 해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"
-          onClick={() => submitDelete(codeValue)}
+          onClick={() => submitDelete()}
         />
       )}
       {isUpdateAuthority && (
