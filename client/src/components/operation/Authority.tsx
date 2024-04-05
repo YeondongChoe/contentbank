@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useReducer } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
@@ -8,8 +8,9 @@ import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
 import { Input } from '../../components';
-import { Button } from '../../components/atom';
+import { Button, ValueNone } from '../../components/atom';
 import { ItemAuthorityType } from '../../types';
+import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
@@ -36,11 +37,11 @@ export const defaultPermissions = [
 
 export function Authority() {
   const [authorityList, setAuthorityList] = useState<ItemAuthorityType[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState<string>('');
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
+  const [codeValueList, setCodeValueList] = useState([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [isPutAuthority, setIsPutAuthority] = useState(false);
   const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
   const [isPutNameError, setIsPutNameError] = useState(false);
@@ -88,43 +89,101 @@ export function Authority() {
     updateAuthorityList();
   }, [authorityListData]);
 
-  const openUpdateAlert = () => {
-    setIsAlertOpen(true);
-    if (inputValue === '') {
-      setIsCreateNameError(true);
-      setIsUpdateAuthority(false);
-    }
-    if (inputValue) {
-      setIsCreateNameError(false);
-      setIsUpdateAuthority(true);
-    }
+  // 선택된 권한 불러오기 api
+  const getAuthority = async (code: string) => {
+    await userInstance
+      .get(`/v1/authority/${code}`)
+      .then((res) => {
+        const authorityt = res && res.data.data;
+        setCodeValueList(authorityt.permissionList);
+        console.log(`getAuthority--- 결과값`, res);
+      })
+      .catch((err) => {
+        postRefreshToken();
+      });
   };
 
-  // const clickMemberAuthority = (code: string) => {
-  //   getMemberAuthority(
-  //     {
-  //       setIsEditCreateChecked,
-  //       setIsManageCreateChecked,
-  //       setIsEditCreateListChecked,
-  //       setIsManageCreateListChecked,
-  //       setIsEditWorksheetChecked,
-  //       setIsManageWorksheetChecked,
-  //       setIsEditManagementChecked,
-  //       setIsManageManagementChecked,
-  //       setIsEditManagementListChecked,
-  //       setIsManageManagementListChecked,
-  //       setIsEditTreeChecked,
-  //       setIsManageTreeChecked,
-  //       setIsEditOperationChecked,
-  //       setIsManageOperationChecked,
-  //       setIsEditMemberChecked,
-  //       setIsManageMemberChecked,
-  //       setIsEditAuthorityChecked,
-  //       setIsManageAuthorityChecked,
-  //     },
-  //     code,
-  //   );
-  // };
+  const clickMemberAuthority = (code: string) => {
+    console.log('code', code);
+    setIsClickedName(true);
+    getAuthority(code);
+  };
+
+  useEffect(() => {
+    updateAuthority();
+  }, [codeValueList]);
+
+  const updateAuthority = () => {
+    const onList: { key: string; checked: boolean }[] = [];
+    console.log('codeValueList111', codeValueList);
+
+    codeValueList.map(
+      (el: {
+        idx: number;
+        menuIdx?: number;
+        isEdit: boolean;
+        isManage: boolean;
+      }) => {
+        if (el.idx == 1 || el.idx == 11) {
+          onList.push(
+            { key: 'isEditCreateChecked', checked: el.isEdit },
+            { key: 'isManageCreateChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 2 || el.idx == 12) {
+          onList.push(
+            { key: 'isEditCreateListChecked', checked: el.isEdit },
+            { key: 'isManageCreateListChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 3 || el.idx == 13) {
+          onList.push(
+            { key: 'isEditWorksheetChecked', checked: el.isEdit },
+            { key: 'isManageWorksheetChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 4 || el.idx == 14) {
+          onList.push(
+            { key: 'isEditManagementChecked', checked: el.isEdit },
+            { key: 'isManageManagementChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 5 || el.idx == 15) {
+          onList.push(
+            { key: 'isEditManagementListChecked', checked: el.isEdit },
+            { key: 'isManageManagementListChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 6 || el.idx == 16) {
+          onList.push(
+            { key: 'isEditTreeChecked', checked: el.isEdit },
+            { key: 'isManageTreeChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 7 || el.idx == 17) {
+          onList.push(
+            { key: 'isEditOperationChecked', checked: el.isEdit },
+            { key: 'isManageOperationChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 8 || el.idx == 18) {
+          onList.push(
+            { key: 'isEditMemberChecked', checked: el.isEdit },
+            { key: 'isManageMemberChecked', checked: el.isManage },
+          );
+        }
+        if (el.idx == 9 || el.idx == 19) {
+          onList.push(
+            { key: 'isEditAuthorityChecked', checked: el.isEdit },
+            { key: 'isManageAuthorityChecked', checked: el.isManage },
+          );
+        }
+      },
+    );
+
+    console.log('updateAuthority', onList);
+    setCheckList([...onList]);
+  };
 
   const submitAuthority = () => {
     // postCreateAuthority({
@@ -545,6 +604,10 @@ export function Authority() {
     // console.log(onList);
   };
 
+  const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
   useEffect(() => {
     if (isClickedName === true) {
       // isClickedName상태값이 수정이고 데이터가 있을시 해당 데이터로
@@ -554,8 +617,8 @@ export function Authority() {
     }
 
     if (isClickedName === false) {
-      // isClickedName상태값이 저장일시 디폴트 (defaultPermissions) 로
-      setCheckList(defaultPermissions);
+      // isClickedName상태값이 저장일시 defaultPermissions 로
+      setCheckList([...defaultPermissions]);
     }
   }, [isClickedName]);
 
@@ -564,8 +627,24 @@ export function Authority() {
   };
 
   useEffect(() => {
-    console.log(checkList);
-  }, [checkList, setCheckList, handleChecked]);
+    //페이지 변경시 초기화
+    setCheckList([...defaultPermissions]);
+  }, []);
+  useEffect(() => {
+    // console.log('console.log(checkList) ', checkList);
+  }, [checkList]);
+
+  const openUpdateAlert = () => {
+    setIsAlertOpen(true);
+    if (inputValue === '') {
+      setIsCreateNameError(true);
+      setIsUpdateAuthority(false);
+    }
+    if (inputValue) {
+      setIsCreateNameError(false);
+      setIsUpdateAuthority(true);
+    }
+  };
 
   return (
     <Container>
@@ -575,21 +654,32 @@ export function Authority() {
           <SubTitleWrapper>
             <SubTitle>권한 {isClickedName ? '수정' : '등록'}</SubTitle>
             <InputWrapper>
-              <Input
-                height="35px"
-                padding="5px"
-                placeholderSize="14px"
-                fontSize="14px"
-                borderradius="5px"
-                type="text"
-                maxLength={20}
-                placeholder="권한명을 작성해주세요."
-                value={inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value);
-                  setIsClickedName(false);
-                }}
-              />
+              {isClickedName ? (
+                <Input
+                  width="100%"
+                  height="35px"
+                  padding="5px"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  borderradius="5px"
+                  type="text"
+                  readOnly
+                  value={inputValue}
+                />
+              ) : (
+                <Input
+                  width="100%"
+                  height="35px"
+                  padding="5px"
+                  placeholderSize="14px"
+                  fontSize="14px"
+                  borderradius="5px"
+                  type="text"
+                  placeholder="권한명을 작성해주세요."
+                  value={inputValue}
+                  onChange={(e) => changeName(e)}
+                />
+              )}
             </InputWrapper>
           </SubTitleWrapper>
           <TableWrapper>
@@ -899,34 +989,44 @@ export function Authority() {
           <PerfectScrollbar>
             <SubTitle className="center">등록 된 권한 목록</SubTitle>
             <AuthorityListWrapper>
-              {authorityListData &&
-                authorityList.map((el) => (
-                  <AuthorityWrapper
-                    key={`${el.idx} ${el.code} ${el.name}`}
-                    onClick={() => {
-                      // clickMemberAuthority(el.code);
-                      setInputValue(el.name);
-                      setIsClickedName(true);
-                    }}
-                  >
-                    <AuthorityName
-                      onClick={() => {
-                        // clickMemberAuthority(el.code);
-                        setInputValue(el.name);
-                        setIsClickedName(true);
-                      }}
-                    >
-                      <span className="ellipsis">{el.name}</span>
-                    </AuthorityName>
-                    <DeleteIconWrapper>
-                      <BiSolidTrashAlt
-                        onClick={() => {
-                          // openDeleteAlert(el.code);
-                        }}
-                      />
-                    </DeleteIconWrapper>
-                  </AuthorityWrapper>
-                ))}
+              {authorityListData && (
+                <>
+                  {authorityList.length > 0 ? (
+                    <>
+                      {authorityList.map((el) => (
+                        <AuthorityWrapper
+                          key={`${el.idx} ${el.code} ${el.name}`}
+                          onClick={() => {
+                            // clickMemberAuthority(el.code);
+                            setInputValue(el.name);
+                            setIsClickedName(true);
+                          }}
+                        >
+                          <AuthorityName
+                            onClick={() => {
+                              clickMemberAuthority(el.code);
+                              setInputValue(el.name);
+                            }}
+                          >
+                            <span className="ellipsis">{el.name}</span>
+                          </AuthorityName>
+                          <DeleteIconWrapper>
+                            <BiSolidTrashAlt
+                              onClick={() => {
+                                // openDeleteAlert(el.code);
+                              }}
+                            />
+                          </DeleteIconWrapper>
+                        </AuthorityWrapper>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <ValueNone textOnly info="등록된 권한이 없습니다" />
+                    </>
+                  )}
+                </>
+              )}
             </AuthorityListWrapper>
           </PerfectScrollbar>
         </ScrollWrapper>
@@ -1038,6 +1138,9 @@ const InputWrapper = styled.div`
   align-items: center;
   border-radius: 5px;
   padding: 5px;
+  > div {
+    width: 100%;
+  }
 `;
 
 const TableWrapper = styled.div`
@@ -1097,7 +1200,7 @@ const AuthorityName = styled.button`
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 5px 10px;
+  padding: 8px 10px;
   padding-right: 50px;
   border-radius: 5px;
   background-color: white;

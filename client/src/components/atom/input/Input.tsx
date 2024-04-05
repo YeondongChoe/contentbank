@@ -24,6 +24,7 @@ type InputProps = {
   borderbottom?: boolean;
   margin?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   errorMessage?: boolean | string;
   successMessage?: boolean | string;
   innerRef?: React.Ref<HTMLInputElement>;
@@ -54,6 +55,7 @@ export function Input({
   innerRef,
   maxLength,
   minLength,
+  readOnly,
   onKeyUp,
 }: InputProps) {
   useEffect(() => {}, [errorMessage]);
@@ -63,6 +65,7 @@ export function Input({
         className={className}
         type={type}
         disabled={disabled}
+        readOnly={readOnly}
         placeholder={placeholder}
         value={value}
         width={width}

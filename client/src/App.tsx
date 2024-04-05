@@ -10,16 +10,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { tokenInstance } from './api/axios';
 import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { useModal } from './hooks';
-import {
-  getAuthorityCookie,
-  removeAuthorityCookie,
-  setAuthorityCookie,
-} from './utils/cookies';
+import { getAuthorityCookie } from './utils/cookies';
+import { postRefreshToken } from './utils/tokenHandler';
 
 export function App() {
   const location = useLocation();
@@ -81,53 +77,6 @@ export function App() {
     }),
   });
 
-  //리프레쉬 토큰 요청 api
-  const postRefreshToken = async () => {
-    const refreshTokenData = await tokenInstance
-      .post(`/v1/auth/refresh-token`)
-      .then((res) => {
-        // console.log('refreshTokenData ', res);
-        if (res.data.code === 'S-001') {
-          setAuthorityCookie('accessToken', res.data.data.accessToken, {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-          return 1;
-        }
-      })
-      .catch((error) => {
-        console.log('refreshTokenData error', error);
-        if (
-          error.response.data.code == 'GE-002'
-          //|| error.response.data.code == 'E-006'
-        ) {
-          // 리프레쉬 토큰 기간 만료시
-          removeAuthorityCookie('accessToken', {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-          removeAuthorityCookie('refreshToken', {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-          removeAuthorityCookie('sessionId', {
-            path: '/',
-            sameSite: 'strict',
-            secure: false,
-          });
-          openToastifyAlert({
-            type: 'error',
-            text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
-          });
-          navigate('/login');
-          return 0;
-        }
-      });
-    console.log('refreshTokenData ', refreshTokenData);
-  };
   useEffect(() => {
     // 토큰이 없을시 로그인페이지로 이동 임시
     if (
