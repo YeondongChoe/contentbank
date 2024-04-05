@@ -146,7 +146,7 @@ export function RegisterModal({
 
   // 권한 불러오기 api
   const getAuthority = async () => {
-    const res = await userInstance.get(`/v1/authority?menuIdx=${9}`);
+    const res = await userInstance.get(`/v1/authority?idx=${9}`);
     return res;
   };
   const { data: authorityData, isFetching } = useQuery({

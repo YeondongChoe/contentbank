@@ -152,7 +152,7 @@ export function EditModal({
 
   // 권한 셀렉트 불러오기 api
   const getAuthorityList = async () => {
-    const res = await userInstance.get(`/v1/authority?menuIdx=${9}`);
+    const res = await userInstance.get(`/v1/authority?idx=${9}`);
     console.log(`getAuthorityList 결과값`, res);
     return res;
   };

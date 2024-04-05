@@ -49,7 +49,7 @@ export function Member() {
   // 유저 리스트 불러오기 api
   const getUserList = async () => {
     const res = await userInstance.get(
-      `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
+      `/v1/account?idx=${9}&pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
 			`,
     );
     // console.log(`유저리스트 get 결과값`, res);
@@ -97,7 +97,7 @@ export function Member() {
   const getTotalMemberList = async () => {
     const totalCount = memberList.pagination.totalCount;
     const res = await userInstance.get(
-      `/v1/account?menuIdx=${9}&pageIndex=${1}&pageUnit=${totalCount}
+      `/v1/account?idx=${9}&pageIndex=${1}&pageUnit=${totalCount}
 				`,
     );
     setTotalMemberList(res.data.data.list);

@@ -1,38 +1,38 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback, useReducer } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
 import { Input } from '../../components';
-import { Button, ValueNone } from '../../components/atom';
+import { Button, ValueNone, openToastifyAlert } from '../../components/atom';
 import { ItemAuthorityType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
 export const defaultPermissions = [
-  { key: 'isEditCreateChecked', checked: false },
-  { key: 'isManageCreateChecked', checked: false },
-  { key: 'isEditCreateListChecked', checked: false },
-  { key: 'isManageCreateListChecked', checked: false },
-  { key: 'isEditWorksheetChecked', checked: false },
-  { key: 'isManageWorksheetChecked', checked: false },
-  { key: 'isEditManagementChecked', checked: false },
-  { key: 'isManageManagementChecked', checked: false },
-  { key: 'isEditManagementListChecked', checked: false },
-  { key: 'isManageManagementListChecked', checked: false },
-  { key: 'isEditTreeChecked', checked: false },
-  { key: 'isManageTreeChecked', checked: false },
-  { key: 'isEditOperationChecked', checked: false },
-  { key: 'isManageOperationChecked', checked: false },
-  { key: 'isEditMemberChecked', checked: false },
-  { key: 'isManageMemberChecked', checked: false },
-  { key: 'isEditAuthorityChecked', checked: false },
-  { key: 'isManageAuthorityChecked', checked: false },
+  { key: 'isEditCreateChecked', checked: false, valueIdx: 0 },
+  { key: 'isManageCreateChecked', checked: false, valueIdx: 1 },
+  { key: 'isEditCreateListChecked', checked: false, valueIdx: 2 },
+  { key: 'isManageCreateListChecked', checked: false, valueIdx: 3 },
+  { key: 'isEditWorksheetChecked', checked: false, valueIdx: 4 },
+  { key: 'isManageWorksheetChecked', checked: false, valueIdx: 5 },
+  { key: 'isEditManagementChecked', checked: false, valueIdx: 6 },
+  { key: 'isManageManagementChecked', checked: false, valueIdx: 7 },
+  { key: 'isEditManagementListChecked', checked: false, valueIdx: 8 },
+  { key: 'isManageManagementListChecked', checked: false, valueIdx: 9 },
+  { key: 'isEditTreeChecked', checked: false, valueIdx: 10 },
+  { key: 'isManageTreeChecked', checked: false, valueIdx: 11 },
+  { key: 'isEditOperationChecked', checked: false, valueIdx: 12 },
+  { key: 'isManageOperationChecked', checked: false, valueIdx: 13 },
+  { key: 'isEditMemberChecked', checked: false, valueIdx: 14 },
+  { key: 'isManageMemberChecked', checked: false, valueIdx: 15 },
+  { key: 'isEditAuthorityChecked', checked: false, valueIdx: 16 },
+  { key: 'isManageAuthorityChecked', checked: false, valueIdx: 17 },
 ];
 
 export function Authority() {
@@ -40,24 +40,38 @@ export function Authority() {
   const [inputValue, setInputValue] = useState<string>('');
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
-  const [codeValueList, setCodeValueList] = useState([]);
+  const [codeUpdateList, setCodeUpdateList] = useState<
+    {
+      idx: number;
+      isEdit: 'Y' | 'N';
+      isManage: 'Y' | 'N';
+    }[]
+  >([]);
+  const [codeGetList, setCodeGetList] = useState<
+    {
+      idx: number;
+      isEdit: boolean;
+      isManage: boolean;
+    }[]
+  >([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
-  const [isPutNameError, setIsPutNameError] = useState(false);
+
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
   const [checkList, setCheckList] = useState<
     {
       key: string;
       checked: boolean;
+      valueIdx: number;
     }[]
   >(defaultPermissions);
 
   // 권한 셀렉트 불러오기 api
   const getAuthorityList = async () => {
-    const res = await userInstance.get(`/v1/authority?menuIdx=${9}`);
-    console.log(`getAuthorityList 결과값`, res);
+    const res = await userInstance.get(`/v1/authority?idx=${9}`);
+    // console.log(`getAuthorityList 결과값`, res);
     return res;
   };
   const { data: authorityListData } = useQuery({
@@ -90,125 +104,267 @@ export function Authority() {
   }, [authorityListData]);
 
   // 선택된 권한 불러오기 api
-  const getAuthority = async (code: string) => {
-    await userInstance
-      .get(`/v1/authority/${code}`)
-      .then((res) => {
-        const authorityt = res && res.data.data;
-        setCodeValueList(authorityt.permissionList);
-        console.log(`getAuthority--- 결과값`, res);
-      })
-      .catch((err) => {
-        postRefreshToken();
-      });
-  };
+  const getAuthority = async () => {
+    return await userInstance.get(`/v1/authority/${codeValue}`);
+    // .then((res) => {
+    //   const permissions = res && res.data.data;
+    //   setCodeGetList(permissions.permissionList);
 
+    //   console.log(`getAuthority--- 결과값`, res);
+    // });
+    // .catch((error) => {
+    //   if (error.response.data.code == 'GE-002') postRefreshToken();
+    // });
+  };
+  const { data: authorityData, isSuccess } = useQuery({
+    queryKey: ['get-authority'],
+    queryFn: getAuthority,
+    meta: {
+      errorMessage: 'get-authority 에러 메세지',
+    },
+    enabled: codeValue !== '',
+  });
+
+  useEffect(() => {
+    if (isSuccess && authorityData)
+      setCodeGetList(authorityData.data.data.permissionList);
+    console.log(`authorityData--- 결과값`, authorityData);
+  }, [authorityData]);
+
+  //등록된 권한 이름 버튼
   const clickMemberAuthority = (code: string) => {
-    console.log('code', code);
     setIsClickedName(true);
-    getAuthority(code);
+    // getAuthority(code);
+    setCodeValue(code);
   };
 
   useEffect(() => {
-    updateAuthority();
-  }, [codeValueList]);
+    updatePermissions();
+  }, [codeGetList]);
 
-  const updateAuthority = () => {
-    const onList: { key: string; checked: boolean }[] = [];
-    console.log('codeValueList111', codeValueList);
+  // 등록된 권한 데이터 불러올 시 체크박스에 맞춘 데이터로 변환
+  const updatePermissions = () => {
+    const onList: { key: string; checked: boolean; valueIdx: number }[] = [];
 
-    codeValueList.map(
-      (el: {
-        idx: number;
-        menuIdx?: number;
-        isEdit: boolean;
-        isManage: boolean;
-      }) => {
+    codeGetList.map(
+      (el: { idx: number; isEdit: boolean; isManage: boolean }) => {
         if (el.idx == 1 || el.idx == 11) {
           onList.push(
-            { key: 'isEditCreateChecked', checked: el.isEdit },
-            { key: 'isManageCreateChecked', checked: el.isManage },
+            {
+              valueIdx: 0,
+              key: 'isEditCreateChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 1,
+              key: 'isManageCreateChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 2 || el.idx == 12) {
           onList.push(
-            { key: 'isEditCreateListChecked', checked: el.isEdit },
-            { key: 'isManageCreateListChecked', checked: el.isManage },
+            {
+              valueIdx: 2,
+              key: 'isEditCreateListChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 3,
+              key: 'isManageCreateListChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 3 || el.idx == 13) {
           onList.push(
-            { key: 'isEditWorksheetChecked', checked: el.isEdit },
-            { key: 'isManageWorksheetChecked', checked: el.isManage },
+            {
+              valueIdx: 4,
+              key: 'isEditWorksheetChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 5,
+              key: 'isManageWorksheetChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 4 || el.idx == 14) {
           onList.push(
-            { key: 'isEditManagementChecked', checked: el.isEdit },
-            { key: 'isManageManagementChecked', checked: el.isManage },
+            {
+              valueIdx: 6,
+              key: 'isEditManagementChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 7,
+              key: 'isManageManagementChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 5 || el.idx == 15) {
           onList.push(
-            { key: 'isEditManagementListChecked', checked: el.isEdit },
-            { key: 'isManageManagementListChecked', checked: el.isManage },
+            {
+              valueIdx: 8,
+              key: 'isEditManagementListChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 9,
+              key: 'isManageManagementListChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 6 || el.idx == 16) {
           onList.push(
-            { key: 'isEditTreeChecked', checked: el.isEdit },
-            { key: 'isManageTreeChecked', checked: el.isManage },
+            {
+              valueIdx: 10,
+              key: 'isEditTreeChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 11,
+              key: 'isManageTreeChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 7 || el.idx == 17) {
           onList.push(
-            { key: 'isEditOperationChecked', checked: el.isEdit },
-            { key: 'isManageOperationChecked', checked: el.isManage },
+            {
+              valueIdx: 12,
+              key: 'isEditOperationChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 13,
+              key: 'isManageOperationChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 8 || el.idx == 18) {
           onList.push(
-            { key: 'isEditMemberChecked', checked: el.isEdit },
-            { key: 'isManageMemberChecked', checked: el.isManage },
+            {
+              valueIdx: 14,
+              key: 'isEditMemberChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 15,
+              key: 'isManageMemberChecked',
+              checked: el.isManage,
+            },
           );
         }
         if (el.idx == 9 || el.idx == 19) {
           onList.push(
-            { key: 'isEditAuthorityChecked', checked: el.isEdit },
-            { key: 'isManageAuthorityChecked', checked: el.isManage },
+            {
+              valueIdx: 16,
+              key: 'isEditAuthorityChecked',
+              checked: el.isEdit,
+            },
+            {
+              valueIdx: 17,
+              key: 'isManageAuthorityChecked',
+              checked: el.isManage,
+            },
           );
         }
       },
     );
 
-    console.log('updateAuthority', onList);
+    // console.log('updateAuthority', onList);
     setCheckList([...onList]);
   };
 
-  const submitAuthority = () => {
-    // postCreateAuthority({
-    //   inputValue,
-    //   isEditCreateChecked,
-    //   isManageCreateChecked,
-    //   isEditCreateListChecked,
-    //   isManageCreateListChecked,
-    //   isEditWorksheetChecked,
-    //   isManageWorksheetChecked,
-    //   isEditManagementChecked,
-    //   isManageManagementChecked,
-    //   isEditManagementListChecked,
-    //   isManageManagementListChecked,
-    //   isEditTreeChecked,
-    //   isManageTreeChecked,
-    //   isEditOperationChecked,
-    //   isManageOperationChecked,
-    //   isEditMemberChecked,
-    //   isManageMemberChecked,
-    //   isEditAuthorityChecked,
-    //   isManageAuthorityChecked,
-    // });
-    setIsAlertOpen(false);
+  // 등록 수정시 서버 데이터 형식 맞추는 함수
+  const createPermissions = (
+    permissions: { key: string; checked: boolean; valueIdx: number }[],
+  ) => {
+    const onListItem: {
+      [idx: number]: {
+        idx: number;
+        isEdit: 'Y' | 'N';
+        isManage: 'Y' | 'N';
+      };
+    } = {};
+    permissions.forEach(({ key, checked, valueIdx }) => {
+      // idx 계산 로직
+      const idx = Math.ceil((valueIdx + 1) / 2);
+
+      // onListItem에 idx가 없으면 초기화
+      if (!onListItem[idx]) {
+        onListItem[idx] = {
+          idx: idx,
+          isEdit: 'N',
+          isManage: 'N',
+        };
+      }
+
+      // idx 값이 7, 8, 9(운영관리의 편집 권한)일 경우, isEdit를 'N'으로 설정
+      if ([7, 8, 9].includes(idx)) {
+        onListItem[idx].isEdit = 'N';
+      } else {
+        if (key.includes('Edit')) {
+          onListItem[idx].isEdit = checked ? 'Y' : 'N';
+        }
+      }
+
+      if (key.includes('Manage')) {
+        onListItem[idx].isManage = checked ? 'Y' : 'N';
+      }
+    });
+
+    // 객체를 배열로 변환하고 idx에 따라 정렬
+    return Object.values(onListItem).sort((a, b) => a.idx - b.idx);
   };
+
+  // 수정 버튼
+  const submitAuthority = () => {
+    const permissionList: {
+      idx: number;
+      isEdit: 'Y' | 'N';
+      isManage: 'Y' | 'N';
+    }[] = createPermissions(checkList);
+    setCodeUpdateList(permissionList);
+    // console.log(permissionList);
+
+    mutateChangeAuthority();
+  };
+
+  // 선택된 권한 수정하기 api
+  const putChangeAuthority = async () => {
+    const data = {
+      name: inputValue,
+      code: codeValue,
+      permissionList: codeUpdateList,
+    };
+    const res = await userInstance.put(`/v1/authority`, data);
+    console.log('fdsfdsf', res);
+    return res;
+  };
+
+  const { data: changeAuthorityData, mutate: mutateChangeAuthority } =
+    useMutation({
+      mutationFn: putChangeAuthority,
+      onError: (context: { response: { data: { message: string } } }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+      },
+      onSuccess: (response: { data: { message: string } }) => {
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+        setIsAlertOpen(false);
+      },
+    });
 
   // 권한관리 체크박스 핸들러
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,6 +377,7 @@ export function Authority() {
     onList.splice(Number(target.value), 1, {
       key: target.id,
       checked: target.checked,
+      valueIdx: Number(target.value),
     });
     setCheckList([...onList]);
 
@@ -231,10 +388,12 @@ export function Authority() {
         onList.splice(2, 1, {
           key: checkList[2].key,
           checked: true,
+          valueIdx: 2,
         });
         onList.splice(4, 1, {
           key: checkList[4].key,
           checked: true,
+          valueIdx: 4,
         });
 
         setCheckList([...onList]);
@@ -243,23 +402,28 @@ export function Authority() {
         onList.splice(2, 1, {
           key: checkList[2].key,
           checked: false,
+          valueIdx: 2,
         });
         onList.splice(4, 1, {
           key: checkList[4].key,
           checked: false,
+          valueIdx: 4,
         });
         // 편집 false일시 관리도 false
         onList.splice(1, 1, {
           key: checkList[1].key,
           checked: false,
+          valueIdx: 1,
         });
         onList.splice(3, 1, {
           key: checkList[3].key,
           checked: false,
+          valueIdx: 3,
         });
         onList.splice(5, 1, {
           key: checkList[5].key,
           checked: false,
+          valueIdx: 5,
         });
 
         setCheckList([...onList]);
@@ -272,20 +436,24 @@ export function Authority() {
         onList.splice(0, 1, {
           key: target.id,
           checked: false,
+          valueIdx: 0,
         });
 
         // 편집 false일시 관리도 false
         onList.splice(1, 1, {
           key: checkList[1].key,
           checked: false,
+          valueIdx: 1,
         });
         onList.splice(3, 1, {
           key: checkList[3].key,
           checked: false,
+          valueIdx: 3,
         });
         onList.splice(5, 1, {
           key: checkList[5].key,
           checked: false,
+          valueIdx: 5,
         });
 
         setCheckList([...onList]);
@@ -294,6 +462,7 @@ export function Authority() {
         onList.splice(0, 1, {
           key: target.id,
           checked: true,
+          valueIdx: 0,
         });
 
         setCheckList([...onList]);
@@ -310,10 +479,12 @@ export function Authority() {
         onList.splice(3, 1, {
           key: checkList[3].key,
           checked: true,
+          valueIdx: 3,
         });
         onList.splice(5, 1, {
           key: checkList[5].key,
           checked: true,
+          valueIdx: 5,
         });
         setCheckList([...onList]);
         return;
@@ -322,10 +493,12 @@ export function Authority() {
         onList.splice(3, 1, {
           key: checkList[3].key,
           checked: false,
+          valueIdx: 3,
         });
         onList.splice(5, 1, {
           key: checkList[5].key,
           checked: false,
+          valueIdx: 5,
         });
         setCheckList([...onList]);
         return;
@@ -335,6 +508,7 @@ export function Authority() {
           onList.splice(1, 1, {
             key: checkList[1].key,
             checked: false,
+            valueIdx: 1,
           });
           setCheckList([...onList]);
           return;
@@ -343,6 +517,7 @@ export function Authority() {
           onList.splice(1, 1, {
             key: checkList[1].key,
             checked: true,
+            valueIdx: 1,
           });
           setCheckList([...onList]);
           return;
@@ -357,10 +532,12 @@ export function Authority() {
         onList.splice(8, 1, {
           key: checkList[8].key,
           checked: true,
+          valueIdx: 8,
         });
         onList.splice(10, 1, {
           key: checkList[10].key,
           checked: true,
+          valueIdx: 10,
         });
 
         setCheckList([...onList]);
@@ -369,23 +546,28 @@ export function Authority() {
         onList.splice(8, 1, {
           key: checkList[8].key,
           checked: false,
+          valueIdx: 8,
         });
         onList.splice(10, 1, {
           key: checkList[10].key,
           checked: false,
+          valueIdx: 10,
         });
         // 편집 false일시 관리도 false
         onList.splice(7, 1, {
           key: checkList[7].key,
           checked: false,
+          valueIdx: 7,
         });
         onList.splice(9, 1, {
           key: checkList[9].key,
           checked: false,
+          valueIdx: 9,
         });
         onList.splice(11, 1, {
           key: checkList[11].key,
           checked: false,
+          valueIdx: 11,
         });
 
         setCheckList([...onList]);
@@ -398,20 +580,24 @@ export function Authority() {
         onList.splice(6, 1, {
           key: target.id,
           checked: false,
+          valueIdx: 6,
         });
 
         // 편집 false일시 관리도 false
         onList.splice(7, 1, {
           key: checkList[7].key,
           checked: false,
+          valueIdx: 7,
         });
         onList.splice(9, 1, {
           key: checkList[9].key,
           checked: false,
+          valueIdx: 9,
         });
         onList.splice(11, 1, {
           key: checkList[11].key,
           checked: false,
+          valueIdx: 11,
         });
 
         setCheckList([...onList]);
@@ -420,6 +606,7 @@ export function Authority() {
         onList.splice(6, 1, {
           key: target.id,
           checked: true,
+          valueIdx: 6,
         });
 
         setCheckList([...onList]);
@@ -436,10 +623,12 @@ export function Authority() {
         onList.splice(9, 1, {
           key: checkList[9].key,
           checked: true,
+          valueIdx: 9,
         });
         onList.splice(11, 1, {
           key: checkList[11].key,
           checked: true,
+          valueIdx: 11,
         });
         setCheckList([...onList]);
         return;
@@ -448,10 +637,12 @@ export function Authority() {
         onList.splice(9, 1, {
           key: checkList[9].key,
           checked: false,
+          valueIdx: 9,
         });
         onList.splice(11, 1, {
           key: checkList[11].key,
           checked: false,
+          valueIdx: 11,
         });
         setCheckList([...onList]);
         return;
@@ -461,6 +652,7 @@ export function Authority() {
           onList.splice(7, 1, {
             key: checkList[7].key,
             checked: false,
+            valueIdx: 7,
           });
           setCheckList([...onList]);
           return;
@@ -469,6 +661,7 @@ export function Authority() {
           onList.splice(7, 1, {
             key: checkList[7].key,
             checked: true,
+            valueIdx: 7,
           });
           setCheckList([...onList]);
           return;
@@ -483,10 +676,12 @@ export function Authority() {
         onList.splice(14, 1, {
           key: checkList[14].key,
           checked: true,
+          valueIdx: 14,
         });
         onList.splice(16, 1, {
           key: checkList[16].key,
           checked: true,
+          valueIdx: 16,
         });
 
         setCheckList([...onList]);
@@ -495,23 +690,28 @@ export function Authority() {
         onList.splice(14, 1, {
           key: checkList[14].key,
           checked: false,
+          valueIdx: 14,
         });
         onList.splice(16, 1, {
           key: checkList[16].key,
           checked: false,
+          valueIdx: 16,
         });
         // 편집 false일시 관리도 false
         onList.splice(13, 1, {
           key: checkList[13].key,
           checked: false,
+          valueIdx: 13,
         });
         onList.splice(15, 1, {
           key: checkList[15].key,
           checked: false,
+          valueIdx: 15,
         });
         onList.splice(17, 1, {
           key: checkList[17].key,
           checked: false,
+          valueIdx: 17,
         });
 
         setCheckList([...onList]);
@@ -524,20 +724,24 @@ export function Authority() {
         onList.splice(12, 1, {
           key: target.id,
           checked: false,
+          valueIdx: 12,
         });
 
         // 편집 false일시 관리도 false
         onList.splice(13, 1, {
           key: checkList[13].key,
           checked: false,
+          valueIdx: 13,
         });
         onList.splice(15, 1, {
           key: checkList[15].key,
           checked: false,
+          valueIdx: 15,
         });
         onList.splice(17, 1, {
           key: checkList[17].key,
           checked: false,
+          valueIdx: 17,
         });
 
         setCheckList([...onList]);
@@ -546,6 +750,7 @@ export function Authority() {
         onList.splice(12, 1, {
           key: target.id,
           checked: true,
+          valueIdx: 12,
         });
 
         setCheckList([...onList]);
@@ -562,10 +767,12 @@ export function Authority() {
         onList.splice(15, 1, {
           key: checkList[15].key,
           checked: true,
+          valueIdx: 15,
         });
         onList.splice(17, 1, {
           key: checkList[17].key,
           checked: true,
+          valueIdx: 17,
         });
         setCheckList([...onList]);
         return;
@@ -574,10 +781,12 @@ export function Authority() {
         onList.splice(15, 1, {
           key: checkList[15].key,
           checked: false,
+          valueIdx: 15,
         });
         onList.splice(17, 1, {
           key: checkList[17].key,
           checked: false,
+          valueIdx: 17,
         });
         setCheckList([...onList]);
         return;
@@ -631,7 +840,7 @@ export function Authority() {
     setCheckList([...defaultPermissions]);
   }, []);
   useEffect(() => {
-    // console.log('console.log(checkList) ', checkList);
+    console.log('console.log(checkList) ', checkList);
   }, [checkList]);
 
   const openUpdateAlert = () => {
@@ -956,7 +1165,9 @@ export function Authority() {
           <ButtonWrapper>
             <Button
               buttonType="button"
-              onClick={openUpdateAlert}
+              onClick={() => {
+                openUpdateAlert();
+              }}
               cursor
               $padding="10px"
               $margin="10px 0 0 0"
@@ -997,9 +1208,8 @@ export function Authority() {
                         <AuthorityWrapper
                           key={`${el.idx} ${el.code} ${el.name}`}
                           onClick={() => {
-                            // clickMemberAuthority(el.code);
+                            clickMemberAuthority(el.code);
                             setInputValue(el.name);
-                            setIsClickedName(true);
                           }}
                         >
                           <AuthorityName

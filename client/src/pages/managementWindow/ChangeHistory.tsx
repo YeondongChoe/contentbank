@@ -125,7 +125,7 @@ export function ChangeHistory() {
   // 유저 리스트 불러오기 api TODO: 히스토리 불러오기 api
   // const getUserList = async () => {
   //   const res = await userInstance.get(
-  //     `/v1/account?menuIdx=${9}&pageIndex=${page}&pageUnit=${8}
+  //     `/v1/account?idx=${9}&pageIndex=${page}&pageUnit=${8}
   // 		`,
   //     // &isUseFilter=${''}
   //   );
