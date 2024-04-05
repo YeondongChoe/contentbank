@@ -106,17 +106,12 @@ export function Authority() {
   // 선택된 권한 불러오기 api
   const getAuthority = async () => {
     return await userInstance.get(`/v1/authority/${codeValue}`);
-    // .then((res) => {
-    //   const permissions = res && res.data.data;
-    //   setCodeGetList(permissions.permissionList);
-
-    //   console.log(`getAuthority--- 결과값`, res);
-    // });
-    // .catch((error) => {
-    //   if (error.response.data.code == 'GE-002') postRefreshToken();
-    // });
   };
-  const { data: authorityData, isSuccess } = useQuery({
+  const {
+    data: authorityData,
+    isSuccess,
+    refetch: authorityDataRefetch,
+  } = useQuery({
     queryKey: ['get-authority'],
     queryFn: getAuthority,
     meta: {
@@ -125,201 +120,107 @@ export function Authority() {
     enabled: codeValue !== '',
   });
 
-  useEffect(() => {
-    if (isSuccess && authorityData)
-      setCodeGetList(authorityData.data.data.permissionList);
-    console.log(`authorityData--- 결과값`, authorityData);
-  }, [authorityData]);
+  // 등록된 권한 데이터 불러올 시 체크박스에 맞춘 데이터로 변환
+  const updatePermissions = (
+    permissions: { idx: number; isEdit: boolean; isManage: boolean }[],
+  ) => {
+    const keys = [
+      'isEditCreateChecked',
+      'isManageCreateChecked',
+      'isEditCreateListChecked',
+      'isManageCreateListChecked',
+      'isEditWorksheetChecked',
+      'isManageWorksheetChecked',
+      'isEditManagementChecked',
+      'isManageManagementChecked',
+      'isEditManagementListChecked',
+      'isManageManagementListChecked',
+      'isEditTreeChecked',
+      'isManageTreeChecked',
+      'isEditOperationChecked',
+      'isManageOperationChecked',
+      'isEditMemberChecked',
+      'isManageMemberChecked',
+      'isEditAuthorityChecked',
+      'isManageAuthorityChecked',
+    ];
+    // 결과 배열 생성
+    const result: { key: string; checked: boolean; valueIdx: number }[] = [];
+
+    // permissions 배열 순회
+    permissions.forEach((perm, index) => {
+      // 결과 배열 길이가 18을 초과하지 않도록 확인
+      if (result.length < 18) {
+        result.push({
+          key: keys[index * 2], // isEdit에 해당하는 key
+          checked: perm.isEdit,
+          valueIdx: index * 2,
+        });
+      }
+
+      // 두 번째 push 조건 추가로 길이 체크
+      if (result.length < 18) {
+        result.push({
+          key: keys[index * 2 + 1], // isManage에 해당하는 key
+          checked: perm.isManage,
+          valueIdx: index * 2 + 1,
+        });
+      }
+    });
+
+    return result;
+  };
 
   //등록된 권한 이름 버튼
   const clickMemberAuthority = (code: string) => {
-    setIsClickedName(true);
     setCodeValue(code);
+    setIsClickedName(true);
+    if (isSuccess && authorityData) {
+      const updatedPermissions = updatePermissions(
+        authorityData.data.data.permissionList,
+      );
+      setCheckList(updatedPermissions);
+    }
   };
 
   useEffect(() => {
-    updatePermissions();
-  }, [codeGetList]);
-
-  // 등록된 권한 데이터 불러올 시 체크박스에 맞춘 데이터로 변환
-  const updatePermissions = () => {
-    const onList: { key: string; checked: boolean; valueIdx: number }[] = [];
-
-    codeGetList.map(
-      (el: { idx: number; isEdit: boolean; isManage: boolean }) => {
-        if (el.idx == 1 || el.idx == 11) {
-          onList.push(
-            {
-              valueIdx: 0,
-              key: 'isEditCreateChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 1,
-              key: 'isManageCreateChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 2 || el.idx == 12) {
-          onList.push(
-            {
-              valueIdx: 2,
-              key: 'isEditCreateListChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 3,
-              key: 'isManageCreateListChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 3 || el.idx == 13) {
-          onList.push(
-            {
-              valueIdx: 4,
-              key: 'isEditWorksheetChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 5,
-              key: 'isManageWorksheetChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 4 || el.idx == 14) {
-          onList.push(
-            {
-              valueIdx: 6,
-              key: 'isEditManagementChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 7,
-              key: 'isManageManagementChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 5 || el.idx == 15) {
-          onList.push(
-            {
-              valueIdx: 8,
-              key: 'isEditManagementListChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 9,
-              key: 'isManageManagementListChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 6 || el.idx == 16) {
-          onList.push(
-            {
-              valueIdx: 10,
-              key: 'isEditTreeChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 11,
-              key: 'isManageTreeChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 7 || el.idx == 17) {
-          onList.push(
-            {
-              valueIdx: 12,
-              key: 'isEditOperationChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 13,
-              key: 'isManageOperationChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 8 || el.idx == 18) {
-          onList.push(
-            {
-              valueIdx: 14,
-              key: 'isEditMemberChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 15,
-              key: 'isManageMemberChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-        if (el.idx == 9 || el.idx == 19) {
-          onList.push(
-            {
-              valueIdx: 16,
-              key: 'isEditAuthorityChecked',
-              checked: el.isEdit,
-            },
-            {
-              valueIdx: 17,
-              key: 'isManageAuthorityChecked',
-              checked: el.isManage,
-            },
-          );
-        }
-      },
-    );
-
-    // console.log('updateAuthority', onList);
-    setCheckList([...onList]);
-  };
+    authorityDataRefetch();
+  }, [codeValue, setCodeValue]);
 
   // 등록 수정시 서버 데이터 형식 맞추는 함수
   const createPermissions = (
     permissions: { key: string; checked: boolean; valueIdx: number }[],
   ) => {
-    const onListItem: {
-      [idx: number]: {
-        idx: number;
-        isEdit: 'Y' | 'N';
-        isManage: 'Y' | 'N';
-      };
-    } = {};
-    permissions.forEach(({ key, checked, valueIdx }) => {
-      // idx 계산 로직
-      const idx = Math.ceil((valueIdx + 1) / 2);
+    // 결과를 저장할 임시 배열 생성
+    const results: {
+      idx: number;
+      isEdit: 'Y' | 'N';
+      isManage: 'Y' | 'N';
+    }[] = permissions.map((permission, index) => ({
+      idx: index + 1, // idx는 1부터 시작하여 순서대로 할당
+      isEdit: 'N', // 초기값 'N'
+      isManage: 'N', // 초기값 'N'
+    }));
 
-      // onListItem에 idx가 없으면 초기화
-      if (!onListItem[idx]) {
-        onListItem[idx] = {
-          idx: idx,
-          isEdit: 'N',
-          isManage: 'N',
-        };
+    // permissions 배열을 순회하면서 isEdit와 isManage 상태 설정
+    permissions.forEach(({ key, checked, valueIdx }, index) => {
+      // 'Edit' 권한 처리
+      if (key.includes('Edit')) {
+        results[index].isEdit = checked ? 'Y' : 'N';
       }
 
-      // idx 값이 7, 8, 9(운영관리의 편집 권한)일 경우, isEdit를 'N'으로 설정
-      if ([7, 8, 9].includes(idx)) {
-        onListItem[idx].isEdit = 'N';
-      } else {
-        if (key.includes('Edit')) {
-          onListItem[idx].isEdit = checked ? 'Y' : 'N';
-        }
-      }
-
+      // 'Manage' 권한 처리
       if (key.includes('Manage')) {
-        onListItem[idx].isManage = checked ? 'Y' : 'N';
+        results[index].isManage = checked ? 'Y' : 'N';
+      }
+
+      // idx 값이 7, 8, 9일 경우, isEdit를 isManage와 동일하게
+      if ([6, 7, 8].includes(index)) {
+        results[index].isEdit = results[index].isManage;
       }
     });
 
-    // 객체를 배열로 변환하고 idx에 따라 정렬
-    return Object.values(onListItem).sort((a, b) => a.idx - b.idx);
+    return results;
   };
 
   // 등록 && 수정 버튼
@@ -330,7 +231,7 @@ export function Authority() {
       isManage: 'Y' | 'N';
     }[] = createPermissions(checkList);
     setCodeUpdateList(permissionList);
-    // console.log(permissionList);
+    console.log(permissionList);
 
     if (isClickedName) {
       mutateChangeAuthority();
@@ -367,8 +268,11 @@ export function Authority() {
           type: 'success',
           text: response.data.message,
         });
+        //초기화
         setIsAlertOpen(false);
         authorityListDataRefetch();
+        setInputValue('');
+        setCheckList([...defaultPermissions]);
       },
     });
   // 선택된 권한 생성하기 api
@@ -394,8 +298,11 @@ export function Authority() {
           type: 'success',
           text: response.data.message,
         });
+        //초기화
         setIsAlertOpen(false);
         authorityListDataRefetch();
+        setInputValue('');
+        setCheckList([...defaultPermissions]);
       },
     });
 
@@ -867,9 +774,7 @@ export function Authority() {
     //페이지 변경시 초기화
     setCheckList([...defaultPermissions]);
   }, []);
-  useEffect(() => {
-    console.log('console.log(checkList) ', checkList);
-  }, [checkList]);
+  useEffect(() => {}, [checkList]);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
@@ -920,275 +825,547 @@ export function Authority() {
             </InputWrapper>
           </SubTitleWrapper>
           <TableWrapper>
-            <table>
-              <thead>
-                <tr>
-                  <th colSpan={2}>권한</th>
-                  <th>편집</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td rowSpan={3}>콘텐츠 제작</td>
-                  <td>전체</td>
-                  <td>
-                    <label htmlFor={'isEditCreateChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditCreateChecked'}
-                        id={'isEditCreateChecked'}
-                        value={0}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[0].checked}
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageCreateChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageCreateChecked'}
-                        id={'isManageCreateChecked'}
-                        value={1}
-                        onChange={(e) => handleChecked(e)}
-                        disabled={!checkList[0].checked}
-                        checked={checkList[1].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>문항</td>
-                  <td>
-                    <label htmlFor={'isEditCreateListChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditCreateListChecked'}
-                        id={'isEditCreateListChecked'}
-                        value={2}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[2].checked}
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageCreateListChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageCreateListChecked'}
-                        id={'isManageCreateListChecked'}
-                        value={3}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[3].checked}
-                        disabled={!checkList[2].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>학습지</td>
-                  <td>
-                    <label htmlFor={'isEditWorksheetChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditWorksheetChecked'}
-                        id={'isEditWorksheetChecked'}
-                        value={4}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[4].checked}
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageWorksheetChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageWorksheetChecked'}
-                        id={'isManageWorksheetChecked'}
-                        value={5}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[5].checked}
-                        disabled={!checkList[4].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td rowSpan={3}>콘텐츠 관리</td>
-                  <td>전체</td>
-                  <td>
-                    <label htmlFor={'isEditManagementChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditManagementChecked'}
-                        id={'isEditManagementChecked'}
-                        value={6}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[6].checked}
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageManagementChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageManagementChecked'}
-                        id={'isManageManagementChecked'}
-                        value={7}
-                        onChange={(e) => handleChecked(e)}
-                        disabled={!checkList[6].checked}
-                        checked={checkList[7].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>문항</td>
-                  <td>
-                    <label htmlFor={'isEditManagementListChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditManagementListChecked'}
-                        id={'isEditManagementListChecked'}
-                        value={8}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[8].checked}
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageManagementListChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageManagementListChecked'}
-                        id={'isManageManagementListChecked'}
-                        value={9}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[9].checked}
-                        disabled={!checkList[8].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>문항트리</td>
-                  <td>
-                    <label htmlFor={'isEditTreeChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditTreeChecked'}
-                        id={'isEditTreeChecked'}
-                        value={10}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[10].checked}
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageTreeChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageTreeChecked'}
-                        id={'isManageTreeChecked'}
-                        value={11}
-                        onChange={(e) => handleChecked(e)}
-                        checked={checkList[11].checked}
-                        disabled={!checkList[10].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td rowSpan={3}>운영 관리</td>
-                  <td>전체</td>
-                  <td>
-                    <label htmlFor={'isEditOperationChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditOperationChecked'}
-                        id={'isEditOperationChecked'}
-                        value={12}
-                        // onChange={(e) => handleChecked(e)}
-                        // checked={checkList[12].checked}
-                        disabled
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageOperationChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageOperationChecked'}
-                        id={'isManageOperationChecked'}
-                        value={13}
-                        onChange={(e) => handleChecked(e)}
-                        // disabled={!checkList[12].checked}
-                        checked={checkList[13].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>회원관리</td>
-                  <td>
-                    <label htmlFor={'isEditMemberChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditMemberChecked'}
-                        id={'isEditMemberChecked'}
-                        value={14}
-                        // onChange={(e) => handleChecked(e)}
-                        // checked={checkList[14].checked}
-                        disabled
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageMemberChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageMemberChecked'}
-                        id={'isManageMemberChecked'}
-                        value={15}
-                        onChange={(e) => handleChecked(e)}
-                        // disabled={!checkList[14].checked}
-                        checked={checkList[15].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>권한관리</td>
-                  <td>
-                    <label htmlFor={'isEditAuthorityChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isEditAuthorityChecked'}
-                        id={'isEditAuthorityChecked'}
-                        value={16}
-                        // onChange={(e) => handleChecked(e)}
-                        // checked={checkList[16].checked}
-                        disabled
-                      />
-                    </label>
-                  </td>
-                  <td>
-                    <label htmlFor={'isManageAuthorityChecked'}>
-                      <input
-                        type="checkbox"
-                        name={'isManageAuthorityChecked'}
-                        id={'isManageAuthorityChecked'}
-                        value={17}
-                        onChange={(e) => handleChecked(e)}
-                        // disabled={!checkList[16].checked}
-                        checked={checkList[17].checked}
-                      />
-                    </label>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            {isClickedName && isSuccess ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th colSpan={2}>권한</th>
+                    <th>편집</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowSpan={3}>콘텐츠 제작</td>
+                    <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditCreateChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditCreateChecked'}
+                          id={'isEditCreateChecked'}
+                          value={0}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[0].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageCreateChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageCreateChecked'}
+                          id={'isManageCreateChecked'}
+                          value={1}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[0].checked}
+                          checked={checkList[1].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>문항</td>
+                    <td>
+                      <label htmlFor={'isEditCreateListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditCreateListChecked'}
+                          id={'isEditCreateListChecked'}
+                          value={2}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[2].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageCreateListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageCreateListChecked'}
+                          id={'isManageCreateListChecked'}
+                          value={3}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[3].checked}
+                          disabled={!checkList[2].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>학습지</td>
+                    <td>
+                      <label htmlFor={'isEditWorksheetChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditWorksheetChecked'}
+                          id={'isEditWorksheetChecked'}
+                          value={4}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[4].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageWorksheetChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageWorksheetChecked'}
+                          id={'isManageWorksheetChecked'}
+                          value={5}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[5].checked}
+                          disabled={!checkList[4].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={3}>콘텐츠 관리</td>
+                    <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditManagementChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditManagementChecked'}
+                          id={'isEditManagementChecked'}
+                          value={6}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[6].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageManagementChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageManagementChecked'}
+                          id={'isManageManagementChecked'}
+                          value={7}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[6].checked}
+                          checked={checkList[7].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>문항</td>
+                    <td>
+                      <label htmlFor={'isEditManagementListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditManagementListChecked'}
+                          id={'isEditManagementListChecked'}
+                          value={8}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[8].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageManagementListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageManagementListChecked'}
+                          id={'isManageManagementListChecked'}
+                          value={9}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[9].checked}
+                          disabled={!checkList[8].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>문항트리</td>
+                    <td>
+                      <label htmlFor={'isEditTreeChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditTreeChecked'}
+                          id={'isEditTreeChecked'}
+                          value={10}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[10].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageTreeChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageTreeChecked'}
+                          id={'isManageTreeChecked'}
+                          value={11}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[11].checked}
+                          disabled={!checkList[10].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={3}>운영 관리</td>
+                    <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditOperationChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditOperationChecked'}
+                          id={'isEditOperationChecked'}
+                          value={12}
+                          // onChange={(e) => handleChecked(e)}
+                          // checked={checkList[12].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageOperationChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageOperationChecked'}
+                          id={'isManageOperationChecked'}
+                          value={13}
+                          onChange={(e) => handleChecked(e)}
+                          // disabled={!checkList[12].checked}
+                          checked={checkList[13].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>회원관리</td>
+                    <td>
+                      <label htmlFor={'isEditMemberChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditMemberChecked'}
+                          id={'isEditMemberChecked'}
+                          value={14}
+                          // onChange={(e) => handleChecked(e)}
+                          // checked={checkList[14].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageMemberChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageMemberChecked'}
+                          id={'isManageMemberChecked'}
+                          value={15}
+                          onChange={(e) => handleChecked(e)}
+                          // disabled={!checkList[14].checked}
+                          checked={checkList[15].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>권한관리</td>
+                    <td>
+                      <label htmlFor={'isEditAuthorityChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditAuthorityChecked'}
+                          id={'isEditAuthorityChecked'}
+                          value={16}
+                          // onChange={(e) => handleChecked(e)}
+                          // checked={checkList[16].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageAuthorityChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageAuthorityChecked'}
+                          id={'isManageAuthorityChecked'}
+                          value={17}
+                          onChange={(e) => handleChecked(e)}
+                          // disabled={!checkList[16].checked}
+                          checked={checkList[17].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th colSpan={2}>권한</th>
+                    <th>편집</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowSpan={3}>콘텐츠 제작</td>
+                    <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditCreateChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditCreateChecked'}
+                          id={'isEditCreateChecked'}
+                          value={0}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[0].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageCreateChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageCreateChecked'}
+                          id={'isManageCreateChecked'}
+                          value={1}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[0].checked}
+                          checked={checkList[1].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>문항</td>
+                    <td>
+                      <label htmlFor={'isEditCreateListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditCreateListChecked'}
+                          id={'isEditCreateListChecked'}
+                          value={2}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[2].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageCreateListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageCreateListChecked'}
+                          id={'isManageCreateListChecked'}
+                          value={3}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[3].checked}
+                          disabled={!checkList[2].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>학습지</td>
+                    <td>
+                      <label htmlFor={'isEditWorksheetChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditWorksheetChecked'}
+                          id={'isEditWorksheetChecked'}
+                          value={4}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[4].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageWorksheetChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageWorksheetChecked'}
+                          id={'isManageWorksheetChecked'}
+                          value={5}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[5].checked}
+                          disabled={!checkList[4].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={3}>콘텐츠 관리</td>
+                    <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditManagementChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditManagementChecked'}
+                          id={'isEditManagementChecked'}
+                          value={6}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[6].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageManagementChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageManagementChecked'}
+                          id={'isManageManagementChecked'}
+                          value={7}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[6].checked}
+                          checked={checkList[7].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>문항</td>
+                    <td>
+                      <label htmlFor={'isEditManagementListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditManagementListChecked'}
+                          id={'isEditManagementListChecked'}
+                          value={8}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[8].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageManagementListChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageManagementListChecked'}
+                          id={'isManageManagementListChecked'}
+                          value={9}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[9].checked}
+                          disabled={!checkList[8].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>문항트리</td>
+                    <td>
+                      <label htmlFor={'isEditTreeChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditTreeChecked'}
+                          id={'isEditTreeChecked'}
+                          value={10}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[10].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageTreeChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageTreeChecked'}
+                          id={'isManageTreeChecked'}
+                          value={11}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[11].checked}
+                          disabled={!checkList[10].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={3}>운영 관리</td>
+                    <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditOperationChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditOperationChecked'}
+                          id={'isEditOperationChecked'}
+                          value={12}
+                          // onChange={(e) => handleChecked(e)}
+                          // checked={checkList[12].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageOperationChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageOperationChecked'}
+                          id={'isManageOperationChecked'}
+                          value={13}
+                          onChange={(e) => handleChecked(e)}
+                          // disabled={!checkList[12].checked}
+                          checked={checkList[13].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>회원관리</td>
+                    <td>
+                      <label htmlFor={'isEditMemberChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditMemberChecked'}
+                          id={'isEditMemberChecked'}
+                          value={14}
+                          // onChange={(e) => handleChecked(e)}
+                          // checked={checkList[14].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageMemberChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageMemberChecked'}
+                          id={'isManageMemberChecked'}
+                          value={15}
+                          onChange={(e) => handleChecked(e)}
+                          // disabled={!checkList[14].checked}
+                          checked={checkList[15].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>권한관리</td>
+                    <td>
+                      <label htmlFor={'isEditAuthorityChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditAuthorityChecked'}
+                          id={'isEditAuthorityChecked'}
+                          value={16}
+                          // onChange={(e) => handleChecked(e)}
+                          // checked={checkList[16].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageAuthorityChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageAuthorityChecked'}
+                          id={'isManageAuthorityChecked'}
+                          value={17}
+                          onChange={(e) => handleChecked(e)}
+                          // disabled={!checkList[16].checked}
+                          checked={checkList[17].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
           </TableWrapper>
           <ButtonWrapper>
             <Button
@@ -1211,6 +1388,7 @@ export function Authority() {
                 onClick={() => {
                   setIsClickedName(false);
                   setInputValue('');
+                  authorityListDataRefetch();
                 }}
                 cursor
                 $padding="10px"
