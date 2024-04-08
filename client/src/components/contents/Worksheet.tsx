@@ -136,17 +136,13 @@ export function Worksheet() {
   };
 
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
-  console.log(pdfData);
 
   const getPdf = async () => {
-    // const pdfUrl =
-    //   'file://C:/Users/user/Desktop/%EC%B5%9C%EC%97%B0%EB%8F%99.pdf';
-    // setPdfData(pdfUrl);
     try {
       const response = await axios.post(
         'http://210.124.177.36:5050/get-pdf',
         {
-          content: 'Sample Content1',
+          content: Contents2.it_quest,
           column: 2,
         },
         {
