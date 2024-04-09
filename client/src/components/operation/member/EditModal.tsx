@@ -9,13 +9,11 @@ import {
 } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { Controller, useForm } from 'react-hook-form';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Input, Label, AlertBar } from '../..';
 import { userInstance } from '../../../api/axios';
 import { useModal } from '../../../hooks';
-import { authorityAtom } from '../../../store/auth';
 import { ItemAuthorityType } from '../../../types';
 import { Button, openToastifyAlert } from '../../atom';
 import { ItemSelectProps, Select } from '../../atom/select';
@@ -33,7 +31,6 @@ export function EditModal({
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
 }) {
-  const [myAuthority, setMyAuthority] = useRecoilState(authorityAtom);
   const { closeModal } = useModal();
   const [member, setMember] = useState<{
     id: null | string;
@@ -155,7 +152,7 @@ export function EditModal({
 
   // 권한 셀렉트 불러오기 api
   const getAuthorityList = async () => {
-    const res = await userInstance.get(`/v1/authority?idx=${myAuthority.idx}`);
+    const res = await userInstance.get(`/v1/authority`);
     console.log(`getAuthorityList 결과값`, res);
     return res;
   };

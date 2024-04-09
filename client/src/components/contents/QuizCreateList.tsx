@@ -18,7 +18,6 @@ import {
 } from '..';
 import { userInstance } from '../../api/axios';
 import { useModal } from '../../hooks';
-import { authorityAtom } from '../../store/auth';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
@@ -27,7 +26,6 @@ import { COLOR } from '../constants';
 import { CreateContentModal } from './CreateContentModal';
 
 export function QuizCreateList() {
-  const [myAuthority, setMyAuthority] = useRecoilState(authorityAtom);
   const { openModal } = useModal();
   const [searchValue, setSearchValue] = useState<string>('');
   const [value, setValue] = useState<string>('');
@@ -45,18 +43,6 @@ export function QuizCreateList() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-
-  // 마이페이지 데이터 불러오기 api
-  const getMyInfo = async () => {
-    return await userInstance.get(`/v1/account/my-info`);
-  };
-  const { data: myInfoData } = useQuery({
-    queryKey: ['get-myInfo'],
-    queryFn: getMyInfo,
-    meta: {
-      errorMessage: 'get-myInfo 에러 메세지',
-    },
-  });
 
   // 활성화/비활성화 버튼상태 토글
   const openSubmitAlert = () => {
@@ -215,10 +201,6 @@ export function QuizCreateList() {
   // ]);
 
   // 검색이나 셀렉트로 특정지어진 데이터 담은 후 보여주기 변경값이 있을때 마다 랜더링
-  useEffect(() => {
-    if (myInfoData) setMyAuthority(myInfoData.data.data.authority);
-    // console.log('myAuthority', myAuthority);
-  });
 
   // useEffect(() => {
   //   if (didMount) {

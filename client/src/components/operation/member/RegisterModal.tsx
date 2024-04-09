@@ -10,14 +10,12 @@ import {
 } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { Controller, useForm } from 'react-hook-form';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Input, Label } from '../..';
 import { userInstance } from '../../../api/axios';
 import { idRegex, COLOR, nameRegex } from '../../../components/constants';
 import { useModal } from '../../../hooks';
-import { authorityAtom } from '../../../store/auth';
 import { ItemAuthorityType, MemberType } from '../../../types';
 import { Button, ItemSelectProps, openToastifyAlert, Select } from '../../atom';
 
@@ -30,7 +28,6 @@ export function RegisterModal({
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
 }) {
-  const [myAuthority, setMyAuthority] = useRecoilState(authorityAtom);
   const { closeModal } = useModal();
 
   const [isIdError, setIsIdError] = useState(false);
@@ -149,7 +146,7 @@ export function RegisterModal({
 
   // 권한 불러오기 api
   const getAuthority = async () => {
-    const res = await userInstance.get(`/v1/authority?idx=${myAuthority.idx}`);
+    const res = await userInstance.get(`/v1/authority`);
     return res;
   };
   const { data: authorityData, isFetching } = useQuery({

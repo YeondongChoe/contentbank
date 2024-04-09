@@ -4,13 +4,11 @@ import { useState, useEffect, useCallback, useReducer } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
 import { Input } from '../../components';
 import { Button, ValueNone, openToastifyAlert } from '../../components/atom';
-import { authorityAtom } from '../../store/auth';
 import { ItemAuthorityType } from '../../types';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
@@ -37,7 +35,6 @@ export const defaultPermissions = [
 ];
 
 export function Authority() {
-  const [myAuthority, setMyAuthority] = useRecoilState(authorityAtom);
   const [authorityList, setAuthorityList] = useState<ItemAuthorityType[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isClickedName, setIsClickedName] = useState(false);
@@ -49,13 +46,7 @@ export function Authority() {
       isManage: 'Y' | 'N';
     }[]
   >([]);
-  const [codeGetList, setCodeGetList] = useState<
-    {
-      idx: number;
-      isEdit: boolean;
-      isManage: boolean;
-    }[]
-  >([]);
+
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
@@ -72,7 +63,7 @@ export function Authority() {
 
   // 권한 리스트 불러오기 api
   const getAuthorityList = async () => {
-    const res = await userInstance.get(`/v1/authority?idx=${myAuthority.idx}`);
+    const res = await userInstance.get(`/v1/authority`);
     return res;
   };
   const { data: authorityListData, refetch: authorityListDataRefetch } =
@@ -101,14 +92,13 @@ export function Authority() {
       setAuthorityList([...authority]);
     }
   };
-  useEffect(() => {
-    updateAuthorityList();
-  }, [authorityListData]);
 
   // 선택된 권한 불러오기 api
   const getAuthority = async () => {
-    return await userInstance.get(`/v1/authority/${codeValue}`);
+    if (codeValue !== '')
+      return await userInstance.get(`/v1/authority/${codeValue}`);
   };
+
   const {
     data: authorityData,
     isSuccess,
@@ -119,7 +109,7 @@ export function Authority() {
     meta: {
       errorMessage: 'get-authority 에러 메세지',
     },
-    enabled: codeValue !== '',
+    enabled: !!codeValue,
   });
 
   // 등록된 권한 데이터 불러올 시 체크박스에 맞춘 데이터로 변환
@@ -173,11 +163,15 @@ export function Authority() {
     return result;
   };
 
+  useEffect(() => {
+    updateAuthorityList();
+  }, [authorityListData]);
+
   //등록된 권한 이름 버튼
   const clickMemberAuthority = (code: string) => {
     setCodeValue(code);
     setIsClickedName(true);
-    if (isSuccess && authorityData) {
+    if (authorityData) {
       const updatedPermissions = updatePermissions(
         authorityData.data.data.permissionList,
       );
@@ -784,6 +778,7 @@ export function Authority() {
     //페이지 변경시 초기화
     setCheckList([...defaultPermissions]);
   }, []);
+
   useEffect(() => {}, [checkList]);
 
   const openUpdateAlert = () => {
