@@ -775,9 +775,9 @@ export const selectCategoryEtc1 = [
 ];
 export const selectCategoryEtc2 = [
   {
-    id: '1',
+    id: '2',
     label: '행동요소2',
-    value: '1',
+    value: '2',
     options: [{ id: '0', label: '문제해결', value: '0' }],
   },
 ];

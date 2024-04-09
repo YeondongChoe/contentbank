@@ -10,7 +10,7 @@ type ModalType = {
 };
 
 export const modalState = atom<ModalType>({
-  key: 'modalState',
+  key: 'modalAtom',
   default: {
     isOpen: false,
     title: '',

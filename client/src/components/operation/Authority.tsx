@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback, useReducer } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
 import { Input } from '../../components';
 import { Button, ValueNone, openToastifyAlert } from '../../components/atom';
+import { authorityAtom } from '../../store/auth';
 import { ItemAuthorityType } from '../../types';
-import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
@@ -36,6 +37,7 @@ export const defaultPermissions = [
 ];
 
 export function Authority() {
+  const [myAuthority, setMyAuthority] = useRecoilState(authorityAtom);
   const [authorityList, setAuthorityList] = useState<ItemAuthorityType[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isClickedName, setIsClickedName] = useState(false);
@@ -68,9 +70,9 @@ export function Authority() {
     }[]
   >(defaultPermissions);
 
-  // 권한 셀렉트 불러오기 api
+  // 권한 리스트 불러오기 api
   const getAuthorityList = async () => {
-    const res = await userInstance.get(`/v1/authority?idx=${9}`);
+    const res = await userInstance.get(`/v1/authority?idx=${myAuthority.idx}`);
     return res;
   };
   const { data: authorityListData, refetch: authorityListDataRefetch } =
@@ -308,9 +310,17 @@ export function Authority() {
 
   useEffect(() => {}, [changeAuthorityData, createAuthorityData]);
 
+  // 선택된 권한 삭제하기 api
+  const deleteAuthority = async () => {
+    const res = await userInstance.delete(`/v1/authority/${codeValue}`);
+    return res;
+  };
   const submitDelete = () => {
-    // DeleteAuthority({ setIsAlertOpen }, codeValue);
-    // codeValue
+    deleteAuthority();
+    //초기화
+    authorityListDataRefetch();
+    setInputValue('');
+    setCheckList([...defaultPermissions]);
   };
 
   // 권한관리 체크박스 핸들러

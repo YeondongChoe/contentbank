@@ -19,7 +19,6 @@ export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
   const [didMount, setDidMount] = useState<boolean>(false);
-  // const [isHide, setIsHide] = useState<boolean>(false);
 
   const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
@@ -84,12 +83,6 @@ export function CreateContentMain() {
   useEffect(() => {
     setDidMount(true);
   }, []);
-
-  // useEffect(() => {
-  //   if (didMount) {
-  //     loadData();
-  //   }
-  // }, [didMount]);
 
   return (
     <Container>

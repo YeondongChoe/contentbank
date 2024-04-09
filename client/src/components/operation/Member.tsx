@@ -25,6 +25,7 @@ import {
   ListItem,
 } from '../../components/molecules';
 import { useModal } from '../../hooks';
+import { authorityAtom } from '../../store/auth';
 import { pageAtom } from '../../store/utilAtom';
 import { MemberType } from '../../types';
 import { COLOR } from '../constants/COLOR';
@@ -33,6 +34,7 @@ import { EditModal } from './member/EditModal';
 import { RegisterModal } from './member/RegisterModal';
 
 export function Member() {
+  const [myAuthority, setMyAuthority] = useRecoilState(authorityAtom);
   const { openModal } = useModal();
   const [tabVeiw, setTabVeiw] = useState<string>('전체');
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -49,7 +51,7 @@ export function Member() {
   // 유저 리스트 불러오기 api
   const getUserList = async () => {
     const res = await userInstance.get(
-      `/v1/account?idx=${9}&pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
+      `/v1/account?idx=${myAuthority.idx}&pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
 			`,
     );
     // console.log(`유저리스트 get 결과값`, res);
@@ -97,7 +99,7 @@ export function Member() {
   const getTotalMemberList = async () => {
     const totalCount = memberList.pagination.totalCount;
     const res = await userInstance.get(
-      `/v1/account?idx=${9}&pageIndex=${1}&pageUnit=${totalCount}
+      `/v1/account?idx=${myAuthority.idx}&pageIndex=${1}&pageUnit=${totalCount}
 				`,
     );
     setTotalMemberList(res.data.data.list);

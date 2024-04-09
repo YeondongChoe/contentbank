@@ -27,13 +27,9 @@ import {
 import { QuizList } from './list';
 
 export function Classification() {
-  // const ContentList = dummy.ContentInfo;
-  const [checkList, setCheckList] = useState<string[]>([]);
-
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
   >([]);
-  // const [targetValue, setTargetValue] = useState('');
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
@@ -43,7 +39,10 @@ export function Classification() {
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
 
-  const [unitClassificationList, setUnitClassificationList] = useState([]);
+  const [unitClassificationList, setUnitClassificationList] = useState([
+    '',
+    '',
+  ]);
   // 라디오 버튼 설정
   const handleRadioCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -88,8 +87,6 @@ export function Classification() {
 
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
-    // console.log('click');
-
     if (checked) {
       setCheckedDepthList((prev) => [...prev, id]);
     } else {

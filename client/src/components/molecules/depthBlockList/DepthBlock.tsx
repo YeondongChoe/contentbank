@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { styled } from 'styled-components';
 
@@ -35,8 +35,29 @@ export function DepthBlock({
   checked,
   disabled,
 }: DepthBlockProps) {
+  const onTopMark = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const target = e.currentTarget;
+    const parentElement = target.parentElement?.parentElement?.parentElement;
+
+    if (!parentElement) return; // 상위 엘리먼트가 존재하지 않는 경우 조기 반환
+
+    const depthTargets = Array.from(parentElement.children).map(
+      (child) => child.children[0].children[1] as HTMLSpanElement,
+    );
+
+    const nextSibling = target.nextSibling as HTMLSpanElement;
+    const depthClass = nextSibling.className.split(' ')[2];
+    const depth = parseInt(depthClass.split('-')[1], 10);
+
+    if (target.checked) {
+      depthTargets.slice(0, depth).forEach((el) => el.classList.add('border'));
+    } else {
+      depthTargets.forEach((el) => el.classList.remove('border'));
+    }
+  };
+  useEffect(() => {}, []);
   return (
-    <Component $margin={$margin} key={key}>
+    <Component $margin={$margin} key={`${key}-depthBlock`}>
       <label htmlFor={id}>
         <input
           type="checkbox"
@@ -46,11 +67,14 @@ export function DepthBlock({
           value={value}
           checked={checked}
           onChange={onChange}
+          onClick={(e) => {
+            onTopMark(e);
+          }}
           disabled={disabled}
         />
 
         <span
-          className={`label depthBlock ${classNameList} ${checked ? 'on' : ''}`}
+          className={`label depthButton ${classNameList} ${checked ? 'on' : ''}`}
         >
           {checked ? (
             <svg
@@ -124,7 +148,10 @@ const Component = styled.div<{ $margin?: string }>`
     }
   }
 
-  .depthBlock {
+  .depthButton {
+    border: none;
+    text-align: left;
+    text-overflow: ellipsis;
     display: flex;
     font-size: 13px;
     padding: 6px 10px;
@@ -135,6 +162,10 @@ const Component = styled.div<{ $margin?: string }>`
     &.on {
       background-color: ${COLOR.FONT_NAVI};
       color: #fff;
+    }
+
+    &.border {
+      border: 1px solid ${COLOR.BORDER_BLUE};
     }
   }
 

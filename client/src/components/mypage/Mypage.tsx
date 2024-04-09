@@ -47,7 +47,7 @@ export function Mypage() {
 
   // 마이페이지 데이터 불러오기 api
   const getMyInfo = async () => {
-    console.log('getMyInfo sessionId', getAuthorityCookie('sessionId'));
+    // console.log('getMyInfo sessionId', getAuthorityCookie('sessionId'));
     return await userInstance.get(`/v1/account/my-info`);
   };
   const {
@@ -118,14 +118,8 @@ export function Mypage() {
 
   useEffect(() => {
     loadData();
-    //
-    // mutationCache.clear();
+    //myInfoData
   }, [myInfoData]);
-
-  // console.log('member', member);
-  // useEffect(() => {
-  //   handleAuthorizationRenewal('');
-  // }, [error]);
 
   if (isLoading)
     return (

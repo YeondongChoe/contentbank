@@ -5,6 +5,7 @@ import {
   QueryClientProvider,
   QueryClient,
   QueryCache,
+  useQuery,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
