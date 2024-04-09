@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
+import axios from 'axios';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -94,7 +95,8 @@ export function Step3() {
   };
 
   const submitCreateWorksheet = () => {
-    navigate('/content-create/exam');
+    getPdf();
+    //navigate('/content-create/exam');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 
@@ -196,6 +198,37 @@ export function Step3() {
   //   setExistList(existList);
   // };
 
+  const [pdfData, setPdfData] = useState<string | undefined>(undefined);
+  const getPdf = async () => {
+    try {
+      const response = await axios.post(
+        'http://210.124.177.36:5050/get-pdf',
+        {
+          title: 'test',
+          content: Contents2.it_quest,
+          column: 2,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
+          withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
+        },
+      );
+      if (response.status === 200) {
+        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        console.log(pdfUrl);
+        setPdfData(pdfUrl);
+      } else {
+        console.error('Server responded with an error');
+      }
+    } catch (error) {
+      console.error('Failed to fetch PDF data:', error);
+    }
+  };
+
   const loadData = () => {
     // 데이터 불러오기
 
@@ -230,6 +263,13 @@ export function Step3() {
 
   return (
     <Container>
+      <iframe
+        title="PDF Viewer"
+        src={pdfData}
+        width="1100"
+        height="750"
+        style={{ border: 'none', borderRadius: 25 }}
+      ></iframe>
       <TitleWrapper>
         <IconWrapper>
           <IoIosArrowBack
