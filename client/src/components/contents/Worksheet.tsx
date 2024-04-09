@@ -135,36 +135,45 @@ export function Worksheet() {
     setShowPdf(false);
   };
 
+  const [pdfUrl, setPdfUrl] = useState<string>(
+    'https://j-dev01.dreamonesys.co.kr/CB/%EB%93%9C%EB%A6%BC%EC%9B%90%EC%8B%9C%EC%8A%A4%20%EA%B7%BC%ED%83%9C%EA%B4%80%EB%A6%AC%202024%20Ver._240312.pdf',
+  );
+  console.log(pdfUrl);
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
 
-  const getPdf = async () => {
-    try {
-      const response = await axios.post(
-        'http://210.124.177.36:5050/get-pdf',
-        {
-          content: Contents2.it_quest,
-          column: 2,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
-          withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
-        },
-      );
+  // const getPdf = async () => {
+  //   try {
+  //     const response = await axios.post(
+  //       'http://210.124.177.36:5050/get-pdf',
+  //       {
+  //         content: Contents2.it_quest,
+  //         column: 2,
+  //       },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
+  //         withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
+  //       },
+  //     );
 
-      if (response.status === 200) {
-        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        setPdfData(pdfUrl);
-        setShowPdf(true);
-      } else {
-        console.error('Server responded with an error');
-      }
-    } catch (error) {
-      console.error('Failed to fetch PDF data:', error);
-    }
+  //     if (response.status === 200) {
+  //       const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+  //       const pdfUrl = URL.createObjectURL(pdfBlob);
+  //       console.log(pdfUrl);
+  //       setPdfData(pdfUrl);
+  //       setShowPdf(true);
+  //     } else {
+  //       console.error('Server responded with an error');
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to fetch PDF data:', error);
+  //   }
+  // };
+
+  const getPdf = () => {
+    setShowPdf(true);
   };
 
   return (
@@ -184,7 +193,8 @@ export function Worksheet() {
             </Button>
           </IframeButtonWrapper>
           <iframe
-            src={pdfData}
+            title="PDF Viewer"
+            src={pdfUrl}
             width="1100"
             height="750"
             style={{ border: 'none', borderRadius: 25 }}
