@@ -1,24 +1,20 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { IoSearch } from 'react-icons/io5';
 import { MdPublishedWithChanges } from 'react-icons/md';
-import { PiArrowCounterClockwise } from 'react-icons/pi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { classificationInstance } from '../../api/axios';
 import {
   Accordion,
   Button,
   ButtonFormatRadio,
-  CheckBoxI,
   DepthBlock,
-  Input,
-  MathViewer,
   PaginationBox,
   ResizeLayout,
-  Search,
   ValueNone,
 } from '../../components';
 import { COLOR } from '../../components/constants';
@@ -29,7 +25,6 @@ import {
   depthBlockList,
 } from '../../components/contents/createcontent/contentCreatingCategory';
 import { QuizList } from '../../components/contents/createcontent/list';
-import { QuestionTableType } from '../../types';
 
 export function ContentInformationChange() {
   const [selected1depth, setSelected1depth] = useState<string>('');
@@ -47,6 +42,47 @@ export function ContentInformationChange() {
   const [changeValue, setChangeValue] = useState<string>('');
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
+
+  //  카테고리 불러오기 api
+  const getCategory = async () => {
+    const res = await classificationInstance.get(`/v1/category`);
+    console.log(`getCategory 결과값`, res);
+    return res;
+  };
+  const { data: categoryData } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+  });
+  const category = categoryData && categoryData?.data.data.categoryItemList;
+  useEffect(() => {
+    if (category) {
+      const idxList = category.map((el: { idx: number }) => el.idx);
+
+      console.log(idxList);
+      const num = category.length;
+      // for (let i = 0; i > num; i++) {
+
+      // }
+    }
+  }, [category]);
+  const categoryIdx = 0;
+
+  //  카테고리의 각 항목 불러오기 api
+  const getCategoryList = async () => {
+    const res = await classificationInstance.get(`/v1/category/${categoryIdx}`);
+    console.log(`getCategoryList 결과값`, res);
+    return res;
+  };
+  const { data: categoryListData } = useQuery({
+    queryKey: ['get-categoryList'],
+    queryFn: getCategoryList,
+    meta: {
+      errorMessage: 'get-categoryList 에러 메세지',
+    },
+  });
 
   // 라디오 버튼 설정
   const handleRadioCheck = (

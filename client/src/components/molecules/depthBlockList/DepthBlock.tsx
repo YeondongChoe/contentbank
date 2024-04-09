@@ -26,7 +26,6 @@ export function DepthBlock({
   children,
   $margin,
   onChange,
-  onClick,
   classNameList = '',
   defaultChecked,
   id,
@@ -55,7 +54,7 @@ export function DepthBlock({
       depthTargets.forEach((el) => el.classList.remove('border'));
     }
   };
-  useEffect(() => {}, []);
+
   return (
     <Component $margin={$margin} key={`${key}-depthBlock`}>
       <label htmlFor={id}>

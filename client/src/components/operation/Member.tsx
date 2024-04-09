@@ -46,7 +46,7 @@ export function Member() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
-  const [totalMemberList, setTotalMemberList] = useState<MemberType[]>();
+  const [totalMemberList, setTotalMemberList] = useState<MemberType[]>([]);
 
   // 유저 리스트 불러오기 api
   const getUserList = async () => {
@@ -98,11 +98,15 @@ export function Member() {
   // 아이디 중복 확인 && 토탈 유저 수
   const getTotalMemberList = async () => {
     const totalCount = memberList.pagination.totalCount;
-    const res = await userInstance.get(
-      `/v1/account?idx=${myAuthority.idx}&pageIndex=${1}&pageUnit=${totalCount}
+    if (totalCount) {
+      const res = await userInstance.get(
+        `/v1/account?idx=${myAuthority.idx}&pageIndex=${1}&pageUnit=${totalCount}
 				`,
-    );
-    setTotalMemberList(res.data.data.list);
+      );
+      setTotalMemberList(res.data.data.list);
+    } else {
+      setTotalMemberList([]);
+    }
   };
 
   /* 아이디 만들기 모달 열기 */

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
 import { MdAccountBalance } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -19,28 +18,10 @@ export function Navigation() {
   //[menuType 코드] null: 전체 조회, view: 화면 url만 조회
   const [menuType, setMenuType] = useState(null);
 
-  // if (!isOpenNavigation) {
-  //   return null;
-  // }
-  // const getMenu = () => {
-  //   return resourceInstance.get(`/v1/menu?menuType=${menuType}`);
-  // };
-  // const { isLoading, isError, data, error } = useQuery({
-  //   queryKey: ['getMenuList'],
-  //   queryFn: getMenu,
-  // });
-  // console.log('getMenuList', data);
-
   const moveMainpage = () => {
     navigate('/content-create/quiz');
   };
 
-  // const loadData = async () => {
-  //   await resourceInstance.get(`/v1/menu?menuType=${menuType}`);
-  // };
-  // useEffect(() => {
-  //   loadData();
-  // }, []);
   const clickLink = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const depth1Value =
       e.currentTarget.parentElement?.children[0].children[0].children[0];
