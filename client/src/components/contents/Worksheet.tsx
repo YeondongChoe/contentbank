@@ -134,7 +134,7 @@ export function Worksheet() {
     setShowPdf(false);
   };
   const [pdfUrl, setPdfUrl] = useState<string>(
-    'https://210.124.177.36:5050/usr/share/nginx/html/CB/worksheettest.pdf',
+    'https://j-dev01.dreamonesys.co.kr/usr/share/nginx/html/CB/worksheettest.pdf',
     // 'https://j-dev01.dreamonesys.co.kr/CB/%EB%93%9C%EB%A6%BC%EC%9B%90%EC%8B%9C%EC%8A%A4%20%EA%B7%BC%ED%83%9C%EA%B4%80%EB%A6%AC%202024%20Ver._240312.pdf',
   );
 
