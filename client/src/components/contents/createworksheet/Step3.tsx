@@ -197,7 +197,8 @@ export function Step3() {
   //   console.log('existList', existList);
   //   setExistList(existList);
   // };
-
+  // 210.124.177.36:5050'
+  // localhost:5000
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
   const getPdf = async () => {
     try {
