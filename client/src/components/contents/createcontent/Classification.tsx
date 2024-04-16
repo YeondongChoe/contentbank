@@ -1,16 +1,19 @@
 import * as React from 'react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { Button, Icon, IconButton, ResizeLayout, ValueNone } from '../..';
+import { classificationInstance } from '../../../api/axios';
 import {
   Accordion,
   ButtonFormatRadio,
   DepthBlock,
   Search,
 } from '../../../components/molecules';
+import { ItemCategoryType } from '../../../types';
 import { COLOR } from '../../constants/COLOR';
 
 import {
@@ -28,7 +31,7 @@ import { QuizList } from './list';
 
 export function Classification() {
   const [radioCheck, setRadioCheck] = useState<
-    { title: string; checkValue: string }[]
+    { title: string; checkValue: number }[]
   >([]);
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
@@ -43,10 +46,67 @@ export function Classification() {
     '',
     '',
   ]);
+
+  const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
+  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+
+  //  카테고리 불러오기 api
+  const getCategory = async () => {
+    const res = await classificationInstance.get(`/v1/category`);
+    console.log(`getCategory 결과값`, res);
+    return res;
+  };
+  const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+  });
+  // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
+  useEffect(() => {
+    if (categoryData) {
+      setCategoryItems(categoryData.data.data.categoryItemList);
+    }
+  }, [categoryData]);
+
+  // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
+  useEffect(() => {
+    const fetchCategoryDetails = async () => {
+      const requests = categoryItems.map((item) =>
+        classificationInstance.get(`/v1/category/${item.idx}`),
+      );
+      const responses = await Promise.all(requests);
+      const lists = responses.map(
+        (response) => response.data.data.categoryClassList,
+      );
+      setCategoryList(lists);
+    };
+
+    if (categoryItems.length > 0) {
+      fetchCategoryDetails().catch(console.error);
+    }
+  }, [categoryItems]);
+
+  const selectedDepth = (index: number) => {
+    switch (index + 1) {
+      case 1:
+        return selected1depth;
+      case 2:
+        return selected2depth;
+      case 3:
+        return selected3depth;
+      case 4:
+        return selected4depth;
+      default:
+        return '';
+    }
+  };
+
   // 라디오 버튼 설정
   const handleRadioCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
-    titleValue: string,
+    value: number,
   ) => {
     // console.log(
     //   e.target.parentElement?.parentElement?.parentElement?.parentElement
@@ -68,6 +128,7 @@ export function Classification() {
       case '4depth':
         setSelected4depth(e.currentTarget.value);
         break;
+
       case 'etc1':
         setSelectedCategoryEtc1(e.currentTarget.value);
         break;
@@ -79,8 +140,8 @@ export function Classification() {
     setRadioCheck([
       ...radioCheck,
       {
-        title: titleValue,
-        checkValue: e.currentTarget.value,
+        title: e.currentTarget.attributes[1].value,
+        checkValue: value,
       },
     ]);
   };
@@ -177,72 +238,27 @@ export function Classification() {
                   )}
                 </UnitClassifications>
 
-                {/* TODO: 메타데이터 변경 */}
-                <div className="1depth">
-                  {selectCategory0.map((meta, index) => (
-                    <ButtonFormatRadio
-                      key={`${meta.id}`}
-                      titleText={`${meta.label}`}
-                      list={meta.options}
-                      selected={selected1depth}
-                      onChange={(e) => handleRadioCheck(e, meta.label)}
-                      // defaultChecked={} //저장된 값 디폴트체크로
-                      checkedInput={radioCheck}
-                      $margin={index === 0 ? `10px 0 0 0` : ''}
-                    />
-                  ))}
-                </div>
-                <div className="2depth">
-                  {selected1depth.length === 0 ? (
-                    <></>
-                  ) : (
-                    selectCategory2.map((meta) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected2depth}
-                        onChange={(e) => handleRadioCheck(e, meta.label)}
-                        // defaultChecked={} //저장된 값 디폴트체크로
-                        checkedInput={radioCheck}
-                      />
-                    ))
-                  )}
-                </div>
-                <div className="3depth">
-                  {selected2depth.length === 0 ? (
-                    <></>
-                  ) : (
-                    selectCategory3.map((meta) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected3depth}
-                        onChange={(e) => handleRadioCheck(e, meta.label)}
-                        // defaultChecked={} //저장된 값 디폴트체크로
-                        checkedInput={radioCheck}
-                      />
-                    ))
-                  )}
-                </div>
-                <div className="4depth">
-                  {selected3depth.length === 0 ? (
-                    <></>
-                  ) : (
-                    selectCategory4.map((meta) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected4depth}
-                        onChange={(e) => handleRadioCheck(e, meta.label)}
-                        // defaultChecked={} //저장된 값 디폴트체크로
-                        checkedInput={radioCheck}
-                      />
-                    ))
-                  )}
-                </div>
+                {!isCategoryLoading && categoryItems && categoryList && (
+                  <>
+                    {categoryItems.map((item, index) => (
+                      <div
+                        className={`${index + 1}depth`}
+                        key={`ButtonFormatRadio ${item.idx}`}
+                      >
+                        <ButtonFormatRadio
+                          titleText={`${item.name}`}
+                          list={categoryList[index]}
+                          selected={selectedDepth(index)}
+                          onChange={(e) => handleRadioCheck(e, item.idx)}
+                          // defaultChecked={}
+                          checkedInput={radioCheck}
+                          $margin={index === 0 ? `10px 0 0 0` : ''}
+                        />
+                      </div>
+                    ))}
+                  </>
+                )}
+
                 <p className="line"></p>
 
                 {/* 아코디언 리스트  */}
@@ -293,7 +309,7 @@ export function Classification() {
                       $margin={'4px 0 0 0 '}
                     >
                       <RowListWrapper>
-                        <div className="etc1">
+                        {/* <div className="etc1">
                           {selectCategoryEtc1.map((meta) => (
                             <ButtonFormatRadio
                               key={`${meta.id}`}
@@ -318,7 +334,7 @@ export function Classification() {
                               checkedInput={radioCheck}
                             />
                           ))}
-                        </div>
+                        </div> */}
                       </RowListWrapper>
                     </Accordion>
                   </AccordionWrapper>

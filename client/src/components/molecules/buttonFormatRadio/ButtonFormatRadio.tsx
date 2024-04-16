@@ -3,20 +3,18 @@ import { useState } from 'react';
 
 import { styled } from 'styled-components';
 
-import { Button } from '../../../components';
-import { OptionsdepthProps } from '../../../components/contents/createcontent/options/OtionsSelect'; // TODO : 더미 데이터
+import { ItemCategoryType } from '../../../types';
 import { COLOR } from '../../constants';
 
 type ButtonFormatRadioProps = {
-  list: any[]; //TODO : 임시타입
+  list: ItemCategoryType[];
   titleText?: string;
   $margin?: string;
   defaultChecked?: boolean;
-  checkedInput: { title: string; checkValue: string }[];
+  checkedInput: { title: string; checkValue: number }[];
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  selected: string;
-  key?: string;
+  selected: string | number;
 };
 
 export function ButtonFormatRadio({
@@ -26,32 +24,31 @@ export function ButtonFormatRadio({
   $margin,
   onChange,
   selected,
-  key,
 }: ButtonFormatRadioProps) {
+  console.log(list && list);
+
   return (
-    <Component $margin={$margin} key={key}>
-      {list.length !== 0 || list == null ? (
+    <Component $margin={$margin}>
+      {list && list.length !== 0 ? (
         <>
           {titleText && <strong>{titleText}</strong>}
 
           <ButtonFormatRadioList>
-            {list.map((item) => (
-              <li key={item.value}>
-                <label htmlFor={item.value as string}>
+            {list.map((item: ItemCategoryType) => (
+              <li key={`${item.idx} ${item.name} ${item.code}`}>
+                <label htmlFor={item.idx.toString()}>
                   <input
                     type="radio"
                     defaultChecked={defaultChecked}
-                    name={item.label as string}
-                    id={item.value as string}
-                    value={item.value}
+                    name={item.name as string}
+                    id={item.idx.toString()}
+                    value={item.idx}
                     onChange={onChange}
-                    checked={selected === item.value}
-                    className={item.parentValue}
+                    checked={selected == item.idx}
+                    // className={item.parentValue}
                   />
-                  <span
-                    className={`label ${selected === item.value ? 'on' : ''}`}
-                  >
-                    {item.label}
+                  <span className={`label ${selected == item.idx ? 'on' : ''}`}>
+                    {item.name}
                   </span>
                 </label>
               </li>

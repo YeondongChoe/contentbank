@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { IoSearch } from 'react-icons/io5';
 import { MdPublishedWithChanges } from 'react-icons/md';
 import { PiArrowCounterClockwise } from 'react-icons/pi';
@@ -8,6 +9,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { classificationInstance } from '../../api/axios';
 import {
   Accordion,
   Button,
@@ -26,6 +28,7 @@ import {
   metaListChange,
 } from '../../components/contents/createcontent/contentCreatingCategory';
 import { QuizList } from '../../components/contents/createcontent/list';
+import { ItemCategoryType } from '../../types';
 
 export function ContentCategoryChange() {
   const [selected1depth, setSelected1depth] = useState<string>('');
@@ -36,7 +39,7 @@ export function ContentCategoryChange() {
   const [selected6depth, setSelected6depth] = useState<string>('');
   const [selected7depth, setSelected7depth] = useState<string>('');
   const [radioCheck, setRadioCheck] = useState<
-    { title: string; checkValue: string }[]
+    { title: string; checkValue: number }[]
   >([]);
   const [changeVlaue1depth, setChangeVlaue1depth] = useState<string>('');
   const [changeVlaue2depth, setChangeVlaue2depth] = useState<string>('');
@@ -45,16 +48,77 @@ export function ContentCategoryChange() {
   const [changeVlaue5depth, setChangeVlaue5depth] = useState<string>('');
   const [changeVlaue6depth, setChangeVlaue6depth] = useState<string>('');
   const [radioChangeCheck, setRadioChangeCheck] = useState<
-    { title: string; checkValue: string }[]
+    { title: string; checkValue: number }[]
   >([]);
 
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
 
+  const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
+  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+
+  //  카테고리 불러오기 api
+  const getCategory = async () => {
+    const res = await classificationInstance.get(`/v1/category`);
+    console.log(`getCategory 결과값`, res);
+    return res;
+  };
+  const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+  });
+  // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
+  useEffect(() => {
+    if (categoryData) {
+      setCategoryItems(categoryData.data.data.categoryItemList);
+    }
+  }, [categoryData]);
+
+  // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
+  useEffect(() => {
+    const fetchCategoryDetails = async () => {
+      const requests = categoryItems.map((item) =>
+        classificationInstance.get(`/v1/category/${item.idx}`),
+      );
+      const responses = await Promise.all(requests);
+      const lists = responses.map(
+        (response) => response.data.data.categoryClassList,
+      );
+      setCategoryList(lists);
+    };
+
+    if (categoryItems.length > 0) {
+      fetchCategoryDetails().catch(console.error);
+    }
+  }, [categoryItems]);
+  const selectedDepth = (index: number) => {
+    switch (index + 1) {
+      case 1:
+        return selected1depth;
+      case 2:
+        return selected2depth;
+      case 3:
+        return selected3depth;
+      case 4:
+        return selected4depth;
+      case 5:
+        return selected5depth;
+      case 6:
+        return selected6depth;
+      case 7:
+        return selected7depth;
+      default:
+        return '';
+    }
+  };
+
   // 라디오 버튼 설정
   const handleRadioCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
-    value: string,
+    value: number,
   ) => {
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
@@ -86,45 +150,6 @@ export function ContentCategoryChange() {
 
     setRadioCheck([
       ...radioCheck,
-      {
-        title: e.currentTarget.attributes[1].value,
-        checkValue: value,
-      },
-    ]);
-  };
-  const handleRadioChangeValueCheck = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    value: string,
-  ) => {
-    const depth =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.classList[0];
-
-    // console.log(e.currentTarget.attributes[1].value);
-
-    switch (depth) {
-      case '1depthChangeValue':
-        setChangeVlaue1depth(e.currentTarget.value);
-        break;
-      case '2depthChangeValue':
-        setChangeVlaue2depth(e.currentTarget.value);
-        break;
-      case '3depthChangeValue':
-        setChangeVlaue3depth(e.currentTarget.value);
-        break;
-      case '4depthChangeValue':
-        setChangeVlaue4depth(e.currentTarget.value);
-        break;
-      case '5depthChangeValue':
-        setChangeVlaue5depth(e.currentTarget.value);
-        break;
-      case '6depthChangeValue':
-        setChangeVlaue6depth(e.currentTarget.value);
-        break;
-    }
-
-    setRadioChangeCheck([
-      ...radioChangeCheck,
       {
         title: e.currentTarget.attributes[1].value,
         checkValue: value,
@@ -207,98 +232,26 @@ export function ContentCategoryChange() {
             <ScrollWrapper>
               <PerfectScrollbar>
                 <div className="meta_radio_select">
-                  <div className="1depth">
-                    {metaList[0].data.map((meta, index) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected1depth}
-                        onChange={(e) => handleRadioCheck(e, meta.value)}
-                        // defaultChecked={}
-                        checkedInput={radioCheck}
-                        $margin={index === 0 ? `10px 0 0 0` : ''}
-                      />
-                    ))}
-                  </div>
-                  <div className="2depth">
-                    {metaList[1].data.map((meta, index) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected2depth}
-                        onChange={(e) => handleRadioCheck(e, meta.value)}
-                        // defaultChecked={}
-                        checkedInput={radioCheck}
-                      />
-                    ))}
-                  </div>
-                  <div className="3depth">
-                    {metaList[2].data.map((meta, index) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected3depth}
-                        onChange={(e) => handleRadioCheck(e, meta.value)}
-                        // defaultChecked={}
-                        checkedInput={radioCheck}
-                      />
-                    ))}
-                  </div>
-                  <div className="4depth">
-                    {metaList[3].data.map((meta, index) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected4depth}
-                        onChange={(e) => handleRadioCheck(e, meta.value)}
-                        // defaultChecked={}
-                        checkedInput={radioCheck}
-                      />
-                    ))}
-                  </div>
-                  <div className="5depth">
-                    {metaList[4].data.map((meta, index) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected5depth}
-                        onChange={(e) => handleRadioCheck(e, meta.value)}
-                        // defaultChecked={}
-                        checkedInput={radioCheck}
-                      />
-                    ))}
-                  </div>
-                  <div className="6depth">
-                    {metaList[5].data.map((meta, index) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected6depth}
-                        onChange={(e) => handleRadioCheck(e, meta.value)}
-                        // defaultChecked={}
-                        checkedInput={radioCheck}
-                      />
-                    ))}
-                  </div>
-                  <div className="7depth">
-                    {metaList[6].data.map((meta, index) => (
-                      <ButtonFormatRadio
-                        key={`${meta.id}`}
-                        titleText={`${meta.label}`}
-                        list={meta.options}
-                        selected={selected7depth}
-                        onChange={(e) => handleRadioCheck(e, meta.value)}
-                        // defaultChecked={}
-                        checkedInput={radioCheck}
-                      />
-                    ))}
-                  </div>
+                  {!isCategoryLoading && categoryItems && categoryList && (
+                    <>
+                      {categoryItems.map((item, index) => (
+                        <div
+                          className={`${index + 1}depth`}
+                          key={`ButtonFormatRadio ${item.idx}`}
+                        >
+                          <ButtonFormatRadio
+                            titleText={`${item.name}`}
+                            list={categoryList[index]}
+                            selected={selectedDepth(index)}
+                            onChange={(e) => handleRadioCheck(e, item.idx)}
+                            // defaultChecked={}
+                            checkedInput={radioCheck}
+                            $margin={index === 0 ? `10px 0 0 0` : ''}
+                          />
+                        </div>
+                      ))}
+                    </>
+                  )}
                 </div>
                 <div className="meta_accordion_select">
                   {selected1depth &&
@@ -401,7 +354,7 @@ export function ContentCategoryChange() {
                       선택한 문항 총 {checkedList.length} 건
                     </p>
                     <div className="meta_radio_select">
-                      <div className="1depthChangeValue">
+                      {/* <div className="1depthChangeValue">
                         {metaListChange[0].data.map((meta, index) => (
                           <ButtonFormatRadio
                             key={`${meta.id}`}
@@ -416,82 +369,7 @@ export function ContentCategoryChange() {
                             $margin={index === 0 ? `10px 0 0 0` : ''}
                           />
                         ))}
-                      </div>
-                      <div className="2depthChangeValue">
-                        {metaListChange[1].data.map((meta, index) => (
-                          <ButtonFormatRadio
-                            key={`${meta.id}`}
-                            titleText={`${meta.label}`}
-                            list={meta.options}
-                            selected={changeVlaue2depth}
-                            onChange={(e) =>
-                              handleRadioChangeValueCheck(e, meta.value)
-                            }
-                            // defaultChecked={}
-                            checkedInput={radioChangeCheck}
-                          />
-                        ))}
-                      </div>
-                      <div className="3depthChangeValue">
-                        {metaListChange[2].data.map((meta, index) => (
-                          <ButtonFormatRadio
-                            key={`${meta.id}`}
-                            titleText={`${meta.label}`}
-                            list={meta.options}
-                            selected={changeVlaue3depth}
-                            onChange={(e) =>
-                              handleRadioChangeValueCheck(e, meta.value)
-                            }
-                            // defaultChecked={}
-                            checkedInput={radioChangeCheck}
-                          />
-                        ))}
-                      </div>
-                      <div className="4depthChangeValue">
-                        {metaListChange[3].data.map((meta, index) => (
-                          <ButtonFormatRadio
-                            key={`${meta.id}`}
-                            titleText={`${meta.label}`}
-                            list={meta.options}
-                            selected={changeVlaue4depth}
-                            onChange={(e) =>
-                              handleRadioChangeValueCheck(e, meta.value)
-                            }
-                            // defaultChecked={}
-                            checkedInput={radioChangeCheck}
-                          />
-                        ))}
-                      </div>
-                      <div className="5depthChangeValue">
-                        {metaListChange[4].data.map((meta, index) => (
-                          <ButtonFormatRadio
-                            key={`${meta.id}`}
-                            titleText={`${meta.label}`}
-                            list={meta.options}
-                            selected={changeVlaue5depth}
-                            onChange={(e) =>
-                              handleRadioChangeValueCheck(e, meta.value)
-                            }
-                            // defaultChecked={}
-                            checkedInput={radioChangeCheck}
-                          />
-                        ))}
-                      </div>
-                      <div className="6depthChangeValue">
-                        {metaListChange[5].data.map((meta, index) => (
-                          <ButtonFormatRadio
-                            key={`${meta.id}`}
-                            titleText={`${meta.label}`}
-                            list={meta.options}
-                            selected={changeVlaue6depth}
-                            onChange={(e) =>
-                              handleRadioChangeValueCheck(e, meta.value)
-                            }
-                            // defaultChecked={}
-                            checkedInput={radioChangeCheck}
-                          />
-                        ))}
-                      </div>
+                      </div> */}
                     </div>
                     <div className="meta_accordion_select">
                       {/* <strong>세부 검색조건</strong> */}

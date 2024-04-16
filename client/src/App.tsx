@@ -67,10 +67,10 @@ export function App() {
         // useQuery get 데이터 통신 후
         // 에러후 에러값이 있을시 토스트알럿에 표시
         if (query.meta && query.meta.errorMessage) {
-          openToastifyAlert({
-            type: 'error',
-            text: `${query.meta.errorMessage}: ${context}`,
-          });
+          // openToastifyAlert({
+          //   type: 'error',
+          //   text: `${query.meta.errorMessage}: ${context}`,
+          // });
           console.log(`${query.meta.errorMessage}: ${context}`);
         }
       },
