@@ -137,7 +137,7 @@ export function Worksheet() {
   //210.124.177로 보내면 여기만 됨
   const [pdfUrl, setPdfUrl] = useState<string>(
     // 'https://j-dev01.dreamonesys.co.kr/usr/share/nginx/html/CB/worksheettest.pdf',
-    'https://j-dev01.dreamonesys.co.kr/CB/worksheettest.pdf',
+    'https://j-dev01.dreamonesys.co.kr/CB/worksheetest.pdf',
   );
 
   const getPdf = () => {
