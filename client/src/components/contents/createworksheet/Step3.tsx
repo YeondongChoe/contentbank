@@ -271,7 +271,7 @@ export function Step3() {
         height="750"
         style={{ border: 'none', borderRadius: 25 }}
       ></iframe>
-      <TitleWrapper>
+      {/* <TitleWrapper>
         <IconWrapper>
           <IoIosArrowBack
             style={{ fontSize: '24px', cursor: 'pointer' }}
@@ -790,7 +790,28 @@ export function Step3() {
               theme={selectedTheme}
             ></TypeB>
           )}
-          {/* <ThemeProvider theme={selectedTheme}>
+        </WorksheetTemplateViewSection>
+      </Wrapper> */}
+      <CreateButtonWrapper>
+        <Button
+          buttonType="button"
+          onClick={submitCreateWorksheet}
+          $padding="10px"
+          height={'35px'}
+          width={'120px'}
+          fontSize="13px"
+          $filled
+          cursor
+        >
+          <span>학습지 만들기</span>
+        </Button>
+      </CreateButtonWrapper>
+    </Container>
+  );
+}
+
+{
+  /* <ThemeProvider theme={selectedTheme}>
             <WorksheetTemplateWrapper>
               <Label value={'미리보기'}></Label>
               <WorksheetTemplate>
@@ -892,25 +913,7 @@ export function Step3() {
                 </MathViewerListWrapper>
               </WorksheetTemplate>
             </WorksheetTemplateWrapper>
-          </ThemeProvider> */}
-        </WorksheetTemplateViewSection>
-      </Wrapper>
-      <CreateButtonWrapper>
-        <Button
-          buttonType="button"
-          onClick={submitCreateWorksheet}
-          $padding="10px"
-          height={'35px'}
-          width={'120px'}
-          fontSize="13px"
-          $filled
-          cursor
-        >
-          <span>학습지 만들기</span>
-        </Button>
-      </CreateButtonWrapper>
-    </Container>
-  );
+          </ThemeProvider> */
 }
 
 const Container = styled.div``;
