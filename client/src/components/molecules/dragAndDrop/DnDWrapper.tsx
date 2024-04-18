@@ -66,7 +66,7 @@ export const DnDWrapper = ({
     }
     setIsStartDnd?.(true);
   };
-  console.log(isStartDnD);
+  // console.log(isStartDnD);
 
   useEffect(() => {
     setCurrentItems(dragList);

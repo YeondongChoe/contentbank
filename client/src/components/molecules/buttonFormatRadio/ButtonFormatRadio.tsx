@@ -11,7 +11,7 @@ type ButtonFormatRadioProps = {
   titleText?: string;
   $margin?: string;
   defaultChecked?: boolean;
-  checkedInput: { title: string; checkValue: number }[];
+  checkedInput: { title: string; checkValue: number; code: string };
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   selected: string | number;
@@ -25,8 +25,7 @@ export function ButtonFormatRadio({
   onChange,
   selected,
 }: ButtonFormatRadioProps) {
-  console.log(list && list);
-
+  // console.log(list && list);
   return (
     <Component $margin={$margin}>
       {list && list.length !== 0 ? (
@@ -45,7 +44,7 @@ export function ButtonFormatRadio({
                     value={item.idx}
                     onChange={onChange}
                     checked={selected == item.idx}
-                    // className={item.parentValue}
+                    className={item.code}
                   />
                   <span className={`label ${selected == item.idx ? 'on' : ''}`}>
                     {item.name}

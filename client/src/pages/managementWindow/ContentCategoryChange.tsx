@@ -239,7 +239,7 @@ export function ContentCategoryChange() {
                           className={`${index + 1}depth`}
                           key={`ButtonFormatRadio ${item.idx}`}
                         >
-                          <ButtonFormatRadio
+                          {/* <ButtonFormatRadio
                             titleText={`${item.name}`}
                             list={categoryList[index]}
                             selected={selectedDepth(index)}
@@ -247,7 +247,7 @@ export function ContentCategoryChange() {
                             // defaultChecked={}
                             checkedInput={radioCheck}
                             $margin={index === 0 ? `10px 0 0 0` : ''}
-                          />
+                          /> */}
                         </div>
                       ))}
                     </>

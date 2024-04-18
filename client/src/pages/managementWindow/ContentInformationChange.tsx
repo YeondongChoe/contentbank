@@ -28,6 +28,41 @@ import { QuizList } from '../../components/contents/createcontent/list';
 import { ItemCategoryType } from '../../types';
 
 export function ContentInformationChange() {
+  const [radio1depthCheck, setRadio1depthCheck] = useState<{
+    title: string;
+    checkValue: number;
+    code: string;
+  }>({ title: '', checkValue: 0, code: '' });
+  const [radio2depthCheck, setRadio2depthCheck] = useState<{
+    title: string;
+    checkValue: number;
+    code: string;
+  }>({ title: '', checkValue: 0, code: '' });
+  const [radio3depthCheck, setRadio3depthCheck] = useState<{
+    title: string;
+    checkValue: number;
+    code: string;
+  }>({ title: '', checkValue: 0, code: '' });
+  const [radio4depthCheck, setRadio4depthCheck] = useState<{
+    title: string;
+    checkValue: number;
+    code: string;
+  }>({ title: '', checkValue: 0, code: '' });
+  const [radio5depthCheck, setRadio5depthCheck] = useState<{
+    title: string;
+    checkValue: number;
+    code: string;
+  }>({ title: '', checkValue: 0, code: '' });
+  const [radio6depthCheck, setRadio6depthCheck] = useState<{
+    title: string;
+    checkValue: number;
+    code: string;
+  }>({ title: '', checkValue: 0, code: '' });
+  const [radio7depthCheck, setRadio7depthCheck] = useState<{
+    title: string;
+    checkValue: number;
+    code: string;
+  }>({ title: '', checkValue: 0, code: '' });
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
@@ -35,6 +70,15 @@ export function ContentInformationChange() {
   const [selected5depth, setSelected5depth] = useState<string>('');
   const [selected6depth, setSelected6depth] = useState<string>('');
   const [selected7depth, setSelected7depth] = useState<string>('');
+  const [nextList1depth, setNextList1depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList2depth, setNextList2depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList3depth, setNextList3depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: number }[]
@@ -51,7 +95,7 @@ export function ContentInformationChange() {
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
-    console.log(`getCategory 결과값`, res);
+    // console.log(`getCategory 결과값`, res);
     return res;
   };
   const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
@@ -68,23 +112,182 @@ export function ContentInformationChange() {
     }
   }, [categoryData]);
 
-  // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
+  const getCategoryGroups = async () => {
+    const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    return response.data.data.typeList;
+  };
+  const { data: groupsData } = useQuery({
+    queryKey: ['get-category-groups'],
+    queryFn: getCategoryGroups,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups 에러 메세지',
+    },
+  });
   useEffect(() => {
-    const fetchCategoryDetails = async () => {
-      const requests = categoryItems.map((item) =>
-        classificationInstance.get(`/v1/category/${item.idx}`),
-      );
-      const responses = await Promise.all(requests);
-      const lists = responses.map(
-        (response) => response.data.data.categoryClassList,
-      );
-      setCategoryList(lists);
-    };
-
-    if (categoryItems.length > 0) {
-      fetchCategoryDetails().catch(console.error);
+    if (groupsData) {
+      fetchCategoryItems(groupsData);
     }
-  }, [categoryItems]);
+  }, [groupsData]);
+  // 카테고리의 그룹 유형 조회
+  const fetchCategoryItems = async (typeList: string) => {
+    const typeIds = typeList.split(',');
+    const requests = typeIds.map((id) =>
+      classificationInstance.get(`/v1/category/${id}`),
+    );
+    const responses = await Promise.all(requests);
+    const itemsList = responses.map((res) => res.data.data.categoryClassList);
+    setCategoryList(itemsList);
+  };
+
+  // 라디오 버튼 설정
+  const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.className);
+    const depth =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.classList[0];
+    switch (depth) {
+      case '1depth':
+        setSelected1depth(e.currentTarget.id);
+        setRadio1depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+      case '2depth':
+        setSelected2depth(e.currentTarget.value);
+        setRadio2depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+      case '3depth':
+        setSelected3depth(e.currentTarget.value);
+        setRadio3depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+      case '4depth':
+        setSelected4depth(e.currentTarget.value);
+        setRadio4depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+      case '5depth':
+        setSelected5depth(e.currentTarget.value);
+        setRadio5depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+      case '6depth':
+        setSelected6depth(e.currentTarget.value);
+        setRadio6depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+      case '7depth':
+        setSelected7depth(e.currentTarget.value);
+        setRadio7depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+    }
+  };
+
+  /* 선택된 유형에따라 항목 조회 */
+  //1뎁스 선택시 2뎁스 설정되게
+  const getNextList1 = async () => {
+    const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
+    const res = await classificationInstance
+      .get(`/v1/category/${itemIdx}/${pidx}`)
+      .then((res) => {
+        setNextList1depth(res.data.data.categoryClassList);
+      });
+    return res;
+  };
+  const { data: nextListData1, refetch: nextListData1Refetch } = useQuery({
+    queryKey: ['get-nextList1'],
+    queryFn: getNextList1,
+    meta: {
+      errorMessage: 'get-nextList1 에러 메세지',
+    },
+    // 체크된 값이 있을때 조회
+    enabled: radio1depthCheck.code !== '',
+  });
+
+  //2뎁스 선택시 3뎁스 설정되게
+  const getNextList2 = async () => {
+    const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
+    const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
+    const res = await classificationInstance
+      .get(`/v1/category/${itemIdx}/${pidx}`)
+      .then((res) => {
+        setNextList2depth(res.data.data.categoryClassList);
+      });
+    return res;
+  };
+  const { data: nextListData2, refetch: nextListData2Refetch } = useQuery({
+    queryKey: ['get-nextList2'],
+    queryFn: getNextList2,
+    meta: {
+      errorMessage: 'get-nextList2 에러 메세지',
+    },
+    // 체크된 값이 있을때 조회
+    enabled: radio2depthCheck.code !== '',
+  });
+
+  //3뎁스 선택시 4뎁스 설정되게
+  const getNextList3 = async () => {
+    const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
+    const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
+    const res = await classificationInstance
+      .get(`/v1/category/${itemIdx}/${pidx}`)
+      .then((res) => {
+        setNextList3depth(res.data.data.categoryClassList);
+      });
+
+    return res;
+  };
+  const { data: nextListData3, refetch: nextListData3Refetch } = useQuery({
+    queryKey: ['get-nextList3'],
+    queryFn: getNextList3,
+    meta: {
+      errorMessage: 'get-nextList3 에러 메세지',
+    },
+    // 체크된 값이 있을때 조회
+    enabled: radio3depthCheck.code !== '',
+  });
+
+  useEffect(() => {
+    if (radio1depthCheck.code !== '') nextListData1Refetch();
+    if (radio2depthCheck.code !== '') nextListData2Refetch();
+    if (radio3depthCheck.code !== '') nextListData3Refetch();
+  }, [radio1depthCheck, radio2depthCheck, radio3depthCheck]);
+
+  // 체크값 변경시 초기화
+  useEffect(() => {
+    setSelected2depth('');
+  }, [selected1depth]);
+  useEffect(() => {
+    setSelected3depth('');
+  }, [selected2depth]);
+  useEffect(() => {
+    setSelected4depth('');
+    setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
+  }, [selected3depth]);
 
   const selectedDepth = (index: number) => {
     switch (index + 1) {
@@ -105,48 +308,6 @@ export function ContentInformationChange() {
       default:
         return '';
     }
-  };
-
-  // 라디오 버튼 설정
-  const handleRadioCheck = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    value: number,
-  ) => {
-    const depth =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.classList[0];
-
-    switch (depth) {
-      case '1depth':
-        setSelected1depth(e.currentTarget.value);
-        break;
-      case '2depth':
-        setSelected2depth(e.currentTarget.value);
-        break;
-      case '3depth':
-        setSelected3depth(e.currentTarget.value);
-        break;
-      case '4depth':
-        setSelected4depth(e.currentTarget.value);
-        break;
-      case '5depth':
-        setSelected5depth(e.currentTarget.value);
-        break;
-      case '6depth':
-        setSelected6depth(e.currentTarget.value);
-        break;
-      case '7depth':
-        setSelected7depth(e.currentTarget.value);
-        break;
-    }
-
-    setRadioCheck([
-      ...radioCheck,
-      {
-        title: e.currentTarget.attributes[1].value,
-        checkValue: value,
-      },
-    ]);
   };
 
   // 깊이가 있는 리스트 체크박스
@@ -204,41 +365,94 @@ export function ContentInformationChange() {
             <ScrollWrapper>
               <PerfectScrollbar>
                 <div className="meta_radio_select">
-                  {!isCategoryLoading && categoryItems && categoryList && (
+                  {categoryData && categoryItems[0] && categoryList && (
                     <>
-                      {categoryItems.map((item, index) => (
+                      {[categoryItems[0]].map((item) => (
                         <div
-                          className={`${index + 1}depth`}
-                          key={`ButtonFormatRadio ${item.idx}`}
+                          className={`1depth`}
+                          key={`selected1depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
                             titleText={`${item.name}`}
-                            list={categoryList[index]}
-                            selected={selectedDepth(index)}
-                            onChange={(e) => handleRadioCheck(e, item.idx)}
+                            list={categoryList[0]}
+                            selected={selected1depth}
+                            onChange={(e) => handleRadioCheck(e)}
                             // defaultChecked={}
-                            checkedInput={radioCheck}
-                            $margin={index === 0 ? `10px 0 0 0` : ''}
+                            checkedInput={radio1depthCheck}
+                            $margin={`10px 0 0 0`}
                           />
                         </div>
                       ))}
+
+                      {radio1depthCheck.code !== '' &&
+                        selected1depth !== '' &&
+                        [categoryItems[1]].map((item) => (
+                          <div
+                            className={`2depth`}
+                            key={`selected2depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              titleText={`${item.name}`}
+                              list={nextList1depth}
+                              selected={selected2depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio2depthCheck}
+                            />
+                          </div>
+                        ))}
+
+                      {radio2depthCheck.code !== '' &&
+                        selected2depth !== '' &&
+                        [categoryItems[2]].map((item) => (
+                          <div
+                            className={`3depth`}
+                            key={`selected3depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              titleText={`${item.name}`}
+                              list={nextList2depth}
+                              selected={selected3depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio3depthCheck}
+                            />
+                          </div>
+                        ))}
+                      {radio3depthCheck.code !== '' &&
+                        selected3depth !== '' &&
+                        [categoryItems[3]].map((item) => (
+                          <div
+                            className={`4depth`}
+                            key={`selected4depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              titleText={`${item.name}`}
+                              list={nextList3depth}
+                              selected={selected4depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio4depthCheck}
+                            />
+                          </div>
+                        ))}
                     </>
                   )}
                 </div>
                 <div className="meta_accordion_select">
-                  {selected1depth &&
-                    selected2depth &&
-                    selected3depth &&
-                    selected4depth &&
-                    selected5depth &&
-                    selected6depth &&
-                    selected7depth && (
+                  {radio1depthCheck.code !== '' &&
+                    radio2depthCheck.code !== '' &&
+                    radio3depthCheck.code !== '' &&
+                    radio4depthCheck.code !== '' &&
+                    selected1depth !== '' &&
+                    selected2depth !== '' &&
+                    selected3depth !== '' && (
                       <>
                         <strong>세부 검색조건</strong>
                         <Accordion
                           $backgroundColor={`${COLOR.GRAY}`}
-                          title={`${selected1depth}`}
-                          id={`세부 검색조건 ${selected1depth}`}
+                          title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                          id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
                           $margin={`0`}
                         >
                           <>
