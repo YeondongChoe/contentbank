@@ -71,6 +71,8 @@ export const userInstance = createAPIInstance('user-service');
 export const classificationInstance = createAPIInstance(
   'classification-service',
 );
+/* 학습지 API Instance */
+export const workbookInstance = createAPIInstance('workbook-service');
 
 // 메뉴 리소스 서비스
 // export const resourceInstance = axios.create({
