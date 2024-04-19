@@ -21,7 +21,11 @@ import {
   DepthBlock,
   Search,
 } from '../../../components/molecules';
-import { ItemCategoryType } from '../../../types';
+import {
+  ItemCategoryType,
+  ItemTreeListType,
+  ItemTreeType,
+} from '../../../types';
 import { COLOR } from '../../constants/COLOR';
 
 import {
@@ -79,6 +83,8 @@ export function Classification() {
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+  const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
+  const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
 
   //  카테고리 전체 불러오기 api
   const getCategory = async () => {
@@ -86,7 +92,11 @@ export function Classification() {
     // console.log(`getCategory 결과값`, res);
     return res;
   };
-  const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['get-category'],
     queryFn: getCategory,
     meta: {
@@ -276,12 +286,12 @@ export function Classification() {
       })
       .join(',');
 
-    const jsonString = { jsonString: [`{${keyValuePairs}}`] };
-    // console.log(`jsonString 결과값`, jsonString);
-    const res = await classificationInstance.post('/v1/item', {
-      params: jsonString,
-    });
-    // console.log(`item 결과값`, res);
+    const jsonList = `{"jsonList": [{${keyValuePairs}}]}`;
+    // console.log(`jsonList 결과값`, jsonList);
+    const res = await classificationInstance.post(
+      '/v1/item',
+      JSON.parse(jsonList),
+    );
     return res;
   };
 
@@ -294,12 +304,10 @@ export function Classification() {
           text: context.response.data.message,
         });
       },
-      onSuccess: (response: { data: { message: string } }) => {
-        console.log('categoryItemTreeData -- :', response);
-        openToastifyAlert({
-          type: 'success',
-          text: response.data.message,
-        });
+      onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+        // setItemTreeList(res.data.data[0].itemTreeList);
+        console.log('categoryItemTreeData -- :', response.data.data);
+        setItemTree(response.data.data);
       },
     });
 
@@ -307,6 +315,7 @@ export function Classification() {
     if (radio4depthCheck.code !== '') categoryItemTreeDataMutate();
   }, [radio4depthCheck]);
 
+  // itemTreeList, itemTreeKey 데이터
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
     if (checked) {
@@ -495,25 +504,30 @@ export function Classification() {
                         <p className="line bottom_text">Total : {`${0}`}</p>
                         <DepthBlockScrollWrapper>
                           <PerfectScrollbar>
-                            {depthBlockList.map((item) => (
-                              <DepthBlock
-                                key={`depthList${item.id}`}
-                                classNameList={`depth-${item.depth}`}
-                                id={item.id}
-                                name={item.name}
-                                value={item.value}
-                                onChange={(e) =>
-                                  handleSingleCheck(e.target.checked, item.id)
-                                }
-                                checked={
-                                  checkedDepthList.includes(item.id as string)
-                                    ? true
-                                    : false
-                                }
-                              >
-                                <span>{item.label}</span>
-                              </DepthBlock>
-                            ))}
+                            {itemTree.length !== 0 &&
+                              itemTree[0].itemTreeList.length !== 0 &&
+                              itemTree[0].itemTreeList.map((item) => (
+                                <DepthBlock
+                                  key={`depthList${item.code} ${item.name}`}
+                                  classNameList={`depth-${item.level}`}
+                                  id={item.code}
+                                  name={item.name}
+                                  value={item.code}
+                                  onChange={(e) =>
+                                    handleSingleCheck(
+                                      e.target.checked,
+                                      item.code,
+                                    )
+                                  }
+                                  checked={
+                                    checkedDepthList.includes(item.code)
+                                      ? true
+                                      : false
+                                  }
+                                >
+                                  <span>{item.name}</span>
+                                </DepthBlock>
+                              ))}
                           </PerfectScrollbar>
                         </DepthBlockScrollWrapper>
                       </RowListWrapper>

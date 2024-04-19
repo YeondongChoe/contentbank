@@ -7,7 +7,7 @@ import { Button, CheckBoxI } from '../..';
 import { COLOR } from '../../constants';
 
 type DepthBlockProps = {
-  key?: any;
+  key?: string;
   children: JSX.Element | JSX.Element[];
   $margin?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -40,18 +40,21 @@ export function DepthBlock({
 
     if (!parentElement) return; // 상위 엘리먼트가 존재하지 않는 경우 조기 반환
 
-    const depthTargets = Array.from(parentElement.children).map(
-      (child) => child.children[0].children[1] as HTMLSpanElement,
-    );
+    const depthTargets = Array.from(parentElement.children)
+      .map((child) => {
+        const element = child.children[0]?.children[1];
+        return element ? (element as HTMLSpanElement) : null;
+      })
+      .filter((el) => el !== null);
 
     const nextSibling = target.nextSibling as HTMLSpanElement;
     const depthClass = nextSibling.className.split(' ')[2];
     const depth = parseInt(depthClass.split('-')[1], 10);
 
     if (target.checked) {
-      depthTargets.slice(0, depth).forEach((el) => el.classList.add('border'));
+      depthTargets.slice(0, depth).forEach((el) => el?.classList.add('border'));
     } else {
-      depthTargets.forEach((el) => el.classList.remove('border'));
+      depthTargets.forEach((el) => el?.classList.remove('border'));
     }
   };
 
