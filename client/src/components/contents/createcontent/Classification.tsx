@@ -83,6 +83,7 @@ export function Classification() {
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+  const [itemTreeLenth, setItemTreeLenth] = useState<number>(0);
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
 
@@ -107,7 +108,9 @@ export function Classification() {
   useEffect(() => {
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
+      return;
     }
+    refetch();
   }, [categoryData]);
 
   const getCategoryGroups = async () => {
@@ -193,12 +196,16 @@ export function Classification() {
   const getNextList1 = async () => {
     const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
-    const res = await classificationInstance
-      .get(`/v1/category/${itemIdx}/${pidx}`)
-      .then((res) => {
-        setNextList1depth(res.data.data.categoryClassList);
-      });
-    return res;
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList1depth(res.data.data.categoryClassList);
+      return res.data;
+    } catch (error) {
+      console.error('Error fetching next list: ', error);
+      return undefined;
+    }
   };
   const { data: nextListData1, refetch: nextListData1Refetch } = useQuery({
     queryKey: ['get-nextList1'],
@@ -214,12 +221,16 @@ export function Classification() {
   const getNextList2 = async () => {
     const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
-    const res = await classificationInstance
-      .get(`/v1/category/${itemIdx}/${pidx}`)
-      .then((res) => {
-        setNextList2depth(res.data.data.categoryClassList);
-      });
-    return res;
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList2depth(res.data.data.categoryClassList);
+      return res.data;
+    } catch (error) {
+      console.error('Error fetching next list: ', error);
+      return undefined;
+    }
   };
   const { data: nextListData2, refetch: nextListData2Refetch } = useQuery({
     queryKey: ['get-nextList2'],
@@ -235,13 +246,16 @@ export function Classification() {
   const getNextList3 = async () => {
     const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
-    const res = await classificationInstance
-      .get(`/v1/category/${itemIdx}/${pidx}`)
-      .then((res) => {
-        setNextList3depth(res.data.data.categoryClassList);
-      });
-
-    return res;
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList3depth(res.data.data.categoryClassList);
+      return res.data;
+    } catch (error) {
+      console.error('Error fetching next list: ', error);
+      return undefined;
+    }
   };
   const { data: nextListData3, refetch: nextListData3Refetch } = useQuery({
     queryKey: ['get-nextList3'],
@@ -306,7 +320,6 @@ export function Classification() {
       },
       onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
         // setItemTreeList(res.data.data[0].itemTreeList);
-        console.log('categoryItemTreeData -- :', response.data.data);
         setItemTree(response.data.data);
       },
     });
@@ -315,7 +328,6 @@ export function Classification() {
     if (radio4depthCheck.code !== '') categoryItemTreeDataMutate();
   }, [radio4depthCheck]);
 
-  // itemTreeList, itemTreeKey 데이터
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
     if (checked) {
@@ -504,30 +516,36 @@ export function Classification() {
                         <p className="line bottom_text">Total : {`${0}`}</p>
                         <DepthBlockScrollWrapper>
                           <PerfectScrollbar>
-                            {itemTree.length !== 0 &&
-                              itemTree[0].itemTreeList.length !== 0 &&
-                              itemTree[0].itemTreeList.map((item) => (
-                                <DepthBlock
-                                  key={`depthList${item.code} ${item.name}`}
-                                  classNameList={`depth-${item.level}`}
-                                  id={item.code}
-                                  name={item.name}
-                                  value={item.code}
-                                  onChange={(e) =>
-                                    handleSingleCheck(
-                                      e.target.checked,
-                                      item.code,
-                                    )
-                                  }
-                                  checked={
-                                    checkedDepthList.includes(item.code)
-                                      ? true
-                                      : false
-                                  }
-                                >
-                                  <span>{item.name}</span>
-                                </DepthBlock>
-                              ))}
+                            {itemTree.length !== 0 && (
+                              <>
+                                {itemTree.map((el, idx) => (
+                                  <div key={`${el.itemTreeKey}`}>
+                                    {el.itemTreeList.map((item) => (
+                                      <DepthBlock
+                                        key={`depthList${item.code} ${item.name}`}
+                                        classNameList={`depth-${item.level}`}
+                                        id={item.code}
+                                        name={item.name}
+                                        value={item.code}
+                                        onChange={(e) =>
+                                          handleSingleCheck(
+                                            e.target.checked,
+                                            item.code,
+                                          )
+                                        }
+                                        checked={
+                                          checkedDepthList.includes(item.code)
+                                            ? true
+                                            : false
+                                        }
+                                      >
+                                        <span>{item.name}</span>
+                                      </DepthBlock>
+                                    ))}
+                                  </div>
+                                ))}
+                              </>
+                            )}
                           </PerfectScrollbar>
                         </DepthBlockScrollWrapper>
                       </RowListWrapper>

@@ -7,7 +7,6 @@ import { Button, CheckBoxI } from '../..';
 import { COLOR } from '../../constants';
 
 type DepthBlockProps = {
-  key?: string;
   children: JSX.Element | JSX.Element[];
   $margin?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -22,7 +21,6 @@ type DepthBlockProps = {
 };
 
 export function DepthBlock({
-  key,
   children,
   $margin,
   onChange,
@@ -59,7 +57,7 @@ export function DepthBlock({
   };
 
   return (
-    <Component $margin={$margin} key={`${key}-depthBlock`}>
+    <Component $margin={$margin}>
       <label htmlFor={id}>
         <input
           type="checkbox"
