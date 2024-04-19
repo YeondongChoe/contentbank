@@ -101,7 +101,12 @@ export function ContentInformationChange() {
     // console.log(`getCategory 결과값`, res);
     return res;
   };
-  const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    error: categoryDataError,
+    refetch: categoryDataRefetch,
+  } = useQuery({
     queryKey: ['get-category'],
     queryFn: getCategory,
     meta: {
@@ -112,8 +117,10 @@ export function ContentInformationChange() {
   useEffect(() => {
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
+    } else if (categoryDataError) {
+      categoryDataRefetch();
     }
-  }, [categoryData]);
+  }, [categoryData, categoryDataError, categoryDataRefetch]);
 
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경

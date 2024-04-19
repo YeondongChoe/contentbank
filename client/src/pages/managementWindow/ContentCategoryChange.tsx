@@ -123,7 +123,8 @@ export function ContentCategoryChange() {
   const {
     data: categoryData,
     isLoading: isCategoryLoading,
-    refetch,
+    error: categoryDataError,
+    refetch: categoryDataRefetch,
   } = useQuery({
     queryKey: ['get-category'],
     queryFn: getCategory,
@@ -135,10 +136,10 @@ export function ContentCategoryChange() {
   useEffect(() => {
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
-      return;
+    } else if (categoryDataError) {
+      categoryDataRefetch();
     }
-    refetch();
-  }, [categoryData]);
+  }, [categoryData, categoryDataError, categoryDataRefetch]);
 
   // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
   const getCategoryGroups = async () => {

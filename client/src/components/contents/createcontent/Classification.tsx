@@ -86,7 +86,7 @@ export function Classification() {
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
 
-  //  카테고리 전체 불러오기 api
+  //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
     // console.log(`getCategory 결과값`, res);
@@ -95,7 +95,8 @@ export function Classification() {
   const {
     data: categoryData,
     isLoading: isCategoryLoading,
-    refetch,
+    error: categoryDataError,
+    refetch: categoryDataRefetch,
   } = useQuery({
     queryKey: ['get-category'],
     queryFn: getCategory,
@@ -107,10 +108,10 @@ export function Classification() {
   useEffect(() => {
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
-      return;
+    } else if (categoryDataError) {
+      categoryDataRefetch();
     }
-    refetch();
-  }, [categoryData]);
+  }, [categoryData, categoryDataError, categoryDataRefetch]);
 
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
