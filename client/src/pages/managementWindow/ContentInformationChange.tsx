@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { IoSearch } from 'react-icons/io5';
 import { MdPublishedWithChanges } from 'react-icons/md';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -16,6 +16,7 @@ import {
   PaginationBox,
   ResizeLayout,
   ValueNone,
+  openToastifyAlert,
 } from '../../components';
 import { COLOR } from '../../components/constants';
 //TODO: 더미데이터
@@ -25,7 +26,7 @@ import {
   depthBlockList,
 } from '../../components/contents/createcontent/contentCreatingCategory';
 import { QuizList } from '../../components/contents/createcontent/list';
-import { ItemCategoryType } from '../../types';
+import { ItemCategoryType, ItemTreeListType, ItemTreeType } from '../../types';
 
 export function ContentInformationChange() {
   const [radio1depthCheck, setRadio1depthCheck] = useState<{
@@ -91,6 +92,8 @@ export function ContentInformationChange() {
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+  const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
+  const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -211,12 +214,16 @@ export function ContentInformationChange() {
   const getNextList1 = async () => {
     const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
-    const res = await classificationInstance
-      .get(`/v1/category/${itemIdx}/${pidx}`)
-      .then((res) => {
-        setNextList1depth(res.data.data.categoryClassList);
-      });
-    return res;
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList1depth(res.data.data.categoryClassList);
+      return res.data;
+    } catch (error) {
+      console.error('Error fetching next list: ', error);
+      return undefined;
+    }
   };
   const { data: nextListData1, refetch: nextListData1Refetch } = useQuery({
     queryKey: ['get-nextList1'],
@@ -232,12 +239,16 @@ export function ContentInformationChange() {
   const getNextList2 = async () => {
     const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
-    const res = await classificationInstance
-      .get(`/v1/category/${itemIdx}/${pidx}`)
-      .then((res) => {
-        setNextList2depth(res.data.data.categoryClassList);
-      });
-    return res;
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList2depth(res.data.data.categoryClassList);
+      return res.data;
+    } catch (error) {
+      console.error('Error fetching next list: ', error);
+      return undefined;
+    }
   };
   const { data: nextListData2, refetch: nextListData2Refetch } = useQuery({
     queryKey: ['get-nextList2'],
@@ -253,13 +264,16 @@ export function ContentInformationChange() {
   const getNextList3 = async () => {
     const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
-    const res = await classificationInstance
-      .get(`/v1/category/${itemIdx}/${pidx}`)
-      .then((res) => {
-        setNextList3depth(res.data.data.categoryClassList);
-      });
-
-    return res;
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList3depth(res.data.data.categoryClassList);
+      return res.data;
+    } catch (error) {
+      console.error('Error fetching next list: ', error);
+      return undefined;
+    }
   };
   const { data: nextListData3, refetch: nextListData3Refetch } = useQuery({
     queryKey: ['get-nextList3'],
@@ -289,26 +303,48 @@ export function ContentInformationChange() {
     setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
   }, [selected3depth]);
 
-  const selectedDepth = (index: number) => {
-    switch (index + 1) {
-      case 1:
-        return selected1depth;
-      case 2:
-        return selected2depth;
-      case 3:
-        return selected3depth;
-      case 4:
-        return selected4depth;
-      case 5:
-        return selected5depth;
-      case 6:
-        return selected6depth;
-      case 7:
-        return selected7depth;
-      default:
-        return '';
-    }
+  // 카테고리 선택후 아이템트리
+  // 아이템 트리 불러오기 api
+  const getCategoryItemTree = async () => {
+    const keyValuePairs = categoryItems
+      .map((item, index) => {
+        const radioDepthCheck = [
+          radio1depthCheck,
+          radio2depthCheck,
+          radio3depthCheck,
+          radio4depthCheck,
+        ][index];
+        return `"${item.code}": "${radioDepthCheck.code}"`;
+      })
+      .join(',');
+
+    const jsonList = `{"jsonList": [{${keyValuePairs}}]}`;
+    // console.log(`jsonList 결과값`, jsonList);
+    const res = await classificationInstance.post(
+      '/v1/item',
+      JSON.parse(jsonList),
+    );
+    return res;
   };
+
+  const { data: categoryItemTreeData, mutate: categoryItemTreeDataMutate } =
+    useMutation({
+      mutationFn: getCategoryItemTree,
+      onError: (context: { response: { data: { message: string } } }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+      },
+      onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+        // setItemTreeList(res.data.data[0].itemTreeList);
+        setItemTree(response.data.data);
+      },
+    });
+
+  useEffect(() => {
+    if (radio4depthCheck.code !== '') categoryItemTreeDataMutate();
+  }, [radio4depthCheck]);
 
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
@@ -365,6 +401,7 @@ export function ContentInformationChange() {
             <ScrollWrapper>
               <PerfectScrollbar>
                 <div className="meta_radio_select">
+                  {/* 교육과정 라디오 버튼 부분 */}
                   {categoryData && categoryItems[0] && categoryList && (
                     <>
                       {[categoryItems[0]].map((item) => (
@@ -456,25 +493,36 @@ export function ContentInformationChange() {
                           $margin={`0`}
                         >
                           <>
-                            {depthBlockList.map((item) => (
-                              <DepthBlock
-                                key={`depthList${item.id}`}
-                                classNameList={`depth-${item.depth}`}
-                                id={item.id}
-                                name={item.name}
-                                value={item.value}
-                                onChange={(e) =>
-                                  handleSingleCheck(e.target.checked, item.id)
-                                }
-                                checked={
-                                  checkedDepthList.includes(item.id as string)
-                                    ? true
-                                    : false
-                                }
-                              >
-                                <span>{item.label}</span>
-                              </DepthBlock>
-                            ))}
+                            {itemTree.length !== 0 && (
+                              <>
+                                {itemTree.map((el, idx) => (
+                                  <div key={`${el.itemTreeKey}`}>
+                                    {el.itemTreeList.map((item) => (
+                                      <DepthBlock
+                                        key={`depthList${item.code} ${item.name}`}
+                                        classNameList={`depth-${item.level}`}
+                                        id={item.code}
+                                        name={item.name}
+                                        value={item.code}
+                                        onChange={(e) =>
+                                          handleSingleCheck(
+                                            e.target.checked,
+                                            item.code,
+                                          )
+                                        }
+                                        checked={
+                                          checkedDepthList.includes(item.code)
+                                            ? true
+                                            : false
+                                        }
+                                      >
+                                        <span>{item.name}</span>
+                                      </DepthBlock>
+                                    ))}
+                                  </div>
+                                ))}
+                              </>
+                            )}
                           </>
                         </Accordion>
                       </>

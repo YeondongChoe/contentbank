@@ -83,7 +83,6 @@ export function Classification() {
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
-  const [itemTreeLenth, setItemTreeLenth] = useState<number>(0);
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
 
