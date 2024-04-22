@@ -96,7 +96,7 @@ export function Step3() {
 
   const submitCreateWorksheet = () => {
     getPdf();
-    //navigate('/content-create/exam');
+    navigate('/content-create/exam');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 
@@ -217,14 +217,14 @@ export function Step3() {
           withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
         },
       );
-      if (response.status === 200) {
-        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        console.log(pdfUrl);
-        setPdfData(pdfUrl);
-      } else {
-        console.error('Server responded with an error');
-      }
+      // if (response.status === 200) {
+      //   const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      //   const pdfUrl = URL.createObjectURL(pdfBlob);
+      //   console.log(pdfUrl);
+      //   setPdfData(pdfUrl);
+      // } else {
+      //   console.error('Server responded with an error');
+      // }
     } catch (error) {
       console.error('Failed to fetch PDF data:', error);
     }
@@ -264,14 +264,7 @@ export function Step3() {
 
   return (
     <Container>
-      <iframe
-        title="PDF Viewer"
-        src={pdfData}
-        width="1100"
-        height="750"
-        style={{ border: 'none', borderRadius: 25 }}
-      ></iframe>
-      {/* <TitleWrapper>
+      <TitleWrapper>
         <IconWrapper>
           <IoIosArrowBack
             style={{ fontSize: '24px', cursor: 'pointer' }}
@@ -791,7 +784,7 @@ export function Step3() {
             ></TypeB>
           )}
         </WorksheetTemplateViewSection>
-      </Wrapper> */}
+      </Wrapper>
       <CreateButtonWrapper>
         <Button
           buttonType="button"
