@@ -199,7 +199,7 @@ export function Step3() {
   const getPdf = async () => {
     try {
       const response = await axios.post(
-        'https://210.124.177.36:5050/get-pdf',
+        'http://210.124.177.36:5050/get-pdf',
         {
           title: 'test',
           content: Contents2.it_quest,
