@@ -223,8 +223,7 @@ export function Worksheet() {
   //https로 보내면 https 서버가 되며
   //210.124.177로 보내면 여기만 됨
   const [pdfUrl, setPdfUrl] = useState<string>(
-    // 'https://j-dev01.dreamonesys.co.kr/usr/share/nginx/html/CB/worksheettest.pdf',
-    'https://j-dev01.dreamonesys.co.kr/CB/worksheetest.pdf',
+    'https://j-dev01.dreamonesys.co.kr/CB/worksheettest2.pdf',
   );
 
   const getPdf = () => {

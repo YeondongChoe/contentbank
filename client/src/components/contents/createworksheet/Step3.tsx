@@ -13,6 +13,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import Contents2 from '../../../components/mathViewer/test2.json';
 import Contents3 from '../../../components/mathViewer/test3.json';
 import Contents4 from '../../../components/mathViewer/test4.json';
+import { useModal } from '../../../hooks';
 import { ItemQuestionType } from '../../../types';
 import { Input, Label, Button, CheckBox } from '../../atom';
 import { COLOR } from '../../constants';
@@ -29,6 +30,7 @@ import { TypeA, TypeB } from '../worksheetType';
 export function Step3() {
   const [didMount, setDidMount] = useState(false);
   const navigate = useNavigate();
+  const { closeModal } = useModal();
 
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
@@ -96,7 +98,6 @@ export function Step3() {
 
   const submitCreateWorksheet = () => {
     getPdf();
-    //navigate('/content-create/exam');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 
@@ -217,14 +218,14 @@ export function Step3() {
           withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
         },
       );
-      if (response.status === 200) {
-        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        console.log(pdfUrl);
-        setPdfData(pdfUrl);
-      } else {
-        console.error('Server responded with an error');
-      }
+      // if (response.status === 200) {
+      //   const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      //   const pdfUrl = URL.createObjectURL(pdfBlob);
+      //   console.log(pdfUrl);
+      //   setPdfData(pdfUrl);
+      // } else {
+      //   console.error('Server responded with an error');
+      // }
     } catch (error) {
       console.error('Failed to fetch PDF data:', error);
     }
@@ -264,14 +265,7 @@ export function Step3() {
 
   return (
     <Container>
-      <iframe
-        title="PDF Viewer"
-        src={pdfData}
-        width="1100"
-        height="750"
-        style={{ border: 'none', borderRadius: 25 }}
-      ></iframe>
-      {/* <TitleWrapper>
+      <TitleWrapper>
         <IconWrapper>
           <IoIosArrowBack
             style={{ fontSize: '24px', cursor: 'pointer' }}
@@ -790,28 +784,7 @@ export function Step3() {
               theme={selectedTheme}
             ></TypeB>
           )}
-        </WorksheetTemplateViewSection>
-      </Wrapper> */}
-      <CreateButtonWrapper>
-        <Button
-          buttonType="button"
-          onClick={submitCreateWorksheet}
-          $padding="10px"
-          height={'35px'}
-          width={'120px'}
-          fontSize="13px"
-          $filled
-          cursor
-        >
-          <span>학습지 만들기</span>
-        </Button>
-      </CreateButtonWrapper>
-    </Container>
-  );
-}
-
-{
-  /* <ThemeProvider theme={selectedTheme}>
+          {/* <ThemeProvider theme={selectedTheme}>
             <WorksheetTemplateWrapper>
               <Label value={'미리보기'}></Label>
               <WorksheetTemplate>
@@ -913,7 +886,28 @@ export function Step3() {
                 </MathViewerListWrapper>
               </WorksheetTemplate>
             </WorksheetTemplateWrapper>
-          </ThemeProvider> */
+          </ThemeProvider> */}
+        </WorksheetTemplateViewSection>
+      </Wrapper>
+      <CreateButtonWrapper>
+        <Button
+          buttonType="button"
+          onClick={() => {
+            getPdf();
+            closeModal();
+          }}
+          $padding="10px"
+          height={'35px'}
+          width={'120px'}
+          fontSize="13px"
+          $filled
+          cursor
+        >
+          <span>학습지 만들기</span>
+        </Button>
+      </CreateButtonWrapper>
+    </Container>
+  );
 }
 
 const Container = styled.div``;
