@@ -350,7 +350,8 @@ export function ContentInformationChange() {
     });
 
   useEffect(() => {
-    if (radio4depthCheck.code !== '') categoryItemTreeDataMutate();
+    // if (radio4depthCheck.code !== '')
+    categoryItemTreeDataMutate();
   }, [radio4depthCheck]);
 
   // 깊이가 있는 리스트 체크박스
