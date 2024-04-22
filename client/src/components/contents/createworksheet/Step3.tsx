@@ -13,6 +13,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import Contents2 from '../../../components/mathViewer/test2.json';
 import Contents3 from '../../../components/mathViewer/test3.json';
 import Contents4 from '../../../components/mathViewer/test4.json';
+import { useModal } from '../../../hooks';
 import { ItemQuestionType } from '../../../types';
 import { Input, Label, Button, CheckBox } from '../../atom';
 import { COLOR } from '../../constants';
@@ -94,9 +95,12 @@ export function Step3() {
     navigate('/content-create/exam/step2');
   };
 
+  const { closeModal } = useModal();
+
   const submitCreateWorksheet = () => {
     getPdf();
-    navigate('/content-create/exam');
+    closeModal();
+    //navigate('/content-create/exam');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 
