@@ -141,7 +141,7 @@ export function ContentCreating({
           <ContentList>
             <QuizList
               questionList={questionList}
-              $height={`calc(100vh - 100px)`}
+              $height={`calc(100vh - 70px)`}
               showViewAllButton
               setCheckedList={setCheckedList}
             />
@@ -256,12 +256,12 @@ const SelectWrapper = styled.div`
 const ContentListWrapper = styled.div`
   width: 25%;
   padding: 0 10px;
+  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
 `;
 const ContentList = styled.div`
-  height: 100%;
+  height: calc(100vh - 70px);
   width: 100%;
-  /* overflow: hidden; */
-
+  overflow: hidden;
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   background-color: ${COLOR.LIGHT_GRAY};

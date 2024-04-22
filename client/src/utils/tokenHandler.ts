@@ -21,6 +21,7 @@ export const postRefreshToken = async () => {
       console.log('refreshTokenData error', error);
       if (
         error.response.data.code == 'GE-002' ||
+        error.response.data.code == 'GE-003' ||
         error.response.data.code == 'E-006'
       ) {
         // 리프레쉬 토큰 기간 만료시

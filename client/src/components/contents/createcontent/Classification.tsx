@@ -301,11 +301,11 @@ export function Classification() {
       .join(',');
 
     const jsonList = `{"jsonList": [{${keyValuePairs}}]}`;
-    // console.log(`jsonList 결과값`, jsonList);
     const res = await classificationInstance.post(
       '/v1/item',
       JSON.parse(jsonList),
     );
+    console.log(`jsonList 결과값`, jsonList, res);
     return res;
   };
 
@@ -327,6 +327,9 @@ export function Classification() {
   useEffect(() => {
     if (radio4depthCheck.code !== '') categoryItemTreeDataMutate();
   }, [radio4depthCheck]);
+  useEffect(() => {
+    console.log('categoryItemTreeData', categoryItemTreeData);
+  }, [categoryItemTreeData]);
 
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
