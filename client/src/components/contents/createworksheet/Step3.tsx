@@ -30,6 +30,7 @@ import { TypeA, TypeB } from '../worksheetType';
 export function Step3() {
   const [didMount, setDidMount] = useState(false);
   const navigate = useNavigate();
+  const { closeModal } = useModal();
 
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
@@ -95,12 +96,8 @@ export function Step3() {
     navigate('/content-create/exam/step2');
   };
 
-  const { closeModal } = useModal();
-
   const submitCreateWorksheet = () => {
     getPdf();
-    closeModal();
-    //navigate('/content-create/exam');
     console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
   };
 
@@ -787,28 +784,7 @@ export function Step3() {
               theme={selectedTheme}
             ></TypeB>
           )}
-        </WorksheetTemplateViewSection>
-      </Wrapper>
-      <CreateButtonWrapper>
-        <Button
-          buttonType="button"
-          onClick={submitCreateWorksheet}
-          $padding="10px"
-          height={'35px'}
-          width={'120px'}
-          fontSize="13px"
-          $filled
-          cursor
-        >
-          <span>학습지 만들기</span>
-        </Button>
-      </CreateButtonWrapper>
-    </Container>
-  );
-}
-
-{
-  /* <ThemeProvider theme={selectedTheme}>
+          {/* <ThemeProvider theme={selectedTheme}>
             <WorksheetTemplateWrapper>
               <Label value={'미리보기'}></Label>
               <WorksheetTemplate>
@@ -910,7 +886,28 @@ export function Step3() {
                 </MathViewerListWrapper>
               </WorksheetTemplate>
             </WorksheetTemplateWrapper>
-          </ThemeProvider> */
+          </ThemeProvider> */}
+        </WorksheetTemplateViewSection>
+      </Wrapper>
+      <CreateButtonWrapper>
+        <Button
+          buttonType="button"
+          onClick={() => {
+            getPdf();
+            closeModal();
+          }}
+          $padding="10px"
+          height={'35px'}
+          width={'120px'}
+          fontSize="13px"
+          $filled
+          cursor
+        >
+          <span>학습지 만들기</span>
+        </Button>
+      </CreateButtonWrapper>
+    </Container>
+  );
 }
 
 const Container = styled.div``;
