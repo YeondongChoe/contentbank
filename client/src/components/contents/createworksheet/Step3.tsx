@@ -96,11 +96,6 @@ export function Step3() {
     navigate('/content-create/exam/step2');
   };
 
-  const submitCreateWorksheet = () => {
-    getPdf();
-    console.log('전 단계에서 받은 가공된 데이터로 학습지 post 요청 API');
-  };
-
   //오른쪽 템플릿 부분
   // 더미 데이터
   const list = [
@@ -204,7 +199,7 @@ export function Step3() {
   const getPdf = async () => {
     try {
       const response = await axios.post(
-        'http://210.124.177.36:5050/get-pdf',
+        'https://210.124.177.36:5050/get-pdf',
         {
           title: 'test',
           content: Contents2.it_quest,
@@ -218,6 +213,7 @@ export function Step3() {
           withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
         },
       );
+      //window.close();
       // if (response.status === 200) {
       //   const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
       //   const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -229,6 +225,10 @@ export function Step3() {
     } catch (error) {
       console.error('Failed to fetch PDF data:', error);
     }
+  };
+
+  const submitCreateWorksheet = () => {
+    getPdf();
   };
 
   const loadData = () => {
@@ -892,10 +892,7 @@ export function Step3() {
       <CreateButtonWrapper>
         <Button
           buttonType="button"
-          onClick={() => {
-            getPdf();
-            closeModal();
-          }}
+          onClick={submitCreateWorksheet}
           $padding="10px"
           height={'35px'}
           width={'120px'}
