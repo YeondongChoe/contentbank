@@ -325,11 +325,8 @@ export function Classification() {
     });
 
   useEffect(() => {
-    if (radio4depthCheck.code !== '') categoryItemTreeDataMutate();
+    categoryItemTreeDataMutate();
   }, [radio4depthCheck]);
-  useEffect(() => {
-    console.log('categoryItemTreeData', categoryItemTreeData);
-  }, [categoryItemTreeData]);
 
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
