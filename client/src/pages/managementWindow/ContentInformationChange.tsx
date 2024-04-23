@@ -13,6 +13,7 @@ import {
   Button,
   ButtonFormatRadio,
   DepthBlock,
+  Loader,
   PaginationBox,
   ResizeLayout,
   ValueNone,
@@ -20,11 +21,7 @@ import {
 } from '../../components';
 import { COLOR } from '../../components/constants';
 //TODO: 더미데이터
-import {
-  questionList,
-  metaList,
-  depthBlockList,
-} from '../../components/contents/createcontent/contentCreatingCategory';
+import { questionList } from '../../components/contents/createcontent/contentCreatingCategory';
 import { QuizList } from '../../components/contents/createcontent/list';
 import { ItemCategoryType, ItemTreeListType, ItemTreeType } from '../../types';
 
@@ -94,6 +91,7 @@ export function ContentInformationChange() {
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -106,6 +104,7 @@ export function ContentInformationChange() {
     isLoading: isCategoryLoading,
     error: categoryDataError,
     refetch: categoryDataRefetch,
+    isSuccess,
   } = useQuery({
     queryKey: ['get-category'],
     queryFn: getCategory,
@@ -115,12 +114,20 @@ export function ContentInformationChange() {
   });
   // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
   useEffect(() => {
+    // console.log(categoryData && categoryData);
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
     } else if (categoryDataError) {
       categoryDataRefetch();
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
+
+  useEffect(() => {
+    console.log('0--------------------------', isSuccess);
+    if (isSuccess) {
+      setIsCategoryLoaded(true);
+    }
+  }, [isSuccess]);
 
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
@@ -313,24 +320,28 @@ export function ContentInformationChange() {
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
-    const keyValuePairs = categoryItems
-      .map((item, index) => {
+    const keyValuePairs = categoryItems.reduce<Record<string, string>>(
+      (acc, item, index) => {
         const radioDepthCheck = [
-          radio1depthCheck,
-          radio2depthCheck,
-          radio3depthCheck,
-          radio4depthCheck,
+          selected1depth,
+          selected2depth,
+          selected3depth,
+          selected4depth,
         ][index];
-        return `"${item.code}": "${radioDepthCheck.code}"`;
-      })
-      .join(',');
-
-    const jsonList = `{"jsonList": [{${keyValuePairs}}]}`;
-    // console.log(`jsonList 결과값`, jsonList);
-    const res = await classificationInstance.post(
-      '/v1/item',
-      JSON.parse(jsonList),
+        if (radioDepthCheck !== undefined) {
+          // undefined가 아닐 때만 추가
+          acc[item.code] = radioDepthCheck;
+        }
+        return acc;
+      },
+      {},
     );
+
+    const jsonList = { jsonList: [keyValuePairs] };
+    console.log('jsonList :', jsonList);
+
+    const res = await classificationInstance.post('/v1/item', jsonList);
+    console.log('classificationInstance 응답:', res);
     return res;
   };
 
@@ -350,9 +361,14 @@ export function ContentInformationChange() {
     });
 
   useEffect(() => {
-    // if (radio4depthCheck.code !== '')
+    console.log(radio4depthCheck);
+    if (selected4depth == '') return;
     categoryItemTreeDataMutate();
-  }, [radio4depthCheck]);
+  }, [selected4depth]);
+
+  useEffect(() => {
+    // console.log(error);
+  }, [itemTree]);
 
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
@@ -410,7 +426,7 @@ export function ContentInformationChange() {
               <PerfectScrollbar>
                 <div className="meta_radio_select">
                   {/* 교육과정 라디오 버튼 부분 */}
-                  {categoryData && categoryItems[0] && categoryList && (
+                  {isCategoryLoaded && categoryItems[0] && categoryList && (
                     <>
                       {[categoryItems[0]].map((item) => (
                         <div
@@ -501,35 +517,48 @@ export function ContentInformationChange() {
                           $margin={`0`}
                         >
                           <>
-                            {itemTree.length !== 0 && (
+                            {categoryItemTreeData ? (
                               <>
-                                {itemTree.map((el, idx) => (
-                                  <div key={`${el.itemTreeKey}`}>
-                                    {el.itemTreeList.map((item) => (
-                                      <DepthBlock
-                                        key={`depthList${item.code} ${item.name}`}
-                                        classNameList={`depth-${item.level}`}
-                                        id={item.code}
-                                        name={item.name}
-                                        value={item.code}
-                                        onChange={(e) =>
-                                          handleSingleCheck(
-                                            e.target.checked,
-                                            item.code,
-                                          )
-                                        }
-                                        checked={
-                                          checkedDepthList.includes(item.code)
-                                            ? true
-                                            : false
-                                        }
-                                      >
-                                        <span>{item.name}</span>
-                                      </DepthBlock>
+                                {itemTree.length ? (
+                                  <>
+                                    {itemTree.map((el, idx) => (
+                                      <div key={`${el.itemTreeKey}`}>
+                                        {el.itemTreeList.map((item) => (
+                                          <DepthBlock
+                                            key={`depthList${item.code} ${item.name}`}
+                                            classNameList={`depth-${item.level}`}
+                                            id={item.code}
+                                            name={item.name}
+                                            value={item.code}
+                                            onChange={(e) =>
+                                              handleSingleCheck(
+                                                e.target.checked,
+                                                item.code,
+                                              )
+                                            }
+                                            checked={
+                                              checkedDepthList.includes(
+                                                item.code,
+                                              )
+                                                ? true
+                                                : false
+                                            }
+                                          >
+                                            <span>{item.name}</span>
+                                          </DepthBlock>
+                                        ))}
+                                      </div>
                                     ))}
-                                  </div>
-                                ))}
+                                  </>
+                                ) : (
+                                  <ValueNone
+                                    textOnly
+                                    info="등록된 데이터가 없습니다"
+                                  />
+                                )}
                               </>
+                            ) : (
+                              <Loader />
                             )}
                           </>
                         </Accordion>
