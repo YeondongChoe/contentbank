@@ -22,6 +22,7 @@ import {
 } from '../../components';
 import Contents2 from '../../components/mathViewer/test2.json';
 import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';
+import { useModal } from '../../hooks';
 import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { WorksheetTableType } from '../../types';
@@ -223,7 +224,7 @@ export function Worksheet() {
   //https로 보내면 https 서버가 되며
   //210.124.177로 보내면 여기만 됨
   const [pdfUrl, setPdfUrl] = useState<string>(
-    'https://j-dev01.dreamonesys.co.kr/CB/worksheettest2.pdf',
+    'https://j-dev01.dreamonesys.co.kr/CB/worksheettest.pdf',
   );
 
   const getPdf = () => {
