@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -15,11 +16,17 @@ import {
   TabMenu,
   Modal,
   ValueNone,
+  Loader,
+  List,
+  ListItem,
+  CheckBoxI,
+  DropDownItemProps,
+  DropDown,
 } from '..';
-import { userInstance } from '../../api/axios';
+import { userInstance, quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
-import { QuestionTableType } from '../../types';
+import { ItemQuestionType, QuizListType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
 
@@ -27,48 +34,18 @@ import { CreateContentModal } from './CreateContentModal';
 
 export function QuizCreateList() {
   const { openModal } = useModal();
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [value, setValue] = useState<string>('');
-
-  const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
   const [page, setPage] = useRecoilState(pageAtom);
-  const size = 7;
-  const MenuCode = 'CNC_Q';
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
-  const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
-
+  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
-
+  const [checkList, setCheckList] = useState<number[]>([]);
   const [content, setContent] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-
-  // 활성화/비활성화 버튼상태 토글
-  const openSubmitAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeSubmitAlert = () => {
-    setIsAlertOpen(false);
-  };
-  // 활성화/비활성화 데이터 전송
-  const submitDisabled = () => {
-    // console.log(selectedRows);
-
-    const formattedArray: { contentSeq: number }[] = [];
-    // 데이터 형태 api쪽에 맞춰 { contentSeq: number }[]; 로 변경
-    for (let i = 0; i < selectedRows.length; i += 1) {
-      formattedArray.push({ contentSeq: selectedRows[i] });
-    }
-    // putChangeServiced({ formattedArray, setIsChangedServiced });
-
-    setIsAlertOpen(false);
-  };
-
-  const filterSearchValue = () => {
-    // console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
-    setSearchValue(value);
-  };
+  const [showDropDown, setShowDropDown] = useState<boolean>(false);
 
   const modalData = {
     title: '',
@@ -79,6 +56,126 @@ export function QuizCreateList() {
   // 모달 연뒤 문항 생성 윈도우 이동
   const openCreateModal = () => {
     openModal(modalData);
+  };
+  // 탭메뉴 클릭시 페이지네이션 초기화
+  //              && 리스트 데이터 전송값 변경
+  const changeTab = () => {
+    setPage(1);
+  };
+
+  const dropDownList: DropDownItemProps[] = [
+    {
+      key: 'ListTabl/수정',
+      title: '수정',
+      onClick: () => {
+        openCreateEditWindow();
+        setShowDropDown(false);
+      },
+    },
+    {
+      key: 'ListTable/DropDownList복제 후 수정',
+      title: '복제 후 수정',
+      onClick: () => {
+        openCreateEditWindow();
+        setShowDropDown(false);
+      },
+    },
+  ];
+
+  // 문항 수정 윈도우 열기
+  const openCreateEditWindow = () => {
+    saveLocalData();
+    windowOpenHandler({
+      name: 'createcontentmain',
+      url: '/createcontentmain',
+    });
+  };
+
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = () => {
+    const sendData = { data: false };
+    localStorage.setItem('sendData', JSON.stringify(sendData));
+
+    //새로운 리스트 데이터 조회
+    // window.parentCallback = () => {
+    //   getContents();
+    // };
+  };
+
+  // 문항리스트 불러오기 api
+  const getQuiz = async () => {
+    const res = await quizService.get(`/v1/quiz`);
+    console.log(`getQuiz 결과값`, res.data.data);
+    return res.data.data;
+  };
+  const {
+    data: quizData,
+    isLoading,
+    error: quizDataError,
+    refetch: quizDataRefetch,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['get-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-quizList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (quizData) {
+      setQuestionList(quizData.quizList);
+    }
+    console.log('questionList', questionList);
+  }, [quizData]);
+
+  // 활성화/비활성화 버튼상태 토글
+  const openSubmitAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
+  };
+  // 활성화/비활성화 데이터 전송
+  const submitDisabled = () => {};
+
+  // 검색 기능 함수
+  const filterSearchValue = () => {
+    // 쿼리 스트링 변경 로직
+    setSearchKeywordValue(searchValue);
+    if (searchValue == '') setSearchKeywordValue('');
+  };
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === 'Enter') {
+      setSearchKeywordValue(searchValue);
+    }
+    if (event.key === 'Backspace') {
+      setSearchKeywordValue('');
+    }
+  };
+
+  // 체크박스 설정
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.checked);
+    if (e.target.checked) {
+      setCheckList(questionList.map((item: QuizListType) => item.idx));
+    } else {
+      setCheckList([]);
+    }
+  };
+  const handleButtonCheck = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: number,
+  ) => {
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+    if (!target.checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
+    }
   };
 
   const menuList = [
@@ -181,33 +278,6 @@ export function QuizCreateList() {
     },
   ];
 
-  // const loadData = useCallback(() => {
-  //   getQuestionList({
-  //     setQuestionList,
-  //     setIsChangedServiced,
-  //     settotalPage,
-  //     searchValue,
-  //     MenuCode,
-  //     page,
-  //     size,
-  //   });
-  // }, [
-  //   page,
-  //   MenuCode,
-  //   searchValue,
-  //   setQuestionList,
-  //   settotalPage,
-  //   setIsChangedServiced,
-  // ]);
-
-  // 검색이나 셀렉트로 특정지어진 데이터 담은 후 보여주기 변경값이 있을때 마다 랜더링
-
-  // useEffect(() => {
-  //   if (didMount) {
-  //     loadData();
-  //   }
-  // }, [didMount, page, isChangedServiced]);
-
   return (
     <Container>
       <TitleWrapper>
@@ -223,46 +293,140 @@ export function QuizCreateList() {
           + 문항 업로드
         </Button>
       </TitleWrapper>
-      <HeadWrapper>
-        <TabMenu
-          length={2}
-          menu={menuList}
-          width={'250px'}
-          selected={tabVeiw}
-          setTabVeiw={setTabVeiw}
-        />
-        <Search
-          value={value}
-          onClick={() => filterSearchValue()}
-          onKeyDown={(e) => {}}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="문항코드, 중단원, 담당자 검색"
-          width={'25%'}
-          height="40px"
-        />
-      </HeadWrapper>
-      <TableWrapper>
-        {/* 리스트 셀렉트 */}
-        <SelectWrapper>
-          {selectCategory.map((el) => (
-            <Select
-              width={'130px'}
-              defaultValue={el.label}
-              key={el.label}
-              options={el.options}
-              onSelect={(event) => selectCategoryOption(event)}
+
+      {isLoading && (
+        <LoaderWrapper>
+          <Loader width="50px" />
+        </LoaderWrapper>
+      )}
+
+      {!isLoading && quizData && (
+        <>
+          <TabMenu
+            length={2}
+            menu={menuList}
+            selected={tabVeiw}
+            width={'300px'}
+            setTabVeiw={setTabVeiw}
+            lineStyle
+            $margin={'10px 0'}
+            onClickTab={changeTab}
+          />
+          {/* 리스트 셀렉트 */}
+          <SelectWrapper>
+            {selectCategory.map((el) => (
+              <Select
+                width={'130px'}
+                defaultValue={el.label}
+                key={el.label}
+                options={el.options}
+                onSelect={(event) => selectCategoryOption(event)}
+              />
+            ))}
+            <Search
+              value={searchValue}
+              onClick={() => filterSearchValue()}
+              onKeyDown={(e) => filterSearchValueEnter(e)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+              }}
+              placeholder="문항코드, 중단원, 담당자 검색"
+              width={'25%'}
+              height="40px"
             />
-          ))}
-        </SelectWrapper>
-        {questionList.length > 1 ? (
-          <ContentList list={questionList} onClick={openSubmitAlert} />
-        ) : (
-          <ValueNoneWrapper>
-            <ValueNone />
-          </ValueNoneWrapper>
-        )}
-      </TableWrapper>
-      <PaginationBox itemsCountPerPage={7} totalItemsCount={totalPage} />
+          </SelectWrapper>
+          <InputWrapper>
+            <ButtonWrapper>
+              <CheckBoxWrapper>
+                <CheckBoxI
+                  $margin={'0 5px 0 0'}
+                  onChange={(e) => handleAllCheck(e)}
+                  checked={
+                    checkList.length === questionList.length ? true : false
+                  }
+                  id={'all check'}
+                  value={'all check'}
+                />
+                <span className="title_top">전체선택</span>
+              </CheckBoxWrapper>
+              <ActionButtonWrapper>
+                <DropDown
+                  list={dropDownList}
+                  buttonText={'수정'}
+                  showDropDown={showDropDown}
+                  setShowDropDown={setShowDropDown}
+                  disabled={isEnabled}
+                ></DropDown>
+                <Button
+                  width="140px"
+                  height="35px"
+                  fontSize="14px"
+                  $borderRadius="7px"
+                  onClick={openSubmitAlert}
+                  $filled
+                  $success
+                  disabled={isEnabled}
+                  cursor
+                >
+                  활성화 / 비활성화
+                </Button>
+              </ActionButtonWrapper>
+            </ButtonWrapper>
+          </InputWrapper>
+          <TableWrapper>
+            <Total> Total : {quizData.pagination.totalCount}</Total>
+            {questionList.length > 1 ? (
+              // <ContentList list={questionList} onClick={openSubmitAlert} />
+              <ListWrapper>
+                <ListTitle>
+                  <strong className="width_10px">NO</strong>
+                  <strong>담당자</strong>
+                  <strong>변경일시</strong>
+                  <strong>변경영역</strong>
+                  <strong className="width_40">변경사항</strong>
+                  <strong>건수</strong>
+                </ListTitle>
+                <ScrollWrapper>
+                  <PerfectScrollbar>
+                    <List margin={`10px 0`}>
+                      {questionList.map((item: QuizListType) => (
+                        <ListItem
+                          key={item.code}
+                          isChecked={false}
+                          onClick={() => {}}
+                        >
+                          <ItemLayout>
+                            {/* <span className="width_20px">{item.num} </span>
+                            <div className="line"></div>
+                            <span className="width_10">{item.manager} </span>
+                            <div className="line"></div>
+                            <span>{item.changeAt} </span>
+                            <div className="line"></div>
+                            <span>{item.function} </span>
+                            <div className="line"></div>
+                            <span className="width_50">{item.changes} </span>
+                            <div className="line"></div>
+                            <span className="width_5">{item.totalItem}</span> */}
+                          </ItemLayout>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </PerfectScrollbar>
+                </ScrollWrapper>
+              </ListWrapper>
+            ) : (
+              <ValueNoneWrapper>
+                <ValueNone />
+              </ValueNoneWrapper>
+            )}
+          </TableWrapper>
+
+          <PaginationBox
+            itemsCountPerPage={quizData.pagination.pageUnit}
+            totalItemsCount={quizData.pagination.totalCount}
+          />
+        </>
+      )}
       <Alert
         isAlertOpen={isAlertOpen}
         description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
@@ -290,24 +454,136 @@ const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
 `;
-const HeadWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 10px;
-`;
+
 const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 5px;
-  padding-bottom: 20px;
+  /* padding-bottom: 10px; */
+  padding-top: 10px;
 `;
-
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
 const TableWrapper = styled.div`
   //min-height: 670px;
 `;
 
 const ValueNoneWrapper = styled.div`
   padding: 100px 0;
+`;
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 30px;
+  padding-left: calc(50% - 35px);
+`;
+
+const Total = styled.span`
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: ${COLOR.FONT_BLACK};
+  padding: 10px;
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 10px;
+`;
+const ActionButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+const CheckBoxWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const ListWrapper = styled.div`
+  padding: 10px;
+  height: calc(100vh - 200px);
+`;
+const ScrollWrapper = styled.div`
+  /* overflow-y: auto; */
+  height: calc(100vh - 300px);
+  width: 100%;
+  border-top: 1px solid ${COLOR.BORDER_GRAY};
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+  /* margin-top: 5px; */
+  padding: 0 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+`;
+
+const ListTitle = styled.p`
+  padding: 15px 40px;
+  background-color: #eee;
+  border-top: 1px solid ${COLOR.BORDER_GRAY};
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  > strong {
+    font-size: 14px;
+    /* flex-wrap: nowrap;
+    word-break: break-all; */
+    text-align: center;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    /* background-color: ${COLOR.BORDER_GRAY}; */
+  }
+
+  .width_10px {
+    width: 10px;
+  }
+  .width_20px {
+    width: 20px;
+  }
+  .width_40 {
+    width: 45%;
+  }
+`;
+
+const ItemLayout = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+
+  > span {
+    display: flex;
+    /* flex: 1 0 0; */
+    justify-content: space-around;
+    flex-wrap: wrap;
+    word-break: break-all;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+  }
+  .width_5 {
+    width: 5%;
+  }
+  .width_10 {
+    width: 10%;
+  }
+  .width_20px {
+    width: 20px;
+  }
+  .width_50 {
+    width: 50%;
+  }
 `;

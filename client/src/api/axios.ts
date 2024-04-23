@@ -73,27 +73,5 @@ export const classificationInstance = createAPIInstance(
 );
 /* 학습지 API Instance */
 export const workbookInstance = createAPIInstance('workbook-service');
-
-// 메뉴 리소스 서비스
-// export const resourceInstance = axios.create({
-//   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/resource-service`,
-//   headers: {
-//     'Content-Type': 'application/json',
-//     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-//   },
-// });
-
-/** 문항서버 API Instance*/
-// export const questionInstance = axios.create({
-//   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/question-service`,
-//   headers: {
-//     'Content-Type': 'application/json',
-//     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-//     'Accept-Language': `ko_KR`,
-//   },
-// });
-
-// questionInstance.interceptors.request.use(function (config) {
-//   config.headers.Authorization = `Bearer ${getAuthorityCookie('accessToken')}`;
-//   return config;
-// });
+/* 문항 API Instance */
+export const quizService = createAPIInstance('quiz-service');

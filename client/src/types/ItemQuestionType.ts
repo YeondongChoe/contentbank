@@ -17,3 +17,36 @@ export type ItemQuestionType = {
   // it_point: string;
   // it_hint: string | null;
 };
+
+type Article = {
+  createdAt: string;
+  createdBy: string;
+  extension: string;
+  idx: number;
+  originalName: string;
+  storedPath: string;
+  type: string;
+};
+
+export type QuizType = {
+  idx: number;
+  code: string;
+  type: string;
+  content: string;
+  sort: number;
+};
+
+export type QuizListType = {
+  code: string;
+  createdAt: string;
+  createdBy: string;
+  idx: number;
+  isDelete: boolean;
+  isUse: boolean;
+  lastArticle: Article;
+  lastModifiedAt: string;
+  lastModifiedBy: string;
+  quizItemList: QuizType[];
+  type: string;
+  userKey: string;
+};
