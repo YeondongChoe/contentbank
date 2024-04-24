@@ -82,16 +82,6 @@ export function ContentList({
     // };
   };
 
-  // 활성화/비활성화 버튼상태 토글
-  const openSubmitAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeSubmitAlert = () => {
-    setIsAlertOpen(false);
-  };
-  // 활성화/비활성화 데이터 전송
-  const submitDisabled = () => {};
-
   // 체크박스 설정
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.currentTarget.checked);
@@ -124,6 +114,23 @@ export function ContentList({
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
+  // 활성화/비활성화 버튼상태 토글
+  const openSubmitAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
+  };
+  // 활성화/비활성화 데이터 전송
+  const submitDisabled = () => {};
+  // 활성화 버튼
+  useEffect(() => {
+    if (!checkList.length) {
+      setIsEnabled(true);
+    } else {
+      setIsEnabled(false);
+    }
+  }, [checkList]);
 
   return (
     <>
