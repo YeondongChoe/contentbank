@@ -303,7 +303,6 @@ const ButtonWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding-bottom: 5px;
 `;
 const ActionButtonWrapper = styled.div`
   display: flex;
