@@ -253,7 +253,6 @@ export function Member() {
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      // console.log('click', e.target?.toString().includes('Div'));
       if (e.target?.toString().includes('Div')) setCheckList([]);
     };
     window.addEventListener('click', handleClick);
@@ -382,13 +381,13 @@ export function Member() {
                         />
                         <ItemLayout>
                           <span>{list.name} </span>
-                          <div className="line"></div>
+                          <i className="line"></i>
                           <span>{list.id} </span>
-                          <div className="line"></div>
+                          <i className="line"></i>
                           <span>
                             <span className="tag">{list.authorityName}</span>
                           </span>
-                          <div className="line"></div>
+                          <i className="line"></i>
                           <span>{list.createdAt}</span>
                         </ItemLayout>
                         {list.isUse ? (
@@ -512,7 +511,7 @@ const CheckBoxWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
-const ItemLayout = styled.div`
+const ItemLayout = styled.span`
   display: flex;
   width: 100%;
   justify-content: space-between;

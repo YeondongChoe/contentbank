@@ -1,25 +1,33 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilValue } from 'recoil';
 import { styled } from 'styled-components';
 
 import {
   Button,
   DropDown,
-  ContentCard,
   DropDownItemProps,
   CheckBox,
+  List,
+  ListItem,
+  CheckBoxI,
+  Modal,
+  Alert,
+  Icon,
 } from '../../../components';
 import { pageAtom } from '../../../store/utilAtom';
-// import { QuestionTableType } from '../../../types';
+import { QuizListType } from '../../../types';
 import { windowOpenHandler } from '../../../utils/windowHandler';
+import { COLOR } from '../../constants';
 
 type ContentListProps = {
-  list: any[];
+  list: QuizListType[] | any[]; // TODO
   onClick: () => void;
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
+  totalCount?: number;
 };
 
 export function ContentList({
@@ -27,11 +35,13 @@ export function ContentList({
   onClick,
   deleteBtn,
   ondeleteClick,
+  totalCount,
 }: ContentListProps) {
   const page = useRecoilValue(pageAtom);
-
+  const backgroundRef = useRef<HTMLDivElement>(null);
+  const [checkList, setCheckList] = useState<string[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
-
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const dropDownList: DropDownItemProps[] = [
     {
@@ -72,164 +82,267 @@ export function ContentList({
     // };
   };
 
-  const [checkList, setCheckList] = useState<number[]>([]);
+  // 활성화/비활성화 버튼상태 토글
+  const openSubmitAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
+  };
+  // 활성화/비활성화 데이터 전송
+  const submitDisabled = () => {};
 
-  const [isAllChecked, setIsAllChecked] = useState<boolean>(false);
-  //console.log(isAllChecked);
-
-  const handleAllCheck = () => {
-    setIsAllChecked((prev) => !prev);
-    if (isAllChecked === false) {
-      setCheckList(list.map((item) => item.contentSeq as number));
-      setIsEnabled(false);
+  // 체크박스 설정
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.checked);
+    if (e.target.checked) {
+      setCheckList(list.map((item: QuizListType) => item.code));
     } else {
       setCheckList([]);
-      setIsEnabled(true);
+    }
+  };
+  const handleButtonCheck = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+  ) => {
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+    if (!target.checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
     }
   };
 
-  //checkList와 List의 일치 여부를 확인
-  //배열의 순서와 상관없이 length가 일치할때 value 값을 비교하여 같으면 true
-  const isArraysEqual = (arr1: any[], arr2: any[]): boolean => {
-    const sortedArr1 = [...arr1].sort();
-    const sortedArr2 = [...arr2].sort();
-
-    return (
-      sortedArr1.length === sortedArr2.length &&
-      sortedArr1.every((value, index) => value === sortedArr2[index])
-    );
-  };
-
+  // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
-    if (checkList.length !== 0 && list.length !== 0) {
-      setIsAllChecked(
-        isArraysEqual(
-          checkList,
-          list.map((item) => item.contentSeq),
-        ),
-      );
-    }
-  }, [checkList, list]);
-
-  useEffect(() => {
-    setIsAllChecked(false);
-  }, [page]);
-
-  //체크된 문항 초기화
-  const [ignoreChecked, setIgnoreChecked] = useState(false);
-
-  // 최초 페이지 랜더링 했을 때 handleClickOutside함수를 등록
-  // outside에 해당하는 부분을 클릭했을 때 함수가 실행됨
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const targetElement = event.target as HTMLElement;
-      const isOutside = !targetElement.closest('.inside');
-
-      if (isOutside) {
-        setIgnoreChecked(true);
-        setIsAllChecked(false);
-      }
+    const handleClick = (e: MouseEvent) => {
+      // console.log('click', e.target);
+      // console.log('click', e.target?.toString().includes('Div'));
+      if (e.target?.toString().includes('Div')) setCheckList([]);
     };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    setCheckList([]);
-    setIgnoreChecked(false);
-  }, [ignoreChecked === true, setIgnoreChecked]);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [backgroundRef]);
 
   return (
     <>
-      <ButtonWrapper className="inside">
-        <AllCheckButtonWrapper>
-          <CheckBox
-            onClick={() => handleAllCheck()}
-            isChecked={isAllChecked}
-          ></CheckBox>
-          <div>전체선택</div>
-        </AllCheckButtonWrapper>
-        <ActionButtonWrapper>
-          {deleteBtn && (
-            <Button
-              width="100px"
-              height="35px"
-              fontSize="14px"
-              $borderRadius="7px"
-              onClick={ondeleteClick}
-              $filled
-              $warning
-              disabled={isEnabled}
-              cursor
+      <Total> Total : {totalCount ? totalCount : 0}</Total>
+      <ListButtonWrapper>
+        <InputWrapper>
+          <ButtonWrapper>
+            <CheckBoxWrapper>
+              <CheckBoxI
+                $margin={'0 5px 0 0'}
+                onChange={(e) => handleAllCheck(e)}
+                checked={checkList.length === list.length ? true : false}
+                id={'all check'}
+                value={'all check'}
+              />
+              <span className="title_top">전체선택</span>
+            </CheckBoxWrapper>
+            <ActionButtonWrapper>
+              {deleteBtn && (
+                <Button
+                  width="100px"
+                  height="35px"
+                  fontSize="14px"
+                  $borderRadius="7px"
+                  onClick={ondeleteClick}
+                  $filled
+                  $warning
+                  disabled={isEnabled}
+                  cursor
+                >
+                  삭제
+                </Button>
+              )}
+              <DropDown
+                list={dropDownList}
+                buttonText={'수정'}
+                showDropDown={showDropDown}
+                setShowDropDown={setShowDropDown}
+                disabled={isEnabled}
+              ></DropDown>
+              <Button
+                width="140px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                onClick={openSubmitAlert}
+                $filled
+                $success
+                disabled={isEnabled}
+                cursor
+              >
+                활성화 / 비활성화
+              </Button>
+            </ActionButtonWrapper>
+          </ButtonWrapper>
+        </InputWrapper>
+      </ListButtonWrapper>
+
+      <ListWrapper ref={backgroundRef}>
+        <List margin={`10px 0`}>
+          {list.map((item: QuizListType) => (
+            <ListItem
+              height="80px"
+              key={item.code as string}
+              isChecked={checkList.includes(item.code)}
+              onClick={(e) => handleButtonCheck(e, item.code)}
             >
-              삭제
-            </Button>
-          )}
-          <DropDown
-            list={dropDownList}
-            buttonText={'수정'}
-            showDropDown={showDropDown}
-            setShowDropDown={setShowDropDown}
-            disabled={isEnabled}
-          ></DropDown>
-          <Button
-            width="140px"
-            height="35px"
-            fontSize="14px"
-            $borderRadius="7px"
-            onClick={onClick}
-            $filled
-            $success
-            disabled={isEnabled}
-            cursor
-          >
-            활성화 / 비활성화
-          </Button>
-        </ActionButtonWrapper>
-      </ButtonWrapper>
-      <ContentCardWrapper className="inside">
-        {list.map((content) => (
-          <ContentCard
-            key={content.questionCode}
-            content={content}
-            setIsEnabled={setIsEnabled}
-            isEnabled={isEnabled}
-            checkList={checkList}
-            setCheckList={setCheckList}
-            ignoreChecked={ignoreChecked}
-            setIgnoreChecked={setIgnoreChecked}
-          ></ContentCard>
-        ))}
-      </ContentCardWrapper>
+              <CheckBoxI
+                id={item.code}
+                value={item.code}
+                $margin={`0 5px 0 0`}
+                checked={checkList.includes(item.code)}
+                readOnly
+              />
+              {!item.isUse ? (
+                <Icon
+                  width={`18px`}
+                  $margin={'0 0 0 12px'}
+                  src={`/images/icon/favorites_on.svg`}
+                  disabled={true}
+                />
+              ) : (
+                <Icon
+                  width={`18px`}
+                  $margin={'0 0 0 12px'}
+                  src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
+                  disabled={true}
+                />
+              )}
+              <ItemLayout>
+                {/* //TODO */}
+                <span className="width_20px">{item.idx} </span>
+                <i className="line"></i>
+                <span>{item.code} </span>
+                <i className="line"></i>
+                <span>{item.type} </span>
+                <i className="line"></i>
+                <span className="width_10">{item.createdBy} </span>
+                <i className="line"></i>
+                <span className="width_10">{item.createdAt}</span>
+                <i className="line"></i>
+                <span className="width_5">
+                  {item.isUse ? (
+                    <Icon
+                      width={`18px`}
+                      $margin={'0 0 0 12px'}
+                      src={`/images/icon/lock_open_${
+                        checkList.length
+                          ? checkList.includes(item.code)
+                            ? 'on'
+                            : 'off'
+                          : 'off'
+                      }.svg`}
+                      disabled={true}
+                    />
+                  ) : (
+                    <Icon
+                      width={`18px`}
+                      $margin={'0 0 0 12px'}
+                      src={`/images/icon/lock_${
+                        checkList.length
+                          ? checkList.includes(item.code)
+                            ? 'on'
+                            : 'off'
+                          : 'off'
+                      }.svg`}
+                      disabled={true}
+                    />
+                  )}
+                </span>
+              </ItemLayout>
+            </ListItem>
+          ))}
+        </List>
+      </ListWrapper>
+
+      <Alert
+        isAlertOpen={isAlertOpen}
+        description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
+        action="확인"
+        isWarning={true}
+        onClose={closeSubmitAlert}
+        onClick={submitDisabled}
+      ></Alert>
+
+      <Modal />
     </>
   );
 }
 
+const ListButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const Total = styled.span`
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: ${COLOR.FONT_BLACK};
+`;
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 10px;
-`;
-const AllCheckButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 20px;
-  gap: 10px;
+  width: 100%;
+  padding-bottom: 5px;
 `;
 const ActionButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 5px;
 `;
-const ContentCardWrapper = styled.ul`
+const CheckBoxWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-bottom: 30px;
+`;
+
+const ItemLayout = styled.span`
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+
+  > span {
+    display: flex;
+    /* flex: 1 0 0; */
+    justify-content: space-around;
+    flex-wrap: wrap;
+    word-break: break-all;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+  }
+  .width_5 {
+    width: 5%;
+  }
+  .width_10 {
+    width: 10%;
+  }
+  .width_20px {
+    width: 20px;
+  }
+  .width_50 {
+    width: 50%;
+  }
 `;

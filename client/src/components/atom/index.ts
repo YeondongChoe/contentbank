@@ -1,7 +1,6 @@
 export * from './button';
 export * from './alertBar';
 export * from './barChart';
-export * from '../molecules/contentList/contentCard';
 export * from './checkBox';
 export * from './input';
 export * from './label';
