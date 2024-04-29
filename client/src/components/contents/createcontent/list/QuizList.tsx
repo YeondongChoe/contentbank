@@ -5,6 +5,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { CheckBoxI, DnDWrapper, Icon, Tooltip } from '../../..';
+import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
 
 //TODO : 데이터 들어올시 타입도 변경
@@ -181,7 +182,17 @@ export function QuizList({
                   </MetaGroup>
                   {showViewAllButton && (
                     <ViewAllButton>
-                      <button type="button" onClick={() => {}}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          windowOpenHandler({
+                            name: 'quizpreview',
+                            url: '/quizpreview',
+                            $width: 500,
+                            $height: 500,
+                          });
+                        }}
+                      >
                         전체보기
                         <Icon
                           $margin={'0 0 0 2px'}

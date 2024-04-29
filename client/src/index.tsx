@@ -25,7 +25,7 @@ import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
 import { Notfound } from './pages/Notfound';
 import { Preparing } from './pages/Preparing';
-import { CreateContentMain } from './pages/quizCreateWindow';
+import { CreateContentMain, QuizPreview } from './pages/quizCreateWindow';
 import GlobalStyle from './styles/GlobalStyle';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
@@ -80,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: '/createcontentmain',
         element: <CreateContentMain />,
+      },
+      {
+        path: '/quizpreview',
+        element: <QuizPreview />,
       },
       {
         path: '/content-create/exam',
