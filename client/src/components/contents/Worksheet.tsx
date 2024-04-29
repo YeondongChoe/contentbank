@@ -258,7 +258,7 @@ export function Worksheet() {
       ) : (
         <>
           <TitleWrapper>
-            <Title>문항</Title>
+            <Title>학습지</Title>
             <Button
               height={'35px'}
               width={'150px'}
