@@ -75,6 +75,6 @@ export const classificationInstance = createAPIInstance(
 /* 학습지 API Instance */
 export const workbookInstance = createAPIInstance('workbook-service');
 /* 학습지 만들기API Instance */
-export const makingworkbookInstance = createAPIInstance('api-node-service');
+export const makingworkbookInstance = createAPIInstance('node-service');
 /* 문항 API Instance */
 export const quizService = createAPIInstance('quiz-service');
