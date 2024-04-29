@@ -200,7 +200,7 @@ export function Step3() {
 
   // 학습지 즐겨찾기 api
   const postWorkbook = (data: any) => {
-    return makingworkbookInstance.patch(`/get-pdf`, data);
+    return makingworkbookInstance.post(`/get-pdf`, data);
   };
 
   const makingWorkbook = () => {
