@@ -43,7 +43,6 @@ export function QuizCreateList() {
     openModal(modalData);
   };
   // 탭메뉴 클릭시 페이지네이션 초기화
-  //              && 리스트 데이터 전송값 변경
   const changeTab = () => {
     setPage(1);
   };
@@ -74,11 +73,13 @@ export function QuizCreateList() {
     if (quizData) {
       setQuestionList(quizData.quizList);
     }
-    console.log('questionList', questionList);
+    // console.log('questionList', questionList);
   }, [quizData]);
 
+  // 탭 바뀔시 초기화
   useEffect(() => {
     quizDataRefetch();
+    setSearchValue('');
   }, [tabVeiw]);
 
   // 검색 기능 함수
@@ -228,7 +229,6 @@ export function QuizCreateList() {
             selected={tabVeiw}
             width={'300px'}
             setTabVeiw={setTabVeiw}
-            lineStyle
             $margin={'10px 0'}
             onClickTab={changeTab}
           />

@@ -43,6 +43,7 @@ export type QuizListType = {
   idx: number;
   isDelete: boolean;
   isUse: boolean;
+  isFavorite?: boolean;
   lastArticle: Article;
   lastModifiedAt: string;
   lastModifiedBy: string;

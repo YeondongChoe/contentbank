@@ -144,7 +144,7 @@ export function EditModal({
   // 비밀번호 초기화 버튼
   const handleInitPassword = () => {
     setIsAlertOpen(true);
-    patchUserPasswordInit();
+    mutateUserPasswordInit();
   };
   const closeInitPasswordAlert = () => {
     setIsAlertOpen(false);

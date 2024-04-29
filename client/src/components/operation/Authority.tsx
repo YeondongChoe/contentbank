@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useReducer } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { redirect } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { userInstance } from '../../api/axios';
@@ -87,11 +88,11 @@ export function Authority() {
   const [isClickedName, setIsClickedName] = useState(false);
   const [codeValue, setCodeValue] = useState('');
   const [codeUpdateList, setCodeUpdateList] = useState<PermissionOutput[]>([]);
+  const [deleteCodeValue, setDeleteCodeValue] = useState('');
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
-
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
   const [checkList, setCheckList] =
@@ -138,6 +139,7 @@ export function Authority() {
   const {
     data: authorityData,
     isSuccess,
+    isPending,
     refetch: authorityDataRefetch,
   } = useQuery({
     queryKey: ['get-authority'],
@@ -188,7 +190,7 @@ export function Authority() {
   }, [codeValue, setCodeValue]);
 
   useEffect(() => {
-    if (authorityData) {
+    if (isSuccess && authorityData) {
       console.log(
         'authorityData.data.data.permissionList',
         authorityData.data.data.permissionList,
@@ -287,6 +289,7 @@ export function Authority() {
         authorityListDataRefetch();
         setInputValue('');
         setCheckList([...defaultPermissions]);
+        setIsClickedName(false);
       },
     });
   // 선택된 권한 생성하기 api
@@ -317,23 +320,48 @@ export function Authority() {
         authorityListDataRefetch();
         setInputValue('');
         setCheckList([...defaultPermissions]);
+        setIsClickedName(false);
       },
     });
 
-  useEffect(() => {}, [changeAuthorityData, createAuthorityData]);
-
   // 선택된 권한 삭제하기 api
-  const deleteAuthority = async () => {
-    const res = await userInstance.delete(`/v1/authority/${codeValue}`);
+  const deleteAuthority = async (authorityCode: string) => {
+    const res = await userInstance.delete(`/v1/authority/${authorityCode}`);
     return res;
   };
+  const { data: deleteAuthorityData, mutate: mutateDeleteAuthority } =
+    useMutation({
+      mutationFn: deleteAuthority,
+      onError: (context: { response: { data: { message: string } } }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+      },
+      onSuccess: (response: { data: { message: string } }) => {
+        // console.log('deleteAuthorityData', response);
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+        //초기화
+        authorityListDataRefetch();
+        setInputValue('');
+        setCheckList([...defaultPermissions]);
+        setIsClickedName(false);
+        //얼럿 닫기
+        setIsAlertOpen(false);
+      },
+    });
+
   const submitDelete = () => {
-    deleteAuthority();
-    //초기화
-    authorityListDataRefetch();
-    setInputValue('');
-    setCheckList([...defaultPermissions]);
+    console.log('deleteCodeValue', deleteCodeValue);
+    mutateDeleteAuthority(deleteCodeValue);
   };
+
+  useEffect(() => {
+    redirect('/operation-manage/authority');
+  }, [changeAuthorityData, createAuthorityData, deleteAuthorityData]);
 
   // 권한관리 체크박스 핸들러
   const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -805,7 +833,7 @@ export function Authority() {
   useEffect(() => {
     // console.log('checkList');
     // console.log(checkList);
-  }, [checkList]);
+  }, [checkList, setCheckList]);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
@@ -856,20 +884,22 @@ export function Authority() {
             </InputWrapper>
           </SubTitleWrapper>
           <TableWrapper>
-            {isClickedName && isSuccess ? (
+            {isClickedName ? (
               // 수정 테이블
-              <table>
-                <thead>
-                  <tr>
-                    <th colSpan={2}>권한</th>
-                    <th>편집</th>
-                    <th>관리</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td rowSpan={2}>콘텐츠 제작</td>
-                    {/* <td>전체</td>
+              <>
+                {!isPending && isSuccess ? (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th colSpan={2}>권한</th>
+                        <th>편집</th>
+                        <th>관리</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td rowSpan={2}>콘텐츠 제작</td>
+                        {/* <td>전체</td>
                     <td>
                       <label htmlFor={'isEditCreateChecked'}>
                         <input
@@ -895,66 +925,66 @@ export function Authority() {
                         />
                       </label>
                     </td> */}
-                    {/* </tr>
+                        {/* </tr>
                   <tr> */}
-                    <td>문항</td>
-                    <td>
-                      <label htmlFor={'QE_isEdit'}>
-                        <input
-                          type="checkbox"
-                          name={'QE_isEdit'}
-                          id={'QE_isEdit'}
-                          value={2}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[2].checked}
-                        />
-                      </label>
-                    </td>
-                    <td>
-                      <label htmlFor={'QE_isManage'}>
-                        <input
-                          type="checkbox"
-                          name={'QE_isManage'}
-                          id={'QE_isManage'}
-                          value={3}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[3].checked}
-                          disabled={!checkList[2].checked}
-                        />
-                      </label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>학습지</td>
-                    <td>
-                      <label htmlFor={'WE_isEdit'}>
-                        <input
-                          type="checkbox"
-                          name={'WE_isEdit'}
-                          id={'WE_isEdit'}
-                          value={4}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[4].checked}
-                        />
-                      </label>
-                    </td>
-                    <td>
-                      <label htmlFor={'WE_isManage'}>
-                        <input
-                          type="checkbox"
-                          name={'WE_isManage'}
-                          id={'WE_isManage'}
-                          value={5}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[5].checked}
-                          disabled={!checkList[4].checked}
-                        />
-                      </label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td rowSpan={2}>콘텐츠 관리</td>
-                    {/* <td>전체</td>
+                        <td>문항</td>
+                        <td>
+                          <label htmlFor={'QE_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'QE_isEdit'}
+                              id={'QE_isEdit'}
+                              value={2}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[2].checked}
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'QE_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'QE_isManage'}
+                              id={'QE_isManage'}
+                              value={3}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[3].checked}
+                              disabled={!checkList[2].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>학습지</td>
+                        <td>
+                          <label htmlFor={'WE_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'WE_isEdit'}
+                              id={'WE_isEdit'}
+                              value={4}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[4].checked}
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'WE_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'WE_isManage'}
+                              id={'WE_isManage'}
+                              value={5}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[5].checked}
+                              disabled={!checkList[4].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td rowSpan={2}>콘텐츠 관리</td>
+                        {/* <td>전체</td>
                     <td>
                       <label htmlFor={'isEditManagementChecked'}>
                         <input
@@ -980,36 +1010,36 @@ export function Authority() {
                         />
                       </label>
                     </td> */}
-                  </tr>
-                  <tr>
-                    <td>문항</td>
-                    <td>
-                      <label htmlFor={'QM_isEdit'}>
-                        <input
-                          type="checkbox"
-                          name={'QM_isEdit'}
-                          id={'QM_isEdit'}
-                          value={8}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[8].checked}
-                        />
-                      </label>
-                    </td>
-                    <td>
-                      <label htmlFor={'QM_isManage'}>
-                        <input
-                          type="checkbox"
-                          name={'QM_isManage'}
-                          id={'QM_isManage'}
-                          value={9}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[9].checked}
-                          disabled={!checkList[8].checked}
-                        />
-                      </label>
-                    </td>
-                  </tr>
-                  {/* <tr>
+                      </tr>
+                      <tr>
+                        <td>문항</td>
+                        <td>
+                          <label htmlFor={'QM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'QM_isEdit'}
+                              id={'QM_isEdit'}
+                              value={8}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[8].checked}
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'QM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'QM_isManage'}
+                              id={'QM_isManage'}
+                              value={9}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[9].checked}
+                              disabled={!checkList[8].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      {/* <tr>
                     <td>문항트리</td>
                     <td>
                       <label htmlFor={'isEditTreeChecked'}>
@@ -1037,9 +1067,9 @@ export function Authority() {
                       </label>
                     </td>
                   </tr> */}
-                  <tr>
-                    <td rowSpan={2}>운영 관리</td>
-                    {/* <td>전체</td>
+                      <tr>
+                        <td rowSpan={2}>운영 관리</td>
+                        {/* <td>전체</td>
                     <td>
                       <label htmlFor={'isEditOperationChecked'}>
                         <input
@@ -1066,67 +1096,71 @@ export function Authority() {
                         />
                       </label>
                     </td> */}
-                    {/* </tr>
+                        {/* </tr>
                   <tr> */}
-                    <td>회원관리</td>
-                    <td>
-                      <label htmlFor={'AM_isEdit'}>
-                        <input
-                          type="checkbox"
-                          name={'AM_isEdit'}
-                          id={'AM_isEdit'}
-                          value={14}
-                          // onChange={(e) => handleChecked(e)}
-                          // checked={checkList[14].checked}
-                          disabled
-                        />
-                      </label>
-                    </td>
-                    <td>
-                      <label htmlFor={'AM_isManage'}>
-                        <input
-                          type="checkbox"
-                          name={'AM_isManage'}
-                          id={'AM_isManage'}
-                          value={15}
-                          onChange={(e) => handleChecked(e)}
-                          // disabled={!checkList[14].checked}
-                          checked={checkList[15].checked}
-                        />
-                      </label>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>권한관리</td>
-                    <td>
-                      <label htmlFor={'PM_isEdit'}>
-                        <input
-                          type="checkbox"
-                          name={'PM_isEdit'}
-                          id={'PM_isEdit'}
-                          value={16}
-                          // onChange={(e) => handleChecked(e)}
-                          // checked={checkList[16].checked}
-                          disabled
-                        />
-                      </label>
-                    </td>
-                    <td>
-                      <label htmlFor={'PM_isManage'}>
-                        <input
-                          type="checkbox"
-                          name={'PM_isManage'}
-                          id={'PM_isManage'}
-                          value={17}
-                          onChange={(e) => handleChecked(e)}
-                          // disabled={!checkList[16].checked}
-                          checked={checkList[17].checked}
-                        />
-                      </label>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                        <td>회원관리</td>
+                        <td>
+                          <label htmlFor={'AM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'AM_isEdit'}
+                              id={'AM_isEdit'}
+                              value={14}
+                              // onChange={(e) => handleChecked(e)}
+                              // checked={checkList[14].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'AM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'AM_isManage'}
+                              id={'AM_isManage'}
+                              value={15}
+                              onChange={(e) => handleChecked(e)}
+                              // disabled={!checkList[14].checked}
+                              checked={checkList[15].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>권한관리</td>
+                        <td>
+                          <label htmlFor={'PM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'PM_isEdit'}
+                              id={'PM_isEdit'}
+                              value={16}
+                              // onChange={(e) => handleChecked(e)}
+                              // checked={checkList[16].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'PM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'PM_isManage'}
+                              id={'PM_isManage'}
+                              value={17}
+                              onChange={(e) => handleChecked(e)}
+                              // disabled={!checkList[16].checked}
+                              checked={checkList[17].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                ) : (
+                  <Loader />
+                )}
+              </>
             ) : (
               // 등록 테이블
               <table>
@@ -1458,7 +1492,9 @@ export function Authority() {
                           <DeleteIconWrapper>
                             <BiSolidTrashAlt
                               onClick={() => {
-                                // openDeleteAlert(el.code);
+                                setDeleteCodeValue(el.code);
+                                setIsAlertOpen(true);
+                                setIsDeleteAuthority(true);
                               }}
                             />
                           </DeleteIconWrapper>
@@ -1482,6 +1518,7 @@ export function Authority() {
           description="권한을 삭제할 경우, 해당 권한의 아이디는 접속이 불가합니다."
           action="삭제"
           onClick={() => submitDelete()}
+          onClose={() => setIsAlertOpen(false)}
         />
       )}
       {isUpdateAuthority && (

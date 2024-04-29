@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useRecoilValue } from 'recoil';
 import { styled } from 'styled-components';
 
+import { quizService } from '../../../api/axios';
 import {
   Button,
   DropDown,
@@ -16,8 +17,8 @@ import {
   Modal,
   Alert,
   Icon,
+  openToastifyAlert,
 } from '../../../components';
-import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType } from '../../../types';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
@@ -37,7 +38,6 @@ export function ContentList({
   ondeleteClick,
   totalCount,
 }: ContentListProps) {
-  const page = useRecoilValue(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -104,6 +104,43 @@ export function ContentList({
     }
   };
 
+  // 문항 즐겨찾기 api
+  const patchQuizFavorite = async (data: {
+    idx: number;
+    isFavorite: boolean;
+  }) => {
+    return await quizService.patch(`/v1/quiz/favorite`, data);
+  };
+  const { data: quizFavorite, mutate: mutateQuizFavorite } = useMutation({
+    mutationFn: patchQuizFavorite,
+    onError: (context: { response: { data: { message: string } } }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      // console.log('quizFavorite', response);
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
+
+  // 즐겨찾기 토글 버튼
+  const handleFavorite = (data: { idx: number; isFavorite: boolean }) => {
+    const favoriteItem = {
+      idx: data.idx,
+      isFavorite: !data.isFavorite,
+    };
+    mutateQuizFavorite(favoriteItem);
+  };
+
+  useEffect(() => {
+    console.log('quizFavorite', quizFavorite);
+  }, [mutateQuizFavorite]);
+
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -121,15 +158,20 @@ export function ContentList({
   const closeSubmitAlert = () => {
     setIsAlertOpen(false);
   };
+
   // 활성화/비활성화 데이터 전송
-  const submitDisabled = () => {};
-  // 활성화 버튼
+  const handleDisabled = () => {};
+
   useEffect(() => {
+    // 체크시 활성화 버튼
     if (!checkList.length) {
       setIsEnabled(true);
     } else {
       setIsEnabled(false);
     }
+
+    //즐겨찾기 데이터 전송시 객체값 축출
+    console.log('checkList', checkList);
   }, [checkList]);
 
   return (
@@ -205,12 +247,19 @@ export function ContentList({
                 checked={checkList.includes(item.code)}
                 readOnly
               />
-              {!item.isUse ? (
+              {item.isFavorite ? (
                 <Icon
                   width={`18px`}
                   $margin={'0 0 0 12px'}
                   src={`/images/icon/favorites_on.svg`}
                   disabled={true}
+                  onClick={() =>
+                    handleFavorite({
+                      idx: item.idx,
+                      isFavorite: true,
+                    })
+                  }
+                  cursor
                 />
               ) : (
                 <Icon
@@ -218,6 +267,13 @@ export function ContentList({
                   $margin={'0 0 0 12px'}
                   src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
                   disabled={true}
+                  onClick={() =>
+                    handleFavorite({
+                      idx: item.idx,
+                      isFavorite: false,
+                    })
+                  }
+                  cursor
                 />
               )}
               <ItemLayout>
@@ -273,7 +329,7 @@ export function ContentList({
         action="확인"
         isWarning={true}
         onClose={closeSubmitAlert}
-        onClick={submitDisabled}
+        onClick={handleDisabled}
       ></Alert>
 
       <Modal />
@@ -293,10 +349,12 @@ const InputWrapper = styled.div`
 `;
 
 const Total = styled.span`
+  display: inline-block;
   text-align: right;
   font-size: 15px;
   font-weight: bold;
   color: ${COLOR.FONT_BLACK};
+  margin-top: 10px;
 `;
 const ButtonWrapper = styled.div`
   display: flex;

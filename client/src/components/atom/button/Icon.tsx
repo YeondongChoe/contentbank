@@ -9,6 +9,7 @@ type IconProps = {
   width?: string;
   height?: string;
   disabled?: boolean;
+  cursor?: boolean;
 };
 
 export function Icon({
@@ -18,6 +19,7 @@ export function Icon({
   width,
   height,
   disabled = false,
+  cursor,
 }: IconProps) {
   return (
     <Container
@@ -27,12 +29,9 @@ export function Icon({
       height={height}
       $margin={$margin}
       disabled={disabled}
+      cursor={cursor}
     >
-      <Image
-        src={src}
-        loading="lazy"
-        // src={`/images/settings/ic-bookmark-${active ? 'on' : 'off'}.svg`}
-      />
+      <Image src={src} loading="lazy" />
     </Container>
   );
 }
@@ -41,12 +40,14 @@ const Container = styled.button<{
   width?: string;
   height?: string;
   $margin?: string;
+  cursor?: boolean;
 }>`
   border: none;
   background-color: transparent;
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   width: ${({ width }) => (width ? ` ${width};` : '22px')};
   height: ${({ height }) => (height ? ` ${height};` : '22px')};
+  ${({ cursor }) => (cursor ? ` cursor: pointer;` : '')};
 `;
 
 const Image = styled.img`
