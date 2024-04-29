@@ -351,18 +351,20 @@ export function Member() {
                       />
                       <span className="title_top">전체선택</span>
                     </CheckBoxWrapper>
-                    <Button
-                      height={'35px'}
-                      width={'130px'}
-                      onClick={openSubmitAlert}
-                      fontSize="15px"
-                      $filled
-                      disabled={isEnabled}
-                      cursor
-                      $margin="5px 0 0 0"
-                    >
-                      비활성화
-                    </Button>
+                    {tabVeiw !== '비활성화' && (
+                      <Button
+                        height={'35px'}
+                        width={'130px'}
+                        onClick={openSubmitAlert}
+                        fontSize="15px"
+                        $filled
+                        disabled={isEnabled}
+                        cursor
+                        $margin="5px 0 0 0"
+                      >
+                        비활성화
+                      </Button>
+                    )}
                   </ButtonWrapper>
 
                   <List margin={`10px 0`}>
