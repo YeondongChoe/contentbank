@@ -4,6 +4,7 @@ import { getAuthorityCookie } from '../utils/cookies';
 
 // axios 전역 설정
 axios.defaults.withCredentials = true; // withCredentials 전역 설정
+console.log(`${process.env.REACT_APP_AXIOS_BASE_URL}`);
 
 /*  토큰 재발급 API Instance */
 export const tokenInstance = axios.create({
@@ -73,5 +74,7 @@ export const classificationInstance = createAPIInstance(
 );
 /* 학습지 API Instance */
 export const workbookInstance = createAPIInstance('workbook-service');
+/* 학습지 만들기API Instance */
+export const makingworkbookInstance = createAPIInstance('api-node-service');
 /* 문항 API Instance */
 export const quizService = createAPIInstance('quiz-service');

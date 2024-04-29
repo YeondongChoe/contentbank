@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
@@ -10,6 +11,7 @@ import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
+import { makingworkbookInstance } from '../../../api/axios';
 import Contents2 from '../../../components/mathViewer/test2.json';
 import Contents3 from '../../../components/mathViewer/test3.json';
 import Contents4 from '../../../components/mathViewer/test4.json';
@@ -195,11 +197,42 @@ export function Step3() {
   // };
   // 210.124.177.36:5050'
   // localhost:5000
+
+  // 학습지 즐겨찾기 api
+  const postWorkbook = (data: any) => {
+    return makingworkbookInstance.patch(`/get-pdf`, data);
+  };
+
+  const makingWorkbook = () => {
+    const data = {
+      title: 'test',
+      content: Contents2.it_quest,
+      column: 2,
+      uploadDir: '/usr/share/nginx/html/CB',
+      fileName: 'worksheettest.pdf',
+    };
+    workbookData(data);
+  };
+
+  const { mutate: workbookData } = useMutation({
+    mutationFn: postWorkbook,
+    onError: (error) => {
+      console.error('post-workbook 에러:', error);
+      // 에러 처리 로직 추가
+    },
+    onSuccess: (data) => {
+      console.log('post-workbook 성공:', data);
+      //setIsWorkingFavorite(!isWorkingFavorite);
+      // 성공 처리 로직 추가
+    },
+  });
+
   const [pdfData, setPdfData] = useState<string | undefined>(undefined);
   const getPdf = async () => {
     try {
       const response = await axios.post(
-        'http://210.124.177.36:5050/get-pdf',
+        'http://210.124.177.36:5050/api-node-service/get-pdf',
+        //`http://${process.env.REACT_APP_AXIOS_BASE_URL}/api-node-service/get-pdf`,
         {
           title: 'test',
           content: Contents2.it_quest,
@@ -228,7 +261,10 @@ export function Step3() {
   };
 
   const submitCreateWorksheet = () => {
-    getPdf();
+    //node 서버에서 pdf 생성
+    makingWorkbook();
+    //getPdf();
+    //pdf 생성 후 데이터와 pdf경로/파일명을 서버로 보내기
   };
 
   const loadData = () => {
