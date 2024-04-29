@@ -50,7 +50,9 @@ export function QuizCreateList() {
 
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
-    const res = await quizService.get(`/v1/quiz`);
+    const res = await quizService.get(
+      `${tabVeiw == '즐겨찾는 문항' ? `/v1/quiz/favorite` : '/v1/quiz'}`,
+    );
     console.log(`getQuiz 결과값`, res.data.data);
     return res.data.data;
   };
@@ -74,6 +76,10 @@ export function QuizCreateList() {
     }
     console.log('questionList', questionList);
   }, [quizData]);
+
+  useEffect(() => {
+    quizDataRefetch();
+  }, [tabVeiw]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -251,21 +257,22 @@ export function QuizCreateList() {
           </SelectWrapper>
 
           {questionList.length > 1 ? (
-            <ContentList
-              list={questionList}
-              onClick={() => {}}
-              totalCount={quizData.pagination.totalCount}
-            />
+            <>
+              <ContentList
+                list={questionList}
+                onClick={() => {}}
+                totalCount={quizData.pagination.totalCount}
+              />
+              <PaginationBox
+                itemsCountPerPage={quizData.pagination.pageUnit}
+                totalItemsCount={quizData.pagination.totalCount}
+              />
+            </>
           ) : (
             <ValueNoneWrapper>
               <ValueNone />
             </ValueNoneWrapper>
           )}
-
-          <PaginationBox
-            itemsCountPerPage={quizData.pagination.pageUnit}
-            totalItemsCount={quizData.pagination.totalCount}
-          />
         </>
       )}
     </Container>
