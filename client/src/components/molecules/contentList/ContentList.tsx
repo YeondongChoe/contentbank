@@ -160,7 +160,16 @@ export function ContentList({
   };
 
   // 활성화/비활성화 데이터 전송
-  const handleDisabled = () => {};
+  const handleDisabled = () => {
+    // const data = {
+    //   idx: 2,
+    //   isUse: true,
+    // };
+    console.log('checkList', checkList);
+    const codesSet = new Set(checkList);
+    const filteredList = list.filter((item) => codesSet.has(item.code));
+    console.log('isUse chaeck arr', filteredList);
+  };
 
   useEffect(() => {
     // 체크시 활성화 버튼
@@ -171,7 +180,6 @@ export function ContentList({
     }
 
     //즐겨찾기 데이터 전송시 객체값 축출
-    console.log('checkList', checkList);
   }, [checkList]);
 
   return (

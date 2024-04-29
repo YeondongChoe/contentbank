@@ -8,6 +8,13 @@ export const postRefreshToken = async () => {
     .post(`/v1/auth/refresh-token`)
     .then((res) => {
       // console.log('refreshTokenData ', res);
+      // 초기화
+      // removeAuthorityCookie('accessToken', {
+      //   path: '/',
+      //   sameSite: 'strict',
+      //   secure: false,
+      // });
+
       if (res.data.code === 'S-001') {
         setAuthorityCookie('accessToken', res.data.data.accessToken, {
           path: '/',
