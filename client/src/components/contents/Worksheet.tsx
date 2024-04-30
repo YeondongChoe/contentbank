@@ -42,12 +42,14 @@ export function Worksheet() {
   const [page, setPage] = useRecoilState(pageAtom);
 
   const changeTab = () => {
-    setPage(1);
+    //setPage(1);
   };
 
   // 학습지 리스트 불러오기 api
   const getWorkbookList = async () => {
-    const res = await workbookInstance.get(`/v1/workbook`);
+    const res = await workbookInstance.get(
+      `/v1/workbook?pageIndex=${page}&pageUnit=${8}`,
+    );
     console.log(`학습지 get 결과값`, res);
     return res;
   };
@@ -65,6 +67,18 @@ export function Worksheet() {
   });
 
   const workbookList = workbookListData?.data.data;
+
+  // const [favoriteList, setFavoriteList] = useState([]);
+  // const getWorkbookFavoriteList = async () => {
+  //   try {
+  //     const res = await workbookInstance.get(`/v1/workbook/favorite`);
+  //     setFavoriteList(res.data.data);
+  //     console.log(`학습지 즐겨찾기 get 결과값`, res);
+  //   } catch (error) {
+  //     console.error('API 호출 중 에러:', error);
+  //   }
+  // };
+  // console.log(favoriteList);
 
   // 학습지 즐겨찾기 리스트 불러오기 api
   const getWorkbookFavoriteList = async () => {
@@ -86,6 +100,7 @@ export function Worksheet() {
   });
 
   const workbookFavoriteList = workbookFavoriteListData?.data.data;
+  console.log(workbookFavoriteList);
 
   // 학습지 즐겨찾기 api
   const patchWorkbookFavorite = (data: any) => {
@@ -112,16 +127,44 @@ export function Worksheet() {
     },
   });
 
-  // useEffect(() => {
-  //   workbookListRefetch();
-  //   workbookFavoriteListRefetch();
-  // }, [page]);
-
   useEffect(() => {
-    // 학습지 즐겨찾기가 변경될 때마다 학습지 리스트와 학습지 즐겨찾기 리스트를 다시 받아옴
     workbookListRefetch();
     workbookFavoriteListRefetch();
-  }, [isWorkingFavorite]); // 학습지 즐겨찾기 데이터가 변경될 때마다 실행
+  }, [page, tabVeiw]);
+  useEffect(() => {}, [workbookList]);
+  useEffect(() => {}, [workbookFavoriteList]);
+
+  // useEffect(() => {
+  //   // 페이지 진입 후에만 데이터를 요청하도록 조건 추가
+  //   if (favoriteList.length === 0) {
+  //     getWorkbookFavoriteList();
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (tabVeiw === '학습지') {
+  //     workbookListRefetch();
+  //   }
+  //   if (tabVeiw === '즐겨찾는 학습지') {
+  //     workbookFavoriteListRefetch();
+  //   }
+  // }, [tabVeiw]);
+
+  // useEffect(() => {
+  //   if (tabVeiw === '학습지') {
+  //     workbookListRefetch();
+  //   }
+  //   if (tabVeiw === '즐겨찾는 학습지') {
+  //     workbookFavoriteListRefetch();
+  //   }
+  // }, [page]);
+  // useEffect(() => {}, [workbookList]);
+
+  // useEffect(() => {
+  //   // 학습지 즐겨찾기가 변경될 때마다 학습지 리스트와 학습지 즐겨찾기 리스트를 다시 받아옴
+  //   workbookListRefetch();
+  //   workbookFavoriteListRefetch();
+  // }, [isWorkingFavorite]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -214,7 +257,6 @@ export function Worksheet() {
       value: '고등',
     },
   ];
-  const worksheetList: WorksheetTableType[] = dummy.Worksheet;
 
   const [showPdf, setShowPdf] = useState(false);
 
@@ -277,7 +319,7 @@ export function Worksheet() {
               width={'250px'}
               selected={tabVeiw}
               setTabVeiw={setTabVeiw}
-              onClickTab={changeTab}
+              //onClickTab={changeTab}
             />
             <Search
               value={searchValue}
@@ -323,7 +365,7 @@ export function Worksheet() {
                         <div
                           className="bookmark"
                           onClick={() => {
-                            clickFavorite(content.idx, 'Y');
+                            clickFavorite(content.idx, 'true');
                           }}
                           style={{ cursor: 'pointer' }}
                         >
@@ -393,7 +435,7 @@ export function Worksheet() {
           )}
           {tabVeiw === '즐겨찾는 학습지' && (
             <>
-              {workbookFavoriteListLoading && (
+              {/* {workbookFavoriteListLoading && (
                 <LoaderWrapper>
                   <Loader width="50px" />
                 </LoaderWrapper>
@@ -425,7 +467,7 @@ export function Worksheet() {
                         <div
                           className="bookmark"
                           onClick={() => {
-                            clickFavorite(content.idx, 'N');
+                            clickFavorite(content.idx, 'false');
                           }}
                           style={{ cursor: 'pointer' }}
                         >
@@ -490,7 +532,7 @@ export function Worksheet() {
                     totalItemsCount={workbookFavoriteList.pagination.totalCount}
                   />
                 </>
-              )}
+              )} */}
             </>
           )}
         </>
