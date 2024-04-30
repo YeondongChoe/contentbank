@@ -1,13 +1,26 @@
 import { tokenInstance } from '../api/axios';
 import { openToastifyAlert } from '../components';
 
-import { removeAuthorityCookie, setAuthorityCookie } from './cookies';
+import {
+  getAuthorityCookie,
+  removeAuthorityCookie,
+  setAuthorityCookie,
+} from './cookies';
 //리프레쉬 토큰 요청 api
 export const postRefreshToken = async () => {
+  console.log(
+    '리프레쉬 토큰 요청 apigetAuthorityCookie ',
+    getAuthorityCookie('accessToken'),
+  );
+  console.log(
+    '리프레쉬 토큰 요청 apigetAuthorityCookie ',
+    getAuthorityCookie('refreshToken'),
+  );
+
   const refreshTokenData = await tokenInstance
     .post(`/v1/auth/refresh-token`)
     .then((res) => {
-      // console.log('refreshTokenData ', res);
+      console.log('refreshTokenData ', res);
       // 초기화
       // removeAuthorityCookie('accessToken', {
       //   path: '/',

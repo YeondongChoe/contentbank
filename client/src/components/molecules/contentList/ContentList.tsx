@@ -169,6 +169,7 @@ export function ContentList({
     const codesSet = new Set(checkList);
     const filteredList = list.filter((item) => codesSet.has(item.code));
     console.log('isUse chaeck arr', filteredList);
+    // 데이터 전송 후 얼럿 닫기
   };
 
   useEffect(() => {

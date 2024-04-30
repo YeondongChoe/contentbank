@@ -12,7 +12,7 @@ export const tokenInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-    refresh: `Bearer ${getAuthorityCookie('refreshToken')}`,
+    Refresh: `Bearer ${getAuthorityCookie('refreshToken')}`,
     'session-id': `${getAuthorityCookie('sessionId')}`,
     'Accept-Language': `ko_KR`,
   },
@@ -26,6 +26,9 @@ tokenInstance.interceptors.request.use(function (config) {
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
+  }
+  if (headerAuth !== getAuthorityCookie('refreshToken')) {
+    config.headers.Refresh = `Bearer ${getAuthorityCookie('refreshToken')}`;
   }
   if (headerSessionId !== getAuthorityCookie('sessionId')) {
     config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
