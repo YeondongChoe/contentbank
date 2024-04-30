@@ -81,26 +81,26 @@ export function Worksheet() {
   // console.log(favoriteList);
 
   // 학습지 즐겨찾기 리스트 불러오기 api
-  const getWorkbookFavoriteList = async () => {
-    const res = await workbookInstance.get(`/v1/workbook/favorite`);
-    console.log(`학습지 즐겨찾기 get 결과값`, res);
-    return res;
-  };
+  // const getWorkbookFavoriteList = async () => {
+  //   const res = await workbookInstance.get(`/v1/workbook/favorite`);
+  //   console.log(`학습지 즐겨찾기 get 결과값`, res);
+  //   return res;
+  // };
 
-  const {
-    isLoading: workbookFavoriteListLoading,
-    data: workbookFavoriteListData,
-    refetch: workbookFavoriteListRefetch,
-  } = useQuery({
-    queryKey: ['get-workbookfavoritelist'],
-    queryFn: getWorkbookFavoriteList,
-    meta: {
-      errorMessage: 'get-workbookfavoritelist 에러 메세지',
-    },
-  });
+  // const {
+  //   isLoading: workbookFavoriteListLoading,
+  //   data: workbookFavoriteListData,
+  //   refetch: workbookFavoriteListRefetch,
+  // } = useQuery({
+  //   queryKey: ['get-workbookfavoritelist'],
+  //   queryFn: getWorkbookFavoriteList,
+  //   meta: {
+  //     errorMessage: 'get-workbookfavoritelist 에러 메세지',
+  //   },
+  // });
 
-  const workbookFavoriteList = workbookFavoriteListData?.data.data;
-  console.log(workbookFavoriteList);
+  // const workbookFavoriteList = workbookFavoriteListData?.data.data;
+  // console.log(workbookFavoriteList);
 
   // 학습지 즐겨찾기 api
   const patchWorkbookFavorite = (data: any) => {
@@ -129,10 +129,10 @@ export function Worksheet() {
 
   useEffect(() => {
     workbookListRefetch();
-    workbookFavoriteListRefetch();
+    //workbookFavoriteListRefetch();
   }, [page, tabVeiw]);
   useEffect(() => {}, [workbookList]);
-  useEffect(() => {}, [workbookFavoriteList]);
+  //useEffect(() => {}, [workbookFavoriteList]);
 
   // useEffect(() => {
   //   // 페이지 진입 후에만 데이터를 요청하도록 조건 추가
@@ -321,7 +321,7 @@ export function Worksheet() {
               setTabVeiw={setTabVeiw}
               //onClickTab={changeTab}
             />
-            <Search
+            {/* <Search
               value={searchValue}
               width={'25%'}
               height="40px"
@@ -329,7 +329,7 @@ export function Worksheet() {
               onKeyDown={(e) => {}}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="학습지명, 학년, 태그, 작성자 검색"
-            />
+            /> */}
           </HeadWrapper>
           {tabVeiw === '학습지' && (
             <>
@@ -340,15 +340,26 @@ export function Worksheet() {
               )}
               {!workbookListLoading && workbookListData && (
                 <>
-                  <TabMenu
-                    length={4}
-                    menu={subMenuList}
-                    width={'300px'}
-                    selected={subTabVeiw}
-                    setTabVeiw={setSubTabVeiw}
-                    lineStyle
-                    $margin={'10px 0 20px 0'}
-                  />
+                  <TabWrapper>
+                    <TabMenu
+                      length={4}
+                      menu={subMenuList}
+                      width={'300px'}
+                      selected={subTabVeiw}
+                      setTabVeiw={setSubTabVeiw}
+                      lineStyle
+                      $margin={'10px 0 20px 0'}
+                    />
+                    <Search
+                      value={searchValue}
+                      width={'25%'}
+                      height="40px"
+                      onClick={() => filterSearchValue()}
+                      onKeyDown={(e) => {}}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      placeholder="학습지명, 학년, 태그, 작성자 검색"
+                    />
+                  </TabWrapper>
                   <ListWrapper>
                     <ListTitleWrapper>
                       <ListTitle className="bookmark"></ListTitle>
@@ -442,15 +453,26 @@ export function Worksheet() {
               )}
               {!workbookFavoriteListLoading && workbookFavoriteList && (
                 <>
-                  <TabMenu
-                    length={4}
-                    menu={subMenuList}
-                    width={'300px'}
-                    selected={subTabVeiw}
-                    setTabVeiw={setSubTabVeiw}
-                    lineStyle
-                    $margin={'10px 0 20px 0'}
-                  />
+                  <TabWrapper>
+                    <TabMenu
+                      length={4}
+                      menu={subMenuList}
+                      width={'300px'}
+                      selected={subTabVeiw}
+                      setTabVeiw={setSubTabVeiw}
+                      lineStyle
+                      $margin={'10px 0 20px 0'}
+                    />
+                    <Search
+                      value={searchValue}
+                      width={'25%'}
+                      height="40px"
+                      onClick={() => filterSearchValue()}
+                      onKeyDown={(e) => {}}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      placeholder="학습지명, 학년, 태그, 작성자 검색"
+                    />
+                  </TabWrapper>
                   <ListWrapper>
                     <ListTitleWrapper>
                       <ListTitle className="bookmark"></ListTitle>
@@ -571,8 +593,10 @@ const HeadWrapper = styled.div`
   justify-content: space-between;
   padding-bottom: 10px;
 `;
-const TableWrapper = styled.div`
-  min-height: 280px;
+const TabWrapper = styled.div`
+  //min-height: 280px;
+  display: flex;
+  justify-content: space-between;
 `;
 const ListWrapper = styled.div`
   min-height: 550px;
