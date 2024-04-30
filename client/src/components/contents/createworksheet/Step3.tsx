@@ -198,9 +198,11 @@ export function Step3() {
   // 210.124.177.36:5050'
   // localhost:5000
 
-  // 학습지 즐겨찾기 api
-  const postWorkbook = (data: any) => {
-    return makingworkbookInstance.post(`/get-pdf`, data);
+  // 학습지 만들기 api
+  const postWorkbook = async (data: any) => {
+    const res = await makingworkbookInstance.post(`/get-pdf`, data);
+    console.log(`학습지 만들기결과값`, res);
+    return res;
   };
 
   const makingWorkbook = () => {
