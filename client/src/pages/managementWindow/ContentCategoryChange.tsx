@@ -361,6 +361,7 @@ export function ContentCategoryChange() {
       {},
     );
 
+    // TODO : jsonList => itemTreeIdxList
     const jsonList = { jsonList: [keyValuePairs] };
     console.log('jsonList :', jsonList);
 
