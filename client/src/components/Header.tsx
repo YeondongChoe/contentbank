@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { getLogout } from '../api/auth';
 import { openNaviationBoolAtom, pageIndexAtom } from '../store/utilAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
@@ -17,6 +18,7 @@ export function Header() {
   const [isOpenNavigation, setIsOpenNavigation] = useRecoilState(
     openNaviationBoolAtom,
   );
+  const [isLogin, setIsLogin] = useState(true);
   const pageIndexValue = useRecoilValue(pageIndexAtom);
 
   const navigate = useNavigate();
@@ -27,25 +29,40 @@ export function Header() {
 
   // 사이드메뉴 로그아웃 시
   const onLogout = () => {
-    //쿠키 삭제
-    queryClient.getQueryCache().clear;
-    removeAuthorityCookie('accessToken', {
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-    });
-    removeAuthorityCookie('refreshToken', {
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-    });
-    removeAuthorityCookie('sessionId', {
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-    });
+    setIsLogin(false);
   };
 
+  const { isSuccess } = useQuery({
+    queryKey: ['get-logout'],
+    queryFn: getLogout,
+    meta: {
+      errorMessage: 'get-logout 에러 메세지',
+    },
+    enabled: !isLogin,
+  });
+
+  useEffect(() => {
+    //로그아웃시 초기화
+    if (isSuccess) {
+      navigate('/login');
+      queryClient.getQueryCache().clear;
+      removeAuthorityCookie('accessToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('refreshToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('sessionId', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+    }
+  }, [isSuccess]);
   return (
     <Container $isOpenNavigation={isOpenNavigation}>
       <Wrapper>
@@ -71,9 +88,7 @@ export function Header() {
         <Link to="/preparing">가이드</Link>
         <Link to="/preparing">고객센터</Link>
         <Link to="/mypage">마이페이지</Link>
-        <Link to="/login" onClick={onLogout}>
-          로그아웃
-        </Link>
+        <button onClick={() => onLogout()}>로그아웃</button>
       </SideMenuWrapper>
     </Container>
   );
@@ -109,7 +124,8 @@ const IconWrapper = styled.div`
 const SideMenuWrapper = styled.div`
   display: flex;
 
-  a {
+  a,
+  button {
     display: flex;
     align-items: center;
     font-size: 14px;
@@ -118,6 +134,9 @@ const SideMenuWrapper = styled.div`
     padding: 5px 10px;
     text-decoration: none;
     position: relative;
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
 
     &::after {
       content: '';

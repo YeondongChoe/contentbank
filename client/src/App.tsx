@@ -89,7 +89,9 @@ export function App() {
   }, [getAuthorityCookie('accessToken'), getAuthorityCookie('sessionId')]);
   useEffect(() => {
     // 전역 초기화
-    if (location.pathname === '/login') closeModal();
+    if (location.pathname === '/login') {
+      closeModal();
+    }
   }, [location]);
 
   return (

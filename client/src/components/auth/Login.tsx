@@ -5,10 +5,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdAccountBalance } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance } from '../../api/axios';
+import { LoginType, postLogin } from '../../api/auth';
 import {
   Input,
   Label,
@@ -18,20 +17,10 @@ import {
 } from '../../components';
 import { COLOR } from '../../components/constants/COLOR';
 import {
-  accessTokenAtom,
-  refreshTokenAtom,
-  sessionIdAtom,
-} from '../../store/auth';
-import {
   getAuthorityCookie,
   removeAuthorityCookie,
   setAuthorityCookie,
 } from '../../utils/cookies';
-
-export type LoginType = {
-  username: string;
-  password: string;
-};
 
 export function Login() {
   // const setAccessTokenAtom = useSetRecoilState(accessTokenAtom);
@@ -55,12 +44,6 @@ export function Login() {
   const navigate = useNavigate();
 
   //로그인 api
-  const postLogin = (auth: LoginType) => {
-    console.log('postLogin', auth);
-
-    return authInstance.post('/v1/auth/login', auth);
-  };
-
   const {
     data: loginPostData,
     mutate: onLogin,

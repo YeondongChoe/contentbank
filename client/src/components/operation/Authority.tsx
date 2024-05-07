@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback, useReducer } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { redirect } from 'react-router-dom';
@@ -97,6 +97,7 @@ export function Authority() {
 
   const [checkList, setCheckList] =
     useState<PermissionInput[]>(defaultPermissions);
+  const queryClient = useQueryClient();
 
   // 권한 리스트 불러오기 api
   const getAuthorityList = async () => {
@@ -186,6 +187,9 @@ export function Authority() {
     setIsClickedName(true);
   };
   useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ['get-authority'],
+    });
     authorityDataRefetch();
   }, [codeValue, setCodeValue]);
 
@@ -1158,7 +1162,9 @@ export function Authority() {
                     </tbody>
                   </table>
                 ) : (
-                  <Loader />
+                  <LoaderWrapper>
+                    <Loader />
+                  </LoaderWrapper>
                 )}
               </>
             ) : (
@@ -1737,4 +1743,12 @@ const DeleteIconWrapper = styled.button`
   &:hover {
     background: ${COLOR.RED};
   }
+`;
+
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 30px;
+  margin-bottom: 100px;
+  padding-left: calc(50% - 35px);
 `;

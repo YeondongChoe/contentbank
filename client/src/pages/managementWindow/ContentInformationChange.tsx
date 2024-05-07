@@ -337,10 +337,10 @@ export function ContentInformationChange() {
       {},
     );
 
-    const jsonList = { jsonList: [keyValuePairs] };
-    console.log('jsonList :', jsonList);
+    const itemTreeKey = { itemTreeKey: [keyValuePairs] };
+    console.log('itemTreeKey :', itemTreeKey);
 
-    const res = await classificationInstance.post('/v1/item', jsonList);
+    const res = await classificationInstance.post('/v1/item', itemTreeKey);
     console.log('classificationInstance 응답:', res);
     return res;
   };

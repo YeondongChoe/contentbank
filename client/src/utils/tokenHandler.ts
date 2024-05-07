@@ -28,14 +28,14 @@ export const postRefreshToken = async () => {
       //   secure: false,
       // });
 
-      if (res.data.code === 'S-001') {
-        setAuthorityCookie('accessToken', res.data.data.accessToken, {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        });
-        return 1;
-      }
+      // if (res.data.code === 'S-001') {
+      setAuthorityCookie('accessToken', res.data.data.accessToken, {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      return 1;
+      // }
     })
     .catch((error) => {
       console.log('refreshTokenData error', error);
