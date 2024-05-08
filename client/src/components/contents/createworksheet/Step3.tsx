@@ -211,7 +211,7 @@ export function Step3() {
       content: Contents2.it_quest,
       column: 2,
       uploadDir: '/usr/share/nginx/html/CB',
-      fileName: 'worksheettestYDC.pdf',
+      fileName: 'workbookYD1.pdf',
     };
     workbookData(data);
   };
@@ -228,39 +228,6 @@ export function Step3() {
       // 성공 처리 로직 추가
     },
   });
-
-  const [pdfData, setPdfData] = useState<string | undefined>(undefined);
-  const getPdf = async () => {
-    try {
-      const response = await axios.post(
-        'http://210.124.177.36:5050/api-node-service/get-pdf',
-        //`http://${process.env.REACT_APP_AXIOS_BASE_URL}/api-node-service/get-pdf`,
-        {
-          title: 'test',
-          content: Contents2.it_quest,
-          column: 2,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer', // 서버로부터 바이너리 데이터로 응답 받기
-          withCredentials: true, // CORS 요청에 자격 증명 정보를 포함하도록 설정
-        },
-      );
-      //window.close();
-      // if (response.status === 200) {
-      //   const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-      //   const pdfUrl = URL.createObjectURL(pdfBlob);
-      //   console.log(pdfUrl);
-      //   setPdfData(pdfUrl);
-      // } else {
-      //   console.error('Server responded with an error');
-      // }
-    } catch (error) {
-      console.error('Failed to fetch PDF data:', error);
-    }
-  };
 
   const submitCreateWorksheet = () => {
     //node 서버에서 pdf 생성

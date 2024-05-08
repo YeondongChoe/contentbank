@@ -551,7 +551,7 @@ export function Step2() {
             <p>
               총 배점: <Span>100점</Span>/<Span>100점</Span>
             </p>
-            <Button
+            {/* <Button
               buttonType="button"
               onClick={() => {}}
               $padding="10px"
@@ -562,7 +562,7 @@ export function Step2() {
               cursor
             >
               <span>임시저장</span>
-            </Button>
+            </Button> */}
             <Button
               buttonType="button"
               onClick={moveStep3}
