@@ -12,7 +12,12 @@ import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { Input, Label, AlertBar } from '../..';
-import { userInstance } from '../../../api/axios';
+import {
+  getAuthorityList,
+  getUser,
+  patchUserPasswordInit,
+  putChangeUserInfo,
+} from '../../../api/user';
 import { useModal } from '../../../hooks';
 import { ItemAuthorityType } from '../../../types';
 import { Button, openToastifyAlert } from '../../atom';
@@ -65,15 +70,6 @@ export function EditModal({
     setIsSuccessAlertOpen(false);
   };
   // 유저 정보 변경 api
-  const putChangeUserInfo = async (userInfo: {
-    name: string;
-    authorityCode: string;
-    note: string;
-    isUseNot: string;
-  }) => {
-    return await userInstance.put(`/v1/account/${accountIdx}`, userInfo);
-  };
-
   const { data: changeUserInfo, mutate: mutateChangeUserInfo } = useMutation({
     mutationFn: putChangeUserInfo,
     onError: (context: { response: { data: { message: string } } }) => {
@@ -82,11 +78,11 @@ export function EditModal({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response: { data: { message: string } }) => {
+    onSuccess: (response: { message: string }) => {
       console.log('changeUserInfo', response);
       openToastifyAlert({
         type: 'success',
-        text: response.data.message,
+        text: response.message,
       });
       refetch();
       closeModal();
@@ -114,16 +110,11 @@ export function EditModal({
         note: Comment as string,
         isUseNot: memberDatas?.isLock ? 'Y' : 'N',
       };
-      mutateChangeUserInfo(userInfo);
+      mutateChangeUserInfo({ accountIdx, userInfo });
     }
   };
 
   // 유저 비밀번호 초기화 api
-  const patchUserPasswordInit = async () => {
-    return await userInstance.patch(
-      `/v1/account/initialize-password/${userKey}`,
-    );
-  };
   const { data: userPasswordInit, mutate: mutateUserPasswordInit } =
     useMutation({
       mutationFn: patchUserPasswordInit,
@@ -144,18 +135,13 @@ export function EditModal({
   // 비밀번호 초기화 버튼
   const handleInitPassword = () => {
     setIsAlertOpen(true);
-    mutateUserPasswordInit();
+    mutateUserPasswordInit(userKey);
   };
   const closeInitPasswordAlert = () => {
     setIsAlertOpen(false);
   };
 
   // 권한 셀렉트 불러오기 api
-  const getAuthorityList = async () => {
-    const res = await userInstance.get(`/v1/authority`);
-    console.log(`getAuthorityList 결과값`, res);
-    return res;
-  };
   const { data: authorityListData } = useQuery({
     queryKey: ['get-authorityList'],
     queryFn: getAuthorityList,
@@ -182,15 +168,10 @@ export function EditModal({
     updateAuthorityList();
   }, [authorityListData]);
 
-  // 유저 리스트 불러오기 api
-  const getUser = async () => {
-    const res = await userInstance.get(`/v1/account/${accountIdx}`);
-    // console.log(`accountIdx get 결과값`, accountIdx, res);
-    return res;
-  };
+  // 유저 불러오기 api
   const { data: memberData } = useQuery({
     queryKey: ['get-member'],
-    queryFn: getUser,
+    queryFn: () => getUser(accountIdx),
     meta: {
       errorMessage: 'get-member 에러 메세지',
     },

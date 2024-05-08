@@ -7,7 +7,13 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { redirect } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { userInstance } from '../../api/axios';
+import {
+  deleteAuthority,
+  getAuthorityItem,
+  getAuthorityList,
+  postCreateAuthority,
+  putChangeAuthority,
+} from '../../api/user';
 import { Input } from '../../components';
 import {
   Button,
@@ -16,6 +22,7 @@ import {
   openToastifyAlert,
 } from '../../components/atom';
 import { ItemAuthorityType } from '../../types';
+import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
 
@@ -100,10 +107,6 @@ export function Authority() {
   const queryClient = useQueryClient();
 
   // 권한 리스트 불러오기 api
-  const getAuthorityList = async () => {
-    const res = await userInstance.get(`/v1/authority`);
-    return res;
-  };
   const { data: authorityListData, refetch: authorityListDataRefetch } =
     useQuery({
       queryKey: ['get-authorityList'],
@@ -132,11 +135,6 @@ export function Authority() {
   };
 
   // 선택된 권한 불러오기 api
-  const getAuthority = async () => {
-    if (codeValue !== '')
-      return await userInstance.get(`/v1/authority/${codeValue}`);
-  };
-
   const {
     data: authorityData,
     isSuccess,
@@ -144,11 +142,11 @@ export function Authority() {
     refetch: authorityDataRefetch,
   } = useQuery({
     queryKey: ['get-authority'],
-    queryFn: getAuthority,
+    queryFn: () => getAuthorityItem(codeValue),
     meta: {
       errorMessage: 'get-authority 에러 메세지',
     },
-    enabled: !codeValue,
+    enabled: !!codeValue,
   });
 
   // 등록된 권한 데이터 불러올 시 체크박스에 맞춘 데이터로 변환
@@ -187,9 +185,9 @@ export function Authority() {
     setIsClickedName(true);
   };
   useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: ['get-authority'],
-    });
+    // queryClient.invalidateQueries({
+    //   queryKey: ['get-authority'],
+    // });
     authorityDataRefetch();
   }, [codeValue, setCodeValue]);
 
@@ -254,26 +252,23 @@ export function Authority() {
     // console.log('permissionList', permissionList);
 
     if (isClickedName) {
-      mutateChangeAuthority();
+      mutateChangeAuthority({
+        name: inputValue,
+        code: codeValue,
+        permissionList: codeUpdateList,
+      });
       return;
     }
     if (!isClickedName) {
-      mutateCreateAuthority();
+      mutateCreateAuthority({
+        name: inputValue,
+        permissionList: codeUpdateList,
+      });
       return;
     }
   };
 
   // 선택된 권한 수정하기 api
-  const putChangeAuthority = async () => {
-    const data = {
-      name: inputValue,
-      code: codeValue,
-      permissionList: codeUpdateList,
-    };
-    const res = await userInstance.put(`/v1/authority`, data);
-    console.log('authority', res);
-    return res;
-  };
   const { data: changeAuthorityData, mutate: mutateChangeAuthority } =
     useMutation({
       mutationFn: putChangeAuthority,
@@ -297,23 +292,21 @@ export function Authority() {
       },
     });
   // 선택된 권한 생성하기 api
-  const postCreateAuthority = async () => {
-    const data = {
-      name: inputValue,
-      permissionList: codeUpdateList,
-    };
-    const res = await userInstance.post(`/v1/authority`, data);
-    return res;
-  };
   const { data: createAuthorityData, mutate: mutateCreateAuthority } =
     useMutation({
       mutationFn: postCreateAuthority,
-      onError: (context: { response: { data: { message: string } } }) => {
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
         });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
       },
+
       onSuccess: (response: { data: { message: string } }) => {
         openToastifyAlert({
           type: 'success',
@@ -322,6 +315,7 @@ export function Authority() {
         //초기화
         setIsAlertOpen(false);
         authorityListDataRefetch();
+        authorityDataRefetch();
         setInputValue('');
         setCheckList([...defaultPermissions]);
         setIsClickedName(false);
@@ -329,10 +323,6 @@ export function Authority() {
     });
 
   // 선택된 권한 삭제하기 api
-  const deleteAuthority = async (authorityCode: string) => {
-    const res = await userInstance.delete(`/v1/authority/${authorityCode}`);
-    return res;
-  };
   const { data: deleteAuthorityData, mutate: mutateDeleteAuthority } =
     useMutation({
       mutationFn: deleteAuthority,
@@ -1499,8 +1489,9 @@ export function Authority() {
                             <BiSolidTrashAlt
                               onClick={() => {
                                 setDeleteCodeValue(el.code);
-                                setIsAlertOpen(true);
                                 setIsDeleteAuthority(true);
+                                setIsUpdateAuthority(false);
+                                setIsAlertOpen(true);
                               }}
                             />
                           </DeleteIconWrapper>

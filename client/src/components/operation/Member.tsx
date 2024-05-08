@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { userInstance } from '../../api/axios';
+import { getUserList, getUserListTotal, patchChangeUse } from '../../api/user';
 import {
   Button,
   AlertBar,
@@ -45,17 +45,9 @@ export function Member() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [totalMemberList, setTotalMemberList] = useState<MemberType[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(1);
 
   // 유저 리스트 불러오기 api
-  const getUserList = async () => {
-    const res = await userInstance.get(
-      `/v1/account?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
-			`,
-    );
-    // console.log(`유저리스트 get 결과값`, res);
-    return res;
-  };
-
   const isUseFilter = useMemo(() => {
     if (tabVeiw === '전체') return '';
     if (tabVeiw === '활성화') return 'Y';
@@ -66,9 +58,10 @@ export function Member() {
     isLoading,
     data: memberListData,
     refetch,
+    isSuccess,
   } = useQuery({
     queryKey: ['get-memberlist'],
-    queryFn: getUserList,
+    queryFn: () => getUserList({ page, searchKeywordValue, isUseFilter }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
@@ -94,24 +87,33 @@ export function Member() {
   };
 
   // 아이디 중복 확인 && 토탈 유저 수
-  const getTotalMemberList = async () => {
-    const totalCount = memberList.pagination.totalCount;
-    if (totalCount) {
-      const res = await userInstance.get(
-        `/v1/account?&pageIndex=${1}&pageUnit=${totalCount}
-				`,
-      );
-      setTotalMemberList(res.data.data.list);
+  const { data: totalData, refetch: totalDataRefetch } = useQuery({
+    queryKey: ['get-memberlist-total'],
+    queryFn: () => getUserListTotal({ totalCount }),
+    meta: {
+      errorMessage: 'get-memberlist 에러 메세지',
+    },
+    enabled: !!isSuccess,
+  });
+
+  useEffect(() => {
+    // console.log('totalData', totalData);
+    if (totalData) {
+      setTotalMemberList(totalData.data.data.list);
     } else {
       setTotalMemberList([]);
     }
-  };
+  }, [totalData]);
+
+  useEffect(() => {
+    // console.log('isSuccess', isSuccess);
+    if (isSuccess) setTotalCount(memberList?.pagination?.totalCount);
+  }, [isSuccess]);
 
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
-    getTotalMemberList();
     openModal({
       title: '',
       content: <RegisterModal memberList={totalMemberList} refetch={refetch} />,
@@ -151,16 +153,11 @@ export function Member() {
   // 활성화/비활성화 데이터 전송
   const submitChangeUse = () => {
     // console.log('checkList :', checkList);
-    mutateChangeUse();
+    mutateChangeUse(checkList);
     setIsAlertOpen(false);
   };
 
   // 활성화/비활성화 api
-  const patchChangeUse = async () => {
-    return await userInstance.patch(`/v1/account/change-use`, {
-      idxList: checkList,
-    });
-  };
   const {
     data: changeUse,
     mutate: mutateChangeUse,
@@ -232,7 +229,7 @@ export function Member() {
     // 데이터 바뀔시 초기화
     setCheckList([]);
     // 비활성화 이후 토탈 멤버 api 재호출
-    if (memberListData) getTotalMemberList();
+    if (memberListData) totalDataRefetch();
   }, [memberListData]);
 
   const tabMenuList = [
@@ -263,6 +260,7 @@ export function Member() {
   useEffect(() => {
     refetch();
   }, [page, searchKeywordValue, isUseFilter, changeUse]);
+
   useEffect(() => {}, [memberList]);
 
   return (
