@@ -35,6 +35,7 @@ export function Worksheet() {
   const navigate = useNavigate();
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');
+  console.log(tabVeiw);
   const [subTabVeiw, setSubTabVeiw] = useState<string>('전체');
   const [searchValue, setSearchValue] = useState<string>('');
   const [totalPage, settotalPage] = useRecoilState(totalPageAtom);
@@ -48,14 +49,14 @@ export function Worksheet() {
   // 학습지 리스트 불러오기 api
   const getWorkbookList = async () => {
     const res = await workbookInstance.get(
-      `/v1/workbook?pageIndex=${page}&pageUnit=${8}`,
+      `${tabVeiw == '즐겨찾는 학습지' ? `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}` : `/v1/workbook?pageIndex=${page}&pageUnit=${8}`}`,
     );
-    console.log(`학습지 get 결과값`, res);
+    console.log(`getWorkbook 결과값`, res);
     return res;
   };
 
   const {
-    isLoading: workbookListLoading,
+    isLoading,
     data: workbookListData,
     refetch: workbookListRefetch,
   } = useQuery({
@@ -68,53 +69,20 @@ export function Worksheet() {
 
   const workbookList = workbookListData?.data.data;
 
-  // const [favoriteList, setFavoriteList] = useState([]);
-  // const getWorkbookFavoriteList = async () => {
-  //   try {
-  //     const res = await workbookInstance.get(`/v1/workbook/favorite`);
-  //     setFavoriteList(res.data.data);
-  //     console.log(`학습지 즐겨찾기 get 결과값`, res);
-  //   } catch (error) {
-  //     console.error('API 호출 중 에러:', error);
-  //   }
-  // };
-  // console.log(favoriteList);
-
-  // 학습지 즐겨찾기 리스트 불러오기 api
-  const getWorkbookFavoriteList = async () => {
-    const res = await workbookInstance.get(
-      `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}`,
-    );
-    console.log(`학습지 즐겨찾기 get 결과값`, res);
-    return res;
-  };
-
-  const {
-    isLoading: workbookFavoriteListLoading,
-    data: workbookFavoriteListData,
-    refetch: workbookFavoriteListRefetch,
-  } = useQuery({
-    queryKey: ['get-workbookfavoritelist'],
-    queryFn: getWorkbookFavoriteList,
-    meta: {
-      errorMessage: 'get-workbookfavoritelist 에러 메세지',
-    },
-  });
-
-  const workbookFavoriteList = workbookFavoriteListData?.data.data;
-  console.log(workbookFavoriteList);
+  const [isWorkingFavorite, setIsWorkingFavorite] = useState(false);
 
   // 학습지 즐겨찾기 api
   const patchWorkbookFavorite = (data: any) => {
     return workbookInstance.patch(`/v1/workbook/favorite`, data);
   };
 
-  const clickFavorite = (idx: number, isFavorite: string) => {
-    const data = { idx: idx, isFavorite: isFavorite };
-    workbookFavoriteData(data);
+  const clickFavorite = (idx: number) => {
+    if (isWorkingFavorite) {
+      workbookFavoriteData({ idx: idx, isFavorite: 'false' });
+    } else {
+      workbookFavoriteData({ idx: idx, isFavorite: 'true' });
+    }
   };
-
-  const [isWorkingFavorite, setIsWorkingFavorite] = useState(false);
 
   const { mutate: workbookFavoriteData } = useMutation({
     mutationFn: patchWorkbookFavorite,
@@ -129,44 +97,11 @@ export function Worksheet() {
     },
   });
 
+  // 탭 바뀔시 초기화
   useEffect(() => {
     workbookListRefetch();
-    //workbookFavoriteListRefetch();
-  }, [page]);
-
-  //useEffect(() => {}, [workbookFavoriteList]);
-
-  // useEffect(() => {
-  //   // 페이지 진입 후에만 데이터를 요청하도록 조건 추가
-  //   if (favoriteList.length === 0) {
-  //     getWorkbookFavoriteList();
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (tabVeiw === '학습지') {
-  //     workbookListRefetch();
-  //   }
-  //   if (tabVeiw === '즐겨찾는 학습지') {
-  //     workbookFavoriteListRefetch();
-  //   }
-  // }, [tabVeiw]);
-
-  // useEffect(() => {
-  //   if (tabVeiw === '학습지') {
-  //     workbookListRefetch();
-  //   }
-  //   if (tabVeiw === '즐겨찾는 학습지') {
-  //     workbookFavoriteListRefetch();
-  //   }
-  // }, [page]);
-  // useEffect(() => {}, [workbookList]);
-
-  // useEffect(() => {
-  //   // 학습지 즐겨찾기가 변경될 때마다 학습지 리스트와 학습지 즐겨찾기 리스트를 다시 받아옴
-  //   workbookListRefetch();
-  //   workbookFavoriteListRefetch();
-  // }, [isWorkingFavorite]);
+    setSearchValue('');
+  }, [tabVeiw, page, isWorkingFavorite]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -318,247 +253,129 @@ export function Worksheet() {
             <TabMenu
               length={2}
               menu={menuList}
-              width={'250px'}
+              width={'300px'}
               selected={tabVeiw}
               setTabVeiw={setTabVeiw}
+              $margin={'10px 0'}
               onClickTab={changeTab}
             />
-            {/* <Search
-              value={searchValue}
-              width={'25%'}
-              height="40px"
-              onClick={() => filterSearchValue()}
-              onKeyDown={(e) => {}}
-              onChange={(e) => setSearchValue(e.target.value)}
-              placeholder="학습지명, 학년, 태그, 작성자 검색"
-            /> */}
           </HeadWrapper>
-          {tabVeiw === '학습지' && (
+
+          {isLoading && (
+            <LoaderWrapper>
+              <Loader width="50px" />
+            </LoaderWrapper>
+          )}
+
+          {!isLoading && workbookListData && (
+            <>
+              <TabWrapper>
+                <TabMenu
+                  length={4}
+                  menu={subMenuList}
+                  width={'300px'}
+                  selected={subTabVeiw}
+                  setTabVeiw={setSubTabVeiw}
+                  lineStyle
+                  $margin={'10px 0 20px 0'}
+                />
+                <Search
+                  value={searchValue}
+                  width={'25%'}
+                  height="40px"
+                  onClick={() => filterSearchValue()}
+                  onKeyDown={(e) => {}}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  placeholder="학습지명, 학년, 태그, 작성자 검색"
+                />
+              </TabWrapper>
+              <ListWrapper>
+                <ListTitleWrapper>
+                  <ListTitle className="bookmark"></ListTitle>
+                  <ListTitle className="grade">학년</ListTitle>
+                  <ListTitle className="tag">태그</ListTitle>
+                  <ListTitle className="title">학습지명</ListTitle>
+                  <ListTitle className="createAt">등록일</ListTitle>
+                  <ListTitle className="creater">작성자</ListTitle>
+                  <ListTitle className="preview">미리보기</ListTitle>
+                  <ListTitle className="setting">설정</ListTitle>
+                </ListTitleWrapper>
+                {workbookList.workbookList.map((content: any) => (
+                  <WorksheetList key={content?.idx}>
+                    <div
+                      className="bookmark"
+                      onClick={() => {
+                        clickFavorite(content.idx);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
+                    </div>
+                    <div className="grade">{content.grade}</div>
+                    <div className="tag">{content.originalName}</div>
+                    <div className="title">{content.name}</div>
+                    <div className="createAt">{content.createdAt}</div>
+                    <div className="creater">{content.createdBy}</div>
+                    <div className="preview">
+                      <LuFileSearch2
+                        style={{ fontSize: '22px', cursor: 'pointer' }}
+                        onClick={getPdf}
+                      />
+                    </div>
+                    <div className="setting">
+                      <SettingButton
+                        type="button"
+                        onClick={(event) => openSettingList(event)}
+                        onMouseLeave={(event) => closeSettingList(event)}
+                      >
+                        <SlOptionsVertical style={{ fontSize: '16px' }} />
+                        <SettingList>
+                          <li>
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                openEditFilePopup();
+                              }}
+                            >
+                              수정
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                openEditFilePopup();
+                              }}
+                            >
+                              복제 후 수정
+                            </button>
+                          </li>
+                          <li>
+                            <button type="button" onClick={(event) => {}}>
+                              삭제
+                            </button>
+                          </li>
+                        </SettingList>
+                      </SettingButton>
+                    </div>
+                  </WorksheetList>
+                ))}
+              </ListWrapper>
+              <PaginationBox
+                itemsCountPerPage={workbookList.pagination.pageUnit}
+                totalItemsCount={workbookList.pagination.totalCount}
+              />
+            </>
+          )}
+          {/* {tabVeiw === '학습지' && (
             <>
               {workbookListLoading && (
                 <LoaderWrapper>
                   <Loader width="50px" />
                 </LoaderWrapper>
               )}
-              {!workbookListLoading && workbookListData && (
-                <>
-                  <TabWrapper>
-                    <TabMenu
-                      length={4}
-                      menu={subMenuList}
-                      width={'300px'}
-                      selected={subTabVeiw}
-                      setTabVeiw={setSubTabVeiw}
-                      lineStyle
-                      $margin={'10px 0 20px 0'}
-                    />
-                    <Search
-                      value={searchValue}
-                      width={'25%'}
-                      height="40px"
-                      onClick={() => filterSearchValue()}
-                      onKeyDown={(e) => {}}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                      placeholder="학습지명, 학년, 태그, 작성자 검색"
-                    />
-                  </TabWrapper>
-                  <ListWrapper>
-                    <ListTitleWrapper>
-                      <ListTitle className="bookmark"></ListTitle>
-                      <ListTitle className="grade">학년</ListTitle>
-                      <ListTitle className="tag">태그</ListTitle>
-                      <ListTitle className="title">학습지명</ListTitle>
-                      <ListTitle className="createAt">등록일</ListTitle>
-                      <ListTitle className="creater">작성자</ListTitle>
-                      <ListTitle className="preview">미리보기</ListTitle>
-                      <ListTitle className="setting">설정</ListTitle>
-                    </ListTitleWrapper>
-                    {workbookList.workbookList.map((content: any) => (
-                      <WorksheetList key={content?.idx}>
-                        <div
-                          className="bookmark"
-                          onClick={() => {
-                            clickFavorite(content.idx, 'true');
-                          }}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          {content.favorited ? (
-                            <FaBookmark />
-                          ) : (
-                            <FaRegBookmark />
-                          )}
-                        </div>
-                        <div className="grade">{content.grade}</div>
-                        <div className="tag">{content.originalName}</div>
-                        <div className="title">{content.name}</div>
-                        <div className="createAt">{content.createdAt}</div>
-                        <div className="creater">{content.createdBy}</div>
-                        <div className="preview">
-                          <LuFileSearch2
-                            style={{ fontSize: '22px', cursor: 'pointer' }}
-                            onClick={getPdf}
-                          />
-                        </div>
-                        <div className="setting">
-                          <SettingButton
-                            type="button"
-                            onClick={(event) => openSettingList(event)}
-                            onMouseLeave={(event) => closeSettingList(event)}
-                          >
-                            <SlOptionsVertical style={{ fontSize: '16px' }} />
-                            <SettingList>
-                              <li>
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    openEditFilePopup();
-                                  }}
-                                >
-                                  수정
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    openEditFilePopup();
-                                  }}
-                                >
-                                  복제 후 수정
-                                </button>
-                              </li>
-                              <li>
-                                <button type="button" onClick={(event) => {}}>
-                                  삭제
-                                </button>
-                              </li>
-                            </SettingList>
-                          </SettingButton>
-                        </div>
-                      </WorksheetList>
-                    ))}
-                  </ListWrapper>
-                  <PaginationBox
-                    itemsCountPerPage={workbookList.pagination.pageUnit}
-                    totalItemsCount={workbookList.pagination.totalCount}
-                  />
-                </>
-              )}
             </>
-          )}
-          {tabVeiw === '즐겨찾는 학습지' && (
-            <>
-              {workbookFavoriteListLoading && (
-                <LoaderWrapper>
-                  <Loader width="50px" />
-                </LoaderWrapper>
-              )}
-              {!workbookFavoriteListLoading && workbookFavoriteList && (
-                <>
-                  <TabWrapper>
-                    <TabMenu
-                      length={4}
-                      menu={subMenuList}
-                      width={'300px'}
-                      selected={subTabVeiw}
-                      setTabVeiw={setSubTabVeiw}
-                      lineStyle
-                      $margin={'10px 0 20px 0'}
-                    />
-                    <Search
-                      value={searchValue}
-                      width={'25%'}
-                      height="40px"
-                      onClick={() => filterSearchValue()}
-                      onKeyDown={(e) => {}}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                      placeholder="학습지명, 학년, 태그, 작성자 검색"
-                    />
-                  </TabWrapper>
-                  <ListWrapper>
-                    <ListTitleWrapper>
-                      <ListTitle className="bookmark"></ListTitle>
-                      <ListTitle className="grade">학년</ListTitle>
-                      <ListTitle className="tag">태그</ListTitle>
-                      <ListTitle className="title">학습지명</ListTitle>
-                      <ListTitle className="createAt">등록일</ListTitle>
-                      <ListTitle className="creater">작성자</ListTitle>
-                      <ListTitle className="preview">미리보기</ListTitle>
-                      <ListTitle className="setting">설정</ListTitle>
-                    </ListTitleWrapper>
-                    {workbookFavoriteList.workbookList.map((content: any) => (
-                      <WorksheetList key={content?.idx}>
-                        <div
-                          className="bookmark"
-                          onClick={() => {
-                            clickFavorite(content.idx, 'false');
-                          }}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          {content.favorited ? (
-                            <FaBookmark />
-                          ) : (
-                            <FaRegBookmark />
-                          )}
-                        </div>
-                        <div className="grade">{content.grade}</div>
-                        <div className="tag">{content.originalName}</div>
-                        <div className="title">{content.name}</div>
-                        <div className="createAt">{content.createdAt}</div>
-                        <div className="creater">{content.createdBy}</div>
-                        <div className="preview">
-                          <LuFileSearch2
-                            style={{ fontSize: '22px', cursor: 'pointer' }}
-                            onClick={getPdf}
-                          />
-                        </div>
-                        <div className="setting">
-                          <SettingButton
-                            type="button"
-                            onClick={(event) => openSettingList(event)}
-                            onMouseLeave={(event) => closeSettingList(event)}
-                          >
-                            <SlOptionsVertical style={{ fontSize: '16px' }} />
-                            <SettingList>
-                              <li>
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    openEditFilePopup();
-                                  }}
-                                >
-                                  수정
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    openEditFilePopup();
-                                  }}
-                                >
-                                  복제 후 수정
-                                </button>
-                              </li>
-                              <li>
-                                <button type="button" onClick={(event) => {}}>
-                                  삭제
-                                </button>
-                              </li>
-                            </SettingList>
-                          </SettingButton>
-                        </div>
-                      </WorksheetList>
-                    ))}
-                  </ListWrapper>
-                  <PaginationBox
-                    itemsCountPerPage={workbookFavoriteList.pagination.pageUnit}
-                    totalItemsCount={workbookFavoriteList.pagination.totalCount}
-                  />
-                </>
-              )}
-            </>
-          )}
+          )} */}
         </>
       )}
     </Container>
@@ -753,18 +570,4 @@ const LoaderWrapper = styled.div`
   width: 100%;
   padding-top: 30px;
   padding-left: calc(50% - 35px);
-`;
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
 `;
