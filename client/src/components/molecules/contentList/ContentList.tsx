@@ -20,6 +20,7 @@ import {
   openToastifyAlert,
 } from '../../../components';
 import { QuizListType } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
 
@@ -113,11 +114,16 @@ export function ContentList({
   };
   const { data: quizFavorite, mutate: mutateQuizFavorite } = useMutation({
     mutationFn: patchQuizFavorite,
-    onError: (context: { response: { data: { message: string } } }) => {
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
       openToastifyAlert({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       // console.log('quizFavorite', response);

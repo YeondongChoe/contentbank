@@ -15,7 +15,7 @@ import {
   Icon,
 } from '../../components';
 import { COLOR, nameRegex } from '../../components/constants';
-import { getAuthorityCookie } from '../../utils/cookies';
+import { postRefreshToken } from '../../utils/tokenHandler';
 import { ChangePassword } from '../auth/password/ChangePassword';
 
 export function Mypage() {
@@ -61,11 +61,16 @@ export function Mypage() {
   // 이름 수정 api
   const { data: saveNameData, mutate: saveNameDataMutate } = useMutation({
     mutationFn: patchSaveName,
-    onError: (context: { response: { data: { message: string } } }) => {
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
       openToastifyAlert({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       console.log('passwordDataInit', response);

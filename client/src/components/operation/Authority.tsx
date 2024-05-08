@@ -272,11 +272,16 @@ export function Authority() {
   const { data: changeAuthorityData, mutate: mutateChangeAuthority } =
     useMutation({
       mutationFn: putChangeAuthority,
-      onError: (context: { response: { data: { message: string } } }) => {
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
         });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
       },
       onSuccess: (response: { data: { message: string } }) => {
         openToastifyAlert({
@@ -306,7 +311,6 @@ export function Authority() {
           postRefreshToken();
         }
       },
-
       onSuccess: (response: { data: { message: string } }) => {
         openToastifyAlert({
           type: 'success',
@@ -326,11 +330,16 @@ export function Authority() {
   const { data: deleteAuthorityData, mutate: mutateDeleteAuthority } =
     useMutation({
       mutationFn: deleteAuthority,
-      onError: (context: { response: { data: { message: string } } }) => {
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
         });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
       },
       onSuccess: (response: { data: { message: string } }) => {
         // console.log('deleteAuthorityData', response);

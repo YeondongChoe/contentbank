@@ -17,6 +17,7 @@ import { getAuthorityList, postCreateAccount } from '../../../api/user';
 import { idRegex, COLOR, nameRegex } from '../../../components/constants';
 import { useModal } from '../../../hooks';
 import { ItemAuthorityType, MemberType } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Button, ItemSelectProps, openToastifyAlert, Select } from '../../atom';
 
 export function RegisterModal({
@@ -72,19 +73,18 @@ export function RegisterModal({
   };
 
   // 계정 등록하기 api
-
   const { data: createAccountData, mutate: onCreateAccount } = useMutation({
     mutationFn: postCreateAccount,
     onError: (context: {
-      response: {
-        data: { code: string; message: string; data: { id: string } };
-      };
+      response: { data: { message: string; code: string } };
     }) => {
-      //TODO : 데이터 구조 통일 요청 // 에러시 message로
       openToastifyAlert({
         type: 'error',
-        text: context.response.data.data.id,
+        text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response) => {
       console.log('responseresponse', response);
