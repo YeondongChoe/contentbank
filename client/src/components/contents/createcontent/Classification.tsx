@@ -27,6 +27,7 @@ import {
   ItemTreeListType,
   ItemTreeType,
 } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { questionList } from './contentCreatingCategory'; // TODO : 더미데이터
@@ -324,11 +325,16 @@ export function Classification() {
   const { data: categoryItemTreeData, mutate: categoryItemTreeDataMutate } =
     useMutation({
       mutationFn: getCategoryItemTree,
-      onError: (context: { response: { data: { message: string } } }) => {
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
         });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
       },
       onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
         // setItemTreeList(res.data.data[0].itemTreeList);

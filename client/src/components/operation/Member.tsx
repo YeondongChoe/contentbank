@@ -27,6 +27,7 @@ import {
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { MemberType } from '../../types';
+import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants/COLOR';
 
 import { EditModal } from './member/EditModal';
@@ -164,11 +165,16 @@ export function Member() {
     isPending: isPendingChangeUse,
   } = useMutation({
     mutationFn: patchChangeUse,
-    onError: (context: { response: { data: { message: string } } }) => {
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
       openToastifyAlert({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       openToastifyAlert({

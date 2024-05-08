@@ -24,6 +24,7 @@ import { COLOR } from '../../components/constants';
 import { questionList } from '../../components/contents/createcontent/contentCreatingCategory';
 import { QuizList } from '../../components/contents/createcontent/list';
 import { ItemCategoryType, ItemTreeListType, ItemTreeType } from '../../types';
+import { postRefreshToken } from '../../utils/tokenHandler';
 
 export function ContentInformationChange() {
   const [radio1depthCheck, setRadio1depthCheck] = useState<{
@@ -348,11 +349,16 @@ export function ContentInformationChange() {
   const { data: categoryItemTreeData, mutate: categoryItemTreeDataMutate } =
     useMutation({
       mutationFn: getCategoryItemTree,
-      onError: (context: { response: { data: { message: string } } }) => {
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
         });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
       },
       onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
         // setItemTreeList(res.data.data[0].itemTreeList);

@@ -20,6 +20,7 @@ import {
 } from '../../../api/user';
 import { useModal } from '../../../hooks';
 import { ItemAuthorityType } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Button, openToastifyAlert } from '../../atom';
 import { ItemSelectProps, Select } from '../../atom/select';
 import { COLOR } from '../../constants';
@@ -72,11 +73,16 @@ export function EditModal({
   // 유저 정보 변경 api
   const { data: changeUserInfo, mutate: mutateChangeUserInfo } = useMutation({
     mutationFn: putChangeUserInfo,
-    onError: (context: { response: { data: { message: string } } }) => {
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
       openToastifyAlert({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { message: string }) => {
       console.log('changeUserInfo', response);
@@ -118,11 +124,16 @@ export function EditModal({
   const { data: userPasswordInit, mutate: mutateUserPasswordInit } =
     useMutation({
       mutationFn: patchUserPasswordInit,
-      onError: (context: { response: { data: { message: string } } }) => {
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
         openToastifyAlert({
           type: 'error',
           text: context.response.data.message,
         });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
       },
       onSuccess: (response: { data: { message: string } }) => {
         // console.log('userPasswordInit', response);

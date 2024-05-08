@@ -13,6 +13,7 @@ import {
   removeAuthorityCookie,
   setAuthorityCookie,
 } from '../../../utils/cookies';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 type passwordProps = {
@@ -111,13 +112,13 @@ export function ChangePassword({
     onError: (context: {
       response: { data: { message: string; code: string } };
     }) => {
-      //TODO : 전역에서 작동하는지 확인
-      // if (context.response.data.code == 'GE-002') {
-      // }
-      // openToastifyAlert({
-      //   type: 'error',
-      //   text: context.response.data.message,
-      // });
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: {
       data: {
