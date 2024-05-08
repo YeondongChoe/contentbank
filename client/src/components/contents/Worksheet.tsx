@@ -42,7 +42,7 @@ export function Worksheet() {
   const [page, setPage] = useRecoilState(pageAtom);
 
   const changeTab = () => {
-    //setPage(1);
+    setPage(1);
   };
 
   // 학습지 리스트 불러오기 api
@@ -81,26 +81,28 @@ export function Worksheet() {
   // console.log(favoriteList);
 
   // 학습지 즐겨찾기 리스트 불러오기 api
-  // const getWorkbookFavoriteList = async () => {
-  //   const res = await workbookInstance.get(`/v1/workbook/favorite`);
-  //   console.log(`학습지 즐겨찾기 get 결과값`, res);
-  //   return res;
-  // };
+  const getWorkbookFavoriteList = async () => {
+    const res = await workbookInstance.get(
+      `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}`,
+    );
+    console.log(`학습지 즐겨찾기 get 결과값`, res);
+    return res;
+  };
 
-  // const {
-  //   isLoading: workbookFavoriteListLoading,
-  //   data: workbookFavoriteListData,
-  //   refetch: workbookFavoriteListRefetch,
-  // } = useQuery({
-  //   queryKey: ['get-workbookfavoritelist'],
-  //   queryFn: getWorkbookFavoriteList,
-  //   meta: {
-  //     errorMessage: 'get-workbookfavoritelist 에러 메세지',
-  //   },
-  // });
+  const {
+    isLoading: workbookFavoriteListLoading,
+    data: workbookFavoriteListData,
+    refetch: workbookFavoriteListRefetch,
+  } = useQuery({
+    queryKey: ['get-workbookfavoritelist'],
+    queryFn: getWorkbookFavoriteList,
+    meta: {
+      errorMessage: 'get-workbookfavoritelist 에러 메세지',
+    },
+  });
 
-  // const workbookFavoriteList = workbookFavoriteListData?.data.data;
-  // console.log(workbookFavoriteList);
+  const workbookFavoriteList = workbookFavoriteListData?.data.data;
+  console.log(workbookFavoriteList);
 
   // 학습지 즐겨찾기 api
   const patchWorkbookFavorite = (data: any) => {
@@ -130,8 +132,8 @@ export function Worksheet() {
   useEffect(() => {
     workbookListRefetch();
     //workbookFavoriteListRefetch();
-  }, [page, tabVeiw]);
-  useEffect(() => {}, [workbookList]);
+  }, [page]);
+
   //useEffect(() => {}, [workbookFavoriteList]);
 
   // useEffect(() => {
@@ -266,7 +268,7 @@ export function Worksheet() {
   //https로 보내면 https 서버가 되며
   //210.124.177로 보내면 여기만 됨
   const [pdfUrl, setPdfUrl] = useState<string>(
-    'https://j-dev01.dreamonesys.co.kr/CB/worksheettest.pdf',
+    'https://j-dev01.dreamonesys.co.kr/CB/workbookYD1.pdf',
   );
 
   const getPdf = () => {
@@ -319,7 +321,7 @@ export function Worksheet() {
               width={'250px'}
               selected={tabVeiw}
               setTabVeiw={setTabVeiw}
-              //onClickTab={changeTab}
+              onClickTab={changeTab}
             />
             {/* <Search
               value={searchValue}
@@ -446,7 +448,7 @@ export function Worksheet() {
           )}
           {tabVeiw === '즐겨찾는 학습지' && (
             <>
-              {/* {workbookFavoriteListLoading && (
+              {workbookFavoriteListLoading && (
                 <LoaderWrapper>
                   <Loader width="50px" />
                 </LoaderWrapper>
@@ -554,7 +556,7 @@ export function Worksheet() {
                     totalItemsCount={workbookFavoriteList.pagination.totalCount}
                   />
                 </>
-              )} */}
+              )}
             </>
           )}
         </>
