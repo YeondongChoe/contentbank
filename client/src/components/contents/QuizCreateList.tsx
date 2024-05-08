@@ -15,7 +15,7 @@ import {
   ValueNone,
   Loader,
 } from '..';
-import { userInstance, quizService } from '../../api/axios';
+import { quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
 import { QuizListType } from '../../types';

@@ -13,7 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 import { Input, Label } from '../..';
-import { userInstance } from '../../../api/axios';
+import { getAuthorityList, postCreateAccount } from '../../../api/user';
 import { idRegex, COLOR, nameRegex } from '../../../components/constants';
 import { useModal } from '../../../hooks';
 import { ItemAuthorityType, MemberType } from '../../../types';
@@ -72,19 +72,6 @@ export function RegisterModal({
   };
 
   // 계정 등록하기 api
-  const postCreateAccount: MutationFunction<
-    { data: { code: string; message: string } },
-    void
-  > = () => {
-    const account = {
-      id: Id,
-      name: Name,
-      authorityCode: selectedAuthority,
-      note: Comment,
-    };
-    // console.log('account', account);
-    return userInstance.post(`/v1/account`, account);
-  };
 
   const { data: createAccountData, mutate: onCreateAccount } = useMutation({
     mutationFn: postCreateAccount,
@@ -99,17 +86,18 @@ export function RegisterModal({
         text: context.response.data.data.id,
       });
     },
-    onSuccess: (response: { data: { code: string; message: string } }) => {
-      if (response.data.code !== 'S-002') {
+    onSuccess: (response) => {
+      console.log('responseresponse', response);
+      if (response.code !== 'S-002') {
         openToastifyAlert({
           type: 'error',
-          text: response.data.message,
+          text: response.message,
         });
       }
-      if (response.data.code == 'S-002') {
+      if (response.code == 'S-002') {
         openToastifyAlert({
           type: 'success',
-          text: response.data.message,
+          text: response.message,
         });
         closeModal();
         refetch();
@@ -140,20 +128,16 @@ export function RegisterModal({
       return;
     }
 
-    onCreateAccount();
+    onCreateAccount({ Id, Name, selectedAuthority, Comment });
     //버튼 disable 처리
   };
 
   // 권한 불러오기 api
-  const getAuthority = async () => {
-    const res = await userInstance.get(`/v1/authority`);
-    return res;
-  };
   const { data: authorityData, isFetching } = useQuery({
-    queryKey: ['get-authority'],
-    queryFn: getAuthority,
+    queryKey: ['get-authorityList'],
+    queryFn: getAuthorityList,
     meta: {
-      errorMessage: 'get-authority 에러 메세지',
+      errorMessage: 'get-authorityList 에러 메세지',
     },
   });
 

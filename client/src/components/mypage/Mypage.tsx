@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
-import { userInstance } from '../../api/axios';
+import { getMyInfo, patchSaveName } from '../../api/user';
 import {
   Input,
   Label,
@@ -46,10 +46,6 @@ export function Mypage() {
   };
 
   // 마이페이지 데이터 불러오기 api
-  const getMyInfo = async () => {
-    // console.log('getMyInfo sessionId', getAuthorityCookie('sessionId'));
-    return await userInstance.get(`/v1/account/my-info`);
-  };
   const {
     isLoading,
     data: myInfoData,
@@ -63,37 +59,32 @@ export function Mypage() {
   });
 
   // 이름 수정 api
-  const saveName = async () => {
-    await userInstance
-      .patch(`/v1/account/change-name`, nameValue)
-      .then((res) => {
-        // console.log(res);
-        if (res.data.code == 'S-001') {
-          setIsNameEdit(false);
-          openToastifyAlert({
-            type: 'success',
-            text: `이름이 수정되었습니다.`,
-          });
-          myInfoData &&
-            setMember({
-              id: myInfoData.data.data.id,
-              name: nameValue,
-              authority: myInfoData.data.data.authority.name,
-            });
-
-          refetch();
-        }
-      })
-      .catch((error) => {
-        // console.log(error.response.data);
-        if (error.response.data.code == 'E-004') {
-          openToastifyAlert({
-            type: 'error',
-            text: `${error.response.data.data.name}`,
-          });
-        }
+  const { data: saveNameData, mutate: saveNameDataMutate } = useMutation({
+    mutationFn: patchSaveName,
+    onError: (context: { response: { data: { message: string } } }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
       });
-  };
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      console.log('passwordDataInit', response);
+
+      setIsNameEdit(false);
+      openToastifyAlert({
+        type: 'success',
+        text: `이름이 수정되었습니다.`,
+      });
+      myInfoData &&
+        setMember({
+          id: myInfoData.data.data.id,
+          name: nameValue,
+          authority: myInfoData.data.data.authority.name,
+        });
+
+      refetch();
+    },
+  });
 
   const submitName = () => {
     if (!nameRegex.test(nameValue)) {
@@ -101,7 +92,7 @@ export function Mypage() {
       setNameErrorMessage('띄워쓰기 없이 한글, 영문, 숫자만 입력');
       return;
     } else {
-      saveName();
+      saveNameDataMutate(nameValue);
       setIsNameError(false);
       setNameErrorMessage('');
     }

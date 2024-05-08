@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Input, Label, Button, Alert, openToastifyAlert } from '../..';
-import { userInstance } from '../../../api/axios';
+import { patchPassword, patchPasswordInit } from '../../../api/user';
 import { passwordRegex } from '../../../components/constants';
 import {
   removeAuthorityCookie,
@@ -81,13 +81,6 @@ export function ChangePassword({
   const navigate = useNavigate();
 
   // 최초 로그인 패스워드 변경 api
-  const patchPasswordInit = (auth: {
-    code: string;
-    password: string;
-    passwordConfirm: string;
-  }) => {
-    return userInstance.patch('/v1/account/init-change-password', auth);
-  };
   const { data: passwordDataInit, mutate: changePasswordInit } = useMutation({
     mutationFn: patchPasswordInit,
     onError: (context: { response: { data: { message: string } } }) => {
@@ -113,12 +106,6 @@ export function ChangePassword({
   };
 
   // 마이페이지 패스워드 변경 api
-  const patchPassword = (auth: {
-    password: string;
-    passwordConfirm: string;
-  }) => {
-    return userInstance.patch('/v1/account/change-password', auth);
-  };
   const { data: passwordData, mutate: changePassword } = useMutation({
     mutationFn: patchPassword,
     onError: (context: {
