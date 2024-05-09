@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { GrPlan } from 'react-icons/gr';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -15,6 +16,7 @@ import {
   IconButton,
   List,
   ListItem,
+  Loader,
   Modal,
   PaginationBox,
   Search,
@@ -22,6 +24,7 @@ import {
   TabMenu,
   ValueNone,
 } from '..';
+import { quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
@@ -35,8 +38,15 @@ export function QuizManagementList() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  // TODO: 임시 데이터
+
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
+
+  const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
+  const [content, setContent] = useState<string[]>([]);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  // TODO: 신고하기 임시 데이터 api 연결후 삭제
   const [reportQuestionList, setReportQuestionList] = useState([
     {
       id: 'ds1215515',
@@ -100,40 +110,57 @@ export function QuizManagementList() {
       },
     },
   ]);
+  // 문항리스트 불러오기 api
+  const getQuiz = async () => {
+    const res = await quizService.get('/v1/quiz');
+    console.log(`getQuiz 결과값`, res.data.data);
+    return res.data.data;
+  };
+  const {
+    data: quizData,
+    isLoading,
+    error: quizDataError,
+    refetch: quizDataRefetch,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['get-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-quizList 에러 메세지',
+    },
+  });
 
-  const size = 10;
-  const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
-  const [content, setContent] = useState<string[]>([]);
-  const [searchValue, setSearchValue] = useState<string>('');
+  useEffect(() => {
+    if (quizData) {
+      setQuestionList(quizData.quizList);
+    }
+    // console.log('questionList', questionList);
+  }, [quizData]);
 
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  // 탭 바뀔시 초기화
+  useEffect(() => {
+    quizDataRefetch();
+    setSearchValue('');
+  }, [tabVeiw]);
 
   const closeAlert = () => {
     setIsAlertOpen(false);
   };
 
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  // 활성화/비활성화 버튼상태 토글
-  const submitChangingService = () => {
-    setIsAlertOpen(true);
-  };
-
-  // 활성화/비활성화 데이터 전송
-  const submitDisabled = () => {
-    // console.log(selectedRows);
-
-    const formattedArray: { contentSeq: number }[] = [];
-    // 데이터 형태 api쪽에 맞춰 { contentSeq: number }[]; 로 변경
-    for (let i = 0; i < selectedRows.length; i += 1) {
-      formattedArray.push({ contentSeq: selectedRows[i] });
-    }
-    // putChangeServiced({ formattedArray, setIsChangedServiced });
-
-    setIsAlertOpen(false);
-  };
 
   const filterSearchValue = () => {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+  };
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === 'Enter') {
+      // setSearchKeywordValue(searchValue);
+    }
+    if (event.key === 'Backspace') {
+      // setSearchKeywordValue('');
+    }
   };
 
   const menuList = [
@@ -265,6 +292,11 @@ export function QuizManagementList() {
     });
   };
 
+  // 탭메뉴 클릭시 페이지네이션 초기화
+  const changeTab = () => {
+    setPage(1);
+  };
+
   useEffect(() => {
     setPage(1);
   }, []);
@@ -284,287 +316,297 @@ export function QuizManagementList() {
           문항 일괄 편집
         </Button>
       </TitleWrapper>
-      <HeadWrapper>
-        <TabMenu
-          length={2}
-          menu={menuList}
-          width={'250px'}
-          selected={tabVeiw}
-          setTabVeiw={setTabVeiw}
-        />
 
-        <Search
-          value={searchValue}
-          onClick={() => filterSearchValue()}
-          onKeyDown={(e) => {}}
-          onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="문항코드, 중단원, 담당자 검색"
-          width={'25%'}
-          height="40px"
-        />
-      </HeadWrapper>
+      <TabMenu
+        length={2}
+        menu={menuList}
+        width={'300px'}
+        selected={tabVeiw}
+        setTabVeiw={setTabVeiw}
+        $margin={'10px 0'}
+        onClickTab={changeTab}
+      />
 
-      {/* 셀렉트 + 테이블 + 수정 비활성화 버튼 */}
-      <TableWrapper>
-        {/* 테이블 셀렉트 */}
-        <SelectWrapper>
-          {selectCategory.map((el) => (
-            <Select
-              width={'120px'}
-              defaultValue={el.label}
-              key={el.label}
-              options={el.options}
-              onSelect={(event) => selectCategoryOption(event)}
-            />
-          ))}
-          <CommonDate
-            setDate={setStartDate}
-            $button={
-              <IconButton
-                width={'125px'}
-                height={'40px'}
-                fontSize={'14px'}
-                onClick={() => {}}
-              >
-                <span className="btn_title">
-                  {startDate === '' ? `시작일` : `${startDate}`}
-                </span>
-                <GrPlan />
-              </IconButton>
-            }
-          />
+      {isLoading && (
+        <LoaderWrapper>
+          <Loader width="50px" />
+        </LoaderWrapper>
+      )}
 
-          <span> ~ </span>
-          <CommonDate
-            setDate={setEndDate}
-            $button={
-              <IconButton
-                width={'125px'}
-                height={'40px'}
-                fontSize={'14px'}
-                onClick={() => {}}
-              >
-                <span className="btn_title">
-                  {endDate === '' ? `종료일` : `${endDate}`}
-                </span>
-                <GrPlan />
-              </IconButton>
-            }
-          />
-        </SelectWrapper>
-
-        {tabVeiw === '문항 리스트' && (
-          <>
-            {questionList.length > 0 ? (
-              <ContentList
-                list={questionList}
-                deleteBtn
-                ondeleteClick={() => {}}
-                tabVeiw={''}
+      {!isLoading && quizData && (
+        <>
+          {/* 리스트 셀렉트 */}
+          <SelectWrapper>
+            {selectCategory.map((el) => (
+              <Select
+                width={'120px'}
+                defaultValue={el.label}
+                key={el.label}
+                options={el.options}
+                onSelect={(event) => selectCategoryOption(event)}
               />
-            ) : (
-              <ValueNoneWrapper>
-                <ValueNone />
-              </ValueNoneWrapper>
-            )}
-          </>
-        )}
-        {tabVeiw === '신고 문항' && (
-          <>
-            <Total> Total : {reportQuestionList.length}</Total>
+            ))}
+            <CommonDate
+              setDate={setStartDate}
+              $button={
+                <IconButton
+                  width={'125px'}
+                  height={'40px'}
+                  fontSize={'14px'}
+                  onClick={() => {}}
+                >
+                  <span className="btn_title">
+                    {startDate === '' ? `시작일` : `${startDate}`}
+                  </span>
+                  <GrPlan />
+                </IconButton>
+              }
+            />
 
-            <ListTitle>
-              <strong className="width_30px">NO</strong>
-              <strong>출처</strong>
-              <strong>교육과정</strong>
-              <strong>학교급</strong>
-              <strong>학년</strong>
-              <strong>학기</strong>
-              <strong>교과</strong>
-              <strong>과목</strong>
-              <strong>대단원</strong>
-              <strong>문항타입</strong>
-              <strong>담당자</strong>
-              <strong>일자</strong>
-              <strong>오픈여부</strong>
-            </ListTitle>
-            <ScrollWrapper>
-              <PerfectScrollbar>
-                {reportQuestionList.length > 0 ? (
-                  <List margin={`10px 0`}>
-                    {reportQuestionList.map(
-                      (item: {
-                        id: string;
-                        num: string;
-                        source: string;
-                        curriculum_th: string;
-                        level: string;
-                        grade: string;
-                        semester: string;
-                        curriculum: string;
-                        subject: string;
-                        denouement: string;
-                        questionType: string;
+            <span> ~ </span>
+            <CommonDate
+              setDate={setEndDate}
+              $button={
+                <IconButton
+                  width={'125px'}
+                  height={'40px'}
+                  fontSize={'14px'}
+                  onClick={() => {}}
+                >
+                  <span className="btn_title">
+                    {endDate === '' ? `종료일` : `${endDate}`}
+                  </span>
+                  <GrPlan />
+                </IconButton>
+              }
+            />
+            <Search
+              value={searchValue}
+              onClick={() => filterSearchValue()}
+              onKeyDown={(e) => filterSearchValueEnter(e)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+              }}
+              placeholder="문항코드, 중단원, 담당자 검색"
+              width={'30%'}
+              height="40px"
+            />
+          </SelectWrapper>
+
+          {tabVeiw === '문항 리스트' && (
+            <>
+              {questionList.length > 0 ? (
+                <>
+                  <ContentList
+                    list={questionList}
+                    deleteBtn
+                    ondeleteClick={() => {}}
+                    tabVeiw={tabVeiw}
+                  />
+                  <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
+                </>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone />
+                </ValueNoneWrapper>
+              )}
+            </>
+          )}
+        </>
+      )}
+
+      {tabVeiw === '신고 문항' && (
+        <>
+          <Total> Total : {reportQuestionList.length}</Total>
+
+          <ListTitle>
+            <strong className="width_30px">NO</strong>
+            <strong>출처</strong>
+            <strong>교육과정</strong>
+            <strong>학교급</strong>
+            <strong>학년</strong>
+            <strong>학기</strong>
+            <strong>교과</strong>
+            <strong>과목</strong>
+            <strong>대단원</strong>
+            <strong>문항타입</strong>
+            <strong>담당자</strong>
+            <strong>일자</strong>
+            <strong>오픈여부</strong>
+          </ListTitle>
+          <ScrollWrapper>
+            <PerfectScrollbar>
+              {reportQuestionList.length > 0 ? (
+                <List margin={`10px 0`}>
+                  {reportQuestionList.map(
+                    (item: {
+                      id: string;
+                      num: string;
+                      source: string;
+                      curriculum_th: string;
+                      level: string;
+                      grade: string;
+                      semester: string;
+                      curriculum: string;
+                      subject: string;
+                      denouement: string;
+                      questionType: string;
+                      manager: string;
+                      changeAt: string;
+                      activate: string;
+                      state: string;
+                      report: {
+                        reportAt: string;
                         manager: string;
-                        changeAt: string;
-                        activate: string;
-                        state: string;
-                        report: {
-                          reportAt: string;
-                          manager: string;
-                          type: string;
-                          details: string;
-                        };
-                        processed: {
-                          changeAt: null | string;
-                          manager: null | string;
-                          type: null | string;
-                          details: null | string;
-                        };
-                      }) => (
-                        <ListItem
-                          height={'fit-content'}
-                          key={item.id as string}
-                          isChecked={false}
-                          onClick={() => {}}
-                        >
-                          <AccordionWrapper>
-                            <ItemLayout>
-                              <span className="width_40px">{item.num} </span>
-                              <div className="line"></div>
-                              <span>{item.source} </span>
-                              <div className="line"></div>
-                              <span>{item.curriculum_th} </span>
-                              <div className="line"></div>
-                              <span>{item.level} </span>
-                              <div className="line"></div>
-                              <span>{item.grade} </span>
-                              <div className="line"></div>
-                              <span>{item.semester} </span>
-                              <div className="line"></div>
-                              <span>{item.curriculum} </span>
-                              <div className="line"></div>
-                              <span>{item.subject} </span>
-                              <div className="line"></div>
-                              <span>{item.denouement} </span>
-                              <div className="line"></div>
-                              <span>{item.questionType} </span>
-                              <div className="line"></div>
-                              <span>{item.manager} </span>
-                              <div className="line"></div>
-                              <span>{item.changeAt} </span>
-                              <div className="line"></div>
-                              <span>{item.activate} </span>
-                            </ItemLayout>
+                        type: string;
+                        details: string;
+                      };
+                      processed: {
+                        changeAt: null | string;
+                        manager: null | string;
+                        type: null | string;
+                        details: null | string;
+                      };
+                    }) => (
+                      <ListItem
+                        height={'fit-content'}
+                        key={item.id as string}
+                        isChecked={false}
+                        onClick={() => {}}
+                      >
+                        <AccordionWrapper>
+                          <ItemLayout>
+                            <span className="width_40px">{item.num} </span>
+                            <div className="line"></div>
+                            <span>{item.source} </span>
+                            <div className="line"></div>
+                            <span>{item.curriculum_th} </span>
+                            <div className="line"></div>
+                            <span>{item.level} </span>
+                            <div className="line"></div>
+                            <span>{item.grade} </span>
+                            <div className="line"></div>
+                            <span>{item.semester} </span>
+                            <div className="line"></div>
+                            <span>{item.curriculum} </span>
+                            <div className="line"></div>
+                            <span>{item.subject} </span>
+                            <div className="line"></div>
+                            <span>{item.denouement} </span>
+                            <div className="line"></div>
+                            <span>{item.questionType} </span>
+                            <div className="line"></div>
+                            <span>{item.manager} </span>
+                            <div className="line"></div>
+                            <span>{item.changeAt} </span>
+                            <div className="line"></div>
+                            <span>{item.activate} </span>
+                          </ItemLayout>
 
-                            <Accordion
-                              $backgroundColor={`${item.state == '처리대기' ? `${COLOR.GRAY}` : `${COLOR.BLUEGREEN}`}`}
-                              title={`${item.state == '처리대기' ? '처리대기' : '처리완료'}`}
-                              id={`${item.id}`}
-                            >
-                              <AccordionItemLayout>
-                                <div className="text_wrapper">
-                                  <strong className="title">신고일자</strong>
-                                  <span className="text">
-                                    {item.report.reportAt}
-                                  </span>
-                                </div>
-                                <div className="text_wrapper">
-                                  <strong className="title">신고자</strong>
-                                  <span className="text">
-                                    {item.report.manager}
-                                  </span>
-                                </div>
-                                <div className="text_wrapper">
-                                  <strong className="title">신고유형</strong>
-                                  <span className="text">
-                                    {item.report.type}
-                                  </span>
-                                </div>
-                                <div className="text_wrapper">
-                                  <strong className="title">신고내용</strong>
-                                  <span className="text">
-                                    {item.report.details}
-                                  </span>
-                                </div>
-                                <div className="process_wrapper">
-                                  {item.state !== '처리대기' ? (
-                                    <div className="processed">
-                                      <div className="text_wrapper">
-                                        <strong className="title">
-                                          처리일자
-                                        </strong>
-                                        <span className="text">
-                                          {item.processed.changeAt}
-                                        </span>
-                                      </div>
-                                      <div className="text_wrapper">
-                                        <strong className="title">
-                                          처리자
-                                        </strong>
-                                        <span className="text">
-                                          {item.processed.manager}
-                                        </span>
-                                      </div>
-                                      <div className="text_wrapper">
-                                        <strong className="title">
-                                          처리유형
-                                        </strong>
-                                        <span className="text">
-                                          {item.processed.type}
-                                        </span>
-                                      </div>
-                                      <div className="text_wrapper">
-                                        <strong className="title">
-                                          처리내용
-                                        </strong>
-                                        <span className="text">
-                                          {item.processed.details}
-                                        </span>
-                                      </div>
+                          <Accordion
+                            $backgroundColor={`${item.state == '처리대기' ? `${COLOR.GRAY}` : `${COLOR.BLUEGREEN}`}`}
+                            title={`${item.state == '처리대기' ? '처리대기' : '처리완료'}`}
+                            id={`${item.id}`}
+                          >
+                            <AccordionItemLayout>
+                              <div className="text_wrapper">
+                                <strong className="title">신고일자</strong>
+                                <span className="text">
+                                  {item.report.reportAt}
+                                </span>
+                              </div>
+                              <div className="text_wrapper">
+                                <strong className="title">신고자</strong>
+                                <span className="text">
+                                  {item.report.manager}
+                                </span>
+                              </div>
+                              <div className="text_wrapper">
+                                <strong className="title">신고유형</strong>
+                                <span className="text">{item.report.type}</span>
+                              </div>
+                              <div className="text_wrapper">
+                                <strong className="title">신고내용</strong>
+                                <span className="text">
+                                  {item.report.details}
+                                </span>
+                              </div>
+                              <div className="process_wrapper">
+                                {item.state !== '처리대기' ? (
+                                  <div className="processed">
+                                    <div className="text_wrapper">
+                                      <strong className="title">
+                                        처리일자
+                                      </strong>
+                                      <span className="text">
+                                        {item.processed.changeAt}
+                                      </span>
                                     </div>
-                                  ) : (
-                                    <div className="button_wrapper">
-                                      <Button
-                                        $filled
-                                        height={'35px'}
-                                        fontSize={'13px'}
-                                        cursor
-                                        onClick={() => {
-                                          openCreateEditWindow();
-                                        }}
-                                      >
-                                        문항 수정하러가기
-                                      </Button>
-                                      <Button
-                                        $filled
-                                        height={'35px'}
-                                        fontSize={'13px'}
-                                        cursor
-                                        onClick={() => openReportProcess()}
-                                      >
-                                        처리 완료
-                                      </Button>
+                                    <div className="text_wrapper">
+                                      <strong className="title">처리자</strong>
+                                      <span className="text">
+                                        {item.processed.manager}
+                                      </span>
                                     </div>
-                                  )}
-                                </div>
-                              </AccordionItemLayout>
-                            </Accordion>
-                          </AccordionWrapper>
-                        </ListItem>
-                      ),
-                    )}
-                  </List>
-                ) : (
-                  <ValueNoneWrapper>
-                    <ValueNone />
-                  </ValueNoneWrapper>
-                )}
-              </PerfectScrollbar>
-            </ScrollWrapper>
-          </>
-        )}
-      </TableWrapper>
+                                    <div className="text_wrapper">
+                                      <strong className="title">
+                                        처리유형
+                                      </strong>
+                                      <span className="text">
+                                        {item.processed.type}
+                                      </span>
+                                    </div>
+                                    <div className="text_wrapper">
+                                      <strong className="title">
+                                        처리내용
+                                      </strong>
+                                      <span className="text">
+                                        {item.processed.details}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="button_wrapper">
+                                    <Button
+                                      $filled
+                                      height={'35px'}
+                                      fontSize={'13px'}
+                                      cursor
+                                      onClick={() => {
+                                        openCreateEditWindow();
+                                      }}
+                                    >
+                                      문항 수정하러가기
+                                    </Button>
+                                    <Button
+                                      $filled
+                                      height={'35px'}
+                                      fontSize={'13px'}
+                                      cursor
+                                      onClick={() => openReportProcess()}
+                                    >
+                                      처리 완료
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </AccordionItemLayout>
+                          </Accordion>
+                        </AccordionWrapper>
+                      </ListItem>
+                    ),
+                  )}
+                </List>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone />
+                </ValueNoneWrapper>
+              )}
+            </PerfectScrollbar>
+          </ScrollWrapper>
+        </>
+      )}
+
       <Alert
         isAlertOpen={isAlertOpen}
         description="권한을 삭제할 경우, 해당 권한의 아이디는 접속이 불가합니다."
@@ -572,16 +614,6 @@ export function QuizManagementList() {
         onClose={closeAlert}
         // onClick={() => submitDelete()}
       />
-      <Alert
-        isAlertOpen={isAlertOpen}
-        description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
-        action="확인"
-        isWarning={true}
-        onClose={closeAlert}
-        onClick={submitDisabled}
-      ></Alert>
-
-      <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
 
       <Modal />
     </Container>
@@ -607,12 +639,6 @@ const Total = styled.span`
   font-weight: bold;
   color: ${COLOR.FONT_BLACK};
   padding: 10px;
-`;
-const HeadWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 10px;
 `;
 
 const SelectWrapper = styled.div`
@@ -742,7 +768,12 @@ const AccordionItemLayout = styled.div`
   }
 `;
 
-const TableWrapper = styled.div``;
 const ValueNoneWrapper = styled.div`
   padding: 100px 0;
+`;
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 30px;
+  padding-left: calc(50% - 35px);
 `;

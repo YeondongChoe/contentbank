@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
+import { GrPlan } from 'react-icons/gr';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -14,6 +15,8 @@ import {
   TabMenu,
   ValueNone,
   Loader,
+  CommonDate,
+  IconButton,
 } from '..';
 import { quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
@@ -31,6 +34,8 @@ export function QuizCreateList() {
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   const modalData = {
     title: '',
@@ -248,6 +253,40 @@ export function QuizCreateList() {
                 onSelect={(event) => selectCategoryOption(event)}
               />
             ))}
+            <CommonDate
+              setDate={setStartDate}
+              $button={
+                <IconButton
+                  width={'125px'}
+                  height={'40px'}
+                  fontSize={'14px'}
+                  onClick={() => {}}
+                >
+                  <span className="btn_title">
+                    {startDate === '' ? `시작일` : `${startDate}`}
+                  </span>
+                  <GrPlan />
+                </IconButton>
+              }
+            />
+
+            <span> ~ </span>
+            <CommonDate
+              setDate={setEndDate}
+              $button={
+                <IconButton
+                  width={'125px'}
+                  height={'40px'}
+                  fontSize={'14px'}
+                  onClick={() => {}}
+                >
+                  <span className="btn_title">
+                    {endDate === '' ? `종료일` : `${endDate}`}
+                  </span>
+                  <GrPlan />
+                </IconButton>
+              }
+            />
             <Search
               value={searchValue}
               onClick={() => filterSearchValue()}
@@ -255,8 +294,8 @@ export function QuizCreateList() {
               onChange={(e) => {
                 setSearchValue(e.target.value);
               }}
-              placeholder="문항코드, 중단원, 담당자 검색"
-              width={'25%'}
+              placeholder="대단원, 담당자를 입력해주세요"
+              width={'30%'}
               height="40px"
             />
           </SelectWrapper>
