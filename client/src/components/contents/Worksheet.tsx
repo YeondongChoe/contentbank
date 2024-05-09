@@ -365,8 +365,8 @@ export function Worksheet() {
               </ListWrapper> */}
               <ContentList
                 list={workbookList.workbookList}
-                onClick={() => {}}
                 totalCount={workbookList.pagination.totalCount}
+                tabVeiw={tabVeiw}
               ></ContentList>
               <PaginationBox
                 itemsCountPerPage={workbookList.pagination.pageUnit}
