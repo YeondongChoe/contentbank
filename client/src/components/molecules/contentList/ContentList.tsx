@@ -105,7 +105,7 @@ export function ContentList({
     }
   };
 
-  // 문항 즐겨찾기 api
+  // 문항 즐겨찾기 토글 api
   const patchQuizFavorite = async (data: {
     idx: number;
     isFavorite: boolean;

@@ -196,7 +196,7 @@ export function EditModal({
       key: memberDatas?.userKey,
       authority: memberDatas?.authorityCode,
       comment: memberDatas?.note,
-      enabled: memberDatas?.isLock,
+      enabled: memberDatas?.isUse,
       authCode: memberDatas?.roleCode,
     });
     setAuthorityCode(memberDatas?.authorityCode);
@@ -338,14 +338,14 @@ export function EditModal({
               <button
                 type="button"
                 onClick={() => {}}
-                className={`${!member.enabled && `isActive`} isActive_btn`}
+                className={`${member.enabled && `isActive`} isActive_btn`}
               >
                 활성화
               </button>
               <button
                 type="button"
                 onClick={() => {}}
-                className={`${member.enabled && `isActive`} isActive_btn`}
+                className={`${!member.enabled && `isActive`} isActive_btn`}
               >
                 비활성화
               </button>
@@ -469,13 +469,13 @@ const ButtonWrapper = styled.div`
     background-color: ${COLOR.BUTTON_NORMAL};
     border: none;
     border-radius: 5px;
-    cursor: pointer;
+    /* cursor: pointer; */
     padding: 10px;
     font-weight: bold;
-    color: ${COLOR.FONT_BLACK};
+    color: ${COLOR.GRAY};
   }
   .isActive {
-    background-color: ${COLOR.PRIMARY};
+    background-color: ${COLOR.ALERTBAR_SUCCESS};
     color: #fff;
   }
 `;
