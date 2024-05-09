@@ -267,6 +267,19 @@ export function ContentList({
               <span className="title_top">전체선택</span>
             </CheckBoxWrapper>
             <ActionButtonWrapper>
+              <Button
+                width="100px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                $filled
+                $normal
+                onClick={() => {}}
+                disabled={isEnabled}
+                cursor
+              >
+                문항 출력
+              </Button>
               {deleteBtn && (
                 <Button
                   width="100px"
