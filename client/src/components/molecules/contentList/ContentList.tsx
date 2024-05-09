@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { styled } from 'styled-components';
 
@@ -26,7 +26,7 @@ import { COLOR } from '../../constants';
 
 type ContentListProps = {
   list: QuizListType[] | any[]; // TODO
-  onClick: () => void;
+  tabVeiw: string;
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
   totalCount?: number;
@@ -34,11 +34,12 @@ type ContentListProps = {
 
 export function ContentList({
   list,
-  onClick,
+  tabVeiw,
   deleteBtn,
   ondeleteClick,
   totalCount,
 }: ContentListProps) {
+  const queryClient = useQueryClient();
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -62,6 +63,7 @@ export function ContentList({
       },
     },
   ];
+  const [usedToggle, setUsedToggle] = useState<string>('비활성화');
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = () => {
@@ -131,11 +133,22 @@ export function ContentList({
         type: 'success',
         text: response.data.message,
       });
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+        exact: true,
+      });
     },
   });
 
   // 즐겨찾기 토글 버튼
-  const handleFavorite = (data: { idx: number; isFavorite: boolean }) => {
+  const handleFavorite = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data: { idx: number; isFavorite: boolean },
+  ) => {
+    e.stopPropagation();
+
     const favoriteItem = {
       idx: data.idx,
       isFavorite: !data.isFavorite,
@@ -143,40 +156,77 @@ export function ContentList({
     mutateQuizFavorite(favoriteItem);
   };
 
-  useEffect(() => {
-    console.log('quizFavorite', quizFavorite);
-  }, [mutateQuizFavorite]);
+  // 활성화/비활성화 데이터 전송
+  const handleDisabled = () => {
+    console.log('checkList', checkList);
+    const codesSet = new Set(checkList);
+    const filteredList = list.filter((item) => codesSet.has(item.code));
+    console.log('isUse chaeck arr', filteredList);
+    const idxList: number[] = [];
+    filteredList.map((item) => {
+      return idxList.push(item.idx);
+    });
+    // 비활성화시
+    if (usedToggle == '비활성화') {
+      const data = {
+        idxList: idxList,
+        isUse: false,
+      };
+      mutateQuizDisabled(data);
+    }
+    //활성화시
+    if (usedToggle == '활성화') {
+      const data = {
+        idxList: idxList,
+        isUse: true,
+      };
+      mutateQuizDisabled(data);
+    }
+  };
+  // 활성화/비활성화 토글 api
+  const patchQuizDisabled = async (data: {
+    idxList: number[];
+    isUse: boolean;
+  }) => {
+    return await quizService.patch(`/v1/quiz/used`, data);
+  };
+  const { data: quizDisabled, mutate: mutateQuizDisabled } = useMutation({
+    mutationFn: patchQuizDisabled,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      // console.log('quizFavorite', response);
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      // 초기화
+      setIsAlertOpen(false);
+      setCheckList([]);
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+        exact: true,
+      });
+    },
+  });
 
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      // console.log('click', e.target);
-      // console.log('click', e.target?.toString().includes('Div'));
       if (e.target?.toString().includes('Div')) setCheckList([]);
     };
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
-  // 활성화/비활성화 버튼상태 토글
-  const openSubmitAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeSubmitAlert = () => {
-    setIsAlertOpen(false);
-  };
-
-  // 활성화/비활성화 데이터 전송
-  const handleDisabled = () => {
-    // const data = {
-    //   idx: 2,
-    //   isUse: true,
-    // };
-    console.log('checkList', checkList);
-    const codesSet = new Set(checkList);
-    const filteredList = list.filter((item) => codesSet.has(item.code));
-    console.log('isUse chaeck arr', filteredList);
-    // 데이터 전송 후 얼럿 닫기
-  };
 
   useEffect(() => {
     // 체크시 활성화 버튼
@@ -185,9 +235,20 @@ export function ContentList({
     } else {
       setIsEnabled(false);
     }
-
-    //즐겨찾기 데이터 전송시 객체값 축출
   }, [checkList]);
+
+  // 알림창 상태
+  const openSubmitAlert = () => {
+    setIsAlertOpen(true);
+  };
+  const closeSubmitAlert = () => {
+    setIsAlertOpen(false);
+  };
+
+  // 탭 바뀔시 초기화
+  useEffect(() => {
+    setCheckList([]);
+  }, [tabVeiw]);
 
   return (
     <>
@@ -227,19 +288,37 @@ export function ContentList({
                 showDropDown={showDropDown}
                 setShowDropDown={setShowDropDown}
                 disabled={isEnabled}
-              ></DropDown>
+              />
               <Button
-                width="140px"
+                width="100px"
                 height="35px"
                 fontSize="14px"
                 $borderRadius="7px"
-                onClick={openSubmitAlert}
+                $filled
+                onClick={() => {
+                  setUsedToggle('비활성화');
+                  openSubmitAlert();
+                }}
+                disabled={isEnabled}
+                cursor
+              >
+                비활성화
+              </Button>
+              <Button
+                width="100px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                onClick={() => {
+                  setUsedToggle('활성화');
+                  openSubmitAlert();
+                }}
                 $filled
                 $success
                 disabled={isEnabled}
                 cursor
               >
-                활성화 / 비활성화
+                활성화
               </Button>
             </ActionButtonWrapper>
           </ButtonWrapper>
@@ -267,9 +346,8 @@ export function ContentList({
                   width={`18px`}
                   $margin={'0 0 0 12px'}
                   src={`/images/icon/favorites_on.svg`}
-                  disabled={true}
-                  onClick={() =>
-                    handleFavorite({
+                  onClick={(e) =>
+                    handleFavorite(e, {
                       idx: item.idx,
                       isFavorite: true,
                     })
@@ -281,9 +359,8 @@ export function ContentList({
                   width={`18px`}
                   $margin={'0 0 0 12px'}
                   src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
-                  disabled={true}
-                  onClick={() =>
-                    handleFavorite({
+                  onClick={(e) =>
+                    handleFavorite(e, {
                       idx: item.idx,
                       isFavorite: false,
                     })
@@ -338,15 +415,26 @@ export function ContentList({
         </List>
       </ListWrapper>
 
-      <Alert
-        isAlertOpen={isAlertOpen}
-        description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
-        action="확인"
-        isWarning={true}
-        onClose={closeSubmitAlert}
-        onClick={handleDisabled}
-      ></Alert>
-
+      {usedToggle == '비활성화' && (
+        <Alert
+          isAlertOpen={isAlertOpen}
+          description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
+          action="확인"
+          isWarning={true}
+          onClose={closeSubmitAlert}
+          onClick={handleDisabled}
+        />
+      )}
+      {usedToggle == '활성화' && (
+        <Alert
+          isAlertOpen={isAlertOpen}
+          description={`${checkList.length}개의 문항을 활성화 처리 하시겠습니까?`}
+          action="확인"
+          isWarning={true}
+          onClose={closeSubmitAlert}
+          onClick={handleDisabled}
+        />
+      )}
       <Modal />
     </>
   );

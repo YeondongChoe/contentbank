@@ -261,11 +261,11 @@ export function QuizCreateList() {
             />
           </SelectWrapper>
 
-          {questionList.length > 1 ? (
+          {questionList.length > 0 ? (
             <>
               <ContentList
                 list={questionList}
-                onClick={() => {}}
+                tabVeiw={tabVeiw}
                 totalCount={quizData.pagination.totalCount}
               />
               <PaginationBox

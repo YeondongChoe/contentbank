@@ -3,7 +3,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 type IconProps = {
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   src: any;
   $margin?: string;
   width?: string;
