@@ -49,11 +49,16 @@ export function QuizCreateList() {
 
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
-    const res = await quizService.get(
-      `${tabVeiw == '즐겨찾는 문항' ? `/v1/quiz/favorite` : '/v1/quiz'}`,
-    );
-    console.log(`getQuiz 결과값`, res.data.data);
-    return res.data.data;
+    if (tabVeiw == '문항 리스트') {
+      const res = await quizService.get('/v1/quiz');
+      console.log(`getQuiz 결과값`, res.data.data);
+      return res.data.data;
+    }
+    if (tabVeiw == '즐겨찾는 문항') {
+      const res = await quizService.get(`/v1/quiz/favorite`);
+      console.log(`getQuizfavorite 결과값`, res.data.data);
+      return res.data.data;
+    }
   };
   const {
     data: quizData,
