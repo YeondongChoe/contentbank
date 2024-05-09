@@ -288,7 +288,7 @@ export function Worksheet() {
                   onClick={() => filterSearchValue()}
                   onKeyDown={(e) => {}}
                   onChange={(e) => setSearchValue(e.target.value)}
-                  placeholder="학습지명, 학년, 태그, 작성자 검색"
+                  placeholder="학습지명, 학년, 태그, 작성자 검색."
                 />
               </TabWrapper>
               {/* <ListWrapper>
