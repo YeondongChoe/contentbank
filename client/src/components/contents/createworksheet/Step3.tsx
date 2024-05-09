@@ -205,13 +205,15 @@ export function Step3() {
     return res;
   };
 
-  const makingWorkbook = () => {
+  const makingWorkbook = (nameValue: string) => {
+    const currentTime = new Date().getTime();
     const data = {
-      title: 'test1',
+      title: nameValue,
       content: Contents2.it_quest,
       column: 2,
       uploadDir: '/usr/share/nginx/html/CB',
-      fileName: 'workbookYD1.pdf',
+      //fileName: `${nameValue}_${currentTime}.pdf`,
+      fileName: `testYD.pdf`,
     };
     workbookData(data);
   };
@@ -229,9 +231,9 @@ export function Step3() {
     },
   });
 
-  const submitCreateWorksheet = () => {
+  const submitCreateWorksheet = (nameValue: string) => {
     //node 서버에서 pdf 생성
-    makingWorkbook();
+    makingWorkbook(nameValue);
     //getPdf();
     //pdf 생성 후 데이터와 pdf경로/파일명을 서버로 보내기
   };
@@ -897,7 +899,7 @@ export function Step3() {
       <CreateButtonWrapper>
         <Button
           buttonType="button"
-          onClick={submitCreateWorksheet}
+          onClick={() => submitCreateWorksheet(nameValue)}
           $padding="10px"
           height={'35px'}
           width={'120px'}

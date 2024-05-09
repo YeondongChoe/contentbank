@@ -13,6 +13,7 @@ import styled from 'styled-components';
 
 import { workbookInstance } from '../../api/axios';
 import {
+  ContentList,
   Loader,
   Button,
   IndexInfo,
@@ -25,7 +26,7 @@ import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';
 import { useModal } from '../../hooks';
 import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
 import { pageAtom, totalPageAtom } from '../../store/utilAtom';
-import { WorksheetTableType } from '../../types';
+import { WorksheetListType } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR, worksheetColWidth, worksheetTheadList } from '../constants';
 import dummy from '../constants/data.json';
@@ -68,6 +69,7 @@ export function Worksheet() {
   });
 
   const workbookList = workbookListData?.data.data;
+  console.log(workbookList);
 
   const [isWorkingFavorite, setIsWorkingFavorite] = useState(false);
 
@@ -76,11 +78,11 @@ export function Worksheet() {
     return workbookInstance.patch(`/v1/workbook/favorite`, data);
   };
 
-  const clickFavorite = (idx: number) => {
-    if (isWorkingFavorite) {
-      workbookFavoriteData({ idx: idx, isFavorite: 'false' });
+  const clickFavorite = (idx: number, isFavorite: boolean) => {
+    if (isFavorite) {
+      workbookFavoriteData({ idx: idx, isFavorite: false });
     } else {
-      workbookFavoriteData({ idx: idx, isFavorite: 'true' });
+      workbookFavoriteData({ idx: idx, isFavorite: true });
     }
   };
 
@@ -289,7 +291,7 @@ export function Worksheet() {
                   placeholder="학습지명, 학년, 태그, 작성자 검색"
                 />
               </TabWrapper>
-              <ListWrapper>
+              {/* <ListWrapper>
                 <ListTitleWrapper>
                   <ListTitle className="bookmark"></ListTitle>
                   <ListTitle className="grade">학년</ListTitle>
@@ -305,11 +307,11 @@ export function Worksheet() {
                     <div
                       className="bookmark"
                       onClick={() => {
-                        clickFavorite(content.idx);
+                        clickFavorite(content.idx, content.isFavorite);
                       }}
                       style={{ cursor: 'pointer' }}
                     >
-                      {content.favorited ? <FaBookmark /> : <FaRegBookmark />}
+                      {content.isFavorite ? <FaBookmark /> : <FaRegBookmark />}
                     </div>
                     <div className="grade">{content.grade}</div>
                     <div className="tag">{content.originalName}</div>
@@ -360,7 +362,12 @@ export function Worksheet() {
                     </div>
                   </WorksheetList>
                 ))}
-              </ListWrapper>
+              </ListWrapper> */}
+              <ContentList
+                list={workbookList.workbookList}
+                onClick={() => {}}
+                totalCount={workbookList.pagination.totalCount}
+              ></ContentList>
               <PaginationBox
                 itemsCountPerPage={workbookList.pagination.pageUnit}
                 totalItemsCount={workbookList.pagination.totalCount}

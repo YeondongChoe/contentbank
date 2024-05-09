@@ -19,7 +19,7 @@ import {
   Icon,
   openToastifyAlert,
 } from '../../../components';
-import { QuizListType } from '../../../types';
+import { QuizListType, WorksheetListType } from '../../../types';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
 
