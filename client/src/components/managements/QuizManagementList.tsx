@@ -360,7 +360,7 @@ export function QuizManagementList() {
                 list={questionList}
                 deleteBtn
                 ondeleteClick={() => {}}
-                onClick={() => {}}
+                tabVeiw={''}
               />
             ) : (
               <ValueNoneWrapper>
