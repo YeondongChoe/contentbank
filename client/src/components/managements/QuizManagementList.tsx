@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { GrPlan } from 'react-icons/gr';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
@@ -19,11 +19,13 @@ import {
   Select,
   TabMenu,
   ValueNone,
+  openToastifyAlert,
 } from '..';
 import { quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
+import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
 
@@ -36,7 +38,7 @@ export function QuizManagementList() {
   const [endDate, setEndDate] = useState<string>('');
 
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
-
+  const [checkListOn, setCheckListOn] = useState<string[]>([]);
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -68,6 +70,42 @@ export function QuizManagementList() {
     }
     // console.log('questionList', questionList);
   }, [quizData]);
+
+  // 선택된 문항 삭제하기 api
+  const deleteQuiz = async (idxList: string) => {
+    const res = await quizService.delete(`/v1/quiz/${idxList}`);
+    return res;
+  };
+
+  const {
+    data: deleteQuizData,
+    mutate: mutateDeleteQuiz,
+    isSuccess: deleteQuizIsSuccess,
+  } = useMutation({
+    mutationFn: deleteQuiz,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
+
+  const submitDelete = () => {
+    const idxList = ''; // 선택된 리스트데이터값
+    mutateDeleteQuiz(idxList);
+  };
 
   // 탭 바뀔시 초기화
   useEffect(() => {
@@ -314,8 +352,12 @@ export function QuizManagementList() {
                   <ContentList
                     list={questionList}
                     deleteBtn
-                    ondeleteClick={() => {}}
+                    ondeleteClick={() => {
+                      setIsAlertOpen(true);
+                    }}
+                    setCheckListOn={setCheckListOn}
                     tabVeiw={tabVeiw}
+                    deleteQuizIsSuccess={deleteQuizIsSuccess}
                   />
                   <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
                 </>
@@ -333,10 +375,11 @@ export function QuizManagementList() {
 
       <Alert
         isAlertOpen={isAlertOpen}
-        description="권한을 삭제할 경우, 해당 권한의 아이디는 접속이 불가합니다."
+        description={`${checkListOn.length}개의 문항을 삭제 처리 하시겠습니까?`}
         action="삭제"
+        isWarning={true}
         onClose={closeAlert}
-        // onClick={() => submitDelete()}
+        onClick={() => submitDelete()}
       />
 
       <Modal />

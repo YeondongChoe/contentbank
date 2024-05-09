@@ -30,6 +30,8 @@ type ContentListProps = {
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
   totalCount?: number;
+  setCheckListOn?: React.Dispatch<React.SetStateAction<string[]>>;
+  deleteQuizIsSuccess?: boolean;
 };
 
 export function ContentList({
@@ -38,6 +40,8 @@ export function ContentList({
   deleteBtn,
   ondeleteClick,
   totalCount,
+  setCheckListOn,
+  deleteQuizIsSuccess,
 }: ContentListProps) {
   const queryClient = useQueryClient();
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -234,6 +238,10 @@ export function ContentList({
       setIsEnabled(true);
     } else {
       setIsEnabled(false);
+    }
+    if (setCheckListOn) setCheckListOn(checkList);
+    if (deleteQuizIsSuccess) {
+      setCheckList([]);
     }
   }, [checkList]);
 
