@@ -234,8 +234,9 @@ export function Classification() {
       );
       setNextList2depth(res.data.data.categoryClassList);
       return res.data;
-    } catch (error) {
-      console.error('Error fetching next list: ', error);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error.data.code);
+      if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -259,8 +260,9 @@ export function Classification() {
       );
       setNextList3depth(res.data.data.categoryClassList);
       return res.data;
-    } catch (error) {
-      console.error('Error fetching next list: ', error);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error.data.code);
+      if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -298,17 +300,18 @@ export function Classification() {
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
+    const depthChecks = [
+      radio1depthCheck,
+      radio2depthCheck,
+      radio3depthCheck,
+      radio4depthCheck,
+    ];
+
     const keyValuePairs = categoryItems.reduce<Record<string, string>>(
       (acc, item, index) => {
-        const radioDepthCheck = [
-          selected1depth,
-          selected2depth,
-          selected3depth,
-          selected4depth,
-        ][index];
-        if (radioDepthCheck !== undefined) {
-          // undefined가 아닐 때만 추가
-          acc[item.name] = radioDepthCheck;
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item.name] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
         }
         return acc;
       },
