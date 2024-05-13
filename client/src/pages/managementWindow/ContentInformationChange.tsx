@@ -340,10 +340,10 @@ export function ContentInformationChange() {
       {},
     );
 
-    const itemTreeKey = { itemTreeKey: [keyValuePairs] };
-    console.log('itemTreeKey :', itemTreeKey);
+    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
+    console.log('itemTreeKeyList :', itemTreeKeyList);
 
-    const res = await classificationInstance.post('/v1/item', itemTreeKey);
+    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
     console.log('classificationInstance 응답:', res);
     return res;
   };
