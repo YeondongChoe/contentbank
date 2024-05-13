@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import { quizService } from '../../../api/axios';
@@ -19,6 +20,7 @@ import {
   Icon,
   openToastifyAlert,
 } from '../../../components';
+import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType, WorksheetListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
@@ -44,6 +46,7 @@ export function ContentList({
   deleteQuizIsSuccess,
 }: ContentListProps) {
   const queryClient = useQueryClient();
+  const [page, setPage] = useRecoilState(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<number[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -259,7 +262,7 @@ export function ContentList({
   // 탭 바뀔시 초기화
   useEffect(() => {
     setCheckList([]);
-  }, [tabVeiw]);
+  }, [tabVeiw, page]);
 
   return (
     <>
