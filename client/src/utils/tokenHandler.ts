@@ -65,6 +65,12 @@ export const postRefreshToken = async () => {
           text: `로그인 기간이 만료되었습니다. 재로그인 해주세요.`,
         });
         // navigator('/login');
+        if (
+          window.location.pathname.includes('/managementEditMain') ||
+          window.location.pathname.includes('/createcontentmain')
+        ) {
+          window.close();
+        }
         return 0;
       }
     });
