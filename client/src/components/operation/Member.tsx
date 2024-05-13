@@ -262,7 +262,7 @@ export function Member() {
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
 
-  // 대이터 변경시 리랜더링
+  // 대이터 변경시 리랜더링 (초기화)
   useEffect(() => {
     refetch();
   }, [page, searchKeywordValue, isUseFilter, changeUse]);
