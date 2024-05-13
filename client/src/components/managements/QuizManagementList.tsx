@@ -22,7 +22,6 @@ import {
   openToastifyAlert,
 } from '..';
 import { quizService } from '../../api/axios';
-import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { QuestionTableType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
@@ -32,7 +31,6 @@ import { COLOR } from '../constants';
 import { QuizReportList } from './QuizReportList';
 
 export function QuizManagementList() {
-  const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');

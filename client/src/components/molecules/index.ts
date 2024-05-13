@@ -15,3 +15,4 @@ export * from './tooltip';
 export * from './accordion';
 export * from './difficultyRate';
 export * from './depthBlockList';
+export * from './PDFModal';

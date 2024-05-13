@@ -257,7 +257,7 @@ export function ContentCategoryChange() {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      setNextList1depth(res.data.data.categoryClassList);
+      setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
       console.error('Error fetching next list: ', error.data.code);
@@ -283,7 +283,7 @@ export function ContentCategoryChange() {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      setNextList2depth(res.data.data.categoryClassList);
+      setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error) {
       console.error('Error fetching next list: ', error);
@@ -308,7 +308,7 @@ export function ContentCategoryChange() {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      setNextList3depth(res.data.data.categoryClassList);
+      setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error) {
       console.error('Error fetching next list: ', error);

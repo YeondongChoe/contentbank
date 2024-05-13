@@ -19,7 +19,9 @@ import {
   Alert,
   Icon,
   openToastifyAlert,
+  PDFModal,
 } from '../../../components';
+import { useModal } from '../../../hooks';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType, WorksheetListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -45,6 +47,7 @@ export function ContentList({
   setCheckListOn,
   deleteQuizIsSuccess,
 }: ContentListProps) {
+  const { openModal } = useModal();
   const queryClient = useQueryClient();
   const [page, setPage] = useRecoilState(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -90,6 +93,20 @@ export function ContentList({
     // window.parentCallback = () => {
     //   getContents();
     // };
+  };
+
+  /* 문항 pdf 모달 열기 */
+  const openCreatePDFModal = () => {
+    console.log(
+      'checkList 체크된 문항 1개당 최소1페이지 문항데이터 배열로 직접',
+      checkList,
+    );
+    openModal({
+      title: '',
+      content: <PDFModal list={checkList} />,
+    });
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
   };
 
   // 체크박스 설정
@@ -288,7 +305,7 @@ export function ContentList({
                 $borderRadius="7px"
                 $filled
                 $normal
-                onClick={() => {}}
+                onClick={() => openCreatePDFModal()}
                 disabled={isEnabled}
                 cursor
               >
