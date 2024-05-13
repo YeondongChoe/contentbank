@@ -30,7 +30,7 @@ type ContentListProps = {
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
   totalCount?: number;
-  setCheckListOn?: React.Dispatch<React.SetStateAction<string[]>>;
+  setCheckListOn?: React.Dispatch<React.SetStateAction<number[]>>;
   deleteQuizIsSuccess?: boolean;
 };
 
@@ -45,7 +45,7 @@ export function ContentList({
 }: ContentListProps) {
   const queryClient = useQueryClient();
   const backgroundRef = useRef<HTMLDivElement>(null);
-  const [checkList, setCheckList] = useState<string[]>([]);
+  const [checkList, setCheckList] = useState<number[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
@@ -93,14 +93,14 @@ export function ContentList({
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.currentTarget.checked);
     if (e.target.checked) {
-      setCheckList(list.map((item: QuizListType) => item.code));
+      setCheckList(list.map((item: QuizListType) => item.idx));
     } else {
       setCheckList([]);
     }
   };
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
-    id: string,
+    id: number,
   ) => {
     const target = e.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
@@ -164,7 +164,7 @@ export function ContentList({
   const handleDisabled = () => {
     console.log('checkList', checkList);
     const codesSet = new Set(checkList);
-    const filteredList = list.filter((item) => codesSet.has(item.code));
+    const filteredList = list.filter((item) => codesSet.has(item.idx));
     console.log('isUse chaeck arr', filteredList);
     const idxList: number[] = [];
     filteredList.map((item) => {
@@ -240,10 +240,13 @@ export function ContentList({
       setIsEnabled(false);
     }
     if (setCheckListOn) setCheckListOn(checkList);
+  }, [checkList]);
+
+  useEffect(() => {
     if (deleteQuizIsSuccess) {
       setCheckList([]);
     }
-  }, [checkList]);
+  }, [deleteQuizIsSuccess]);
 
   // 알림창 상태
   const openSubmitAlert = () => {
@@ -351,15 +354,15 @@ export function ContentList({
           {list.map((item: QuizListType) => (
             <ListItem
               height="80px"
-              key={item.code as string}
-              isChecked={checkList.includes(item.code)}
-              onClick={(e) => handleButtonCheck(e, item.code)}
+              key={item.code}
+              isChecked={checkList.includes(item.idx)}
+              onClick={(e) => handleButtonCheck(e, item.idx)}
             >
               <CheckBoxI
                 id={item.code}
-                value={item.code}
+                value={item.idx}
                 $margin={`0 5px 0 0`}
-                checked={checkList.includes(item.code)}
+                checked={checkList.includes(item.idx)}
                 readOnly
               />
               {item.isFavorite ? (
@@ -379,7 +382,7 @@ export function ContentList({
                 <Icon
                   width={`18px`}
                   $margin={'0 0 0 12px'}
-                  src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
+                  src={`/images/icon/favorites${checkList.includes(item.idx) ? `_off_W` : `_off_B`}.svg`}
                   onClick={(e) =>
                     handleFavorite(e, {
                       idx: item.idx,
@@ -393,7 +396,7 @@ export function ContentList({
                 {/* //TODO */}
                 <span className="width_20px">{item.idx} </span>
                 <i className="line"></i>
-                <span>{item.code} </span>
+                <span>{item.idx} </span>
                 <i className="line"></i>
                 <span>{item.type} </span>
                 <i className="line"></i>
@@ -408,7 +411,7 @@ export function ContentList({
                       $margin={'0 0 0 12px'}
                       src={`/images/icon/lock_open_${
                         checkList.length
-                          ? checkList.includes(item.code)
+                          ? checkList.includes(item.idx)
                             ? 'on'
                             : 'off'
                           : 'off'
@@ -421,7 +424,7 @@ export function ContentList({
                       $margin={'0 0 0 12px'}
                       src={`/images/icon/lock_${
                         checkList.length
-                          ? checkList.includes(item.code)
+                          ? checkList.includes(item.idx)
                             ? 'on'
                             : 'off'
                           : 'off'

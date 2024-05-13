@@ -341,9 +341,12 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
   gap: 5px;
-  /* padding-bottom: 10px; */
-  padding-top: 10px;
+  padding-bottom: 10px;
+  .btn_title {
+    padding-right: 5px;
+  }
 `;
 
 const ValueNoneWrapper = styled.div`

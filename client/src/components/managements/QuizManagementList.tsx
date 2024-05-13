@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GrPlan } from 'react-icons/gr';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
@@ -33,12 +33,13 @@ import { QuizReportList } from './QuizReportList';
 
 export function QuizManagementList() {
   const { openModal } = useModal();
+  const queryClient = useQueryClient();
   const [page, setPage] = useRecoilState(pageAtom);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
-  const [checkListOn, setCheckListOn] = useState<string[]>([]);
+  const [checkListOn, setCheckListOn] = useState<number[]>([]);
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -80,6 +81,7 @@ export function QuizManagementList() {
   const {
     data: deleteQuizData,
     mutate: mutateDeleteQuiz,
+    isPending,
     isSuccess: deleteQuizIsSuccess,
   } = useMutation({
     mutationFn: deleteQuiz,
@@ -99,11 +101,19 @@ export function QuizManagementList() {
         type: 'success',
         text: response.data.message,
       });
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+        exact: true,
+      });
+      setIsAlertOpen(false);
     },
   });
 
   const submitDelete = () => {
-    const idxList = ''; // 선택된 리스트데이터값
+    // console.log('checkListOn', checkListOn);
+    const idxList = checkListOn.join(','); // 선택된 리스트데이터값
     mutateDeleteQuiz(idxList);
   };
 
@@ -338,6 +348,12 @@ export function QuizManagementList() {
       </SelectWrapper>
 
       {isLoading && (
+        <LoaderWrapper>
+          <Loader width="50px" />
+        </LoaderWrapper>
+      )}
+
+      {isPending && (
         <LoaderWrapper>
           <Loader width="50px" />
         </LoaderWrapper>
