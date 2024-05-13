@@ -43,11 +43,14 @@ export function QuizManagementList() {
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
-    const res = await quizService.get('/v1/quiz');
+    const res = await quizService.get(
+      `/v1/quiz?pageIndex=${page}&pageUnit=${10}&searchKeyword=${searchKeywordValue}`,
+    );
     console.log(`getQuiz 결과값`, res.data.data);
     return res.data.data;
   };
@@ -56,7 +59,7 @@ export function QuizManagementList() {
     isLoading,
     error: quizDataError,
     refetch: quizDataRefetch,
-    isSuccess,
+    isPending,
   } = useQuery({
     queryKey: ['get-quizList'],
     queryFn: getQuiz,
@@ -81,7 +84,7 @@ export function QuizManagementList() {
   const {
     data: deleteQuizData,
     mutate: mutateDeleteQuiz,
-    isPending,
+    isPending: isPendingDelete,
     isSuccess: deleteQuizIsSuccess,
   } = useMutation({
     mutationFn: deleteQuiz,
@@ -103,10 +106,7 @@ export function QuizManagementList() {
       });
 
       // 초기화
-      queryClient.invalidateQueries({
-        queryKey: ['get-quizList'],
-        exact: true,
-      });
+      quizDataRefetch();
       setIsAlertOpen(false);
     },
   });
@@ -127,17 +127,20 @@ export function QuizManagementList() {
     setIsAlertOpen(false);
   };
 
+  // 검색 기능 함수
   const filterSearchValue = () => {
-    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+    // 쿼리 스트링 변경 로직
+    setSearchKeywordValue(searchValue);
+    if (searchValue == '') setSearchKeywordValue('');
   };
   const filterSearchValueEnter = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === 'Enter') {
-      // setSearchKeywordValue(searchValue);
+      setSearchKeywordValue(searchValue);
     }
     if (event.key === 'Backspace') {
-      // setSearchKeywordValue('');
+      setSearchKeywordValue('');
     }
   };
 
@@ -347,17 +350,12 @@ export function QuizManagementList() {
         />
       </SelectWrapper>
 
-      {isLoading && (
-        <LoaderWrapper>
-          <Loader width="50px" />
-        </LoaderWrapper>
-      )}
-
-      {isPending && (
-        <LoaderWrapper>
-          <Loader width="50px" />
-        </LoaderWrapper>
-      )}
+      {isLoading ||
+        (isPendingDelete && (
+          <LoaderWrapper>
+            <Loader width="50px" />
+          </LoaderWrapper>
+        ))}
 
       {!isLoading && quizData && (
         <>
@@ -375,7 +373,10 @@ export function QuizManagementList() {
                     tabVeiw={tabVeiw}
                     deleteQuizIsSuccess={deleteQuizIsSuccess}
                   />
-                  <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
+                  <PaginationBox
+                    itemsCountPerPage={quizData.pagination.pageUnit}
+                    totalItemsCount={quizData.pagination.totalCount}
+                  />
                 </>
               ) : (
                 <ValueNoneWrapper>
