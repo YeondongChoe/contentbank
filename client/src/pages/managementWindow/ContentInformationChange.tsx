@@ -236,8 +236,9 @@ export function ContentInformationChange() {
       );
       setNextList1depth(res.data.data.categoryClassList);
       return res.data;
-    } catch (error) {
-      console.error('Error fetching next list: ', error);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error.data.code);
+      if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
