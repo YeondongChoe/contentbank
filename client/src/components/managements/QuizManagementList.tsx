@@ -282,74 +282,6 @@ export function QuizManagementList() {
         </Button>
       </TitleWrapper>
 
-      <TabMenu
-        length={2}
-        menu={menuList}
-        width={'300px'}
-        selected={tabVeiw}
-        setTabVeiw={setTabVeiw}
-        $margin={'10px 0'}
-        onClickTab={changeTab}
-      />
-
-      {/* 리스트 셀렉트 */}
-      <SelectWrapper>
-        {selectCategory.map((el) => (
-          <Select
-            width={'120px'}
-            defaultValue={el.label}
-            key={el.label}
-            options={el.options}
-            onSelect={(event) => selectCategoryOption(event)}
-          />
-        ))}
-        <CommonDate
-          setDate={setStartDate}
-          $button={
-            <IconButton
-              width={'125px'}
-              height={'40px'}
-              fontSize={'14px'}
-              onClick={() => {}}
-            >
-              <span className="btn_title">
-                {startDate === '' ? `시작일` : `${startDate}`}
-              </span>
-              <GrPlan />
-            </IconButton>
-          }
-        />
-
-        <span> ~ </span>
-        <CommonDate
-          setDate={setEndDate}
-          $button={
-            <IconButton
-              width={'125px'}
-              height={'40px'}
-              fontSize={'14px'}
-              onClick={() => {}}
-            >
-              <span className="btn_title">
-                {endDate === '' ? `종료일` : `${endDate}`}
-              </span>
-              <GrPlan />
-            </IconButton>
-          }
-        />
-        <Search
-          value={searchValue}
-          onClick={() => filterSearchValue()}
-          onKeyDown={(e) => filterSearchValueEnter(e)}
-          onChange={(e) => {
-            setSearchValue(e.target.value);
-          }}
-          placeholder="문항코드, 중단원, 담당자 검색"
-          width={'30%'}
-          height="40px"
-        />
-      </SelectWrapper>
-
       {isLoading ||
         (isPendingDelete && (
           <LoaderWrapper>
@@ -359,6 +291,73 @@ export function QuizManagementList() {
 
       {!isLoading && quizData && (
         <>
+          <TabMenu
+            length={2}
+            menu={menuList}
+            width={'300px'}
+            selected={tabVeiw}
+            setTabVeiw={setTabVeiw}
+            $margin={'10px 0'}
+            onClickTab={changeTab}
+          />
+
+          {/* 리스트 셀렉트 */}
+          <SelectWrapper>
+            {selectCategory.map((el) => (
+              <Select
+                width={'120px'}
+                defaultValue={el.label}
+                key={el.label}
+                options={el.options}
+                onSelect={(event) => selectCategoryOption(event)}
+              />
+            ))}
+            <CommonDate
+              setDate={setStartDate}
+              $button={
+                <IconButton
+                  width={'125px'}
+                  height={'40px'}
+                  fontSize={'14px'}
+                  onClick={() => {}}
+                >
+                  <span className="btn_title">
+                    {startDate === '' ? `시작일` : `${startDate}`}
+                  </span>
+                  <GrPlan />
+                </IconButton>
+              }
+            />
+
+            <span> ~ </span>
+            <CommonDate
+              setDate={setEndDate}
+              $button={
+                <IconButton
+                  width={'125px'}
+                  height={'40px'}
+                  fontSize={'14px'}
+                  onClick={() => {}}
+                >
+                  <span className="btn_title">
+                    {endDate === '' ? `종료일` : `${endDate}`}
+                  </span>
+                  <GrPlan />
+                </IconButton>
+              }
+            />
+            <Search
+              value={searchValue}
+              onClick={() => filterSearchValue()}
+              onKeyDown={(e) => filterSearchValueEnter(e)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+              }}
+              placeholder="문항코드, 중단원, 담당자 검색"
+              width={'30%'}
+              height="40px"
+            />
+          </SelectWrapper>
           {tabVeiw === '문항 리스트' && (
             <>
               {questionList.length > 0 ? (
