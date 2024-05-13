@@ -56,14 +56,14 @@ export function QuizCreateList() {
   const getQuiz = async () => {
     if (tabVeiw == '문항 리스트') {
       const res = await quizService.get(
-        `/v1/quiz?pageIndex=${page}&pageUnit=${10}&searchKeyword=${searchKeywordValue}`,
+        `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}`,
       );
       // console.log(`getQuiz 결과값`, res.data.data);
       return res.data.data;
     }
     if (tabVeiw == '즐겨찾는 문항') {
       const res = await quizService.get(
-        `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${10}&searchKeyword=${searchKeywordValue}`,
+        `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}`,
       );
       // console.log(`getQuizfavorite 결과값`, res.data.data);
       return res.data.data;
@@ -212,10 +212,8 @@ export function QuizCreateList() {
     quizDataRefetch();
     setSearchValue('');
   }, [tabVeiw]);
-
-  // 대이터 변경시 리랜더링
+  // 데이터 변경시 리랜더링
   useEffect(() => {
-    console.log('------------', page);
     quizDataRefetch();
   }, [page]);
 

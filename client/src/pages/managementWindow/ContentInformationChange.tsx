@@ -106,6 +106,7 @@ export function ContentInformationChange() {
     error: categoryDataError,
     refetch: categoryDataRefetch,
     isSuccess,
+    isPending,
   } = useQuery({
     queryKey: ['get-category'],
     queryFn: getCategory,
@@ -134,7 +135,7 @@ export function ContentInformationChange() {
     const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
     return response.data.data.typeList;
   };
-  const { data: groupsData } = useQuery({
+  const { data: groupsData, isPending: isPendingGroupsData } = useQuery({
     queryKey: ['get-category-groups'],
     queryFn: getCategoryGroups,
     enabled: !!categoryData,
@@ -432,6 +433,11 @@ export function ContentInformationChange() {
               <PerfectScrollbar>
                 <div className="meta_radio_select">
                   {/* 교육과정 라디오 버튼 부분 */}
+                  {isPendingGroupsData && (
+                    <LoaderWrapper>
+                      <Loader width="50px" />
+                    </LoaderWrapper>
+                  )}
                   {isCategoryLoaded && categoryItems[0] && categoryList && (
                     <>
                       {[categoryItems[0]].map((item) => (
@@ -866,4 +872,11 @@ const ChangeInfoWrapper = styled.div`
     color: #fff;
     padding: 2px;
   }
+`;
+
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 30px;
+  padding-left: calc(50% - 35px);
 `;

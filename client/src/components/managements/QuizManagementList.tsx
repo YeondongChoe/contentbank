@@ -33,7 +33,6 @@ import { QuizReportList } from './QuizReportList';
 
 export function QuizManagementList() {
   const { openModal } = useModal();
-  const queryClient = useQueryClient();
   const [page, setPage] = useRecoilState(pageAtom);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -49,7 +48,7 @@ export function QuizManagementList() {
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
     const res = await quizService.get(
-      `/v1/quiz?pageIndex=${page}&pageUnit=${10}&searchKeyword=${searchKeywordValue}`,
+      `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}`,
     );
     console.log(`getQuiz 결과값`, res.data.data);
     return res.data.data;
@@ -122,6 +121,10 @@ export function QuizManagementList() {
     quizDataRefetch();
     setSearchValue('');
   }, [tabVeiw]);
+  // 데이터 변경시 리랜더링
+  useEffect(() => {
+    quizDataRefetch();
+  }, [page]);
 
   const closeAlert = () => {
     setIsAlertOpen(false);
@@ -261,10 +264,6 @@ export function QuizManagementList() {
   const changeTab = () => {
     setPage(1);
   };
-
-  useEffect(() => {
-    setPage(1);
-  }, []);
 
   return (
     <Container>
