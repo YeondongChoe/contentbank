@@ -3,10 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Button, DnDWrapper, Modal, Select } from '../..';
 import { quizService } from '../../../api/axios';
+import { quizListAtom } from '../../../store/quizListAtom';
 import { QuizListType } from '../../../types';
 import { COLOR } from '../../constants/COLOR';
 
@@ -19,6 +21,7 @@ export function ContentCreating({
 }: {
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
@@ -31,6 +34,7 @@ export function ContentCreating({
   const submitSave = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     console.log('신규 등록된 문항 리스트 get 요청 API');
+    setQuizList(questionList);
   };
 
   //TODO : 임시로 퀴즈데이터 이미 등록된 데이터로 불러옴

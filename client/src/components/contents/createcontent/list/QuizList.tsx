@@ -135,7 +135,7 @@ export function QuizList({
                 {(dragItem, ref, isDragging) => (
                   <ListItem
                     ref={ref}
-                    className={`${isDataColor && dragItem.classificationData.length && `on`} ${isDragging ? 'opacity' : ''}`}
+                    className={`${isDataColor && dragItem.classificationData?.length && `on`} ${isDragging ? 'opacity' : ''}`}
                   >
                     {showCheckBox ? (
                       <button

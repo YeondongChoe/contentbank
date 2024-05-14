@@ -4,12 +4,11 @@ import { useEffect, useState } from 'react';
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
   Button,
-  Icon,
-  IconButton,
   Loader,
   ResizeLayout,
   ValueNone,
@@ -22,6 +21,7 @@ import {
   DepthBlock,
   Search,
 } from '../../../components/molecules';
+import { quizListAtom } from '../../../store/quizListAtom';
 import {
   ItemCategoryType,
   ItemTreeListType,
@@ -34,6 +34,7 @@ import { COLOR } from '../../constants/COLOR';
 import { QuizList } from './list';
 
 export function Classification() {
+  const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [radio1depthCheck, setRadio1depthCheck] = useState<{
     title: string;
@@ -84,6 +85,7 @@ export function Classification() {
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [addInfo, setAddInfo] = useState();
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -121,7 +123,7 @@ export function Classification() {
   }, [isSuccess]);
 
   const getCategoryGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    const response = await classificationInstance.get('/v1/category/group/A');
     return response.data.data.typeList;
   };
   const { data: groupsData } = useQuery({
@@ -353,11 +355,29 @@ export function Classification() {
     categoryItemTreeDataMutate();
   }, [selected4depth]);
 
-  // 추가된 문항 데이터 TODO : 전역으로 저장한 추가된 문항 데이터들 불러오기
-  // 화면 진입시 문항 데이터들 리스트ui에넣기
+  // 추가 정보 셀렉트 버튼
+  const getAddInfoGroups = async () => {
+    const response = await classificationInstance.get('/v1/category/group/B');
+    return response.data.data.typeList;
+  };
+  const { data: addInfoData } = useQuery({
+    queryKey: ['get-add-info-groups'],
+    queryFn: getAddInfoGroups,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-add-info-groups 에러 메세지',
+    },
+  });
   useEffect(() => {
-    setQuestionList([]);
-  }, []);
+    if (addInfoData) {
+      // setAddInfo([]);
+      console.log('addInfoData', addInfoData);
+    }
+  }, [addInfoData]);
+
+  const onSubmit = () => {
+    // 최종적으로 전송 될 데이터
+  };
 
   useEffect(() => {
     // console.log(error);
@@ -371,6 +391,14 @@ export function Classification() {
       setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
     }
   };
+
+  // 추가된 문항 데이터 TODO : 전역으로 저장한 추가된 문항 데이터들 불러오기
+  // 화면 진입시 문항 데이터들 리스트ui에넣기
+  useEffect(() => {
+    console.log('quizList', quizList);
+    setQuestionList(quizList);
+  }, []);
+  useEffect(() => {}, [questionList]);
 
   return (
     <Container>
@@ -548,7 +576,9 @@ export function Classification() {
                           onChange={() => {}}
                           onKeyDown={() => {}}
                         />
-                        <p className="line bottom_text">Total : {`${0}`}</p>
+                        <p className="line bottom_text">
+                          {/* Total : {itemTree.length && itemTree.length} */}
+                        </p>
                         <DepthBlockScrollWrapper>
                           <PerfectScrollbar>
                             {categoryItemTreeData ? (
@@ -605,6 +635,7 @@ export function Classification() {
                       $margin={'4px 0 0 0 '}
                     >
                       <RowListWrapper>
+                        {addInfoData && <></>}
                         {/* <div className="etc1">
                           {selectCategoryEtc1.map((meta) => (
                             <ButtonFormatRadio
@@ -664,7 +695,7 @@ export function Classification() {
             disabled={unitClassificationList.length !== 0 ? false : true}
             cursor
             width={'calc(50% - 5px)'}
-            onClick={() => window.close()}
+            onClick={() => onSubmit()}
           >
             저장
           </Button>
