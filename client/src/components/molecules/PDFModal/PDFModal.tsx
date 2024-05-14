@@ -48,12 +48,13 @@ export function PDFModal({ list }: PDFModalProps) {
           <PerfectScrollbar>
             {list.map((item) => (
               <div key={item} className="A4_paper">
-                <div>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos
-                  officiis at iure sapiente maxime provident possimus dolorum
-                  eveniet illo nisi ullam, animi sunt nobis, error consequatur
-                  quos facere. Perspiciatis, harum.
-                </div>
+                <Contents>
+                  문항데이터가 들어올 자리 Lorem ipsum dolor sit amet
+                  consectetur adipisicing elit. Eos officiis at iure sapiente
+                  maxime provident possimus dolorum eveniet illo nisi ullam,
+                  animi sunt nobis, error consequatur quos facere. Perspiciatis,
+                  harum.
+                </Contents>
               </div>
             ))}
           </PerfectScrollbar>
@@ -116,4 +117,8 @@ const ScrollWrapper = styled.div`
       padding-top: 2px;
     }
   }
+`;
+
+const Contents = styled.p`
+  padding: 30px;
 `;
