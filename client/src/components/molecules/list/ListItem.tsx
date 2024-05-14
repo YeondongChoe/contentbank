@@ -58,6 +58,7 @@ const Component = styled.li<ListItemStyleProps>`
   height: ${({ height }) => (height ? ` ${height};` : '100%')};
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
   /* min-height: 40px; */
   border: 1px solid ${COLOR.BORDER_GRAY};

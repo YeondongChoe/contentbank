@@ -50,4 +50,6 @@ export type QuizListType = {
   quizItemList: QuizType[];
   type: string;
   userKey: string;
+
+  quizCategoryList: any[]; //TODO : 데이터 다 들어갈시 명확히
 };

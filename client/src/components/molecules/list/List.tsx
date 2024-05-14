@@ -34,6 +34,7 @@ type ListStyleProps = {
 const Component = styled.ul<ListStyleProps>`
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '100%')};
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};

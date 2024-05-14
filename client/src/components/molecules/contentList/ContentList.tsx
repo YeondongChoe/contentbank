@@ -24,7 +24,7 @@ import {
 } from '../../../components';
 import { useModal } from '../../../hooks';
 import { pageAtom } from '../../../store/utilAtom';
-import { QuizListType, WorksheetListType } from '../../../types';
+import { QuizListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
@@ -386,7 +386,6 @@ export function ContentList({
         <List margin={`10px 0`}>
           {list.map((item: QuizListType) => (
             <ListItem
-              height="80px"
               key={item.code}
               isChecked={checkList.includes(item.idx)}
               onClick={(e) => handleButtonCheck(e, item.idx)}
@@ -427,11 +426,12 @@ export function ContentList({
               )}
               <ItemLayout>
                 <span
-                  className="width_80px"
+                  className="width_80px tooltip_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">출처</strong>
+
                   <span className="tag">{item.idx}</span>
                   <Tooltip arrowPosition={`left: 50%`}>
                     <span>출처 툴팁</span>
@@ -443,22 +443,22 @@ export function ContentList({
                   <span className="tag">{item.idx}</span>
                 </span>
                 <i className="line"></i>
-                <span>
+                <span className="width_50px">
                   <strong className="title">학교급</strong>
                   <span className="tag">{item.idx}</span>
                 </span>
                 <i className="line"></i>
-                <span>
+                <span className="width_50px">
                   <strong className="title">학년</strong>
                   <span className="tag">{item.idx}</span>
                 </span>
                 <i className="line"></i>
-                <span>
+                <span className="width_50px">
                   <strong className="title">학기</strong>
                   <span className="tag">{item.idx}</span>
                 </span>
                 <i className="line"></i>
-                <span>
+                <span className="width_50px">
                   <strong className="title">교과</strong>
                   <span className="tag">{item.idx}</span>
                 </span>
@@ -468,12 +468,18 @@ export function ContentList({
                   <span className="tag">{item.idx}</span>
                 </span>
                 <i className="line"></i>
-                <span className="width_80px">
+                <span>
                   <strong className="title"> 대단원</strong>
                   <span className="tag">{item.idx}</span>
                 </span>
                 <i className="line"></i>
-                <span>{item.type} </span>
+                <span className="width_50px">
+                  {item.quizCategoryList.length == 0 && <>-</>}
+                  {item.quizCategoryList.length > 0 &&
+                    item.quizCategoryList.map((item) => (
+                      <>{item.quizCategory.문항타입}</>
+                    ))}
+                </span>
                 <i className="line"></i>
                 <span className="width_10">{item.createdBy} </span>
                 <i className="line"></i>
@@ -583,11 +589,14 @@ const ListWrapper = styled.div`
 const ItemLayout = styled.span`
   display: flex;
   width: 100%;
+  min-height: 40px;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
-  position: relative;
 
+  .tooltip_wrapper {
+    position: relative;
+  }
   > span {
     display: flex;
     /* flex: 1 0 0; */
@@ -611,7 +620,7 @@ const ItemLayout = styled.span`
     gap: 5px;
     padding: 3px 5px;
     border-radius: 10px;
-    background-color: ${COLOR.BORDER_GRAY};
+    background-color: #aeaeae;
   }
   .line {
     width: 1px;
@@ -627,10 +636,10 @@ const ItemLayout = styled.span`
   .width_20px {
     width: 20px;
   }
+  .width_50px {
+    width: 50px;
+  }
   .width_80px {
     width: 80px;
-  }
-  .width_50 {
-    width: 50%;
   }
 `;
