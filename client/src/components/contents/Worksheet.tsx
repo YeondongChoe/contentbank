@@ -13,7 +13,6 @@ import styled from 'styled-components';
 
 import { workbookInstance } from '../../api/axios';
 import {
-  ContentList,
   Loader,
   Button,
   IndexInfo,
@@ -22,6 +21,7 @@ import {
   TabMenu,
 } from '../../components';
 import Contents2 from '../../components/mathViewer/test2.json';
+import { WorkbookList } from '../../components/molecules/workbookList';
 import { WorksheetBasic } from '../../components/worksheet/WorksheetBasic';
 import { useModal } from '../../hooks';
 import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
@@ -61,10 +61,10 @@ export function Worksheet() {
     data: workbookListData,
     refetch: workbookListRefetch,
   } = useQuery({
-    queryKey: ['get-workbooklist'],
+    queryKey: ['get-workbookList'],
     queryFn: getWorkbookList,
     meta: {
-      errorMessage: 'get-workbooklist 에러 메세지',
+      errorMessage: 'get-workbookList 에러 메세지',
     },
   });
 
@@ -363,11 +363,11 @@ export function Worksheet() {
                   </WorksheetList>
                 ))}
               </ListWrapper> */}
-              <ContentList
+              <WorkbookList
                 list={workbookList.workbookList}
                 totalCount={workbookList.pagination.totalCount}
                 tabVeiw={tabVeiw}
-              ></ContentList>
+              ></WorkbookList>
               <PaginationBox
                 itemsCountPerPage={workbookList.pagination.pageUnit}
                 totalItemsCount={workbookList.pagination.totalCount}

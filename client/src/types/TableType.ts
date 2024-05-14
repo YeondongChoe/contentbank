@@ -1,5 +1,8 @@
 //학습지 리스트 타입
 export type WorksheetListType = {
+  code: string;
+  tag: string;
+  isFavorite: boolean;
   createdAt: string;
   createdBy: string;
   examiner: string;
@@ -14,6 +17,7 @@ export type WorksheetListType = {
   name: string;
   quizCnt: number;
   userKey: string;
+  type?: string;
 };
 
 export type QuestionTableType = {

@@ -161,10 +161,10 @@ export function ContentList({
       });
 
       // 초기화
-      queryClient.invalidateQueries({
-        queryKey: ['get-quizList'],
-        exact: true,
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: ['get-quizList'],
+      //   exact: true,
+      // });
     },
   });
 
@@ -381,7 +381,6 @@ export function ContentList({
           </ButtonWrapper>
         </InputWrapper>
       </ListButtonWrapper>
-
       <ListWrapper ref={backgroundRef}>
         <List margin={`10px 0`}>
           {list.map((item: QuizListType) => (
