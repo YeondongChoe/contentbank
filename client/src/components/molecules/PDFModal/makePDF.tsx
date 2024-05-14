@@ -4,7 +4,7 @@ import jsPDF from 'jspdf';
 export const makePdf = () => {
   // Convert a single HTML element to an image
   const converToImg = async (element: HTMLElement): Promise<string> => {
-    const canvas = await html2canvas(element);
+    const canvas = await html2canvas(element, { scale: 1.5 });
     return canvas.toDataURL('image/png', 1.0);
   };
 
@@ -14,7 +14,8 @@ export const makePdf = () => {
 
     if (papers.length === 0) throw new Error('No A4 paper elements found.');
 
-    const doc = new jsPDF('p', 'mm', 'a4');
+    const doc = new jsPDF('p', 'mm', 'a4', true);
+
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -27,7 +28,7 @@ export const makePdf = () => {
 
       doc.addImage(
         imageFile,
-        'PNG',
+        'JPEG',
         0,
         0,
         pageWidth,
