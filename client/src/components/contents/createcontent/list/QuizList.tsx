@@ -4,16 +4,10 @@ import { useEffect, useState, useRef } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
-import { CheckBoxI, DnDWrapper, Icon, Tooltip } from '../../..';
+import { CheckBoxI, DnDWrapper, Icon, Tooltip, ValueNone } from '../../..';
+import { QuizListType } from '../../../../types';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
-
-//TODO : 데이터 들어올시 타입도 변경
-export interface TestDnDItem {
-  id: string;
-  text: string;
-  classificationData: any[];
-}
 
 export function QuizList({
   questionList,
@@ -25,7 +19,7 @@ export function QuizList({
   setCheckedList,
   isDataColor,
 }: {
-  questionList: TestDnDItem[];
+  questionList: QuizListType[] | [];
   showTitle?: boolean;
   showCheckBox?: boolean;
   showViewAllButton?: boolean;
@@ -40,9 +34,9 @@ export function QuizList({
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
   >([]);
-  const [initialItems, _] = useState<TestDnDItem[]>(questionList);
+  const [initialItems, _] = useState<QuizListType[]>(questionList);
 
-  const whenDragEnd = (newList: TestDnDItem[]) => {
+  const whenDragEnd = (newList: QuizListType[]) => {
     console.log('@드래그끝났을떄', newList);
   };
 
@@ -55,7 +49,7 @@ export function QuizList({
     // console.log(e.currentTarget.checked);
 
     if (e.target.checked) {
-      setCheckList(questionList.map((item) => item.id as string));
+      setCheckList(questionList.map((item) => item.code as string)); //
     } else {
       setCheckList([]);
     }
@@ -107,108 +101,115 @@ export function QuizList({
 
   return (
     <Container>
-      <ScrollWrapper $height={$height}>
-        <PerfectScrollbar>
-          {showTitle && (
-            <Title>
-              {showCheckBox && (
-                <CheckBoxI
-                  $margin={'0 5px 0 0'}
-                  onChange={(e) => handleAllCheck(e)}
-                  checked={
-                    checkList.length === questionList.length ? true : false
-                  }
-                  // checked={true}
-                  id={'all check'}
-                  value={'all check'}
-                />
-              )}
-              <span className={`${fontBold ? `bold` : ''} title_top`}>
-                전체선택
-              </span>
-            </Title>
-          )}
-          <ListWrapper>
-            <DnDWrapper
-              dragList={initialItems}
-              onDragging={() => {}}
-              onDragEnd={whenDragEnd}
-              dragSectionName={'abc'}
-            >
-              {(dragItem, ref, isDragging) => (
-                <ListItem
-                  ref={ref}
-                  className={`${isDataColor && dragItem.classificationData.length && `on`} ${isDragging ? 'opacity' : ''}`}
-                >
-                  {showCheckBox ? (
-                    <button
-                      type="button"
-                      className="title"
-                      onClick={(e) => {
-                        handleButtonCheck(e, dragItem.id);
-                      }}
-                    >
-                      <CheckBoxI
-                        $margin={'0 5px 0 0'}
-                        onChange={(e) =>
-                          handleSingleCheck(e.target.checked, dragItem.id)
-                        }
-                        checked={
-                          checkList.includes(dragItem.id as string)
-                            ? true
-                            : false
-                        }
-                        id={dragItem.id}
-                        value={dragItem.value}
-                      />
-                      <span className="title_id">{dragItem.id}</span>
-                      <span className="title_tag">{`객관식`}</span>
-                    </button>
-                  ) : (
-                    <span className="title">
-                      <span className="title_id">{dragItem.id}</span>
-                      <span className="title_tag">{`객관식`}</span>
-                    </span>
-                  )}
-                  <MetaGroup
-                    onMouseOver={(e) => showTooltip(e)}
-                    onMouseLeave={(e) => hideTooltip(e)}
+      {questionList.length == 0 && (
+        <ValueNone info="문항을 추가 해주세요" textOnly></ValueNone>
+      )}
+      {questionList.length > 0 && (
+        <ScrollWrapper $height={$height}>
+          <PerfectScrollbar>
+            {showTitle && (
+              <Title>
+                {showCheckBox && (
+                  <CheckBoxI
+                    $margin={'0 5px 0 0'}
+                    onChange={(e) => handleAllCheck(e)}
+                    checked={
+                      checkList.length === questionList.length ? true : false
+                    }
+                    // checked={true}
+                    id={'all check'}
+                    value={'all check'}
+                  />
+                )}
+                <span className={`${fontBold ? `bold` : ''} title_top`}>
+                  전체선택
+                </span>
+              </Title>
+            )}
+            <ListWrapper>
+              <DnDWrapper
+                dragList={initialItems}
+                onDragging={() => {}}
+                onDragEnd={whenDragEnd}
+                dragSectionName={'abc'}
+              >
+                {(dragItem, ref, isDragging) => (
+                  <ListItem
+                    ref={ref}
+                    className={`${isDataColor && dragItem.classificationData.length && `on`} ${isDragging ? 'opacity' : ''}`}
                   >
-                    <span className="sub_title ellipsis">{dragItem.text}</span>
-
-                    <Tooltip>
-                      <span>{dragItem.text}</span>
-                    </Tooltip>
-                  </MetaGroup>
-                  {showViewAllButton && (
-                    <ViewAllButton>
+                    {showCheckBox ? (
                       <button
                         type="button"
-                        onClick={() => {
-                          windowOpenHandler({
-                            name: 'quizpreview',
-                            url: '/quizpreview',
-                            $width: 500,
-                            $height: 500,
-                          });
+                        className="title"
+                        onClick={(e) => {
+                          handleButtonCheck(e, dragItem.id);
                         }}
                       >
-                        전체보기
-                        <Icon
-                          $margin={'0 0 0 2px'}
-                          width={`10px`}
-                          src={`/images/icon/view_arrow.svg`}
-                          disabled={true}
+                        <CheckBoxI
+                          $margin={'0 5px 0 0'}
+                          onChange={(e) =>
+                            handleSingleCheck(e.target.checked, dragItem.id)
+                          }
+                          checked={
+                            checkList.includes(dragItem.id as string)
+                              ? true
+                              : false
+                          }
+                          id={dragItem.id}
+                          value={dragItem.value}
                         />
+                        <span className="title_id">{dragItem.id}</span>
+                        <span className="title_tag">{`객관식`}</span>
                       </button>
-                    </ViewAllButton>
-                  )}
-                </ListItem>
-              )}
-            </DnDWrapper>
-          </ListWrapper>
-        </PerfectScrollbar>
-      </ScrollWrapper>
+                    ) : (
+                      <span className="title">
+                        <span className="title_id">{dragItem.id}</span>
+                        <span className="title_tag">{`객관식`}</span>
+                      </span>
+                    )}
+                    <MetaGroup
+                      onMouseOver={(e) => showTooltip(e)}
+                      onMouseLeave={(e) => hideTooltip(e)}
+                    >
+                      <span className="sub_title ellipsis">
+                        {dragItem.text}
+                      </span>
+
+                      <Tooltip>
+                        <span>{dragItem.text}</span>
+                      </Tooltip>
+                    </MetaGroup>
+                    {showViewAllButton && (
+                      <ViewAllButton>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            windowOpenHandler({
+                              name: 'quizpreview',
+                              url: '/quizpreview',
+                              $width: 500,
+                              $height: 500,
+                            });
+                          }}
+                        >
+                          전체보기
+                          <Icon
+                            $margin={'0 0 0 2px'}
+                            width={`10px`}
+                            src={`/images/icon/view_arrow.svg`}
+                            disabled={true}
+                          />
+                        </button>
+                      </ViewAllButton>
+                    )}
+                  </ListItem>
+                )}
+              </DnDWrapper>
+            </ListWrapper>
+          </PerfectScrollbar>
+        </ScrollWrapper>
+      )}
     </Container>
   );
 }

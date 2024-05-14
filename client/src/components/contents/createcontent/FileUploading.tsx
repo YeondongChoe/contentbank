@@ -7,13 +7,10 @@ import styled from 'styled-components';
 
 import { Button, Modal, ResizeLayout, Select } from '../..';
 import { COLOR } from '../../../components/constants';
+import { QuizListType } from '../../../types';
 
-import {
-  questionList,
-  selectCategory1,
-  selectCategory3,
-} from './contentCreatingCategory';
-import { QuizList, TestDnDItem } from './list';
+import { selectCategory1, selectCategory3 } from './contentCreatingCategory';
+import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
 export function FileUploading({
@@ -22,7 +19,7 @@ export function FileUploading({
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [initialItems, _] = useState<TestDnDItem[]>(questionList);
+  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
 
