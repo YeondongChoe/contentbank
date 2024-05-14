@@ -158,13 +158,23 @@ export function QuizList({
                           id={dragItem.code}
                           value={dragItem.code}
                         />
-                        <span className="title_id">{dragItem.code}</span>
-                        <span className="title_tag">{`객관식`}</span>
+                        <span className="title_id">
+                          {dragItem.quizCategoryList[0]?.quizCategory?.교육과정}
+                          / {dragItem.code}
+                        </span>
+                        <span className="title_tag">
+                          {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                        </span>
                       </button>
                     ) : (
                       <span className="title">
-                        <span className="title_id">{dragItem.code}</span>
-                        <span className="title_tag">{`객관식`}</span>
+                        <span className="title_id">
+                          {dragItem.quizCategoryList[0]?.quizCategory?.교육과정}
+                          / {dragItem.code}
+                        </span>
+                        <span className="title_tag">
+                          {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                        </span>
                       </span>
                     )}
                     <MetaGroup
@@ -172,11 +182,27 @@ export function QuizList({
                       onMouseLeave={(e) => hideTooltip(e)}
                     >
                       <span className="sub_title ellipsis">
-                        {dragItem.code}
+                        {dragItem.quizCategoryList[0]?.quizCategory?.출처},
+                        {dragItem.code},
+                        {dragItem.quizCategoryList[0]?.quizCategory?.학기},
+                        {dragItem.quizCategoryList[0]?.quizCategory?.학년},
+                        {/* {dragItem.quizCategoryList[0]?.quizCategory?.}, */}
+                        기출, 기출년도 , 시험지타입, 문항번호, 교재, 출판사,
+                        교재명, 교재페이지, 교재번호, 내신, 학교명, 출제년도,
+                        학사일정
                       </span>
 
                       <Tooltip>
-                        <span>{dragItem.code}</span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.출처},
+                          {dragItem.code},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.학기},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.학년},
+                          {/* {dragItem.quizCategoryList[0]?.quizCategory?.}, */}
+                          기출, 기출년도 , 시험지타입, 문항번호, 교재, 출판사,
+                          교재명, 교재페이지, 교재번호, 내신, 학교명, 출제년도,
+                          학사일정
+                        </span>
                       </Tooltip>
                     </MetaGroup>
                     {showViewAllButton && (
