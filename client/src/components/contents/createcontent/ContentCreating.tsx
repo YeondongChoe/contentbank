@@ -5,14 +5,11 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { Button, DnDWrapper, Modal, Select } from '../..';
+import { QuizListType } from '../../../types';
 import { COLOR } from '../../constants/COLOR';
 
-import {
-  questionList,
-  selectCategory1,
-  selectCategory3,
-} from './contentCreatingCategory';
-import { QuizList, TestDnDItem } from './list';
+import { selectCategory1, selectCategory3 } from './contentCreatingCategory';
+import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
 export function ContentCreating({
@@ -20,8 +17,9 @@ export function ContentCreating({
 }: {
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [initialItems, _] = useState<TestDnDItem[]>(questionList);
+
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
 
@@ -255,7 +253,7 @@ const SelectWrapper = styled.div`
 
 const ContentListWrapper = styled.div`
   width: 25%;
-  padding: 0 10px;
+  padding-left: 10px;
   border-bottom: 1px solid ${COLOR.BORDER_BLUE};
 `;
 const ContentList = styled.div`

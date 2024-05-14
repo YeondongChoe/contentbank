@@ -23,15 +23,18 @@ import {
 } from '../../components';
 import { COLOR } from '../../components/constants';
 //TODO: 더미데이터
-import {
-  questionList,
-  depthBlockList,
-} from '../../components/contents/createcontent/contentCreatingCategory';
+import { depthBlockList } from '../../components/contents/createcontent/contentCreatingCategory';
 import { QuizList } from '../../components/contents/createcontent/list';
-import { ItemCategoryType, ItemTreeListType, ItemTreeType } from '../../types';
+import {
+  ItemCategoryType,
+  ItemTreeListType,
+  ItemTreeType,
+  QuizListType,
+} from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 
 export function ContentCategoryChange() {
+  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [radio1depthCheck, setRadio1depthCheck] = useState<{
     title: string;
     checkValue: number;
