@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { Button, DnDWrapper, Modal, Select } from '../..';
+import { quizService } from '../../../api/axios';
 import { QuizListType } from '../../../types';
 import { COLOR } from '../../constants/COLOR';
 
@@ -31,14 +33,29 @@ export function ContentCreating({
     console.log('신규 등록된 문항 리스트 get 요청 API');
   };
 
-  const loadData = () => {
-    // 기본 필수 셀렉트값 불러오기
-    // 과목 / 출처 / 문항타입 셀렉트 데이터
+  //TODO : 임시로 퀴즈데이터 이미 등록된 데이터로 불러옴
+  //       나중에 등록버튼으로 등록 완료된 데이터로 전역저장후 다시setQuestionList값으로 넣기
+  //TODO : 수정 팝업으로 열렸을시 - 전역에 체크박스데이터 저장후 열릴때 setQuestionList에 값넣기
+  const getQuiz = async () => {
+    const res = await quizService.get(`/v1/quiz`);
+    console.log(`getQuiz 결과값`, res.data.data);
+    return res.data.data;
   };
+  const { data: quizData } = useQuery({
+    queryKey: ['get-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-quizList 에러 메세지',
+    },
+  });
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (quizData) {
+      console.log(quizData.quizList);
+      setQuestionList(quizData.quizList);
+    }
+  }, [quizData]);
+
   return (
     <Container>
       <ContentsWrapper>
