@@ -98,9 +98,10 @@ export function ContentList({
   /* 문항 pdf 모달 열기 */
   const openCreatePDFModal = () => {
     console.log(
-      'checkList 체크된 문항 1개당 최소1페이지 문항데이터 배열로 직접',
+      'checkList 체크된 문항 1개당 최소1페이지 문항데이터 배열로 직접 또는 idx 값으로 문항 데이터불러오기',
       checkList,
     );
+
     openModal({
       title: '',
       content: <PDFModal list={checkList} />,
