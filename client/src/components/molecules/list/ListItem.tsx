@@ -27,6 +27,18 @@ export function ListItem({
   isChecked,
   onClick,
 }: ListItemProps) {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // 클릭된 요소가 SVG 또는 이미지인 경우 이벤트 전파 중지
+    const targetNodeName = (event.target as HTMLElement).nodeName;
+    console.log(targetNodeName);
+    if (targetNodeName === 'svg' || targetNodeName === 'path') {
+      event.stopPropagation();
+    } else if (onClick) {
+      // 그 외의 경우는 onClick 핸들러 실행
+      onClick(event);
+    }
+  };
+
   return (
     <Component
       className={`${isChecked && 'on'}`}
@@ -37,7 +49,7 @@ export function ListItem({
     >
       <Wrapper
         className={`${isChecked && 'on'}`}
-        onClick={onClick}
+        onClick={handleClick}
         type="button"
         $padding={$padding}
       >
