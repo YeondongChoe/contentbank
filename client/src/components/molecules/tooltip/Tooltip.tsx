@@ -11,6 +11,7 @@ type TooltiptProps = {
   margin?: string;
   children: JSX.Element;
   className?: string;
+  arrowPosition?: string;
 };
 
 export function Tooltip({
@@ -19,6 +20,7 @@ export function Tooltip({
   margin,
   children,
   className,
+  arrowPosition,
 }: TooltiptProps) {
   return (
     <Component
@@ -26,6 +28,7 @@ export function Tooltip({
       height={height}
       $margin={margin}
       className={` ${className}`}
+      arrowPosition={arrowPosition}
     >
       <TooltipText>{children}</TooltipText>
     </Component>
@@ -36,6 +39,7 @@ type TooltiptStyleProps = {
   width?: string;
   height?: string;
   $margin?: string;
+  arrowPosition?: string;
 };
 
 const Component = styled.div<TooltiptStyleProps>`
@@ -59,7 +63,7 @@ const Component = styled.div<TooltiptStyleProps>`
     width: 0;
     height: 0;
     top: -5px;
-    left: 2px;
+    ${({ arrowPosition }) => (arrowPosition ? `${arrowPosition}` : '')};
     border-bottom: 10px solid ${COLOR.FONT_BLACK}; /* 화살표 */
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;

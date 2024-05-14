@@ -20,6 +20,7 @@ import {
   Icon,
   openToastifyAlert,
   PDFModal,
+  Tooltip,
 } from '../../../components';
 import { useModal } from '../../../hooks';
 import { pageAtom } from '../../../store/utilAtom';
@@ -282,6 +283,17 @@ export function ContentList({
     setCheckList([]);
   }, [tabVeiw, page]);
 
+  const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    const target = e.currentTarget.children[2];
+    // console.log(target.classList);
+    target.classList.add('on');
+  };
+  const hideTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    const target = e.currentTarget.children[2];
+    // console.log(target.classList);
+    target.classList.remove('on');
+  };
+
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>
@@ -414,10 +426,52 @@ export function ContentList({
                 />
               )}
               <ItemLayout>
-                {/* //TODO */}
-                <span className="width_20px">{item.idx} </span>
+                <span
+                  className="width_80px"
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">출처</strong>
+                  <span className="tag">{item.idx}</span>
+                  <Tooltip arrowPosition={`left: 50%`}>
+                    <span>출처 툴팁</span>
+                  </Tooltip>
+                </span>
                 <i className="line"></i>
-                <span>{item.idx} </span>
+                <span className="width_80px">
+                  <strong className="title">교육과정</strong>
+                  <span className="tag">{item.idx}</span>
+                </span>
+                <i className="line"></i>
+                <span>
+                  <strong className="title">학교급</strong>
+                  <span className="tag">{item.idx}</span>
+                </span>
+                <i className="line"></i>
+                <span>
+                  <strong className="title">학년</strong>
+                  <span className="tag">{item.idx}</span>
+                </span>
+                <i className="line"></i>
+                <span>
+                  <strong className="title">학기</strong>
+                  <span className="tag">{item.idx}</span>
+                </span>
+                <i className="line"></i>
+                <span>
+                  <strong className="title">교과</strong>
+                  <span className="tag">{item.idx}</span>
+                </span>
+                <i className="line"></i>
+                <span>
+                  <strong className="title">과목</strong>
+                  <span className="tag">{item.idx}</span>
+                </span>
+                <i className="line"></i>
+                <span className="width_80px">
+                  <strong className="title"> 대단원</strong>
+                  <span className="tag">{item.idx}</span>
+                </span>
                 <i className="line"></i>
                 <span>{item.type} </span>
                 <i className="line"></i>
@@ -532,6 +586,7 @@ const ItemLayout = styled.span`
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
+  position: relative;
 
   > span {
     display: flex;
@@ -539,6 +594,24 @@ const ItemLayout = styled.span`
     justify-content: space-around;
     flex-wrap: wrap;
     word-break: break-all;
+    min-width: 30px;
+    max-width: 150px;
+    font-weight: normal;
+  }
+  .title {
+    width: 100%;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .tag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 3px 5px;
+    border-radius: 10px;
+    background-color: ${COLOR.BORDER_GRAY};
   }
   .line {
     width: 1px;
@@ -553,6 +626,9 @@ const ItemLayout = styled.span`
   }
   .width_20px {
     width: 20px;
+  }
+  .width_80px {
+    width: 80px;
   }
   .width_50 {
     width: 50%;

@@ -34,7 +34,6 @@ export function QuizList({
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
   >([]);
-  const [initialItems, _] = useState<QuizListType[]>(questionList);
 
   const whenDragEnd = (newList: QuizListType[]) => {
     console.log('@드래그끝났을떄', newList);
@@ -128,7 +127,7 @@ export function QuizList({
             )}
             <ListWrapper>
               <DnDWrapper
-                dragList={initialItems}
+                dragList={questionList}
                 onDragging={() => {}}
                 onDragEnd={whenDragEnd}
                 dragSectionName={'abc'}
@@ -143,28 +142,28 @@ export function QuizList({
                         type="button"
                         className="title"
                         onClick={(e) => {
-                          handleButtonCheck(e, dragItem.id);
+                          handleButtonCheck(e, dragItem.code);
                         }}
                       >
                         <CheckBoxI
                           $margin={'0 5px 0 0'}
                           onChange={(e) =>
-                            handleSingleCheck(e.target.checked, dragItem.id)
+                            handleSingleCheck(e.target.checked, dragItem.code)
                           }
                           checked={
-                            checkList.includes(dragItem.id as string)
+                            checkList.includes(dragItem.code as string)
                               ? true
                               : false
                           }
-                          id={dragItem.id}
-                          value={dragItem.value}
+                          id={dragItem.code}
+                          value={dragItem.code}
                         />
-                        <span className="title_id">{dragItem.id}</span>
+                        <span className="title_id">{dragItem.code}</span>
                         <span className="title_tag">{`객관식`}</span>
                       </button>
                     ) : (
                       <span className="title">
-                        <span className="title_id">{dragItem.id}</span>
+                        <span className="title_id">{dragItem.code}</span>
                         <span className="title_tag">{`객관식`}</span>
                       </span>
                     )}
@@ -173,11 +172,11 @@ export function QuizList({
                       onMouseLeave={(e) => hideTooltip(e)}
                     >
                       <span className="sub_title ellipsis">
-                        {dragItem.text}
+                        {dragItem.code}
                       </span>
 
                       <Tooltip>
-                        <span>{dragItem.text}</span>
+                        <span>{dragItem.code}</span>
                       </Tooltip>
                     </MetaGroup>
                     {showViewAllButton && (
