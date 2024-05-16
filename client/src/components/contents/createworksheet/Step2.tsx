@@ -18,19 +18,14 @@ import {
   TabMenu,
   Label,
   BarChart,
-  MathviewerCard,
   MathviewerAccordion,
   Select,
   CheckBox,
   DnDWrapper,
 } from '../..';
+import { WorkbookData } from '../../../types/WorkbookType';
 import { COLOR } from '../../constants';
-import Contents2 from '../../mathViewer/test2.json';
-import Contents3 from '../../mathViewer/test3.json';
-import Contents4 from '../../mathViewer/test4.json';
 import dummy from '../createcontent/data.json';
-
-import { Step3 } from './Step3';
 
 type ContentListType = {
   sort: number;
@@ -129,10 +124,6 @@ export function Step2() {
     console.log('어떤 데이터 값으로 호출?');
   };
 
-  const [contentList, setContentList] = useState(ContentList);
-
-  const [selectedIndex, setSelectedIndex] = useState<number>();
-
   const [initialItems, setInitialItems] =
     useState<ContentListType[]>(ContentList);
 
@@ -149,32 +140,9 @@ export function Step2() {
     const target = e.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
   };
-
-  const dragItem = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
   const [isStartDnD, setIsStartDnd] = useState(false);
   console.log(isStartDnD);
 
-  const dragStart = (e: React.DragEvent, position: number, sort: number) => {
-    setSelectedIndex(sort);
-    dragItem.current = position;
-  };
-  const dragEnter = (e: React.DragEvent, position: number) => {
-    dragOverItem.current = position;
-  };
-  const dragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-  const drop = () => {
-    if (dragItem.current !== null && dragOverItem.current !== null) {
-      const newList = [...contentList];
-      const [removed] = newList.splice(dragItem.current, 1);
-      newList.splice(dragOverItem.current, 0, removed);
-      dragItem.current = null;
-      dragOverItem.current = null;
-      setContentList(newList);
-    }
-  };
   // const Mathviwerdrop = () => {
   //   if (dragItem.current !== null && dragOverItem.current !== null) {
   //     // 가정: contentList의 각 항목이 객체인 경우

@@ -3,6 +3,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Step2 } from '../../components/contents/createworksheet';
+import { WorkbookData } from '../../types/WorkbookType';
 
 export function CreateWorksheetStep2() {
   return (

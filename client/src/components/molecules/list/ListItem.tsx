@@ -30,7 +30,6 @@ export function ListItem({
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     // 클릭된 요소가 SVG 또는 이미지인 경우 이벤트 전파 중지
     const targetNodeName = (event.target as HTMLElement).nodeName;
-    console.log(targetNodeName);
     if (targetNodeName === 'svg' || targetNodeName === 'path') {
       event.stopPropagation();
     } else if (onClick) {
