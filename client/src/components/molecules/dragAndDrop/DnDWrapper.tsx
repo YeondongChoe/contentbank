@@ -46,33 +46,32 @@ export const DnDWrapper = ({
   setIsStartDnd,
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
+
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
     dragIndex: number,
     hoverIndex: number,
     isFinished: boolean,
   ) => {
-    const newItems = [...currentItems];
-    const [draggedItem] = newItems.splice(dragIndex, 1);
-    newItems.splice(hoverIndex, 0, draggedItem);
-    setCurrentItems(newItems);
-    newItems.forEach((item, index) => {
-      item.order = index;
-    });
+    // 상태 업데이트 로직을 함수 밖으로 빼내서, 렌더링 중에 호출되지 않도록 함
+    const newItems = updateItems(dragIndex, hoverIndex);
+
     if (isFinished) {
-      onDragEnd(newItems); // 드래그가 종료되었을 때 콜백 함수를 호출.
+      // 상태 업데이트 요청을 상위 컴포넌트로 전달
+      onDragEnd(newItems);
     } else {
-      onDragging && onDragging(newItems); // 항목이 드래그 중일 때 콜백 함수를 호출.
+      // 드래깅 중인 상태 업데이트는 로컬 상태로 처리
+      setCurrentItems(newItems);
     }
-    setIsStartDnd?.(true);
   };
-  // console.log(isStartDnD);
+  // 항목 업데이트 로직 분리
+  function updateItems(dragIndex: number, hoverIndex: number) {
+    const newItems = [...currentItems];
+    const draggedItem = newItems.splice(dragIndex, 1)[0];
+    newItems.splice(hoverIndex, 0, draggedItem);
+    return newItems.map((item, index) => ({ ...item, order: index }));
+  }
 
-  useEffect(() => {
-    setCurrentItems(dragList);
-  }, [dragList]);
-
-  // 각 항목을 랜더링.
   return (
     <>
       {doubleDnD ? (

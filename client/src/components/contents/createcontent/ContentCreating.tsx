@@ -55,7 +55,7 @@ export function ContentCreating({
 
   useEffect(() => {
     if (quizData) {
-      console.log(quizData.quizList);
+      console.log('초기값 임시로 불러와서 넣기', quizData.quizList);
       setQuestionList(quizData.quizList);
     }
   }, [quizData]);

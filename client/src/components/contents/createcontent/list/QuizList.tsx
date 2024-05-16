@@ -10,7 +10,7 @@ import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
 
 export function QuizList({
-  questionList,
+  questionList: initialQuestionList,
   showTitle,
   $height,
   showCheckBox,
@@ -18,6 +18,7 @@ export function QuizList({
   fontBold,
   setCheckedList,
   isDataColor,
+  isHasMeta,
 }: {
   questionList: QuizListType[] | [];
   showTitle?: boolean;
@@ -27,21 +28,15 @@ export function QuizList({
   fontBold?: boolean;
   setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
   isDataColor?: boolean;
+  isHasMeta?: boolean;
 }) {
   // const ContentList = dummy.ContentInfo;
+  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
   >([]);
-
-  const whenDragEnd = (newList: QuizListType[]) => {
-    console.log('@드래그끝났을떄', newList);
-  };
-
-  const submitSave = async () => {
-    //TODO :  체크박스 체크후 분류 항목체크시 전송
-  };
 
   // 체크박스 설정
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +54,10 @@ export function QuizList({
     } else {
       setCheckList(checkList.filter((el) => el !== id));
     }
+
+    // if (ref.current && ref.current.classList.contains('isHasMeta')) {
+
+    // }
   };
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -90,13 +89,17 @@ export function QuizList({
     setCheckedList(checkList);
   }, [checkList]);
 
-  useEffect(() => {
-    setCheckList([]);
-  }, [questionList]);
+  const whenDragEnd = (newList: QuizListType[]) => {
+    setQuestionList(newList); // 이동후 questionList를 업데이트
+  };
 
   useEffect(() => {
-    // 탭 또는 버튼 이동시 이전 단계 저장된 리스트 불러오기
-  }, []);
+    setCheckedList(checkList); // 체크리스트 상태를 외부로 전달
+  }, [checkList, setCheckedList]);
+
+  useEffect(() => {
+    setQuestionList(initialQuestionList);
+  }, [initialQuestionList]);
 
   return (
     <Container>
@@ -133,9 +136,11 @@ export function QuizList({
                 dragSectionName={'abc'}
               >
                 {(dragItem, ref, isDragging) => (
-                  <ListItem
+                  <ListDnDItem
+                    key={`${dragItem.code}`}
                     ref={ref}
-                    className={`${isDataColor && dragItem.classificationData?.length && `on`} ${isDragging ? 'opacity' : ''}`}
+                    className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${isHasMeta ? 'isHasMeta' : ''}`}
+                    isChecked={checkList.includes(dragItem.code)}
                   >
                     {showCheckBox ? (
                       <button
@@ -228,7 +233,7 @@ export function QuizList({
                         </button>
                       </ViewAllButton>
                     )}
-                  </ListItem>
+                  </ListDnDItem>
                 )}
               </DnDWrapper>
             </ListWrapper>
@@ -273,7 +278,7 @@ const ListWrapper = styled.ul`
   height: fit-content;
 `;
 
-const ListItem = styled.li`
+const ListDnDItem = styled.li<{ isChecked: boolean }>`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -285,7 +290,7 @@ const ListItem = styled.li`
   min-height: 50px;
   margin-bottom: 10px;
 
-  &.on {
+  &.ondnd {
     background-color: ${COLOR.IS_HAVE_DATA};
     button.title {
       background-color: ${COLOR.IS_HAVE_DATA};
@@ -299,7 +304,8 @@ const ListItem = styled.li`
     flex-wrap: wrap;
     /* align-items: center; */
     border: none;
-    background-color: #fff;
+    background-color: ${({ isChecked }) =>
+      isChecked ? `rgb(229, 236, 255)` : 'white'};
     cursor: pointer;
 
     .title_id {
@@ -343,6 +349,8 @@ const ListItem = styled.li`
   &.opacity {
     opacity: 0.8;
   }
+  background-color: ${({ isChecked }) =>
+    isChecked ? `rgb(229, 236, 255)` : 'white'};
 `;
 
 const MetaGroup = styled.span`

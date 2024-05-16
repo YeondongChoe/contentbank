@@ -7,6 +7,7 @@ import { COLOR } from '../../constants';
 type ListItemProps = {
   // onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;
   // onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  ref?: React.RefObject<HTMLLIElement>;
   width?: string;
   height?: string;
   $margin?: string;
@@ -15,9 +16,11 @@ type ListItemProps = {
   key: string;
   isChecked: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
 };
 
 export function ListItem({
+  ref,
   width,
   height,
   $margin,
@@ -26,6 +29,7 @@ export function ListItem({
   key,
   isChecked,
   onClick,
+  className,
 }: ListItemProps) {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     // 클릭된 요소가 SVG 또는 이미지인 경우 이벤트 전파 중지
@@ -41,11 +45,12 @@ export function ListItem({
 
   return (
     <Component
-      className={`${isChecked && 'on'}`}
+      className={`${isChecked && 'on'} ${className}`}
       width={width}
       height={height}
       $margin={$margin}
       key={key}
+      ref={ref}
     >
       <Wrapper
         className={`${isChecked && 'on'}`}
