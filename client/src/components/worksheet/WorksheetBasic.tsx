@@ -13,7 +13,6 @@ import Contents2 from '../../components/mathViewer/test2.json';
 import Contents3 from '../../components/mathViewer/test3.json';
 import Contents4 from '../../components/mathViewer/test4.json';
 import { PaginationBox } from '../../components/molecules';
-import { previewWorksheetBoolAtom } from '../../store/creatingWorksheetAtom';
 import { totalPageAtom } from '../../store/utilAtom';
 import { ItemQuestionType } from '../../types';
 import { A4_HEIGHT, A4_WIDTH, COLOR } from '../constants';
@@ -45,7 +44,6 @@ export const list = [
 ];
 
 export function WorksheetBasic() {
-  const setIsPreview = useSetRecoilState(previewWorksheetBoolAtom);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const printDivRef = useRef<HTMLDivElement | null>(null);
 
