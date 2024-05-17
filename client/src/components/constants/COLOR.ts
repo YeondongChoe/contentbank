@@ -27,6 +27,7 @@ export const COLOR = {
   TABLE_GRAY: '#f0f0f0',
 
   IS_HAVE_DATA: 'rgb(195, 209, 247)',
+  IS_CHECK_BACKGROUND: 'rgb(229, 236, 255)',
   //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ//
   HOVER: '#f4f7fe',
   GRAY: '#9a9a9a',

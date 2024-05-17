@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -9,6 +9,8 @@ import styled from 'styled-components';
 
 import {
   Button,
+  Icon,
+  IconButton,
   Loader,
   ResizeLayout,
   ValueNone,
@@ -85,10 +87,7 @@ export function Classification() {
     { code: '', idx: 0, name: '' },
   ]);
 
-  const [unitClassificationList, setUnitClassificationList] = useState([
-    '',
-    '',
-  ]);
+  const [unitClassificationList, setUnitClassificationList] = useState([]);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -161,7 +160,9 @@ export function Classification() {
         classificationInstance.get(`/v1/category/${id}`),
       );
       const responses = await Promise.all(requests);
-      const itemsList = responses.map((res) => res.data.data.categoryClassList);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
       setCategoryList(itemsList);
     } catch (error: any) {
       console.error('Error fetching next list: ', error?.data?.code);
@@ -420,11 +421,13 @@ export function Classification() {
         classificationInstance.get(`/v1/category/${id}`),
       );
       const responses = await Promise.all(requests);
-      const itemsList = responses.map((res) => res.data.data.categoryClassList);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
       console.error('Error fetching next list: ', error?.data?.code);
-      if (error.data.code == 'GE-002') {
+      if (error?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
       }
@@ -476,6 +479,27 @@ export function Classification() {
   }, []);
   useEffect(() => {}, [questionList]);
 
+  // 교과정보 추가버튼 disable 처리
+  const addButtonBool = useMemo(() => {
+    if (
+      unitClassificationList.length < 5 &&
+      radio1depthCheck.code !== '' &&
+      radio2depthCheck.code !== '' &&
+      radio3depthCheck.code !== '' &&
+      radio4depthCheck.code !== ''
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [
+    unitClassificationList,
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    radio4depthCheck,
+  ]);
+
   return (
     <Container>
       <ResizeLayoutWrapper>
@@ -513,7 +537,7 @@ export function Classification() {
                 </Title>
                 {/* 추가된 단원분류 리스트 최대5개 저장 */}
                 <UnitClassifications>
-                  {/* {unitClassificationList.length > 0 ? (
+                  {unitClassificationList.length > 0 ? (
                     <>
                       {unitClassificationList.map((el) => (
                         <IconButtonWrapper key={`${el} idx`}>
@@ -551,7 +575,7 @@ export function Classification() {
                     <p className="info">
                       교과정보는 최대 5개 까지 저장 가능합니다
                     </p>
-                  )} */}
+                  )}
                 </UnitClassifications>
 
                 {/* 교육과정 라디오 버튼 부분 */}
@@ -766,7 +790,7 @@ export function Classification() {
         <SubmitButtonWrapper>
           <Button
             $filled
-            disabled={unitClassificationList.length <= 5 ? false : true}
+            disabled={addButtonBool}
             cursor
             width={'calc(50% - 5px)'}
             $margin={'0 10px 0 0'}
@@ -858,7 +882,8 @@ const UnitClassifications = styled.div`
   flex-direction: column;
   background-color: ${COLOR.IS_HAVE_DATA};
   .info {
-    color: ${COLOR.FONT_NAVI};
+    color: ${COLOR.SECONDARY};
+    font-size: 14px;
   }
 `;
 const AccordionWrapper = styled.div`

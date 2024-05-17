@@ -348,10 +348,10 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
     opacity: 0.8;
   }
   background-color: ${({ isChecked }) =>
-    isChecked ? `rgb(229, 236, 255)` : 'white'};
+    isChecked ? `${COLOR.IS_CHECK_BACKGROUND}` : 'white'};
 
   &.isHasMeta {
-    background-color: rgb(198, 217, 252);
+    background-color: ${COLOR.IS_HAVE_DATA};
   }
 `;
 
