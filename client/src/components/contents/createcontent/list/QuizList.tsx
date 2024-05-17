@@ -54,10 +54,6 @@ export function QuizList({
     } else {
       setCheckList(checkList.filter((el) => el !== id));
     }
-
-    // if (ref.current && ref.current.classList.contains('isHasMeta')) {
-
-    // }
   };
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -139,7 +135,7 @@ export function QuizList({
                   <ListDnDItem
                     key={`${dragItem.code}`}
                     ref={ref}
-                    className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${isHasMeta ? 'isHasMeta' : ''}`}
+                    className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${dragItem.quizCategoryList[0] ? 'isHasMeta' : ''}`}
                     isChecked={checkList.includes(dragItem.code)}
                   >
                     {showCheckBox ? (
@@ -304,8 +300,7 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
     flex-wrap: wrap;
     /* align-items: center; */
     border: none;
-    background-color: ${({ isChecked }) =>
-      isChecked ? `rgb(229, 236, 255)` : 'white'};
+    background-color: transparent;
     cursor: pointer;
 
     .title_id {
@@ -314,7 +309,7 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
       word-break: break-all;
       text-align: left;
       color: ${COLOR.PRIMARY};
-      /* padding-top: 1px; */
+      background-color: transparent;
     }
     .title_tag {
       width: 40px;
@@ -322,6 +317,7 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
       font-size: 13px;
       font-weight: bold;
       color: ${COLOR.ALERTBAR_SUCCESS};
+      background-color: transparent;
     }
   }
   span.title {
@@ -336,6 +332,7 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
       word-break: break-all;
       color: ${COLOR.PRIMARY};
       width: calc(100% - 40px);
+      background-color: transparent;
     }
     .title_tag {
       width: 40px;
@@ -343,6 +340,7 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
       font-size: 13px;
       font-weight: bold;
       color: ${COLOR.ALERTBAR_ERROR};
+      background-color: transparent;
     }
   }
 
@@ -351,6 +349,10 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
   }
   background-color: ${({ isChecked }) =>
     isChecked ? `rgb(229, 236, 255)` : 'white'};
+
+  &.isHasMeta {
+    background-color: rgb(198, 217, 252);
+  }
 `;
 
 const MetaGroup = styled.span`
@@ -365,6 +367,7 @@ const MetaGroup = styled.span`
     width: 100%;
     font-size: 13px;
     border-top: 1px solid ${COLOR.BORDER_BLUE};
+    background-color: transparent;
   }
 
   .ellipsis {
@@ -387,6 +390,7 @@ const ViewAllButton = styled.p`
     border: none;
     background-color: #fff;
     color: ${COLOR.ALERTBAR_SUCCESS};
+    background-color: transparent;
     cursor: pointer;
 
     > button {
