@@ -47,6 +47,12 @@ export const DnDWrapper = ({
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
 
+  useEffect(() => {
+    if (dragList) {
+      setCurrentItems(dragList);
+    }
+  }, [dragList]);
+
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
     dragIndex: number,
@@ -79,7 +85,7 @@ export const DnDWrapper = ({
           {currentItems.length !== 0 ? (
             currentItems.map((item, idx) => (
               <DraggableItem
-                key={item.id}
+                key={idx}
                 dragItem={item}
                 itemIndex={idx}
                 onMove={handleItemMove}
@@ -96,7 +102,7 @@ export const DnDWrapper = ({
           {currentItems.length !== 0 ? (
             currentItems.map((item, idx) => (
               <DraggableItem
-                key={item.id}
+                key={idx}
                 dragItem={item}
                 itemIndex={idx}
                 onMove={handleItemMove}

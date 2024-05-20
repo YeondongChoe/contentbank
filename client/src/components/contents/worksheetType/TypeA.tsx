@@ -10,8 +10,8 @@ import Contents2 from '../../../components/mathViewer/test2.json';
 import Contents3 from '../../../components/mathViewer/test3.json';
 import Contents4 from '../../../components/mathViewer/test4.json';
 import { ItemQuestionType } from '../../../types/ItemQuestionType';
+import { QuizList } from '../../../types/WorkbookType';
 import { COLOR } from '../../constants';
-
 type TypeAProps = {
   title?: string;
   grade?: string;
@@ -31,24 +31,24 @@ export const TypeA = ({
   isContentTypeTitle,
   theme,
 }: TypeAProps) => {
-  const [list, setList] = useState<ItemQuestionType[]>([]);
-  const [list1, setList1] = useState<ItemQuestionType[]>([]);
+  const [list, setList] = useState<QuizList[]>([]);
+  const [list1, setList1] = useState<QuizList[]>([]);
 
-  useEffect(() => {
-    if (contentQuantity === '최대') {
-      setList([Contents2, Contents2, Contents3, Contents4]);
-      setList1([Contents2, Contents3, Contents4]);
-    }
-    if (contentQuantity === '6문제') {
-      setList([Contents2, Contents2, Contents3]);
-    }
-    if (contentQuantity === '4문제') {
-      setList([Contents1, Contents2]);
-    }
-    if (contentQuantity === '2문제') {
-      setList([Contents1]);
-    }
-  }, [contentQuantity]);
+  // useEffect(() => {
+  //   if (contentQuantity === '최대') {
+  //     setList([Contents2, Contents2, Contents3, Contents4]);
+  //     setList1([Contents2, Contents3, Contents4]);
+  //   }
+  //   if (contentQuantity === '6문제') {
+  //     setList([Contents2, Contents2, Contents3]);
+  //   }
+  //   if (contentQuantity === '4문제') {
+  //     setList([Contents1, Contents2]);
+  //   }
+  //   if (contentQuantity === '2문제') {
+  //     setList([Contents1]);
+  //   }
+  // }, [contentQuantity]);
 
   return (
     <Container>
@@ -91,7 +91,7 @@ export const TypeA = ({
         <WorksheetBody>
           <WorksheetBodyLeft>
             {list.map((card, i) => (
-              <MathViewerWrapper key={card.it_quest + i}>
+              <MathViewerWrapper key={i}>
                 <strong>{i + 1}.</strong>
                 <MathViewer
                   data={card}
