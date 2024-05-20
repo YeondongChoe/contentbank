@@ -16,7 +16,7 @@ export function WorksheetPdf() {
           {list.map((card, i) => (
             <div key={i}>
               <Text>
-                <MathViewer data={card} width="450px"></MathViewer>
+                {/* <MathViewer data={card} width="450px"></MathViewer> */}
               </Text>
             </div>
           ))}

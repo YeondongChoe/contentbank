@@ -15,6 +15,7 @@ import Contents4 from '../../components/mathViewer/test4.json';
 import { PaginationBox } from '../../components/molecules';
 import { totalPageAtom } from '../../store/utilAtom';
 import { ItemQuestionType } from '../../types';
+import { QuizList } from '../../types/WorkbookType';
 import { A4_HEIGHT, A4_WIDTH, COLOR } from '../constants';
 import { MathViewer } from '../mathViewer/MathViewer';
 
@@ -49,15 +50,14 @@ export function WorksheetBasic() {
 
   const [didMount, setDidMount] = useState(false);
   const [heightList, setHeightList] = useState<number[]>([]);
-  const [colList, setColList] = useState<ItemQuestionType[]>([]);
-  const [colList2, setColList2] = useState<ItemQuestionType[]>([]);
-  const [existList, setExistList] = useState<ItemQuestionType[]>([]);
+  const [colList, setColList] = useState<QuizList[]>([]);
+  const [colList2, setColList2] = useState<QuizList[]>([]);
+  const [existList, setExistList] = useState<QuizList[]>([]);
 
   const loadData = () => {
     // 데이터 불러오기
-
     // 리스트 초기화
-    setColList(list);
+    //setColList(list);
   };
 
   const cardWidth = useMemo(() => {
@@ -110,9 +110,9 @@ export function WorksheetBasic() {
       }
     }
     console.log('sortList', sortList);
-    setColList2(sortList);
+    //setColList2(sortList);
     console.log('existList', existList);
-    setExistList(existList);
+    //setExistList(existList);
   };
   console.log('colList', colList);
 
@@ -212,7 +212,7 @@ export function WorksheetBasic() {
               <MathViewerList ref={containerRef}>
                 {existList.map((card, i) => (
                   <MathViewerWrapper
-                    key={card.it_quest + i}
+                    key={i}
                     width={cardWidth}
                     // onLoad={(e) => {
                     //   getItemHeight(e);
@@ -234,7 +234,7 @@ export function WorksheetBasic() {
               <MathViewerList ref={containerRef}>
                 {colList.map((card, i) => (
                   <MathViewerWrapper
-                    key={card.it_quest + i}
+                    key={i}
                     width={cardWidth}
                     // onLoad={(e) => {
                     //   getItemHeight(e);
@@ -257,7 +257,7 @@ export function WorksheetBasic() {
               <MathViewerList ref={containerRef}>
                 {colList2.map((card, i) => (
                   <MathViewerWrapper
-                    key={card.it_quest + i}
+                    key={i}
                     width={cardWidth}
                     // onLoad={(e) => {
                     //   getItemHeight(e);

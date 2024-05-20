@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -23,7 +23,12 @@ import {
   CheckBox,
   DnDWrapper,
 } from '../..';
-import { WorkbookData } from '../../../types/WorkbookType';
+import {
+  WorkbookData,
+  QuizList,
+  QuizCategory,
+  QuizCategoryList,
+} from '../../../types/WorkbookType';
 import { COLOR } from '../../constants';
 import dummy from '../createcontent/data.json';
 
@@ -35,6 +40,41 @@ type ContentListType = {
 };
 
 export function Step2() {
+  const [didMount, setDidMount] = useState<boolean>(false);
+  const [sendLocalData, setSendLocalData] = useState<WorkbookData>();
+  const getLocalData = () => {
+    const data = localStorage.getItem('sendData');
+    let sendData;
+    if (data) sendData = JSON.parse(data);
+
+    console.log('데이터 조회', sendData && sendData.data);
+    setSendLocalData(sendData.data.data);
+    // if (sendData === undefined) setIsUploadFile('createcontent');
+    // if (sendData.data === 'createcontent') setIsUploadFile(sendData.data);
+    // if (sendData.data === 'uploadfile') setIsUploadFile(sendData.data);
+
+    // 로컬스토리지 값 다받은 뒤 초기화
+    window.opener.localStorage.clear();
+  };
+  // console.log(sendLocalData);
+
+  useEffect(() => {
+    if (didMount) {
+      // navigate 이동하며 전달된 데이터 받기
+      // if (location?.state?.isUploadFile !== undefined) {
+      //   setIsUploadFile(location.state.isUploadFile);
+      // } else {
+      //   setIsUploadFile(false);
+      // }
+      // 윈도우 열릴때 부모윈도우 스토리지 접근
+      getLocalData();
+    }
+  }, [didMount]);
+
+  useEffect(() => {
+    setDidMount(true);
+  }, []);
+
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
     {
@@ -124,10 +164,19 @@ export function Step2() {
     console.log('어떤 데이터 값으로 호출?');
   };
 
-  const [initialItems, setInitialItems] =
-    useState<ContentListType[]>(ContentList);
+  const [initialItems, setInitialItems] = useState<QuizList[]>(
+    sendLocalData?.data.quizList || [],
+  );
 
-  const whenDragEnd = (newList: ContentListType[]) => {
+  useEffect(() => {
+    if (sendLocalData?.data.quizList) {
+      setInitialItems(sendLocalData.data.quizList);
+    }
+  }, [sendLocalData]);
+
+  // console.log(initialItems);
+
+  const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
     console.log('@드래그끝났을떄', newList);
   };
@@ -141,7 +190,7 @@ export function Step2() {
       .childNodes[0] as HTMLInputElement;
   };
   const [isStartDnD, setIsStartDnd] = useState(false);
-  console.log(isStartDnD);
+  // console.log(isStartDnD);
 
   // const Mathviwerdrop = () => {
   //   if (dragItem.current !== null && dragOverItem.current !== null) {
@@ -265,7 +314,7 @@ export function Step2() {
                         <Label value="문항 통계" fontSize="16px" />
                         <Discription>
                           <DiscriptionOutline>
-                            <div>총 45 문항</div>
+                            <div>총 {sendLocalData?.data.quizCnt} 문항</div>
                             <DiscriptionType>객관식 20</DiscriptionType>
                             <DiscriptionType>주관식 10</DiscriptionType>
                             <DiscriptionType>서술형 15</DiscriptionType>
@@ -281,7 +330,7 @@ export function Step2() {
                             <div className="number">번호</div>
                             <div className="type">문항타입</div>
                             <div className="level">난이도</div>
-                            <div className="title">유형명명</div>
+                            <div className="title">유형명</div>
                             <div className="icon">순서변경</div>
                           </ListCategory>
                           <DnDWrapper
@@ -297,26 +346,115 @@ export function Step2() {
                                 className={`${isDragging ? 'opacity' : ''}`}
                               >
                                 <Content
+                                  // key={i}
                                   onClick={(e) => {
-                                    handleButtonCheck(e, dragItem.id);
+                                    //handleButtonCheck(e, i.toString());
                                   }}
                                 >
-                                  <div className="number">{dragItem.sort}</div>
+                                  <div className="number">{dragItem.idx}</div>
                                   <div className="type">
-                                    {dragItem.unitType}
+                                    {
+                                      dragItem.quizCategoryList[0].quizCategory
+                                        .문항타입
+                                    }
                                   </div>
                                   <div className="level">
-                                    {dragItem.contentLevel}
+                                    {
+                                      dragItem.quizCategoryList[0].quizCategory
+                                        .난이도
+                                    }
                                   </div>
                                   <div className="title">
-                                    {dragItem.unitMajor}
+                                    {
+                                      dragItem.quizCategoryList[0].quizCategory
+                                        .출처
+                                    }
                                   </div>
                                   <div className="icon">
-                                    <IoMenuOutline
-                                      style={{ cursor: 'grab' }}
-                                    ></IoMenuOutline>
+                                    <IoMenuOutline style={{ cursor: 'grab' }} />
                                   </div>
                                 </Content>
+                                {/* {Array.isArray(dragItem) &&
+                                  dragItem.length > 0 &&
+                                  dragItem.map(
+                                    (quizList: QuizList, i: number) => (
+                                      <Content
+                                        key={i}
+                                        onClick={(e) => {
+                                          handleButtonCheck(e, i.toString());
+                                        }}
+                                      >
+                                        <div className="number">
+                                          {
+                                            quizList.quizCategoryList[0]
+                                              .quizCategory.난이도
+                                          }
+                                        </div>
+                                        <div className="type">
+                                          {
+                                            quizList.quizCategoryList[0]
+                                              .quizCategory.문항타입
+                                          }
+                                        </div>
+                                        <div className="level">
+                                          {
+                                            quizList.quizCategoryList[0]
+                                              .quizCategory.난이도
+                                          }
+                                        </div>
+                                        <div className="title">
+                                          {
+                                            quizList.quizCategoryList[0]
+                                              .quizCategory.출처
+                                          }
+                                        </div>
+                                        <div className="icon">
+                                          <IoMenuOutline
+                                            style={{ cursor: 'grab' }}
+                                          />
+                                        </div>
+                                      </Content>
+                                    ),
+                                  )} */}
+                                {/* {Array.isArray(dragItem) &&
+                                  dragItem.map((quizList: QuizList, i) => (
+                                    <Content
+                                      key={i}
+                                      onClick={(e) => {
+                                        handleButtonCheck(e, i.toString());
+                                      }}
+                                    >
+                                      <div className="number">
+                                        {
+                                          quizList.quizCategoryList[0]
+                                            .quizCategory.난이도
+                                        }
+                                      </div>
+                                      <div className="type">
+                                        {
+                                          quizList.quizCategoryList[0]
+                                            .quizCategory.문항타입
+                                        }
+                                      </div>
+                                      <div className="level">
+                                        {
+                                          quizList.quizCategoryList[0]
+                                            .quizCategory.난이도
+                                        }
+                                      </div>
+                                      <div className="title">
+                                        {
+                                          quizList.quizCategoryList[0]
+                                            .quizCategory.출처
+                                        }
+                                      </div>
+                                      <div className="icon">
+                                        <IoMenuOutline
+                                          style={{ cursor: 'grab' }}
+                                        />
+                                      </div>
+                                    </Content>
+                                  ))} */}
                               </li>
                             )}
                           </DnDWrapper>
