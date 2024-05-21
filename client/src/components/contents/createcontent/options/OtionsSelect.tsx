@@ -64,79 +64,79 @@ type SelectProps = {
   $positionTop?: boolean;
 };
 
-export function OtionsSelect({
-  options,
-  onClick,
-  onSelect,
-  defaultValue,
-  width,
-  height = '40px',
-  padding,
-  text,
-  blackMode,
-  disabled,
-  // selected,
-  setSelected,
-  $positionTop,
-}: SelectProps) {
-  const [isOptionShow, setIsOptionShow] = useState(false);
+// export function OtionsSelect({
+//   options,
+//   onClick,
+//   onSelect,
+//   defaultValue,
+//   width,
+//   height = '40px',
+//   padding,
+//   text,
+//   blackMode,
+//   disabled,
+//   // selected,
+//   setSelected,
+//   $positionTop,
+// }: SelectProps) {
+//   const [isOptionShow, setIsOptionShow] = useState(false);
 
-  const [select, setSelect] = useState<string>('');
-  useEffect(() => {
-    setSelected(select);
-  }, [select]);
+//   const [select, setSelect] = useState<string>('');
+//   useEffect(() => {
+//     setSelected(select);
+//   }, [select]);
 
-  return (
-    <Component
-      $padding={padding}
-      onMouseLeave={() => {
-        setIsOptionShow(false);
-      }}
-      onClick={onClick}
-    >
-      <IconButton
-        width={width}
-        height={height}
-        text={text}
-        fontSize="14px"
-        onClick={() => setIsOptionShow(true)}
-        textAlign="left"
-        rightIconSrc={React.createElement(IoMdArrowDropdown)}
-        blackMode={blackMode}
-      >
-        <span>{select || defaultValue}</span>
-      </IconButton>
-      {isOptionShow && (
-        <SelectOptionsList
-          onClick={() => {
-            setIsOptionShow(false);
-          }}
-          onMouseLeave={() => {
-            setIsOptionShow(false);
-          }}
-          $top={height}
-          $positionTop={$positionTop}
-          height={height}
-        >
-          {options?.map((el) => (
-            <li key={el.id}>
-              <button
-                disabled={disabled}
-                value={el.label}
-                onClick={(event) => {
-                  onSelect(event, el.code),
-                    setSelect(event.currentTarget.value);
-                }}
-              >
-                <span>{el.label}</span>
-              </button>
-            </li>
-          ))}
-        </SelectOptionsList>
-      )}
-    </Component>
-  );
-}
+//   return (
+//     <Component
+//       $padding={padding}
+//       onMouseLeave={() => {
+//         setIsOptionShow(false);
+//       }}
+//       onClick={onClick}
+//     >
+//       <IconButton
+//         width={width}
+//         height={height}
+//         text={text}
+//         fontSize="14px"
+//         onClick={() => setIsOptionShow(true)}
+//         textAlign="left"
+//         rightIconSrc={React.createElement(IoMdArrowDropdown)}
+//         blackMode={blackMode}
+//       >
+//         <span>{select || defaultValue}</span>
+//       </IconButton>
+//       {isOptionShow && (
+//         <SelectOptionsList
+//           onClick={() => {
+//             setIsOptionShow(false);
+//           }}
+//           onMouseLeave={() => {
+//             setIsOptionShow(false);
+//           }}
+//           $top={height}
+//           $positionTop={$positionTop}
+//           height={height}
+//         >
+//           {options?.map((el) => (
+//             <li key={el.id}>
+//               <button
+//                 disabled={disabled}
+//                 value={el.label}
+//                 onClick={(event) => {
+//                   onSelect(event, el.code),
+//                     setSelect(event.currentTarget.value);
+//                 }}
+//               >
+//                 <span>{el.label}</span>
+//               </button>
+//             </li>
+//           ))}
+//         </SelectOptionsList>
+//       )}
+//     </Component>
+//   );
+// }
 
 const Component = styled.div<{ $padding?: string }>`
   position: relative;

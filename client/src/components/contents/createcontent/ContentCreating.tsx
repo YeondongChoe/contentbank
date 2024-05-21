@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, DnDWrapper, Modal, Select } from '../..';
+import { Button, Modal, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { ItemCategoryType, QuizListType } from '../../../types';
@@ -21,6 +21,8 @@ export function ContentCreating({
 }: {
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
@@ -30,12 +32,6 @@ export function ContentCreating({
   const [categoriesG, setCategoriesG] = useState<ItemCategoryType[][]>([]);
   const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
   const [content, setContent] = useState<string[]>([]);
-
-  const submitSave = () => {
-    console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
-    console.log('신규 등록된 문항 리스트 get 요청 API');
-    setQuizList(questionList);
-  };
 
   //TODO : 임시로 퀴즈데이터 이미 등록된 데이터로 불러옴
   //       나중에 등록버튼으로 등록 완료된 데이터로 전역저장후 다시setQuestionList값으로 넣기
@@ -189,6 +185,27 @@ export function ContentCreating({
     setContent((prevContent) => [...prevContent, value]);
   };
 
+  const submitSave = () => {
+    console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
+    console.log('신규 등록된 문항 리스트 get 요청 API');
+    setQuizList(questionList);
+
+    // getLocalData();
+  };
+
+  // iframe 데이터
+  useEffect(() => {
+    const iframe = document.getElementById('editorIframe') as HTMLIFrameElement;
+    console.log('iframe', iframe);
+    if (iframe) {
+      const contentWindow = iframe.contentWindow;
+      // const saveData = contentWindow.saveExamData();
+      console.log('contentWindow', contentWindow);
+      // console.log('postMessage', contentWindow?.postMessage());
+      // console.log('saveData', saveData);
+    }
+  }, []);
+
   return (
     <Container>
       <ContentsWrapper>
@@ -201,9 +218,11 @@ export function ContentCreating({
                 src="http://43.201.205.140:40031/"
                 name="아이텍솔루션"
                 frameBorder={0}
+                ref={iframeRef}
+                id="editorIframe"
                 //allow="fullscreen"
-                //sandbox="allow-forms allow-modals allow-same-origin"
-                //referrerPolicy="no-referrer"
+                // sandbox="allow-forms allow-modals allow-same-origin"
+                // referrerPolicy="no-referrer"
               ></iframe>
             </EditWrapper>
 
@@ -249,14 +268,18 @@ export function ContentCreating({
                 </strong>
                 <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {categoriesE && categoryTitles && (
-                    <OptionList
-                      list={categoriesE[2]}
-                      categoriesF={categoriesF}
-                      categoriesG={categoriesG}
-                      categoriesH={categoriesH}
-                    />
-                  )}
+                  {categoriesF &&
+                    categoriesG &&
+                    categoriesH &&
+                    categoryTitles && (
+                      <OptionList
+                        categoryTitlesList={categoryTitles}
+                        categoriesE={categoriesE}
+                        categoriesF={categoriesF}
+                        categoriesG={categoriesG}
+                        categoriesH={categoriesH}
+                      />
+                    )}
                 </SourceOptionWrapper>
               </SelectListWrapper>
               <SelectListWrapper>

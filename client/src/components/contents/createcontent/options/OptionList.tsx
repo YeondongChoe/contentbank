@@ -9,15 +9,17 @@ import { COLOR } from '../../../constants/COLOR';
 import { selectCategory2 } from '../contentCreatingCategory';
 
 import { Options } from './Options';
-import { OtionsSelect, OptionsItemProps } from './OtionsSelect';
+import { OptionsItemProps } from './OtionsSelect';
 
 export function OptionList({
-  list,
+  categoryTitlesList,
+  categoriesE,
   categoriesF,
   categoriesG,
   categoriesH,
 }: {
-  list: ItemCategoryType[];
+  categoryTitlesList: ItemCategoryType[];
+  categoriesE: ItemCategoryType[][];
   categoriesF: ItemCategoryType[][];
   categoriesG: ItemCategoryType[][];
   categoriesH: ItemCategoryType[][];
@@ -173,22 +175,20 @@ export function OptionList({
               </Button>
             )}
             <SelectWrapper>
-              {selectCategory2.map((el) => (
+              {categoriesE[2].map((el) => (
                 <>
                   <SelectMapWrapper
-                    key={`${el.label} SelectMapWrap`}
+                    key={`${el.name} SelectMapWrap`}
                     id={`${index.toString()}SelectMapWrap`}
                   >
-                    <OtionsSelect
+                    <Select
                       $positionTop
                       width={'110px'}
                       height={'30px'}
-                      defaultValue={el.label}
-                      key={el.label}
-                      options={el.options}
+                      defaultValue={categoryTitlesList[7].code}
+                      key={categoryTitlesList[7].code}
+                      options={categoriesE[2]}
                       onSelect={(event) => selectCategoryOption(event)}
-                      selected={selected}
-                      setSelected={setSelected}
                     />
                   </SelectMapWrapper>
                   {index === 0 &&

@@ -18,7 +18,6 @@ import {
 export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [didMount, setDidMount] = useState<boolean>(false);
 
   const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
@@ -66,23 +65,6 @@ export function CreateContentMain() {
   useEffect(() => {
     console.log(isUploadFile);
   }, [isUploadFile]);
-
-  useEffect(() => {
-    if (didMount) {
-      // navigate 이동하며 전달된 데이터 받기
-      // if (location?.state?.isUploadFile !== undefined) {
-      //   setIsUploadFile(location.state.isUploadFile);
-      // } else {
-      //   setIsUploadFile(false);
-      // }
-      // 윈도우 열릴때 부모윈도우 스토리지 접근
-      getLocalData();
-    }
-  }, [didMount]);
-
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
 
   return (
     <Container>
