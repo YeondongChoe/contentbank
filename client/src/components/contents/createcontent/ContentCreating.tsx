@@ -274,7 +274,7 @@ export function ContentCreating({
                     categoryTitles && (
                       <OptionList
                         categoryTitlesList={categoryTitles}
-                        categoriesE={categoriesE}
+                        categoriesE={categoriesE[2]}
                         categoriesF={categoriesF}
                         categoriesG={categoriesG}
                         categoriesH={categoriesH}

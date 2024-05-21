@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { ItemCategoryType } from '../../../../types';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
-import { selectCategory2 } from '../contentCreatingCategory';
 
 import { Options } from './Options';
 import { OptionsItemProps } from './OtionsSelect';
@@ -19,7 +18,7 @@ export function OptionList({
   categoriesH,
 }: {
   categoryTitlesList: ItemCategoryType[];
-  categoriesE: ItemCategoryType[][];
+  categoriesE: ItemCategoryType[];
   categoriesF: ItemCategoryType[][];
   categoriesG: ItemCategoryType[][];
   categoriesH: ItemCategoryType[][];
@@ -175,49 +174,65 @@ export function OptionList({
               </Button>
             )}
             <SelectWrapper>
-              {categoriesE[2].map((el) => (
-                <>
-                  <SelectMapWrapper
-                    key={`${el.name} SelectMapWrap`}
-                    id={`${index.toString()}SelectMapWrap`}
-                  >
-                    <Select
-                      $positionTop
-                      width={'110px'}
-                      height={'30px'}
-                      defaultValue={categoryTitlesList[7].code}
-                      key={categoryTitlesList[7].code}
-                      options={categoriesE[2]}
-                      onSelect={(event) => selectCategoryOption(event)}
-                    />
-                  </SelectMapWrapper>
-                  {index === 0 &&
-                    optionsList1 &&
-                    optionsList1.map((el: ItemCategoryType) => (
-                      <Options listItem={el} key={`${el.name} optionsdepth`} />
-                    ))}
-                  {index === 1 &&
-                    optionsList2 &&
-                    optionsList2.map((el: ItemCategoryType) => (
-                      <Options listItem={el} key={`${el.name} optionsdepth`} />
-                    ))}
-                  {index === 2 &&
-                    optionsList3 &&
-                    optionsList3.map((el: ItemCategoryType) => (
-                      <Options listItem={el} key={`${el.name} optionsdepth`} />
-                    ))}
-                  {index === 3 &&
-                    optionsList4 &&
-                    optionsList4.map((el: ItemCategoryType) => (
-                      <Options listItem={el} key={`${el.name} optionsdepth`} />
-                    ))}
-                  {index === 4 &&
-                    optionsList5 &&
-                    optionsList5.map((el: ItemCategoryType) => (
-                      <Options listItem={el} key={`${el.name} optionsdepth`} />
-                    ))}
-                </>
-              ))}
+              {categoriesE &&
+                categoriesE.map((el) => (
+                  <>
+                    <SelectMapWrapper
+                      key={`${el.name} SelectMapWrap`}
+                      id={`${index.toString()}SelectMapWrap`}
+                    >
+                      <Select
+                        $positionTop
+                        width={'110px'}
+                        height={'30px'}
+                        defaultValue={categoryTitlesList[7].code}
+                        key={categoryTitlesList[7].code}
+                        options={categoriesE}
+                        onSelect={(event) => selectCategoryOption(event)}
+                      />
+                    </SelectMapWrapper>
+                    {index === 0 &&
+                      optionsList1 &&
+                      optionsList1.map((el: ItemCategoryType) => (
+                        <Options
+                          listItem={el}
+                          key={`${el.name} optionsdepth`}
+                        />
+                      ))}
+                    {index === 1 &&
+                      optionsList2 &&
+                      optionsList2.map((el: ItemCategoryType) => (
+                        <Options
+                          listItem={el}
+                          key={`${el.name} optionsdepth`}
+                        />
+                      ))}
+                    {index === 2 &&
+                      optionsList3 &&
+                      optionsList3.map((el: ItemCategoryType) => (
+                        <Options
+                          listItem={el}
+                          key={`${el.name} optionsdepth`}
+                        />
+                      ))}
+                    {index === 3 &&
+                      optionsList4 &&
+                      optionsList4.map((el: ItemCategoryType) => (
+                        <Options
+                          listItem={el}
+                          key={`${el.name} optionsdepth`}
+                        />
+                      ))}
+                    {index === 4 &&
+                      optionsList5 &&
+                      optionsList5.map((el: ItemCategoryType) => (
+                        <Options
+                          listItem={el}
+                          key={`${el.name} optionsdepth`}
+                        />
+                      ))}
+                  </>
+                ))}
             </SelectWrapper>
           </li>
         </SelectList>
