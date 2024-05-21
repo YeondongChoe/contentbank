@@ -161,7 +161,7 @@ export function ContentCategoryChange() {
     return response.data.data.typeList;
   };
   const { data: groupsData } = useQuery({
-    queryKey: ['get-category-groups'],
+    queryKey: ['get-category-groups-A'],
     queryFn: getCategoryGroups,
     enabled: !!categoryData,
     meta: {

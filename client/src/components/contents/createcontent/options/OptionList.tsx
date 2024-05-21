@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
+import { ItemCategoryType } from '../../../../types';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 import { selectCategory2 } from '../contentCreatingCategory';
@@ -10,7 +11,17 @@ import { selectCategory2 } from '../contentCreatingCategory';
 import { Options } from './Options';
 import { OtionsSelect, OptionsItemProps } from './OtionsSelect';
 
-export function OptionList() {
+export function OptionList({
+  list,
+  categoriesF,
+  categoriesG,
+  categoriesH,
+}: {
+  list: ItemCategoryType[];
+  categoriesF: ItemCategoryType[][];
+  categoriesG: ItemCategoryType[][];
+  categoriesH: ItemCategoryType[][];
+}) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [count, setCount] = useState(1);
   const [selectValue, setSelectValue] = useState({
@@ -18,19 +29,19 @@ export function OptionList() {
     value: '',
   });
   const [optionsList1, setOptionsList1] = useState<
-    OptionsItemProps | undefined
+    ItemCategoryType[] | undefined
   >();
   const [optionsList2, setOptionsList2] = useState<
-    OptionsItemProps | undefined
+    ItemCategoryType[] | undefined
   >();
   const [optionsList3, setOptionsList3] = useState<
-    OptionsItemProps | undefined
+    ItemCategoryType[] | undefined
   >();
   const [optionsList4, setOptionsList4] = useState<
-    OptionsItemProps | undefined
+    ItemCategoryType[] | undefined
   >();
   const [optionsList5, setOptionsList5] = useState<
-    OptionsItemProps | undefined
+    ItemCategoryType[] | undefined
   >();
 
   const [selected, setSelected] = useState<string>('');
@@ -58,43 +69,48 @@ export function OptionList() {
   // 셀렉트 선택이후 셀렉트에 속한 자식 배열값 보여주기
   const listSwitch = () => {
     const listIdx = selectValue.idx;
+    let selectedOptions: ItemCategoryType[][];
 
-    switch (true) {
-      case listIdx == 0:
-        setOptionsList1(
-          selectCategory2[0].options.filter(
-            (el: { label: string }) => el.label == selectValue.value,
-          )[0],
-        );
+    // 선택된 인덱스에 따라 적절한 데이터 배열 선택
+    switch (listIdx) {
+      case 0:
+        selectedOptions = categoriesF;
         break;
-      case listIdx == 1:
-        setOptionsList2(
-          selectCategory2[0].options.filter(
-            (el: { label: string }) => el.label == selectValue.value,
-          )[0],
-        );
+      case 1:
+        selectedOptions = categoriesG;
         break;
-      case listIdx == 2:
-        setOptionsList3(
-          selectCategory2[0].options.filter(
-            (el: { label: string }) => el.label == selectValue.value,
-          )[0],
-        );
+      case 2:
+        selectedOptions = categoriesH;
         break;
-      case listIdx == 3:
-        setOptionsList4(
-          selectCategory2[0].options.filter(
-            (el: { label: string }) => el.label == selectValue.value,
-          )[0],
-        );
-        break;
-      case listIdx == 4:
-        setOptionsList5(
-          selectCategory2[0].options.filter(
-            (el: { label: string }) => el.label == selectValue.value,
-          )[0],
-        );
-        break;
+      default:
+        selectedOptions = []; // 기본값으로 빈 배열 설정
+    }
+
+    // 배열의 모든 그룹을 검색하여 사용자 선택과 일치하는 첫 번째 그룹을 찾음
+    const selectedOption = selectedOptions.find((group) =>
+      group.some((item) => item.name === selectValue.value),
+    );
+
+    // 선택된 그룹에서 사용자 선택과 일치하는 첫 번째 항목을 찾아 상태를 설정
+    if (selectedOption) {
+      const optionsToSet = selectedOption.find(
+        (item) => item.name === selectValue.value,
+      );
+      if (optionsToSet) {
+        switch (listIdx) {
+          case 0:
+            setOptionsList1([optionsToSet]); // 상태는 배열 형태로 저장
+            break;
+          case 1:
+            setOptionsList2([optionsToSet]);
+            break;
+          case 2:
+            setOptionsList3([optionsToSet]);
+            break;
+          default:
+            break; // 추가 케이스
+        }
+      }
     }
   };
 
@@ -177,28 +193,28 @@ export function OptionList() {
                   </SelectMapWrapper>
                   {index === 0 &&
                     optionsList1 &&
-                    optionsList1.optionsdepth.map((el: OptionsItemProps) => (
-                      <Options listItem={el} key={`${el.label} optionsdepth`} />
+                    optionsList1.map((el: ItemCategoryType) => (
+                      <Options listItem={el} key={`${el.name} optionsdepth`} />
                     ))}
                   {index === 1 &&
                     optionsList2 &&
-                    optionsList2.optionsdepth.map((el: OptionsItemProps) => (
-                      <Options listItem={el} key={`${el.label} optionsdepth`} />
+                    optionsList2.map((el: ItemCategoryType) => (
+                      <Options listItem={el} key={`${el.name} optionsdepth`} />
                     ))}
                   {index === 2 &&
                     optionsList3 &&
-                    optionsList3.optionsdepth.map((el: OptionsItemProps) => (
-                      <Options listItem={el} key={`${el.label} optionsdepth`} />
+                    optionsList3.map((el: ItemCategoryType) => (
+                      <Options listItem={el} key={`${el.name} optionsdepth`} />
                     ))}
                   {index === 3 &&
                     optionsList4 &&
-                    optionsList4.optionsdepth.map((el: OptionsItemProps) => (
-                      <Options listItem={el} key={`${el.label} optionsdepth`} />
+                    optionsList4.map((el: ItemCategoryType) => (
+                      <Options listItem={el} key={`${el.name} optionsdepth`} />
                     ))}
                   {index === 4 &&
                     optionsList5 &&
-                    optionsList5.optionsdepth.map((el: OptionsItemProps) => (
-                      <Options listItem={el} key={`${el.label} optionsdepth`} />
+                    optionsList5.map((el: ItemCategoryType) => (
+                      <Options listItem={el} key={`${el.name} optionsdepth`} />
                     ))}
                 </>
               ))}

@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
@@ -37,6 +42,9 @@ type ContentListProps = {
   totalCount?: number;
   setCheckListOn?: React.Dispatch<React.SetStateAction<number[]>>;
   deleteQuizIsSuccess?: boolean;
+  quizDataRefetch?: (
+    options?: RefetchOptions | undefined,
+  ) => Promise<QueryObserverResult<any, Error>>;
 };
 
 export function ContentList({
@@ -47,9 +55,9 @@ export function ContentList({
   totalCount,
   setCheckListOn,
   deleteQuizIsSuccess,
+  quizDataRefetch,
 }: ContentListProps) {
   const { openModal } = useModal();
-  const queryClient = useQueryClient();
   const [page, setPage] = useRecoilState(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<number[]>([]);
@@ -161,10 +169,7 @@ export function ContentList({
       });
 
       // 초기화
-      // queryClient.invalidateQueries({
-      //   queryKey: ['get-quizList'],
-      //   exact: true,
-      // });
+      quizDataRefetch && quizDataRefetch();
     },
   });
 
@@ -238,10 +243,7 @@ export function ContentList({
       // 초기화
       setIsAlertOpen(false);
       setCheckList([]);
-      queryClient.invalidateQueries({
-        queryKey: ['get-quizList'],
-        exact: true,
-      });
+      quizDataRefetch && quizDataRefetch();
     },
   });
 

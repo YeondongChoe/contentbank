@@ -97,6 +97,7 @@ export function ChangePassword({
         text: response.data.message,
       });
 
+      postRefreshToken();
       navigate(`/content-create/quiz`);
     },
   });

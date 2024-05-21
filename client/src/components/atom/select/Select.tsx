@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
 
+import { ItemCategoryType } from '../../../types';
 import { COLOR } from '../../constants';
 import { IconButton } from '../button';
 
@@ -15,7 +16,7 @@ export type ItemSelectProps = {
 };
 
 type SelectProps = {
-  options?: ItemSelectProps[];
+  options?: ItemCategoryType[] | ItemCategoryType | any[]; //TODO :
   onClick?: () => void;
   onSelect?: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -56,6 +57,12 @@ export function Select({
     setSelectedValue(code);
   }
 
+  const normalizedOptions = Array.isArray(options)
+    ? options
+    : options
+      ? [options]
+      : [];
+
   return (
     <Component
       $padding={padding}
@@ -86,18 +93,19 @@ export function Select({
           $positionTop={$positionTop}
           height={height}
         >
-          {options?.map((el) => (
-            <li key={el.id}>
+          {normalizedOptions.map((el) => (
+            <li key={el.code}>
               <button
                 disabled={disabled}
-                value={el.label}
+                value={el.name}
                 className={el.code}
                 onClick={(event) => {
                   setSelected(event.currentTarget.value);
                   setCode(event.currentTarget.classList[0]);
+                  setIsOptionShow(false);
                 }}
               >
-                <span>{el.label}</span>
+                <span>{el.name}</span>
               </button>
             </li>
           ))}

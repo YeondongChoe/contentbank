@@ -8,7 +8,7 @@ type IconButtonProps = {
   children: JSX.Element | JSX.Element[];
   text?: string;
   buttonType?: 'button' | 'submit' | 'reset';
-  onClick: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onChange?: (x: any) => void;
   onMouseLeave?: () => void;
   $padding?: string;

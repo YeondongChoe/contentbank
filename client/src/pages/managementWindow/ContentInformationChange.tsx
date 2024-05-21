@@ -140,7 +140,7 @@ export function ContentInformationChange() {
     return response.data.data.typeList;
   };
   const { data: groupsData, isPending: isPendingGroupsData } = useQuery({
-    queryKey: ['get-category-groups'],
+    queryKey: ['get-category-groups-A'],
     queryFn: getCategoryGroups,
     enabled: !!categoryData,
     meta: {

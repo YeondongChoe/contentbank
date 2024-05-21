@@ -7,12 +7,12 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Button, DnDWrapper, Modal, Select } from '../..';
-import { quizService } from '../../../api/axios';
+import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
-import { QuizListType } from '../../../types';
+import { ItemCategoryType, QuizListType } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
-import { selectCategory1, selectCategory3 } from './contentCreatingCategory';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
@@ -24,12 +24,12 @@ export function ContentCreating({
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
-
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const value = event.currentTarget.value;
-
-    // setContent((prevContent) => [...prevContent, value]);
-  };
+  const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
+  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
+  const [categoriesF, setCategoriesF] = useState<ItemCategoryType[][]>([]);
+  const [categoriesG, setCategoriesG] = useState<ItemCategoryType[][]>([]);
+  const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
+  const [content, setContent] = useState<string[]>([]);
 
   const submitSave = () => {
     console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
@@ -60,23 +60,152 @@ export function ContentCreating({
     }
   }, [quizData]);
 
+  // 카테고리 api 불러오기
+  const getCategory = async () => {
+    const res = await classificationInstance.get(`/v1/category`);
+    return res;
+  };
+  const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (categoryData) {
+      setCategoryTitles(categoryData.data.data.categoryItemList);
+    }
+  }, [categoryData]);
+
+  // 카테고리의 그룹 유형 조회 (출처)
+  const getCategoryGroupsE = async () => {
+    const response = await classificationInstance.get('/v1/category/group/E');
+    return response.data.data.typeList;
+  };
+  const { data: groupsEData, refetch: groupsDataERefetch } = useQuery({
+    queryKey: ['get-category-groups-E'],
+    queryFn: getCategoryGroupsE,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-E 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsEData) {
+      fetchCategoryItems(groupsEData, setCategoriesE);
+    }
+  }, [groupsEData]);
+  // 카테고리의 그룹 유형 조회 (교재)
+  const getCategoryGroupsF = async () => {
+    const response = await classificationInstance.get('/v1/category/group/F');
+    return response.data.data.typeList;
+  };
+  const { data: groupsDataF, refetch: groupsDataFRefetch } = useQuery({
+    queryKey: ['get-category-groups-F'],
+    queryFn: getCategoryGroupsF,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-F 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsDataF) {
+      fetchCategoryItems(groupsDataF, setCategoriesF);
+    }
+  }, [groupsDataF]);
+  // 카테고리의 그룹 유형 조회 (내신)
+  const getCategoryGroupsG = async () => {
+    const response = await classificationInstance.get('/v1/category/group/G');
+    return response.data.data.typeList;
+  };
+  const { data: groupsDataG, refetch: groupsDataGRefetch } = useQuery({
+    queryKey: ['get-category-groups-G'],
+    queryFn: getCategoryGroupsG,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-G 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsDataG) {
+      fetchCategoryItems(groupsDataG, setCategoriesG);
+    }
+  }, [groupsDataG]);
+  // 카테고리의 그룹 유형 조회 (기출)
+  const getCategoryGroupsH = async () => {
+    const response = await classificationInstance.get('/v1/category/group/H');
+    return response.data.data.typeList;
+  };
+  const { data: groupsDataH, refetch: groupsDataHRefetch } = useQuery({
+    queryKey: ['get-category-groups-H'],
+    queryFn: getCategoryGroupsH,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-H 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsDataH) {
+      fetchCategoryItems(groupsDataH, setCategoriesH);
+    }
+  }, [groupsDataH]);
+
+  // 카테고리의 그룹 아이템 조회
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
+    const typeIds = typeList.split(',');
+    try {
+      const requests = typeIds.map((id) =>
+        classificationInstance.get(`/v1/category/${id}`),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+      console.log('itemsList', itemsList);
+      setCategory(itemsList);
+    } catch (error: any) {
+      if (error.data.code == 'GE-002') postRefreshToken();
+    }
+  };
+  useEffect(() => {
+    console.log(
+      'API Response Check: 등록시 필수 E',
+      categoriesE,
+      'API Response Check: 교재 F',
+      categoriesF,
+      'API Response Check: 내신 G',
+      categoriesG,
+      'API Response Check: 기출 H',
+      categoriesH,
+    );
+  }, [categoriesE, categoriesF, categoriesG, categoriesH]);
+
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const value = event.currentTarget.value;
+    setContent((prevContent) => [...prevContent, value]);
+  };
+
   return (
     <Container>
       <ContentsWrapper>
-        {/* <iframe
-        width="100%"
-        height="672"
-        //src="http://43.201.205.140:40031"
-        name="아이텍솔루션"
-        frameBorder={0}
-        //allow="fullscreen"
-        //sandbox="allow-forms allow-modals allow-same-origin"
-        //referrerPolicy="no-referrer"
-      ></iframe> */}
-
         <EditContainerWrapper>
           <PerfectScrollbar>
-            <EditWrapper>EditWrap</EditWrapper>
+            <EditWrapper>
+              <iframe
+                width="100%"
+                height="672"
+                src="http://43.201.205.140:40031/"
+                name="아이텍솔루션"
+                frameBorder={0}
+                //allow="fullscreen"
+                //sandbox="allow-forms allow-modals allow-same-origin"
+                //referrerPolicy="no-referrer"
+              ></iframe>
+            </EditWrapper>
 
             <BackgroundWrapper>
               <SelectListWrapper>
@@ -86,17 +215,30 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {selectCategory1.map((el) => (
+                      {/* 교과 */}
+                      {categoriesE && categoryTitles[6] && (
                         <Select
                           $positionTop
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={el.label}
-                          key={el.label}
-                          options={el.options}
+                          defaultValue={categoryTitles[6].code}
+                          key={categoryTitles[6].code}
+                          options={categoriesE[0]}
                           onSelect={(event) => selectCategoryOption(event)}
                         />
-                      ))}
+                      )}
+                      {/* 과목 */}
+                      {categoriesE && categoryTitles[7] && (
+                        <Select
+                          $positionTop
+                          width={'110px'}
+                          height={'30px'}
+                          defaultValue={categoryTitles[7].code}
+                          key={categoryTitles[7].code}
+                          options={categoriesE[1]}
+                          onSelect={(event) => selectCategoryOption(event)}
+                        />
+                      )}
                     </SelectWrapper>
                   </li>
                 </SelectList>
@@ -107,7 +249,14 @@ export function ContentCreating({
                 </strong>
                 <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  <OptionList />
+                  {categoriesE && categoryTitles && (
+                    <OptionList
+                      list={categoriesE[2]}
+                      categoriesF={categoriesF}
+                      categoriesG={categoriesG}
+                      categoriesH={categoriesH}
+                    />
+                  )}
                 </SourceOptionWrapper>
               </SelectListWrapper>
               <SelectListWrapper>
@@ -117,17 +266,17 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {selectCategory3.map((el) => (
+                      {categoriesE && categoryTitles[40] && (
                         <Select
                           $positionTop
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={el.label}
-                          key={el.label}
-                          options={el.options}
+                          defaultValue={categoryTitles[40].code}
+                          key={categoryTitles[40].code}
+                          options={categoriesE[3]}
                           onSelect={(event) => selectCategoryOption(event)}
                         />
-                      ))}
+                      )}
                     </SelectWrapper>
                   </li>
                 </SelectList>
@@ -137,17 +286,17 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {selectCategory3.map((el) => (
+                      {categoriesE && categoryTitles[41] && (
                         <Select
                           $positionTop
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={el.label}
-                          key={el.label}
-                          options={el.options}
+                          defaultValue={categoryTitles[41].code}
+                          key={categoryTitles[41].code}
+                          options={categoriesE[4]}
                           onSelect={(event) => selectCategoryOption(event)}
                         />
-                      ))}
+                      )}
                     </SelectWrapper>
                   </li>
                 </SelectList>
@@ -212,10 +361,14 @@ const EditContainerWrapper = styled.div`
 `;
 
 const EditWrapper = styled.div`
-  height: calc(100vh - 300px); // 탭 네비 높이, 하단 셀렉트 높이 제외
+  height: calc(100vh - 100px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   margin-bottom: 10px;
+  > iframe {
+    width: 100%;
+    height: calc(100vh - 100px);
+  }
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};

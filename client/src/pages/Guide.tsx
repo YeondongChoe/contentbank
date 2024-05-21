@@ -117,10 +117,9 @@ export function Guide() {
         width={'150px'}
         defaultValue={'커스텀 select'}
         options={[
-          { id: '0', label: '개정과정', value: '0' },
-          { id: '1', label: '2015학년', value: '1' },
-          { id: '2', label: '2018학년', value: '2' },
-          { id: '3', label: '2020학년', value: '3' },
+          { code: '0', idx: 0, name: 'name1' },
+          { code: '1', idx: 1, name: 'name2' },
+          { code: '2', idx: 3, name: 'name3' },
         ]}
         onSelect={(event) => selectCategoryOption(event)}
       />

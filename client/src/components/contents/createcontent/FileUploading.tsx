@@ -80,7 +80,7 @@ export function FileUploading({
                         </strong>
                         <SourceOptionWrapper>
                           {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                          <OptionList />
+                          {/* <OptionList /> */}
                         </SourceOptionWrapper>
                       </SelectListWrapper>
                       <SelectListWrapper>

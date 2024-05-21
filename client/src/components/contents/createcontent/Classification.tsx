@@ -35,39 +35,45 @@ import { COLOR } from '../../constants/COLOR';
 
 import { QuizList } from './list';
 
+interface RadioState {
+  title: string;
+  checkValue: number;
+  code: string;
+}
+
 export function Classification() {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-  const [radio1depthCheck, setRadio1depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radio2depthCheck, setRadio2depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radio3depthCheck, setRadio3depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radio4depthCheck, setRadio4depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radioEtc1Check, setRadioEtc1Check] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radioEtc2Check, setRadioEtc2Check] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
+  const [radio1depthCheck, setRadio1depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radio2depthCheck, setRadio2depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radio3depthCheck, setRadio3depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radio4depthCheck, setRadio4depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
@@ -87,7 +93,9 @@ export function Classification() {
     { code: '', idx: 0, name: '' },
   ]);
 
-  const [unitClassificationList, setUnitClassificationList] = useState([]);
+  const [unitClassificationList, setUnitClassificationList] = useState<
+    RadioState[][]
+  >([]);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -134,12 +142,13 @@ export function Classification() {
     }
   }, [isSuccess]);
 
+  // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A');
     return response.data.data.typeList;
   };
   const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
-    queryKey: ['get-category-groups'],
+    queryKey: ['get-category-groups-A'],
     queryFn: getCategoryGroups,
     enabled: !!categoryData,
     meta: {
@@ -152,7 +161,7 @@ export function Classification() {
     }
   }, [groupsData]);
 
-  // 카테고리의 그룹 유형 조회
+  // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (typeList: string) => {
     const typeIds = typeList.split(',');
     try {
@@ -165,7 +174,7 @@ export function Classification() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      console.error('Error fetching next list: ', error?.data?.code);
+      // console.error('Error fetching next list: ', error?.data?.code);
       if (error.data.code == 'GE-002') postRefreshToken();
     }
   };
@@ -241,7 +250,7 @@ export function Classification() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      console.error('Error fetching next list: ', error.data.code);
+      // console.error('Error fetching next list: ', error.data.code);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -426,7 +435,7 @@ export function Classification() {
       );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
-      console.error('Error fetching next list: ', error?.data?.code);
+      // console.error('Error fetching next list: ', error?.data?.code);
       if (error?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
@@ -435,16 +444,33 @@ export function Classification() {
   };
 
   const saveCheckItems = () => {
-    console.log(
-      'saveCheckItems',
+    console.log('saveCheckItems', [
       radio1depthCheck,
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
       radioEtc1Check,
       radioEtc2Check,
-    );
+    ]);
 
+    if (unitClassificationList.length < 6) {
+      setUnitClassificationList((prevList) => [
+        ...prevList,
+        [
+          radio1depthCheck,
+          radio2depthCheck,
+          radio3depthCheck,
+          radio4depthCheck,
+          radioEtc1Check,
+          radioEtc2Check,
+        ],
+      ]);
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '교과정보는 최대 5개 까지 저장 가능합니다',
+      });
+    }
     //선택정보 저장과 함께 체크상태 초기화
     //저장 성공 후
     const reset = { title: '', checkValue: 0, code: '' };
@@ -453,6 +479,71 @@ export function Classification() {
     setRadio3depthCheck(reset);
     setRadio4depthCheck(reset);
   };
+  //삭제
+  const deleteUnitClassification = (idx: number) => {
+    setUnitClassificationList((prevList) => [
+      ...prevList.slice(0, idx),
+      ...prevList.slice(idx + 1),
+    ]);
+  };
+
+  // 수정
+  const changeUnitClassification = (idx: number) => {
+    console.log('unitClassificationList', unitClassificationList);
+    const selectedClassification = unitClassificationList[idx];
+
+    if (selectedClassification) {
+      if (selectedClassification[0]) {
+        setRadio1depthCheck(selectedClassification[0]);
+        setSelected1depth(selectedClassification[0].code);
+      } else {
+        setRadio1depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected1depth('');
+      }
+
+      if (selectedClassification[1]) {
+        setRadio2depthCheck(selectedClassification[1]);
+        setSelected2depth(selectedClassification[1].code);
+      } else {
+        setRadio2depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected2depth('');
+      }
+
+      if (selectedClassification[2]) {
+        setRadio3depthCheck(selectedClassification[2]);
+        setSelected3depth(selectedClassification[2].code);
+      } else {
+        setRadio3depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected3depth('');
+      }
+
+      if (selectedClassification[3]) {
+        setRadio4depthCheck(selectedClassification[3]);
+        setSelected4depth(selectedClassification[3].code);
+      } else {
+        setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected4depth('');
+      }
+
+      if (selectedClassification[4]) {
+        setRadioEtc1Check(selectedClassification[4]);
+        setSelectedCategoryEtc1(selectedClassification[4].code);
+      } else {
+        setRadioEtc1Check({ title: '', checkValue: 0, code: '' });
+        setSelectedCategoryEtc1('');
+      }
+
+      if (selectedClassification[5]) {
+        setRadioEtc2Check(selectedClassification[5]);
+        setSelectedCategoryEtc2(selectedClassification[5].code);
+      } else {
+        setRadioEtc2Check({ title: '', checkValue: 0, code: '' });
+        setSelectedCategoryEtc2('');
+      }
+    }
+  };
+
+  useEffect(() => {}, []);
 
   const onSubmit = () => {
     // 최종적으로 전송 될 데이터
@@ -539,7 +630,7 @@ export function Classification() {
                 <UnitClassifications>
                   {unitClassificationList.length > 0 ? (
                     <>
-                      {unitClassificationList.map((el) => (
+                      {unitClassificationList.map((el, idx) => (
                         <IconButtonWrapper key={`${el} idx`}>
                           <IconButton
                             width={`calc(100% - 25px)`}
@@ -557,13 +648,13 @@ export function Classification() {
                                 </button>
                               </IconWrapper>
                             }
-                            onClick={() => {}}
+                            onClick={() => changeUnitClassification(idx)}
                           >
-                            <span>{`${`저장된 분류리스트값 저장된 분류리스트값 저장된 분류리스트값 저장된 분류리스트값`}`}</span>
+                            <span>{el.map((item) => `${item.title} / `)}</span>
                           </IconButton>
 
                           <Icon
-                            onClick={() => {}}
+                            onClick={() => deleteUnitClassification(idx)}
                             $margin={'0 0 0 2px'}
                             width={`15px`}
                             src={`/images/icon/icoclose.svg`}
