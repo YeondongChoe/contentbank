@@ -44,9 +44,19 @@ export function Step2() {
       console.log('데이터 조회', parsedData);
       setSendLocalData(parsedData);
       // 로컬 스토리지 값 다 받은 뒤 초기화
-      window.opener.localStorage.clear();
+      //window.opener.localStorage.clear();
+      // if (sendLocalData) {
+      //   window.opener.localStorage.clear();
+      // }
     }
   }, []);
+
+  useEffect(() => {
+    if (sendLocalData) {
+      window.opener.localStorage.clear();
+    }
+  }, [sendLocalData]);
+
   console.log(sendLocalData);
   console.log(sendLocalData?.data);
 
