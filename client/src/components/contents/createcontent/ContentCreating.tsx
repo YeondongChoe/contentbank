@@ -309,7 +309,7 @@ export function ContentCreating({
           <ContentList>
             <QuizList
               questionList={questionList}
-              $height={`calc(100vh - 70px)`}
+              $height={`calc(100vh - 100px)`}
               showViewAllButton
               setCheckedList={setCheckedList}
             />
@@ -354,17 +354,20 @@ const ContentsWrapper = styled.div`
   flex-wrap: wrap;
   width: 100%;
   height: calc(100vh - 200px);
+  position: relative;
 `;
 
 const EditContainerWrapper = styled.div`
   flex: 1 0 0;
+  margin-bottom: 300px;
 `;
 
 const EditWrapper = styled.div`
   height: calc(100vh - 100px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
-  margin-bottom: 10px;
+  width: 100%;
+
   > iframe {
     width: 100%;
     height: calc(100vh - 100px);
@@ -426,16 +429,20 @@ const SelectWrapper = styled.div`
 `;
 
 const ContentListWrapper = styled.div`
-  width: 25%;
+  width: 340px;
   padding-left: 10px;
   border-bottom: 1px solid ${COLOR.BORDER_BLUE};
+
+  position: absolute;
+  right: 0;
 `;
 const ContentList = styled.div`
-  height: calc(100vh - 70px);
+  height: calc(100vh - 100px);
   width: 100%;
   overflow: hidden;
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
+  border-bottom: none;
   background-color: ${COLOR.LIGHT_GRAY};
 `;
 

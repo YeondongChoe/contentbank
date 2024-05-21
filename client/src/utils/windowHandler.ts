@@ -8,7 +8,7 @@ export const windowOpenHandler = ({
   url,
   options = '', // sendData = '',
   $height = 800,
-  $width = 1200,
+  $width = 1400,
 }: {
   name?: string;
   url: string;

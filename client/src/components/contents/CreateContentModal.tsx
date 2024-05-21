@@ -32,7 +32,6 @@ export function CreateContentModal() {
       name: 'createcontentmain',
       url: '/createcontentmain',
       $height: 850,
-      $width: 1250,
     });
   };
 

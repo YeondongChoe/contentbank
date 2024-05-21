@@ -114,7 +114,8 @@ export function CreateContentMain() {
           {isUploadFile && isUploadFile === 'createcontent' ? (
             <ContentCreating setTabVeiw={setTabVeiw} />
           ) : (
-            <FileUploading setTabVeiw={setTabVeiw} />
+            // <FileUploading setTabVeiw={setTabVeiw} />
+            <ContentCreating setTabVeiw={setTabVeiw} />
           )}
         </ContentBox>
       )}

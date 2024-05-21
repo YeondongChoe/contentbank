@@ -34,119 +34,123 @@ export function FileUploading({
   return (
     <Container>
       {/* <ContentsWrapper> */}
-      <ResizeLayoutWrapper>
+      {/* <ResizeLayoutWrapper>
         <ResizeLayout
           height={'calc(100vh - 100px)'}
           column={'2nd'}
-          item1Width={600}
-          item1={
-            <EditContainerWrapper>
-              <PerfectScrollbar>
-                <FlexWrapper>
-                  <div>
-                    <p>FileUploadBtnWrap</p>
-                  </div>
-                  <div>
-                    <EditWrapper>EditWrap</EditWrapper>
+          item1Width={800}
+          item1={ */}
+      <EditContainerWrapper>
+        <PerfectScrollbar>
+          <AsideWrapper>
+            <EditFileWrapper>
+              <iframe
+                width="100%"
+                height="672"
+                src="http://43.201.205.140:40031/"
+                name="아이텍솔루션"
+                frameBorder={0}
+                //allow="fullscreen"
+                //sandbox="allow-forms allow-modals allow-same-origin"
+                //referrerPolicy="no-referrer"
+              ></iframe>
+            </EditFileWrapper>
+            <div className="aside bottom">
+              <BackgroundWrapper>
+                <SelectListWrapper>
+                  <strong>
+                    과목<span>*</span>
+                  </strong>
+                  <SelectList>
+                    <li>
+                      <SelectWrapper>
+                        {selectCategory1.map((el) => (
+                          <Select
+                            $positionTop
+                            width={'110px'}
+                            height={'30px'}
+                            defaultValue={el.label}
+                            key={el.label}
+                            options={el.options}
+                            onSelect={(event) => selectCategoryOption(event)}
+                          />
+                        ))}
+                      </SelectWrapper>
+                    </li>
+                  </SelectList>
+                </SelectListWrapper>
+                <SelectListWrapper>
+                  <strong>
+                    출처<span>*</span>
+                  </strong>
+                  <SourceOptionWrapper>
+                    {/* 옵션 리스트 셀렉트 컴포넌트 */}
+                    {/* <OptionList /> */}
+                  </SourceOptionWrapper>
+                </SelectListWrapper>
+                <SelectListWrapper>
+                  <strong>
+                    문항타입<span>*</span>
+                  </strong>
+                  <SelectList>
+                    <li>
+                      <SelectWrapper>
+                        {selectCategory3.map((el) => (
+                          <Select
+                            $positionTop
+                            width={'110px'}
+                            height={'30px'}
+                            defaultValue={el.label}
+                            key={el.label}
+                            options={el.options}
+                            onSelect={(event) => selectCategoryOption(event)}
+                          />
+                        ))}
+                      </SelectWrapper>
+                    </li>
+                  </SelectList>
+                </SelectListWrapper>
+                <SelectListWrapper>
+                  <strong>난이도</strong>
+                  <SelectList>
+                    <li>
+                      <SelectWrapper>
+                        {selectCategory3.map((el) => (
+                          <Select
+                            $positionTop
+                            width={'110px'}
+                            height={'30px'}
+                            defaultValue={el.label}
+                            key={el.label}
+                            options={el.options}
+                            onSelect={(event) => selectCategoryOption(event)}
+                          />
+                        ))}
+                      </SelectWrapper>
+                    </li>
+                  </SelectList>
+                </SelectListWrapper>
+              </BackgroundWrapper>
+            </div>
+            <div className="aside right">
+              <QuizListWrapper>
+                <QuizList
+                  questionList={questionList}
+                  $height={`calc(100vh - 130px)`}
+                  showViewAllButton
+                  setCheckedList={setCheckedList}
+                />
+              </QuizListWrapper>
+            </div>
+          </AsideWrapper>
+        </PerfectScrollbar>
+      </EditContainerWrapper>
+      {/* // }
+          // item2={ */}
 
-                    <BackgroundWrapper>
-                      <SelectListWrapper>
-                        <strong>
-                          과목<span>*</span>
-                        </strong>
-                        <SelectList>
-                          <li>
-                            <SelectWrapper>
-                              {selectCategory1.map((el) => (
-                                <Select
-                                  $positionTop
-                                  width={'110px'}
-                                  height={'30px'}
-                                  defaultValue={el.label}
-                                  key={el.label}
-                                  options={el.options}
-                                  onSelect={(event) =>
-                                    selectCategoryOption(event)
-                                  }
-                                />
-                              ))}
-                            </SelectWrapper>
-                          </li>
-                        </SelectList>
-                      </SelectListWrapper>
-                      <SelectListWrapper>
-                        <strong>
-                          출처<span>*</span>
-                        </strong>
-                        <SourceOptionWrapper>
-                          {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                          {/* <OptionList /> */}
-                        </SourceOptionWrapper>
-                      </SelectListWrapper>
-                      <SelectListWrapper>
-                        <strong>
-                          문항타입<span>*</span>
-                        </strong>
-                        <SelectList>
-                          <li>
-                            <SelectWrapper>
-                              {selectCategory3.map((el) => (
-                                <Select
-                                  $positionTop
-                                  width={'110px'}
-                                  height={'30px'}
-                                  defaultValue={el.label}
-                                  key={el.label}
-                                  options={el.options}
-                                  onSelect={(event) =>
-                                    selectCategoryOption(event)
-                                  }
-                                />
-                              ))}
-                            </SelectWrapper>
-                          </li>
-                        </SelectList>
-                      </SelectListWrapper>
-                      <SelectListWrapper>
-                        <strong>난이도</strong>
-                        <SelectList>
-                          <li>
-                            <SelectWrapper>
-                              {selectCategory3.map((el) => (
-                                <Select
-                                  $positionTop
-                                  width={'110px'}
-                                  height={'30px'}
-                                  defaultValue={el.label}
-                                  key={el.label}
-                                  options={el.options}
-                                  onSelect={(event) =>
-                                    selectCategoryOption(event)
-                                  }
-                                />
-                              ))}
-                            </SelectWrapper>
-                          </li>
-                        </SelectList>
-                      </SelectListWrapper>
-                    </BackgroundWrapper>
-                  </div>
-                </FlexWrapper>
-              </PerfectScrollbar>
-            </EditContainerWrapper>
-          }
-          item2={
-            <QuizListWrapper>
-              <QuizList
-                questionList={questionList}
-                $height={`calc(100vh - 130px)`}
-                showViewAllButton
-                setCheckedList={setCheckedList}
-              />
-            </QuizListWrapper>
-          }
-        />
-      </ResizeLayoutWrapper>
+      {/* //   }
+        // /> */}
+      {/* </ResizeLayoutWrapper> */}
       {/* </ContentsWrapper> */}
       {/* 하단 버튼 영역 */}
       <BorderWrapper>
@@ -194,12 +198,44 @@ const EditContainerWrapper = styled.div`
     width: 100%;
   }
 `;
-const FlexWrapper = styled.div`
+const AsideWrapper = styled.div`
   display: flex;
   width: 100%;
-  justify-content: space-between;
-`;
+  position: relative;
 
+  > .aside {
+    position: absolute;
+  }
+
+  > .right {
+    border: 1px solid ${COLOR.BORDER_GRAY};
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 350px;
+    overflow: hidden;
+    background-color: #fff;
+  }
+
+  > .bottom {
+    width: 100%;
+    bottom: -290px;
+  }
+
+  iframe {
+    position: absolute;
+    width: 100%;
+  }
+`;
+const EditFileWrapper = styled.div`
+  width: calc(100% - 300px);
+  height: 680px;
+  overflow: hidden;
+  > iframe {
+    height: 680px;
+    overflow: hidden;
+  }
+`;
 const EditWrapper = styled.div`
   height: calc(100vh - 300px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   border: 1px solid ${COLOR.BORDER_BLUE};
@@ -208,7 +244,6 @@ const EditWrapper = styled.div`
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
   padding-bottom: 100px;
-  max-width: 500px;
 `;
 const QuizListWrapper = styled.div`
   width: 100%;
@@ -224,6 +259,7 @@ const SelectListWrapper = styled.div`
   display: flex;
   /* align-items: center; */
   padding: 0 15px;
+  width: 100%;
 
   strong {
     min-width: 40px;
