@@ -47,12 +47,6 @@ export const DnDWrapper = ({
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
 
-  useEffect(() => {
-    if (dragList) {
-      setCurrentItems(dragList);
-    }
-  }, [dragList]);
-
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
     dragIndex: number,
@@ -77,6 +71,12 @@ export const DnDWrapper = ({
     newItems.splice(hoverIndex, 0, draggedItem);
     return newItems.map((item, index) => ({ ...item, order: index }));
   }
+
+  // useEffect(() => { //TODO : 해당 코드가 활성화시 dnd 이후 원복 에러
+  //   if (dragList) {
+  //     setCurrentItems(dragList);
+  //   }
+  // }, [dragList]);
 
   return (
     <>
