@@ -117,7 +117,7 @@ export function WorkbookList({
     enabled: !!workbookIdx,
   });
 
-  console.log(workbookData);
+  // console.log(workbookData);
 
   useEffect(() => {
     refetch();
@@ -125,7 +125,7 @@ export function WorkbookList({
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = () => {
-    const sendData = { data: workbookData };
+    const sendData = { data: workbookData?.data.data };
     localStorage.setItem('sendData', JSON.stringify(sendData));
   };
 
