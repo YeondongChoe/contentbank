@@ -21,7 +21,7 @@ import {
   MathviewerAccordion,
   Select,
   CheckBox,
-  DnDWrapper,
+  StepDnDWrapper,
 } from '../..';
 import {
   WorkbookData,
@@ -31,7 +31,6 @@ import {
   Data,
 } from '../../../types/WorkbookType';
 import { COLOR } from '../../constants';
-import dummy from '../createcontent/data.json';
 
 export function Step2() {
   const [sendLocalData, setSendLocalData] = useState<WorkbookData | null>(null);
@@ -50,7 +49,7 @@ export function Step2() {
       // }
     }
   }, []);
-
+  // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (sendLocalData) {
       window.opener.localStorage.clear();
@@ -314,7 +313,7 @@ export function Step2() {
                             <div className="title">유형명</div>
                             <div className="icon">순서변경</div>
                           </ListCategory>
-                          <DnDWrapper
+                          <StepDnDWrapper
                             dragList={initialItems}
                             onDragging={() => {}}
                             onDragEnd={whenDragEnd}
@@ -329,7 +328,7 @@ export function Step2() {
                                 <Content
                                   // key={i}
                                   onClick={(e) => {
-                                    //handleButtonCheck(e, i.toString());
+                                    handleButtonCheck(e, dragItem.idx);
                                   }}
                                 >
                                   <div className="number">{dragItem.idx}</div>
@@ -438,7 +437,7 @@ export function Step2() {
                                   ))} */}
                               </li>
                             )}
-                          </DnDWrapper>
+                          </StepDnDWrapper>
                         </ContentsList>
                       </>
                     )}
@@ -606,7 +605,7 @@ export function Step2() {
                 </SelectWrapper>
               </ListFilter>
               <ContentListWrapper>
-                <DnDWrapper
+                <StepDnDWrapper
                   dragList={initialItems}
                   onDragging={() => {}}
                   onDragEnd={whenDragEnd}
@@ -630,7 +629,7 @@ export function Step2() {
                       ></MathviewerAccordion>
                     </li>
                   )}
-                </DnDWrapper>
+                </StepDnDWrapper>
               </ContentListWrapper>
             </ContentListSection>
           </MainWrapper>

@@ -35,7 +35,7 @@ interface DraggableItemProps {
 }
 
 // 드래그 앤 드랍을 처리하는 래퍼 컴포넌트를 정의한다.
-export const DnDWrapper = ({
+export const StepDnDWrapper = ({
   dragList,
   onDragging,
   onDragEnd,
@@ -74,11 +74,11 @@ export const DnDWrapper = ({
     return newItems.map((item, index) => ({ ...item, order: index }));
   }
 
-  // useEffect(() => { //TODO : 해당 코드가 활성화시 dnd 이후 원복 에러
-  //   if (dragList) {
-  //     setCurrentItems(dragList);
-  //   }
-  // }, [dragList]);
+  useEffect(() => {
+    if (dragList) {
+      setCurrentItems(dragList);
+    }
+  }, [dragList]);
 
   return (
     <>
