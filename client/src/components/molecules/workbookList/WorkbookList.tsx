@@ -82,13 +82,12 @@ export function WorkbookList({
     }
   };
 
-  const [workbookIdx, setWorkbookIdx] = useState<string>('');
+  const [workbookIdx, setWorkbookIdx] = useState<number | null>(null);
   console.log(workbookIdx);
 
   // 문항 수정 윈도우 열기
-  const openCreateEditWindow = (idx: string) => {
+  const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
-    saveLocalData();
     windowOpenHandler({
       name: 'step2',
       url: '/content-create/exam/step2',
@@ -98,36 +97,41 @@ export function WorkbookList({
   };
 
   // 학습지 상세 정보 불러오기 api
-  const getWorkbookData = async (idx: string) => {
+  const getWorkbookData = async (idx: number) => {
     const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
     console.log(`getWorkbook 결과값`, res);
     return res;
   };
 
-  const {
-    isLoading,
-    data: workbookData,
-    refetch,
-  } = useQuery({
+  const { data: workbookData, refetch } = useQuery({
     queryKey: ['get-workbookData'],
-    queryFn: () => getWorkbookData(workbookIdx),
+    queryFn: () => getWorkbookData(workbookIdx as number),
     meta: {
       errorMessage: 'get-workbookData 에러 메세지',
     },
     enabled: !!workbookIdx,
   });
 
-  console.log(workbookData);
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = (data: any) => {
+    const sendData = { data: data?.data.data };
+    if (sendData.data && Object.keys(sendData).length !== 0) {
+      localStorage.setItem('sendData', JSON.stringify(sendData));
+    }
+  };
+
+  // console.log(workbookData);
+  useEffect(() => {
+    if (workbookData) {
+      saveLocalData(workbookData);
+    }
+  }, [workbookData]);
 
   useEffect(() => {
-    refetch();
-  }, [workbookIdx]);
-
-  // 로컬스토리지에 보낼데이터 저장
-  const saveLocalData = () => {
-    const sendData = { data: workbookData };
-    localStorage.setItem('sendData', JSON.stringify(sendData));
-  };
+    if (workbookIdx !== null) {
+      refetch();
+    }
+  }, [workbookIdx, refetch]);
 
   // 학습지 즐겨찾기 api
   const patchWorkbookFavorite = (data: any) => {
@@ -344,7 +348,7 @@ export function WorkbookList({
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openCreateEditWindow(item.idx.toString());
+                                openCreateEditWindow(item.idx);
                               }}
                             >
                               수정
@@ -355,7 +359,7 @@ export function WorkbookList({
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openCreateEditWindow(item.idx.toString());
+                                openCreateEditWindow(item.idx);
                               }}
                             >
                               복제 후 수정

@@ -29,6 +29,7 @@ import {
   ItemCategoryType,
   ItemTreeListType,
 } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 import dummy from '../../constants/data.json';
 
@@ -124,11 +125,6 @@ export function Step1() {
 
   const [tabVeiw, setTabVeiw] = useState<string>('단원·유형별');
   const navigate = useNavigate();
-  const moveStep2 = () => {
-    navigate('/content-create/exam/step2');
-    console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
-    console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
-  };
 
   const [radio1depthCheck, setRadio1depthCheck] = useState<{
     title: string;
@@ -228,7 +224,7 @@ export function Step1() {
   // 카테고리의 그룹 유형 조회
   const fetchCategoryItems = async (typeList: string) => {
     const typeIds = typeList.split(',');
-    console.log(typeIds);
+    // console.log(typeIds);
     const requests = typeIds.map((id) =>
       classificationInstance.get(`/v1/category/${id}`),
     );
@@ -427,7 +423,7 @@ export function Step1() {
     });
 
   useEffect(() => {
-    console.log(radio4depthCheck);
+    // console.log(radio4depthCheck);
     if (selected4depth == '') return;
     categoryItemTreeDataMutate();
   }, [selected4depth]);
@@ -620,7 +616,7 @@ export function Step1() {
 
     if (isSaveEqualValue) {
       const quotient = Math.floor(parsedValue / questionNumValue);
-      console.log(quotient);
+      // console.log(quotient);
       const remainder = parsedValue % questionNumValue;
       setQuotient(quotient);
       setRemainder(remainder);
@@ -772,7 +768,7 @@ export function Step1() {
   // 수능/모의고사
   const getCategoryExamGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
-    console.log(response.data.data.typeList);
+    // console.log(response.data.data.typeList);
     return response.data.data.typeList;
   };
   const { data: examData } = useQuery({
@@ -964,6 +960,63 @@ export function Step1() {
 
       return [...newData];
     });
+  };
+
+  // step1 선택된 문항 불러오기 api
+  const postWorkbookStep1 = (data: any) => {
+    return classificationInstance.post(`/v1/item/quiz`, data);
+  };
+  // console.log(questionLevel);
+  const clickNextButton = () => {
+    const data = {
+      itemTreeIdxList: [
+        radio1depthCheck.checkValue,
+        radio2depthCheck.checkValue,
+        radio3depthCheck.checkValue,
+        radio4depthCheck.checkValue,
+      ],
+      quizCategory: {
+        난이도: questionLevel,
+        출처: '내신',
+        문항타입: questionType.join(', '),
+        문항수: questionNum,
+      },
+    };
+    //console.log(data);
+    postStep1Data(data);
+  };
+
+  const { mutate: postStep1Data } = useMutation({
+    mutationFn: postWorkbookStep1,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      saveLocalData(response.data.data);
+      navigate('/content-create/exam/step2');
+      // openToastifyAlert({
+      //   type: 'success',
+      //   text: response.data.message,
+      // });
+    },
+  });
+
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = (data: any) => {
+    const sendData = { data: data };
+    localStorage.setItem('sendData', JSON.stringify(sendData));
+  };
+
+  const moveStep2 = () => {
+    clickNextButton();
   };
 
   useEffect(() => {
