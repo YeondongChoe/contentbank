@@ -175,7 +175,7 @@ export function Classification() {
       setCategoryList(itemsList);
     } catch (error: any) {
       // console.error('Error fetching next list: ', error?.data?.code);
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.data?.code == 'GE-002') postRefreshToken();
     }
   };
 
@@ -250,8 +250,8 @@ export function Classification() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
-      if (error.data.code == 'GE-002') postRefreshToken();
+      // console.error('Error fetching next list: ', error.data?.code);
+      if (error.data?.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -262,7 +262,7 @@ export function Classification() {
       errorMessage: 'get-nextList1 에러 메세지',
     },
     // 체크된 값이 있을때 조회
-    enabled: radio1depthCheck.code !== '',
+    enabled: radio1depthCheck?.code !== '',
   });
 
   //2뎁스 선택시 3뎁스 설정되게
@@ -276,8 +276,8 @@ export function Classification() {
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
-      if (error.data.code == 'GE-002') postRefreshToken();
+      // console.error('Error fetching next list: ', error.data?.code);
+      if (error.data?.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -288,7 +288,7 @@ export function Classification() {
       errorMessage: 'get-nextList2 에러 메세지',
     },
     // 체크된 값이 있을때 조회
-    enabled: radio2depthCheck.code !== '',
+    enabled: radio2depthCheck?.code !== '',
   });
 
   //3뎁스 선택시 4뎁스 설정되게
@@ -302,8 +302,8 @@ export function Classification() {
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
-      if (error.data.code == 'GE-002') postRefreshToken();
+      // console.error('Error fetching next list: ', error.data?.code);
+      if (error.data?.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -314,13 +314,13 @@ export function Classification() {
       errorMessage: 'get-nextList3 에러 메세지',
     },
     // 체크된 값이 있을때 조회
-    enabled: radio3depthCheck.code !== '',
+    enabled: radio3depthCheck?.code !== '',
   });
 
   useEffect(() => {
-    if (radio1depthCheck.code !== '') nextListData1Refetch();
-    if (radio2depthCheck.code !== '') nextListData2Refetch();
-    if (radio3depthCheck.code !== '') nextListData3Refetch();
+    if (radio1depthCheck?.code !== '') nextListData1Refetch();
+    if (radio2depthCheck?.code !== '') nextListData2Refetch();
+    if (radio3depthCheck?.code !== '') nextListData3Refetch();
   }, [radio1depthCheck, radio2depthCheck, radio3depthCheck]);
 
   // 체크값 변경시 초기화
@@ -387,7 +387,7 @@ export function Classification() {
         type: 'error',
         text: context.response.data.message,
       });
-      if (context.response.data.code == 'GE-002') {
+      if (context.response.data?.code == 'GE-002') {
         postRefreshToken();
       }
     },
@@ -435,7 +435,7 @@ export function Classification() {
       );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error?.data?.code);
+      // console.error('Error fetching next list: ', error?.data??.code);
       if (error?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
@@ -495,7 +495,7 @@ export function Classification() {
     if (selectedClassification) {
       if (selectedClassification[0]) {
         setRadio1depthCheck(selectedClassification[0]);
-        setSelected1depth(selectedClassification[0].code);
+        setSelected1depth(selectedClassification[0]?.code);
       } else {
         setRadio1depthCheck({ title: '', checkValue: 0, code: '' });
         setSelected1depth('');
@@ -503,7 +503,7 @@ export function Classification() {
 
       if (selectedClassification[1]) {
         setRadio2depthCheck(selectedClassification[1]);
-        setSelected2depth(selectedClassification[1].code);
+        setSelected2depth(selectedClassification[1]?.code);
       } else {
         setRadio2depthCheck({ title: '', checkValue: 0, code: '' });
         setSelected2depth('');
@@ -511,7 +511,7 @@ export function Classification() {
 
       if (selectedClassification[2]) {
         setRadio3depthCheck(selectedClassification[2]);
-        setSelected3depth(selectedClassification[2].code);
+        setSelected3depth(selectedClassification[2]?.code);
       } else {
         setRadio3depthCheck({ title: '', checkValue: 0, code: '' });
         setSelected3depth('');
@@ -519,7 +519,7 @@ export function Classification() {
 
       if (selectedClassification[3]) {
         setRadio4depthCheck(selectedClassification[3]);
-        setSelected4depth(selectedClassification[3].code);
+        setSelected4depth(selectedClassification[3]?.code);
       } else {
         setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
         setSelected4depth('');
@@ -527,7 +527,7 @@ export function Classification() {
 
       if (selectedClassification[4]) {
         setRadioEtc1Check(selectedClassification[4]);
-        setSelectedCategoryEtc1(selectedClassification[4].code);
+        setSelectedCategoryEtc1(selectedClassification[4]?.code);
       } else {
         setRadioEtc1Check({ title: '', checkValue: 0, code: '' });
         setSelectedCategoryEtc1('');
@@ -535,7 +535,7 @@ export function Classification() {
 
       if (selectedClassification[5]) {
         setRadioEtc2Check(selectedClassification[5]);
-        setSelectedCategoryEtc2(selectedClassification[5].code);
+        setSelectedCategoryEtc2(selectedClassification[5]?.code);
       } else {
         setRadioEtc2Check({ title: '', checkValue: 0, code: '' });
         setSelectedCategoryEtc2('');
@@ -574,10 +574,10 @@ export function Classification() {
   const addButtonBool = useMemo(() => {
     if (
       unitClassificationList.length < 5 &&
-      radio1depthCheck.code !== '' &&
-      radio2depthCheck.code !== '' &&
-      radio3depthCheck.code !== '' &&
-      radio4depthCheck.code !== ''
+      radio1depthCheck?.code !== '' &&
+      radio2depthCheck?.code !== '' &&
+      radio3depthCheck?.code !== '' &&
+      radio4depthCheck?.code !== ''
     ) {
       return false;
     } else {
@@ -689,7 +689,7 @@ export function Classification() {
                       </div>
                     ))}
 
-                    {radio1depthCheck.code !== '' &&
+                    {radio1depthCheck?.code !== '' &&
                       selected1depth !== '' &&
                       [categoryItems[1]].map((item) => (
                         <div
@@ -707,7 +707,7 @@ export function Classification() {
                         </div>
                       ))}
 
-                    {radio2depthCheck.code !== '' &&
+                    {radio2depthCheck?.code !== '' &&
                       selected2depth !== '' &&
                       [categoryItems[2]].map((item) => (
                         <div
@@ -724,7 +724,7 @@ export function Classification() {
                           />
                         </div>
                       ))}
-                    {radio3depthCheck.code !== '' &&
+                    {radio3depthCheck?.code !== '' &&
                       selected3depth !== '' &&
                       [categoryItems[3]].map((item) => (
                         <div
@@ -747,10 +747,10 @@ export function Classification() {
                 <p className="line"></p>
 
                 {/* 교과정보 아코디언 리스트  */}
-                {radio1depthCheck.code !== '' &&
-                radio2depthCheck.code !== '' &&
-                radio3depthCheck.code !== '' &&
-                radio4depthCheck.code !== '' &&
+                {radio1depthCheck?.code !== '' &&
+                radio2depthCheck?.code !== '' &&
+                radio3depthCheck?.code !== '' &&
+                radio4depthCheck?.code !== '' &&
                 selected1depth !== '' &&
                 selected2depth !== '' &&
                 selected3depth !== '' ? (
@@ -785,20 +785,20 @@ export function Classification() {
                                       <div key={`${el.itemTreeKey}`}>
                                         {el.itemTreeList.map((item) => (
                                           <DepthBlock
-                                            key={`depthList${item.code} ${item.name}`}
+                                            key={`depthList${item?.code} ${item.name}`}
                                             classNameList={`depth-${item.level}`}
-                                            id={item.code}
+                                            id={item?.code}
                                             name={item.name}
-                                            value={item.code}
+                                            value={item?.code}
                                             onChange={(e) =>
                                               handleSingleCheck(
                                                 e.target.checked,
-                                                item.code,
+                                                item?.code,
                                               )
                                             }
                                             checked={
                                               checkedDepthList.includes(
-                                                item.code,
+                                                item?.code,
                                               )
                                                 ? true
                                                 : false
