@@ -220,14 +220,15 @@ export function Step1() {
     },
   });
   useEffect(() => {
-    if (groupsData) {
+    if (tabVeiw === '단원·유형별' && groupsData) {
       fetchCategoryItems(groupsData);
     }
-  }, [groupsData]);
+  }, [groupsData, tabVeiw]);
 
   // 카테고리의 그룹 유형 조회
   const fetchCategoryItems = async (typeList: string) => {
     const typeIds = typeList.split(',');
+    console.log(typeIds);
     const requests = typeIds.map((id) =>
       classificationInstance.get(`/v1/category/${id}`),
     );
@@ -769,6 +770,33 @@ export function Step1() {
   };
 
   // 수능/모의고사
+  const getCategoryExamGroups = async () => {
+    const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    console.log(response.data.data.typeList);
+    return response.data.data.typeList;
+  };
+  const { data: examData } = useQuery({
+    queryKey: ['get-category-exam-groups'],
+    queryFn: getCategoryExamGroups,
+    // enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-exam-groups 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (tabVeiw === '수능/모의고사' && examData) {
+      fetchCategoryItems(examData);
+    }
+  }, [examData, tabVeiw]);
+
+  const excludedNames = ['1', '2', '8', '12'];
+
+  // console.log(
+  //   categoryList[3].map((el) => {
+  //     return el.name;
+  //   }),
+  // );
+  //console.log(examData);
   // 드롭다운에서 선택한 값으로 더미데이터를 대신해서 넣고 선택 완료를 누르면 서버에 요청해서 값을 저장함
   const [isDropdown, setIsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -829,11 +857,11 @@ export function Step1() {
   };
 
   const isAllSelectedExamYear =
-    examYear.includes('2024년') &&
-    examYear.includes('2023년') &&
-    examYear.includes('2022년') &&
-    examYear.includes('2021년') &&
-    examYear.includes('2020년');
+    examYear.includes('2024') &&
+    examYear.includes('2023') &&
+    examYear.includes('2022') &&
+    examYear.includes('2021') &&
+    examYear.includes('2020');
 
   const [examMonthly, setExamMonthly] = useState<string[]>([]);
   const selectExamMonthly = (newValue: string) => {
@@ -849,14 +877,14 @@ export function Step1() {
   };
 
   const isAllSelectedExamMonthly =
-    examMonthly.includes('3월') &&
-    examMonthly.includes('4월') &&
-    examMonthly.includes('5월') &&
-    examMonthly.includes('6월') &&
-    examMonthly.includes('7월') &&
-    examMonthly.includes('9월') &&
-    examMonthly.includes('10월') &&
-    examMonthly.includes('11월');
+    examMonthly.includes('3') &&
+    examMonthly.includes('4') &&
+    examMonthly.includes('5') &&
+    examMonthly.includes('6') &&
+    examMonthly.includes('7') &&
+    examMonthly.includes('9') &&
+    examMonthly.includes('10') &&
+    examMonthly.includes('11');
 
   const [examOption, setExamOption] = useState<string | null>(null);
   const selectExamOption = (newValue: string | null) => {
@@ -2729,11 +2757,11 @@ export function Step1() {
                                 setExamYear([]);
                               } else {
                                 setExamYear([
-                                  '2024년',
-                                  '2023년',
-                                  '2022년',
-                                  '2021년',
-                                  '2020년',
+                                  '2024',
+                                  '2023',
+                                  '2022',
+                                  '2021',
+                                  '2020',
                                 ]);
                               }
                             }}
@@ -2747,71 +2775,21 @@ export function Step1() {
                           >
                             <span>전체</span>
                           </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2024년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2024년')}
-                            $filled={examYear.includes('2024년')}
-                            cursor
-                          >
-                            <span>2024년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2023년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2023년')}
-                            $filled={examYear.includes('2023년')}
-                            cursor
-                          >
-                            <span>2023년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2022년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2022년')}
-                            $filled={examYear.includes('2022년')}
-                            cursor
-                          >
-                            <span>2022년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2021년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2021년')}
-                            $filled={examYear.includes('2021년')}
-                            cursor
-                          >
-                            <span>2021년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2020년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2020년')}
-                            $filled={examYear.includes('2020년')}
-                            cursor
-                          >
-                            <span>2020년</span>
-                          </Button>
+                          {categoryList[2].map((el) => (
+                            <Button
+                              key={el.idx}
+                              onClick={() => selectExamYear(el.name)}
+                              $padding="10px"
+                              height={'35px'}
+                              width={'80px'}
+                              fontSize="13px"
+                              $normal={!examYear.includes(el.name)}
+                              $filled={examYear.includes(el.name)}
+                              cursor
+                            >
+                              <span>{el.name}년</span>
+                            </Button>
+                          ))}
                         </MockExamHalfButtonWrapper>
                       </MockExamOptionWrapper>
                       <MockExamOptionWrapper>
@@ -2827,14 +2805,14 @@ export function Step1() {
                                 setExamMonthly([]);
                               } else {
                                 setExamMonthly([
-                                  '3월',
-                                  '4월',
-                                  '5월',
-                                  '6월',
-                                  '7월',
-                                  '9월',
-                                  '10월',
-                                  '11월',
+                                  '3',
+                                  '4',
+                                  '5',
+                                  '6',
+                                  '7',
+                                  '9',
+                                  '10',
+                                  '11',
                                 ]);
                               }
                             }}
@@ -2848,110 +2826,26 @@ export function Step1() {
                           >
                             <span>전체</span>
                           </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('3월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('3월')}
-                            $filled={examMonthly.includes('3월')}
-                            cursor
-                          >
-                            <span>3월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('4월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('4월')}
-                            $filled={examMonthly.includes('4월')}
-                            cursor
-                          >
-                            <span>4월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('5월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('5월')}
-                            $filled={examMonthly.includes('5월')}
-                            cursor
-                          >
-                            <span>5월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('6월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('6월')}
-                            $filled={examMonthly.includes('6월')}
-                            cursor
-                          >
-                            <span>6월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('7월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('7월')}
-                            $filled={examMonthly.includes('7월')}
-                            cursor
-                          >
-                            <span>7월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('9월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('9월')}
-                            $filled={examMonthly.includes('9월')}
-                            cursor
-                          >
-                            <span>9월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('10월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('10월')}
-                            $filled={examMonthly.includes('10월')}
-                            cursor
-                          >
-                            <span>10월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('11월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('11월')}
-                            $filled={examMonthly.includes('11월')}
-                            cursor
-                          >
-                            <span>11월</span>
-                          </Button>
+                          {categoryList[3]
+                            .filter((el) => {
+                              return !excludedNames.includes(el.name);
+                            })
+                            .map((el) => (
+                              <Button
+                                key={el.idx}
+                                buttonType="button"
+                                onClick={() => selectExamMonthly(el.name)}
+                                $padding="10px"
+                                height={'35px'}
+                                width={'80px'}
+                                fontSize="13px"
+                                $normal={!examMonthly.includes(el.name)}
+                                $filled={examMonthly.includes(el.name)}
+                                cursor
+                              >
+                                <span>{el.name}월</span>
+                              </Button>
+                            ))}
                         </MockExamHalfButtonWrapper>
                       </MockExamOptionWrapper>
                       <MockExamOptionWrapper>

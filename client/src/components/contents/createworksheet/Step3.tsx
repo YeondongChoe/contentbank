@@ -769,7 +769,7 @@ export function Step3() {
           </AnswerCommentaryWrapper>
         </WorksheetSettingSection>
         <WorksheetTemplateViewSection>
-          {templateType === 'A' && (
+          {/* {templateType === 'A' && (
             <TypeA
               title={nameValue}
               grade={gradeValue}
@@ -790,7 +790,7 @@ export function Step3() {
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
             ></TypeB>
-          )}
+          )} */}
           {/* <ThemeProvider theme={selectedTheme}>
             <WorksheetTemplateWrapper>
               <Label value={'미리보기'}></Label>

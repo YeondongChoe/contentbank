@@ -219,13 +219,13 @@ export function Guide() {
       <BarChart data={Data}></BarChart>
       <h3>mathviewer</h3>
       <div style={{ width: '480px' }}>
-        <MathviewerCard
+        {/* <MathviewerCard
           onClick={() => {}}
           data={Contents2}
           index={1}
           selectedCardIndex={1}
           onSelectCard={() => {}}
-        ></MathviewerCard>
+        ></MathviewerCard> */}
       </div>
       <h3>pagination</h3>
       <PaginationBox itemsCountPerPage={1} totalItemsCount={10}></PaginationBox>

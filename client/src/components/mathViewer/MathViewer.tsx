@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import styled from 'styled-components';
 
+import Contents2 from '../../components/mathViewer/test3.json';
 import { ItemQuestionType } from '../../types';
+import { QuizList } from '../../types/WorkbookType';
 import { Loader } from '../atom/Loader';
 
 type MathViewerProps = {
-  data: ItemQuestionType;
+  data: QuizList;
   display?: string;
   width?: string;
   padding?: string;
@@ -43,6 +45,8 @@ export function MathViewer({ data, width, padding, height }: MathViewerProps) {
     // console.log('off loader');
     setDisplay('block');
   };
+  //console.log(data.quizItemList[1].content);
+  //console.log(Contents2.it_quest);
 
   // 안정성 문제로 리액트에서 권장하는 방식
   // const createMarkup = (data: string) => {
@@ -88,7 +92,9 @@ export function MathViewer({ data, width, padding, height }: MathViewerProps) {
           {/* <strong>{data.it_title}</strong> */}
           <MathJax inline dynamic onInitTypeset={() => offLoader()}>
             <ContentQuestion
-              dangerouslySetInnerHTML={createMarkup(data.it_quest)}
+              dangerouslySetInnerHTML={createMarkup(
+                data.quizItemList[5].content,
+              )}
             ></ContentQuestion>
             {/* <ContentAnswer
               dangerouslySetInnerHTML={createMarkup(data.it_answer[0])}
