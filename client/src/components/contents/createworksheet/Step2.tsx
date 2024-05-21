@@ -28,52 +28,27 @@ import {
   QuizList,
   QuizCategory,
   QuizCategoryList,
+  Data,
 } from '../../../types/WorkbookType';
 import { COLOR } from '../../constants';
 import dummy from '../createcontent/data.json';
 
-type ContentListType = {
-  sort: number;
-  unitType: string;
-  contentLevel: string;
-  unitMajor: string;
-};
-
 export function Step2() {
-  const [didMount, setDidMount] = useState<boolean>(false);
-  const [sendLocalData, setSendLocalData] = useState<WorkbookData>();
-  const getLocalData = () => {
+  const [sendLocalData, setSendLocalData] = useState<WorkbookData | null>(null);
+
+  // 로컬 스토리지에서 데이터 가져오기
+  useEffect(() => {
     const data = localStorage.getItem('sendData');
-    let sendData;
-    if (data) sendData = JSON.parse(data);
-
-    console.log('데이터 조회', sendData && sendData.data);
-    setSendLocalData(sendData.data.data);
-    // if (sendData === undefined) setIsUploadFile('createcontent');
-    // if (sendData.data === 'createcontent') setIsUploadFile(sendData.data);
-    // if (sendData.data === 'uploadfile') setIsUploadFile(sendData.data);
-
-    // 로컬스토리지 값 다받은 뒤 초기화
-    window.opener.localStorage.clear();
-  };
-  // console.log(sendLocalData);
-
-  useEffect(() => {
-    if (didMount) {
-      // navigate 이동하며 전달된 데이터 받기
-      // if (location?.state?.isUploadFile !== undefined) {
-      //   setIsUploadFile(location.state.isUploadFile);
-      // } else {
-      //   setIsUploadFile(false);
-      // }
-      // 윈도우 열릴때 부모윈도우 스토리지 접근
-      getLocalData();
+    if (data) {
+      const parsedData = JSON.parse(data);
+      console.log('데이터 조회', parsedData);
+      setSendLocalData(parsedData);
+      // 로컬 스토리지 값 다 받은 뒤 초기화
+      window.opener.localStorage.clear();
     }
-  }, [didMount]);
-
-  useEffect(() => {
-    setDidMount(true);
   }, []);
+  console.log(sendLocalData);
+  console.log(sendLocalData?.data);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
@@ -101,7 +76,6 @@ export function Step2() {
     { value: 0, label: '상' },
     { value: 0, label: '최상' },
   ];
-  //const [list, setList] = useState<ContentListType[]>();
   const bookmark: any[] = [];
   const selectCategory = [
     {
@@ -155,7 +129,6 @@ export function Step2() {
 
   const navigate = useNavigate();
   const [isSimilar, setIsSimilar] = useState(false);
-  const ContentList = dummy.ContentInfo;
 
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
 
@@ -167,14 +140,13 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     sendLocalData?.data.quizList || [],
   );
+  console.log(initialItems);
 
   useEffect(() => {
     if (sendLocalData?.data.quizList) {
       setInitialItems(sendLocalData.data.quizList);
     }
   }, [sendLocalData]);
-
-  // console.log(initialItems);
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
@@ -217,7 +189,6 @@ export function Step2() {
 
   const moveStep3 = () => {
     navigate('/content-create/exam/step3');
-    console.log('받아온 데이타를 수정한 가공한 데이타를 넘겨주기');
   };
 
   return (
