@@ -220,7 +220,7 @@ export function ContentCreating({
   useEffect(() => {
     const handleMessage = (event: { origin: string; data: any }) => {
       if (event.origin !== 'http://43.201.205.140:40031') {
-        console.warn('Received message from untrusted source:', event.origin);
+        // console.warn('Received message from untrusted source:', event.origin);
         return;
       }
       console.log('parent message');
@@ -301,7 +301,7 @@ export function ContentCreating({
                     categoriesH &&
                     categoryTitles && (
                       <OptionList
-                        categoryTitlesList={categoryTitles}
+                        categoryTitles={categoryTitles}
                         categoriesE={categoriesE[2]}
                         categoriesF={categoriesF}
                         categoriesG={categoriesG}

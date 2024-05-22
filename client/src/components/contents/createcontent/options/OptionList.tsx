@@ -8,56 +8,94 @@ import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 
 import { Options } from './Options';
-import { OptionsItemProps } from './OtionsSelect';
+import { OptionsItemProps, OtionsSelect } from './OtionsSelect';
 
-export function OptionList({
-  categoryTitlesList,
-  categoriesE,
-  categoriesF,
-  categoriesG,
-  categoriesH,
-}: {
-  categoryTitlesList: ItemCategoryType[];
+type CategoryList = {
+  name: string;
+  categories: ItemCategoryType[][];
+};
+
+interface Props {
+  categoryTitles: ItemCategoryType[];
   categoriesE: ItemCategoryType[];
   categoriesF: ItemCategoryType[][];
   categoriesG: ItemCategoryType[][];
   categoriesH: ItemCategoryType[][];
-}) {
+}
+
+export function OptionList({
+  categoryTitles,
+  categoriesE,
+  categoriesF,
+  categoriesG,
+  categoriesH,
+}: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [count, setCount] = useState(1);
-  const [selectValue, setSelectValue] = useState({
-    idx: 0,
-    value: '',
-  });
-  const [optionsList1, setOptionsList1] = useState<
-    ItemCategoryType[] | undefined
-  >();
-  const [optionsList2, setOptionsList2] = useState<
-    ItemCategoryType[] | undefined
-  >();
-  const [optionsList3, setOptionsList3] = useState<
-    ItemCategoryType[] | undefined
-  >();
-  const [optionsList4, setOptionsList4] = useState<
-    ItemCategoryType[] | undefined
-  >();
-  const [optionsList5, setOptionsList5] = useState<
-    ItemCategoryType[] | undefined
-  >();
-
   const [selected, setSelected] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
+  const [selectedValues, setSelectedValues] = useState<{
+    [key: number]: string;
+  }>({});
+
+  const [optionsList1, setOptionsList1] = useState<CategoryList>({
+    name: '',
+    categories: [],
+  });
+  const [optionsList2, setOptionsList2] = useState<CategoryList>({
+    name: '',
+    categories: [],
+  });
+  const [optionsList3, setOptionsList3] = useState<CategoryList>({
+    name: '',
+    categories: [],
+  });
+  const [optionsList4, setOptionsList4] = useState<CategoryList>({
+    name: '',
+    categories: [],
+  });
+  const [optionsList5, setOptionsList5] = useState<CategoryList>({
+    name: '',
+    categories: [],
+  });
+
+  const lists = [
+    {
+      name: '교재',
+      categories: categoriesF,
+    },
+    {
+      name: '내신',
+      categories: categoriesG,
+    },
+    {
+      name: '기출',
+      categories: categoriesH,
+    },
+    {
+      name: '자체제작',
+      categories: [], // 자체제작은 예시로 빈 배열
+    },
+    {
+      name: '기타',
+      categories: [], // 기타는 예시로 빈 배열
+    },
+  ];
 
   // 부모 셀렉트 핸들링
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const selectCategoryOption = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
     const value = event.currentTarget.value;
     const id =
       event.currentTarget.parentElement?.parentElement?.parentElement
         ?.parentElement?.parentElement?.parentElement?.parentElement?.id;
 
     // 셀렉트 선택이후 옵션에 속한 버튼값보여주기
-    setSelectValue({ idx: Number(id), value: value });
-    console.log(value, id);
+    setSelectedValues((prev) => ({ ...prev, [index]: value }));
+
+    console.log('v', value, 'id', id);
     // 중복셀렉트 선택못하도록
 
     //셀렉트 선택시에만 추가 가능하도록
@@ -67,57 +105,39 @@ export function OptionList({
     }
   };
 
+  useEffect(() => {}, [selected]);
+
   // 셀렉트 선택이후 셀렉트에 속한 자식 배열값 보여주기
-  const listSwitch = () => {
-    const listIdx = selectValue.idx;
-    let selectedOptions: ItemCategoryType[][];
-
-    // 선택된 인덱스에 따라 적절한 데이터 배열 선택
-    switch (listIdx) {
-      case 0:
-        selectedOptions = categoriesF;
-        break;
-      case 1:
-        selectedOptions = categoriesG;
-        break;
-      case 2:
-        selectedOptions = categoriesH;
-        break;
-      default:
-        selectedOptions = []; // 기본값으로 빈 배열 설정
-    }
-
-    // 배열의 모든 그룹을 검색하여 사용자 선택과 일치하는 첫 번째 그룹을 찾음
-    const selectedOption = selectedOptions.find((group) =>
-      group.some((item) => item.name === selectValue.value),
-    );
-
-    // 선택된 그룹에서 사용자 선택과 일치하는 첫 번째 항목을 찾아 상태를 설정
-    if (selectedOption) {
-      const optionsToSet = selectedOption.find(
-        (item) => item.name === selectValue.value,
-      );
-      if (optionsToSet) {
-        switch (listIdx) {
-          case 0:
-            setOptionsList1([optionsToSet]); // 상태는 배열 형태로 저장
-            break;
-          case 1:
-            setOptionsList2([optionsToSet]);
-            break;
-          case 2:
-            setOptionsList3([optionsToSet]);
-            break;
-          default:
-            break; // 추가 케이스
-        }
+  const listSwitch = (value: string, index: number) => {
+    const list = lists.find((list) => list.name === value);
+    if (list) {
+      switch (index) {
+        case 0:
+          setOptionsList1(list);
+          break;
+        case 1:
+          setOptionsList2(list);
+          break;
+        case 2:
+          setOptionsList3(list);
+          break;
+        case 3:
+          setOptionsList4(list);
+          break;
+        case 4:
+          setOptionsList5(list);
+          break;
+        default:
+          break;
       }
     }
   };
 
   useEffect(() => {
-    listSwitch();
-  }, [selectValue]);
+    Object.keys(selectedValues).forEach((key) => {
+      listSwitch(selectedValues[Number(key)], Number(key));
+    });
+  }, [selectedValues]);
 
   const addSourceOptions = () => {
     // console.log('출처 카테고리 추가 API');
@@ -130,113 +150,92 @@ export function OptionList({
   };
   useEffect(() => {}, [disabled]);
 
-  const removeSourceOptions = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const removeSourceOptions = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
     const target = event.currentTarget;
     const id = target.parentElement?.parentElement?.id;
     const arr = sourceOptions.filter((el) => el !== Number(id));
     setSourceOptions(arr);
+
+    const newSelectedValues = { ...selectedValues };
+    delete newSelectedValues[index];
+    setSelectedValues(newSelectedValues);
+  };
+
+  const getCategoryList = (value: string): ItemCategoryType[][] => {
+    const list = lists.find((list) => list.name === value);
+    return list ? list.categories : [];
   };
 
   return (
     <Container>
-      {sourceOptions.map((index) => (
-        <SelectList key={`${index}selectList el`} id={index.toString()}>
-          <li>
-            {index === 0 && optionsList1 == undefined && (
-              <p className="info_hight">
-                <p className="info">출처는 최대 5개까지만 추가 가능</p>
-              </p>
-            )}
-            {index === 0 ? (
-              <Button
-                width={'50px'}
-                height={'30px'}
-                fontSize={'15px'}
-                $padding={'5px'}
-                $filled
-                cursor
-                disabled={disabled}
-                onClick={() => addSourceOptions()}
-              >
-                +
-              </Button>
-            ) : (
-              <Button
-                width={'50px'}
-                height={'30px'}
-                fontSize={'15px'}
-                $padding={'5px'}
-                $filled
-                cursor
-                onClick={(event) => removeSourceOptions(event)}
-              >
-                -
-              </Button>
-            )}
-            <SelectWrapper>
-              {categoriesE &&
-                categoriesE.map((el) => (
-                  <>
-                    <SelectMapWrapper
-                      key={`${el.name} SelectMapWrap`}
-                      id={`${index.toString()}SelectMapWrap`}
-                    >
-                      <Select
-                        $positionTop
-                        width={'110px'}
-                        height={'30px'}
-                        defaultValue={categoryTitlesList[7].code}
-                        key={categoryTitlesList[7].code}
-                        options={categoriesE}
-                        onSelect={(event) => selectCategoryOption(event)}
+      {categoryTitles &&
+        sourceOptions.map((index) => (
+          <SelectList key={`${index}selectList el`} id={index.toString()}>
+            <li>
+              {index === 0 && sourceOptions.length < 2 && (
+                <p className="info_hight">
+                  <p className="info">출처는 최대 5개까지만 추가 가능</p>
+                </p>
+              )}
+              {index === 0 ? (
+                <Button
+                  width={'50px'}
+                  height={'30px'}
+                  fontSize={'15px'}
+                  $padding={'5px'}
+                  $filled
+                  cursor
+                  disabled={disabled}
+                  onClick={() => addSourceOptions()}
+                >
+                  +
+                </Button>
+              ) : (
+                <Button
+                  width={'50px'}
+                  height={'30px'}
+                  fontSize={'15px'}
+                  $padding={'5px'}
+                  $filled
+                  cursor
+                  onClick={(event) => removeSourceOptions(event, index)}
+                >
+                  -
+                </Button>
+              )}
+              <SelectWrapper>
+                <SelectMapWrapper id={`${index.toString()}SelectMapWrap`}>
+                  <OtionsSelect
+                    $positionTop
+                    width={'110px'}
+                    height={'30px'}
+                    defaultValue={categoryTitles[16]?.name}
+                    key={categoryTitles[16]?.name}
+                    options={categoriesE}
+                    onSelect={(
+                      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+                    ) => selectCategoryOption(event, index)}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                </SelectMapWrapper>
+
+                {selectedValues[index] &&
+                  getCategoryList(selectedValues[index]).map(
+                    (category, idx) => (
+                      <Options
+                        listItem={category}
+                        key={`${category[idx]?.name} optionsdepth${idx}`}
                       />
-                    </SelectMapWrapper>
-                    {index === 0 &&
-                      optionsList1 &&
-                      optionsList1.map((el: ItemCategoryType) => (
-                        <Options
-                          listItem={el}
-                          key={`${el.name} optionsdepth`}
-                        />
-                      ))}
-                    {index === 1 &&
-                      optionsList2 &&
-                      optionsList2.map((el: ItemCategoryType) => (
-                        <Options
-                          listItem={el}
-                          key={`${el.name} optionsdepth`}
-                        />
-                      ))}
-                    {index === 2 &&
-                      optionsList3 &&
-                      optionsList3.map((el: ItemCategoryType) => (
-                        <Options
-                          listItem={el}
-                          key={`${el.name} optionsdepth`}
-                        />
-                      ))}
-                    {index === 3 &&
-                      optionsList4 &&
-                      optionsList4.map((el: ItemCategoryType) => (
-                        <Options
-                          listItem={el}
-                          key={`${el.name} optionsdepth`}
-                        />
-                      ))}
-                    {index === 4 &&
-                      optionsList5 &&
-                      optionsList5.map((el: ItemCategoryType) => (
-                        <Options
-                          listItem={el}
-                          key={`${el.name} optionsdepth`}
-                        />
-                      ))}
-                  </>
-                ))}
-            </SelectWrapper>
-          </li>
-        </SelectList>
-      ))}
+                    ),
+                  )}
+              </SelectWrapper>
+            </li>
+          </SelectList>
+        ))}
     </Container>
   );
 }

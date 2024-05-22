@@ -11,7 +11,7 @@ import { ItemCategoryType } from '../../../../types';
 import { COLOR } from '../../../constants/COLOR';
 import { SchoolInputModal } from '../SchoolInputModal';
 
-export function Options({ listItem }: { listItem: ItemCategoryType }) {
+export function Options({ listItem }: { listItem: ItemCategoryType[] }) {
   const { openModal } = useModal();
   const [startDate, setStartDate] = useState<string>('');
   const [schoolNameValue, setSchoolNameValue] = useState('');
@@ -43,15 +43,25 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
     }
   }, [schoolNameValue]);
 
+  useEffect(() => {
+    console.log('listItem-----------', listItem);
+  }, [listItem]);
+
   return (
     <OptionWrapper>
       <li>
-        {/* {listItem?.type === 'input' && (
+        <p>
+          {listItem.map((el) => (
+            <>{el.name}</>
+          ))}
+        </p>
+
+        {/* {listItem?.type === 'INPUT' && (
           <input placeholder={`${listItem.name}`} />
         )} */}
       </li>
       <li>
-        {/* {listItem?.type === 'datepicker' && (
+        {/* {listItem?.type === 'DATEPICKER' && (
           <CommonDate
             setDate={setStartDate}
             $button={
@@ -71,7 +81,7 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
         )} */}
       </li>
       <li>
-        {/* {listItem?.type === 'modal' && (
+        {/* {listItem?.type === 'MODAL' && (
           <input
             className="modal_input"
             readOnly
@@ -82,7 +92,7 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
         )} */}
       </li>
       <li>
-        {/* {listItem?.type === 'select' && (
+        {/* {listItem?.type === 'SELECT' && (
           <OtionsSelect
             width={'110px'}
             height={'30px'}
