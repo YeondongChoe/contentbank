@@ -102,7 +102,7 @@ export function WorkbookList({
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
-    //refetch();
+    refetch();
     windowOpenHandler({
       name: 'step2',
       url: '/content-create/exam/step2',
@@ -127,7 +127,7 @@ export function WorkbookList({
   }, [workbookData]);
 
   // useEffect(() => {
-  //   if (workbookIdx !== null) {
+  //   if (workbookIdx) {
   //     refetch();
   //   }
   // }, [workbookIdx, refetch]);
