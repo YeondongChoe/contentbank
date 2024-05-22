@@ -45,8 +45,8 @@ export function MathViewer({ data, width, padding, height }: MathViewerProps) {
     // console.log('off loader');
     setDisplay('block');
   };
-  console.log(data.quizItemList[1].content);
-  console.log(Contents2.it_quest);
+  // console.log(data.quizItemList[1].content);
+  // console.log(Contents2.it_quest);
 
   // 안정성 문제로 리액트에서 권장하는 방식
   // const createMarkup = (data: string) => {

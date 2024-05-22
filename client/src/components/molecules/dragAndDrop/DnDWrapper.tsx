@@ -46,8 +46,6 @@ export const DnDWrapper = ({
   setIsStartDnd,
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
-  console.log(dragList);
-  console.log(currentItems);
 
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
