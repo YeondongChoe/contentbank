@@ -83,19 +83,6 @@ export function WorkbookList({
   };
 
   const [workbookIdx, setWorkbookIdx] = useState<number | null>(null);
-  console.log(workbookIdx);
-
-  // 문항 수정 윈도우 열기
-  const openCreateEditWindow = (idx: number) => {
-    setWorkbookIdx(idx);
-    windowOpenHandler({
-      name: 'step2',
-      url: '/content-create/exam/step2',
-      options:
-        'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
-    });
-  };
-
   // 학습지 상세 정보 불러오기 api
   const getWorkbookData = async (idx: number) => {
     const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
@@ -104,13 +91,25 @@ export function WorkbookList({
   };
 
   const { data: workbookData, refetch } = useQuery({
-    queryKey: ['get-workbookData'],
+    queryKey: ['get-workbookData', workbookIdx],
     queryFn: () => getWorkbookData(workbookIdx as number),
     meta: {
       errorMessage: 'get-workbookData 에러 메세지',
     },
     enabled: !!workbookIdx,
   });
+
+  // 문항 수정 윈도우 열기
+  const openCreateEditWindow = (idx: number) => {
+    setWorkbookIdx(idx);
+    refetch();
+    windowOpenHandler({
+      name: 'step2',
+      url: '/content-create/exam/step2',
+      options:
+        'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
+    });
+  };
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
@@ -127,11 +126,11 @@ export function WorkbookList({
     }
   }, [workbookData]);
 
-  useEffect(() => {
-    if (workbookIdx !== null) {
-      refetch();
-    }
-  }, [workbookIdx, refetch]);
+  // useEffect(() => {
+  //   if (workbookIdx) {
+  //     refetch();
+  //   }
+  // }, [workbookIdx, refetch]);
 
   // 학습지 즐겨찾기 api
   const patchWorkbookFavorite = (data: any) => {
