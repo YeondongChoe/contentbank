@@ -226,7 +226,7 @@ export function Step3() {
     },
     onSuccess: (data) => {
       console.log('post-workbook 성공:', data);
-      //setIsWorkingFavorite(!isWorkingFavorite);
+
       // 성공 처리 로직 추가
     },
   });

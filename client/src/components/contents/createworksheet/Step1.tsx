@@ -1008,6 +1008,34 @@ export function Step1() {
       // });
     },
   });
+  const [sendLocalData, setSendLocalData] = useState<any | null>(null);
+
+  // 로컬 스토리지에서 데이터 가져오기
+  useEffect(() => {
+    const data = localStorage.getItem('sendData');
+    if (data) {
+      const parsedData = JSON.parse(data);
+      console.log('데이터 조회', parsedData);
+      setSendLocalData(parsedData);
+    }
+  }, []);
+
+  // 로컬 스토리지 값 다 받은 뒤 초기화
+  useEffect(() => {
+    if (sendLocalData) {
+      window.opener.localStorage.clear();
+    }
+  }, [sendLocalData]);
+  //로컬 스토리지에서 받아온 값이 있다면 보여주기
+  useEffect(() => {
+    if (sendLocalData) {
+      setQuestionNum(sendLocalData.문항수);
+      setQuestionLevel(sendLocalData.난이도);
+      setQuestionType([sendLocalData.문항타입]);
+    }
+  }, [sendLocalData]);
+
+  // console.log(sendLocalData);
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {

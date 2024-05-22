@@ -42,11 +42,6 @@ export function Step2() {
       const parsedData = JSON.parse(data);
       console.log('데이터 조회', parsedData);
       setSendLocalData(parsedData);
-      // 로컬 스토리지 값 다 받은 뒤 초기화
-      //window.opener.localStorage.clear();
-      // if (sendLocalData) {
-      //   window.opener.localStorage.clear();
-      // }
     }
   }, []);
   // 로컬 스토리지 값 다 받은 뒤 초기화
@@ -192,7 +187,22 @@ export function Step2() {
   //     setList(newList);
   //   }
   // };
-  const goBackMainPopup = () => {
+
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = (data: any) => {
+    //const sendData = { data: data };
+    if (data) {
+      localStorage.setItem('sendData', JSON.stringify(data));
+    }
+  };
+
+  const goBackStep1 = () => {
+    const data = {
+      문항수: '25',
+      난이도: '중',
+      문항타입: '객관식',
+    };
+    saveLocalData(data);
     navigate('/content-create/exam/step1');
   };
 
@@ -208,12 +218,12 @@ export function Step2() {
             <IconWrapper>
               <IoIosArrowBack
                 style={{ fontSize: '24px', cursor: 'pointer' }}
-                onClick={goBackMainPopup}
+                onClick={goBackStep1}
               />
             </IconWrapper>
             <Title>
               <Span style={{ paddingRight: '10px' }}>
-                <FrontSpan onClick={goBackMainPopup}>STEP 1 - </FrontSpan>
+                <FrontSpan onClick={goBackStep1}>STEP 1 - </FrontSpan>
                 STEP 2
               </Span>
               학습지 상세 편집
