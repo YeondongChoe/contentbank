@@ -82,7 +82,7 @@ export function WorkbookList({
     }
   };
 
-  const [workbookIdx, setWorkbookIdx] = useState<number | null>(null);
+  const [workbookIdx, setWorkbookIdx] = useState<number>(1);
   // 학습지 상세 정보 불러오기 api
   const getWorkbookData = async (idx: number) => {
     const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
