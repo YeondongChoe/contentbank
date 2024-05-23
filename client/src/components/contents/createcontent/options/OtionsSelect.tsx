@@ -8,43 +8,6 @@ import { ItemCategoryType } from '../../../../types';
 import { IconButton } from '../../../atom/button';
 import { COLOR } from '../../../constants';
 
-export type OptionsdepthProps = {
-  id?: string | number;
-  label: string;
-  value?: number | string;
-  code?: string;
-  options?: OptionsProps[];
-  parentValue?: string;
-};
-
-export type OptionsProps = {
-  id?: string | number;
-  label?: string;
-  value?: number | string;
-  code?: string;
-  type?: string;
-  inputValue?: string;
-  dateValue?: string;
-  options?: OptionsItemProps[];
-};
-
-export type OptionsItemProps = {
-  optionsdepth: any[];
-  id?: string | number;
-  label?: string;
-  value?: string | number;
-  type?: string;
-  inputValue?: string;
-  dateValue?: string;
-  options?: ItemProps[];
-};
-
-type ItemProps = {
-  id?: string | number;
-  label?: string;
-  value?: string | number;
-};
-
 type SelectProps = {
   options?: ItemCategoryType[];
   onClick?: () => void;

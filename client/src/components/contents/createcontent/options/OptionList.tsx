@@ -8,7 +8,7 @@ import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 
 import { Options } from './Options';
-import { OptionsItemProps, OtionsSelect } from './OtionsSelect';
+import { OtionsSelect } from './OtionsSelect';
 
 type CategoryList = {
   name: string;

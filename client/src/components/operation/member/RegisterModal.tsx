@@ -18,7 +18,13 @@ import { idRegex, COLOR, nameRegex } from '../../../components/constants';
 import { useModal } from '../../../hooks';
 import { ItemAuthorityType, MemberType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
-import { Button, ItemSelectProps, openToastifyAlert, Select } from '../../atom';
+import {
+  Button,
+  ItemSelectProps,
+  Loader,
+  openToastifyAlert,
+  Select,
+} from '../../atom';
 
 export function RegisterModal({
   memberList,
@@ -73,7 +79,11 @@ export function RegisterModal({
   };
 
   // 계정 등록하기 api
-  const { data: createAccountData, mutate: onCreateAccount } = useMutation({
+  const {
+    data: createAccountData,
+    mutate: onCreateAccount,
+    isPending,
+  } = useMutation({
     mutationFn: postCreateAccount,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -151,16 +161,18 @@ export function RegisterModal({
           label: item.name,
           code: item.code,
           value: item.name,
+          name: item.name,
         }),
       );
       setAuthoritySelectList([...list]);
     } else {
       setAuthoritySelectList([
         {
-          id: 0,
+          idx: 0,
           label: 'none',
           code: 'none',
           value: 'none',
+          name: 'none',
         },
       ]);
     }
@@ -168,74 +180,36 @@ export function RegisterModal({
 
   return (
     <Container>
-      {/* <AlertBar
-        type="success"
-        isAlertOpen={isSuccessAlertOpen}
-        closeAlert={closeSuccessAlert}
-        message={'정상 처리되었습니다.'}
-      /> */}
-
       <Title>회원 아이디 만들기</Title>
-      <form>
-        <ContentBox>
-          <InputWrapper>
-            {isNameError ? (
-              <Label
-                width="130px"
-                type="error"
-                fontSize="15px"
-                value="* 이름"
-              />
-            ) : (
-              <Label width="130px" fontSize="15px" value="* 이름" />
-            )}
-            <Controller
-              control={control}
-              name="name"
-              defaultValue=""
-              render={({ field }) => (
-                <Input
-                  type="text"
-                  placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
-                  value={field.value}
-                  width="100%"
-                  height="38px"
-                  fontSize="16px"
-                  placeholderSize="12px"
-                  margin="0px 0px 10px 0px"
-                  border="black"
-                  maxLength={10}
-                  minLength={2}
-                  borderbottom={isNameError && true}
-                  onChange={field.onChange}
-                  onClick={() => setIsNameError(false)}
-                  errorMessage={isNameError && nameErrorMessage}
+
+      {isPending ? (
+        <LoaderWrapper>
+          <Loader width="50px" />
+        </LoaderWrapper>
+      ) : (
+        <form>
+          <ContentBox>
+            <InputWrapper>
+              {isNameError ? (
+                <Label
+                  width="130px"
+                  type="error"
+                  fontSize="15px"
+                  value="* 이름"
                 />
+              ) : (
+                <Label width="130px" fontSize="15px" value="* 이름" />
               )}
-            />
-          </InputWrapper>
-          <InputWrapper>
-            {isIdError ? (
-              <Label
-                width="130px"
-                type="error"
-                fontSize="15px"
-                value="* 아이디"
-              />
-            ) : (
-              <Label width="130px" fontSize="15px" value="* 아이디" />
-            )}
-            <ButtonWrapper>
               <Controller
                 control={control}
-                name="id"
+                name="name"
                 defaultValue=""
                 render={({ field }) => (
                   <Input
                     type="text"
-                    placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
+                    placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                     value={field.value}
-                    width={`100%`}
+                    width="100%"
                     height="38px"
                     fontSize="16px"
                     placeholderSize="12px"
@@ -243,129 +217,169 @@ export function RegisterModal({
                     border="black"
                     maxLength={10}
                     minLength={2}
+                    borderbottom={isNameError && true}
                     onChange={field.onChange}
-                    onClick={() => {
-                      setIsIdError(false);
-                      setIsDuplicate(true);
-                    }}
-                    errorMessage={isIdError && idErrorMessage}
-                    successMessage={
-                      Id &&
-                      !isDuplicate &&
-                      isRegexp &&
-                      '사용가능한 아이디 입니다'
-                    }
-                    className={Id && !isDuplicate && isRegexp ? 'success' : ''}
-                    borderbottom={isIdError}
+                    onClick={() => setIsNameError(false)}
+                    errorMessage={isNameError && nameErrorMessage}
                   />
                 )}
               />
+            </InputWrapper>
+            <InputWrapper>
+              {isIdError ? (
+                <Label
+                  width="130px"
+                  type="error"
+                  fontSize="15px"
+                  value="* 아이디"
+                />
+              ) : (
+                <Label width="130px" fontSize="15px" value="* 아이디" />
+              )}
+              <ButtonWrapper>
+                <Controller
+                  control={control}
+                  name="id"
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
+                      value={field.value}
+                      width={`100%`}
+                      height="38px"
+                      fontSize="16px"
+                      placeholderSize="12px"
+                      margin="0px 0px 10px 0px"
+                      border="black"
+                      maxLength={10}
+                      minLength={2}
+                      onChange={field.onChange}
+                      onClick={() => {
+                        setIsIdError(false);
+                        setIsDuplicate(true);
+                      }}
+                      errorMessage={isIdError && idErrorMessage}
+                      successMessage={
+                        Id &&
+                        !isDuplicate &&
+                        isRegexp &&
+                        '사용가능한 아이디 입니다'
+                      }
+                      className={
+                        Id && !isDuplicate && isRegexp ? 'success' : ''
+                      }
+                      borderbottom={isIdError}
+                    />
+                  )}
+                />
 
+                <Button
+                  buttonType="button"
+                  $margin={'0 0 0 10px'}
+                  width={`130px`}
+                  onClick={(e) => checkDuplicate(e)}
+                  $padding={'8px'}
+                  height={'38px'}
+                  fontSize="15px"
+                  $filled
+                  cursor
+                  disabled={!Id}
+                >
+                  <span>중복확인</span>
+                </Button>
+              </ButtonWrapper>
+            </InputWrapper>
+            <InputWrapper>
+              {isAuthorityError ? (
+                <Label
+                  width="130px"
+                  fontSize="15px"
+                  type="error"
+                  value="* 권한"
+                />
+              ) : (
+                <Label width="130px" fontSize="15px" value="* 권한" />
+              )}
+
+              <Controller
+                control={control}
+                name="authority"
+                render={({ field }) => (
+                  <SelectWrapper>
+                    <Select
+                      width="100%"
+                      height="50px"
+                      padding="5px 0px 0px 0px"
+                      defaultValue={'권한을 선택하세요'}
+                      onClick={() => setIsAuthorityError(false)}
+                      options={authoritySelectList}
+                      setSelectedValue={setSelectedAuthority}
+                    />
+                  </SelectWrapper>
+                )}
+              />
+
+              {isAuthorityError && (
+                <ErrorMessage>{AuthorityErrorMessage}</ErrorMessage>
+              )}
+            </InputWrapper>
+
+            <InputWrapper>
+              <Label width="130px" fontSize="15px" value="비고" />
+              <Textarea
+                onChange={(e) => {
+                  setCommentValue(e.target.value);
+                }}
+              ></Textarea>
+            </InputWrapper>
+            <NoticeWarpper>
+              <Notice>
+                초기 비밀번호는
+                <Button
+                  height={'23px'}
+                  width={'90px'}
+                  fontSize="13px"
+                  $borderRadius="5px"
+                  $filled
+                  $success
+                >
+                  <span>drmath@369</span>
+                </Button>
+                입니다.
+              </Notice>
+              <Notice>
+                로그인 후 비밀번호를 변경하고 다시 로그인 하면 사용 할 수
+                있습니다.
+              </Notice>
+            </NoticeWarpper>
+            <ButtonGroup>
               <Button
                 buttonType="button"
-                $margin={'0 0 0 10px'}
-                width={`130px`}
-                onClick={(e) => checkDuplicate(e)}
-                $padding={'8px'}
-                height={'38px'}
-                fontSize="15px"
+                onClick={() => closeModal()}
+                $padding="10px"
+                height={'40px'}
+                fontSize="16px"
+                $border
+                cursor
+              >
+                <span>취소</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => submitRegister()}
+                $padding="10px"
+                height={'40px'}
+                fontSize="16px"
                 $filled
                 cursor
-                disabled={!Id}
               >
-                <span>중복확인</span>
+                <span>등록</span>
               </Button>
-            </ButtonWrapper>
-          </InputWrapper>
-          <InputWrapper>
-            {isAuthorityError ? (
-              <Label
-                width="130px"
-                fontSize="15px"
-                type="error"
-                value="* 권한"
-              />
-            ) : (
-              <Label width="130px" fontSize="15px" value="* 권한" />
-            )}
-
-            <Controller
-              control={control}
-              name="authority"
-              render={({ field }) => (
-                <SelectWrapper>
-                  <Select
-                    width="100%"
-                    height="50px"
-                    padding="5px 0px 0px 0px"
-                    defaultValue={'권한을 선택하세요'}
-                    onClick={() => setIsAuthorityError(false)}
-                    options={authoritySelectList}
-                    setSelectedValue={setSelectedAuthority}
-                  ></Select>
-                </SelectWrapper>
-              )}
-            />
-
-            {isAuthorityError && (
-              <ErrorMessage>{AuthorityErrorMessage}</ErrorMessage>
-            )}
-          </InputWrapper>
-
-          <InputWrapper>
-            <Label width="130px" fontSize="15px" value="비고" />
-            <Textarea
-              onChange={(e) => {
-                setCommentValue(e.target.value);
-              }}
-            ></Textarea>
-          </InputWrapper>
-          <NoticeWarpper>
-            <Notice>
-              초기 비밀번호는
-              <Button
-                height={'23px'}
-                width={'90px'}
-                fontSize="13px"
-                $borderRadius="5px"
-                $filled
-                $success
-              >
-                <span>drmath@369</span>
-              </Button>
-              입니다.
-            </Notice>
-            <Notice>
-              로그인 후 비밀번호를 변경하고 다시 로그인 하면 사용 할 수
-              있습니다.
-            </Notice>
-          </NoticeWarpper>
-          <ButtonGroup>
-            <Button
-              buttonType="button"
-              onClick={() => closeModal()}
-              $padding="10px"
-              height={'40px'}
-              fontSize="16px"
-              $border
-              cursor
-            >
-              <span>취소</span>
-            </Button>
-            <Button
-              buttonType="button"
-              onClick={() => submitRegister()}
-              $padding="10px"
-              height={'40px'}
-              fontSize="16px"
-              $filled
-              cursor
-            >
-              <span>등록</span>
-            </Button>
-          </ButtonGroup>
-        </ContentBox>
-      </form>
+            </ButtonGroup>
+          </ContentBox>
+        </form>
+      )}
     </Container>
   );
 }
@@ -446,4 +460,11 @@ const ErrorMessage = styled.p`
   position: absolute;
   bottom: 0;
   top: auto;
+`;
+
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-bottom: 50px;
+  padding-left: calc(50% - 35px);
 `;

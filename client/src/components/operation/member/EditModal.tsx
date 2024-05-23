@@ -21,7 +21,7 @@ import {
 import { useModal } from '../../../hooks';
 import { ItemAuthorityType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
-import { Button, openToastifyAlert } from '../../atom';
+import { Button, Loader, openToastifyAlert } from '../../atom';
 import { ItemSelectProps, Select } from '../../atom/select';
 import { COLOR } from '../../constants';
 import { Alert } from '../../molecules/alert/Alert';
@@ -71,7 +71,11 @@ export function EditModal({
     setIsSuccessAlertOpen(false);
   };
   // 유저 정보 변경 api
-  const { data: changeUserInfo, mutate: mutateChangeUserInfo } = useMutation({
+  const {
+    data: changeUserInfo,
+    mutate: mutateChangeUserInfo,
+    isPending,
+  } = useMutation({
     mutationFn: putChangeUserInfo,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -164,12 +168,13 @@ export function EditModal({
   const updateAuthorityList = () => {
     if (authorityListData) {
       const authority: ItemSelectProps[] = [];
-      authorityListData.data.data.authorityList.map((el: ItemAuthorityType) => {
+      authorityListData.data.data.authorityList.map((el: ItemSelectProps) => {
         authority.push({
-          id: `${el.idx} ${el.name}`,
+          idx: el.idx,
           label: `${el.name}`,
           code: `${el.code}`,
-          value: `${el.name} ${el.name}`,
+          value: `${el.name}`,
+          name: `${el.name}`,
         });
       });
       setAuthorityList([...authority]);
@@ -237,187 +242,192 @@ export function EditModal({
       />
 
       <Title>회원 정보 상세보기</Title>
-
-      <form>
-        <ContentBox>
-          <InputWrapper>
-            {isNameError ? (
-              <Label
-                width="130px"
-                type="error"
-                fontSize="15px"
-                value="* 이름"
-              />
-            ) : (
-              <Label width="130px" fontSize="15px" value="* 이름" />
-            )}
-
-            <Controller
-              control={control}
-              name="name"
-              defaultValue=""
-              render={({ field }) => (
-                <Input
-                  type="text"
-                  placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
-                  value={field.value}
-                  height="38px"
-                  width="100%"
-                  fontSize="16px"
-                  placeholderSize="12px"
-                  margin="0px 0px 10px 0px"
-                  border="black"
-                  borderbottom={isNameError && true}
-                  onChange={field.onChange}
-                  onClick={() => setIsNameError(false)}
-                  errorMessage={isNameError && nameErrorMessage}
+      {isPending ? (
+        <LoaderWrapper>
+          <Loader width="50px" />
+        </LoaderWrapper>
+      ) : (
+        <form>
+          <ContentBox>
+            <InputWrapper>
+              {isNameError ? (
+                <Label
+                  width="130px"
+                  type="error"
+                  fontSize="15px"
+                  value="* 이름"
                 />
+              ) : (
+                <Label width="130px" fontSize="15px" value="* 이름" />
               )}
-            />
-          </InputWrapper>
-          <InputWrapper>
-            <Label width="130px" fontSize="15px" value="* 아이디" />
-            <ButtonWrapper>
+
               <Controller
                 control={control}
-                name="id"
+                name="name"
                 defaultValue=""
                 render={({ field }) => (
                   <Input
-                    disabled
                     type="text"
+                    placeholder="띄워쓰기 없이 한글, 영문, 숫자만 입력"
                     value={field.value}
-                    width={`100%`}
                     height="38px"
+                    width="100%"
                     fontSize="16px"
+                    placeholderSize="12px"
                     margin="0px 0px 10px 0px"
                     border="black"
+                    borderbottom={isNameError && true}
                     onChange={field.onChange}
+                    onClick={() => setIsNameError(false)}
+                    errorMessage={isNameError && nameErrorMessage}
                   />
                 )}
               />
+            </InputWrapper>
+            <InputWrapper>
+              <Label width="130px" fontSize="15px" value="* 아이디" />
+              <ButtonWrapper>
+                <Controller
+                  control={control}
+                  name="id"
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Input
+                      disabled
+                      type="text"
+                      value={field.value}
+                      width={`100%`}
+                      height="38px"
+                      fontSize="16px"
+                      margin="0px 0px 10px 0px"
+                      border="black"
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
 
+                <Button
+                  buttonType="button"
+                  $margin={'0 0 0 10px'}
+                  width={`130px`}
+                  onClick={handleInitPassword}
+                  $padding={'8px'}
+                  height={'38px'}
+                  fontSize="15px"
+                  $filled
+                  cursor
+                >
+                  <span>비밀번호 초기화</span>
+                </Button>
+              </ButtonWrapper>
+            </InputWrapper>
+            <InputWrapper>
+              <Label width="130px" fontSize="15px" value="* 권한" />
+
+              <Controller
+                control={control}
+                name="authority"
+                render={({ field }) => (
+                  <SelectWrapper>
+                    <Select
+                      width="100%"
+                      height="50px"
+                      padding="5px 0px 0px 0px"
+                      defaultValue={member.authority}
+                      setSelectedValue={setAuthorityCode}
+                      options={authorityList}
+                    />
+                  </SelectWrapper>
+                )}
+              />
+            </InputWrapper>
+            <InputWrapper>
+              <Label width="130px" fontSize="15px" value="* 활성화" />
+              <ButtonWrapper>
+                <button
+                  type="button"
+                  onClick={() => {}}
+                  className={`${member.enabled && `isActive`} isActive_btn`}
+                >
+                  활성화
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {}}
+                  className={`${!member.enabled && `isActive`} isActive_btn`}
+                >
+                  비활성화
+                </button>
+              </ButtonWrapper>
+            </InputWrapper>
+            <InputWrapper>
+              <Label width="130px" fontSize="15px" value="비고" />
+              <Controller
+                control={control}
+                name="comment"
+                defaultValue=""
+                render={({ field }) => (
+                  <Textarea
+                    onChange={field.onChange}
+                    value={field.value}
+                  ></Textarea>
+                )}
+              />
+            </InputWrapper>
+            <NoticeWarpper>
+              <Notice>
+                초기 비밀번호는
+                <Button
+                  height={'23px'}
+                  width={'90px'}
+                  fontSize="13px"
+                  $borderRadius="5px"
+                  $filled
+                  $success
+                >
+                  <span>drmath@369</span>
+                </Button>
+                입니다.
+              </Notice>
+              <Notice>
+                로그인 후 비밀번호를 변경하고 다시 로그인 하면 사용 할 수
+                있습니다.
+              </Notice>
+            </NoticeWarpper>
+            <ButtonGroup>
               <Button
                 buttonType="button"
-                $margin={'0 0 0 10px'}
-                width={`130px`}
-                onClick={handleInitPassword}
-                $padding={'8px'}
-                height={'38px'}
-                fontSize="15px"
+                onClick={() => closeModal()}
+                $padding="10px"
+                height={'40px'}
+                fontSize="16px"
+                $border
+                cursor
+              >
+                <span>취소</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={submitEdit}
+                $padding="10px"
+                height={'40px'}
+                fontSize="16px"
                 $filled
                 cursor
               >
-                <span>비밀번호 초기화</span>
+                <span>수정</span>
               </Button>
-            </ButtonWrapper>
-          </InputWrapper>
-          <InputWrapper>
-            <Label width="130px" fontSize="15px" value="* 권한" />
-
-            <Controller
-              control={control}
-              name="authority"
-              render={({ field }) => (
-                <SelectWrapper>
-                  <Select
-                    width="100%"
-                    height="50px"
-                    padding="5px 0px 0px 0px"
-                    defaultValue={member.authority}
-                    setSelectedValue={setAuthorityCode}
-                    options={authorityList}
-                  ></Select>
-                </SelectWrapper>
-              )}
+            </ButtonGroup>
+            <Alert
+              isAlertOpen={isAlertOpen}
+              description="비밀번호가 초기화 되었습니다."
+              subDescription="초기 비밀번호는 drmath@369입니다."
+              notice
+              onClose={closeInitPasswordAlert}
             />
-          </InputWrapper>
-          <InputWrapper>
-            <Label width="130px" fontSize="15px" value="* 활성화" />
-            <ButtonWrapper>
-              <button
-                type="button"
-                onClick={() => {}}
-                className={`${member.enabled && `isActive`} isActive_btn`}
-              >
-                활성화
-              </button>
-              <button
-                type="button"
-                onClick={() => {}}
-                className={`${!member.enabled && `isActive`} isActive_btn`}
-              >
-                비활성화
-              </button>
-            </ButtonWrapper>
-          </InputWrapper>
-          <InputWrapper>
-            <Label width="130px" fontSize="15px" value="비고" />
-            <Controller
-              control={control}
-              name="comment"
-              defaultValue=""
-              render={({ field }) => (
-                <Textarea
-                  onChange={field.onChange}
-                  value={field.value}
-                ></Textarea>
-              )}
-            />
-          </InputWrapper>
-          <NoticeWarpper>
-            <Notice>
-              초기 비밀번호는
-              <Button
-                height={'23px'}
-                width={'90px'}
-                fontSize="13px"
-                $borderRadius="5px"
-                $filled
-                $success
-              >
-                <span>drmath@369</span>
-              </Button>
-              입니다.
-            </Notice>
-            <Notice>
-              로그인 후 비밀번호를 변경하고 다시 로그인 하면 사용 할 수
-              있습니다.
-            </Notice>
-          </NoticeWarpper>
-          <ButtonGroup>
-            <Button
-              buttonType="button"
-              onClick={() => closeModal()}
-              $padding="10px"
-              height={'40px'}
-              fontSize="16px"
-              $border
-              cursor
-            >
-              <span>취소</span>
-            </Button>
-            <Button
-              buttonType="button"
-              onClick={submitEdit}
-              $padding="10px"
-              height={'40px'}
-              fontSize="16px"
-              $filled
-              cursor
-            >
-              <span>수정</span>
-            </Button>
-          </ButtonGroup>
-          <Alert
-            isAlertOpen={isAlertOpen}
-            description="비밀번호가 초기화 되었습니다."
-            subDescription="초기 비밀번호는 drmath@369입니다."
-            notice
-            onClose={closeInitPasswordAlert}
-          />
-        </ContentBox>
-      </form>
+          </ContentBox>
+        </form>
+      )}
     </Container>
   );
 }
@@ -508,4 +518,10 @@ const ButtonGroup = styled.div`
   display: flex;
   width: 100%;
   gap: 10px;
+`;
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-bottom: 50px;
+  padding-left: calc(50% - 35px);
 `;

@@ -9,14 +9,15 @@ import { COLOR } from '../../constants';
 import { IconButton } from '../button';
 
 export type ItemSelectProps = {
-  id?: string | number;
+  idx?: string | number;
   label?: string;
   code?: string;
   value?: string | number;
+  name?: string;
 };
 
 type SelectProps = {
-  options?: ItemCategoryType[] | ItemCategoryType | any[]; //TODO :
+  options?: ItemCategoryType[] | ItemCategoryType | ItemSelectProps[];
   onClick?: () => void;
   onSelect?: (
     event: React.MouseEvent<HTMLButtonElement>,
