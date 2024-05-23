@@ -157,124 +157,128 @@ export function QuizReportList() {
       </ListTitle>
       <ScrollWrapper>
         <PerfectScrollbar>
-          {reportList.length > 0 ? (
-            <List margin={`10px 0`}>
-              {reportList.map((item: Report) => (
-                <ListItem
-                  height={'fit-content'}
-                  key={item.idx.toLocaleString()}
-                  isChecked={false}
-                  onClick={() => {}}
-                >
-                  <AccordionWrapper>
-                    <ItemLayout>
-                      <span className="width_40px">{item.idx} </span>
-                      <div className="line"></div>
-                      <span>출처 </span>
-                      <div className="line"></div>
-                      <span>교육과정 </span>
-                      <div className="line"></div>
-                      <span>학교급 </span>
-                      <div className="line"></div>
-                      <span>학년 </span>
-                      <div className="line"></div>
-                      <span>학기 </span>
-                      <div className="line"></div>
-                      <span>교과 </span>
-                      <div className="line"></div>
-                      <span>과목 </span>
-                      <div className="line"></div>
-                      <span>대단원 </span>
-                      <div className="line"></div>
-                      <span>문항타입 </span>
-                      <div className="line"></div>
-                      <span>{item.answerBy} </span>
-                      <div className="line"></div>
-                      <span>{item.answerAt} </span>
-                      <div className="line"></div>
-                      <span>{item.quiz.isUse ? '활성화' : '비활성화'}</span>
-                    </ItemLayout>
+          <>
+            {reportList.length > 0 ? (
+              <List margin={`10px 0`} width="99%" noWrap={true}>
+                {reportList.map((item: Report) => (
+                  <ListItem
+                    height={'fit-content'}
+                    key={item.idx.toLocaleString()}
+                    isChecked={false}
+                    onClick={() => {}}
+                  >
+                    <AccordionWrapper>
+                      <ItemLayout>
+                        <span className="width_40px">{item.idx} </span>
+                        <div className="line"></div>
+                        <span>출처 </span>
+                        <div className="line"></div>
+                        <span>교육과정 </span>
+                        <div className="line"></div>
+                        <span>학교급 </span>
+                        <div className="line"></div>
+                        <span>학년 </span>
+                        <div className="line"></div>
+                        <span>학기 </span>
+                        <div className="line"></div>
+                        <span>교과 </span>
+                        <div className="line"></div>
+                        <span>과목 </span>
+                        <div className="line"></div>
+                        <span>대단원 </span>
+                        <div className="line"></div>
+                        <span>문항타입 </span>
+                        <div className="line"></div>
+                        <span>{item.answerBy} </span>
+                        <div className="line"></div>
+                        <span>{item.answerAt} </span>
+                        <div className="line"></div>
+                        <span>{item.quiz.isUse ? '활성화' : '비활성화'}</span>
+                      </ItemLayout>
 
-                    <Accordion
-                      $backgroundColor={`${item.isUse ? `${COLOR.BLUEGREEN}` : `${COLOR.GRAY}`}`}
-                      title={`${item.isUse === false ? '처리대기' : '처리완료'}`}
-                      id={`${item.idx}`}
-                    >
-                      <AccordionItemLayout>
-                        <div className="text_wrapper">
-                          <strong className="title">신고일자</strong>
-                          <span className="text">{item.reportAt}</span>
-                        </div>
-                        <div className="text_wrapper">
-                          <strong className="title">신고자</strong>
-                          <span className="text">{item.reportBy}</span>
-                        </div>
-                        <div className="text_wrapper">
-                          <strong className="title">신고유형</strong>
-                          <span className="text">{item.reportType}</span>
-                        </div>
-                        <div className="text_wrapper">
-                          <strong className="title">신고내용</strong>
-                          <span className="text">{item.reportContent}</span>
-                        </div>
-                        <div className="process_wrapper">
-                          {item.isUse ? (
-                            <div className="processed">
-                              <div className="text_wrapper">
-                                <strong className="title">처리일자</strong>
-                                <span className="text">{item.answerAt}</span>
+                      <Accordion
+                        $backgroundColor={`${item.isUse ? `${COLOR.BLUEGREEN}` : `${COLOR.GRAY}`}`}
+                        title={`${item.isUse === false ? '처리대기' : '처리완료'}`}
+                        id={`${item.idx}`}
+                      >
+                        <AccordionItemLayout>
+                          <div className="text_wrapper">
+                            <strong className="title">신고일자</strong>
+                            <span className="text">{item.reportAt}</span>
+                          </div>
+                          <div className="text_wrapper">
+                            <strong className="title">신고자</strong>
+                            <span className="text">{item.reportBy}</span>
+                          </div>
+                          <div className="text_wrapper">
+                            <strong className="title">신고유형</strong>
+                            <span className="text">{item.reportType}</span>
+                          </div>
+                          <div className="text_wrapper">
+                            <strong className="title">신고내용</strong>
+                            <span className="text">{item.reportContent}</span>
+                          </div>
+                          <div className="process_wrapper">
+                            {item.isUse ? (
+                              <div className="processed">
+                                <div className="text_wrapper">
+                                  <strong className="title">처리일자</strong>
+                                  <span className="text">{item.answerAt}</span>
+                                </div>
+                                <div className="text_wrapper">
+                                  <strong className="title">처리자</strong>
+                                  <span className="text">{item.answerBy}</span>
+                                </div>
+                                <div className="text_wrapper">
+                                  <strong className="title">처리유형</strong>
+                                  <span className="text">
+                                    {item.answerType}
+                                  </span>
+                                </div>
+                                <div className="text_wrapper">
+                                  <strong className="title">처리내용</strong>
+                                  <span className="text">
+                                    {item.answerContent}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="text_wrapper">
-                                <strong className="title">처리자</strong>
-                                <span className="text">{item.answerBy}</span>
+                            ) : (
+                              <div className="button_wrapper">
+                                <Button
+                                  $filled
+                                  height={'35px'}
+                                  fontSize={'13px'}
+                                  cursor
+                                  onClick={() => {
+                                    openCreateEditWindow();
+                                  }}
+                                >
+                                  문항 수정하러가기
+                                </Button>
+                                <Button
+                                  $filled
+                                  height={'35px'}
+                                  fontSize={'13px'}
+                                  cursor
+                                  onClick={() => openReportProcess()}
+                                >
+                                  처리 완료
+                                </Button>
                               </div>
-                              <div className="text_wrapper">
-                                <strong className="title">처리유형</strong>
-                                <span className="text">{item.answerType}</span>
-                              </div>
-                              <div className="text_wrapper">
-                                <strong className="title">처리내용</strong>
-                                <span className="text">
-                                  {item.answerContent}
-                                </span>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="button_wrapper">
-                              <Button
-                                $filled
-                                height={'35px'}
-                                fontSize={'13px'}
-                                cursor
-                                onClick={() => {
-                                  openCreateEditWindow();
-                                }}
-                              >
-                                문항 수정하러가기
-                              </Button>
-                              <Button
-                                $filled
-                                height={'35px'}
-                                fontSize={'13px'}
-                                cursor
-                                onClick={() => openReportProcess()}
-                              >
-                                처리 완료
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </AccordionItemLayout>
-                    </Accordion>
-                  </AccordionWrapper>
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <ValueNoneWrapper>
-              <ValueNone />
-            </ValueNoneWrapper>
-          )}
+                            )}
+                          </div>
+                        </AccordionItemLayout>
+                      </Accordion>
+                    </AccordionWrapper>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <ValueNoneWrapper>
+                <ValueNone />
+              </ValueNoneWrapper>
+            )}
+          </>
         </PerfectScrollbar>
       </ScrollWrapper>
       <PaginationBox
