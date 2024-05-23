@@ -55,7 +55,7 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
     return response.data.data.categoryClassList;
   };
   const { data: categoryItems, refetch: categoryItemsRefetch } = useQuery({
-    queryKey: ['get-category-items'],
+    queryKey: ['get-category-items', listItem.idx],
     queryFn: getCategoryItems,
     meta: {
       errorMessage: 'get-category-items 에러 메세지',
@@ -64,7 +64,7 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
 
   useEffect(() => {
     console.log('listItem-----------', listItem.idx);
-    // if (categoryItems) categoryItemsRefetch();
+    if (categoryItems) categoryItemsRefetch();
   }, [listItem]);
   console.log('categoryItems-----------', categoryItems);
 
