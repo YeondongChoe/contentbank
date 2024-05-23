@@ -45,14 +45,27 @@ export function QuizManagementList() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  //탭 고정 데이터
+  const menuList = [
+    {
+      label: '문항 리스트',
+      value: '문항 리스트',
+    },
+    {
+      label: '신고 문항',
+      value: '신고 문항',
+    },
+  ];
 
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
-    const res = await quizService.get(
-      `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}`,
-    );
-    console.log(`getQuiz 결과값`, res.data.data);
-    return res.data.data;
+    if (tabVeiw == '문항 리스트') {
+      const res = await quizService.get(
+        `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}`,
+      );
+      console.log(`getQuiz 결과값`, res.data.data);
+      return res.data.data;
+    }
   };
   const {
     data: quizData,
@@ -67,13 +80,6 @@ export function QuizManagementList() {
       errorMessage: 'get-quizList 에러 메세지',
     },
   });
-
-  useEffect(() => {
-    if (quizData) {
-      setQuestionList(quizData.quizList);
-    }
-    // console.log('questionList', questionList);
-  }, [quizData]);
 
   // 선택된 문항 삭제하기 api
   const deleteQuiz = async (idxList: string) => {
@@ -95,7 +101,7 @@ export function QuizManagementList() {
         type: 'error',
         text: context.response.data.message,
       });
-      if (context.response.data.code == 'GE-002') {
+      if (context.response.data?.code == 'GE-002') {
         postRefreshToken();
       }
     },
@@ -117,20 +123,6 @@ export function QuizManagementList() {
     mutateDeleteQuiz(idxList);
   };
 
-  // 탭 바뀔시 초기화
-  useEffect(() => {
-    quizDataRefetch();
-    setSearchValue('');
-  }, [tabVeiw]);
-  // 데이터 변경시 리랜더링
-  useEffect(() => {
-    quizDataRefetch();
-  }, [page]);
-
-  const closeAlert = () => {
-    setIsAlertOpen(false);
-  };
-
   // 검색 기능 함수
   const filterSearchValue = () => {
     // 쿼리 스트링 변경 로직
@@ -147,17 +139,6 @@ export function QuizManagementList() {
       setSearchKeywordValue('');
     }
   };
-
-  const menuList = [
-    {
-      label: '문항 리스트',
-      value: '문항 리스트',
-    },
-    {
-      label: '신고 문항',
-      value: '신고 문항',
-    },
-  ];
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -231,7 +212,7 @@ export function QuizManagementList() {
       console.log('itemsList', itemsList);
       setCategory(itemsList);
     } catch (error: any) {
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.data?.code == 'GE-002') postRefreshToken();
     }
   };
   useEffect(() => {
@@ -256,9 +237,30 @@ export function QuizManagementList() {
     });
   };
 
+  useEffect(() => {
+    if (quizData) {
+      setQuestionList(quizData.quizList);
+    }
+    // console.log('questionList', questionList);
+  }, [quizData]);
+
   // 탭메뉴 클릭시 페이지네이션 초기화
   const changeTab = () => {
     setPage(1);
+  };
+  // 탭 바뀔시 초기화
+  useEffect(() => {
+    quizDataRefetch();
+    setSearchValue('');
+  }, [tabVeiw]);
+
+  // 데이터 변경시 리랜더링
+  useEffect(() => {
+    quizDataRefetch();
+  }, [page, searchKeywordValue]);
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
   };
 
   return (
@@ -278,6 +280,7 @@ export function QuizManagementList() {
       </TitleWrapper>
 
       {isLoading ||
+        isPending ||
         (isPendingDelete && (
           <LoaderWrapper>
             <Loader width="50px" />
@@ -302,8 +305,8 @@ export function QuizManagementList() {
             {categoriesE && categoryTitles[16] && (
               <Select
                 width={'130px'}
-                defaultValue={categoryTitles[16].code}
-                key={categoryTitles[16].code}
+                defaultValue={categoryTitles[16]?.code}
+                key={categoryTitles[16]?.code}
                 options={categoriesE[2]}
                 onSelect={(event) => selectCategoryOption(event)}
               />
@@ -322,8 +325,8 @@ export function QuizManagementList() {
             {categoriesE && categoryTitles[6] && (
               <Select
                 width={'130px'}
-                defaultValue={categoryTitles[6].code}
-                key={categoryTitles[6].code}
+                defaultValue={categoryTitles[6]?.code}
+                key={categoryTitles[6]?.code}
                 options={categoriesE[0]}
                 onSelect={(event) => selectCategoryOption(event)}
               />
@@ -332,8 +335,8 @@ export function QuizManagementList() {
             {categoriesE && categoryTitles[7] && (
               <Select
                 width={'130px'}
-                defaultValue={categoryTitles[7].code}
-                key={categoryTitles[7].code}
+                defaultValue={categoryTitles[7]?.code}
+                key={categoryTitles[7]?.code}
                 options={categoriesE[1]}
                 onSelect={(event) => selectCategoryOption(event)}
               />
@@ -342,8 +345,8 @@ export function QuizManagementList() {
             {categoriesE && categoryTitles[40] && (
               <Select
                 width={'130px'}
-                defaultValue={categoryTitles[40].code}
-                key={categoryTitles[40].code}
+                defaultValue={categoryTitles[40]?.code}
+                key={categoryTitles[40]?.code}
                 options={categoriesE[3]}
                 onSelect={(event) => selectCategoryOption(event)}
               />
@@ -420,6 +423,7 @@ export function QuizManagementList() {
                   <ContentList
                     list={questionList}
                     deleteBtn
+                    quizDataRefetch={quizDataRefetch}
                     ondeleteClick={() => {
                       setIsAlertOpen(true);
                     }}

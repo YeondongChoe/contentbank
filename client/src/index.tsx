@@ -23,6 +23,7 @@ import {
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
+import { Formula } from './pages/managementWindow/Formula';
 import { Notfound } from './pages/Notfound';
 import { Preparing } from './pages/Preparing';
 import { CreateContentMain, QuizPreview } from './pages/quizCreateWindow';
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
       {
         path: '/createcontentmain',
         element: <CreateContentMain />,
+      },
+      {
+        path: '/formula',
+        element: <Formula />,
       },
       {
         path: '/quizpreview',
