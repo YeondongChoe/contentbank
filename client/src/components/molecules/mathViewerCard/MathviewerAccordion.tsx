@@ -55,30 +55,47 @@ function Accordion({
         <ActionButtonWrapper>
           {isNewQuiz && (
             <>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="10px"
-                height={'30px'}
-                width={'70px'}
-                fontSize="12px"
-                $normal
-                cursor
-              >
-                <span>교체</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="10px"
-                height={'30px'}
-                width={'70px'}
-                fontSize="12px"
-                $normal
-                cursor
-              >
-                <span>+ 추가</span>
-              </Button>
+              {isSimilarQuiz ? (
+                <>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {}}
+                    $padding="10px"
+                    height={'30px'}
+                    width={'70px'}
+                    fontSize="12px"
+                    $normal
+                    cursor
+                  >
+                    <span>교체</span>
+                  </Button>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {}}
+                    $padding="10px"
+                    height={'30px'}
+                    width={'70px'}
+                    fontSize="12px"
+                    $normal
+                    cursor
+                  >
+                    <span>+ 추가</span>
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  buttonType="button"
+                  onClick={() => {}}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'70px'}
+                  fontSize="12px"
+                  $normal
+                  cursor
+                >
+                  <span>+ 추가</span>
+                </Button>
+              )}
             </>
           )}
           <IoMenuOutline
@@ -146,7 +163,7 @@ export function MathviewerAccordion({
           <div>객관식</div>
         </div>
         <MathViewer data={data} width={width}></MathViewer>
-        {isSimilarQuiz || isNewQuiz ? (
+        {isNewQuiz ? (
           <ButtonWrapper>
             <div className="menuIcon">
               <LuSiren
