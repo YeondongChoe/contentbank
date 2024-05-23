@@ -238,7 +238,6 @@ export function OptionList({
                       <Options
                         listItem={category}
                         key={`${category?.name} optionsdepth${idx}`}
-                        categoryTitles={categoryTitles}
                       />
                     ),
                   )}

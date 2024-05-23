@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { GrPlan } from 'react-icons/gr';
 import styled from 'styled-components';
 
+import { classificationInstance } from '../../../../api/axios';
 import { Button, IconButton, Select } from '../../../../components/atom';
 import { CommonDate, Modal } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
@@ -13,13 +15,7 @@ import { SchoolInputModal } from '../SchoolInputModal';
 
 import { OtionsSelect } from './OtionsSelect';
 
-export function Options({
-  listItem,
-  categoryTitles,
-}: {
-  listItem: ItemCategoryType;
-  categoryTitles: ItemCategoryType[];
-}) {
+export function Options({ listItem }: { listItem: ItemCategoryType }) {
   const { openModal } = useModal();
   const [startDate, setStartDate] = useState<string>('');
   const [schoolNameValue, setSchoolNameValue] = useState('');
@@ -51,10 +47,26 @@ export function Options({
     }
   }, [schoolNameValue]);
 
+  // 셀렉트 api 호출
+  const getCategoryItems = async () => {
+    const response = await classificationInstance.get(
+      `/v1/category/${listItem.idx}`,
+    );
+    return response.data.data.categoryClassList;
+  };
+  const { data: categoryItems, refetch: categoryItemsRefetch } = useQuery({
+    queryKey: ['get-category-items'],
+    queryFn: getCategoryItems,
+    meta: {
+      errorMessage: 'get-category-items 에러 메세지',
+    },
+  });
+
   useEffect(() => {
-    console.log('listItem-----------', listItem);
-    console.log('categoryTitles-----------', categoryTitles);
+    console.log('listItem-----------', listItem.idx);
+    // if (categoryItems) categoryItemsRefetch();
   }, [listItem]);
+  console.log('categoryItems-----------', categoryItems);
 
   return (
     <OptionWrapper>
@@ -95,13 +107,13 @@ export function Options({
         )}
       </li>
       <li>
-        {listItem?.type === 'SELECT' && (
+        {categoryItems && listItem?.type === 'SELECT' && (
           <OtionsSelect
             width={'115px'}
             height={'30px'}
             defaultValue={listItem.name}
             key={listItem.name}
-            options={[]}
+            options={categoryItems}
             onSelect={(
               event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
             ) => selectCategoryOption(event)}

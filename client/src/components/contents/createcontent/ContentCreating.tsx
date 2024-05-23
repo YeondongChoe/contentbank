@@ -121,7 +121,6 @@ export function ContentCreating({
   // 카테고리의 그룹 유형 조회 (기출)
   const getCategoryGroupsH = async () => {
     const response = await classificationInstance.get('/v1/category/group/H');
-    console.log('response------------h', response);
     return response.data.data.typeList;
   };
   const { data: groupsDataH, refetch: groupsDataHRefetch } = useQuery({
@@ -154,16 +153,16 @@ export function ContentCreating({
     }
   };
   useEffect(() => {
-    console.log(
-      'API Response Check: 등록시 필수 E',
-      categoriesE,
-      'API Response Check: 교재 F',
-      groupsDataF,
-      'API Response Check: 내신 G',
-      groupsDataG,
-      'API Response Check: 기출 H',
-      groupsDataH,
-    );
+    // console.log(
+    //   'API Response Check: 등록시 필수 E',
+    //   categoriesE,
+    //   'API Response Check: 교재 F',
+    //   groupsDataF,
+    //   'API Response Check: 내신 G',
+    //   groupsDataG,
+    //   'API Response Check: 기출 H',
+    //   groupsDataH,
+    // );
   }, [categoriesE]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
