@@ -1,13 +1,24 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Accordion, Button, List, ListItem, Modal, ValueNone } from '..';
+import {
+  Accordion,
+  Button,
+  List,
+  ListItem,
+  Modal,
+  ValueNone,
+  PaginationBox,
+} from '..';
+import { quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
+import { ReportData, Report } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
 
@@ -16,13 +27,40 @@ import { ReportProcessModal } from './ReportProcessModal';
 export function QuizReportList() {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
+  const [reportList, setReportList] = useState<Report[]>([]);
+
+  const getReportList = async () => {
+    const res = await quizService.get(`/v1/report`);
+    // console.log(`getCategory 결과값`, res);
+    return res.data;
+  };
+
+  const {
+    data: reportData,
+    isLoading,
+    refetch,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['get-reportList'],
+    queryFn: getReportList,
+    meta: {
+      errorMessage: 'get-reportList 에러 메세지',
+    },
+  });
+  console.log(reportData?.data.pagination);
+
+  useEffect(() => {
+    if (reportData) {
+      setReportList(reportData.data.reportList);
+    }
+  }, [reportData]);
 
   // TODO: 신고하기 임시 데이터 api 연결후 삭제
   const [reportQuestionList, setReportQuestionList] = useState([
     {
       id: 'ds1215515',
       num: '12',
-      source: '교재, 자체제작',
+      source: '교ㅣ재, 자체제작',
       curriculum_th: '6차, 8차',
       level: '학교급',
       grade: '학년',
@@ -100,7 +138,7 @@ export function QuizReportList() {
 
   return (
     <>
-      <Total> Total : {reportQuestionList.length}</Total>
+      <Total> Total : {reportData?.data.pagination.totalCount}</Total>
 
       <ListTitle>
         <strong className="width_30px">NO</strong>
@@ -119,120 +157,88 @@ export function QuizReportList() {
       </ListTitle>
       <ScrollWrapper>
         <PerfectScrollbar>
-          {reportQuestionList.length > 0 ? (
-            <List margin={`10px 0`}>
-              {reportQuestionList.map(
-                (item: {
-                  id: string;
-                  num: string;
-                  source: string;
-                  curriculum_th: string;
-                  level: string;
-                  grade: string;
-                  semester: string;
-                  curriculum: string;
-                  subject: string;
-                  denouement: string;
-                  questionType: string;
-                  manager: string;
-                  changeAt: string;
-                  activate: string;
-                  state: string;
-                  report: {
-                    reportAt: string;
-                    manager: string;
-                    type: string;
-                    details: string;
-                  };
-                  processed: {
-                    changeAt: null | string;
-                    manager: null | string;
-                    type: null | string;
-                    details: null | string;
-                  };
-                }) => (
+          <>
+            {reportList.length > 0 ? (
+              <List margin={`10px 0`} width="99%" noWrap={true}>
+                {reportList.map((item: Report) => (
                   <ListItem
                     height={'fit-content'}
-                    key={item.id as string}
+                    key={item.idx.toLocaleString()}
                     isChecked={false}
                     onClick={() => {}}
                   >
                     <AccordionWrapper>
                       <ItemLayout>
-                        <span className="width_40px">{item.num} </span>
+                        <span className="width_40px">{item.idx} </span>
                         <div className="line"></div>
-                        <span>{item.source} </span>
+                        <span>출처 </span>
                         <div className="line"></div>
-                        <span>{item.curriculum_th} </span>
+                        <span>교육과정 </span>
                         <div className="line"></div>
-                        <span>{item.level} </span>
+                        <span>학교급 </span>
                         <div className="line"></div>
-                        <span>{item.grade} </span>
+                        <span>학년 </span>
                         <div className="line"></div>
-                        <span>{item.semester} </span>
+                        <span>학기 </span>
                         <div className="line"></div>
-                        <span>{item.curriculum} </span>
+                        <span>교과 </span>
                         <div className="line"></div>
-                        <span>{item.subject} </span>
+                        <span>과목 </span>
                         <div className="line"></div>
-                        <span>{item.denouement} </span>
+                        <span>대단원 </span>
                         <div className="line"></div>
-                        <span>{item.questionType} </span>
+                        <span>문항타입 </span>
                         <div className="line"></div>
-                        <span>{item.manager} </span>
+                        <span>{item.answerBy} </span>
                         <div className="line"></div>
-                        <span>{item.changeAt} </span>
+                        <span>{item.answerAt} </span>
                         <div className="line"></div>
-                        <span>{item.activate} </span>
+                        <span>{item.quiz.isUse ? '활성화' : '비활성화'}</span>
                       </ItemLayout>
 
                       <Accordion
-                        $backgroundColor={`${item.state == '처리대기' ? `${COLOR.GRAY}` : `${COLOR.BLUEGREEN}`}`}
-                        title={`${item.state == '처리대기' ? '처리대기' : '처리완료'}`}
-                        id={`${item.id}`}
+                        $backgroundColor={`${item.isUse ? `${COLOR.BLUEGREEN}` : `${COLOR.GRAY}`}`}
+                        title={`${item.isUse === false ? '처리대기' : '처리완료'}`}
+                        id={`${item.idx}`}
                       >
                         <AccordionItemLayout>
                           <div className="text_wrapper">
                             <strong className="title">신고일자</strong>
-                            <span className="text">{item.report.reportAt}</span>
+                            <span className="text">{item.reportAt}</span>
                           </div>
                           <div className="text_wrapper">
                             <strong className="title">신고자</strong>
-                            <span className="text">{item.report.manager}</span>
+                            <span className="text">{item.reportBy}</span>
                           </div>
                           <div className="text_wrapper">
                             <strong className="title">신고유형</strong>
-                            <span className="text">{item.report.type}</span>
+                            <span className="text">{item.reportType}</span>
                           </div>
                           <div className="text_wrapper">
                             <strong className="title">신고내용</strong>
-                            <span className="text">{item.report.details}</span>
+                            <span className="text">{item.reportContent}</span>
                           </div>
                           <div className="process_wrapper">
-                            {item.state !== '처리대기' ? (
+                            {item.isUse ? (
                               <div className="processed">
                                 <div className="text_wrapper">
                                   <strong className="title">처리일자</strong>
-                                  <span className="text">
-                                    {item.processed.changeAt}
-                                  </span>
+                                  <span className="text">{item.answerAt}</span>
                                 </div>
                                 <div className="text_wrapper">
                                   <strong className="title">처리자</strong>
-                                  <span className="text">
-                                    {item.processed.manager}
-                                  </span>
+                                  <span className="text">{item.answerBy}</span>
                                 </div>
                                 <div className="text_wrapper">
                                   <strong className="title">처리유형</strong>
                                   <span className="text">
-                                    {item.processed.type}
+                                    {item.answerType}
                                   </span>
                                 </div>
                                 <div className="text_wrapper">
                                   <strong className="title">처리내용</strong>
                                   <span className="text">
-                                    {item.processed.details}
+                                    {item.answerContent}
                                   </span>
                                 </div>
                               </div>
@@ -265,17 +271,20 @@ export function QuizReportList() {
                       </Accordion>
                     </AccordionWrapper>
                   </ListItem>
-                ),
-              )}
-            </List>
-          ) : (
-            <ValueNoneWrapper>
-              <ValueNone />
-            </ValueNoneWrapper>
-          )}
+                ))}
+              </List>
+            ) : (
+              <ValueNoneWrapper>
+                <ValueNone />
+              </ValueNoneWrapper>
+            )}
+          </>
         </PerfectScrollbar>
       </ScrollWrapper>
-
+      <PaginationBox
+        itemsCountPerPage={reportData?.data.pagination.pageUnit as number}
+        totalItemsCount={reportData?.data.pagination.totalCount as number}
+      />
       <Modal />
     </>
   );
@@ -290,7 +299,7 @@ const Total = styled.span`
 `;
 
 const ScrollWrapper = styled.div`
-  /* overflow-y: auto; */
+  overflow-y: auto;
   height: calc(100vh - 450px);
   width: 100%;
   border-top: 1px solid ${COLOR.BORDER_GRAY};

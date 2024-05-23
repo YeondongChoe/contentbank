@@ -33,7 +33,7 @@ import {
   Icon,
   IconButton,
 } from '../..';
-import { classificationInstance } from '../../../api/axios';
+import { classificationInstance, quizService } from '../../../api/axios';
 import { ItemCategoryType, ItemTreeListType } from '../../../types';
 import {
   WorkbookData,
@@ -213,7 +213,6 @@ export function Step2() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     RadioState[][]
   >([]);
-  console.log(unitClassificationList);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -515,7 +514,6 @@ export function Step2() {
   });
 
   useEffect(() => {
-    // console.log(radio4depthCheck);
     if (selected4depth == '') return;
     categoryItemTreeDataMutate();
   }, [selected4depth]);
@@ -561,14 +559,6 @@ export function Step2() {
   };
 
   const saveCheckItems = () => {
-    // console.log('saveCheckItems', [
-    //   radio1depthCheck,
-    //   radio2depthCheck,
-    //   radio3depthCheck,
-    //   radio4depthCheck,
-    //   radioEtc1Check,
-    //   radioEtc2Check,
-    // ]);
     if (unitClassificationList.length < 5) {
       setUnitClassificationList((prevList) => [
         ...prevList,
@@ -659,6 +649,9 @@ export function Step2() {
     }
   };
 
+  //교과정보 문항 조회
+  const getCheckedItems = () => {};
+
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
@@ -679,6 +672,15 @@ export function Step2() {
     radio3depthCheck,
     radio4depthCheck,
   ]);
+
+  // 교과정보 추가버튼 disable 처리
+  const getButtonBool = useMemo(() => {
+    if (unitClassificationList.length > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [unitClassificationList]);
 
   useEffect(() => {}, []);
 
@@ -705,19 +707,59 @@ export function Step2() {
   const [recommend, setRecommend] = useState<boolean>(false);
 
   const navigate = useNavigate();
-  const [isSimilar, setIsSimilar] = useState(false);
 
   // 유사문항
-  const showSimilarContent = () => {
-    setIsSimilar(!isSimilar);
-    console.log('어떤 데이터 값으로 호출?');
+  const [isSimilar, setIsSimilar] = useState(false);
+  const [similarItems, setSimilarItems] = useState<QuizList[]>(
+    sendLocalData?.data.quizList || [],
+  );
+
+  const postSimilarItems = async (code: string) => {
+    const data = {
+      quizCode: code,
+      count: 10,
+      filterList: [code],
+    };
+    const res = await quizService.post('/v1/quiz/similar', data);
+    console.log('quizService 응답:', res);
+    return res;
   };
+
+  const {
+    data: similarData,
+    mutate: similarDataMutate,
+    //isPending,
+  } = useMutation({
+    mutationFn: postSimilarItems,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      // if (context.response.data.code == 'GE-002') {
+      //   postRefreshToken();
+      // }
+    },
+    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+      // setItemTreeList(res.data.data[0].itemTreeList);
+      setItemTree(response.data.data);
+    },
+  });
+
+  const showSimilarContent = (code: string) => {
+    setIsSimilar(!isSimilar);
+    similarDataMutate(code);
+  };
+  console.log(similarData);
+
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     sendLocalData?.data.quizList || [],
   );
-  console.log(initialItems);
+  //console.log(initialItems);
 
   useEffect(() => {
     if (sendLocalData?.data.quizList) {
@@ -815,26 +857,24 @@ export function Step2() {
                       </SimilarIconWrapper>
                     </SimilarTitleWrapper>
                     <SimilarContentsWrapper>
-                      {/* {list.map((card, i) => (
-                      <div
-                        key={i}
-                        // draggable
-                        // onDragStart={(e) => dragStart(e, i)}
-                        // onDragEnter={(e) => dragEnter(e, i)}
-                        // onDragOver={dragOver}
-                        // onDragEnd={drop}
-                      >
-                        <MathviewerCard
-                          width="300px"
-                          onClick={showSimilarContent}
-                          isSimilarQuiz={true}
-                          index={i + 1}
-                          data={card}
-                          selectedCardIndex={selectedCardIndex}
-                          onSelectCard={setSelectedCardIndex}
-                        ></MathviewerCard>
-                      </div>
-                    ))} */}
+                      <AddNewContensWrapper>
+                        {initialItems.map((item) => (
+                          <MathviewerAccordion
+                            key={item.idx}
+                            componentWidth="600px"
+                            width="450px"
+                            componentHeight="150px"
+                            onClick={() => showSimilarContent(item.code)}
+                            isBorder={true}
+                            isNewQuiz={true}
+                            isSimilarQuiz={true}
+                            data={item}
+                            index={item.idx}
+                            selectedCardIndex={selectedCardIndex}
+                            onSelectCard={setSelectedCardIndex}
+                          ></MathviewerAccordion>
+                        ))}
+                      </AddNewContensWrapper>
                     </SimilarContentsWrapper>
                   </SimilarWrapper>
                 </>
@@ -1252,44 +1292,39 @@ export function Step2() {
                                   disabled={addButtonBool}
                                   cursor
                                   $margin={'0 10px 0 0'}
-                                  onClick={() => saveCheckItems()}
+                                  onClick={saveCheckItems}
                                 >
                                   교과정보 추가
+                                </Button>
+                                <Button
+                                  $filled
+                                  disabled={getButtonBool}
+                                  cursor
+                                  $margin={'0 10px 0 0'}
+                                  onClick={getCheckedItems}
+                                >
+                                  불러오기
                                 </Button>
                               </SubmitButtonWrapper>
                             </CategoryWrapper>
                           </AddNewContensWrapper>
                         ) : (
                           <AddNewContensWrapper>
-                            <StepDnDWrapper
-                              dragList={initialItems}
-                              onDragging={() => {}}
-                              onDragEnd={whenDragEnd}
-                              dragSectionName={'미리보기'}
-                              doubleDnD
-                              isStartDnD={isStartDnD}
-                              setIsStartDnd={setIsStartDnd}
-                            >
-                              {(dragItem, ref, isDragging) => (
-                                <li
-                                  ref={ref}
-                                  className={`${isDragging ? 'opacity' : ''}`}
-                                >
-                                  <MathviewerAccordion
-                                    componentWidth="600px"
-                                    width="450px"
-                                    componentHeight="150px"
-                                    onClick={showSimilarContent}
-                                    isBorder={true}
-                                    isSimilarQuiz={true}
-                                    data={dragItem}
-                                    index={dragItem.idx}
-                                    selectedCardIndex={selectedCardIndex}
-                                    onSelectCard={setSelectedCardIndex}
-                                  ></MathviewerAccordion>
-                                </li>
-                              )}
-                            </StepDnDWrapper>
+                            {initialItems.map((item) => (
+                              <MathviewerAccordion
+                                key={item.idx}
+                                componentWidth="600px"
+                                width="450px"
+                                componentHeight="150px"
+                                onClick={() => showSimilarContent(item.code)}
+                                isBorder={true}
+                                isNewQuiz={true}
+                                data={item}
+                                index={item.idx}
+                                selectedCardIndex={selectedCardIndex}
+                                onSelectCard={setSelectedCardIndex}
+                              ></MathviewerAccordion>
+                            ))}
                           </AddNewContensWrapper>
                         )}
                       </>
@@ -1404,7 +1439,7 @@ export function Step2() {
                   dragList={initialItems}
                   onDragging={() => {}}
                   onDragEnd={whenDragEnd}
-                  dragSectionName={'미리보기'}
+                  dragSectionName={'선택한 문항 목록'}
                   doubleDnD
                   isStartDnD={isStartDnD}
                   setIsStartDnd={setIsStartDnd}
@@ -1414,7 +1449,7 @@ export function Step2() {
                       <MathviewerAccordion
                         componentWidth="750px"
                         width="550px"
-                        onClick={showSimilarContent}
+                        onClick={() => showSimilarContent(dragItem.code)}
                         isSimilar={isSimilar}
                         data={dragItem}
                         index={dragItem.idx}
@@ -1461,27 +1496,6 @@ export function Step2() {
     </DndProvider>
   );
 }
-
-// {list.map((card, i) => (
-//   <MathviewerCardWrapper key={i}>
-//     <MathviewerAccordion
-//       className={i === dragItem.current ? 'dragging' : ''}
-//       componentWidth="750px"
-//       width="500px"
-//       onClick={showSimilarContent}
-//       isSimilar={isSimilar}
-//       index={i + 1}
-//       data={card}
-//       isDragged={i === selectedIndex}
-//       selectedCardIndex={selectedCardIndex}
-//       onSelectCard={setSelectedCardIndex}
-//       dragStart={() => (e: any) => dragStart(e, i, card.seq)}
-//       dragEnter={() => (e: any) => dragEnter(e, i)}
-//       dragOver={dragOver}
-//       drop={drop}
-//     ></MathviewerAccordion>
-//   </MathviewerCardWrapper>
-// ))}
 
 const Container = styled.div``;
 const TitleWrapper = styled.div`

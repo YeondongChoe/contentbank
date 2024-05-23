@@ -5,3 +5,4 @@ export * from './ItemSchoolType';
 export * from './ItemAuthorityType';
 export * from './ItemCategoryType';
 export * from './ItemTreeType';
+export * from './ReportQuizType';

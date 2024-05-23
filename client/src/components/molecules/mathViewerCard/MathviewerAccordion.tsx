@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { BiSolidTrashAlt } from 'react-icons/bi';
+import { GoFold, GoUnfold } from 'react-icons/go';
 import { IoMenuOutline } from 'react-icons/io5';
 import { LuSiren, LuBookmarkPlus } from 'react-icons/lu';
 import { styled } from 'styled-components';
@@ -22,6 +23,7 @@ type AccordionProps = {
   isSelected?: boolean;
   isBorder?: boolean;
   isSimilarQuiz?: boolean;
+  isNewQuiz?: boolean;
 };
 
 function Accordion({
@@ -29,6 +31,7 @@ function Accordion({
   title,
   children,
   isSimilarQuiz,
+  isNewQuiz,
   componentWidth,
   componentHeight,
   isSimilar,
@@ -51,39 +54,64 @@ function Accordion({
       <AccordionHeader>
         <span>{title}</span>
         <ActionButtonWrapper>
-          {isSimilarQuiz && (
+          {isNewQuiz && (
             <>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="10px"
-                height={'30px'}
-                width={'70px'}
-                fontSize="12px"
-                $normal
-                cursor
-              >
-                <span>교체</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="10px"
-                height={'30px'}
-                width={'70px'}
-                fontSize="12px"
-                $normal
-                cursor
-              >
-                <span>+ 추가</span>
-              </Button>
+              {isSimilarQuiz ? (
+                <>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {}}
+                    $padding="10px"
+                    height={'30px'}
+                    width={'70px'}
+                    fontSize="12px"
+                    $normal
+                    cursor
+                  >
+                    <span>교체</span>
+                  </Button>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {}}
+                    $padding="10px"
+                    height={'30px'}
+                    width={'70px'}
+                    fontSize="12px"
+                    $normal
+                    cursor
+                  >
+                    <span>+ 추가</span>
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  buttonType="button"
+                  onClick={() => {}}
+                  $padding="10px"
+                  height={'30px'}
+                  width={'70px'}
+                  fontSize="12px"
+                  $normal
+                  cursor
+                >
+                  <span>+ 추가</span>
+                </Button>
+              )}
             </>
           )}
-          <IoMenuOutline
-            fontSize={'30px'}
-            style={{ cursor: 'pointer' }}
-            onClick={toggleAccordion}
-          />
+          {isCollapsed ? (
+            <GoUnfold
+              fontSize={'30px'}
+              style={{ cursor: 'pointer' }}
+              onClick={toggleAccordion}
+            ></GoUnfold>
+          ) : (
+            <GoFold
+              fontSize={'30px'}
+              style={{ cursor: 'pointer' }}
+              onClick={toggleAccordion}
+            />
+          )}
         </ActionButtonWrapper>
       </AccordionHeader>
       {!isCollapsed && <AccordionContent>{children}</AccordionContent>}
@@ -101,6 +129,7 @@ type MathviewerCardProps = {
   onSelectCard: (index: number) => void;
   width?: string;
   isSimilarQuiz?: boolean;
+  isNewQuiz?: boolean;
   componentWidth?: string;
   componentHeight?: string;
   className?: string;
@@ -116,6 +145,7 @@ export function MathviewerAccordion({
   data,
   width,
   isSimilarQuiz,
+  isNewQuiz,
   componentWidth,
   componentHeight,
   className,
@@ -130,6 +160,7 @@ export function MathviewerAccordion({
       isBorder={isBorder}
       isSelected={index === selectedCardIndex}
       isSimilarQuiz={isSimilarQuiz}
+      isNewQuiz={isNewQuiz}
     >
       <Component className={className} $componentHeight={componentHeight}>
         <div className="leftInfomation">
@@ -141,7 +172,7 @@ export function MathviewerAccordion({
           <div>객관식</div>
         </div>
         <MathViewer data={data} width={width}></MathViewer>
-        {isSimilarQuiz ? (
+        {isNewQuiz ? (
           <ButtonWrapper>
             <div className="menuIcon">
               <LuSiren
@@ -153,10 +184,6 @@ export function MathviewerAccordion({
           </ButtonWrapper>
         ) : (
           <ButtonWrapper>
-            {/* <div className="menuIcon">
-              <IoMenuOutline fontSize={'30px'} style={{ cursor: 'grab' }} />
-            </div> */}
-
             {index === selectedCardIndex && isSimilar ? (
               <div
                 onClick={() => {

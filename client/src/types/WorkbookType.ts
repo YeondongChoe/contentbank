@@ -41,7 +41,7 @@ export interface QuizList {
   quizItemList: QuizItemList[];
   quizCategoryList: QuizCategoryList[];
   favorite: boolean;
-  use: boolean;
+  isUse: boolean;
   delete: boolean;
 }
 
