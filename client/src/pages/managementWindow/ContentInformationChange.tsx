@@ -28,6 +28,7 @@ import {
   QuizListType,
 } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
+import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function ContentInformationChange() {
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -420,6 +421,20 @@ export function ContentInformationChange() {
     selected7depth,
   ]);
 
+  //수식 윈도우
+  const openFormula = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const target = e.currentTarget.value;
+    // 로컬스토리지에 보낼데이터 저장
+    // const sendData = { data: target };
+    // localStorage.setItem('sendData', JSON.stringify(sendData));
+
+    windowOpenHandler({
+      name: 'formula',
+      url: '/formula',
+      $width: 500,
+      $height: 500,
+    });
+  };
   return (
     <Container>
       <ResizeLayout
@@ -602,7 +617,7 @@ export function ContentInformationChange() {
                   cursor
                   $filled
                   $success
-                  onClick={() => {}}
+                  onClick={(e) => openFormula(e)}
                 >
                   수식
                 </Button>

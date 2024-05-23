@@ -102,6 +102,7 @@ export function App() {
           location.pathname !== '/init-change-password' &&
           location.pathname !== '/relogin' &&
           location.pathname !== '/createcontentmain' &&
+          location.pathname !== '/formula' &&
           location.pathname !== '/quizpreview' &&
           location.pathname !== '/managementEditMain' &&
           location.pathname !== '/content-create/exam/step1' &&
@@ -113,6 +114,7 @@ export function App() {
             location.pathname !== '/init-change-password' &&
             location.pathname !== '/relogin' &&
             location.pathname !== '/createcontentmain' &&
+            location.pathname !== '/formula' &&
             location.pathname !== '/quizpreview' &&
             location.pathname !== '/managementEditMain' &&
             location.pathname !== '/content-create/exam/step1' &&
