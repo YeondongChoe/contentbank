@@ -1,13 +1,24 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { Accordion, Button, List, ListItem, Modal, ValueNone } from '..';
+import {
+  Accordion,
+  Button,
+  List,
+  ListItem,
+  Modal,
+  ValueNone,
+  PaginationBox,
+} from '..';
+import { quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
+import { ReportData, Report } from '../../types';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
 
@@ -16,13 +27,40 @@ import { ReportProcessModal } from './ReportProcessModal';
 export function QuizReportList() {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
+  const [reportList, setReportList] = useState<Report[]>([]);
+
+  const getReportList = async () => {
+    const res = await quizService.get(`/v1/report`);
+    // console.log(`getCategory 결과값`, res);
+    return res.data;
+  };
+
+  const {
+    data: reportData,
+    isLoading,
+    refetch,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['get-reportList'],
+    queryFn: getReportList,
+    meta: {
+      errorMessage: 'get-reportList 에러 메세지',
+    },
+  });
+  console.log(reportData?.data.pagination);
+
+  useEffect(() => {
+    if (reportData) {
+      setReportList(reportData.data.reportList);
+    }
+  }, [reportData]);
 
   // TODO: 신고하기 임시 데이터 api 연결후 삭제
   const [reportQuestionList, setReportQuestionList] = useState([
     {
       id: 'ds1215515',
       num: '12',
-      source: '교재, 자체제작',
+      source: '교ㅣ재, 자체제작',
       curriculum_th: '6차, 8차',
       level: '학교급',
       grade: '학년',
@@ -100,7 +138,7 @@ export function QuizReportList() {
 
   return (
     <>
-      <Total> Total : {reportQuestionList.length}</Total>
+      <Total> Total : {reportData?.data.pagination.totalCount}</Total>
 
       <ListTitle>
         <strong className="width_30px">NO</strong>
@@ -119,154 +157,118 @@ export function QuizReportList() {
       </ListTitle>
       <ScrollWrapper>
         <PerfectScrollbar>
-          {reportQuestionList.length > 0 ? (
+          {reportList.length > 0 ? (
             <List margin={`10px 0`}>
-              {reportQuestionList.map(
-                (item: {
-                  id: string;
-                  num: string;
-                  source: string;
-                  curriculum_th: string;
-                  level: string;
-                  grade: string;
-                  semester: string;
-                  curriculum: string;
-                  subject: string;
-                  denouement: string;
-                  questionType: string;
-                  manager: string;
-                  changeAt: string;
-                  activate: string;
-                  state: string;
-                  report: {
-                    reportAt: string;
-                    manager: string;
-                    type: string;
-                    details: string;
-                  };
-                  processed: {
-                    changeAt: null | string;
-                    manager: null | string;
-                    type: null | string;
-                    details: null | string;
-                  };
-                }) => (
-                  <ListItem
-                    height={'fit-content'}
-                    key={item.id as string}
-                    isChecked={false}
-                    onClick={() => {}}
-                  >
-                    <AccordionWrapper>
-                      <ItemLayout>
-                        <span className="width_40px">{item.num} </span>
-                        <div className="line"></div>
-                        <span>{item.source} </span>
-                        <div className="line"></div>
-                        <span>{item.curriculum_th} </span>
-                        <div className="line"></div>
-                        <span>{item.level} </span>
-                        <div className="line"></div>
-                        <span>{item.grade} </span>
-                        <div className="line"></div>
-                        <span>{item.semester} </span>
-                        <div className="line"></div>
-                        <span>{item.curriculum} </span>
-                        <div className="line"></div>
-                        <span>{item.subject} </span>
-                        <div className="line"></div>
-                        <span>{item.denouement} </span>
-                        <div className="line"></div>
-                        <span>{item.questionType} </span>
-                        <div className="line"></div>
-                        <span>{item.manager} </span>
-                        <div className="line"></div>
-                        <span>{item.changeAt} </span>
-                        <div className="line"></div>
-                        <span>{item.activate} </span>
-                      </ItemLayout>
+              {reportList.map((item: Report) => (
+                <ListItem
+                  height={'fit-content'}
+                  key={item.idx.toLocaleString()}
+                  isChecked={false}
+                  onClick={() => {}}
+                >
+                  <AccordionWrapper>
+                    <ItemLayout>
+                      <span className="width_40px">{item.idx} </span>
+                      <div className="line"></div>
+                      <span>출처 </span>
+                      <div className="line"></div>
+                      <span>교육과정 </span>
+                      <div className="line"></div>
+                      <span>학교급 </span>
+                      <div className="line"></div>
+                      <span>학년 </span>
+                      <div className="line"></div>
+                      <span>학기 </span>
+                      <div className="line"></div>
+                      <span>교과 </span>
+                      <div className="line"></div>
+                      <span>과목 </span>
+                      <div className="line"></div>
+                      <span>대단원 </span>
+                      <div className="line"></div>
+                      <span>문항타입 </span>
+                      <div className="line"></div>
+                      <span>{item.answerBy} </span>
+                      <div className="line"></div>
+                      <span>{item.answerAt} </span>
+                      <div className="line"></div>
+                      <span>{item.quiz.isUse ? '활성화' : '비활성화'}</span>
+                    </ItemLayout>
 
-                      <Accordion
-                        $backgroundColor={`${item.state == '처리대기' ? `${COLOR.GRAY}` : `${COLOR.BLUEGREEN}`}`}
-                        title={`${item.state == '처리대기' ? '처리대기' : '처리완료'}`}
-                        id={`${item.id}`}
-                      >
-                        <AccordionItemLayout>
-                          <div className="text_wrapper">
-                            <strong className="title">신고일자</strong>
-                            <span className="text">{item.report.reportAt}</span>
-                          </div>
-                          <div className="text_wrapper">
-                            <strong className="title">신고자</strong>
-                            <span className="text">{item.report.manager}</span>
-                          </div>
-                          <div className="text_wrapper">
-                            <strong className="title">신고유형</strong>
-                            <span className="text">{item.report.type}</span>
-                          </div>
-                          <div className="text_wrapper">
-                            <strong className="title">신고내용</strong>
-                            <span className="text">{item.report.details}</span>
-                          </div>
-                          <div className="process_wrapper">
-                            {item.state !== '처리대기' ? (
-                              <div className="processed">
-                                <div className="text_wrapper">
-                                  <strong className="title">처리일자</strong>
-                                  <span className="text">
-                                    {item.processed.changeAt}
-                                  </span>
-                                </div>
-                                <div className="text_wrapper">
-                                  <strong className="title">처리자</strong>
-                                  <span className="text">
-                                    {item.processed.manager}
-                                  </span>
-                                </div>
-                                <div className="text_wrapper">
-                                  <strong className="title">처리유형</strong>
-                                  <span className="text">
-                                    {item.processed.type}
-                                  </span>
-                                </div>
-                                <div className="text_wrapper">
-                                  <strong className="title">처리내용</strong>
-                                  <span className="text">
-                                    {item.processed.details}
-                                  </span>
-                                </div>
+                    <Accordion
+                      $backgroundColor={`${item.isUse ? `${COLOR.BLUEGREEN}` : `${COLOR.GRAY}`}`}
+                      title={`${item.isUse === false ? '처리대기' : '처리완료'}`}
+                      id={`${item.idx}`}
+                    >
+                      <AccordionItemLayout>
+                        <div className="text_wrapper">
+                          <strong className="title">신고일자</strong>
+                          <span className="text">{item.reportAt}</span>
+                        </div>
+                        <div className="text_wrapper">
+                          <strong className="title">신고자</strong>
+                          <span className="text">{item.reportBy}</span>
+                        </div>
+                        <div className="text_wrapper">
+                          <strong className="title">신고유형</strong>
+                          <span className="text">{item.reportType}</span>
+                        </div>
+                        <div className="text_wrapper">
+                          <strong className="title">신고내용</strong>
+                          <span className="text">{item.reportContent}</span>
+                        </div>
+                        <div className="process_wrapper">
+                          {item.isUse ? (
+                            <div className="processed">
+                              <div className="text_wrapper">
+                                <strong className="title">처리일자</strong>
+                                <span className="text">{item.answerAt}</span>
                               </div>
-                            ) : (
-                              <div className="button_wrapper">
-                                <Button
-                                  $filled
-                                  height={'35px'}
-                                  fontSize={'13px'}
-                                  cursor
-                                  onClick={() => {
-                                    openCreateEditWindow();
-                                  }}
-                                >
-                                  문항 수정하러가기
-                                </Button>
-                                <Button
-                                  $filled
-                                  height={'35px'}
-                                  fontSize={'13px'}
-                                  cursor
-                                  onClick={() => openReportProcess()}
-                                >
-                                  처리 완료
-                                </Button>
+                              <div className="text_wrapper">
+                                <strong className="title">처리자</strong>
+                                <span className="text">{item.answerBy}</span>
                               </div>
-                            )}
-                          </div>
-                        </AccordionItemLayout>
-                      </Accordion>
-                    </AccordionWrapper>
-                  </ListItem>
-                ),
-              )}
+                              <div className="text_wrapper">
+                                <strong className="title">처리유형</strong>
+                                <span className="text">{item.answerType}</span>
+                              </div>
+                              <div className="text_wrapper">
+                                <strong className="title">처리내용</strong>
+                                <span className="text">
+                                  {item.answerContent}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="button_wrapper">
+                              <Button
+                                $filled
+                                height={'35px'}
+                                fontSize={'13px'}
+                                cursor
+                                onClick={() => {
+                                  openCreateEditWindow();
+                                }}
+                              >
+                                문항 수정하러가기
+                              </Button>
+                              <Button
+                                $filled
+                                height={'35px'}
+                                fontSize={'13px'}
+                                cursor
+                                onClick={() => openReportProcess()}
+                              >
+                                처리 완료
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </AccordionItemLayout>
+                    </Accordion>
+                  </AccordionWrapper>
+                </ListItem>
+              ))}
             </List>
           ) : (
             <ValueNoneWrapper>
@@ -275,7 +277,10 @@ export function QuizReportList() {
           )}
         </PerfectScrollbar>
       </ScrollWrapper>
-
+      <PaginationBox
+        itemsCountPerPage={reportData?.data.pagination.pageUnit as number}
+        totalItemsCount={reportData?.data.pagination.totalCount as number}
+      />
       <Modal />
     </>
   );
@@ -290,7 +295,7 @@ const Total = styled.span`
 `;
 
 const ScrollWrapper = styled.div`
-  /* overflow-y: auto; */
+  overflow-y: auto;
   height: calc(100vh - 450px);
   width: 100%;
   border-top: 1px solid ${COLOR.BORDER_GRAY};

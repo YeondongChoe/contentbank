@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { BiSolidTrashAlt } from 'react-icons/bi';
+import { GoFold, GoUnfold } from 'react-icons/go';
 import { IoMenuOutline } from 'react-icons/io5';
 import { LuSiren, LuBookmarkPlus } from 'react-icons/lu';
 import { styled } from 'styled-components';
@@ -98,11 +99,19 @@ function Accordion({
               )}
             </>
           )}
-          <IoMenuOutline
-            fontSize={'30px'}
-            style={{ cursor: 'pointer' }}
-            onClick={toggleAccordion}
-          />
+          {isCollapsed ? (
+            <GoUnfold
+              fontSize={'30px'}
+              style={{ cursor: 'pointer' }}
+              onClick={toggleAccordion}
+            ></GoUnfold>
+          ) : (
+            <GoFold
+              fontSize={'30px'}
+              style={{ cursor: 'pointer' }}
+              onClick={toggleAccordion}
+            />
+          )}
         </ActionButtonWrapper>
       </AccordionHeader>
       {!isCollapsed && <AccordionContent>{children}</AccordionContent>}
