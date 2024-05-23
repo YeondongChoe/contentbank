@@ -561,14 +561,6 @@ export function Step2() {
   };
 
   const saveCheckItems = () => {
-    // console.log('saveCheckItems', [
-    //   radio1depthCheck,
-    //   radio2depthCheck,
-    //   radio3depthCheck,
-    //   radio4depthCheck,
-    //   radioEtc1Check,
-    //   radioEtc2Check,
-    // ]);
     if (unitClassificationList.length < 5) {
       setUnitClassificationList((prevList) => [
         ...prevList,
@@ -659,6 +651,9 @@ export function Step2() {
     }
   };
 
+  //교과정보 문항 조회
+  const getCheckedItems = () => {};
+
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
@@ -679,6 +674,15 @@ export function Step2() {
     radio3depthCheck,
     radio4depthCheck,
   ]);
+  console.log(unitClassificationList.length);
+  // 교과정보 추가버튼 disable 처리
+  const getButtonBool = useMemo(() => {
+    if (unitClassificationList.length > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [unitClassificationList]);
 
   useEffect(() => {}, []);
 
@@ -1252,9 +1256,18 @@ export function Step2() {
                                   disabled={addButtonBool}
                                   cursor
                                   $margin={'0 10px 0 0'}
-                                  onClick={() => saveCheckItems()}
+                                  onClick={saveCheckItems}
                                 >
                                   교과정보 추가
+                                </Button>
+                                <Button
+                                  $filled
+                                  disabled={getButtonBool}
+                                  cursor
+                                  $margin={'0 10px 0 0'}
+                                  onClick={getCheckedItems}
+                                >
+                                  불러오기
                                 </Button>
                               </SubmitButtonWrapper>
                             </CategoryWrapper>
@@ -1281,7 +1294,7 @@ export function Step2() {
                                     componentHeight="150px"
                                     onClick={showSimilarContent}
                                     isBorder={true}
-                                    isSimilarQuiz={true}
+                                    isNewQuiz={true}
                                     data={dragItem}
                                     index={dragItem.idx}
                                     selectedCardIndex={selectedCardIndex}
