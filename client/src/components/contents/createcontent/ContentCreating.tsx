@@ -28,9 +28,6 @@ export function ContentCreating({
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
-  const [categoriesF, setCategoriesF] = useState<ItemCategoryType[][]>([]);
-  const [categoriesG, setCategoriesG] = useState<ItemCategoryType[][]>([]);
-  const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
   const [content, setContent] = useState<string[]>([]);
   const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
 
@@ -106,11 +103,7 @@ export function ContentCreating({
       errorMessage: 'get-category-groups-F 에러 메세지',
     },
   });
-  useEffect(() => {
-    if (groupsDataF) {
-      fetchCategoryItems(groupsDataF, setCategoriesF);
-    }
-  }, [groupsDataF]);
+
   // 카테고리의 그룹 유형 조회 (내신)
   const getCategoryGroupsG = async () => {
     const response = await classificationInstance.get('/v1/category/group/G');
@@ -124,14 +117,11 @@ export function ContentCreating({
       errorMessage: 'get-category-groups-G 에러 메세지',
     },
   });
-  useEffect(() => {
-    if (groupsDataG) {
-      fetchCategoryItems(groupsDataG, setCategoriesG);
-    }
-  }, [groupsDataG]);
+
   // 카테고리의 그룹 유형 조회 (기출)
   const getCategoryGroupsH = async () => {
     const response = await classificationInstance.get('/v1/category/group/H');
+    console.log('response------------h', response);
     return response.data.data.typeList;
   };
   const { data: groupsDataH, refetch: groupsDataHRefetch } = useQuery({
@@ -142,11 +132,7 @@ export function ContentCreating({
       errorMessage: 'get-category-groups-H 에러 메세지',
     },
   });
-  useEffect(() => {
-    if (groupsDataH) {
-      fetchCategoryItems(groupsDataH, setCategoriesH);
-    }
-  }, [groupsDataH]);
+  useEffect(() => {}, [groupsDataH, groupsDataG, groupsDataF]);
 
   // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (
@@ -162,7 +148,6 @@ export function ContentCreating({
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      console.log('itemsList', itemsList);
       setCategory(itemsList);
     } catch (error: any) {
       if (error.data?.code == 'GE-002') postRefreshToken();
@@ -173,13 +158,13 @@ export function ContentCreating({
       'API Response Check: 등록시 필수 E',
       categoriesE,
       'API Response Check: 교재 F',
-      categoriesF,
+      groupsDataF,
       'API Response Check: 내신 G',
-      categoriesG,
+      groupsDataG,
       'API Response Check: 기출 H',
-      categoriesH,
+      groupsDataH,
     );
-  }, [categoriesE, categoriesF, categoriesG, categoriesH]);
+  }, [categoriesE]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
@@ -296,16 +281,16 @@ export function ContentCreating({
                 </strong>
                 <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {categoriesF &&
-                    categoriesG &&
-                    categoriesH &&
+                  {groupsDataF &&
+                    groupsDataG &&
+                    groupsDataH &&
                     categoryTitles && (
                       <OptionList
                         categoryTitles={categoryTitles}
                         categoriesE={categoriesE[2]}
-                        categoriesF={categoriesF}
-                        categoriesG={categoriesG}
-                        categoriesH={categoriesH}
+                        groupsDataF={groupsDataF}
+                        groupsDataG={groupsDataG}
+                        groupsDataH={groupsDataH}
                       />
                     )}
                 </SourceOptionWrapper>

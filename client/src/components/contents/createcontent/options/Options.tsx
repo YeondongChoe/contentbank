@@ -11,7 +11,15 @@ import { ItemCategoryType } from '../../../../types';
 import { COLOR } from '../../../constants/COLOR';
 import { SchoolInputModal } from '../SchoolInputModal';
 
-export function Options({ listItem }: { listItem: ItemCategoryType[] }) {
+import { OtionsSelect } from './OtionsSelect';
+
+export function Options({
+  listItem,
+  categoryTitles,
+}: {
+  listItem: ItemCategoryType;
+  categoryTitles: ItemCategoryType[];
+}) {
   const { openModal } = useModal();
   const [startDate, setStartDate] = useState<string>('');
   const [schoolNameValue, setSchoolNameValue] = useState('');
@@ -45,23 +53,18 @@ export function Options({ listItem }: { listItem: ItemCategoryType[] }) {
 
   useEffect(() => {
     console.log('listItem-----------', listItem);
+    console.log('categoryTitles-----------', categoryTitles);
   }, [listItem]);
 
   return (
     <OptionWrapper>
       <li>
-        <p>
-          {listItem.map((el) => (
-            <>{el.name}</>
-          ))}
-        </p>
-
-        {/* {listItem?.type === 'INPUT' && (
+        {listItem?.type === 'INPUT' && (
           <input placeholder={`${listItem.name}`} />
-        )} */}
+        )}
       </li>
       <li>
-        {/* {listItem?.type === 'DATEPICKER' && (
+        {listItem?.type === 'DATEPICKER' && (
           <CommonDate
             setDate={setStartDate}
             $button={
@@ -78,10 +81,10 @@ export function Options({ listItem }: { listItem: ItemCategoryType[] }) {
               </IconButton>
             }
           />
-        )} */}
+        )}
       </li>
       <li>
-        {/* {listItem?.type === 'MODAL' && (
+        {listItem?.type === 'MODAL' && (
           <input
             className="modal_input"
             readOnly
@@ -89,22 +92,24 @@ export function Options({ listItem }: { listItem: ItemCategoryType[] }) {
             onClick={(e) => openCreateModal(e)}
             value={schoolName}
           />
-        )} */}
+        )}
       </li>
       <li>
-        {/* {listItem?.type === 'SELECT' && (
+        {listItem?.type === 'SELECT' && (
           <OtionsSelect
-            width={'110px'}
+            width={'115px'}
             height={'30px'}
             defaultValue={listItem.name}
             key={listItem.name}
-            options={listItem as OptionsdepthProps[]}
-            onSelect={(event) => selectCategoryOption(event)}
+            options={[]}
+            onSelect={(
+              event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+            ) => selectCategoryOption(event)}
             $positionTop
             selected={''}
             setSelected={() => {}}
           />
-        )} */}
+        )}
       </li>
     </OptionWrapper>
   );

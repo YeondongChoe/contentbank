@@ -12,23 +12,23 @@ import { OptionsItemProps, OtionsSelect } from './OtionsSelect';
 
 type CategoryList = {
   name: string;
-  categories: ItemCategoryType[][];
+  categories: ItemCategoryType[];
 };
 
 interface Props {
   categoryTitles: ItemCategoryType[];
   categoriesE: ItemCategoryType[];
-  categoriesF: ItemCategoryType[][];
-  categoriesG: ItemCategoryType[][];
-  categoriesH: ItemCategoryType[][];
+  groupsDataF: string;
+  groupsDataG: string;
+  groupsDataH: string;
 }
 
 export function OptionList({
   categoryTitles,
   categoriesE,
-  categoriesF,
-  categoriesG,
-  categoriesH,
+  groupsDataF,
+  groupsDataG,
+  groupsDataH,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [count, setCount] = useState(1);
@@ -58,6 +58,15 @@ export function OptionList({
     name: '',
     categories: [],
   });
+
+  const getCategoryListFromString = (data: string) => {
+    const groupsArray = data.split(',').map(Number);
+    return categoryTitles.filter((el) => groupsArray.includes(el.idx));
+  };
+
+  const categoriesF = getCategoryListFromString(groupsDataF);
+  const categoriesG = getCategoryListFromString(groupsDataG);
+  const categoriesH = getCategoryListFromString(groupsDataH);
 
   const lists = [
     {
@@ -95,7 +104,7 @@ export function OptionList({
     // 셀렉트 선택이후 옵션에 속한 버튼값보여주기
     setSelectedValues((prev) => ({ ...prev, [index]: value }));
 
-    console.log('v', value, 'id', id);
+    // console.log('v', value, 'id', id);
     // 중복셀렉트 선택못하도록
 
     //셀렉트 선택시에만 추가 가능하도록
@@ -164,7 +173,7 @@ export function OptionList({
     setSelectedValues(newSelectedValues);
   };
 
-  const getCategoryList = (value: string): ItemCategoryType[][] => {
+  const getCategoryList = (value: string): ItemCategoryType[] => {
     const list = lists.find((list) => list.name === value);
     return list ? list.categories : [];
   };
@@ -228,7 +237,8 @@ export function OptionList({
                     (category, idx) => (
                       <Options
                         listItem={category}
-                        key={`${category[idx]?.name} optionsdepth${idx}`}
+                        key={`${category?.name} optionsdepth${idx}`}
+                        categoryTitles={categoryTitles}
                       />
                     ),
                   )}
