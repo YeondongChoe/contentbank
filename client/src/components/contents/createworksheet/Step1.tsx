@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
 import { IoMdClose, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
@@ -21,6 +21,8 @@ import {
   DepthBlock,
   ValueNone,
   Loader,
+  Icon,
+  IconButton,
 } from '../..';
 import { classificationInstance } from '../../../api/axios';
 import {
@@ -32,6 +34,12 @@ import {
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 import dummy from '../../constants/data.json';
+
+interface RadioState {
+  title: string;
+  checkValue: number;
+  code: string;
+}
 
 type Content = {
   seq: number;
@@ -126,30 +134,43 @@ export function Step1() {
   const [tabVeiw, setTabVeiw] = useState<string>('단원·유형별');
   const navigate = useNavigate();
 
-  const [radio1depthCheck, setRadio1depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radio2depthCheck, setRadio2depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radio3depthCheck, setRadio3depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
-  const [radio4depthCheck, setRadio4depthCheck] = useState<{
-    title: string;
-    checkValue: number;
-    code: string;
-  }>({ title: '', checkValue: 0, code: '' });
+  const [radio1depthCheck, setRadio1depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radio2depthCheck, setRadio2depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radio3depthCheck, setRadio3depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radio4depthCheck, setRadio4depthCheck] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
+  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioState>({
+    title: '',
+    checkValue: 0,
+    code: '',
+  });
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
   const [selected4depth, setSelected4depth] = useState<string>('');
+  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string>('');
+  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string>('');
+  const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
 
   const [nextList1depth, setNextList1depth] = useState([
@@ -162,8 +183,16 @@ export function Step1() {
     { code: '', idx: 0, name: '' },
   ]);
 
+  const [unitClassificationList, setUnitClassificationList] = useState<
+    RadioState[][]
+  >([]);
+  console.log(unitClassificationList);
+
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+  const [categoryAddInfoList, setCategoryAddInfoList] = useState<
+    ItemCategoryType[][]
+  >([]); // 각 카테고리의 상세 리스트를 저장할 상태
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
 
@@ -203,12 +232,13 @@ export function Step1() {
     }
   }, [isSuccess]);
 
+  // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
     return response.data.data.typeList;
   };
-  const { data: groupsData } = useQuery({
-    queryKey: ['get-category-groups'],
+  const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
+    queryKey: ['get-category-groups-A'],
     queryFn: getCategoryGroups,
     enabled: !!categoryData,
     meta: {
@@ -224,13 +254,19 @@ export function Step1() {
   // 카테고리의 그룹 유형 조회
   const fetchCategoryItems = async (typeList: string) => {
     const typeIds = typeList.split(',');
-    // console.log(typeIds);
-    const requests = typeIds.map((id) =>
-      classificationInstance.get(`/v1/category/${id}`),
-    );
-    const responses = await Promise.all(requests);
-    const itemsList = responses.map((res) => res.data.data.categoryClassList);
-    setCategoryList(itemsList);
+    try {
+      const requests = typeIds.map((id) =>
+        classificationInstance.get(`/v1/category/${id}`),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+      setCategoryList(itemsList);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error?.data?.code);
+      if (error.data.code == 'GE-002') postRefreshToken();
+    }
   };
 
   // 라디오 버튼 설정
@@ -273,12 +309,22 @@ export function Step1() {
         });
         break;
 
-      // case 'etc1':
-      //   setSelectedCategoryEtc1(e.currentTarget.value);
-      //   break;
-      // case 'etc2':
-      //   setSelectedCategoryEtc2(e.currentTarget.value);
-      //   break;
+      case 'etc1':
+        setSelectedCategoryEtc1(e.currentTarget.value);
+        setRadioEtc1Check({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
+      case 'etc2':
+        setSelectedCategoryEtc2(e.currentTarget.value);
+        setRadioEtc2Check({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+        });
+        break;
     }
   };
 
@@ -291,10 +337,11 @@ export function Step1() {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      setNextList1depth(res.data.data.categoryClassList);
+      setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
-    } catch (error) {
-      console.error('Error fetching next list: ', error);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error.data.code);
+      if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -316,10 +363,11 @@ export function Step1() {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      setNextList2depth(res.data.data.categoryClassList);
+      setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
-    } catch (error) {
-      console.error('Error fetching next list: ', error);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error.data.code);
+      if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -341,10 +389,11 @@ export function Step1() {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      setNextList3depth(res.data.data.categoryClassList);
+      setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
-    } catch (error) {
-      console.error('Error fetching next list: ', error);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error.data.code);
+      if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -378,55 +427,229 @@ export function Step1() {
     setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
     setItemTree([]);
   }, [selected3depth]);
+  useEffect(() => {
+    setSelectedCategoryEtc1('');
+    setSelectedCategoryEtc2('');
+    setRadioEtc1Check({ title: '', checkValue: 0, code: '' });
+    setRadioEtc2Check({ title: '', checkValue: 0, code: '' });
+    setItemTree([]);
+  }, [selected4depth]);
 
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
-  const getCategoryItemTree = async () => {
+  const postCategoryItemTree = async () => {
+    const depthChecks = [
+      radio1depthCheck,
+      radio2depthCheck,
+      radio3depthCheck,
+      radio4depthCheck,
+    ];
+
     const keyValuePairs = categoryItems.reduce<Record<string, string>>(
       (acc, item, index) => {
-        const radioDepthCheck = [
-          selected1depth,
-          selected2depth,
-          selected3depth,
-          selected4depth,
-        ][index];
-        if (radioDepthCheck !== undefined) {
-          // undefined가 아닐 때만 추가
-          acc[item.code] = radioDepthCheck;
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item.name] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
         }
         return acc;
       },
       {},
     );
 
-    const itemTreeKey = { itemTreeKey: [keyValuePairs] };
-    console.log('itemTreeKey :', itemTreeKey);
+    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
+    console.log('itemTreeKeyList :', itemTreeKeyList);
 
-    const res = await classificationInstance.post('/v1/item', itemTreeKey);
+    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
     console.log('classificationInstance 응답:', res);
     return res;
   };
 
-  const { data: categoryItemTreeData, mutate: categoryItemTreeDataMutate } =
-    useMutation({
-      mutationFn: getCategoryItemTree,
-      onError: (context: { response: { data: { message: string } } }) => {
-        openToastifyAlert({
-          type: 'error',
-          text: context.response.data.message,
-        });
-      },
-      onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
-        // setItemTreeList(res.data.data[0].itemTreeList);
-        setItemTree(response.data.data);
-      },
-    });
+  const {
+    data: categoryItemTreeData,
+    mutate: categoryItemTreeDataMutate,
+    isPending,
+  } = useMutation({
+    mutationFn: postCategoryItemTree,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+      // setItemTreeList(res.data.data[0].itemTreeList);
+      setItemTree(response.data.data);
+    },
+  });
 
   useEffect(() => {
     // console.log(radio4depthCheck);
     if (selected4depth == '') return;
     categoryItemTreeDataMutate();
   }, [selected4depth]);
+
+  // 카테고리의 그룹 유형 조회 (추가정보)
+  const getAddInfoGroups = async () => {
+    const response = await classificationInstance.get('/v1/category/group/B');
+    return response.data.data.typeList;
+  };
+  const { data: addInfoData } = useQuery({
+    queryKey: ['get-add-info-groups'],
+    queryFn: getAddInfoGroups,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-add-info-groups 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (addInfoData) {
+      fetchAddInfoItems(addInfoData);
+    }
+  }, [addInfoData]);
+
+  // 카테고리의 그룹 아이템 조회 (추가정보)
+  const fetchAddInfoItems = async (typeList: string) => {
+    const typeIds = typeList.split(',');
+    try {
+      const requests = typeIds.map((id) =>
+        classificationInstance.get(`/v1/category/${id}`),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+      setCategoryAddInfoList(itemsList);
+    } catch (error: any) {
+      // console.error('Error fetching next list: ', error?.data?.code);
+      if (error?.data?.code == 'GE-002') {
+        postRefreshToken();
+        groupsDataRefetch();
+      }
+    }
+  };
+
+  const saveCheckItems = () => {
+    if (unitClassificationList.length < 5) {
+      setUnitClassificationList((prevList) => [
+        ...prevList,
+        [
+          radio1depthCheck,
+          radio2depthCheck,
+          radio3depthCheck,
+          radio4depthCheck,
+          radioEtc1Check,
+          radioEtc2Check,
+        ],
+      ]);
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '교과정보는 최대 5개 까지 저장 가능합니다',
+      });
+    }
+    //선택정보 저장과 함께 체크상태 초기화
+    //저장 성공 후
+    const reset = { title: '', checkValue: 0, code: '' };
+    setRadio1depthCheck(reset);
+    setRadio2depthCheck(reset);
+    setRadio3depthCheck(reset);
+    setRadio4depthCheck(reset);
+  };
+  //삭제
+  const deleteUnitClassification = (idx: number) => {
+    setUnitClassificationList((prevList) => [
+      ...prevList.slice(0, idx),
+      ...prevList.slice(idx + 1),
+    ]);
+  };
+
+  // 수정
+  const changeUnitClassification = (idx: number) => {
+    console.log('unitClassificationList', unitClassificationList);
+    const selectedClassification = unitClassificationList[idx];
+
+    if (selectedClassification) {
+      if (selectedClassification[0]) {
+        setRadio1depthCheck(selectedClassification[0]);
+        setSelected1depth(selectedClassification[0].code);
+      } else {
+        setRadio1depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected1depth('');
+      }
+
+      if (selectedClassification[1]) {
+        setRadio2depthCheck(selectedClassification[1]);
+        setSelected2depth(selectedClassification[1].code);
+      } else {
+        setRadio2depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected2depth('');
+      }
+
+      if (selectedClassification[2]) {
+        setRadio3depthCheck(selectedClassification[2]);
+        setSelected3depth(selectedClassification[2].code);
+      } else {
+        setRadio3depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected3depth('');
+      }
+
+      if (selectedClassification[3]) {
+        setRadio4depthCheck(selectedClassification[3]);
+        setSelected4depth(selectedClassification[3].code);
+      } else {
+        setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
+        setSelected4depth('');
+      }
+
+      if (selectedClassification[4]) {
+        setRadioEtc1Check(selectedClassification[4]);
+        setSelectedCategoryEtc1(selectedClassification[4].code);
+      } else {
+        setRadioEtc1Check({ title: '', checkValue: 0, code: '' });
+        setSelectedCategoryEtc1('');
+      }
+
+      if (selectedClassification[5]) {
+        setRadioEtc2Check(selectedClassification[5]);
+        setSelectedCategoryEtc2(selectedClassification[5].code);
+      } else {
+        setRadioEtc2Check({ title: '', checkValue: 0, code: '' });
+        setSelectedCategoryEtc2('');
+      }
+    }
+  };
+
+  // 교과정보 추가버튼 disable 처리
+  const addButtonBool = useMemo(() => {
+    if (
+      unitClassificationList.length < 5 &&
+      radio1depthCheck.code !== '' &&
+      radio2depthCheck.code !== '' &&
+      radio3depthCheck.code !== '' &&
+      radio4depthCheck.code !== ''
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [
+    unitClassificationList,
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    radio4depthCheck,
+  ]);
+
+  useEffect(() => {}, []);
+
+  const onSubmit = () => {
+    // 최종적으로 전송 될 데이터
+  };
 
   useEffect(() => {
     // console.log(error);
@@ -1088,6 +1311,54 @@ export function Step1() {
                   />
                 </TabWrapper>
                 <CategoryWrapper>
+                  <UnitClassifications>
+                    {unitClassificationList.length > 0 ? (
+                      <>
+                        <p className="info">
+                          교과정보는 최대 5개 까지 저장 가능합니다
+                        </p>
+                        {unitClassificationList.map((el, idx) => (
+                          <IconButtonWrapper key={`${el} idx`}>
+                            <IconButton
+                              width={`calc(100% - 25px)`}
+                              fontSize="14px"
+                              height="35px"
+                              textAlign="left"
+                              $padding="0 50px 0 10px"
+                              rightIconSrc={
+                                <IconWrapper>
+                                  <button
+                                    type="button"
+                                    className="icon_button primery"
+                                  >
+                                    수정
+                                  </button>
+                                </IconWrapper>
+                              }
+                              onClick={() => changeUnitClassification(idx)}
+                            >
+                              <span>
+                                {el.map((item) => `${item.title} / `)}
+                              </span>
+                            </IconButton>
+
+                            <Icon
+                              onClick={() => deleteUnitClassification(idx)}
+                              $margin={'0 0 0 2px'}
+                              width={`15px`}
+                              src={`/images/icon/icoclose.svg`}
+                            />
+                          </IconButtonWrapper>
+                        ))}
+                      </>
+                    ) : (
+                      <p className="info">
+                        교과정보는 최대 5개 까지 저장 가능합니다
+                      </p>
+                    )}
+                  </UnitClassifications>
+
+                  {/* 교육과정 라디오 버튼 부분 */}
                   {isCategoryLoaded && categoryItems[0] && categoryList && (
                     <>
                       {[categoryItems[0]].map((item) => (
@@ -1186,6 +1457,11 @@ export function Step1() {
                             onKeyDown={() => {}}
                           />
                           <p className="line bottom_text">Total : {`${0}`}</p>
+                          {isPending && (
+                            <LoaderWrapper>
+                              <Loader width="50px" />
+                            </LoaderWrapper>
+                          )}
 
                           {categoryItemTreeData ? (
                             <>
@@ -1237,32 +1513,45 @@ export function Step1() {
                         $margin={'4px 0 0 0 '}
                       >
                         <RowListWrapper>
-                          {/* <div className="etc1">
-                          {selectCategoryEtc1.map((meta) => (
-                            <ButtonFormatRadio
-                              key={`${meta.id}`}
-                              titleText={`${meta.label}`}
-                              list={meta.options}
-                              selected={selectedCategoryEtc1}
-                              onChange={(e) => handleRadioCheck(e, meta.label)}
-                              // defaultChecked={} //저장된 값 디폴트체크로
-                              checkedInput={radioCheck}
+                          {categoryAddInfoList ? (
+                            <>
+                              {[categoryItems[4]].map((item) => (
+                                <div
+                                  className={`etc1`}
+                                  key={`etc1 ${item.idx}`}
+                                >
+                                  <ButtonFormatRadio
+                                    titleText={`${item.name}`}
+                                    list={categoryAddInfoList[0]}
+                                    selected={selectedCategoryEtc1}
+                                    onChange={(e) => handleRadioCheck(e)}
+                                    // defaultChecked={}
+                                    checkedInput={radioEtc1Check}
+                                  />
+                                </div>
+                              ))}
+                              {[categoryItems[5]].map((item) => (
+                                <div
+                                  className={`etc2`}
+                                  key={`etc2 ${item.idx}`}
+                                >
+                                  <ButtonFormatRadio
+                                    titleText={`${item.name}`}
+                                    list={categoryAddInfoList[1]}
+                                    selected={selectedCategoryEtc2}
+                                    onChange={(e) => handleRadioCheck(e)}
+                                    // defaultChecked={}
+                                    checkedInput={radioEtc2Check}
+                                  />
+                                </div>
+                              ))}
+                            </>
+                          ) : (
+                            <ValueNone
+                              textOnly
+                              info="등록된 데이터가 없습니다"
                             />
-                          ))}
-                        </div>
-                        <div className="etc2">
-                          {selectCategoryEtc2.map((meta) => (
-                            <ButtonFormatRadio
-                              key={`${meta.id}`}
-                              titleText={`${meta.label}`}
-                              list={meta.options}
-                              selected={selectedCategoryEtc2}
-                              onChange={(e) => handleRadioCheck(e, meta.label)}
-                              // defaultChecked={} //저장된 값 디폴트체크로
-                              checkedInput={radioCheck}
-                            />
-                          ))}
-                        </div> */}
+                          )}
                         </RowListWrapper>
                       </Accordion>
                     </AccordionWrapper>
@@ -1274,6 +1563,18 @@ export function Step1() {
                       />
                     </ValueNoneWrapper>
                   )}
+                  <SubmitButtonWrapper>
+                    <Button
+                      $filled
+                      disabled={addButtonBool}
+                      cursor
+                      width={'150px'}
+                      $margin={'0 10px 0 0'}
+                      onClick={() => saveCheckItems()}
+                    >
+                      교과정보 추가
+                    </Button>
+                  </SubmitButtonWrapper>
                 </CategoryWrapper>
               </CategorySection>
               <SchoolSelectorSection>
@@ -3245,12 +3546,65 @@ const CategoryWrapper = styled.div`
   width: 100%;
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   padding: 10px;
+  .line {
+    border-top: 1px solid ${COLOR.BORDER_GRAY};
+    margin: 10px 0;
+
+    &.bottom_text {
+      font-size: 13px;
+      padding-top: 2px;
+    }
+  }
+`;
+const IconWrapper = styled.div`
+  .icon_button {
+    padding: 5px;
+    border: none;
+    font-size: 13px;
+    font-weight: bold;
+    color: ${COLOR.SECONDARY};
+    background-color: transparent;
+    cursor: pointer;
+    color: ${COLOR.PRIMARY};
+  }
+`;
+const IconButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  img {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+`;
+const UnitClassifications = styled.div`
+  padding: 10px 20px;
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  background-color: ${COLOR.IS_HAVE_DATA};
+  .info {
+    color: ${COLOR.SECONDARY};
+    font-size: 14px;
+  }
 `;
 const AccordionWrapper = styled.div`
   margin: 10px;
 `;
 const RowListWrapper = styled.div`
   padding: 10px;
+`;
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-bottom: 50px;
+  padding-left: calc(50% - 35px);
+`;
+const SubmitButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;
 const ValueNoneWrapper = styled.div`
   display: flex;

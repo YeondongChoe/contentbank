@@ -13,19 +13,27 @@ import { COLOR } from '../../constants';
 import { MathViewer } from '../../mathViewer/MathViewer';
 
 type AccordionProps = {
+  onClick: () => void;
   title: string;
   children: React.ReactNode;
   componentWidth?: string;
+  componentHeight?: string;
   isSimilar?: boolean;
   isSelected?: boolean;
+  isBorder?: boolean;
+  isSimilarQuiz?: boolean;
 };
 
 function Accordion({
+  onClick,
   title,
   children,
+  isSimilarQuiz,
   componentWidth,
+  componentHeight,
   isSimilar,
   isSelected,
+  isBorder,
 }: AccordionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -38,10 +46,45 @@ function Accordion({
       $componentWidth={componentWidth}
       $isSimilar={isSimilar}
       $isSelected={isSelected}
+      $isBorder={isBorder}
     >
-      <AccordionHeader onClick={toggleAccordion}>
+      <AccordionHeader>
         <span>{title}</span>
-        <IoMenuOutline fontSize={'30px'} style={{ cursor: 'pointer' }} />
+        <ActionButtonWrapper>
+          {isSimilarQuiz && (
+            <>
+              <Button
+                buttonType="button"
+                onClick={() => {}}
+                $padding="10px"
+                height={'30px'}
+                width={'70px'}
+                fontSize="12px"
+                $normal
+                cursor
+              >
+                <span>교체</span>
+              </Button>
+              <Button
+                buttonType="button"
+                onClick={() => {}}
+                $padding="10px"
+                height={'30px'}
+                width={'70px'}
+                fontSize="12px"
+                $normal
+                cursor
+              >
+                <span>+ 추가</span>
+              </Button>
+            </>
+          )}
+          <IoMenuOutline
+            fontSize={'30px'}
+            style={{ cursor: 'pointer' }}
+            onClick={toggleAccordion}
+          />
+        </ActionButtonWrapper>
       </AccordionHeader>
       {!isCollapsed && <AccordionContent>{children}</AccordionContent>}
     </AccordionContainer>
@@ -51,6 +94,7 @@ function Accordion({
 type MathviewerCardProps = {
   onClick: () => void;
   isSimilar?: boolean;
+  isBorder?: boolean;
   data: QuizList;
   index: number;
   selectedCardIndex: number | undefined;
@@ -58,12 +102,14 @@ type MathviewerCardProps = {
   width?: string;
   isSimilarQuiz?: boolean;
   componentWidth?: string;
+  componentHeight?: string;
   className?: string;
 };
 
 export function MathviewerAccordion({
   onClick,
   isSimilar,
+  isBorder,
   selectedCardIndex,
   onSelectCard,
   index,
@@ -71,18 +117,22 @@ export function MathviewerAccordion({
   width,
   isSimilarQuiz,
   componentWidth,
+  componentHeight,
   className,
 }: MathviewerCardProps) {
   return (
     <Accordion
+      onClick={onClick}
       title={`Question ${index}`}
       componentWidth={componentWidth}
+      componentHeight={componentHeight}
       isSimilar={isSimilar}
+      isBorder={isBorder}
       isSelected={index === selectedCardIndex}
+      isSimilarQuiz={isSimilarQuiz}
     >
-      <Component className={className}>
+      <Component className={className} $componentHeight={componentHeight}>
         <div className="leftInfomation">
-          <div className="numbering">{index}</div>
           <LuBookmarkPlus
             fontSize={'25px'}
             style={{ cursor: 'pointer', color: 'gray' }}
@@ -92,40 +142,15 @@ export function MathviewerAccordion({
         </div>
         <MathViewer data={data} width={width}></MathViewer>
         {isSimilarQuiz ? (
-          <SimilarButtonWrapper>
-            <Button
-              buttonType="button"
-              onClick={onClick}
-              $padding="10px"
-              height={'30px'}
-              width={'70px'}
-              fontSize="12px"
-              $normal
-              cursor
-            >
-              <span>교체</span>
-            </Button>
-            <Button
-              buttonType="button"
-              onClick={onClick}
-              $padding="10px"
-              height={'30px'}
-              width={'70px'}
-              fontSize="12px"
-              $normal
-              cursor
-            >
-              <span>+ 추가</span>
-            </Button>
+          <ButtonWrapper>
             <div className="menuIcon">
-              <IoMenuOutline fontSize={'30px'} style={{ cursor: 'grab' }} />
               <LuSiren
                 fontSize={'25px'}
                 color="red"
                 style={{ cursor: 'pointer' }}
               />
             </div>
-          </SimilarButtonWrapper>
+          </ButtonWrapper>
         ) : (
           <ButtonWrapper>
             {/* <div className="menuIcon">
@@ -191,9 +216,11 @@ export function MathviewerAccordion({
 
 const Component = styled.div<{
   $isDragged?: boolean;
+  $componentHeight?: string;
 }>`
   display: flex;
-  min-height: 250px;
+  min-height: ${({ $componentHeight }) =>
+    $componentHeight ? ` ${$componentHeight};` : '250px'};
   background-color: white;
   padding: 10px;
   border-radius: 15px;
@@ -218,11 +245,17 @@ const Component = styled.div<{
     border: 3px solid ${COLOR.PRIMARY};
   `}
 `;
+const ActionButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+`;
 const ButtonWrapper = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 10px;
-  padding-left: 70px;
 
   .menuIcon {
     display: flex;
@@ -235,24 +268,13 @@ const ButtonWrapper = styled.div`
     gap: 5px;
   }
 `;
-const SimilarButtonWrapper = styled.div`
-  display: flex;
-  gap: 10px;
-  padding-left: 10px;
-
-  .menuIcon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-`;
 
 const AccordionContainer = styled.div<{
   $isSimilar?: boolean;
   $isSelected?: boolean;
   $componentWidth?: string;
   $isDragged?: boolean;
+  $isBorder?: boolean;
 }>`
   width: ${({ $componentWidth }) =>
     $componentWidth ? ` ${$componentWidth};` : '600px'};
@@ -262,6 +284,8 @@ const AccordionContainer = styled.div<{
       : '3px solid white'};
   background-color: white;
   border-radius: 15px;
+  margin-top: 10px;
+  border: ${({ $isBorder }) => $isBorder && `solid 1px ${COLOR.PRIMARY}`};
 `;
 
 const AccordionHeader = styled.div`
@@ -272,7 +296,6 @@ const AccordionHeader = styled.div`
   background-color: white;
   border: 3px solid white;
   width: 100%;
-  cursor: pointer;
   border-radius: 15px;
 `;
 
