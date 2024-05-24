@@ -169,29 +169,29 @@ export function QuizReportList() {
                   >
                     <AccordionWrapper>
                       <ItemLayout>
-                        <span className="width_40px">{item.idx} </span>
+                        <span className="width_40px">{item.idx}</span>
                         <div className="line"></div>
-                        <span>출처 </span>
+                        <span>출처</span>
                         <div className="line"></div>
-                        <span>교육과정 </span>
+                        <span>교육과정</span>
                         <div className="line"></div>
-                        <span>학교급 </span>
+                        <span>학교급</span>
                         <div className="line"></div>
-                        <span>학년 </span>
+                        <span>학년</span>
                         <div className="line"></div>
-                        <span>학기 </span>
+                        <span>학기</span>
                         <div className="line"></div>
-                        <span>교과 </span>
+                        <span>교과</span>
                         <div className="line"></div>
-                        <span>과목 </span>
+                        <span>과목</span>
                         <div className="line"></div>
-                        <span>대단원 </span>
+                        <span>대단원</span>
                         <div className="line"></div>
-                        <span>문항타입 </span>
+                        <span>문항타입</span>
                         <div className="line"></div>
-                        <span>{item.answerBy} </span>
+                        <span>{item.answerBy}</span>
                         <div className="line"></div>
-                        <span>{item.answerAt} </span>
+                        <span>{item.answerAt}</span>
                         <div className="line"></div>
                         <span>{item.quiz.isUse ? '활성화' : '비활성화'}</span>
                       </ItemLayout>

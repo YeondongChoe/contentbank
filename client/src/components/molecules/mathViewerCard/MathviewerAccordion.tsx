@@ -121,6 +121,7 @@ function Accordion({
 
 type MathviewerCardProps = {
   onClick: () => void;
+  reportOnClick?: () => void;
   isSimilar?: boolean;
   isBorder?: boolean;
   data: QuizList;
@@ -137,6 +138,7 @@ type MathviewerCardProps = {
 
 export function MathviewerAccordion({
   onClick,
+  reportOnClick,
   isSimilar,
   isBorder,
   selectedCardIndex,
@@ -179,6 +181,7 @@ export function MathviewerAccordion({
                 fontSize={'25px'}
                 color="red"
                 style={{ cursor: 'pointer' }}
+                onClick={reportOnClick}
               />
             </div>
           </ButtonWrapper>
@@ -228,6 +231,7 @@ export function MathviewerAccordion({
                 fontSize={'25px'}
                 color="red"
                 style={{ cursor: 'pointer' }}
+                onClick={reportOnClick}
               />
               <BiSolidTrashAlt
                 fontSize={'25px'}

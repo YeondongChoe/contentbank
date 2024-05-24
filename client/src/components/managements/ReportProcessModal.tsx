@@ -7,7 +7,11 @@ import { Button, Label, Select } from '../../components/atom';
 import { useModal } from '../../hooks';
 import { COLOR } from '../constants';
 
-export function ReportProcessModal() {
+type ReportProcessType = {
+  registorReport?: boolean;
+};
+
+export function ReportProcessModal(registorReport: ReportProcessType) {
   const { closeModal } = useModal();
   const [selectedValue, setSelectedValue] = useState('');
   const [commentValue, setCommentValue] = useState('');
@@ -15,33 +19,33 @@ export function ReportProcessModal() {
     {
       id: string;
       label: string;
-      value: string;
+      name: string;
     }[]
   >([
     {
       id: '단원·유형 분류 오류',
       label: '단원·유형 분류 오류',
-      value: '단원·유형 분류 오류',
+      name: '단원·유형 분류 오류',
     },
     {
       id: '난이도 및 문항타입 오류',
       label: '난이도 및 문항타입 오류',
-      value: '난이도 및 문항타입 오류',
+      name: '난이도 및 문항타입 오류',
     },
     {
       id: '이미지 및 그래프/도표 오류',
       label: '이미지 및 그래프/도표 오류',
-      value: '이미지 및 그래프/도표 오류',
+      name: '이미지 및 그래프/도표 오류',
     },
     {
       id: '오탈자',
       label: '오탈자',
-      value: '오탈자',
+      name: '오탈자',
     },
     {
       id: '기타',
       label: '기타',
-      value: '기타',
+      name: '기타',
     },
   ]);
 
@@ -52,20 +56,32 @@ export function ReportProcessModal() {
 
   return (
     <Container>
-      <Title>처리완료 상태 등록</Title>
+      <Title>{registorReport ? '문항 신고' : '처리완료 상태 등록'}</Title>
       <InputWrapper>
-        <Label width="100px" fontSize="15px" value="처리 유형" />
+        <Label
+          width="100px"
+          fontSize="15px"
+          value={registorReport ? '신고 유형' : '처리 유형'}
+        />
         <Select
           width={`100%`}
           height="50px"
           padding="5px 0px 0px 0px"
-          defaultValue={'처리유형을 선택해주세요'}
+          defaultValue={
+            registorReport
+              ? '신고유형을 선택해주세요'
+              : '처리유형을 선택해주세요'
+          }
           options={reportType}
           setSelectedValue={setSelectedValue}
         />
       </InputWrapper>
       <InputWrapper>
-        <Label width="100px" fontSize="15px" value="처리 내용" />
+        <Label
+          width="100px"
+          fontSize="15px"
+          value={registorReport ? '신고 내용' : '처리 내용'}
+        />
         <div>
           <Textarea
             onChange={(e) => {
