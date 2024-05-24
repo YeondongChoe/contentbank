@@ -56,13 +56,24 @@ export function Step2() {
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
-    const data = localStorage.getItem('sendData');
-    if (data) {
-      const parsedData = JSON.parse(data);
-      console.log('데이터 조회', parsedData);
-      setSendLocalData(parsedData);
+    const isDataInStorage = localStorage.getItem('sendData') !== null;
+
+    if (isDataInStorage) {
+      console.log('로컬 스토리지에 데이터가 남아있습니다.');
+      const data = localStorage.getItem('sendData');
+
+      try {
+        const parsedData = JSON.parse(data as string);
+        console.log('데이터 조회', parsedData);
+        setSendLocalData(parsedData);
+      } catch (error) {
+        console.error('로컬 스토리지 데이터 파싱 에러:', error);
+      }
+    } else {
+      console.log('로컬 스토리지에 데이터가 없습니다.');
     }
   }, []);
+
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (sendLocalData) {
