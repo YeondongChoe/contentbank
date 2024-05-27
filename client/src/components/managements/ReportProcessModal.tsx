@@ -11,7 +11,7 @@ type ReportProcessType = {
   registorReport?: boolean;
 };
 
-export function ReportProcessModal(registorReport: ReportProcessType) {
+export function ReportProcessModal({ registorReport }: ReportProcessType) {
   const { closeModal } = useModal();
   const [selectedValue, setSelectedValue] = useState('');
   const [commentValue, setCommentValue] = useState('');
