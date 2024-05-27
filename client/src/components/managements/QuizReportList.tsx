@@ -31,7 +31,7 @@ export function QuizReportList() {
 
   const getReportList = async () => {
     const res = await quizService.get(`/v1/report`);
-    // console.log(`getCategory 결과값`, res);
+    // console.log(`getReportList 결과값`, res);
     return res.data;
   };
 
@@ -47,7 +47,6 @@ export function QuizReportList() {
       errorMessage: 'get-reportList 에러 메세지',
     },
   });
-  console.log(reportData?.data.pagination);
 
   useEffect(() => {
     if (reportData) {
@@ -124,15 +123,15 @@ export function QuizReportList() {
   const openReportProcess = () => {
     openModal({
       title: '',
-      content: <ReportProcessModal />,
+      content: <ReportProcessModal registorReport={false} />,
       callback: () => {},
     });
   };
 
   const openCreateEditWindow = () => {
     windowOpenHandler({
-      name: 'createcontentwindow',
-      url: '/createcontentwindow',
+      name: 'createcontentmain',
+      url: '/createcontentmain',
     });
   };
 

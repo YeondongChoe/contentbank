@@ -76,7 +76,7 @@ export function Step2() {
 
     fetchDataFromStorage();
 
-    const retryTimeout = setTimeout(fetchDataFromStorage, 1000); // 1초 후에 다시 시도
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
 
     return () => clearTimeout(retryTimeout);
   }, []);
