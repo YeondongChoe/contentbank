@@ -1203,9 +1203,32 @@ export function Step1() {
   };
 
   // step1 선택된 문항 불러오기 api
-  const postWorkbookStep1 = (data: any) => {
-    return quizService.post(`/v1/search/quiz/step/1`, data);
+  const postWorkbookStep1 = async (data: any) => {
+    return await quizService.post(`/v1/search/quiz/step/1`, data);
   };
+
+  const { mutate: postStep1Data } = useMutation({
+    mutationFn: postWorkbookStep1,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      // if (context.response.data.code == 'GE-002') {
+      //   postRefreshToken();
+      // }
+    },
+    onSuccess: (response) => {
+      saveLocalData(response.data.data);
+      //navigate('/content-create/exam/step2');
+      // openToastifyAlert({
+      //   type: 'success',
+      //   text: response.data.message,
+      // });
+    },
+  });
 
   const makingdata = unitClassificationList.map((item) => ({
     itemTreeKey: {
@@ -1236,28 +1259,6 @@ export function Step1() {
     postStep1Data(data);
   };
 
-  const { mutate: postStep1Data } = useMutation({
-    mutationFn: postWorkbookStep1,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: context.response.data.message,
-      });
-      // if (context.response.data.code == 'GE-002') {
-      //   postRefreshToken();
-      // }
-    },
-    onSuccess: (response) => {
-      saveLocalData(response.data.data);
-      //navigate('/content-create/exam/step2');
-      // openToastifyAlert({
-      //   type: 'success',
-      //   text: response.data.message,
-      // });
-    },
-  });
   const [sendLocalData, setSendLocalData] = useState<any | null>(null);
 
   // 로컬 스토리지에서 데이터 가져오기
