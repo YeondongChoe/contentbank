@@ -24,7 +24,7 @@ import {
   Icon,
   IconButton,
 } from '../..';
-import { classificationInstance } from '../../../api/axios';
+import { classificationInstance, quizService } from '../../../api/axios';
 import {
   TextbookType,
   MockexamType,
@@ -35,11 +35,18 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 import dummy from '../../constants/data.json';
 
-interface RadioState {
+type RadioState = {
   title: string;
   checkValue: number;
   code: string;
-}
+};
+
+type UnitClassificationListType = {
+  title: string;
+  checkValue: number;
+  code: string;
+  checkedDepthList?: number[];
+};
 
 type Content = {
   seq: number;
@@ -171,7 +178,7 @@ export function Step1() {
   const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string>('');
   const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string>('');
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
+  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
 
   const [nextList1depth, setNextList1depth] = useState([
     { code: '', idx: 0, name: '' },
@@ -184,9 +191,8 @@ export function Step1() {
   ]);
 
   const [unitClassificationList, setUnitClassificationList] = useState<
-    RadioState[][]
+    UnitClassificationListType[][]
   >([]);
-  console.log(unitClassificationList);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -457,10 +463,10 @@ export function Step1() {
     );
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList :', itemTreeKeyList);
+    // console.log('itemTreeKeyList :', itemTreeKeyList);
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    console.log('classificationInstance 응답:', res);
+    // console.log('classificationInstance 응답:', res);
     return res;
   };
 
@@ -486,6 +492,7 @@ export function Step1() {
       setItemTree(response.data.data);
     },
   });
+  // console.log(categoryItemTreeData);
 
   useEffect(() => {
     // console.log(radio4depthCheck);
@@ -533,7 +540,7 @@ export function Step1() {
     }
   };
 
-  const saveCheckItems = () => {
+  const saveCheckItems = (checkedDepthList: number[]) => {
     if (unitClassificationList.length < 5) {
       setUnitClassificationList((prevList) => [
         ...prevList,
@@ -544,14 +551,16 @@ export function Step1() {
           radio4depthCheck,
           radioEtc1Check,
           radioEtc2Check,
+          { title: '', checkValue: 0, code: '', checkedDepthList },
         ],
       ]);
-    } else {
-      openToastifyAlert({
-        type: 'error',
-        text: '교과정보는 최대 5개 까지 저장 가능합니다',
-      });
     }
+    // else {
+    //   openToastifyAlert({
+    //     type: 'error',
+    //     text: '교과정보는 최대 5개 까지 저장 가능합니다',
+    //   });
+    // }
     //선택정보 저장과 함께 체크상태 초기화
     //저장 성공 후
     const reset = { title: '', checkValue: 0, code: '' };
@@ -656,11 +665,11 @@ export function Step1() {
   }, [itemTree]);
 
   // 깊이가 있는 리스트 체크박스
-  const handleSingleCheck = (checked: boolean, id: string) => {
+  const handleSingleCheck = (checked: boolean, idx: number) => {
     if (checked) {
-      setCheckedDepthList((prev) => [...prev, id]);
+      setCheckedDepthList((prev) => [...prev, idx]);
     } else {
-      setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
+      setCheckedDepthList(checkedDepthList.filter((el) => el !== idx));
     }
   };
 
@@ -704,15 +713,23 @@ export function Step1() {
     setQuestionLevel(newValue);
   };
 
-  const [questionType, setQuestionType] = useState<string[]>([]);
-  const selectQuestionType = (newValue: string) => {
+  const [questionType, setQuestionType] = useState<string[] | null>(null);
+
+  const selectQuestionType = (newValue: string | null) => {
     setQuestionType((prev) => {
-      if (prev.includes(newValue)) {
+      // prev가 null일 경우 빈 배열로 초기화
+      const prevArray = prev ?? [];
+
+      if (newValue === null) {
+        return prevArray; // newValue가 null이면 변경하지 않음
+      }
+
+      if (prevArray.includes(newValue)) {
         // 이미 선택된 경우 선택 취소
-        return prev.filter((type) => type !== newValue);
+        return prevArray.filter((type) => type !== newValue);
       } else {
         // 새로운 선택 추가
-        return [...prev, newValue];
+        return [...prevArray, newValue];
       }
     });
   };
@@ -731,9 +748,9 @@ export function Step1() {
   };
 
   const isAllSelectedQuestionType =
-    questionType.includes('객관식') &&
-    questionType.includes('주관식') &&
-    questionType.includes('서술형');
+    questionType?.includes('MULTIPLE_CHOICE') &&
+    questionType?.includes('SHORT_ANSWER') &&
+    questionType?.includes('ESSAY_ANSWER');
 
   const [containMock, setContainMock] = useState<string | null>(null);
   const selectContainMock = (newValue: string | null) => {
@@ -1187,23 +1204,33 @@ export function Step1() {
 
   // step1 선택된 문항 불러오기 api
   const postWorkbookStep1 = (data: any) => {
-    return classificationInstance.post(`/v1/item/quiz`, data);
+    return quizService.post(`/v1/search/quiz/step/1`, data);
   };
-  // console.log(questionLevel);
+
+  const makingdata = unitClassificationList.map((item) => ({
+    itemTreeKey: {
+      // 교육과정: item[0].title,
+      // 학교급: item[1].title,
+      // 학기: item[2].title,
+      // 학년: item[3].title,
+      교육과정: '11차',
+      교과: '수학',
+      과목: '공통수학',
+    },
+    itemTreeIdxList: item[6].checkedDepthList,
+  }));
+
   const clickNextButton = () => {
     const data = {
-      itemTreeIdxList: [
-        radio1depthCheck.checkValue,
-        radio2depthCheck.checkValue,
-        radio3depthCheck.checkValue,
-        radio4depthCheck.checkValue,
-      ],
-      quizCategory: {
-        난이도: questionLevel,
-        출처: '내신',
-        문항타입: questionType.join(', '),
-        문항수: questionNum,
-      },
+      itemTreeKeyList: makingdata,
+      count: Number(questionNum),
+      difficulty: questionLevel,
+      type: questionType?.join(', '),
+      mock: 1,
+      score: 2,
+      isScoreEven: true,
+      isQuizEven: true,
+      isMePriority: false,
     };
     //console.log(data);
     postStep1Data(data);
@@ -1218,13 +1245,13 @@ export function Step1() {
         type: 'error',
         text: context.response.data.message,
       });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
-      }
+      // if (context.response.data.code == 'GE-002') {
+      //   postRefreshToken();
+      // }
     },
     onSuccess: (response) => {
       saveLocalData(response.data.data);
-      navigate('/content-create/exam/step2');
+      //navigate('/content-create/exam/step2');
       // openToastifyAlert({
       //   type: 'success',
       //   text: response.data.message,
@@ -1263,6 +1290,7 @@ export function Step1() {
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
     const sendData = { data: data };
+    console.log(sendData);
     localStorage.setItem('sendData', JSON.stringify(sendData));
   };
 
@@ -1479,11 +1507,11 @@ export function Step1() {
                                           onChange={(e) =>
                                             handleSingleCheck(
                                               e.target.checked,
-                                              item.code,
+                                              item.idx,
                                             )
                                           }
                                           checked={
-                                            checkedDepthList.includes(item.code)
+                                            checkedDepthList.includes(item.idx)
                                               ? true
                                               : false
                                           }
@@ -1570,7 +1598,7 @@ export function Step1() {
                       cursor
                       width={'150px'}
                       $margin={'0 10px 0 0'}
-                      onClick={() => saveCheckItems()}
+                      onClick={() => saveCheckItems(checkedDepthList)}
                     >
                       교과정보 추가
                     </Button>
@@ -1677,14 +1705,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionLevel('하');
+                      selectQuestionLevel('LOWER');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'74px'}
                     fontSize="14px"
-                    $normal={questionLevel !== '하'}
-                    $filled={questionLevel === '하'}
+                    $normal={questionLevel !== 'LOWER'}
+                    $filled={questionLevel === 'LOWER'}
                     cursor
                   >
                     <span>하</span>
@@ -1692,14 +1720,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionLevel('중하');
+                      selectQuestionLevel('INTERMEDIATE');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'74px'}
                     fontSize="14px"
-                    $normal={questionLevel !== '중하'}
-                    $filled={questionLevel === '중하'}
+                    $normal={questionLevel !== 'INTERMEDIATE'}
+                    $filled={questionLevel === 'INTERMEDIATE'}
                     cursor
                   >
                     <span>중하</span>
@@ -1707,14 +1735,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionLevel('중');
+                      selectQuestionLevel('MEDIUM');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'74px'}
                     fontSize="14px"
-                    $normal={questionLevel !== '중'}
-                    $filled={questionLevel === '중'}
+                    $normal={questionLevel !== 'MEDIUM'}
+                    $filled={questionLevel === 'MEDIUM'}
                     cursor
                   >
                     <span>중</span>
@@ -1722,14 +1750,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionLevel('상');
+                      selectQuestionLevel('UPPER');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'74px'}
                     fontSize="14px"
-                    $normal={questionLevel !== '상'}
-                    $filled={questionLevel === '상'}
+                    $normal={questionLevel !== 'UPPER'}
+                    $filled={questionLevel === 'UPPER'}
                     cursor
                   >
                     <span>상</span>
@@ -1737,14 +1765,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionLevel('최상');
+                      selectQuestionLevel('BEST');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'74px'}
                     fontSize="14px"
-                    $normal={questionLevel !== '최상'}
-                    $filled={questionLevel === '최상'}
+                    $normal={questionLevel !== 'BEST'}
+                    $filled={questionLevel === 'BEST'}
                     cursor
                   >
                     <span>최상</span>
@@ -1769,7 +1797,11 @@ export function Step1() {
                       if (isAllSelectedQuestionType) {
                         setQuestionType([]);
                       } else {
-                        setQuestionType(['객관식', '주관식', '서술형']);
+                        setQuestionType([
+                          'MULTIPLE_CHOICE',
+                          'SHORT_ANSWER',
+                          'ESSAY_ANSWER',
+                        ]);
                       }
                     }}
                     $padding="10px"
@@ -1785,14 +1817,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionType('객관식');
+                      selectQuestionType('MULTIPLE_CHOICE');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'117px'}
                     fontSize="14px"
-                    $normal={!questionType.includes('객관식')}
-                    $filled={questionType.includes('객관식')}
+                    $normal={!questionType?.includes('MULTIPLE_CHOICE')}
+                    $filled={questionType?.includes('MULTIPLE_CHOICE')}
                     cursor
                   >
                     <span>객관식</span>
@@ -1800,14 +1832,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionType('주관식');
+                      selectQuestionType('SHORT_ANSWER');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'117px'}
                     fontSize="14px"
-                    $normal={!questionType.includes('주관식')}
-                    $filled={questionType.includes('주관식')}
+                    $normal={!questionType?.includes('SHORT_ANSWER')}
+                    $filled={questionType?.includes('SHORT_ANSWER')}
                     cursor
                   >
                     <span>주관식</span>
@@ -1815,14 +1847,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionType('서술형');
+                      selectQuestionType('ESSAY_ANSWER');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'117px'}
                     fontSize="14px"
-                    $normal={!questionType.includes('서술형')}
-                    $filled={questionType.includes('서술형')}
+                    $normal={!questionType?.includes('ESSAY_ANSWER')}
+                    $filled={questionType?.includes('ESSAY_ANSWER')}
                     cursor
                   >
                     <span>서술형</span>
@@ -2292,14 +2324,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('하');
+                          selectQuestionLevel('LOWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '하'}
-                        $filled={questionLevel === '하'}
+                        $normal={questionLevel !== 'LOWER'}
+                        $filled={questionLevel === 'LOWER'}
                         cursor
                       >
                         <span>하</span>
@@ -2307,14 +2339,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중하');
+                          selectQuestionLevel('INTERMEDIATE');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중하'}
-                        $filled={questionLevel === '중하'}
+                        $normal={questionLevel !== 'INTERMEDIATE'}
+                        $filled={questionLevel === 'INTERMEDIATE'}
                         cursor
                       >
                         <span>중하</span>
@@ -2322,14 +2354,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중');
+                          selectQuestionLevel('MEDIUM');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중'}
-                        $filled={questionLevel === '중'}
+                        $normal={questionLevel !== 'MEDIUM'}
+                        $filled={questionLevel === 'MEDIUM'}
                         cursor
                       >
                         <span>중</span>
@@ -2337,14 +2369,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('상');
+                          selectQuestionLevel('UPPER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '상'}
-                        $filled={questionLevel === '상'}
+                        $normal={questionLevel !== 'UPPER'}
+                        $filled={questionLevel === 'UPPER'}
                         cursor
                       >
                         <span>상</span>
@@ -2352,14 +2384,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('최상');
+                          selectQuestionLevel('BEST');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '최상'}
-                        $filled={questionLevel === '최상'}
+                        $normal={questionLevel !== 'BEST'}
+                        $filled={questionLevel === 'BEST'}
                         cursor
                       >
                         <span>최상</span>
@@ -2375,7 +2407,11 @@ export function Step1() {
                           if (isAllSelectedQuestionType) {
                             setQuestionType([]);
                           } else {
-                            setQuestionType(['객관식', '주관식', '서술형']);
+                            setQuestionType([
+                              'MULTIPLE_CHOICE',
+                              'SHORT_ANSWER',
+                              'ESSAY_ANSWER',
+                            ]);
                           }
                         }}
                         $padding="10px"
@@ -2391,14 +2427,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('객관식');
+                          selectQuestionType('MULTIPLE_CHOICE');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('객관식')}
-                        $filled={questionType.includes('객관식')}
+                        $normal={!questionType?.includes('MULTIPLE_CHOICE')}
+                        $filled={questionType?.includes('MULTIPLE_CHOICE')}
                         cursor
                       >
                         <span>객관식</span>
@@ -2406,14 +2442,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('주관식');
+                          selectQuestionType('SHORT_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('주관식')}
-                        $filled={questionType.includes('주관식')}
+                        $normal={!questionType?.includes('SHORT_ANSWER')}
+                        $filled={questionType?.includes('SHORT_ANSWER')}
                         cursor
                       >
                         <span>주관식</span>
@@ -2421,14 +2457,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('서술형');
+                          selectQuestionType('ESSAY_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('서술형')}
-                        $filled={questionType.includes('서술형')}
+                        $normal={!questionType?.includes('ESSAY_ANSWER')}
+                        $filled={questionType?.includes('ESSAY_ANSWER')}
                         cursor
                       >
                         <span>서술형</span>
@@ -2746,14 +2782,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('하');
+                          selectQuestionLevel('LOWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '하'}
-                        $filled={questionLevel === '하'}
+                        $normal={questionLevel !== 'LOWER'}
+                        $filled={questionLevel === 'LOWER'}
                         cursor
                       >
                         <span>하</span>
@@ -2761,14 +2797,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중하');
+                          selectQuestionLevel('INTERMEDIATE');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중하'}
-                        $filled={questionLevel === '중하'}
+                        $normal={questionLevel !== 'INTERMEDIATE'}
+                        $filled={questionLevel === 'INTERMEDIATE'}
                         cursor
                       >
                         <span>중하</span>
@@ -2776,14 +2812,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중');
+                          selectQuestionLevel('MEDIUM');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중'}
-                        $filled={questionLevel === '중'}
+                        $normal={questionLevel !== 'MEDIUM'}
+                        $filled={questionLevel === 'MEDIUM'}
                         cursor
                       >
                         <span>중</span>
@@ -2791,14 +2827,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('상');
+                          selectQuestionLevel('UPPER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '상'}
-                        $filled={questionLevel === '상'}
+                        $normal={questionLevel !== 'UPPER'}
+                        $filled={questionLevel === 'UPPER'}
                         cursor
                       >
                         <span>상</span>
@@ -2806,14 +2842,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('최상');
+                          selectQuestionLevel('BEST');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '최상'}
-                        $filled={questionLevel === '최상'}
+                        $normal={questionLevel !== 'BEST'}
+                        $filled={questionLevel === 'BEST'}
                         cursor
                       >
                         <span>최상</span>
@@ -2829,7 +2865,11 @@ export function Step1() {
                           if (isAllSelectedQuestionType) {
                             setQuestionType([]);
                           } else {
-                            setQuestionType(['객관식', '주관식', '서술형']);
+                            setQuestionType([
+                              'MULTIPLE_CHOICE',
+                              'SHORT_ANSWER',
+                              'ESSAY_ANSWER',
+                            ]);
                           }
                         }}
                         $padding="10px"
@@ -2845,14 +2885,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('객관식');
+                          selectQuestionType('MULTIPLE_CHOICE');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('객관식')}
-                        $filled={questionType.includes('객관식')}
+                        $normal={!questionType?.includes('MULTIPLE_CHOICE')}
+                        $filled={questionType?.includes('MULTIPLE_CHOICE')}
                         cursor
                       >
                         <span>객관식</span>
@@ -2860,14 +2900,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('주관식');
+                          selectQuestionType('SHORT_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('주관식')}
-                        $filled={questionType.includes('주관식')}
+                        $normal={!questionType?.includes('SHORT_ANSWER')}
+                        $filled={questionType?.includes('SHORT_ANSWER')}
                         cursor
                       >
                         <span>주관식</span>
@@ -2875,14 +2915,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('서술형');
+                          selectQuestionType('ESSAY_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('서술형')}
-                        $filled={questionType.includes('서술형')}
+                        $normal={!questionType?.includes('ESSAY_ANSWER')}
+                        $filled={questionType?.includes('ESSAY_ANSWER')}
                         cursor
                       >
                         <span>서술형</span>
