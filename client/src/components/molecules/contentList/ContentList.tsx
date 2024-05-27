@@ -35,7 +35,7 @@ import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
 
 type ContentListProps = {
-  list: QuizListType[] | any[]; // TODO
+  questionList: QuizListType[] | any[]; // TODO
   tabVeiw: string;
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
@@ -45,10 +45,13 @@ type ContentListProps = {
   quizDataRefetch?: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<any, Error>>;
+  quizSearchDataRefetch?: (
+    options?: RefetchOptions | undefined,
+  ) => Promise<QueryObserverResult<any, Error>>;
 };
 
 export function ContentList({
-  list,
+  questionList,
   tabVeiw,
   deleteBtn,
   ondeleteClick,
@@ -56,6 +59,7 @@ export function ContentList({
   setCheckListOn,
   deleteQuizIsSuccess,
   quizDataRefetch,
+  quizSearchDataRefetch,
 }: ContentListProps) {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
@@ -123,7 +127,7 @@ export function ContentList({
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.currentTarget.checked);
     if (e.target.checked) {
-      setCheckList(list.map((item: QuizListType) => item.idx));
+      setCheckList(questionList.map((item: QuizListType) => item.idx));
     } else {
       setCheckList([]);
     }
@@ -170,6 +174,7 @@ export function ContentList({
 
       // 초기화
       quizDataRefetch && quizDataRefetch();
+      quizSearchDataRefetch && quizSearchDataRefetch();
     },
   });
 
@@ -191,7 +196,7 @@ export function ContentList({
   const handleDisabled = () => {
     console.log('checkList', checkList);
     const codesSet = new Set(checkList);
-    const filteredList = list.filter((item) => codesSet.has(item.idx));
+    const filteredList = questionList.filter((item) => codesSet.has(item.idx));
     console.log('isUse chaeck arr', filteredList);
     const idxList: number[] = [];
     filteredList.map((item) => {
@@ -244,6 +249,7 @@ export function ContentList({
       setIsAlertOpen(false);
       setCheckList([]);
       quizDataRefetch && quizDataRefetch();
+      quizSearchDataRefetch && quizSearchDataRefetch();
     },
   });
 
@@ -296,6 +302,8 @@ export function ContentList({
     target.classList.remove('on');
   };
 
+  useEffect(() => {}, [questionList]);
+
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>
@@ -306,7 +314,9 @@ export function ContentList({
               <CheckBoxI
                 $margin={'0 5px 0 0'}
                 onChange={(e) => handleAllCheck(e)}
-                checked={checkList.length === list.length ? true : false}
+                checked={
+                  checkList.length === questionList.length ? true : false
+                }
                 id={'all check'}
                 value={'all check'}
               />
@@ -385,7 +395,7 @@ export function ContentList({
       </ListButtonWrapper>
       <ListWrapper ref={backgroundRef}>
         <List margin={`10px 0`}>
-          {list.map((item: QuizListType) => (
+          {questionList.map((item: QuizListType) => (
             <ListItem
               key={item.code}
               isChecked={checkList.includes(item.idx)}
