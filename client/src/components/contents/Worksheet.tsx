@@ -28,7 +28,6 @@ import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function Worksheet() {
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');
-  const [subTabVeiw, setSubTabVeiw] = useState<string>('전체');
   const [searchValue, setSearchValue] = useState<string>('');
   const [content, setContent] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<string>('');
@@ -36,8 +35,6 @@ export function Worksheet() {
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
-  console.log(categoriesE);
-  console.log(categoryTitles);
 
   const [page, setPage] = useRecoilState(pageAtom);
 
@@ -94,7 +91,7 @@ export function Worksheet() {
       errorMessage: 'get-category-groups-E 에러 메세지',
     },
   });
-  console.log(groupsEData);
+
   useEffect(() => {
     if (groupsEData) {
       fetchCategoryItems(groupsEData, setCategoriesE);
@@ -115,10 +112,10 @@ export function Worksheet() {
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      console.log('itemsList', itemsList);
+      //console.log('itemsList', itemsList);
       //itemsList에서마지막 인덱스(학기) 빼기
       const data = itemsList.slice(1, 3);
-      console.log('data', data);
+      //console.log('data', data);
       setCategory(data);
     } catch (error: any) {
       if (error.data.code == 'GE-002') postRefreshToken();
