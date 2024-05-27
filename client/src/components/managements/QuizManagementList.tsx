@@ -421,7 +421,7 @@ export function QuizManagementList() {
               {questionList.length > 0 ? (
                 <>
                   <ContentList
-                    list={questionList}
+                    questionList={questionList}
                     deleteBtn
                     quizDataRefetch={quizDataRefetch}
                     ondeleteClick={() => {

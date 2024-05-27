@@ -34,6 +34,7 @@ type SelectProps = {
   disabled?: boolean;
   $positionTop?: boolean;
   setSelectedValue?: React.Dispatch<React.SetStateAction<string>>;
+  onDefaultSelect?: () => void;
 };
 
 export function Select({
@@ -49,6 +50,7 @@ export function Select({
   disabled,
   $positionTop,
   setSelectedValue,
+  onDefaultSelect,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -63,6 +65,23 @@ export function Select({
     : options
       ? [options]
       : [];
+
+  const optionsWithDefault = defaultValue
+    ? [{ code: '', name: defaultValue }, ...normalizedOptions]
+    : normalizedOptions;
+
+  const handleOptionSelect = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    code: string | undefined,
+  ) => {
+    setSelected(event.currentTarget.value);
+    setCode(event.currentTarget.classList[0]);
+    setIsOptionShow(false);
+    if (onSelect) onSelect(event, code);
+    if (event.currentTarget.value === defaultValue && onDefaultSelect) {
+      onDefaultSelect();
+    }
+  };
 
   return (
     <Component
@@ -94,17 +113,13 @@ export function Select({
           $positionTop={$positionTop}
           height={height}
         >
-          {normalizedOptions.map((el) => (
+          {optionsWithDefault.map((el) => (
             <li key={el.code}>
               <button
                 disabled={disabled}
                 value={el.name}
                 className={el.code}
-                onClick={(event) => {
-                  setSelected(event.currentTarget.value);
-                  setCode(event.currentTarget.classList[0]);
-                  setIsOptionShow(false);
-                }}
+                onClick={(event) => handleOptionSelect(event, el.code)}
               >
                 <span>{el.name}</span>
               </button>

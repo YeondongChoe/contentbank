@@ -17,6 +17,7 @@ import {
   Loader,
   CommonDate,
   IconButton,
+  Icon,
 } from '..';
 import { classificationInstance, quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
@@ -31,6 +32,9 @@ export function QuizCreateList() {
   const [page, setPage] = useRecoilState(pageAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  const [questionSearchList, setQuestionSearchList] = useState<QuizListType[]>(
+    [],
+  );
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
@@ -184,6 +188,22 @@ export function QuizCreateList() {
     setContent((prevContent) => [...prevContent, value]);
   };
 
+  const handleDefaultSelect = () => {
+    setOnSearch(false);
+    setSelectedSource('');
+    setSelectedCurriculum('');
+    setSelectedLevel('');
+    setSelectedGrade('');
+    setSelectedSemester('');
+    setSelectedSubject('');
+    setSelectedCourse('');
+    setSelectedQuestionType('');
+    setSelectedOpenStatus('');
+    setStartDate('');
+    setEndDate('');
+    setSearchKeywordValue('');
+  };
+
   // 문항 검색 불러오기 api
   const getSearchQuiz = async () => {
     const res = await quizService.get(
@@ -209,9 +229,20 @@ export function QuizCreateList() {
   // 검색용 셀렉트 선택시
   useEffect(() => {
     setOnSearch(true);
+    console.log('selectedSource', selectedSource);
+    console.log('selectedCurriculum', selectedCurriculum);
+    console.log('selectedLevel', selectedLevel);
+    console.log('selectedGrade', selectedGrade);
+    console.log('selectedSemester', selectedSemester);
+    console.log('selectedSubject', selectedSubject);
+    console.log('selectedCourse', selectedCourse);
+    console.log('selectedQuestionType', selectedQuestionType);
+    console.log('selectedOpenStatus', selectedOpenStatus);
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
     console.log('searchKeywordValue', searchKeywordValue);
+    quizSearchDataRefetch();
   }, [
-    searchKeywordValue,
     selectedSource,
     selectedCurriculum,
     selectedLevel,
@@ -223,6 +254,7 @@ export function QuizCreateList() {
     selectedOpenStatus,
     startDate,
     endDate,
+    searchKeywordValue,
   ]);
 
   // 검색 기능 함수
@@ -230,6 +262,7 @@ export function QuizCreateList() {
     // 쿼리 스트링 변경 로직
     setSearchKeywordValue(searchValue);
     if (searchValue == '') setSearchKeywordValue('');
+    quizSearchDataRefetch();
   };
   const filterSearchValueEnter = (
     event: React.KeyboardEvent<HTMLInputElement>,
@@ -237,6 +270,7 @@ export function QuizCreateList() {
     if (event.key === 'Enter') {
       console.log('searchValue', searchValue);
       setSearchKeywordValue(searchValue);
+      quizSearchDataRefetch();
     }
     if (event.key === 'Backspace') {
       setSearchKeywordValue('');
@@ -250,6 +284,15 @@ export function QuizCreateList() {
     // console.log('questionList', questionList);
   }, [quizData]);
 
+  // 검색 이후
+  useEffect(() => {
+    if (quizSearchData) {
+      setQuestionSearchList(quizSearchData.quizList);
+    }
+  }, [quizSearchData]);
+  // 검색 초기화
+  useEffect(() => {}, [onSearch]);
+
   // 모달 연뒤 문항 생성 윈도우 이동
   const openCreateModal = () => {
     openModal(modalData);
@@ -257,16 +300,20 @@ export function QuizCreateList() {
   // 탭메뉴 클릭시 페이지네이션 초기화
   const changeTab = () => {
     setPage(1);
+    handleDefaultSelect();
   };
-
   // 탭 바뀔시 초기화
   useEffect(() => {
+    quizSearchDataRefetch();
     quizDataRefetch();
     setSearchValue('');
+    setOnSearch(false);
   }, [tabVeiw]);
   // 데이터 변경시 리랜더링
   useEffect(() => {
+    quizSearchDataRefetch();
     quizDataRefetch();
+    setOnSearch(false);
   }, [page]);
 
   return (
@@ -308,6 +355,7 @@ export function QuizCreateList() {
             {/* 출처 */}
             {categoriesE && categoryTitles[16] && (
               <Select
+                onDefaultSelect={() => handleDefaultSelect()}
                 width={'130px'}
                 defaultValue={categoryTitles[16]?.code}
                 key={categoryTitles[16]?.code}
@@ -319,6 +367,7 @@ export function QuizCreateList() {
             {/* 교육과정 학교급 학년 학기 */}
             {/* {categoryList.map((el, idx) => (
               <Select
+							onDefaultSelect={() => setOnSearch(false)}
                 width={'130px'}
                 defaultValue={categoryTitles[idx].name}
                 key={categoryTitles[idx].name}
@@ -467,19 +516,40 @@ export function QuizCreateList() {
               width={'30%'}
               height="40px"
             />
+            {/* <Icon
+              src={`/images/icon/reflash.svg`}
+              onClick={() => handleDefaultSelect()}
+              cursor
+              width="20px"
+              height="20px"
+              $margin="0 0 0 5px"
+            /> */}
           </SelectWrapper>
 
-          {questionList.length > 0 ? (
+          {questionList.length > 0 || questionSearchList.length > 0 ? (
             <>
               <ContentList
-                list={questionList}
+                questionList={questionSearchList}
                 quizDataRefetch={quizDataRefetch}
+                quizSearchDataRefetch={quizSearchDataRefetch}
                 tabVeiw={tabVeiw}
-                totalCount={quizData.pagination.totalCount}
+                totalCount={
+                  onSearch
+                    ? quizSearchData.pagination.totalCount
+                    : quizData.pagination.totalCount
+                }
               />
               <PaginationBox
-                itemsCountPerPage={quizData.pagination.pageUnit}
-                totalItemsCount={quizData.pagination.totalCount}
+                itemsCountPerPage={
+                  onSearch
+                    ? quizSearchData.pagination.pageUnit
+                    : quizData.pagination.pageUnit
+                }
+                totalItemsCount={
+                  onSearch
+                    ? quizSearchData.pagination.totalCount
+                    : quizData.pagination.totalCount
+                }
               />
             </>
           ) : (

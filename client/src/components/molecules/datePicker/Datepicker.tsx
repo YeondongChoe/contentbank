@@ -19,12 +19,12 @@ export const CommonDate = ({
   const [pickDate, setPickDate] = useState<Date | null>(null);
   useEffect(() => {
     if (pickDate) {
-      const date = pickDate.toLocaleDateString();
-
+      console.log('날자 pickDate :', pickDate);
+      const date = pickDate.toISOString().slice(0, 19);
       console.log('날자 커스텀 :', date);
       setDate(date);
     }
-  }, [pickDate]);
+  }, [pickDate, setDate]);
 
   return (
     <span>
@@ -35,6 +35,7 @@ export const CommonDate = ({
           setPickDate(date as Date);
         }}
         dateFormat="yyyy-MM-dd"
+        timeFormat="HH:mm:ss"
         placeholderText="날짜 입력"
         showMonthDropdown
         showYearDropdown
