@@ -1,25 +1,35 @@
 export const BlueTheme = {
   color: {
-    background: '#86E3CE',
+    textColor: '#3E5798',
+    backgroundColor: '#D8E0F1',
+    tagColor: '#358AFF',
   },
 };
 export const GreenTheme = {
   color: {
-    background: '#D0E6A5',
+    textColor: '#006C59',
+    backgroundColor: '#D1E8D7',
+    tagColor: '#00C171',
   },
 };
 export const OrangeTheme = {
   color: {
-    background: '#FFDD94',
+    textColor: '#E36000',
+    backgroundColor: '#EFE1AD',
+    tagColor: '#FF8A00',
   },
 };
 export const RedTheme = {
   color: {
-    background: '#FA8978',
+    textColor: '#CB0000',
+    backgroundColor: '#F7D2C6',
+    tagColor: '#EE4242',
   },
 };
 export const PurpleTheme = {
   color: {
-    background: '#CCABD8',
+    textColor: '#A33D9D',
+    backgroundColor: '#EED8E9',
+    tagColor: '#D960D1',
   },
 };

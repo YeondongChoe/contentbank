@@ -126,4 +126,5 @@ const Component = styled.div<MathViewerStyleProps>`
   min-height: ${({ height }) => height && ` ${height};`};
   padding: ${({ $padding }) => ($padding ? `${$padding}` : '0')};
 `;
+
 const ContentQuestion = styled.div``;

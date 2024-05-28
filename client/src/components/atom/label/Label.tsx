@@ -14,6 +14,7 @@ type LabelProps = {
   onClick?: (event: any) => void;
   cursor?: boolean;
   flexEnd?: boolean;
+  bold?: boolean;
 };
 
 export function Label({
@@ -26,6 +27,7 @@ export function Label({
   onClick,
   cursor,
   flexEnd,
+  bold,
 }: LabelProps) {
   return (
     <Component
@@ -37,6 +39,7 @@ export function Label({
       onClick={onClick}
       $cursor={cursor}
       $flexEnd={flexEnd}
+      $bold={bold}
     >
       <label>{value}</label>
     </Component>
@@ -51,6 +54,7 @@ type LabelStyleProps = {
   $margin?: string;
   $cursor?: boolean;
   $flexEnd?: boolean;
+  $bold?: boolean;
 };
 
 const Component = styled.label<LabelStyleProps>`
@@ -58,6 +62,7 @@ const Component = styled.label<LabelStyleProps>`
   padding: ${({ $padding }) => ($padding ? ` ${$padding};` : '5px 0px')};
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   font-size: ${({ fontSize }) => (fontSize ? ` ${fontSize};` : '14px')};
+  font-weight: ${({ $bold }) => ($bold ? 'bold' : 'none')};
   ${({ $type }) => {
     if ($type === 'error') {
       return `color: ${COLOR.ERROR};`;
