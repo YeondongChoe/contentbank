@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { backgroundClip } from 'html2canvas/dist/types/css/property-descriptors/background-clip';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -65,7 +66,7 @@ export function Step3() {
       case 'purple':
         return PurpleTheme;
       default:
-        return {}; // 기본값
+        return BlueTheme; // 기본값
     }
   })();
 
@@ -460,19 +461,34 @@ export function Step3() {
             <TemplateOption>
               <ColorBox>
                 <ColorOption>
-                  {colorChoice == 'blue' ? (
+                  {colorChoice == 'red' ? (
                     <FaCircleCheck
-                      color="#86E3CE"
+                      color="#FA8978"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('')}
                     />
                   ) : (
                     <FaCircle
-                      color="#86E3CE"
+                      color="#FA8978"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('blue')}
+                      onClick={() => setColorChoice('red')}
+                    />
+                  )}
+                  {colorChoice == 'orange' ? (
+                    <FaCircleCheck
+                      color="#FFDD94"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('')}
+                    />
+                  ) : (
+                    <FaCircle
+                      color="#FFDD94"
+                      fontSize={20}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setColorChoice('orange')}
                     />
                   )}
                   {colorChoice == 'green' ? (
@@ -490,35 +506,19 @@ export function Step3() {
                       onClick={() => setColorChoice('green')}
                     />
                   )}
-
-                  {colorChoice == 'orange' ? (
+                  {colorChoice == 'blue' ? (
                     <FaCircleCheck
-                      color="#FFDD94"
+                      color="#86aee3"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
                       onClick={() => setColorChoice('')}
                     />
                   ) : (
                     <FaCircle
-                      color="#FFDD94"
+                      color="#86aee3"
                       fontSize={20}
                       style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('orange')}
-                    />
-                  )}
-                  {colorChoice == 'red' ? (
-                    <FaCircleCheck
-                      color="#FA8978"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="#FA8978"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('red')}
+                      onClick={() => setColorChoice('blue')}
                     />
                   )}
                   {colorChoice == 'purple' ? (
@@ -769,7 +769,7 @@ export function Step3() {
           </AnswerCommentaryWrapper>
         </WorksheetSettingSection>
         <WorksheetTemplateViewSection>
-          {/* {templateType === 'A' && (
+          {templateType === 'A' && (
             <TypeA
               title={nameValue}
               grade={gradeValue}
@@ -790,7 +790,7 @@ export function Step3() {
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
             ></TypeB>
-          )} */}
+          )}
           {/* <ThemeProvider theme={selectedTheme}>
             <WorksheetTemplateWrapper>
               <Label value={'미리보기'}></Label>
