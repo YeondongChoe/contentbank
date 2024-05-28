@@ -32,8 +32,11 @@ import {
   Loader,
   Icon,
   IconButton,
+  Modal,
 } from '../..';
-import { classificationInstance } from '../../../api/axios';
+import { classificationInstance, quizService } from '../../../api/axios';
+import { ReportProcessModal } from '../../../components/managements/ReportProcessModal';
+import { useModal } from '../../../hooks';
 import { ItemCategoryType, ItemTreeListType } from '../../../types';
 import {
   WorkbookData,
@@ -56,13 +59,46 @@ export function Step2() {
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
-    const data = localStorage.getItem('sendData');
-    if (data) {
-      const parsedData = JSON.parse(data);
-      console.log('데이터 조회', parsedData);
-      setSendLocalData(parsedData);
-    }
+    const fetchDataFromStorage = () => {
+      const data = localStorage.getItem('sendData');
+      if (data) {
+        try {
+          const parsedData = JSON.parse(data);
+          console.log('데이터 조회', parsedData);
+          setSendLocalData(parsedData);
+        } catch (error) {
+          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 데이터가 없습니다.');
+      }
+    };
+
+    fetchDataFromStorage();
+
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+
+    return () => clearTimeout(retryTimeout);
   }, []);
+  // useEffect(() => {
+  //   const isDataInStorage = localStorage.getItem('sendData') !== null;
+
+  //   if (isDataInStorage) {
+  //     console.log('로컬 스토리지에 데이터가 남아있습니다.');
+  //     const data = localStorage.getItem('sendData');
+
+  //     try {
+  //       const parsedData = JSON.parse(data as string);
+  //       console.log('데이터 조회', parsedData);
+  //       setSendLocalData(parsedData);
+  //     } catch (error) {
+  //       console.error('로컬 스토리지 데이터 파싱 에러:', error);
+  //     }
+  //   } else {
+  //     console.log('로컬 스토리지에 데이터가 없습니다.');
+  //   }
+  // }, []);
+
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (sendLocalData) {
@@ -70,7 +106,7 @@ export function Step2() {
     }
   }, [sendLocalData]);
 
-  // console.log(sendLocalData);
+  console.log(sendLocalData);
   // console.log(sendLocalData?.data);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
@@ -213,7 +249,6 @@ export function Step2() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     RadioState[][]
   >([]);
-  console.log(unitClassificationList);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -515,7 +550,6 @@ export function Step2() {
   });
 
   useEffect(() => {
-    // console.log(radio4depthCheck);
     if (selected4depth == '') return;
     categoryItemTreeDataMutate();
   }, [selected4depth]);
@@ -561,14 +595,6 @@ export function Step2() {
   };
 
   const saveCheckItems = () => {
-    // console.log('saveCheckItems', [
-    //   radio1depthCheck,
-    //   radio2depthCheck,
-    //   radio3depthCheck,
-    //   radio4depthCheck,
-    //   radioEtc1Check,
-    //   radioEtc2Check,
-    // ]);
     if (unitClassificationList.length < 5) {
       setUnitClassificationList((prevList) => [
         ...prevList,
@@ -659,6 +685,9 @@ export function Step2() {
     }
   };
 
+  //교과정보 문항 조회
+  const getCheckedItems = () => {};
+
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
@@ -679,6 +708,15 @@ export function Step2() {
     radio3depthCheck,
     radio4depthCheck,
   ]);
+
+  // 교과정보 추가버튼 disable 처리
+  const getButtonBool = useMemo(() => {
+    if (unitClassificationList.length > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [unitClassificationList]);
 
   useEffect(() => {}, []);
 
@@ -705,19 +743,69 @@ export function Step2() {
   const [recommend, setRecommend] = useState<boolean>(false);
 
   const navigate = useNavigate();
-  const [isSimilar, setIsSimilar] = useState(false);
+
+  //신고하기
+  const { openModal } = useModal();
+  const openReportProcess = () => {
+    openModal({
+      title: '',
+      content: <ReportProcessModal registorReport={true} />,
+      callback: () => {},
+    });
+  };
 
   // 유사문항
-  const showSimilarContent = () => {
-    setIsSimilar(!isSimilar);
-    console.log('어떤 데이터 값으로 호출?');
+  const [isSimilar, setIsSimilar] = useState(false);
+  const [similarItems, setSimilarItems] = useState<QuizList[]>(
+    sendLocalData?.data.quizList || [],
+  );
+
+  const postSimilarItems = async (code: string) => {
+    const data = {
+      quizCode: code,
+      count: 10,
+      filterList: [code],
+    };
+    const res = await quizService.post('/v1/quiz/similar', data);
+    console.log('quizService 응답:', res);
+    return res;
   };
+
+  const {
+    data: similarData,
+    mutate: similarDataMutate,
+    //isPending,
+  } = useMutation({
+    mutationFn: postSimilarItems,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      // if (context.response.data.code == 'GE-002') {
+      //   postRefreshToken();
+      // }
+    },
+    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+      // setItemTreeList(res.data.data[0].itemTreeList);
+      setItemTree(response.data.data);
+    },
+  });
+
+  const showSimilarContent = (code: string) => {
+    setIsSimilar(!isSimilar);
+    similarDataMutate(code);
+  };
+  console.log(similarData);
+
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     sendLocalData?.data.quizList || [],
   );
-  console.log(initialItems);
+  //console.log(initialItems);
 
   useEffect(() => {
     if (sendLocalData?.data.quizList) {
@@ -763,577 +851,585 @@ export function Step2() {
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Container>
-        <Wrapper>
-          <TitleWrapper>
-            <TitleIconWrapper>
-              <IoIosArrowBack
-                style={{ fontSize: '24px', cursor: 'pointer' }}
-                onClick={goBackStep1}
-              />
-            </TitleIconWrapper>
-            <Title>
-              <Span style={{ paddingRight: '10px' }}>
-                <FrontSpan onClick={goBackStep1}>STEP 1 - </FrontSpan>
-                STEP 2
-              </Span>
-              학습지 상세 편집
-            </Title>
-          </TitleWrapper>
-          <MainWrapper>
-            <DiscriptionSection>
-              {isSimilar ? (
-                <>
-                  <SimilarCloseButtonWrapper>
-                    <IoMdClose
-                      onClick={() => setIsSimilar(false)}
-                      style={{ fontSize: '22px', cursor: 'pointer' }}
-                    />
-                  </SimilarCloseButtonWrapper>
-                  <SimilarWrapper>
-                    <SimilarTitleWrapper>
-                      <SimilarTitle>
-                        1번 유사 문항
-                        <SimilarTitleSpan>
-                          문항을 교체하거나, 추가할 수 있습니다.
-                        </SimilarTitleSpan>
-                      </SimilarTitle>
-                      <SimilarIconWrapper>
-                        <SimilarIcon>
-                          <PiArrowCounterClockwiseBold
-                            style={{ fontSize: '22px', cursor: 'pointer' }}
-                          />
-                          이전 불러오기
-                        </SimilarIcon>
-                        <SimilarIcon>
-                          <PiArrowClockwiseBold
-                            style={{ fontSize: '22px', cursor: 'pointer' }}
-                          />
-                          새로 불러오기
-                        </SimilarIcon>
-                      </SimilarIconWrapper>
-                    </SimilarTitleWrapper>
-                    <SimilarContentsWrapper>
-                      {/* {list.map((card, i) => (
-                      <div
-                        key={i}
-                        // draggable
-                        // onDragStart={(e) => dragStart(e, i)}
-                        // onDragEnter={(e) => dragEnter(e, i)}
-                        // onDragOver={dragOver}
-                        // onDragEnd={drop}
-                      >
-                        <MathviewerCard
-                          width="300px"
-                          onClick={showSimilarContent}
-                          isSimilarQuiz={true}
-                          index={i + 1}
-                          data={card}
-                          selectedCardIndex={selectedCardIndex}
-                          onSelectCard={setSelectedCardIndex}
-                        ></MathviewerCard>
-                      </div>
-                    ))} */}
-                    </SimilarContentsWrapper>
-                  </SimilarWrapper>
-                </>
-              ) : (
-                <>
-                  <TabWrapper>
-                    <TabMenu
-                      length={4}
-                      menu={menuList}
-                      width={'500px'}
-                      lineStyle
-                      selected={tabVeiw}
-                      setTabVeiw={setTabVeiw}
-                    />
-                  </TabWrapper>
-                  <DiscriptionWrapper>
-                    {tabVeiw === '학습지 요약' && (
-                      <>
-                        <Label value="문항 통계" fontSize="16px" />
-                        <Discription>
-                          <DiscriptionOutline>
-                            <div>총 {sendLocalData?.data.quizCnt} 문항</div>
-                            <DiscriptionType>객관식 20</DiscriptionType>
-                            <DiscriptionType>주관식 10</DiscriptionType>
-                            <DiscriptionType>서술형 15</DiscriptionType>
-                          </DiscriptionOutline>
-                          <BarChart data={Data}></BarChart>
-                        </Discription>
-                        <Label
-                          value="문항 상세 내용 및 순서 변경"
-                          fontSize="16px"
-                        />
-                        <ContentsList>
-                          <ListCategory>
-                            <div className="number">번호</div>
-                            <div className="type">문항타입</div>
-                            <div className="level">난이도</div>
-                            <div className="title">유형명</div>
-                            <div className="icon">순서변경</div>
-                          </ListCategory>
-                          <StepDnDWrapper
-                            dragList={initialItems}
-                            onDragging={() => {}}
-                            onDragEnd={whenDragEnd}
-                            dragSectionName={'학습지요약'}
-                            doubleDnD
-                          >
-                            {(dragItem, ref, isDragging) => (
-                              <li
-                                ref={ref}
-                                className={`${isDragging ? 'opacity' : ''}`}
-                              >
-                                <Content
-                                  // key={i}
-                                  onClick={(e) => {
-                                    handleButtonCheck(e, dragItem.idx);
-                                  }}
-                                >
-                                  <div className="number">{dragItem.idx}</div>
-                                  <div className="type">
-                                    {
-                                      dragItem.quizCategoryList[0].quizCategory
-                                        .문항타입
-                                    }
-                                  </div>
-                                  <div className="level">
-                                    {
-                                      dragItem.quizCategoryList[0].quizCategory
-                                        .난이도
-                                    }
-                                  </div>
-                                  <div className="title">
-                                    {
-                                      dragItem.quizCategoryList[0].quizCategory
-                                        .출처
-                                    }
-                                  </div>
-                                  <div className="icon">
-                                    <IoMenuOutline style={{ cursor: 'grab' }} />
-                                  </div>
-                                </Content>
-                              </li>
-                            )}
-                          </StepDnDWrapper>
-                        </ContentsList>
-                      </>
-                    )}
-                    {tabVeiw === '새 문항 추가' && (
-                      <>
-                        <AddNewContentOption>
-                          <AddNewContentIcon>
-                            <RiListSettingsLine
-                              style={{ fontSize: '22px', cursor: 'pointer' }}
-                              onClick={openRangeSetting}
-                            />
-                            범위 변경
-                          </AddNewContentIcon>
-                          <AddNewContentIcon>
+    <>
+      <DndProvider backend={HTML5Backend}>
+        <Container>
+          <Wrapper>
+            <TitleWrapper>
+              <TitleIconWrapper>
+                <IoIosArrowBack
+                  style={{ fontSize: '24px', cursor: 'pointer' }}
+                  onClick={goBackStep1}
+                />
+              </TitleIconWrapper>
+              <Title>
+                <Span style={{ paddingRight: '10px' }}>
+                  <FrontSpan onClick={goBackStep1}>STEP 1 - </FrontSpan>
+                  STEP 2
+                </Span>
+                학습지 상세 편집
+              </Title>
+            </TitleWrapper>
+            <MainWrapper>
+              <DiscriptionSection>
+                {isSimilar ? (
+                  <>
+                    <SimilarCloseButtonWrapper>
+                      <IoMdClose
+                        onClick={() => setIsSimilar(false)}
+                        style={{ fontSize: '22px', cursor: 'pointer' }}
+                      />
+                    </SimilarCloseButtonWrapper>
+                    <SimilarWrapper>
+                      <SimilarTitleWrapper>
+                        <SimilarTitle>
+                          1번 유사 문항
+                          <SimilarTitleSpan>
+                            문항을 교체하거나, 추가할 수 있습니다.
+                          </SimilarTitleSpan>
+                        </SimilarTitle>
+                        <SimilarIconWrapper>
+                          <SimilarIcon>
                             <PiArrowCounterClockwiseBold
                               style={{ fontSize: '22px', cursor: 'pointer' }}
                             />
                             이전 불러오기
-                          </AddNewContentIcon>
-                          <AddNewContentIcon>
+                          </SimilarIcon>
+                          <SimilarIcon>
                             <PiArrowClockwiseBold
                               style={{ fontSize: '22px', cursor: 'pointer' }}
                             />
                             새로 불러오기
-                          </AddNewContentIcon>
-                          <Button
-                            buttonType="button"
-                            onClick={() => {}}
-                            $padding="10px"
-                            height={'30px'}
-                            width={'100px'}
-                            fontSize="13px"
-                            $filled
-                            cursor
-                          >
-                            <span>+ 전체 추가</span>
-                          </Button>
-                        </AddNewContentOption>
-                        {isRangeSetting ? (
-                          <AddNewContensWrapper>
-                            <CategoryWrapper>
-                              <CategoryTitleWrapper>
-                                <div>범위변경</div>
-                                <IconWrapper>
-                                  <IoMdClose
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={closeRangeSetting}
-                                  />
-                                </IconWrapper>
-                              </CategoryTitleWrapper>
-
-                              <UnitClassifications>
-                                {unitClassificationList.length > 0 ? (
-                                  <>
-                                    <p className="info">
-                                      교과정보는 최대 5개 까지 저장 가능합니다
-                                    </p>
-                                    {unitClassificationList.map((el, idx) => (
-                                      <IconButtonWrapper key={`${el} idx`}>
-                                        <IconButton
-                                          width={`calc(100% - 25px)`}
-                                          fontSize="14px"
-                                          height="35px"
-                                          textAlign="left"
-                                          $padding="0 50px 0 10px"
-                                          rightIconSrc={
-                                            <IconWrapper>
-                                              <button
-                                                type="button"
-                                                className="icon_button primery"
-                                              >
-                                                수정
-                                              </button>
-                                            </IconWrapper>
-                                          }
-                                          onClick={() =>
-                                            changeUnitClassification(idx)
-                                          }
-                                        >
-                                          <span>
-                                            {el.map(
-                                              (item) => `${item.title} / `,
-                                            )}
-                                          </span>
-                                        </IconButton>
-
-                                        <Icon
-                                          onClick={() =>
-                                            deleteUnitClassification(idx)
-                                          }
-                                          $margin={'0 0 0 2px'}
-                                          width={`15px`}
-                                          src={`/images/icon/icoclose.svg`}
-                                        />
-                                      </IconButtonWrapper>
-                                    ))}
-                                  </>
-                                ) : (
-                                  <p className="info">
-                                    교과정보는 최대 5개 까지 저장 가능합니다
-                                  </p>
-                                )}
-                              </UnitClassifications>
-
-                              {/* 교육과정 라디오 버튼 부분 */}
-                              {isCategoryLoaded &&
-                                categoryItems[0] &&
-                                categoryList && (
-                                  <>
-                                    {[categoryItems[0]].map((item) => (
-                                      <div
-                                        className={`1depth`}
-                                        key={`selected1depth ${item.idx}`}
-                                      >
-                                        <ButtonFormatRadio
-                                          titleText={`${item.name}`}
-                                          list={categoryList[0]}
-                                          selected={selected1depth}
-                                          onChange={(e) => handleRadioCheck(e)}
-                                          // defaultChecked={}
-                                          checkedInput={radio1depthCheck}
-                                          $margin={`10px 0 0 0`}
-                                        />
-                                      </div>
-                                    ))}
-
-                                    {radio1depthCheck.code !== '' &&
-                                      selected1depth !== '' &&
-                                      [categoryItems[1]].map((item) => (
-                                        <div
-                                          className={`2depth`}
-                                          key={`selected2depth ${item.idx}`}
-                                        >
-                                          <ButtonFormatRadio
-                                            titleText={`${item.name}`}
-                                            list={nextList1depth}
-                                            selected={selected2depth}
-                                            onChange={(e) =>
-                                              handleRadioCheck(e)
-                                            }
-                                            // defaultChecked={}
-                                            checkedInput={radio2depthCheck}
-                                          />
-                                        </div>
-                                      ))}
-
-                                    {radio2depthCheck.code !== '' &&
-                                      selected2depth !== '' &&
-                                      [categoryItems[2]].map((item) => (
-                                        <div
-                                          className={`3depth`}
-                                          key={`selected3depth ${item.idx}`}
-                                        >
-                                          <ButtonFormatRadio
-                                            titleText={`${item.name}`}
-                                            list={nextList2depth}
-                                            selected={selected3depth}
-                                            onChange={(e) =>
-                                              handleRadioCheck(e)
-                                            }
-                                            // defaultChecked={}
-                                            checkedInput={radio3depthCheck}
-                                          />
-                                        </div>
-                                      ))}
-                                    {radio3depthCheck.code !== '' &&
-                                      selected3depth !== '' &&
-                                      [categoryItems[3]].map((item) => (
-                                        <div
-                                          className={`4depth`}
-                                          key={`selected4depth ${item.idx}`}
-                                        >
-                                          <ButtonFormatRadio
-                                            titleText={`${item.name}`}
-                                            list={nextList3depth}
-                                            selected={selected4depth}
-                                            onChange={(e) =>
-                                              handleRadioCheck(e)
-                                            }
-                                            // defaultChecked={}
-                                            checkedInput={radio4depthCheck}
-                                          />
-                                        </div>
-                                      ))}
-                                  </>
-                                )}
-
-                              <p className="line"></p>
-
-                              {/* 교과정보 아코디언 리스트  */}
-                              {radio1depthCheck.code !== '' &&
-                              radio2depthCheck.code !== '' &&
-                              radio3depthCheck.code !== '' &&
-                              radio4depthCheck.code !== '' &&
-                              selected1depth !== '' &&
-                              selected2depth !== '' &&
-                              selected3depth !== '' ? (
-                                <AccordionWrapper>
-                                  <Accordion
-                                    title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                                    id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                                  >
-                                    <RowListWrapper>
-                                      <Search
-                                        value={''}
-                                        height={'30px'}
-                                        onClick={() => {}}
-                                        onChange={() => {}}
-                                        onKeyDown={() => {}}
-                                      />
-                                      <p className="line bottom_text">
-                                        Total : {`${0}`}
-                                      </p>
-                                      {isPending && (
-                                        <LoaderWrapper>
-                                          <Loader width="50px" />
-                                        </LoaderWrapper>
-                                      )}
-
-                                      {categoryItemTreeData ? (
-                                        <>
-                                          {itemTree.length ? (
-                                            <>
-                                              {itemTree.map((el, idx) => (
-                                                <div key={`${el.itemTreeKey}`}>
-                                                  {el.itemTreeList.map(
-                                                    (item) => (
-                                                      <DepthBlock
-                                                        key={`depthList${item.code} ${item.name}`}
-                                                        classNameList={`depth-${item.level}`}
-                                                        id={item.code}
-                                                        name={item.name}
-                                                        value={item.code}
-                                                        onChange={(e) =>
-                                                          handleSingleCheck(
-                                                            e.target.checked,
-                                                            item.code,
-                                                          )
-                                                        }
-                                                        checked={
-                                                          checkedDepthList.includes(
-                                                            item.code,
-                                                          )
-                                                            ? true
-                                                            : false
-                                                        }
-                                                      >
-                                                        <span>{item.name}</span>
-                                                      </DepthBlock>
-                                                    ),
-                                                  )}
-                                                </div>
-                                              ))}
-                                            </>
-                                          ) : (
-                                            <ValueNone
-                                              textOnly
-                                              info="등록된 데이터가 없습니다"
-                                            />
-                                          )}
-                                        </>
-                                      ) : (
-                                        <Loader />
-                                      )}
-                                    </RowListWrapper>
-                                  </Accordion>
-
-                                  <Accordion
-                                    title={'추가정보'}
-                                    id={'추가정보'}
-                                    $margin={'4px 0 0 0 '}
-                                  >
-                                    <RowListWrapper>
-                                      {categoryAddInfoList ? (
-                                        <>
-                                          {[categoryItems[4]].map((item) => (
-                                            <div
-                                              className={`etc1`}
-                                              key={`etc1 ${item.idx}`}
-                                            >
-                                              <ButtonFormatRadio
-                                                titleText={`${item.name}`}
-                                                list={categoryAddInfoList[0]}
-                                                selected={selectedCategoryEtc1}
-                                                onChange={(e) =>
-                                                  handleRadioCheck(e)
-                                                }
-                                                // defaultChecked={}
-                                                checkedInput={radioEtc1Check}
-                                              />
-                                            </div>
-                                          ))}
-                                          {[categoryItems[5]].map((item) => (
-                                            <div
-                                              className={`etc2`}
-                                              key={`etc2 ${item.idx}`}
-                                            >
-                                              <ButtonFormatRadio
-                                                titleText={`${item.name}`}
-                                                list={categoryAddInfoList[1]}
-                                                selected={selectedCategoryEtc2}
-                                                onChange={(e) =>
-                                                  handleRadioCheck(e)
-                                                }
-                                                // defaultChecked={}
-                                                checkedInput={radioEtc2Check}
-                                              />
-                                            </div>
-                                          ))}
-                                        </>
-                                      ) : (
-                                        <ValueNone
-                                          textOnly
-                                          info="등록된 데이터가 없습니다"
-                                        />
-                                      )}
-                                    </RowListWrapper>
-                                  </Accordion>
-                                </AccordionWrapper>
-                              ) : (
-                                <ValueNoneWrapper>
-                                  <ValueNone
-                                    textOnly
-                                    info="교육과정, 학교급, 학년, 학기를 선택해주세요"
-                                  />
-                                </ValueNoneWrapper>
-                              )}
-                              <SubmitButtonWrapper>
-                                <Button
-                                  $filled
-                                  disabled={addButtonBool}
-                                  cursor
-                                  $margin={'0 10px 0 0'}
-                                  onClick={() => saveCheckItems()}
-                                >
-                                  교과정보 추가
-                                </Button>
-                              </SubmitButtonWrapper>
-                            </CategoryWrapper>
-                          </AddNewContensWrapper>
-                        ) : (
-                          <AddNewContensWrapper>
+                          </SimilarIcon>
+                        </SimilarIconWrapper>
+                      </SimilarTitleWrapper>
+                      <SimilarContentsWrapper>
+                        <AddNewContensWrapper>
+                          {initialItems.map((item) => (
+                            <MathviewerAccordion
+                              key={item.idx}
+                              componentWidth="600px"
+                              width="450px"
+                              componentHeight="150px"
+                              onClick={() => showSimilarContent(item.code)}
+                              isBorder={true}
+                              isNewQuiz={true}
+                              isSimilarQuiz={true}
+                              data={item}
+                              index={item.idx}
+                              selectedCardIndex={selectedCardIndex}
+                              onSelectCard={setSelectedCardIndex}
+                              reportOnClick={openReportProcess}
+                            ></MathviewerAccordion>
+                          ))}
+                        </AddNewContensWrapper>
+                      </SimilarContentsWrapper>
+                    </SimilarWrapper>
+                  </>
+                ) : (
+                  <>
+                    <TabWrapper>
+                      <TabMenu
+                        length={4}
+                        menu={menuList}
+                        width={'500px'}
+                        lineStyle
+                        selected={tabVeiw}
+                        setTabVeiw={setTabVeiw}
+                      />
+                    </TabWrapper>
+                    <DiscriptionWrapper>
+                      {tabVeiw === '학습지 요약' && (
+                        <>
+                          <Label value="문항 통계" fontSize="16px" />
+                          <Discription>
+                            <DiscriptionOutline>
+                              <div>총 {sendLocalData?.data.quizCnt} 문항</div>
+                              <DiscriptionType>객관식 20</DiscriptionType>
+                              <DiscriptionType>주관식 10</DiscriptionType>
+                              <DiscriptionType>서술형 15</DiscriptionType>
+                            </DiscriptionOutline>
+                            <BarChart data={Data}></BarChart>
+                          </Discription>
+                          <Label
+                            value="문항 상세 내용 및 순서 변경"
+                            fontSize="16px"
+                          />
+                          <ContentsList>
+                            <ListCategory>
+                              <div className="number">번호</div>
+                              <div className="type">문항타입</div>
+                              <div className="level">난이도</div>
+                              <div className="title">유형명</div>
+                              <div className="icon">순서변경</div>
+                            </ListCategory>
                             <StepDnDWrapper
                               dragList={initialItems}
                               onDragging={() => {}}
                               onDragEnd={whenDragEnd}
-                              dragSectionName={'미리보기'}
+                              dragSectionName={'학습지요약'}
                               doubleDnD
-                              isStartDnD={isStartDnD}
-                              setIsStartDnd={setIsStartDnd}
                             >
                               {(dragItem, ref, isDragging) => (
                                 <li
                                   ref={ref}
                                   className={`${isDragging ? 'opacity' : ''}`}
                                 >
-                                  <MathviewerAccordion
-                                    componentWidth="600px"
-                                    width="450px"
-                                    componentHeight="150px"
-                                    onClick={showSimilarContent}
-                                    isBorder={true}
-                                    isSimilarQuiz={true}
-                                    data={dragItem}
-                                    index={dragItem.idx}
-                                    selectedCardIndex={selectedCardIndex}
-                                    onSelectCard={setSelectedCardIndex}
-                                  ></MathviewerAccordion>
+                                  <Content
+                                    // key={i}
+                                    onClick={(e) => {
+                                      handleButtonCheck(e, dragItem.idx);
+                                    }}
+                                  >
+                                    <div className="number">{dragItem.idx}</div>
+                                    <div className="type">
+                                      {
+                                        dragItem.quizCategoryList[0]
+                                          .quizCategory.문항타입
+                                      }
+                                    </div>
+                                    <div className="level">
+                                      {
+                                        dragItem.quizCategoryList[0]
+                                          .quizCategory.난이도
+                                      }
+                                    </div>
+                                    <div className="title">
+                                      {
+                                        dragItem.quizCategoryList[0]
+                                          .quizCategory.출처
+                                      }
+                                    </div>
+                                    <div className="icon">
+                                      <IoMenuOutline
+                                        style={{ cursor: 'grab' }}
+                                      />
+                                    </div>
+                                  </Content>
                                 </li>
                               )}
                             </StepDnDWrapper>
-                          </AddNewContensWrapper>
-                        )}
-                      </>
-                    )}
-                    {tabVeiw === '즐겨찾는 문항' && (
-                      <>
-                        {bookmark.length !== 0 ? (
-                          <>
-                            <BookmarkContentOption>
-                              <SelectWrapper>
-                                {bookmarkSelectCategory.map((el) => (
-                                  <Select
-                                    width={'250px'}
-                                    defaultValue={el.label}
-                                    key={el.label}
-                                    options={el.options}
-                                    onSelect={(event) =>
-                                      selectBookmarkCategoryOption(event)
-                                    }
-                                  />
-                                ))}
-                              </SelectWrapper>
-                              <BookmarkContentCheckWrapper>
-                                <CheckBox
-                                  isChecked={recommend}
-                                  onClick={() => setRecommend(!recommend)}
-                                ></CheckBox>
-                                내 문항 우선 추천
-                              </BookmarkContentCheckWrapper>
-                              <Button
-                                buttonType="button"
-                                onClick={() => {}}
-                                $padding="10px"
-                                height={'30px'}
-                                width={'100px'}
-                                fontSize="13px"
-                                $filled
-                                cursor
-                              >
-                                <span>+ 전체 추가</span>
-                              </Button>
-                            </BookmarkContentOption>
-                            <BookmarkContensWrapper>
-                              {/* {list.map((card, i) => (
+                          </ContentsList>
+                        </>
+                      )}
+                      {tabVeiw === '새 문항 추가' && (
+                        <>
+                          <AddNewContentOption>
+                            <AddNewContentIcon>
+                              <RiListSettingsLine
+                                style={{ fontSize: '22px', cursor: 'pointer' }}
+                                onClick={openRangeSetting}
+                              />
+                              범위 변경
+                            </AddNewContentIcon>
+                            <AddNewContentIcon>
+                              <PiArrowCounterClockwiseBold
+                                style={{ fontSize: '22px', cursor: 'pointer' }}
+                              />
+                              이전 불러오기
+                            </AddNewContentIcon>
+                            <AddNewContentIcon>
+                              <PiArrowClockwiseBold
+                                style={{ fontSize: '22px', cursor: 'pointer' }}
+                              />
+                              새로 불러오기
+                            </AddNewContentIcon>
+                            <Button
+                              buttonType="button"
+                              onClick={() => {}}
+                              $padding="10px"
+                              height={'30px'}
+                              width={'100px'}
+                              fontSize="13px"
+                              $filled
+                              cursor
+                            >
+                              <span>+ 전체 추가</span>
+                            </Button>
+                          </AddNewContentOption>
+                          {isRangeSetting ? (
+                            <AddNewContensWrapper>
+                              <CategoryWrapper>
+                                <CategoryTitleWrapper>
+                                  <div>범위변경</div>
+                                  <IconWrapper>
+                                    <IoMdClose
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={closeRangeSetting}
+                                    />
+                                  </IconWrapper>
+                                </CategoryTitleWrapper>
+
+                                <UnitClassifications>
+                                  {unitClassificationList.length > 0 ? (
+                                    <>
+                                      <p className="info">
+                                        교과정보는 최대 5개 까지 저장 가능합니다
+                                      </p>
+                                      {unitClassificationList.map((el, idx) => (
+                                        <IconButtonWrapper key={`${el} idx`}>
+                                          <IconButton
+                                            width={`calc(100% - 25px)`}
+                                            fontSize="14px"
+                                            height="35px"
+                                            textAlign="left"
+                                            $padding="0 50px 0 10px"
+                                            rightIconSrc={
+                                              <IconWrapper>
+                                                <button
+                                                  type="button"
+                                                  className="icon_button primery"
+                                                >
+                                                  수정
+                                                </button>
+                                              </IconWrapper>
+                                            }
+                                            onClick={() =>
+                                              changeUnitClassification(idx)
+                                            }
+                                          >
+                                            <span>
+                                              {el.map(
+                                                (item) => `${item.title} / `,
+                                              )}
+                                            </span>
+                                          </IconButton>
+
+                                          <Icon
+                                            onClick={() =>
+                                              deleteUnitClassification(idx)
+                                            }
+                                            $margin={'0 0 0 2px'}
+                                            width={`15px`}
+                                            src={`/images/icon/icoclose.svg`}
+                                          />
+                                        </IconButtonWrapper>
+                                      ))}
+                                    </>
+                                  ) : (
+                                    <p className="info">
+                                      교과정보는 최대 5개 까지 저장 가능합니다
+                                    </p>
+                                  )}
+                                </UnitClassifications>
+
+                                {/* 교육과정 라디오 버튼 부분 */}
+                                {isCategoryLoaded &&
+                                  categoryItems[0] &&
+                                  categoryList && (
+                                    <>
+                                      {[categoryItems[0]].map((item) => (
+                                        <div
+                                          className={`1depth`}
+                                          key={`selected1depth ${item.idx}`}
+                                        >
+                                          <ButtonFormatRadio
+                                            titleText={`${item.name}`}
+                                            list={categoryList[0]}
+                                            selected={selected1depth}
+                                            onChange={(e) =>
+                                              handleRadioCheck(e)
+                                            }
+                                            // defaultChecked={}
+                                            checkedInput={radio1depthCheck}
+                                            $margin={`10px 0 0 0`}
+                                          />
+                                        </div>
+                                      ))}
+
+                                      {radio1depthCheck.code !== '' &&
+                                        selected1depth !== '' &&
+                                        [categoryItems[1]].map((item) => (
+                                          <div
+                                            className={`2depth`}
+                                            key={`selected2depth ${item.idx}`}
+                                          >
+                                            <ButtonFormatRadio
+                                              titleText={`${item.name}`}
+                                              list={nextList1depth}
+                                              selected={selected2depth}
+                                              onChange={(e) =>
+                                                handleRadioCheck(e)
+                                              }
+                                              // defaultChecked={}
+                                              checkedInput={radio2depthCheck}
+                                            />
+                                          </div>
+                                        ))}
+
+                                      {radio2depthCheck.code !== '' &&
+                                        selected2depth !== '' &&
+                                        [categoryItems[2]].map((item) => (
+                                          <div
+                                            className={`3depth`}
+                                            key={`selected3depth ${item.idx}`}
+                                          >
+                                            <ButtonFormatRadio
+                                              titleText={`${item.name}`}
+                                              list={nextList2depth}
+                                              selected={selected3depth}
+                                              onChange={(e) =>
+                                                handleRadioCheck(e)
+                                              }
+                                              // defaultChecked={}
+                                              checkedInput={radio3depthCheck}
+                                            />
+                                          </div>
+                                        ))}
+                                      {radio3depthCheck.code !== '' &&
+                                        selected3depth !== '' &&
+                                        [categoryItems[3]].map((item) => (
+                                          <div
+                                            className={`4depth`}
+                                            key={`selected4depth ${item.idx}`}
+                                          >
+                                            <ButtonFormatRadio
+                                              titleText={`${item.name}`}
+                                              list={nextList3depth}
+                                              selected={selected4depth}
+                                              onChange={(e) =>
+                                                handleRadioCheck(e)
+                                              }
+                                              // defaultChecked={}
+                                              checkedInput={radio4depthCheck}
+                                            />
+                                          </div>
+                                        ))}
+                                    </>
+                                  )}
+
+                                <p className="line"></p>
+
+                                {/* 교과정보 아코디언 리스트  */}
+                                {radio1depthCheck.code !== '' &&
+                                radio2depthCheck.code !== '' &&
+                                radio3depthCheck.code !== '' &&
+                                radio4depthCheck.code !== '' &&
+                                selected1depth !== '' &&
+                                selected2depth !== '' &&
+                                selected3depth !== '' ? (
+                                  <AccordionWrapper>
+                                    <Accordion
+                                      title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                                      id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                                    >
+                                      <RowListWrapper>
+                                        <Search
+                                          value={''}
+                                          height={'30px'}
+                                          onClick={() => {}}
+                                          onChange={() => {}}
+                                          onKeyDown={() => {}}
+                                        />
+                                        <p className="line bottom_text">
+                                          Total : {`${0}`}
+                                        </p>
+                                        {isPending && (
+                                          <LoaderWrapper>
+                                            <Loader width="50px" />
+                                          </LoaderWrapper>
+                                        )}
+
+                                        {categoryItemTreeData ? (
+                                          <>
+                                            {itemTree.length ? (
+                                              <>
+                                                {itemTree.map((el, idx) => (
+                                                  <div
+                                                    key={`${el.itemTreeKey}`}
+                                                  >
+                                                    {el.itemTreeList.map(
+                                                      (item) => (
+                                                        <DepthBlock
+                                                          key={`depthList${item.code} ${item.name}`}
+                                                          classNameList={`depth-${item.level}`}
+                                                          id={item.code}
+                                                          name={item.name}
+                                                          value={item.code}
+                                                          onChange={(e) =>
+                                                            handleSingleCheck(
+                                                              e.target.checked,
+                                                              item.code,
+                                                            )
+                                                          }
+                                                          checked={
+                                                            checkedDepthList.includes(
+                                                              item.code,
+                                                            )
+                                                              ? true
+                                                              : false
+                                                          }
+                                                        >
+                                                          <span>
+                                                            {item.name}
+                                                          </span>
+                                                        </DepthBlock>
+                                                      ),
+                                                    )}
+                                                  </div>
+                                                ))}
+                                              </>
+                                            ) : (
+                                              <ValueNone
+                                                textOnly
+                                                info="등록된 데이터가 없습니다"
+                                              />
+                                            )}
+                                          </>
+                                        ) : (
+                                          <Loader />
+                                        )}
+                                      </RowListWrapper>
+                                    </Accordion>
+
+                                    <Accordion
+                                      title={'추가정보'}
+                                      id={'추가정보'}
+                                      $margin={'4px 0 0 0 '}
+                                    >
+                                      <RowListWrapper>
+                                        {categoryAddInfoList ? (
+                                          <>
+                                            {[categoryItems[4]].map((item) => (
+                                              <div
+                                                className={`etc1`}
+                                                key={`etc1 ${item.idx}`}
+                                              >
+                                                <ButtonFormatRadio
+                                                  titleText={`${item.name}`}
+                                                  list={categoryAddInfoList[0]}
+                                                  selected={
+                                                    selectedCategoryEtc1
+                                                  }
+                                                  onChange={(e) =>
+                                                    handleRadioCheck(e)
+                                                  }
+                                                  // defaultChecked={}
+                                                  checkedInput={radioEtc1Check}
+                                                />
+                                              </div>
+                                            ))}
+                                            {[categoryItems[5]].map((item) => (
+                                              <div
+                                                className={`etc2`}
+                                                key={`etc2 ${item.idx}`}
+                                              >
+                                                <ButtonFormatRadio
+                                                  titleText={`${item.name}`}
+                                                  list={categoryAddInfoList[1]}
+                                                  selected={
+                                                    selectedCategoryEtc2
+                                                  }
+                                                  onChange={(e) =>
+                                                    handleRadioCheck(e)
+                                                  }
+                                                  // defaultChecked={}
+                                                  checkedInput={radioEtc2Check}
+                                                />
+                                              </div>
+                                            ))}
+                                          </>
+                                        ) : (
+                                          <ValueNone
+                                            textOnly
+                                            info="등록된 데이터가 없습니다"
+                                          />
+                                        )}
+                                      </RowListWrapper>
+                                    </Accordion>
+                                  </AccordionWrapper>
+                                ) : (
+                                  <ValueNoneWrapper>
+                                    <ValueNone
+                                      textOnly
+                                      info="교육과정, 학교급, 학년, 학기를 선택해주세요"
+                                    />
+                                  </ValueNoneWrapper>
+                                )}
+                                <SubmitButtonWrapper>
+                                  <Button
+                                    $filled
+                                    disabled={addButtonBool}
+                                    cursor
+                                    $margin={'0 10px 0 0'}
+                                    onClick={saveCheckItems}
+                                  >
+                                    교과정보 추가
+                                  </Button>
+                                  <Button
+                                    $filled
+                                    disabled={getButtonBool}
+                                    cursor
+                                    $margin={'0 10px 0 0'}
+                                    onClick={getCheckedItems}
+                                  >
+                                    불러오기
+                                  </Button>
+                                </SubmitButtonWrapper>
+                              </CategoryWrapper>
+                            </AddNewContensWrapper>
+                          ) : (
+                            <AddNewContensWrapper>
+                              {initialItems.map((item) => (
+                                <MathviewerAccordion
+                                  key={item.idx}
+                                  componentWidth="600px"
+                                  width="450px"
+                                  componentHeight="150px"
+                                  onClick={() => showSimilarContent(item.code)}
+                                  isBorder={true}
+                                  isNewQuiz={true}
+                                  data={item}
+                                  index={item.idx}
+                                  selectedCardIndex={selectedCardIndex}
+                                  onSelectCard={setSelectedCardIndex}
+                                  reportOnClick={openReportProcess}
+                                ></MathviewerAccordion>
+                              ))}
+                            </AddNewContensWrapper>
+                          )}
+                        </>
+                      )}
+                      {tabVeiw === '즐겨찾는 문항' && (
+                        <>
+                          {bookmark.length !== 0 ? (
+                            <>
+                              <BookmarkContentOption>
+                                <SelectWrapper>
+                                  {bookmarkSelectCategory.map((el) => (
+                                    <Select
+                                      width={'250px'}
+                                      defaultValue={el.label}
+                                      key={el.label}
+                                      options={el.options}
+                                      onSelect={(event) =>
+                                        selectBookmarkCategoryOption(event)
+                                      }
+                                    />
+                                  ))}
+                                </SelectWrapper>
+                                <BookmarkContentCheckWrapper>
+                                  <CheckBox
+                                    isChecked={recommend}
+                                    onClick={() => setRecommend(!recommend)}
+                                  ></CheckBox>
+                                  내 문항 우선 추천
+                                </BookmarkContentCheckWrapper>
+                                <Button
+                                  buttonType="button"
+                                  onClick={() => {}}
+                                  $padding="10px"
+                                  height={'30px'}
+                                  width={'100px'}
+                                  fontSize="13px"
+                                  $filled
+                                  cursor
+                                >
+                                  <span>+ 전체 추가</span>
+                                </Button>
+                              </BookmarkContentOption>
+                              <BookmarkContensWrapper>
+                                {/* {list.map((card, i) => (
                               <div
                                 key={i}
                                 // draggable
@@ -1353,85 +1449,89 @@ export function Step2() {
                                 ></MathviewerCard>
                               </div>
                             ))} */}
-                            </BookmarkContensWrapper>
-                          </>
-                        ) : (
-                          <BookmarkContensEmptyWrapper>
-                            <BookmarkContensEmptyDiscription>
-                              즐겨 찾기에 추가된 문항이 없습니다.
-                            </BookmarkContensEmptyDiscription>
-                            <BookmarkContensEmptyDiscription>
-                              마음에 드는 문항을 저장하여 학습지나 교재를
-                            </BookmarkContensEmptyDiscription>
-                            <BookmarkContensEmptyDiscription>
-                              만들 때 활용하세요.
-                            </BookmarkContensEmptyDiscription>
-                          </BookmarkContensEmptyWrapper>
-                        )}
-                      </>
+                              </BookmarkContensWrapper>
+                            </>
+                          ) : (
+                            <BookmarkContensEmptyWrapper>
+                              <BookmarkContensEmptyDiscription>
+                                즐겨 찾기에 추가된 문항이 없습니다.
+                              </BookmarkContensEmptyDiscription>
+                              <BookmarkContensEmptyDiscription>
+                                마음에 드는 문항을 저장하여 학습지나 교재를
+                              </BookmarkContensEmptyDiscription>
+                              <BookmarkContensEmptyDiscription>
+                                만들 때 활용하세요.
+                              </BookmarkContensEmptyDiscription>
+                            </BookmarkContensEmptyWrapper>
+                          )}
+                        </>
+                      )}
+                      {tabVeiw === '개념' && (
+                        <>
+                          <ConceptWrapper>
+                            <ConceptDiscription>
+                              준비중인 기능입니다...
+                            </ConceptDiscription>
+                          </ConceptWrapper>
+                        </>
+                      )}
+                    </DiscriptionWrapper>
+                  </>
+                )}
+              </DiscriptionSection>
+              <ContentListSection>
+                <ListFilter>
+                  <Label value="선택한 문항 목록(총45문항)" fontSize="16px" />
+                  <SelectWrapper>
+                    {selectCategory.map((el) => (
+                      <Select
+                        width={'150px'}
+                        key={el.label}
+                        defaultValue={el.label}
+                        options={el.options}
+                        onSelect={(event) => selectListCategoryOption(event)}
+                        blackMode
+                      ></Select>
+                    ))}
+                  </SelectWrapper>
+                </ListFilter>
+                <ContentListWrapper>
+                  <StepDnDWrapper
+                    dragList={initialItems}
+                    onDragging={() => {}}
+                    onDragEnd={whenDragEnd}
+                    dragSectionName={'선택한 문항 목록'}
+                    doubleDnD
+                    isStartDnD={isStartDnD}
+                    setIsStartDnd={setIsStartDnd}
+                  >
+                    {(dragItem, ref, isDragging) => (
+                      <li
+                        ref={ref}
+                        className={`${isDragging ? 'opacity' : ''}`}
+                      >
+                        <MathviewerAccordion
+                          componentWidth="750px"
+                          width="550px"
+                          onClick={() => showSimilarContent(dragItem.code)}
+                          isSimilar={isSimilar}
+                          data={dragItem}
+                          index={dragItem.idx}
+                          selectedCardIndex={selectedCardIndex}
+                          onSelectCard={setSelectedCardIndex}
+                          reportOnClick={openReportProcess}
+                        ></MathviewerAccordion>
+                      </li>
                     )}
-                    {tabVeiw === '개념' && (
-                      <>
-                        <ConceptWrapper>
-                          <ConceptDiscription>
-                            준비중인 기능입니다...
-                          </ConceptDiscription>
-                        </ConceptWrapper>
-                      </>
-                    )}
-                  </DiscriptionWrapper>
-                </>
-              )}
-            </DiscriptionSection>
-            <ContentListSection>
-              <ListFilter>
-                <Label value="선택한 문항 목록(총45문항)" fontSize="16px" />
-                <SelectWrapper>
-                  {selectCategory.map((el) => (
-                    <Select
-                      width={'150px'}
-                      key={el.label}
-                      defaultValue={el.label}
-                      options={el.options}
-                      onSelect={(event) => selectListCategoryOption(event)}
-                      blackMode
-                    ></Select>
-                  ))}
-                </SelectWrapper>
-              </ListFilter>
-              <ContentListWrapper>
-                <StepDnDWrapper
-                  dragList={initialItems}
-                  onDragging={() => {}}
-                  onDragEnd={whenDragEnd}
-                  dragSectionName={'미리보기'}
-                  doubleDnD
-                  isStartDnD={isStartDnD}
-                  setIsStartDnd={setIsStartDnd}
-                >
-                  {(dragItem, ref, isDragging) => (
-                    <li ref={ref} className={`${isDragging ? 'opacity' : ''}`}>
-                      <MathviewerAccordion
-                        componentWidth="750px"
-                        width="550px"
-                        onClick={showSimilarContent}
-                        isSimilar={isSimilar}
-                        data={dragItem}
-                        index={dragItem.idx}
-                        selectedCardIndex={selectedCardIndex}
-                        onSelectCard={setSelectedCardIndex}
-                      ></MathviewerAccordion>
-                    </li>
-                  )}
-                </StepDnDWrapper>
-              </ContentListWrapper>
-            </ContentListSection>
-          </MainWrapper>
-          <NextStepButtonWrapper>
-            <p>
-              총 배점: <Span>100점</Span>/<Span>100점</Span>
-            </p>
-            {/* <Button
+                  </StepDnDWrapper>
+                </ContentListWrapper>
+              </ContentListSection>
+            </MainWrapper>
+            <NextStepButtonWrapper>
+              <p>
+                총 배점: <Span>100점</Span>/<Span>100점</Span>
+              </p>
+              {/* <Button
               buttonType="button"
               onClick={() => {}}
               $padding="10px"
@@ -1443,45 +1543,27 @@ export function Step2() {
             >
               <span>임시저장</span>
             </Button> */}
-            <Button
-              buttonType="button"
-              onClick={moveStep3}
-              $padding="10px"
-              height={'35px'}
-              width={'100px'}
-              fontSize="13px"
-              $filled
-              cursor
-            >
-              <span>다음 단계</span>
-            </Button>
-          </NextStepButtonWrapper>
-        </Wrapper>
-      </Container>
-    </DndProvider>
+              <Button
+                buttonType="button"
+                onClick={moveStep3}
+                $padding="10px"
+                height={'35px'}
+                width={'100px'}
+                fontSize="13px"
+                $filled
+                cursor
+              >
+                <span>다음 단계</span>
+              </Button>
+            </NextStepButtonWrapper>
+          </Wrapper>
+        </Container>
+      </DndProvider>
+
+      <Modal />
+    </>
   );
 }
-
-// {list.map((card, i) => (
-//   <MathviewerCardWrapper key={i}>
-//     <MathviewerAccordion
-//       className={i === dragItem.current ? 'dragging' : ''}
-//       componentWidth="750px"
-//       width="500px"
-//       onClick={showSimilarContent}
-//       isSimilar={isSimilar}
-//       index={i + 1}
-//       data={card}
-//       isDragged={i === selectedIndex}
-//       selectedCardIndex={selectedCardIndex}
-//       onSelectCard={setSelectedCardIndex}
-//       dragStart={() => (e: any) => dragStart(e, i, card.seq)}
-//       dragEnter={() => (e: any) => dragEnter(e, i)}
-//       dragOver={dragOver}
-//       drop={drop}
-//     ></MathviewerAccordion>
-//   </MathviewerCardWrapper>
-// ))}
 
 const Container = styled.div``;
 const TitleWrapper = styled.div`

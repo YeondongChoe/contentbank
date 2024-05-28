@@ -315,9 +315,9 @@ export function WorkbookList({
                     {/* //TODO */}
                     <span className="width_10px">{item.idx}</span>
                     <i className="line"></i>
-                    <span>{item.grade}</span>
+                    <span>학년{item.grade}</span>
                     <i className="line"></i>
-                    <span>{item.tag}</span>
+                    <span>출처{item.tag}</span>
                     <i className="line"></i>
                     <span className="width_20">{item.name}</span>
                     <i className="line"></i>
