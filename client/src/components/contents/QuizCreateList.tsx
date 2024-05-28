@@ -290,8 +290,6 @@ export function QuizCreateList() {
       setQuestionSearchList(quizSearchData.quizList);
     }
   }, [quizSearchData]);
-  // 검색 초기화
-  useEffect(() => {}, [onSearch]);
 
   // 모달 연뒤 문항 생성 윈도우 이동
   const openCreateModal = () => {
@@ -302,6 +300,9 @@ export function QuizCreateList() {
     setPage(1);
     handleDefaultSelect();
   };
+  // 검색 초기화
+  useEffect(() => {}, [onSearch]);
+
   // 탭 바뀔시 초기화
   useEffect(() => {
     quizSearchDataRefetch();

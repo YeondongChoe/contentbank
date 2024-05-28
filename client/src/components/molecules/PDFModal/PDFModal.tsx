@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -6,6 +7,8 @@ import ReactToPrint from 'react-to-print';
 import { styled } from 'styled-components';
 
 import { Icon, IconButton } from '../../../components/atom';
+import { MathViewer } from '../../../components/mathViewer';
+import { QuizListType } from '../../../types';
 import { COLOR } from '../../constants';
 
 import { makePdf } from './makePDF';
@@ -15,6 +18,7 @@ type PDFModalProps = {
 };
 
 export function PDFModal({ list }: PDFModalProps) {
+  const [sortedList, setSortedList] = useState<QuizListType[]>(list);
   const pdf = makePdf();
 
   const printPDF = async () => {
@@ -46,14 +50,93 @@ export function PDFModal({ list }: PDFModalProps) {
       <Component>
         <ScrollWrapper>
           <PerfectScrollbar>
-            {list.map((item) => (
-              <div key={item} className="A4_paper">
+            {sortedList.map((item) => (
+              <div key={`${item.idx} pdf list`} className="A4_paper">
                 <Contents>
-                  문항데이터가 들어올 자리 Lorem ipsum dolor sit amet
-                  consectetur adipisicing elit. Eos officiis at iure sapiente
-                  maxime provident possimus dolorum eveniet illo nisi ullam,
-                  animi sunt nobis, error consequatur quos facere. Perspiciatis,
-                  harum.
+                  {item.quizItemList &&
+                    item.quizItemList.map((el) => (
+                      <div key={`${el?.code} quizItemList sortedList`}>
+                        <MathViewer>
+                          {el?.type == 'TITLE' ? (
+                            el.content && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: el.content || '',
+                                }}
+                              ></div>
+                            )
+                          ) : (
+                            <></>
+                          )}
+                          {el?.type == 'QUESTION' ? (
+                            el.content && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: el.content || '',
+                                }}
+                              ></div>
+                            )
+                          ) : (
+                            <></>
+                          )}
+                          {el?.type == 'EXAMPLE' ? (
+                            el.content && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: el.content || '',
+                                }}
+                              ></div>
+                            )
+                          ) : (
+                            <></>
+                          )}
+                          {el?.type == 'ANSWER' ? (
+                            el.content && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: el.content || '',
+                                }}
+                              ></div>
+                            )
+                          ) : (
+                            <></>
+                          )}
+                          {el?.type == 'TIP' ? (
+                            el.content && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: el.content || '',
+                                }}
+                              ></div>
+                            )
+                          ) : (
+                            <></>
+                          )}
+                          {el?.type == 'COMMENTARY' ? (
+                            el.content && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: el.content || '',
+                                }}
+                              ></div>
+                            )
+                          ) : (
+                            <></>
+                          )}
+                          {el?.type == 'HINT' ? (
+                            el.content && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: el.content || '',
+                                }}
+                              ></div>
+                            )
+                          ) : (
+                            <></>
+                          )}
+                        </MathViewer>
+                      </div>
+                    ))}
                 </Contents>
               </div>
             ))}
