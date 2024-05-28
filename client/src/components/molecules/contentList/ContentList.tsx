@@ -68,6 +68,8 @@ export function ContentList({
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
+  const [sortedList, setSortedList] = useState<QuizListType[]>([]);
+
   const dropDownList: DropDownItemProps[] = [
     {
       key: 'ListTabl/수정',
@@ -106,21 +108,6 @@ export function ContentList({
     // window.parentCallback = () => {
     //   getContents();
     // };
-  };
-
-  /* 문항 pdf 모달 열기 */
-  const openCreatePDFModal = () => {
-    console.log(
-      'checkList 체크된 문항 1개당 최소1페이지 문항데이터 배열로 직접 또는 idx 값으로 문항 데이터불러오기',
-      checkList,
-    );
-
-    openModal({
-      title: '',
-      content: <PDFModal list={checkList} />,
-    });
-    //모달 열릴시 체크리스트 초기화
-    setCheckList([]);
   };
 
   // 체크박스 설정
@@ -253,6 +240,24 @@ export function ContentList({
     },
   });
 
+  /* 문항 pdf 모달 열기 */
+  const sortList = () => {
+    const codesSet = new Set(checkList);
+    const filteredList = questionList.filter((item) => codesSet.has(item.idx));
+    console.log('sortedList------------', filteredList);
+    setSortedList(filteredList);
+  };
+
+  const openCreatePDFModal = () => {
+    console.log('sortedList ---', sortedList);
+    openModal({
+      title: '',
+      content: <PDFModal list={sortedList} />,
+    });
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
+  };
+
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -270,6 +275,9 @@ export function ContentList({
       setIsEnabled(false);
     }
     if (setCheckListOn) setCheckListOn(checkList);
+
+    // 체크 변경시 pdf 전달용 리스트도 변경
+    sortList();
   }, [checkList]);
 
   useEffect(() => {

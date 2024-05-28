@@ -12,6 +12,7 @@ import {
   Icon,
   IconButton,
   Loader,
+  MathViewer,
   ResizeLayout,
   ValueNone,
   openToastifyAlert,
@@ -44,6 +45,7 @@ interface RadioState {
 export function Classification() {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  const [sortedList, setSortedList] = useState<QuizListType[]>([]);
   const [radio1depthCheck, setRadio1depthCheck] = useState<RadioState>({
     title: '',
     checkValue: 0,
@@ -543,8 +545,6 @@ export function Classification() {
     }
   };
 
-  useEffect(() => {}, []);
-
   const onSubmit = () => {
     // 최종적으로 전송 될 데이터
   };
@@ -565,10 +565,21 @@ export function Classification() {
   // 추가된 문항 데이터 TODO : 전역으로 저장한 추가된 문항 데이터들 불러오기
   // 화면 진입시 문항 데이터들 리스트ui에넣기
   useEffect(() => {
-    console.log('quizList', quizList);
+    // console.log('quizList-----------', quizList);
     setQuestionList(quizList);
   }, []);
-  useEffect(() => {}, [questionList]);
+
+  const sortList = () => {
+    const sorted = questionList.filter((el) => checkedList.includes(el.code));
+    // console.log('sortedList------------', sorted);
+    setSortedList(sorted);
+  };
+
+  useEffect(() => {
+    // console.log('checkedList------------', checkedList);
+    sortList();
+  }, [checkedList]);
+  useEffect(() => {}, [sortedList, questionList]);
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -615,6 +626,99 @@ export function Classification() {
                   <Title>
                     <span className="title_top">문항뷰어</span>
                   </Title>
+                  <MathViewerWrapper>
+                    {sortedList.length > 0 ? (
+                      sortedList[sortedList.length - 1]?.quizItemList?.map(
+                        (el) => (
+                          <div key={`${el?.code} quizItemList sortedList`}>
+                            <MathViewer>
+                              {el?.type == 'TITLE' ? (
+                                el.content && (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: el.content || '',
+                                    }}
+                                  ></div>
+                                )
+                              ) : (
+                                <></>
+                              )}
+                              {el?.type == 'QUESTION' ? (
+                                el.content && (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: el.content || '',
+                                    }}
+                                  ></div>
+                                )
+                              ) : (
+                                <></>
+                              )}
+                              {el?.type == 'EXAMPLE' ? (
+                                el.content && (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: el.content || '',
+                                    }}
+                                  ></div>
+                                )
+                              ) : (
+                                <></>
+                              )}
+                              {el?.type == 'ANSWER' ? (
+                                el.content && (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: el.content || '',
+                                    }}
+                                  ></div>
+                                )
+                              ) : (
+                                <></>
+                              )}
+                              {el?.type == 'TIP' ? (
+                                el.content && (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: el.content || '',
+                                    }}
+                                  ></div>
+                                )
+                              ) : (
+                                <></>
+                              )}
+                              {el?.type == 'COMMENTARY' ? (
+                                el.content && (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: el.content || '',
+                                    }}
+                                  ></div>
+                                )
+                              ) : (
+                                <></>
+                              )}
+                              {el?.type == 'HINT' ? (
+                                el.content && (
+                                  <div
+                                    dangerouslySetInnerHTML={{
+                                      __html: el.content || '',
+                                    }}
+                                  ></div>
+                                )
+                              ) : (
+                                <></>
+                              )}
+                            </MathViewer>
+                          </div>
+                        ),
+                      )
+                    ) : (
+                      <>
+                        <ValueNone info="문항을 선택해 주세요" textOnly />
+                      </>
+                    )}
+                  </MathViewerWrapper>
                 </ViewerWrapper>
               </PerfectScrollbar>
             </ScrollWrapper>
@@ -1013,4 +1117,7 @@ const LoaderWrapper = styled.div`
   width: 100%;
   padding-bottom: 50px;
   padding-left: calc(50% - 35px);
+`;
+const MathViewerWrapper = styled.div`
+  padding: 20px;
 `;
