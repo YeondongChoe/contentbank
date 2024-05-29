@@ -32,8 +32,6 @@ import { QuizReportList } from './QuizReportList';
 
 export function QuizManagementList() {
   const [page, setPage] = useRecoilState(pageAtom);
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
@@ -42,9 +40,25 @@ export function QuizManagementList() {
   const [checkListOn, setCheckListOn] = useState<number[]>([]);
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  // 셀렉트
+  const [selectedSource, setSelectedSource] = useState<string>(''); //출처
+  const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
+  const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
+  const [selectedGrade, setSelectedGrade] = useState<string>(''); //학년
+  const [selectedSemester, setSelectedSemester] = useState<string>(''); //학기
+  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
+  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
+  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
+  const [selectedOpenStatus, setSelectedOpenStatus] = useState<string>(''); //오픈여부
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [onSearch, setOnSearch] = useState<boolean>(false);
+
+  const [key, setKey] = useState(0);
+
   //탭 고정 데이터
   const menuList = [
     {
@@ -222,6 +236,136 @@ export function QuizManagementList() {
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
+    if (
+      value !== categoryTitles[16]?.code ||
+      value !== categoryTitles[0]?.code ||
+      value !== categoryTitles[1]?.code ||
+      value !== categoryTitles[2]?.code ||
+      value !== categoryTitles[3]?.code ||
+      value !== categoryTitles[6]?.code ||
+      value !== categoryTitles[7]?.code ||
+      value !== categoryTitles[40]?.code ||
+      value !== '오픈여부'
+    ) {
+      setOnSearch(true);
+    } else {
+      setOnSearch(false);
+    }
+  };
+  //셀렉트 초기화
+  const handleDefaultSelect = (defaultValue?: string) => {
+    if (defaultValue == 'all') {
+      setSelectedSource('');
+      setSelectedCurriculum('');
+      setSelectedLevel('');
+      setSelectedGrade('');
+      setSelectedSemester('');
+      setSelectedSubject('');
+      setSelectedCourse('');
+      setSelectedQuestionType('');
+      setSelectedOpenStatus('');
+      setStartDate('');
+      setEndDate('');
+      setSearchKeywordValue('');
+      setOnSearch(false);
+    }
+    switch (defaultValue) {
+      case categoryTitles[16]?.code:
+        setSelectedSource('');
+        break;
+      case categoryTitles[0]?.code:
+        setSelectedCurriculum('');
+        break;
+      case categoryTitles[1]?.code:
+        setSelectedLevel('');
+        break;
+      case categoryTitles[2]?.code:
+        setSelectedGrade('');
+        break;
+      case categoryTitles[3]?.code:
+        setSelectedSemester('');
+        break;
+      case categoryTitles[6]?.code:
+        setSelectedSubject('');
+        break;
+      case categoryTitles[7]?.code:
+        setSelectedCourse('');
+        break;
+      case categoryTitles[40]?.code:
+        setSelectedQuestionType('');
+        break;
+      case '오픈여부':
+        setSelectedOpenStatus('');
+        break;
+      default:
+        break;
+    }
+  };
+
+  // 문항 검색 불러오기 api
+  const getSearchQuiz = async () => {
+    const res = await quizService.get(
+      `/v1/search/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+    );
+    console.log(`getSearchQuiz 결과값`, res.data.data);
+    return res.data.data;
+  };
+  const {
+    data: quizSearchData,
+    isLoading: quizSearchDataIsLoading,
+    error: quizSearchDataError,
+    refetch: quizSearchDataRefetch,
+  } = useQuery({
+    queryKey: ['get-quizList-search'],
+    queryFn: getSearchQuiz,
+    enabled: !!onSearch,
+    meta: {
+      errorMessage: 'get-quizList-search 에러 메세지',
+    },
+  });
+
+  // 검색용 셀렉트 선택시
+  useEffect(() => {
+    // console.log('selectedSource', selectedSource);
+    // console.log('selectedCurriculum', selectedCurriculum);
+    // console.log('selectedLevel', selectedLevel);
+    // console.log('selectedGrade', selectedGrade);
+    // console.log('selectedSemester', selectedSemester);
+    // console.log('selectedSubject', selectedSubject);
+    // console.log('selectedCourse', selectedCourse);
+    // console.log('selectedQuestionType', selectedQuestionType);
+    // console.log('selectedOpenStatus', selectedOpenStatus);
+    // console.log('startDate', startDate);
+    // console.log('endDate', endDate);
+    // console.log('searchKeywordValue', searchKeywordValue);
+    quizSearchDataRefetch();
+    setOnSearch(true);
+  }, [
+    selectedSource,
+    selectedCurriculum,
+    selectedLevel,
+    selectedGrade,
+    selectedSemester,
+    selectedSubject,
+    selectedCourse,
+    selectedQuestionType,
+    selectedOpenStatus,
+    startDate,
+    endDate,
+    searchKeywordValue,
+  ]);
+
+  useEffect(() => {
+    if (quizSearchData) setQuestionList(quizSearchData.quizList);
+  }, [quizSearchData]);
+
+  useEffect(() => {
+    reloadComponent();
+  }, [questionList]);
+
+  // 랜더링 초기화
+  const reloadComponent = () => {
+    setKey((prevKey) => prevKey + 1);
   };
 
   // 모달 연뒤 문항 일괄편집 윈도우 이동
@@ -248,20 +392,30 @@ export function QuizManagementList() {
   const changeTab = () => {
     setPage(1);
   };
+
   // 탭 바뀔시 초기화
   useEffect(() => {
+    setOnSearch(false);
+    quizSearchDataRefetch();
     quizDataRefetch();
-    setSearchValue('');
   }, [tabVeiw]);
 
   // 데이터 변경시 리랜더링
   useEffect(() => {
     quizDataRefetch();
-  }, [page, searchKeywordValue]);
+  }, [page]);
 
   const closeAlert = () => {
     setIsAlertOpen(false);
   };
+
+  // 검색 초기화
+  useEffect(() => {
+    if (!onSearch) {
+      handleDefaultSelect('all');
+      reloadComponent();
+    }
+  }, [onSearch]);
 
   return (
     <Container>
@@ -304,51 +458,109 @@ export function QuizManagementList() {
             {/* 출처 */}
             {categoriesE && categoryTitles[16] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[16]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[16]?.code}
                 key={categoryTitles[16]?.code}
                 options={categoriesE[2]}
                 onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedSource}
               />
             )}
-            {/* 교육과정 학교급 학년 학기 */}
-            {categoryList.map((el, idx) => (
+            {categoryList && categoryTitles[0] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[0]?.code)
+                }
                 width={'130px'}
-                defaultValue={categoryTitles[idx].name}
-                key={categoryTitles[idx].name}
-                options={el}
+                defaultValue={categoryTitles[0]?.code}
+                key={categoryTitles[0]?.code}
+                options={categoryList[0]}
                 onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedCurriculum}
               />
-            ))}
+            )}
+            {categoryList && categoryTitles[1] && (
+              <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[1]?.code)
+                }
+                width={'130px'}
+                defaultValue={categoryTitles[1]?.code}
+                key={categoryTitles[1]?.code}
+                options={categoryList[1]}
+                onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedLevel}
+              />
+            )}
+            {categoryList && categoryTitles[2] && (
+              <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[2]?.code)
+                }
+                width={'130px'}
+                defaultValue={categoryTitles[2]?.code}
+                key={categoryTitles[2]?.code}
+                options={categoryList[2]}
+                onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedGrade}
+              />
+            )}
+            {categoryList && categoryTitles[3] && (
+              <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[3]?.code)
+                }
+                width={'130px'}
+                defaultValue={categoryTitles[3]?.code}
+                key={categoryTitles[3]?.code}
+                options={categoryList[3]}
+                onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedSemester}
+              />
+            )}
             {/* 교과 */}
             {categoriesE && categoryTitles[6] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[6]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[6]?.code}
                 key={categoryTitles[6]?.code}
                 options={categoriesE[0]}
                 onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedSubject}
               />
             )}
             {/* 과목 */}
             {categoriesE && categoryTitles[7] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[7]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[7]?.code}
                 key={categoryTitles[7]?.code}
                 options={categoriesE[1]}
                 onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedCourse}
               />
             )}
             {/* 문항타입 */}
             {categoriesE && categoryTitles[40] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[40]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[40]?.code}
                 key={categoryTitles[40]?.code}
                 options={categoriesE[3]}
                 onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedQuestionType}
               />
             )}
             <CommonDate
@@ -387,6 +599,7 @@ export function QuizManagementList() {
             />
             {/* 오픈여부 */}
             <Select
+              onDefaultSelect={() => handleDefaultSelect('오픈여부')}
               width={'130px'}
               defaultValue={'오픈여부'}
               key={'오픈여부'}
@@ -403,6 +616,7 @@ export function QuizManagementList() {
                 },
               ]}
               onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setSelectedOpenStatus}
             />
             <Search
               value={searchValue}
@@ -421,7 +635,8 @@ export function QuizManagementList() {
               {questionList.length > 0 ? (
                 <>
                   <ContentList
-                    questionList={questionList}
+                    key={key}
+                    list={questionList}
                     deleteBtn
                     quizDataRefetch={quizDataRefetch}
                     ondeleteClick={() => {
@@ -429,11 +644,24 @@ export function QuizManagementList() {
                     }}
                     setCheckListOn={setCheckListOn}
                     tabVeiw={tabVeiw}
+                    totalCount={
+                      onSearch
+                        ? quizSearchData.pagination.totalCount
+                        : quizData.pagination.totalCount
+                    }
                     deleteQuizIsSuccess={deleteQuizIsSuccess}
                   />
                   <PaginationBox
-                    itemsCountPerPage={quizData.pagination.pageUnit}
-                    totalItemsCount={quizData.pagination.totalCount}
+                    itemsCountPerPage={
+                      onSearch
+                        ? quizSearchData.pagination.pageUnit
+                        : quizData.pagination.pageUnit
+                    }
+                    totalItemsCount={
+                      onSearch
+                        ? quizSearchData.pagination.totalCount
+                        : quizData.pagination.totalCount
+                    }
                   />
                 </>
               ) : (

@@ -35,7 +35,7 @@ import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
 
 type ContentListProps = {
-  questionList: QuizListType[] | any[]; // TODO
+  list: QuizListType[] | any[]; // TODO
   tabVeiw: string;
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
@@ -45,13 +45,12 @@ type ContentListProps = {
   quizDataRefetch?: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<any, Error>>;
-  quizSearchDataRefetch?: (
-    options?: RefetchOptions | undefined,
-  ) => Promise<QueryObserverResult<any, Error>>;
+  key?: number;
 };
 
 export function ContentList({
-  questionList,
+  key,
+  list,
   tabVeiw,
   deleteBtn,
   ondeleteClick,
@@ -59,7 +58,6 @@ export function ContentList({
   setCheckListOn,
   deleteQuizIsSuccess,
   quizDataRefetch,
-  quizSearchDataRefetch,
 }: ContentListProps) {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
@@ -69,6 +67,7 @@ export function ContentList({
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
+  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
 
   const dropDownList: DropDownItemProps[] = [
     {
@@ -161,7 +160,6 @@ export function ContentList({
 
       // 초기화
       quizDataRefetch && quizDataRefetch();
-      quizSearchDataRefetch && quizSearchDataRefetch();
     },
   });
 
@@ -236,7 +234,6 @@ export function ContentList({
       setIsAlertOpen(false);
       setCheckList([]);
       quizDataRefetch && quizDataRefetch();
-      quizSearchDataRefetch && quizSearchDataRefetch();
     },
   });
 
@@ -310,7 +307,17 @@ export function ContentList({
     target.classList.remove('on');
   };
 
-  useEffect(() => {}, [questionList]);
+  useEffect(() => {
+    console.log('list/----------*', list);
+  }, [list]);
+  useEffect(() => {
+    console.log('list/----------*list', list);
+    setQuestionList(list);
+  }, []);
+
+  useEffect(() => {
+    console.log('questionList/----------*', questionList);
+  }, [questionList]);
 
   return (
     <>

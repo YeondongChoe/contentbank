@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
 
 import { styled } from 'styled-components';
 
-import { Button, CheckBoxI } from '../..';
 import { COLOR } from '../../constants';
 
 type DepthBlockProps = {
@@ -14,9 +12,9 @@ type DepthBlockProps = {
   classNameList: string;
   defaultChecked?: boolean;
   disabled?: boolean;
-  id: string;
+  id: string | number;
   name: string;
-  value: string;
+  value: string | number;
   checked: boolean;
 };
 
@@ -58,12 +56,12 @@ export function DepthBlock({
 
   return (
     <Component $margin={$margin}>
-      <label htmlFor={id}>
+      <label htmlFor={String(id)}>
         <input
           type="checkbox"
           defaultChecked={defaultChecked}
           name={name}
-          id={id}
+          id={String(id)}
           value={value}
           checked={checked}
           onChange={onChange}

@@ -35,6 +35,7 @@ type SelectProps = {
   $positionTop?: boolean;
   setSelectedValue?: React.Dispatch<React.SetStateAction<string>>;
   onDefaultSelect?: () => void;
+  selectedValue?: string;
 };
 
 export function Select({
@@ -51,10 +52,15 @@ export function Select({
   $positionTop,
   setSelectedValue,
   onDefaultSelect,
+  selectedValue,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
   const [code, setCode] = useState<string>();
+
+  useEffect(() => {
+    setSelected(selectedValue);
+  }, [selectedValue]);
 
   if (setSelectedValue !== undefined && selected && code) {
     setSelectedValue(code);

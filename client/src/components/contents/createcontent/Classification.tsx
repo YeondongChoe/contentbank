@@ -40,6 +40,16 @@ interface RadioState {
   title: string;
   checkValue: number;
   code: string;
+  key: string;
+}
+
+interface ClassificationState {
+  quizCodeList: string[];
+  categoryList: {
+    itemTreeKey?: Record<string, string>;
+    itemTreeIdxList?: number[];
+    quizCategory?: Record<string, string>;
+  }[];
 }
 
 export function Classification() {
@@ -50,31 +60,37 @@ export function Classification() {
     title: '',
     checkValue: 0,
     code: '',
+    key: '',
   });
   const [radio2depthCheck, setRadio2depthCheck] = useState<RadioState>({
     title: '',
     checkValue: 0,
     code: '',
+    key: '',
   });
   const [radio3depthCheck, setRadio3depthCheck] = useState<RadioState>({
     title: '',
     checkValue: 0,
     code: '',
+    key: '',
   });
   const [radio4depthCheck, setRadio4depthCheck] = useState<RadioState>({
     title: '',
     checkValue: 0,
     code: '',
+    key: '',
   });
   const [radioEtc1Check, setRadioEtc1Check] = useState<RadioState>({
     title: '',
     checkValue: 0,
     code: '',
+    key: '',
   });
   const [radioEtc2Check, setRadioEtc2Check] = useState<RadioState>({
     title: '',
     checkValue: 0,
     code: '',
+    key: '',
   });
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
@@ -83,8 +99,7 @@ export function Classification() {
   const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string>('');
   const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string>('');
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [checkedDepthList, setCheckedDepthList] = useState<string[]>([]);
-
+  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
   const [nextList1depth, setNextList1depth] = useState([
     { code: '', idx: 0, name: '' },
   ]);
@@ -98,7 +113,6 @@ export function Classification() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     RadioState[][]
   >([]);
-
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
   const [categoryAddInfoList, setCategoryAddInfoList] = useState<
@@ -107,7 +121,6 @@ export function Classification() {
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
 
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
-  const [addInfo, setAddInfo] = useState();
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -187,6 +200,9 @@ export function Classification() {
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
+    const itemId =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.id;
     switch (depth) {
       case '1depth':
         setSelected1depth(e.currentTarget.id);
@@ -194,6 +210,7 @@ export function Classification() {
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
           code: e.currentTarget.className,
+          key: itemId as string,
         });
         break;
       case '2depth':
@@ -202,6 +219,7 @@ export function Classification() {
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
           code: e.currentTarget.className,
+          key: itemId as string,
         });
         break;
       case '3depth':
@@ -210,6 +228,7 @@ export function Classification() {
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
           code: e.currentTarget.className,
+          key: itemId as string,
         });
         break;
       case '4depth':
@@ -218,6 +237,7 @@ export function Classification() {
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
           code: e.currentTarget.className,
+          key: itemId as string,
         });
         break;
 
@@ -227,6 +247,7 @@ export function Classification() {
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
           code: e.currentTarget.className,
+          key: itemId as string,
         });
         break;
       case 'etc2':
@@ -235,6 +256,7 @@ export function Classification() {
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
           code: e.currentTarget.className,
+          key: itemId as string,
         });
         break;
     }
@@ -336,14 +358,14 @@ export function Classification() {
   }, [selected2depth]);
   useEffect(() => {
     setSelected4depth('');
-    setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
+    setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
     setItemTree([]);
   }, [selected3depth]);
   useEffect(() => {
     setSelectedCategoryEtc1('');
     setSelectedCategoryEtc2('');
-    setRadioEtc1Check({ title: '', checkValue: 0, code: '' });
-    setRadioEtc2Check({ title: '', checkValue: 0, code: '' });
+    setRadioEtc1Check({ title: '', checkValue: 0, code: '', key: '' });
+    setRadioEtc2Check({ title: '', checkValue: 0, code: '', key: '' });
     setItemTree([]);
   }, [selected4depth]);
 
@@ -475,7 +497,7 @@ export function Classification() {
     }
     //선택정보 저장과 함께 체크상태 초기화
     //저장 성공 후
-    const reset = { title: '', checkValue: 0, code: '' };
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
     setRadio1depthCheck(reset);
     setRadio2depthCheck(reset);
     setRadio3depthCheck(reset);
@@ -499,7 +521,7 @@ export function Classification() {
         setRadio1depthCheck(selectedClassification[0]);
         setSelected1depth(selectedClassification[0]?.code);
       } else {
-        setRadio1depthCheck({ title: '', checkValue: 0, code: '' });
+        setRadio1depthCheck({ title: '', checkValue: 0, code: '', key: '' });
         setSelected1depth('');
       }
 
@@ -507,7 +529,7 @@ export function Classification() {
         setRadio2depthCheck(selectedClassification[1]);
         setSelected2depth(selectedClassification[1]?.code);
       } else {
-        setRadio2depthCheck({ title: '', checkValue: 0, code: '' });
+        setRadio2depthCheck({ title: '', checkValue: 0, code: '', key: '' });
         setSelected2depth('');
       }
 
@@ -515,7 +537,7 @@ export function Classification() {
         setRadio3depthCheck(selectedClassification[2]);
         setSelected3depth(selectedClassification[2]?.code);
       } else {
-        setRadio3depthCheck({ title: '', checkValue: 0, code: '' });
+        setRadio3depthCheck({ title: '', checkValue: 0, code: '', key: '' });
         setSelected3depth('');
       }
 
@@ -523,7 +545,7 @@ export function Classification() {
         setRadio4depthCheck(selectedClassification[3]);
         setSelected4depth(selectedClassification[3]?.code);
       } else {
-        setRadio4depthCheck({ title: '', checkValue: 0, code: '' });
+        setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
         setSelected4depth('');
       }
 
@@ -531,7 +553,7 @@ export function Classification() {
         setRadioEtc1Check(selectedClassification[4]);
         setSelectedCategoryEtc1(selectedClassification[4]?.code);
       } else {
-        setRadioEtc1Check({ title: '', checkValue: 0, code: '' });
+        setRadioEtc1Check({ title: '', checkValue: 0, code: '', key: '' });
         setSelectedCategoryEtc1('');
       }
 
@@ -539,22 +561,84 @@ export function Classification() {
         setRadioEtc2Check(selectedClassification[5]);
         setSelectedCategoryEtc2(selectedClassification[5]?.code);
       } else {
-        setRadioEtc2Check({ title: '', checkValue: 0, code: '' });
+        setRadioEtc2Check({ title: '', checkValue: 0, code: '', key: '' });
         setSelectedCategoryEtc2('');
       }
     }
   };
 
+  const sortedArr = () => {
+    console.log('아이템트리키 들어가야할 목록', unitClassificationList);
+    console.log('아이템idx 들어가야할 목록', checkedDepthList);
+
+    const arr = unitClassificationList.map((classification) => {
+      const itemTreeKey = classification.reduce(
+        (acc, curr) => {
+          if (curr.title) {
+            acc[curr.key] = curr.title;
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+      return {
+        itemTreeKey,
+        itemTreeIdxList: checkedDepthList,
+      };
+    });
+
+    return arr;
+  };
+  // 분류 등록 버튼
   const onSubmit = () => {
     // 최종적으로 전송 될 데이터
+    console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
+
+    const categoryListArr = sortedArr();
+    const data: ClassificationState = {
+      quizCodeList: checkedList,
+      categoryList: categoryListArr,
+    };
+    console.log('최종 전송 데이터 형태', data);
+    mutateChangeClassification(data);
   };
 
+  // 분류 바꾸기 (등록) api
+  const putClassification = async (data: ClassificationState) => {
+    const res = await classificationInstance.put(`/v1/item/quiz`, data);
+    console.log('putClassification', res);
+    return res;
+  };
+
+  const { data: changeClassificationData, mutate: mutateChangeClassification } =
+    useMutation({
+      mutationFn: putClassification,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response: { data: { message: string } }) => {
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+        //초기화
+      },
+    });
+
   useEffect(() => {
-    // console.log(error);
+    // console.log('itemTree ------ ', itemTree);
   }, [itemTree]);
 
   // 깊이가 있는 리스트 체크박스
-  const handleSingleCheck = (checked: boolean, id: string) => {
+  const handleSingleCheck = (checked: boolean, id: number) => {
     if (checked) {
       setCheckedDepthList((prev) => [...prev, id]);
     } else {
@@ -779,6 +863,7 @@ export function Classification() {
                     {[categoryItems[0]].map((item) => (
                       <div
                         className={`1depth`}
+                        id={`${item.name}`}
                         key={`selected1depth ${item.idx}`}
                       >
                         <ButtonFormatRadio
@@ -798,6 +883,7 @@ export function Classification() {
                       [categoryItems[1]].map((item) => (
                         <div
                           className={`2depth`}
+                          id={`${item.name}`}
                           key={`selected2depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
@@ -816,6 +902,7 @@ export function Classification() {
                       [categoryItems[2]].map((item) => (
                         <div
                           className={`3depth`}
+                          id={`${item.name}`}
                           key={`selected3depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
@@ -833,6 +920,7 @@ export function Classification() {
                       [categoryItems[3]].map((item) => (
                         <div
                           className={`4depth`}
+                          id={`${item.name}`}
                           key={`selected4depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
@@ -885,24 +973,24 @@ export function Classification() {
                               <>
                                 {itemTree.length ? (
                                   <>
-                                    {itemTree.map((el, idx) => (
+                                    {itemTree.map((el) => (
                                       <div key={`${el.itemTreeKey}`}>
                                         {el.itemTreeList.map((item) => (
                                           <DepthBlock
-                                            key={`depthList${item?.code} ${item.name}`}
+                                            key={`depthList${item?.idx} ${item.name}`}
                                             classNameList={`depth-${item.level}`}
                                             id={item?.code}
                                             name={item.name}
-                                            value={item?.code}
+                                            value={item?.idx}
                                             onChange={(e) =>
                                               handleSingleCheck(
                                                 e.target.checked,
-                                                item?.code,
+                                                item?.idx,
                                               )
                                             }
                                             checked={
                                               checkedDepthList.includes(
-                                                item?.code,
+                                                item?.idx,
                                               )
                                                 ? true
                                                 : false
@@ -938,7 +1026,11 @@ export function Classification() {
                         {categoryAddInfoList ? (
                           <>
                             {[categoryItems[4]].map((item) => (
-                              <div className={`etc1`} key={`etc1 ${item.idx}`}>
+                              <div
+                                id={`${item.name}`}
+                                className={`etc1`}
+                                key={`etc1 ${item.idx}`}
+                              >
                                 <ButtonFormatRadio
                                   titleText={`${item.name}`}
                                   list={categoryAddInfoList[0]}
@@ -950,7 +1042,11 @@ export function Classification() {
                               </div>
                             ))}
                             {[categoryItems[5]].map((item) => (
-                              <div className={`etc2`} key={`etc2 ${item.idx}`}>
+                              <div
+                                id={`${item.name}`}
+                                className={`etc2`}
+                                key={`etc2 ${item.idx}`}
+                              >
                                 <ButtonFormatRadio
                                   titleText={`${item.name}`}
                                   list={categoryAddInfoList[1]}

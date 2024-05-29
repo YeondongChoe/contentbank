@@ -56,6 +56,8 @@ export function QuizCreateList() {
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [onSearch, setOnSearch] = useState<boolean>(false);
 
+  const [key, setKey] = useState(0);
+
   //탭 고정 데이터
   const menuList = [
     {
@@ -90,6 +92,7 @@ export function QuizCreateList() {
       return res.data.data;
     }
   };
+
   const {
     data: quizData,
     isLoading,
@@ -183,25 +186,75 @@ export function QuizCreateList() {
     // console.log('categoryList', categoryList);
   }, [categoryList]);
 
+  //셀렉트 초기화
+  const handleDefaultSelect = (defaultValue?: string) => {
+    if (defaultValue == 'all') {
+      setSelectedSource('');
+      setSelectedCurriculum('');
+      setSelectedLevel('');
+      setSelectedGrade('');
+      setSelectedSemester('');
+      setSelectedSubject('');
+      setSelectedCourse('');
+      setSelectedQuestionType('');
+      setSelectedOpenStatus('');
+      setStartDate('');
+      setEndDate('');
+      setSearchKeywordValue('');
+      setOnSearch(false);
+    }
+    switch (defaultValue) {
+      case categoryTitles[16]?.code:
+        setSelectedSource('');
+        break;
+      case categoryTitles[0]?.code:
+        setSelectedCurriculum('');
+        break;
+      case categoryTitles[1]?.code:
+        setSelectedLevel('');
+        break;
+      case categoryTitles[2]?.code:
+        setSelectedGrade('');
+        break;
+      case categoryTitles[3]?.code:
+        setSelectedSemester('');
+        break;
+      case categoryTitles[6]?.code:
+        setSelectedSubject('');
+        break;
+      case categoryTitles[7]?.code:
+        setSelectedCourse('');
+        break;
+      case categoryTitles[40]?.code:
+        setSelectedQuestionType('');
+        break;
+      case '오픈여부':
+        setSelectedOpenStatus('');
+        break;
+      default:
+        break;
+    }
+  };
+
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
-  };
 
-  const handleDefaultSelect = () => {
-    setOnSearch(false);
-    setSelectedSource('');
-    setSelectedCurriculum('');
-    setSelectedLevel('');
-    setSelectedGrade('');
-    setSelectedSemester('');
-    setSelectedSubject('');
-    setSelectedCourse('');
-    setSelectedQuestionType('');
-    setSelectedOpenStatus('');
-    setStartDate('');
-    setEndDate('');
-    setSearchKeywordValue('');
+    if (
+      value !== categoryTitles[16]?.code ||
+      value !== categoryTitles[0]?.code ||
+      value !== categoryTitles[1]?.code ||
+      value !== categoryTitles[2]?.code ||
+      value !== categoryTitles[3]?.code ||
+      value !== categoryTitles[6]?.code ||
+      value !== categoryTitles[7]?.code ||
+      value !== categoryTitles[40]?.code ||
+      value !== '오픈여부'
+    ) {
+      setOnSearch(true);
+    } else {
+      setOnSearch(false);
+    }
   };
 
   // 문항 검색 불러오기 api
@@ -215,6 +268,7 @@ export function QuizCreateList() {
   const {
     data: quizSearchData,
     isLoading: quizSearchDataIsLoading,
+    isPending: quizSearchDataIsPending,
     error: quizSearchDataError,
     refetch: quizSearchDataRefetch,
   } = useQuery({
@@ -228,20 +282,20 @@ export function QuizCreateList() {
 
   // 검색용 셀렉트 선택시
   useEffect(() => {
-    setOnSearch(true);
-    console.log('selectedSource', selectedSource);
-    console.log('selectedCurriculum', selectedCurriculum);
-    console.log('selectedLevel', selectedLevel);
-    console.log('selectedGrade', selectedGrade);
-    console.log('selectedSemester', selectedSemester);
-    console.log('selectedSubject', selectedSubject);
-    console.log('selectedCourse', selectedCourse);
-    console.log('selectedQuestionType', selectedQuestionType);
-    console.log('selectedOpenStatus', selectedOpenStatus);
-    console.log('startDate', startDate);
-    console.log('endDate', endDate);
-    console.log('searchKeywordValue', searchKeywordValue);
+    // console.log('selectedSource', selectedSource);
+    // console.log('selectedCurriculum', selectedCurriculum);
+    // console.log('selectedLevel', selectedLevel);
+    // console.log('selectedGrade', selectedGrade);
+    // console.log('selectedSemester', selectedSemester);
+    // console.log('selectedSubject', selectedSubject);
+    // console.log('selectedCourse', selectedCourse);
+    // console.log('selectedQuestionType', selectedQuestionType);
+    // console.log('selectedOpenStatus', selectedOpenStatus);
+    // console.log('startDate', startDate);
+    // console.log('endDate', endDate);
+    // console.log('searchKeywordValue', searchKeywordValue);
     quizSearchDataRefetch();
+    setOnSearch(true);
   }, [
     selectedSource,
     selectedCurriculum,
@@ -256,6 +310,22 @@ export function QuizCreateList() {
     endDate,
     searchKeywordValue,
   ]);
+
+  // 검색 이후
+  useEffect(() => {
+    if (quizSearchData) {
+      setQuestionSearchList(quizSearchData.quizList);
+    }
+  }, [quizSearchData]);
+
+  useEffect(() => {
+    reloadComponent();
+  }, [questionList, questionSearchList]);
+
+  // 랜더링 초기화
+  const reloadComponent = () => {
+    setKey((prevKey) => prevKey + 1);
+  };
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -284,13 +354,6 @@ export function QuizCreateList() {
     // console.log('questionList', questionList);
   }, [quizData]);
 
-  // 검색 이후
-  useEffect(() => {
-    if (quizSearchData) {
-      setQuestionSearchList(quizSearchData.quizList);
-    }
-  }, [quizSearchData]);
-
   // 모달 연뒤 문항 생성 윈도우 이동
   const openCreateModal = () => {
     openModal(modalData);
@@ -298,17 +361,13 @@ export function QuizCreateList() {
   // 탭메뉴 클릭시 페이지네이션 초기화
   const changeTab = () => {
     setPage(1);
-    handleDefaultSelect();
   };
-  // 검색 초기화
-  useEffect(() => {}, [onSearch]);
 
   // 탭 바뀔시 초기화
   useEffect(() => {
+    setOnSearch(false);
     quizSearchDataRefetch();
     quizDataRefetch();
-    setSearchValue('');
-    setOnSearch(false);
   }, [tabVeiw]);
   // 데이터 변경시 리랜더링
   useEffect(() => {
@@ -316,6 +375,13 @@ export function QuizCreateList() {
     quizDataRefetch();
     setOnSearch(false);
   }, [page]);
+  // 검색 초기화
+  useEffect(() => {
+    if (!onSearch) {
+      handleDefaultSelect('all');
+      reloadComponent();
+    }
+  }, [onSearch]);
 
   return (
     <Container>
@@ -356,7 +422,9 @@ export function QuizCreateList() {
             {/* 출처 */}
             {categoriesE && categoryTitles[16] && (
               <Select
-                onDefaultSelect={() => handleDefaultSelect()}
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[16]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[16]?.code}
                 key={categoryTitles[16]?.code}
@@ -379,6 +447,9 @@ export function QuizCreateList() {
             ))} */}
             {categoryList && categoryTitles[0] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[0]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[0]?.code}
                 key={categoryTitles[0]?.code}
@@ -389,6 +460,9 @@ export function QuizCreateList() {
             )}
             {categoryList && categoryTitles[1] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[1]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[1]?.code}
                 key={categoryTitles[1]?.code}
@@ -399,6 +473,9 @@ export function QuizCreateList() {
             )}
             {categoryList && categoryTitles[2] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[2]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[2]?.code}
                 key={categoryTitles[2]?.code}
@@ -409,6 +486,9 @@ export function QuizCreateList() {
             )}
             {categoryList && categoryTitles[3] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[3]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[3]?.code}
                 key={categoryTitles[3]?.code}
@@ -420,6 +500,9 @@ export function QuizCreateList() {
             {/* 교과 */}
             {categoriesE && categoryTitles[6] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[6]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[6]?.code}
                 key={categoryTitles[6]?.code}
@@ -431,6 +514,9 @@ export function QuizCreateList() {
             {/* 과목 */}
             {categoriesE && categoryTitles[7] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[7]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[7]?.code}
                 key={categoryTitles[7]?.code}
@@ -442,6 +528,9 @@ export function QuizCreateList() {
             {/* 문항타입 */}
             {categoriesE && categoryTitles[40] && (
               <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[40]?.code)
+                }
                 width={'130px'}
                 defaultValue={categoryTitles[40]?.code}
                 key={categoryTitles[40]?.code}
@@ -488,6 +577,7 @@ export function QuizCreateList() {
             />
             {/* 오픈여부 */}
             <Select
+              onDefaultSelect={() => handleDefaultSelect('오픈여부')}
               width={'130px'}
               defaultValue={'오픈여부'}
               key={'오픈여부'}
@@ -519,44 +609,57 @@ export function QuizCreateList() {
             />
             {/* <Icon
               src={`/images/icon/reflash.svg`}
-              onClick={() => handleDefaultSelect()}
+              onClick={() => handleDefaultSelect('all')}
               cursor
               width="20px"
               height="20px"
               $margin="0 0 0 5px"
             /> */}
           </SelectWrapper>
-
-          {questionList.length > 0 || questionSearchList.length > 0 ? (
+          {onSearch ? (
             <>
-              <ContentList
-                questionList={questionSearchList}
-                quizDataRefetch={quizDataRefetch}
-                quizSearchDataRefetch={quizSearchDataRefetch}
-                tabVeiw={tabVeiw}
-                totalCount={
-                  onSearch
-                    ? quizSearchData.pagination.totalCount
-                    : quizData.pagination.totalCount
-                }
-              />
-              <PaginationBox
-                itemsCountPerPage={
-                  onSearch
-                    ? quizSearchData.pagination.pageUnit
-                    : quizData.pagination.pageUnit
-                }
-                totalItemsCount={
-                  onSearch
-                    ? quizSearchData.pagination.totalCount
-                    : quizData.pagination.totalCount
-                }
-              />
+              {!quizSearchDataIsPending && questionSearchList.length > 0 ? (
+                <>
+                  <ContentList
+                    key={key}
+                    list={questionSearchList}
+                    quizDataRefetch={quizSearchDataRefetch}
+                    tabVeiw={tabVeiw}
+                    totalCount={quizSearchData.pagination.totalCount}
+                  />
+                  <PaginationBox
+                    itemsCountPerPage={quizSearchData.pagination.pageUnit}
+                    totalItemsCount={quizSearchData.pagination.totalCount}
+                  />
+                </>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone />
+                </ValueNoneWrapper>
+              )}
             </>
           ) : (
-            <ValueNoneWrapper>
-              <ValueNone />
-            </ValueNoneWrapper>
+            <>
+              {questionList.length > 0 ? (
+                <>
+                  <ContentList
+                    key={key}
+                    list={questionList}
+                    quizDataRefetch={quizDataRefetch}
+                    tabVeiw={tabVeiw}
+                    totalCount={quizData.pagination.totalCount}
+                  />
+                  <PaginationBox
+                    itemsCountPerPage={quizData.pagination.pageUnit}
+                    totalItemsCount={quizData.pagination.totalCount}
+                  />
+                </>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone />
+                </ValueNoneWrapper>
+              )}
+            </>
           )}
         </>
       )}
