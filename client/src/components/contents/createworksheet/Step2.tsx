@@ -41,6 +41,7 @@ import { ItemCategoryType, ItemTreeListType } from '../../../types';
 import {
   WorkbookData,
   QuizList,
+  SimilarQuizList,
   QuizCategory,
   QuizCategoryList,
   Data,
@@ -106,7 +107,7 @@ export function Step2() {
     }
   }, [sendLocalData]);
 
-  console.log(sendLocalData);
+  // console.log(sendLocalData);
   // console.log(sendLocalData?.data);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
@@ -756,15 +757,31 @@ export function Step2() {
 
   // 유사문항
   const [isSimilar, setIsSimilar] = useState(false);
-  const [similarItems, setSimilarItems] = useState<QuizList[]>(
-    sendLocalData?.data.quizList || [],
+  const [similarItems, setSimilarItems] = useState<SimilarQuizList>();
+  const [similarItemCode, setSimilarItemCode] = useState<string>('');
+  const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
+    [],
   );
+  // console.log(
+  //   similarPrevItems
+  //     .map((item) => item.quizList.map((item) => item.code))
+  //     .flat(),
+  // );
 
-  const postSimilarItems = async (code: string) => {
+  // 유사문항 요청 api
+  console.log(similarItems);
+  console.log(similarPrevItems);
+
+  const postSimilarItems = async () => {
     const data = {
-      quizCode: code,
+      quizCode: similarItemCode,
       count: 10,
-      filterList: [code],
+      filterList: [
+        similarPrevItems
+          .map((item) => item.quizList.map((item) => item.code))
+          .flat(),
+        similarItemCode,
+      ].flat(),
     };
     const res = await quizService.post('/v1/quiz/similar', data);
     console.log('quizService 응답:', res);
@@ -784,21 +801,42 @@ export function Step2() {
         type: 'error',
         text: context.response.data.message,
       });
-      // if (context.response.data.code == 'GE-002') {
-      //   postRefreshToken();
-      // }
     },
-    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
-      // setItemTreeList(res.data.data[0].itemTreeList);
-      setItemTree(response.data.data);
+    onSuccess: (response: { data: { data: SimilarQuizList } }) => {
+      setSimilarItems(response.data.data);
     },
   });
-
+  // 유사문항 버튼 클릭
   const showSimilarContent = (code: string) => {
-    setIsSimilar(!isSimilar);
-    similarDataMutate(code);
+    setSimilarItemCode(code);
+    if (isSimilar) {
+      setIsSimilar(!isSimilar);
+    } else {
+      setIsSimilar(!isSimilar);
+      similarDataMutate();
+    }
   };
-  console.log(similarData);
+  //새로 불러오기
+  const clickNewSimilarList = () => {
+    if (similarItems) {
+      setSimilarPrevItems((prevItem) => [...prevItem, similarItems]);
+    }
+    postSimilarItems();
+  };
+
+  //이전 불러오기
+  const clickPrevSimilarList = () => {
+    if (similarPrevItems.length > 0) {
+      const lastItem = similarPrevItems[similarPrevItems.length - 1]; // 마지막 요소를 추출
+      setSimilarItems(lastItem); // similarItems에 설정
+      setSimilarPrevItems((prevItems) => prevItems.slice(0, -1)); // 마지막 요소 제거
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '불러올 이전 문항이 없습니다.',
+      });
+    }
+  };
 
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
@@ -892,12 +930,14 @@ export function Step2() {
                           <SimilarIcon>
                             <PiArrowCounterClockwiseBold
                               style={{ fontSize: '22px', cursor: 'pointer' }}
+                              onClick={clickPrevSimilarList}
                             />
                             이전 불러오기
                           </SimilarIcon>
                           <SimilarIcon>
                             <PiArrowClockwiseBold
                               style={{ fontSize: '22px', cursor: 'pointer' }}
+                              onClick={clickNewSimilarList}
                             />
                             새로 불러오기
                           </SimilarIcon>
@@ -905,7 +945,7 @@ export function Step2() {
                       </SimilarTitleWrapper>
                       <SimilarContentsWrapper>
                         <AddNewContensWrapper>
-                          {initialItems.map((item) => (
+                          {similarItems?.quizList.map((item) => (
                             <MathviewerAccordion
                               key={item.idx}
                               componentWidth="600px"
