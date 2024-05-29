@@ -832,7 +832,7 @@ export function Step2() {
       setSimilarPrevItems((prevItems) => prevItems.slice(0, -1)); // 마지막 요소 제거
     } else {
       openToastifyAlert({
-        type: 'error',
+        type: 'warning',
         text: '불러올 이전 문항이 없습니다.',
       });
     }
