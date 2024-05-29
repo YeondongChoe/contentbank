@@ -45,6 +45,10 @@ export interface QuizList {
   delete: boolean;
 }
 
+export interface SimilarQuizList {
+  quizList: QuizList[];
+}
+
 export interface TagClassList {
   idx: number;
   name: string;

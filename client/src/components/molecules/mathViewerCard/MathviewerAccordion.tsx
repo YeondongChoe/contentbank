@@ -16,7 +16,10 @@ import { MathViewer } from '../../mathViewer/MathViewer';
 
 type AccordionProps = {
   onClick: () => void;
-  title: string;
+  changeQuizitem?: () => void;
+  addQuizItem?: () => void;
+  title?: string;
+  quizNum?: number;
   children: React.ReactNode;
   componentWidth?: string;
   componentHeight?: string;
@@ -30,6 +33,7 @@ type AccordionProps = {
 function Accordion({
   onClick,
   title,
+  quizNum,
   children,
   isSimilarQuiz,
   isNewQuiz,
@@ -38,6 +42,8 @@ function Accordion({
   isSimilar,
   isSelected,
   isBorder,
+  changeQuizitem,
+  addQuizItem,
 }: AccordionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -53,7 +59,10 @@ function Accordion({
       $isBorder={isBorder}
     >
       <AccordionHeader>
-        <span>{title}</span>
+        <AccordionHeaderTitle>
+          <span className="number">{quizNum}</span>
+          <span className="title">{title}</span>
+        </AccordionHeaderTitle>
         <ActionButtonWrapper>
           {isNewQuiz && (
             <>
@@ -61,7 +70,7 @@ function Accordion({
                 <>
                   <Button
                     buttonType="button"
-                    onClick={() => {}}
+                    onClick={changeQuizitem}
                     $padding="10px"
                     height={'30px'}
                     width={'70px'}
@@ -73,7 +82,7 @@ function Accordion({
                   </Button>
                   <Button
                     buttonType="button"
-                    onClick={() => {}}
+                    onClick={addQuizItem}
                     $padding="10px"
                     height={'30px'}
                     width={'70px'}
@@ -123,10 +132,13 @@ function Accordion({
 type MathviewerCardProps = {
   onClick: () => void;
   reportOnClick?: () => void;
+  changeQuizitem?: () => void;
+  addQuizItem?: () => void;
   isSimilar?: boolean;
   isBorder?: boolean;
   data: QuizList;
   index: number;
+  quizNum?: number;
   selectedCardIndex: number | undefined;
   onSelectCard: (index: number) => void;
   width?: string;
@@ -135,16 +147,20 @@ type MathviewerCardProps = {
   componentWidth?: string;
   componentHeight?: string;
   className?: string;
+  title?: string;
 };
 
 export function MathviewerAccordion({
   onClick,
   reportOnClick,
+  changeQuizitem,
+  addQuizItem,
   isSimilar,
   isBorder,
   selectedCardIndex,
   onSelectCard,
   index,
+  quizNum,
   data,
   width,
   isSimilarQuiz,
@@ -152,11 +168,15 @@ export function MathviewerAccordion({
   componentWidth,
   componentHeight,
   className,
+  title,
 }: MathviewerCardProps) {
   return (
     <Accordion
       onClick={onClick}
-      title={`Question ${index}`}
+      changeQuizitem={changeQuizitem}
+      addQuizItem={addQuizItem}
+      title={title}
+      quizNum={quizNum}
       componentWidth={componentWidth}
       componentHeight={componentHeight}
       isSimilar={isSimilar}
@@ -329,6 +349,19 @@ const AccordionHeader = styled.div`
   border: 3px solid white;
   width: 100%;
   border-radius: 15px;
+`;
+
+const AccordionHeaderTitle = styled.div`
+  display: flex;
+  padding-left: 16px;
+  gap: 20px;
+  .number {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .title {
+    font-size: 16px;
+  }
 `;
 
 const AccordionContent = styled.div`
