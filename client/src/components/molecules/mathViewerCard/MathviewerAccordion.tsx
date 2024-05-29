@@ -7,6 +7,7 @@ import { IoMenuOutline } from 'react-icons/io5';
 import { LuSiren, LuBookmarkPlus } from 'react-icons/lu';
 import { styled } from 'styled-components';
 
+import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { ItemQuestionType } from '../../../types/ItemQuestionType';
 import { QuizList } from '../../../types/WorkbookType';
 import { Button } from '../../atom';
@@ -173,7 +174,7 @@ export function MathviewerAccordion({
           <div>중</div>
           <div>객관식</div>
         </div>
-        <MathViewer data={data} width={width}></MathViewer>
+        <WorkbookMathViewer data={data} width={width}></WorkbookMathViewer>
         {isNewQuiz ? (
           <ButtonWrapper>
             <div className="menuIcon">
