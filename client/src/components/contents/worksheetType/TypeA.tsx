@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import styled, { ThemeProvider, css } from 'styled-components';
 
 import { Label } from '../../../components/atom';
-import { MathViewer } from '../../../components/mathViewer';
+import { MathViewer, WorkbookMathViewer } from '../../../components/mathViewer';
 import Contents1 from '../../../components/mathViewer/test1.json';
 import Contents2 from '../../../components/mathViewer/test2.json';
 import Contents3 from '../../../components/mathViewer/test3.json';
@@ -49,7 +49,7 @@ export const TypeA = ({
       setList([Contents1]);
     }
   }, [contentQuantity]);
-  console.log(contentQuantity);
+  //console.log(contentQuantity);
 
   return (
     <Container>
@@ -114,7 +114,7 @@ export const TypeA = ({
                         ? `0${Contents2.seq}`
                         : `${Contents2.seq}`}
                     </strong>
-                    <MathViewer
+                    <WorkbookMathViewer
                       data={card}
                       padding={
                         contentQuantity === '4문제'
@@ -125,7 +125,7 @@ export const TypeA = ({
                               ? '0 0 50px 0'
                               : '0'
                       }
-                    ></MathViewer>
+                    ></WorkbookMathViewer>
                   </MathJaxWrapper>
                 </MathViewerWrapper>
               ))}
@@ -148,12 +148,12 @@ export const TypeA = ({
                             ? `0${Contents2.seq}`
                             : `${Contents2.seq}`}
                         </strong>
-                        <MathViewer
+                        <WorkbookMathViewer
                           data={card}
                           padding={
                             contentQuantity === '최대' ? '0 0 80px 0' : '0'
                           }
-                        ></MathViewer>
+                        ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
                   ))}
@@ -174,7 +174,7 @@ export const TypeA = ({
                             ? `0${Contents2.seq}`
                             : `${Contents2.seq}`}
                         </strong>
-                        <MathViewer
+                        <WorkbookMathViewer
                           data={card}
                           padding={
                             contentQuantity === '4문제'
@@ -185,7 +185,7 @@ export const TypeA = ({
                                   ? '0 0 50px 0'
                                   : '0'
                           }
-                        ></MathViewer>
+                        ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
                   ))}
@@ -232,19 +232,20 @@ const Wrapper = styled.div`
 
 const WorksheetHeader = styled.div`
   position: relative;
-  border: 1px solid ${({ theme }) => theme?.color?.backgroundColor || 'initial'};
+  border: 1px solid
+    ${({ theme }) => theme?.color?.backgroundColorTypeA || 'initial'};
   width: 97%;
   border-bottom-right-radius: 50px;
   background-color: ${({ theme }) =>
-    theme?.color?.backgroundColor || 'initial'};
+    theme?.color?.backgroundColorTypeA || 'initial'};
   padding: 20px;
 `;
 const ContentTitle = styled.div`
-  color: gray;
+  color: #888888;
   padding-bottom: 2px;
 `;
 const ContentScript = styled.div`
-  color: gray;
+  color: #888888;
   padding-bottom: 5px;
 `;
 const HeaderTriangle = styled.div`
@@ -253,12 +254,10 @@ const HeaderTriangle = styled.div`
   right: 0;
   width: 0;
   height: 0;
-  width: 0;
-  height: 0;
   border-bottom: 50px solid transparent;
   border-top: 50px solid transparent;
   border-left: 50px solid
-    ${({ theme }) => theme?.color?.backgroundColor || 'initial'};
+    ${({ theme }) => theme?.color?.backgroundColorTypeA || 'initial'};
   border-right: 50px solid transparent;
 `;
 const NoneColorTextWrapper = styled.div`
@@ -283,10 +282,10 @@ const ColorTextWrapper = styled.div`
   align-items: flex-end;
 
   .Title {
-    color: ${({ theme }) => theme?.color?.textColor || 'initial'};
+    color: ${({ theme }) => theme?.color?.textColorTypeA || 'initial'};
   }
   .Tag {
-    color: ${({ theme }) => theme?.color?.tagColor || 'initial'};
+    color: ${({ theme }) => theme?.color?.tagColorTypeA || 'initial'};
     display: flex;
     gap: 10px;
   }
@@ -300,7 +299,8 @@ const ColorTextWrapper = styled.div`
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background-color: ${({ theme }) => theme?.color?.tagColor || 'initial'};
+    background-color: ${({ theme }) =>
+      theme?.color?.tagColorTypeA || 'initial'};
   }
 `;
 type WorksheetBodyType = {
@@ -312,7 +312,7 @@ const WorksheetBody = styled.div<WorksheetBodyType>`
   ${({ $contentQuantity }) =>
     $contentQuantity === '최대' || $contentQuantity === '6문제'
       ? `height: 105%`
-      : `height: calc(100% - 300px);`};
+      : `height: calc(100% - 327px);`};
   margin: 0 auto;
   display: flex;
 `;
@@ -349,13 +349,13 @@ const MathJaxWrapper = styled.div`
 
   strong {
     font-size: 25px;
-    color: ${({ theme }) => theme?.color?.textColor || 'initial'};
+    color: ${({ theme }) => theme?.color?.textColorTypeA || 'initial'};
   }
 `;
 const FooterTriangle = styled.div`
   position: relative;
   top: 40px;
-  right: -660px;
+  right: -658px;
   width: 0;
   height: 0;
   border-bottom: 40px solid transparent;
@@ -365,7 +365,7 @@ const FooterTriangle = styled.div`
 `;
 const WorksheetAdditionalInformation = styled.div`
   position: relative;
-  left: 25px;
+  left: 23px;
   width: 97%;
   height: 40px;
   display: flex;

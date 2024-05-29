@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { Label } from '../../../components/atom';
-import { MathViewer } from '../../../components/mathViewer';
+import { MathViewer, WorkbookMathViewer } from '../../../components/mathViewer';
 import Contents1 from '../../../components/mathViewer/test1.json';
 import Contents2 from '../../../components/mathViewer/test2.json';
 import Contents3 from '../../../components/mathViewer/test3.json';
@@ -32,98 +32,73 @@ export const TypeB = ({
   isContentTypeTitle,
   theme,
 }: TypeBProps) => {
-  const [list, setList] = useState<QuizList[]>([]);
-  const [list1, setList1] = useState<QuizList[]>([]);
+  const [list, setList] = useState<any[]>([]);
+  const [list1, setList1] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //   if (contentQuantity === '최대') {
-  //     setList([Contents2, Contents2, Contents3, Contents4]);
-  //     setList1([Contents2, Contents3, Contents4]);
-  //   }
-  //   if (contentQuantity === '6문제') {
-  //     setList([Contents2, Contents2, Contents3]);
-  //   }
-  //   if (contentQuantity === '4문제') {
-  //     setList([Contents1, Contents2]);
-  //   }
-  //   if (contentQuantity === '2문제') {
-  //     setList([Contents1]);
-  //   }
-  // }, [contentQuantity]);
+  useEffect(() => {
+    if (contentQuantity === '최대') {
+      setList([Contents2, Contents2, Contents3, Contents4]);
+      setList1([Contents2, Contents3, Contents4]);
+    }
+    if (contentQuantity === '6문제') {
+      setList([Contents2, Contents2, Contents3]);
+    }
+    if (contentQuantity === '4문제') {
+      setList([Contents1, Contents2]);
+    }
+    if (contentQuantity === '2문제') {
+      setList([Contents1]);
+    }
+  }, [contentQuantity]);
 
   return (
     <Container>
       <LabelWrapper>
-        <Label value="미리보기"></Label>
+        <Label value="미리보기 화면은 실제 학습지와 약간의 차이가 있습니다."></Label>
       </LabelWrapper>
       <Wrapper>
         <ThemeProvider theme={theme as object}>
+          <HeaderCircle></HeaderCircle>
           <WorksheetHeader>
-            <p>
-              <Label value={(title as string) || '학습지명'} fontSize="14px" />
-            </p>
             <TextWrapper>
-              <div>
+              <div className="grade">
                 <Label
-                  value={(grade as string) || '학교급/대상 학년'}
+                  value={(grade as string) || '대상 학년'}
                   fontSize="12px"
                 />
               </div>
-              <div>
+              <div className="Title">
+                <Label
+                  value={(title as string) || '학습지명'}
+                  fontSize="24px"
+                  bold
+                />
+              </div>
+              <div className="Tag">
                 <Label
                   value={(tag as string) || '학습지 태그'}
-                  fontSize="12px"
+                  fontSize="11px"
                 />
               </div>
             </TextWrapper>
-            {isContentTypeTitle ? (
-              <p>
-                <Label value="문항 유형명" fontSize="14px" />
-              </p>
-            ) : (
-              <p></p>
-            )}
           </WorksheetHeader>
-        </ThemeProvider>
-        <WorksheetBody>
-          <WorksheetBodyLeft>
-            {list.map((card, i) => (
-              <MathViewerWrapper key={i}>
-                <strong>{i + 1}.</strong>
-                <MathViewer
-                  data={card}
-                  padding={
-                    contentQuantity === '4문제'
-                      ? '0 0 60px 0'
-                      : contentQuantity === '6문제'
-                        ? '0 0 60px 0'
-                        : contentQuantity === '최대'
-                          ? '0 0 50px 0'
-                          : '0'
-                  }
-                ></MathViewer>
-              </MathViewerWrapper>
-            ))}
-          </WorksheetBodyLeft>
-          <WorksheetBodyRight>
-            {contentQuantity === '최대' ? (
-              <>
-                {list1.map((card, i) => (
-                  <MathViewerWrapper key={i}>
-                    <strong>{i + 5}.</strong>
-                    <MathViewer
-                      data={card}
-                      padding={contentQuantity === '최대' ? '0 0 80px 0' : '0'}
-                    ></MathViewer>
-                  </MathViewerWrapper>
-                ))}
-              </>
-            ) : (
-              <>
-                {list.map((card, i) => (
-                  <MathViewerWrapper key={i}>
-                    <strong>{i + 3}.</strong>
-                    <MathViewer
+          <WorksheetBody $contentQuantity={contentQuantity}>
+            <WorksheetBodyLeft>
+              {list.map((card, i) => (
+                <MathViewerWrapper key={i}>
+                  {isContentTypeTitle && (
+                    <div>
+                      <ContentTitle>|{Contents2.it_title}|</ContentTitle>
+                      <ContentScript>{Contents2.it_code}</ContentScript>
+                    </div>
+                  )}
+                  <MathJaxWrapper>
+                    <strong>
+                      {Contents2.seq < 10
+                        ? `0${Contents2.seq}`
+                        : `${Contents2.seq}`}
+                    </strong>
+                    <WorkbookMathViewer
                       data={card}
                       padding={
                         contentQuantity === '4문제'
@@ -134,16 +109,82 @@ export const TypeB = ({
                               ? '0 0 50px 0'
                               : '0'
                       }
-                    ></MathViewer>
-                  </MathViewerWrapper>
-                ))}
-              </>
-            )}
-          </WorksheetBodyRight>
-        </WorksheetBody>
+                    ></WorkbookMathViewer>
+                  </MathJaxWrapper>
+                </MathViewerWrapper>
+              ))}
+            </WorksheetBodyLeft>
+            <Divider />
+            <WorksheetBodyRight>
+              {contentQuantity === '최대' ? (
+                <>
+                  {list1.map((card, i) => (
+                    <MathViewerWrapper key={i}>
+                      {isContentTypeTitle && (
+                        <div>
+                          <ContentTitle>|{Contents2.it_title}|</ContentTitle>
+                          <ContentScript>{Contents2.it_code}</ContentScript>
+                        </div>
+                      )}
+                      <MathJaxWrapper>
+                        <strong>
+                          {Contents2.seq < 10
+                            ? `0${Contents2.seq}`
+                            : `${Contents2.seq}`}
+                        </strong>
+                        <WorkbookMathViewer
+                          data={card}
+                          padding={
+                            contentQuantity === '최대' ? '0 0 80px 0' : '0'
+                          }
+                        ></WorkbookMathViewer>
+                      </MathJaxWrapper>
+                    </MathViewerWrapper>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {list.map((card, i) => (
+                    <MathViewerWrapper key={i}>
+                      {isContentTypeTitle && (
+                        <div>
+                          <ContentTitle>|{Contents2.it_title}|</ContentTitle>
+                          <ContentScript>{Contents2.it_code}</ContentScript>
+                        </div>
+                      )}
+                      <MathJaxWrapper>
+                        <strong>
+                          {Contents2.seq < 10
+                            ? `0${Contents2.seq}`
+                            : `${Contents2.seq}`}
+                        </strong>
+                        <WorkbookMathViewer
+                          data={card}
+                          padding={
+                            contentQuantity === '4문제'
+                              ? '0 0 60px 0'
+                              : contentQuantity === '6문제'
+                                ? '0 0 60px 0'
+                                : contentQuantity === '최대'
+                                  ? '0 0 50px 0'
+                                  : '0'
+                          }
+                        ></WorkbookMathViewer>
+                      </MathJaxWrapper>
+                    </MathViewerWrapper>
+                  ))}
+                </>
+              )}
+            </WorksheetBodyRight>
+          </WorksheetBody>
+        </ThemeProvider>
         <WorksheetAdditionalInformation $isWeather={isWeather}>
-          {isWeather && <span>2024/03/19</span>}
-          <span>1페이지</span>
+          {isWeather && (
+            <span className="weather">
+              <Label value="2024/03/19" fontSize="12px"></Label>
+            </span>
+          )}
+          <span className="pagenumber">1</span>
         </WorksheetAdditionalInformation>
       </Wrapper>
     </Container>
@@ -158,6 +199,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: black;
+  font-family: 'Spoqa Han Sans Neo';
 `;
 const LabelWrapper = styled.div`
   width: 100%;
@@ -165,48 +207,114 @@ const LabelWrapper = styled.div`
   color: white;
 `;
 const Wrapper = styled.div`
-  //height: 90%;
   background-color: white;
-  aspect-ratio: 210 / 297;
+  aspect-ratio: 210 / 197;
   overflow-y: auto;
 `;
 const WorksheetHeader = styled.div`
   margin: 0 auto;
-  border-bottom: 1px solid black;
-  padding: 10px;
-  p {
-    display: flex;
-    text-align: center;
-    height: 30px;
-  }
-  label {
-    color: ${({ theme }) => theme?.color?.background || 'initial'};
-  }
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 720px;
+  height: 72px;
+  border: 2px solid ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
+  border-radius: 10px;
+`;
+const ContentTitle = styled.div`
+  color: #888888;
+  padding-bottom: 2px;
+`;
+const ContentScript = styled.div`
+  color: #888888;
+  padding-bottom: 5px;
+`;
+const HeaderCircle = styled.div`
+  position: relative;
+  top: 10px;
+  right: -30px;
+  width: 120px;
+  height: 20px;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  background-color: ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
 `;
 const TextWrapper = styled.div`
+  position: relative;
+  height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  div {
-    display: flex;
-    flex-direction: column;
+
+  .grade {
+    position: relative;
+    top: -35px;
+    right: -30px;
+    width: 100px;
+    border: 1px solid
+      ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
+    border-radius: 50px;
+    background-color: ${({ theme }) =>
+      theme?.color?.textColorTypeB || 'initial'};
+    color: white;
+
+    label {
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  .Title {
+    color: ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
+  }
+
+  .Tag {
+    position: relative;
+    top: 20px;
+    right: 30px;
+    width: 80px;
+    border: 1px solid
+      ${({ theme }) => theme?.color?.backgroundColorTypeB || 'initial'};
+    background-color: ${({ theme }) =>
+      theme?.color?.backgroundColorTypeB || 'initial'};
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    color: ${({ theme }) => theme?.color?.tagColorTypeB || 'initial'};
+
+    label {
+      display: flex;
+      justify-content: center;
+      //text-align: center;
+    }
   }
 `;
-const WorksheetBody = styled.div`
-  height: calc(100% - 130px);
+type WorksheetBodyType = {
+  $contentQuantity?: string;
+};
+const WorksheetBody = styled.div<WorksheetBodyType>`
+  ${({ $contentQuantity }) =>
+    $contentQuantity === '최대' || $contentQuantity === '6문제'
+      ? `height: 105%`
+      : `height: calc(100% - 170px);`};
   margin: 0 auto;
   display: flex;
+`;
+const Divider = styled.span`
+  display: inline-block;
+  width: 1px;
+  height: 100%;
+  background-color: #e8e8e8;
+  margin: 0 10px;
 `;
 const MathViewerWrapper = styled.div`
   height: 100%;
   display: flex;
+  flex-direction: column;
   gap: 2px;
   font-size: 12px;
 `;
 const WorksheetBodyLeft = styled.div`
   flex: 1 0 0;
   padding: 10px 20px 0px 20px;
-  border-right: 1px solid black;
   display: flex;
   flex-direction: column;
 `;
@@ -216,14 +324,34 @@ const WorksheetBodyRight = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const WorksheetAdditionalInformation = styled.div<{ $isWeather?: boolean }>`
+const MathJaxWrapper = styled.div`
   display: flex;
-  ${({ $isWeather }) =>
-    $isWeather
-      ? `justify-content: space-between;`
-      : `justify-content: flex-end;`};
-  padding: 0 20px;
-  span {
+  gap: 10px;
+
+  strong {
+    font-size: 25px;
+    color: ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
+  }
+`;
+const WorksheetAdditionalInformation = styled.div<{ $isWeather?: boolean }>`
+  width: 720px;
+  margin: 0 auto;
+  display: flex;
+  padding-top: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 2px solid #e8e8e8;
+  gap: 650px;
+  margin-top: 80px;
+  margin-bottom: 30px;
+
+  .weather {
     font-size: 12px;
+    color: #888888;
+  }
+  .pagenumber {
+    font-size: 12px;
+    font-weight: bold;
+    color: #666666;
   }
 `;
