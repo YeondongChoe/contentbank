@@ -110,9 +110,6 @@ export function Step2() {
     }
   }, [sendLocalData]);
 
-  // console.log(sendLocalData);
-  // console.log(sendLocalData?.data);
-
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
     {
@@ -284,7 +281,6 @@ export function Step2() {
 
   // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
   useEffect(() => {
-    // console.log(categoryData && categoryData);
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
     } else if (categoryDataError) {
@@ -330,14 +326,12 @@ export function Step2() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error?.data?.code);
       if (error.data.code == 'GE-002') postRefreshToken();
     }
   };
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
@@ -406,7 +400,6 @@ export function Step2() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -432,7 +425,6 @@ export function Step2() {
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -458,7 +450,6 @@ export function Step2() {
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -590,7 +581,6 @@ export function Step2() {
       );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error?.data?.code);
       if (error?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
@@ -635,7 +625,6 @@ export function Step2() {
 
   // 수정
   const changeUnitClassification = (idx: number) => {
-    console.log('unitClassificationList', unitClassificationList);
     const selectedClassification = unitClassificationList[idx];
 
     if (selectedClassification) {
@@ -725,14 +714,11 @@ export function Step2() {
   useEffect(() => {}, []);
 
   useEffect(() => {
-    // console.log(radio4depthCheck);
     if (selected4depth == '') return;
     categoryItemTreeDataMutate();
   }, [selected4depth]);
 
-  useEffect(() => {
-    // console.log(error);
-  }, [itemTree]);
+  useEffect(() => {}, [itemTree]);
 
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: string) => {
@@ -778,19 +764,8 @@ export function Step2() {
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-  // console.log('오른쪽 리스트', initialItems);
-  // console.log('유사문항 코드', similarItemCode);
-  // console.log('유사문항 인덱스', similarItemIndex);
-  // console.log(
-  //   similarPrevItems
-  //     .map((item) => item.quizList.map((item) => item.code))
-  //     .flat(),
-  // );
 
   // 유사문항 요청 api
-  //console.log('유사문항', similarItems);
-  //console.log('이전 불러오기', similarPrevItems);
-
   const postSimilarItems = async () => {
     const data = {
       quizCode: similarItemCode,
@@ -828,7 +803,6 @@ export function Step2() {
   // 유사문항 버튼 클릭
   const showSimilarContent = (code: string, index: number) => {
     setSimilarItemCode(code);
-    console.log(index);
     setSimilarItemIndex(index);
     if (isSimilar) {
       setIsSimilar(!isSimilar);
