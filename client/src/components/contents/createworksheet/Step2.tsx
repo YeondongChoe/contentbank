@@ -41,6 +41,7 @@ import { ItemCategoryType, ItemTreeListType } from '../../../types';
 import {
   WorkbookData,
   QuizList,
+  SimilarQuizList,
   QuizCategory,
   QuizCategoryList,
   Data,
@@ -56,6 +57,9 @@ interface RadioState {
 
 export function Step2() {
   const [sendLocalData, setSendLocalData] = useState<WorkbookData | null>(null);
+  const [initialItems, setInitialItems] = useState<QuizList[]>(
+    sendLocalData?.data.quizList || [],
+  );
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -106,7 +110,7 @@ export function Step2() {
     }
   }, [sendLocalData]);
 
-  console.log(sendLocalData);
+  // console.log(sendLocalData);
   // console.log(sendLocalData?.data);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
@@ -756,26 +760,38 @@ export function Step2() {
 
   // 유사문항
   const [isSimilar, setIsSimilar] = useState(false);
-  const [similarItems, setSimilarItems] = useState<QuizList[]>(
-    sendLocalData?.data.quizList || [],
+  const [similarItems, setSimilarItems] = useState<SimilarQuizList>();
+  const [similarItemCode, setSimilarItemCode] = useState<string>('');
+  const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
+    [],
   );
+  // console.log(
+  //   similarPrevItems
+  //     .map((item) => item.quizList.map((item) => item.code))
+  //     .flat(),
+  // );
 
-  const postSimilarItems = async (code: string) => {
+  // 유사문항 요청 api
+  console.log('유사문항', similarItems);
+  console.log('이전 불러오기', similarPrevItems);
+
+  const postSimilarItems = async () => {
     const data = {
-      quizCode: code,
+      quizCode: similarItemCode,
       count: 10,
-      filterList: [code],
+      filterList: [
+        similarPrevItems
+          .map((item) => item.quizList.map((item) => item.code))
+          .flat(),
+        similarItemCode,
+      ].flat(),
     };
     const res = await quizService.post('/v1/quiz/similar', data);
     console.log('quizService 응답:', res);
     return res;
   };
 
-  const {
-    data: similarData,
-    mutate: similarDataMutate,
-    //isPending,
-  } = useMutation({
+  const { data: similarData, mutate: similarDataMutate } = useMutation({
     mutationFn: postSimilarItems,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -784,27 +800,78 @@ export function Step2() {
         type: 'error',
         text: context.response.data.message,
       });
-      // if (context.response.data.code == 'GE-002') {
-      //   postRefreshToken();
-      // }
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
-    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
-      // setItemTreeList(res.data.data[0].itemTreeList);
-      setItemTree(response.data.data);
+    onSuccess: (response: { data: { data: SimilarQuizList } }) => {
+      console.log('성공');
+      setSimilarItems(response.data.data);
     },
   });
-
+  // 유사문항 버튼 클릭
   const showSimilarContent = (code: string) => {
-    setIsSimilar(!isSimilar);
-    similarDataMutate(code);
+    setSimilarItemCode(code);
+    if (isSimilar) {
+      setIsSimilar(!isSimilar);
+    } else {
+      setIsSimilar(!isSimilar);
+      similarDataMutate();
+    }
   };
-  console.log(similarData);
+  //새로 불러오기
+  const clickNewSimilarList = () => {
+    if (similarItems) {
+      setSimilarPrevItems((prevItem) => [...prevItem, similarItems]);
+    }
+    similarDataMutate();
+  };
+
+  //이전 불러오기
+  const clickPrevSimilarList = () => {
+    if (similarPrevItems.length > 0) {
+      // 마지막 요소를 추출
+      const lastItem = similarPrevItems[similarPrevItems.length - 1];
+      setSimilarItems(lastItem);
+      // 마지막 요소 제거
+      setSimilarPrevItems((prevItems) => prevItems.slice(0, -1));
+    } else {
+      openToastifyAlert({
+        type: 'warning',
+        text: '불러올 이전 문항이 없습니다.',
+      });
+    }
+  };
+
+  const clickChangeQuizitem = () => {
+    //setInitialItems(similarItems);
+  };
+  const clickAddQuizItem = (code: string) => {
+    if (similarItems) {
+      const selectedQuizItem = similarItems.quizList.find(
+        (item) => item.code === code,
+      );
+      console.log(selectedQuizItem);
+      if (selectedQuizItem) {
+        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+        setSimilarItems((prevItems) => {
+          if (prevItems) {
+            return {
+              ...prevItems,
+              quizList: prevItems.quizList.filter(
+                (item) => item !== selectedQuizItem,
+              ),
+            };
+          }
+          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+        });
+      }
+    }
+  };
 
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
-  const [initialItems, setInitialItems] = useState<QuizList[]>(
-    sendLocalData?.data.quizList || [],
-  );
+
   //console.log(initialItems);
 
   useEffect(() => {
@@ -892,12 +959,14 @@ export function Step2() {
                           <SimilarIcon>
                             <PiArrowCounterClockwiseBold
                               style={{ fontSize: '22px', cursor: 'pointer' }}
+                              onClick={clickPrevSimilarList}
                             />
                             이전 불러오기
                           </SimilarIcon>
                           <SimilarIcon>
                             <PiArrowClockwiseBold
                               style={{ fontSize: '22px', cursor: 'pointer' }}
+                              onClick={clickNewSimilarList}
                             />
                             새로 불러오기
                           </SimilarIcon>
@@ -905,7 +974,7 @@ export function Step2() {
                       </SimilarTitleWrapper>
                       <SimilarContentsWrapper>
                         <AddNewContensWrapper>
-                          {initialItems.map((item) => (
+                          {similarItems?.quizList.map((item) => (
                             <MathviewerAccordion
                               key={item.idx}
                               componentWidth="600px"
@@ -917,9 +986,13 @@ export function Step2() {
                               isSimilarQuiz={true}
                               data={item}
                               index={item.idx}
+                              title={item.code}
+                              quizNum={item.idx}
                               selectedCardIndex={selectedCardIndex}
                               onSelectCard={setSelectedCardIndex}
                               reportOnClick={openReportProcess}
+                              changeQuizitem={clickChangeQuizitem}
+                              addQuizItem={() => clickAddQuizItem(item.code)}
                             ></MathviewerAccordion>
                           ))}
                         </AddNewContensWrapper>
@@ -1516,6 +1589,8 @@ export function Step2() {
                           onClick={() => showSimilarContent(dragItem.code)}
                           isSimilar={isSimilar}
                           data={dragItem}
+                          quizNum={dragItem.idx}
+                          title={dragItem.code}
                           index={dragItem.idx}
                           selectedCardIndex={selectedCardIndex}
                           onSelectCard={setSelectedCardIndex}
