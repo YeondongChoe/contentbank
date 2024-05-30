@@ -130,7 +130,7 @@ export function Classification() {
     ItemCategoryType[][]
   >([]); // 각 카테고리의 상세 리스트를 저장할 상태
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
-
+  const [searchValue, setSearchValue] = useState<string>('');
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
 
   //  카테고리 불러오기 api
@@ -362,6 +362,7 @@ export function Classification() {
   useEffect(() => {
     setSelected2depth('');
     setItemTree([]);
+    setCheckedDepthList([]);
   }, [selected1depth]);
   useEffect(() => {
     setSelected3depth('');
@@ -661,8 +662,21 @@ export function Classification() {
     });
 
   useEffect(() => {
-    // console.log('itemTree ------ ', itemTree);
-  }, [itemTree]);
+    console.log('itemTree ------ ', itemTree);
+  }, [itemTree, searchValue]);
+
+  // 검색 기능
+  const filterSearchValue = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    // 쿼리 스트링 변경 로직
+    setSearchValue(e.currentTarget.value);
+  };
+  const filterSearchValueEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchValue(e.currentTarget.value);
+    }
+  };
 
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, id: number) => {
@@ -988,11 +1002,14 @@ export function Classification() {
                     >
                       <RowListWrapper>
                         <Search
-                          value={''}
                           height={'30px'}
-                          onClick={() => {}}
-                          onChange={() => {}}
-                          onKeyDown={() => {}}
+                          value={searchValue}
+                          onClick={(e) => filterSearchValue(e)}
+                          onKeyDown={(e) => filterSearchValueEnter(e)}
+                          onChange={(e) => {
+                            setSearchValue(e.target.value);
+                          }}
+                          placeholder="검색어를 입력해주세요.(두글자 이상)"
                         />
                         <p className="line bottom_text">
                           {/* Total : {itemTree.length && itemTree.length} */}
@@ -1008,34 +1025,75 @@ export function Classification() {
                               <>
                                 {itemTree.length ? (
                                   <>
-                                    {itemTree.map((el) => (
-                                      <div key={`${el.itemTreeKey}`}>
-                                        {el.itemTreeList.map((item) => (
-                                          <DepthBlock
-                                            key={`depthList${item?.idx} ${item.name}`}
-                                            classNameList={`depth-${item.level}`}
-                                            id={item?.code}
-                                            name={item.name}
-                                            value={item?.idx}
-                                            onChange={(e) =>
-                                              handleSingleCheck(
-                                                e.target.checked,
-                                                item?.idx,
+                                    {searchValue.length > 0 ? (
+                                      <>
+                                        {itemTree.map((el) => (
+                                          <div key={`${el.itemTreeKey}`}>
+                                            {el.itemTreeList
+                                              .filter((item) =>
+                                                item.name.includes(searchValue),
                                               )
-                                            }
-                                            checked={
-                                              checkedDepthList.includes(
-                                                item?.idx,
-                                              )
-                                                ? true
-                                                : false
-                                            }
-                                          >
-                                            <span>{item.name}</span>
-                                          </DepthBlock>
+                                              .map((item) => (
+                                                <DepthBlock
+                                                  key={`depthList${item?.idx} ${item.name}`}
+                                                  classNameList={`depth-${item.level}`}
+                                                  id={item?.code}
+                                                  name={item.name}
+                                                  value={item?.idx}
+                                                  onChange={(e) =>
+                                                    handleSingleCheck(
+                                                      e.target.checked,
+                                                      item?.idx,
+                                                    )
+                                                  }
+                                                  checked={
+                                                    checkedDepthList.includes(
+                                                      item?.idx,
+                                                    )
+                                                      ? true
+                                                      : false
+                                                  }
+                                                  searchValue={searchValue}
+                                                >
+                                                  <span>{item.name}</span>
+                                                </DepthBlock>
+                                              ))}
+                                          </div>
                                         ))}
-                                      </div>
-                                    ))}
+                                      </>
+                                    ) : (
+                                      <>
+                                        {itemTree.map((el) => (
+                                          <div key={`${el.itemTreeKey}`}>
+                                            {el.itemTreeList.map((item) => (
+                                              <DepthBlock
+                                                key={`depthList${item?.idx} ${item.name}`}
+                                                classNameList={`depth-${item.level}`}
+                                                id={item?.code}
+                                                name={item.name}
+                                                value={item?.idx}
+                                                onChange={(e) =>
+                                                  handleSingleCheck(
+                                                    e.target.checked,
+                                                    item?.idx,
+                                                  )
+                                                }
+                                                checked={
+                                                  checkedDepthList.includes(
+                                                    item?.idx,
+                                                  )
+                                                    ? true
+                                                    : false
+                                                }
+                                                searchValue={searchValue}
+                                              >
+                                                <span>{item.name}</span>
+                                              </DepthBlock>
+                                            ))}
+                                          </div>
+                                        ))}
+                                      </>
+                                    )}
                                   </>
                                 ) : (
                                   <ValueNone

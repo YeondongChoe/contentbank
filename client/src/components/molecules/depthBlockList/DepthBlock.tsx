@@ -16,6 +16,7 @@ type DepthBlockProps = {
   name: string;
   value: string | number;
   checked: boolean;
+  searchValue?: string;
 };
 
 export function DepthBlock({
@@ -29,6 +30,7 @@ export function DepthBlock({
   value,
   checked,
   disabled,
+  searchValue,
 }: DepthBlockProps) {
   const onTopMark = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const target = e.currentTarget;
@@ -52,6 +54,22 @@ export function DepthBlock({
     } else {
       depthTargets.forEach((el) => el?.classList.remove('border'));
     }
+  };
+
+  const highlightText = (text: string, searchValue: string) => {
+    if (!searchValue) return text;
+    const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
+    return (
+      <span>
+        {parts.map((part, index) =>
+          part.toLowerCase() === searchValue.toLowerCase() ? (
+            <Mark key={index}>{part}</Mark>
+          ) : (
+            part
+          ),
+        )}
+      </span>
+    );
   };
 
   return (
@@ -105,7 +123,7 @@ export function DepthBlock({
               <circle cx="10" cy="10" r="9.5" fill="white" stroke="#A0A0A0" />
             </svg>
           )}
-          {children}
+          {searchValue ? highlightText(name, searchValue) : children}
         </span>
       </label>
     </Component>
@@ -142,6 +160,8 @@ const Component = styled.div<{ $margin?: string }>`
       }
       > span {
         width: calc(100% - 15px);
+        display: flex;
+        flex-direction: row;
       }
     }
   }
@@ -195,4 +215,9 @@ const Component = styled.div<{ $margin?: string }>`
   .depth-5 {
     margin-left: 5rem;
   }
+`;
+
+const Mark = styled.span`
+  display: flex;
+  background-color: ${COLOR.ALERTBAR_WARNING};
 `;
