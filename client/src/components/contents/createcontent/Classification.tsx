@@ -1035,6 +1035,7 @@ export function Classification() {
                                               )
                                               .map((item) => (
                                                 <DepthBlock
+                                                  defaultChecked
                                                   key={`depthList${item?.idx} ${item.name}`}
                                                   classNameList={`depth-${item.level}`}
                                                   id={item?.code}
@@ -1067,6 +1068,7 @@ export function Classification() {
                                           <div key={`${el.itemTreeKey}`}>
                                             {el.itemTreeList.map((item) => (
                                               <DepthBlock
+                                                defaultChecked
                                                 key={`depthList${item?.idx} ${item.name}`}
                                                 classNameList={`depth-${item.level}`}
                                                 id={item?.code}

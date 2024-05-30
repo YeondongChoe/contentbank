@@ -40,8 +40,14 @@ export function DepthBlock({
 
     const depthTargets = Array.from(parentElement.children)
       .map((child) => {
+        const inputElement = child.querySelector('input[type="checkbox"]');
         const element = child.children[0]?.children[1];
-        return element ? (element as HTMLSpanElement) : null;
+        return element
+          ? {
+              element: element as HTMLSpanElement,
+              input: inputElement as HTMLInputElement,
+            }
+          : null;
       })
       .filter((el) => el !== null);
 
@@ -50,11 +56,22 @@ export function DepthBlock({
     const depth = parseInt(depthClass.split('-')[1], 10);
 
     if (target.checked) {
-      depthTargets.slice(0, depth).forEach((el) => el?.classList.add('border'));
+      depthTargets.slice(0, depth).forEach((el) => {
+        el?.element?.classList.add('border');
+
+        if (el?.input) {
+          el.input.defaultChecked = true;
+        }
+      });
     } else {
-      depthTargets.forEach((el) => el?.classList.remove('border'));
+      depthTargets.forEach((el) => {
+        el?.element?.classList.remove('border');
+        if (el?.input) el.input.defaultChecked = false;
+      });
     }
   };
+
+  React.useEffect(() => {}, [onTopMark]);
 
   const highlightText = (text: string, searchValue: string) => {
     if (!searchValue) return text;
