@@ -922,6 +922,20 @@ export function Step1() {
     setClickedIdx(0);
     setClickedTitle('');
   };
+  // // 시중교재 불러오기 api
+  // const getCategoryExamGroups = async () => {
+  //   const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+  //   // console.log(response.data.data.typeList);
+  //   return response.data.data.typeList;
+  // };
+  // const { data: examData } = useQuery({
+  //   queryKey: ['get-category-exam-groups'],
+  //   queryFn: getCategoryExamGroups,
+  //   // enabled: !!categoryData,
+  //   meta: {
+  //     errorMessage: 'get-category-exam-groups 에러 메세지',
+  //   },
+  // });
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number>();
@@ -1236,9 +1250,10 @@ export function Step1() {
       // 학교급: item[1].title,
       // 학기: item[2].title,
       // 학년: item[3].title,
-      교육과정: '11차',
-      교과: '수학',
-      과목: '공통수학',
+      교육과정: '8차',
+      학교급: '초등',
+      학년: '1',
+      학기: '1학기',
     },
     itemTreeIdxList: item[6].checkedDepthList,
   }));
@@ -1248,12 +1263,14 @@ export function Step1() {
       itemTreeKeyList: makingdata,
       count: Number(questionNum),
       difficulty: questionLevel,
-      type: questionType?.join(', '),
+      type: 'MULTIPLE_CHOICE',
+      //questionType?.join(', ')
       mock: 1,
       score: 2,
       isScoreEven: true,
       isQuizEven: true,
       isMePriority: false,
+      filterList: null,
     };
     //console.log(data);
     postStep1Data(data);

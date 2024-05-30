@@ -131,9 +131,10 @@ function Accordion({
 
 type MathviewerCardProps = {
   onClick: () => void;
-  reportOnClick?: () => void;
+  reportQuizitem?: () => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
+  deleteQuizItem?: () => void;
   isSimilar?: boolean;
   isBorder?: boolean;
   data: QuizList;
@@ -152,9 +153,10 @@ type MathviewerCardProps = {
 
 export function MathviewerAccordion({
   onClick,
-  reportOnClick,
+  reportQuizitem,
   changeQuizitem,
   addQuizItem,
+  deleteQuizItem,
   isSimilar,
   isBorder,
   selectedCardIndex,
@@ -202,7 +204,7 @@ export function MathviewerAccordion({
                 fontSize={'25px'}
                 color="red"
                 style={{ cursor: 'pointer' }}
-                onClick={reportOnClick}
+                onClick={reportQuizitem}
               />
             </div>
           </ButtonWrapper>
@@ -252,11 +254,12 @@ export function MathviewerAccordion({
                 fontSize={'25px'}
                 color="red"
                 style={{ cursor: 'pointer' }}
-                onClick={reportOnClick}
+                onClick={reportQuizitem}
               />
               <BiSolidTrashAlt
                 fontSize={'25px'}
                 style={{ cursor: 'pointer' }}
+                onClick={deleteQuizItem}
               />
             </div>
           </ButtonWrapper>
