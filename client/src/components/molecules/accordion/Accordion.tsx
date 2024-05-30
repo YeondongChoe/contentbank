@@ -11,6 +11,7 @@ type AccordionProps = {
   children: JSX.Element | JSX.Element[];
   $margin?: string;
   $backgroundColor?: string;
+  defaultChecked?: boolean;
 };
 
 export function Accordion({
@@ -19,11 +20,17 @@ export function Accordion({
   children,
   $margin,
   $backgroundColor,
+  defaultChecked = false,
 }: AccordionProps) {
   return (
     <Container $margin={$margin} $backgroundColor={$backgroundColor}>
       <div className="accordion">
-        <input type="checkbox" name={id} id={id} />
+        <input
+          type="checkbox"
+          name={id}
+          id={id}
+          defaultChecked={defaultChecked}
+        />
         <label htmlFor={id} className="accordion_label">
           {title}
         </label>
