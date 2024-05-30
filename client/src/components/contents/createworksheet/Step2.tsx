@@ -758,13 +758,29 @@ export function Step2() {
     });
   };
 
+  //리스트에서 문항 삭제하기(배열의 경우)
+  const deleteQuizItem = (code: string) => {
+    if (initialItems) {
+      const selectedQuizItem = initialItems.find((item) => item.code === code);
+      if (selectedQuizItem) {
+        setInitialItems((prevItems) =>
+          prevItems.filter((item) => item !== selectedQuizItem),
+        );
+      }
+    }
+  };
+
   // 유사문항
   const [isSimilar, setIsSimilar] = useState(false);
   const [similarItems, setSimilarItems] = useState<SimilarQuizList>();
   const [similarItemCode, setSimilarItemCode] = useState<string>('');
+  const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
+  // console.log('오른쪽 리스트', initialItems);
+  // console.log('유사문항 코드', similarItemCode);
+  // console.log('유사문항 인덱스', similarItemIndex);
   // console.log(
   //   similarPrevItems
   //     .map((item) => item.quizList.map((item) => item.code))
@@ -772,8 +788,8 @@ export function Step2() {
   // );
 
   // 유사문항 요청 api
-  console.log('유사문항', similarItems);
-  console.log('이전 불러오기', similarPrevItems);
+  //console.log('유사문항', similarItems);
+  //console.log('이전 불러오기', similarPrevItems);
 
   const postSimilarItems = async () => {
     const data = {
@@ -810,8 +826,10 @@ export function Step2() {
     },
   });
   // 유사문항 버튼 클릭
-  const showSimilarContent = (code: string) => {
+  const showSimilarContent = (code: string, index: number) => {
     setSimilarItemCode(code);
+    console.log(index);
+    setSimilarItemIndex(index);
     if (isSimilar) {
       setIsSimilar(!isSimilar);
     } else {
@@ -843,15 +861,12 @@ export function Step2() {
     }
   };
 
-  const clickChangeQuizitem = () => {
-    //setInitialItems(similarItems);
-  };
+  // 리스트에 문항 추가하기(객체인 경우)
   const clickAddQuizItem = (code: string) => {
     if (similarItems) {
       const selectedQuizItem = similarItems.quizList.find(
         (item) => item.code === code,
       );
-      console.log(selectedQuizItem);
       if (selectedQuizItem) {
         setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
         setSimilarItems((prevItems) => {
@@ -869,10 +884,34 @@ export function Step2() {
     }
   };
 
+  //리스트 문항 교체하기
+  const clickSwapQuizItem = (
+    similarItems: SimilarQuizList | undefined,
+    similarItemIndex: number,
+    initialItems: QuizList[],
+    initialItemIndex: number,
+  ) => {
+    if (similarItems && initialItems) {
+      const newSimilarItems = [...similarItems.quizList];
+      const newInitialItems = [...initialItems];
+
+      // 교체할 항목을 임시 저장
+      const temp = newSimilarItems[similarItemIndex];
+      newSimilarItems[similarItemIndex] = newInitialItems[initialItemIndex];
+      newInitialItems[initialItemIndex] = temp;
+
+      setSimilarItems({
+        ...similarItems,
+        quizList: newSimilarItems,
+      });
+      setInitialItems(newInitialItems);
+
+      return [newSimilarItems, newInitialItems];
+    }
+  };
+
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
-
-  //console.log(initialItems);
 
   useEffect(() => {
     if (sendLocalData?.data.quizList) {
@@ -974,13 +1013,13 @@ export function Step2() {
                       </SimilarTitleWrapper>
                       <SimilarContentsWrapper>
                         <AddNewContensWrapper>
-                          {similarItems?.quizList.map((item) => (
+                          {similarItems?.quizList.map((item, i) => (
                             <MathviewerAccordion
                               key={item.idx}
                               componentWidth="600px"
                               width="450px"
                               componentHeight="150px"
-                              onClick={() => showSimilarContent(item.code)}
+                              onClick={() => showSimilarContent(item.code, i)}
                               isBorder={true}
                               isNewQuiz={true}
                               isSimilarQuiz={true}
@@ -990,8 +1029,15 @@ export function Step2() {
                               quizNum={item.idx}
                               selectedCardIndex={selectedCardIndex}
                               onSelectCard={setSelectedCardIndex}
-                              reportOnClick={openReportProcess}
-                              changeQuizitem={clickChangeQuizitem}
+                              reportQuizitem={openReportProcess}
+                              changeQuizitem={() =>
+                                clickSwapQuizItem(
+                                  similarItems,
+                                  i,
+                                  initialItems,
+                                  similarItemIndex as number,
+                                )
+                              }
                               addQuizItem={() => clickAddQuizItem(item.code)}
                             ></MathviewerAccordion>
                           ))}
@@ -1443,20 +1489,22 @@ export function Step2() {
                             </AddNewContensWrapper>
                           ) : (
                             <AddNewContensWrapper>
-                              {initialItems.map((item) => (
+                              {initialItems.map((item, i) => (
                                 <MathviewerAccordion
                                   key={item.idx}
                                   componentWidth="600px"
                                   width="450px"
                                   componentHeight="150px"
-                                  onClick={() => showSimilarContent(item.code)}
+                                  onClick={() =>
+                                    showSimilarContent(item.code, i)
+                                  }
                                   isBorder={true}
                                   isNewQuiz={true}
                                   data={item}
                                   index={item.idx}
                                   selectedCardIndex={selectedCardIndex}
                                   onSelectCard={setSelectedCardIndex}
-                                  reportOnClick={openReportProcess}
+                                  reportQuizitem={openReportProcess}
                                 ></MathviewerAccordion>
                               ))}
                             </AddNewContensWrapper>
@@ -1578,7 +1626,7 @@ export function Step2() {
                     isStartDnD={isStartDnD}
                     setIsStartDnd={setIsStartDnd}
                   >
-                    {(dragItem, ref, isDragging) => (
+                    {(dragItem, ref, isDragging, itemIndex) => (
                       <li
                         ref={ref}
                         className={`${isDragging ? 'opacity' : ''}`}
@@ -1586,15 +1634,22 @@ export function Step2() {
                         <MathviewerAccordion
                           componentWidth="750px"
                           width="550px"
-                          onClick={() => showSimilarContent(dragItem.code)}
+                          onClick={() => {
+                            // const similarIndex = getIndex(
+                            //   dragItem,
+                            //   dragItem.idx,
+                            // );
+                            showSimilarContent(dragItem.code, itemIndex);
+                          }}
                           isSimilar={isSimilar}
                           data={dragItem}
                           quizNum={dragItem.idx}
                           title={dragItem.code}
-                          index={dragItem.idx}
+                          index={itemIndex}
                           selectedCardIndex={selectedCardIndex}
                           onSelectCard={setSelectedCardIndex}
-                          reportOnClick={openReportProcess}
+                          reportQuizitem={openReportProcess}
+                          deleteQuizItem={() => deleteQuizItem(dragItem.code)}
                         ></MathviewerAccordion>
                       </li>
                     )}
