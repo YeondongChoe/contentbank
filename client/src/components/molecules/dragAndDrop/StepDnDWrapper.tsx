@@ -14,6 +14,7 @@ interface DnDWrapperPropsType {
     item: any,
     ref: React.RefObject<HTMLLIElement>,
     isDragging: boolean,
+    itemIndex: number,
   ) => React.ReactNode; // 각 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름(각  드래그리스트는 섹션 이름을 다르게 해야 각 섹션 아이템간 이동이 불가)
   doubleDnD?: boolean; // 한페이지 드래그 2개일때(Cannot have two HTML5 backends at the same time 해결)
@@ -30,6 +31,7 @@ interface DraggableItemProps {
     dragItem: any,
     ref: React.RefObject<HTMLLIElement>,
     isDragging: boolean,
+    itemIndex: number,
   ) => React.ReactNode; // 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름
 }
@@ -128,5 +130,5 @@ const DraggableItem = ({
   dragSectionName,
 }: DraggableItemProps) => {
   const { ref, isDragging } = useDnD({ itemIndex, onMove, dragSectionName }); // useDnD 훅을 사용하여 드래그 앤 드랍을 처리.
-  return dragItem && itemRenderer(dragItem, ref, isDragging); // 항목 랜더링.
+  return dragItem && itemRenderer(dragItem, ref, isDragging, itemIndex); // 항목 랜더링.
 };
