@@ -7,7 +7,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { userInstance } from '../../api/axios';
+import { userInstance, historyService } from '../../api/axios';
 import {
   Button,
   CommonDate,
@@ -18,12 +18,13 @@ import {
   PaginationBox,
   Search,
   Select,
+  ValueNone,
 } from '../../components';
 import { COLOR } from '../../components/constants';
 import { pageAtom } from '../../store/utilAtom';
 
 export function ChangeHistory() {
-  const [content, setContent] = useState<string[]>([]);
+  const [content, setContent] = useState<string>('');
   const [searchValue, setSearchValue] = useState<string>('');
   const [value, setValue] = useState<string>('');
   const [page, setPage] = useRecoilState(pageAtom);
@@ -122,58 +123,59 @@ export function ChangeHistory() {
       totalItem: '203',
     },
   ]);
-  // 유저 리스트 불러오기 api TODO: 히스토리 불러오기 api
-  // const getUserList = async () => {
-  //   const res = await userInstance.get(
-  //
-  // 		`,
-  //     // &isUseFilter=${''}
-  //   );
-  //   console.log(`유저리스트 get 결과값`, res);
-  //   return res;
-  // };
 
-  // const {
-  //   isLoading,
-  //   error,
-  //   data: memberListData,
-  //   isFetching,
-  //   refetch,
-  // } = useQuery({
-  //   queryKey: ['get-memberlist'],
-  //   queryFn: getUserList,
-  //   meta: {
-  //     errorMessage: 'get-memberlist 에러 메세지',
-  //   },
-  // });
+  // 히스토리 불러오기 api
+  const getHistoryList = async () => {
+    const res = await historyService.get(
+      `/v1/quiz-manage?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&functionType=${content}&beginDate=${startDate}&endDate=${endDate}`,
+    );
+    console.log(`히스토리 get 결과값`, res);
+    return res;
+  };
 
-  // // 페이지 변경시 리랜더링
-  // useEffect(() => {
-  //   console.log(page, memberListData);
+  const {
+    isLoading,
+    error,
+    data: historyListData,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['get-historylist'],
+    queryFn: getHistoryList,
+    meta: {
+      errorMessage: 'get-historylist 에러 메세지',
+    },
+  });
 
-  //   refetch();
-  // }, [page]);
+  console.log(historyListData);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
     // 쿼리 스트링 변경 로직
     setSearchValue(value);
+    getHistoryList();
   };
+
+  // 페이지 조건값 변경시 리랜더링
+  useEffect(() => {
+    refetch();
+  }, [endDate, startDate, searchValue, content, page]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
+    console.log(event.currentTarget);
+    setContent(value);
   };
 
   const selectCategory = [
     {
       id: '변경 영역',
       label: '변경 영역',
-      value: '변경 영역',
+      name: '변경 영역',
       options: [
-        { id: '0', label: '전체', value: '0' },
-        { id: '1', label: '문향내용 바꾸기', value: '1' },
-        { id: '2', label: '문항분류 바꾸기', value: '2' },
+        { id: '0', label: '전체', name: '전체' },
+        { id: '1', label: 'CHANGE_QUIZ_CLASS', name: 'CHANGE_QUIZ_CLASS' },
+        { id: '2', label: '문항 분류 바꾸기', name: '문항 분류 바꾸기' },
       ],
     },
   ];
@@ -239,68 +241,63 @@ export function ChangeHistory() {
         />
       </InputWrapper>
 
-      {/* {isLoading && (
-        <LoaderWrapper>
-          <Loader width="50px" />
-        </LoaderWrapper>
-      )} */}
-
       {/* { list.length ?  */}
+      {!isLoading ? (
+        <ListWrapper>
+          <Total> Total : {changesList.length}</Total>
 
-      <ListWrapper>
-        <Total> Total : {changesList.length}</Total>
-
-        <ListTitle>
-          <strong className="width_10px">NO</strong>
-          <strong>담당자</strong>
-          <strong>변경일시</strong>
-          <strong>변경영역</strong>
-          <strong className="width_40">변경사항</strong>
-          <strong>건수</strong>
-        </ListTitle>
-        <ScrollWrapper>
-          <PerfectScrollbar>
-            <List margin={`10px 0`}>
-              {changesList.map(
-                (item: {
-                  id: string;
-                  num: string;
-                  manager: string;
-                  changeAt: string;
-                  function: string;
-                  changes: string;
-                  totalItem: string;
-                }) => (
-                  <ListItem
-                    key={item.id as string}
-                    isChecked={false}
-                    onClick={() => {}}
-                  >
-                    <ItemLayout>
-                      <span className="width_20px">{item.num} </span>
-                      <div className="line"></div>
-                      <span className="width_10">{item.manager} </span>
-                      <div className="line"></div>
-                      <span>{item.changeAt} </span>
-                      <div className="line"></div>
-                      <span>{item.function} </span>
-                      <div className="line"></div>
-                      <span className="width_50">{item.changes} </span>
-                      <div className="line"></div>
-                      <span className="width_5">{item.totalItem}</span>
-                    </ItemLayout>
-                  </ListItem>
-                ),
-              )}
-            </List>
-          </PerfectScrollbar>
-        </ScrollWrapper>
-      </ListWrapper>
+          <ListTitle>
+            <strong className="width_10px">NO</strong>
+            <strong>담당자</strong>
+            <strong>변경일시</strong>
+            <strong>변경영역</strong>
+            <strong className="width_40">변경사항</strong>
+            <strong>건수</strong>
+          </ListTitle>
+          <ScrollWrapper>
+            <PerfectScrollbar>
+              <List margin={`10px 0`}>
+                {changesList.map(
+                  (item: {
+                    id: string;
+                    num: string;
+                    manager: string;
+                    changeAt: string;
+                    function: string;
+                    changes: string;
+                    totalItem: string;
+                  }) => (
+                    <ListItem
+                      key={item.id as string}
+                      isChecked={false}
+                      onClick={() => {}}
+                    >
+                      <ItemLayout>
+                        <span className="width_20px">{item.num} </span>
+                        <div className="line"></div>
+                        <span className="width_10">{item.manager} </span>
+                        <div className="line"></div>
+                        <span>{item.changeAt} </span>
+                        <div className="line"></div>
+                        <span>{item.function} </span>
+                        <div className="line"></div>
+                        <span className="width_50">{item.changes} </span>
+                        <div className="line"></div>
+                        <span className="width_5">{item.totalItem}</span>
+                      </ItemLayout>
+                    </ListItem>
+                  ),
+                )}
+              </List>
+            </PerfectScrollbar>
+          </ScrollWrapper>
+        </ListWrapper>
+      ) : (
+        <ValueNone />
+      )}
       <div className="position_bottom">
         <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
       </div>
-      {/* ) : (
-        <>{!isLoading && <ValueNone />}</>_)} */}
     </Container>
   );
 }

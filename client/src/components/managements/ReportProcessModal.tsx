@@ -24,7 +24,7 @@ export function ReportProcessModal({
   reportIdx,
 }: ReportProcessType) {
   const { closeModal } = useModal();
-  const [selectedTypeValue, setSelectedTypeValue] = useState<string>('');
+  const [content, setContent] = useState<string>();
   const [commentValue, setCommentValue] = useState('');
   const [reportType, setReportType] = useState<
     {
@@ -83,11 +83,16 @@ export function ReportProcessModal({
     },
   });
 
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const value = event.currentTarget.value;
+    setContent(value);
+  };
+
   const submitReportProcess = () => {
     const data = {
       reportType: registorReport ? 'REPORT' : 'ANSWER',
       idx: reportIdx,
-      type: selectedTypeValue,
+      type: content,
       content: commentValue,
     };
     postReportQuizData(data);
@@ -113,7 +118,7 @@ export function ReportProcessModal({
               : '처리유형을 선택해주세요'
           }
           options={reportType}
-          setSelectedTypeValue={setSelectedTypeValue}
+          onSelect={(event) => selectCategoryOption(event)}
         />
       </InputWrapper>
       <InputWrapper>
