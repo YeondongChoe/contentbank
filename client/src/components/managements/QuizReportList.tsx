@@ -120,10 +120,10 @@ export function QuizReportList() {
   ]);
 
   //신고리스트 처리완료 버튼
-  const openReportProcess = () => {
+  const openReportProcess = (idx: number) => {
     openModal({
       title: '',
-      content: <ReportProcessModal registorReport={false} />,
+      content: <ReportProcessModal registorReport={false} reportIdx={idx} />,
       callback: () => {},
     });
   };
@@ -259,7 +259,7 @@ export function QuizReportList() {
                                   height={'35px'}
                                   fontSize={'13px'}
                                   cursor
-                                  onClick={() => openReportProcess()}
+                                  onClick={() => openReportProcess(item.idx)}
                                 >
                                   처리 완료
                                 </Button>

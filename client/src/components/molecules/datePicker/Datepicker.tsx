@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import { parseISO, format } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
@@ -20,9 +21,9 @@ export const CommonDate = ({
   useEffect(() => {
     if (pickDate) {
       console.log('날자 pickDate :', pickDate);
-      const date = pickDate.toISOString().slice(0, 19);
-      console.log('날자 커스텀 :', date);
-      setDate(date);
+      //const date = pickDate.toISOString().slice(0, 19);
+      const formattedDate = format(pickDate, 'yyyy-MM-dd HH:mm:ss');
+      setDate(formattedDate);
     }
   }, [pickDate, setDate]);
 

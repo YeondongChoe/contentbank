@@ -6,11 +6,7 @@ import { GrPlan } from 'react-icons/gr';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import {
-  workbookInstance,
-  classificationInstance,
-  quizService,
-} from '../../api/axios';
+import { workbookInstance, classificationInstance } from '../../api/axios';
 import {
   Loader,
   Button,

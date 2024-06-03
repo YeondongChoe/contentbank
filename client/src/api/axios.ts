@@ -81,3 +81,5 @@ export const workbookInstance = createAPIInstance('workbook-service');
 export const makingworkbookInstance = createAPIInstance('file-service');
 /* 문항 API Instance */
 export const quizService = createAPIInstance('quiz-service');
+/* 문항 API Instance */
+export const historyService = createAPIInstance('history-service');

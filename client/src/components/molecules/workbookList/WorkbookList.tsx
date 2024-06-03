@@ -1,7 +1,14 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  RefetchOptions,
+  QueryObserverResult,
+} from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
 import { styled } from 'styled-components';
@@ -110,6 +117,44 @@ export function WorkbookList({
         'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
     });
   };
+
+  //문항 삭제
+  const [isDeleteWorkbook, setIsDeleteWorkbook] = useState(false);
+  const clickDeleteWorkbook = (idx: number) => {
+    setIsDeleteWorkbook(true);
+    setWorkbookIdx(idx);
+  };
+
+  const deleteWorkbook = async () => {
+    const res = await workbookInstance.delete(`/v1/workbook/${workbookIdx}`);
+    console.log(`문항 삭제 결과값`, res);
+    return res.data;
+  };
+
+  const { mutate: deleteItemMutate } = useMutation({
+    mutationFn: deleteWorkbook,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      setIsDeleteWorkbook(false);
+      openToastifyAlert({
+        type: 'success',
+        text: '삭제 되었습니다.',
+      });
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-workbookList'],
+        exact: true,
+      });
+    },
+  });
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
@@ -369,6 +414,7 @@ export function WorkbookList({
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                clickDeleteWorkbook(item.idx);
                               }}
                             >
                               삭제
@@ -382,6 +428,15 @@ export function WorkbookList({
               ))}
             </List>
           </ListWrapper>
+          {isDeleteWorkbook && (
+            <Alert
+              description={'학습지를 삭제하시겠습니까?'}
+              isAlertOpen={isDeleteWorkbook}
+              action="삭제"
+              onClose={() => setIsDeleteWorkbook(false)}
+              onClick={() => deleteItemMutate()}
+            ></Alert>
+          )}
           <PaginationBox
             itemsCountPerPage={itemsCountPerPage as number}
             totalItemsCount={totalCount as number}
