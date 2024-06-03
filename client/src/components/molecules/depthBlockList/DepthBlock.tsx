@@ -17,6 +17,7 @@ type DepthBlockProps = {
   value: string | number;
   checked: boolean;
   searchValue?: string;
+  branchValue?: string;
 };
 
 export function DepthBlock({
@@ -31,6 +32,7 @@ export function DepthBlock({
   checked,
   disabled,
   searchValue,
+  branchValue,
 }: DepthBlockProps) {
   const onTopMark = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const target = e.currentTarget;
@@ -91,12 +93,14 @@ export function DepthBlock({
 
   return (
     <Component $margin={$margin}>
-      <label htmlFor={String(id)}>
+      <label
+        htmlFor={branchValue ? `${branchValue}_${String(id)}` : String(id)}
+      >
         <input
           type="checkbox"
           defaultChecked={defaultChecked}
           name={name}
-          id={String(id)}
+          id={branchValue ? `${branchValue}_${String(id)}` : String(id)}
           value={value}
           checked={checked}
           onChange={onChange}

@@ -15,7 +15,8 @@ type ButtonFormatRadioProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   selected: string | number;
-  name?: string;
+
+  branchValue?: string;
 };
 
 export function ButtonFormatRadio({
@@ -25,7 +26,7 @@ export function ButtonFormatRadio({
   $margin,
   onChange,
   selected,
-  name,
+  branchValue,
 }: ButtonFormatRadioProps) {
   // console.log(list && list);
   return (
@@ -39,8 +40,8 @@ export function ButtonFormatRadio({
               <li key={`${item.idx} ${item.name} ${item.code}`}>
                 <label
                   htmlFor={
-                    name
-                      ? `${name}_${item.idx.toString()}`
+                    branchValue
+                      ? `${branchValue}_${item.idx.toString()}`
                       : item.idx.toString()
                   }
                 >
@@ -49,8 +50,8 @@ export function ButtonFormatRadio({
                     defaultChecked={defaultChecked}
                     name={item.name as string}
                     id={
-                      name
-                        ? `${name}_${item.idx.toString()}`
+                      branchValue
+                        ? `${branchValue}_${item.idx.toString()}`
                         : item.idx.toString()
                     }
                     value={item.idx}
@@ -61,8 +62,8 @@ export function ButtonFormatRadio({
                   <span
                     className={`label ${
                       selected ==
-                      (name
-                        ? `${name}_${item.idx.toString()}`
+                      (branchValue
+                        ? `${branchValue}_${item.idx.toString()}`
                         : item.idx.toString())
                         ? 'on'
                         : ''

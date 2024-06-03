@@ -2,10 +2,21 @@ import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { MdPublishedWithChanges } from 'react-icons/md';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { styled } from 'styled-components';
 
 import { classificationInstance } from '../../api/axios';
-import { openToastifyAlert, ButtonFormatRadio } from '../../components';
+import {
+  openToastifyAlert,
+  ButtonFormatRadio,
+  Accordion,
+  ValueNone,
+  Loader,
+  DepthBlock,
+  Button,
+} from '../../components';
+import { COLOR } from '../../components/constants';
 import { ItemCategoryType, ItemTreeListType, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 
@@ -15,7 +26,20 @@ interface RadioStateType {
   code: string;
   key: string;
 }
-export function MetaRadioSelect() {
+interface ClassificationStateType {
+  quizCodeList: string[];
+  categoryList: {
+    itemTreeKey?: Record<string, string>;
+    itemTreeIdxList?: number[];
+    quizCategory?: Record<string, string>;
+  }[];
+}
+
+interface ItemTreeKeyType {
+  [key: string]: string;
+}
+
+export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
 
   // States for item3
@@ -83,6 +107,7 @@ export function MetaRadioSelect() {
     { code: '', idx: 0, name: '' },
   ]);
 
+  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
@@ -194,14 +219,6 @@ export function MetaRadioSelect() {
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
 
-    console.log(
-      'check----!!',
-      e.currentTarget.id,
-      // e.currentTarget.name,
-      // Number(e.currentTarget.value),
-      // e.currentTarget.className,
-    );
-
     switch (depth) {
       case '1depth-change':
         setChangeVlaue1depth(e.currentTarget.id);
@@ -248,6 +265,15 @@ export function MetaRadioSelect() {
           key: itemId as string,
         });
         break;
+      case '6depth-change':
+        setChangeVlaue6depth(e.currentTarget.id);
+        setRadio6depthChangeCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
       default:
         break;
     }
@@ -265,7 +291,7 @@ export function MetaRadioSelect() {
       setNextChangeList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      console.error('Error fetching next list: ', error.data.code);
+      console.error('Error fetching next list: ', error);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -359,15 +385,15 @@ export function MetaRadioSelect() {
   // 체크값 변경시 초기화
   useEffect(() => {
     setChangeVlaue2depth('');
-    // setCheckedDepthList([]);
+    setCheckedDepthList([]);
   }, [changeVlaue1depth]);
   useEffect(() => {
     setChangeVlaue3depth('');
-    // setCheckedDepthList([]);
+    setCheckedDepthList([]);
   }, [changeVlaue2depth]);
   useEffect(() => {
     setChangeVlaue4depth('');
-    // setCheckedDepthList([]);
+    setCheckedDepthList([]);
     setRadio4depthChangeCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [changeVlaue3depth]);
   useEffect(() => {
@@ -385,8 +411,8 @@ export function MetaRadioSelect() {
       radio2depthChangeCheck,
       radio3depthChangeCheck,
       radio4depthChangeCheck,
-      radio5depthChangeCheck,
-      radio6depthChangeCheck,
+      // radio5depthChangeCheck, //TODO : api 키값 추가되면 주석 해제
+      // radio6depthChangeCheck,
     ];
 
     const keyValuePairs = categoryItems.reduce<Record<string, string>>(
@@ -401,10 +427,10 @@ export function MetaRadioSelect() {
     );
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList :', itemTreeKeyList);
+    console.log('itemTreeKeyList : ******', itemTreeKeyList);
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    console.log('classificationInstance 응답:', res);
+    console.log('classificationInstance 응답 : ******', res);
     return res;
   };
 
@@ -427,7 +453,14 @@ export function MetaRadioSelect() {
       },
     });
 
-  useEffect(() => {}, [itemTree]);
+  useEffect(() => {
+    if (changeVlaue4depth == '') return;
+    categoryItemTreeDataMutate();
+  }, [changeVlaue4depth]);
+
+  useEffect(() => {
+    console.log('itemTree-----', itemTree);
+  }, [itemTree]);
 
   // 리스트 업데이트
   useEffect(() => {
@@ -435,160 +468,346 @@ export function MetaRadioSelect() {
   }, [questionList]);
 
   // 깊이가 있는 리스트 체크박스
-  // const handleSingleCheck = (checked: boolean, id: number) => {
-  //   // console.log('click');
+  const handleSingleCheck = (checked: boolean, id: number) => {
+    // console.log('click');
 
-  //   if (checked) {
-  //     setCheckedDepthList((prev) => [...prev, id]);
-  //   } else {
-  //     setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
-  //   }
-  // };
+    if (checked) {
+      setCheckedDepthList((prev) => [...prev, id]);
+    } else {
+      setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
+    }
+  };
 
-  // const changeButtonDisabled = useMemo(() => {
-  //   if (
-  //     changeVlaue1depth.length &&
-  //     changeVlaue2depth.length &&
-  //     changeVlaue3depth.length &&
-  //     changeVlaue4depth.length &&
-  //     changeVlaue5depth.length &&
-  //     changeVlaue6depth.length &&
-  //     checkedDepthList.length > 0
-  //   ) {
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }, [
-  //   changeVlaue1depth,
-  //   changeVlaue2depth,
-  //   changeVlaue3depth,
-  //   changeVlaue4depth,
-  //   changeVlaue5depth,
-  //   changeVlaue6depth,
-  //   checkedDepthList,
-  // ]);
+  // 변경 분류값 전송 버튼
+  const onSubmitList = () => {
+    // console.log(
+    //   'selected',
+    //   radio1depthChangeCheck,
+    //   radio2depthChangeCheck,
+    //   radio3depthChangeCheck,
+    //   radio4depthChangeCheck,
+    //   radio5depthChangeCheck,
+    //   radio6depthChangeCheck,
+    // );
+    // console.log('checkedDepthList', checkedDepthList);
+    // console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
+
+    const radioChecks: RadioStateType[] = [
+      radio1depthChangeCheck,
+      radio2depthChangeCheck,
+      radio3depthChangeCheck,
+      radio4depthChangeCheck,
+      radio5depthChangeCheck,
+      radio6depthChangeCheck,
+    ];
+
+    const itemTreeKey = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
+      if (curr.key && curr.title) {
+        acc[curr.key] = curr.title;
+      }
+      return acc;
+    }, {});
+
+    const data: ClassificationStateType = {
+      quizCodeList: checkedList,
+      categoryList: [
+        {
+          itemTreeKey: itemTreeKey,
+          itemTreeIdxList: checkedDepthList,
+        },
+      ],
+    };
+    console.log('최종 전송 데이터 형태', data);
+    mutateChangeClassification(data);
+  };
+  // 분류 바꾸기 (등록) api
+  const putClassification = async (data: ClassificationStateType) => {
+    const res = await classificationInstance.put(`/v1/item/quiz`, data);
+    console.log('putClassification', res);
+    return res;
+  };
+
+  const { data: changeClassificationData, mutate: mutateChangeClassification } =
+    useMutation({
+      mutationFn: putClassification,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response: { data: { message: string } }) => {
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+        //초기화
+        // onResetList();
+      },
+    });
+
+  const changeButtonDisabled = useMemo(() => {
+    if (
+      changeVlaue1depth.length &&
+      changeVlaue2depth.length &&
+      changeVlaue3depth.length &&
+      changeVlaue4depth.length &&
+      changeVlaue5depth.length &&
+      changeVlaue6depth.length &&
+      checkedDepthList.length > 0
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [
+    changeVlaue1depth,
+    changeVlaue2depth,
+    changeVlaue3depth,
+    changeVlaue4depth,
+    changeVlaue5depth,
+    changeVlaue6depth,
+    checkedDepthList,
+  ]);
 
   return (
     <Container>
-      {/* 라디오 버튼 부분 */}
-      {isCategoryLoaded && categoryItems[0] && categoryList && (
-        <>
-          {/* 교육과정 */}
-          {[categoryItems[0]].map((item) => (
-            <div
-              className={`1depth-change`}
-              id={`${item.name}-change`}
-              key={`selected1depth ${item.idx}`}
-            >
-              <ButtonFormatRadio
-                titleText={`${item.name}`}
-                list={categoryList[0]}
-                selected={changeVlaue1depth}
-                onChange={(e) => handleRadioCheck(e)}
-                // defaultChecked={}
-                checkedInput={radio1depthChangeCheck}
-                $margin={`10px 0 0 0`}
-                name={'change'}
-              />
-            </div>
-          ))}
-          {/* 학교급 */}
-          {[categoryItems[1]].map((item) => (
-            <div
-              className={`2depth-change`}
-              id={`${item.name}-change`}
-              key={`selected2depth ${item.idx}`}
-            >
-              <ButtonFormatRadio
-                titleText={`${item.name}`}
-                list={nextChangeList1depth}
-                selected={changeVlaue2depth}
-                onChange={(e) => handleRadioCheck(e)}
-                // defaultChecked={}
-                checkedInput={radio2depthChangeCheck}
-                name={'change'}
-              />
-            </div>
-          ))}
-          {/* 학년 */}
-          {[categoryItems[2]].map((item) => (
-            <div
-              className={`3depth-change`}
-              id={`${item.name}-change`}
-              key={`selected3depth ${item.idx}`}
-            >
-              <ButtonFormatRadio
-                titleText={`${item.name}`}
-                list={nextChangeList2depth}
-                selected={changeVlaue3depth}
-                onChange={(e) => handleRadioCheck(e)}
-                // defaultChecked={}
-                checkedInput={radio3depthChangeCheck}
-                name={'change'}
-              />
-            </div>
-          ))}
-          {/* 학기 */}
-          {[categoryItems[3]].map((item) => (
-            <div
-              className={`4depth-change`}
-              id={`${item.name}-change`}
-              key={`selected4depth ${item.idx}`}
-            >
-              <ButtonFormatRadio
-                titleText={`${item.name}`}
-                list={nextChangeList3depth}
-                selected={changeVlaue4depth}
-                onChange={(e) => handleRadioCheck(e)}
-                // defaultChecked={}
-                checkedInput={radio4depthChangeCheck}
-                name={'change'}
-              />
-            </div>
-          ))}
-          {/* 교과 */}
-          {[categoryItems[6]].map((item) => (
-            <div
-              className={`5depth-change`}
-              id={`${item.name}-change`}
-              key={`selected5depth ${item.idx}`}
-            >
-              <ButtonFormatRadio
-                titleText={`${item.name}`}
-                list={nextChangeList4depth}
-                selected={changeVlaue5depth}
-                onChange={(e) => handleRadioCheck(e)}
-                // defaultChecked={}
-                checkedInput={radio5depthChangeCheck}
-                name={'change'}
-              />
-            </div>
-          ))}
-          {/* 과목 */}
-          {[categoryItems[7]].map((item) => (
-            <div
-              className={`6depth-change`}
-              id={`${item.name}-change`}
-              key={`selected6depth ${item.idx}`}
-            >
-              <ButtonFormatRadio
-                titleText={`${item.name}`}
-                list={nextChangeList5depth}
-                selected={changeVlaue6depth}
-                onChange={(e) => handleRadioCheck(e)}
-                // defaultChecked={}
-                checkedInput={radio6depthChangeCheck}
-                name={'change'}
-              />
-            </div>
-          ))}
-        </>
+      {checkedList.length ? (
+        <ScrollWrapper>
+          <PerfectScrollbar>
+            <ChangeInfoWrapper>
+              <p className="info_total">
+                선택한 문항 총 {checkedList.length} 건
+              </p>
+              {/* 라디오 버튼 부분 */}
+              {isCategoryLoaded && categoryItems[0] && categoryList && (
+                <>
+                  {/* 교육과정 */}
+                  {[categoryItems[0]].map((item) => (
+                    <div
+                      className={`1depth-change`}
+                      id={`${item.name}`}
+                      key={`selected1depth ${item.idx}`}
+                    >
+                      <ButtonFormatRadio
+                        titleText={`${item.name}`}
+                        list={categoryList[0]}
+                        selected={changeVlaue1depth}
+                        onChange={(e) => handleRadioCheck(e)}
+                        // defaultChecked={}
+                        checkedInput={radio1depthChangeCheck}
+                        $margin={`10px 0 0 0`}
+                        branchValue={'change'}
+                      />
+                    </div>
+                  ))}
+                  {/* 학교급 */}
+                  {[categoryItems[1]].map((item) => (
+                    <div
+                      className={`2depth-change`}
+                      id={`${item.name}`}
+                      key={`selected2depth ${item.idx}`}
+                    >
+                      <ButtonFormatRadio
+                        titleText={`${item.name}`}
+                        list={nextChangeList1depth}
+                        selected={changeVlaue2depth}
+                        onChange={(e) => handleRadioCheck(e)}
+                        // defaultChecked={}
+                        checkedInput={radio2depthChangeCheck}
+                        branchValue={'change'}
+                      />
+                    </div>
+                  ))}
+                  {/* 학년 */}
+                  {[categoryItems[2]].map((item) => (
+                    <div
+                      className={`3depth-change`}
+                      id={`${item.name}`}
+                      key={`selected3depth ${item.idx}`}
+                    >
+                      <ButtonFormatRadio
+                        titleText={`${item.name}`}
+                        list={nextChangeList2depth}
+                        selected={changeVlaue3depth}
+                        onChange={(e) => handleRadioCheck(e)}
+                        // defaultChecked={}
+                        checkedInput={radio3depthChangeCheck}
+                        branchValue={'change'}
+                      />
+                    </div>
+                  ))}
+                  {/* 학기 */}
+                  {[categoryItems[3]].map((item) => (
+                    <div
+                      className={`4depth-change`}
+                      id={`${item.name}`}
+                      key={`selected4depth ${item.idx}`}
+                    >
+                      <ButtonFormatRadio
+                        titleText={`${item.name}`}
+                        list={nextChangeList3depth}
+                        selected={changeVlaue4depth}
+                        onChange={(e) => handleRadioCheck(e)}
+                        // defaultChecked={}
+                        checkedInput={radio4depthChangeCheck}
+                        branchValue={'change'}
+                      />
+                    </div>
+                  ))}
+                  {/* 교과 */}
+                  {[categoryItems[6]].map((item) => (
+                    <div
+                      className={`5depth-change`}
+                      id={`${item.name}`}
+                      key={`selected5depth ${item.idx}`}
+                    >
+                      <ButtonFormatRadio
+                        titleText={`${item.name}`}
+                        list={nextChangeList4depth}
+                        selected={changeVlaue5depth}
+                        onChange={(e) => handleRadioCheck(e)}
+                        // defaultChecked={}
+                        checkedInput={radio5depthChangeCheck}
+                        branchValue={'change'}
+                      />
+                    </div>
+                  ))}
+                  {/* 과목 */}
+                  {[categoryItems[7]].map((item) => (
+                    <div
+                      className={`6depth-change`}
+                      id={`${item.name}`}
+                      key={`selected6depth ${item.idx}`}
+                    >
+                      <ButtonFormatRadio
+                        titleText={`${item.name}`}
+                        list={nextChangeList5depth}
+                        selected={changeVlaue6depth}
+                        onChange={(e) => handleRadioCheck(e)}
+                        // defaultChecked={}
+                        checkedInput={radio6depthChangeCheck}
+                        branchValue={'change'}
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
+
+              <div className="meta_accordion_select">
+                {changeVlaue1depth &&
+                  changeVlaue2depth &&
+                  changeVlaue3depth &&
+                  changeVlaue4depth &&
+                  changeVlaue5depth &&
+                  changeVlaue6depth && (
+                    <>
+                      <strong>세부 검색조건</strong>
+
+                      <Accordion
+                        $backgroundColor={`${COLOR.GRAY}`}
+                        title={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}`}
+                        id={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}`}
+                        $margin={`0 0 170px 0`}
+                        defaultChecked={true}
+                      >
+                        <>
+                          {categoryItemTreeData ? (
+                            <>
+                              {itemTree.length ? (
+                                <>
+                                  {itemTree.length !== 0 && (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              key={`depthList${item.code} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item.code}
+                                              branchValue={'change'}
+                                              name={item.name}
+                                              value={item.idx}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                <ValueNone
+                                  textOnly
+                                  info="등록된 데이터가 없습니다"
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <Loader />
+                          )}
+                        </>
+                      </Accordion>
+                    </>
+                  )}
+              </div>
+            </ChangeInfoWrapper>
+          </PerfectScrollbar>
+        </ScrollWrapper>
+      ) : (
+        <ValueNoneWrapper>
+          <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
+        </ValueNoneWrapper>
       )}
+      <ButtonWrapper>
+        <Button
+          $filled
+          cursor
+          disabled={changeButtonDisabled}
+          onClick={() => onSubmitList()}
+        >
+          <span>
+            바꾸기 <MdPublishedWithChanges />
+          </span>
+        </Button>
+      </ButtonWrapper>
     </Container>
   );
 }
 const Container = styled.div`
+  height: 100%;
+`;
+
+const ScrollWrapper = styled.div`
+  overflow-y: auto;
+  height: calc(100vh - 70px);
+  width: 100%;
+  background-color: ${COLOR.LIGHT_GRAY};
+
+  .line {
+    border-top: 1px solid ${COLOR.BORDER_GRAY};
+    margin: 10px 0;
+  }
+
   .meta_accordion_select {
     padding: 20px;
   }
@@ -599,4 +818,42 @@ const Container = styled.div`
       margin-bottom: 5px;
     }
   }
+`;
+
+const ChangeInfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  .info_total {
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    background-color: ${COLOR.FONT_NAVI};
+  }
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow:
+    rgba(0, 17, 255, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  left: 0;
+
+  .pagination {
+    padding-bottom: 12px;
+  }
+`;
+const ValueNoneWrapper = styled.div`
+  background-color: ${COLOR.LIGHT_GRAY};
+  display: flex;
+  height: 100%;
 `;
