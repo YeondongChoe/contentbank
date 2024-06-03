@@ -30,6 +30,8 @@ import {
   QuizListType,
 } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
+
+import { MetaRadioSelect } from './MetaRadioSelect';
 interface RadioStateType {
   title: string;
   checkValue: number;
@@ -43,6 +45,15 @@ interface ItemTreeKeyType {
 export function ContentCategoryChange() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  // States for item1
+  const [selected1depth, setSelected1depth] = useState<string>('');
+  const [selected2depth, setSelected2depth] = useState<string>('');
+  const [selected3depth, setSelected3depth] = useState<string>('');
+  const [selected4depth, setSelected4depth] = useState<string>('');
+  const [selected5depth, setSelected5depth] = useState<string>('');
+  const [selected6depth, setSelected6depth] = useState<string>('');
+  const [selected7depth, setSelected7depth] = useState<string>('');
+
   const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
     title: '',
     checkValue: 0,
@@ -85,23 +96,55 @@ export function ContentCategoryChange() {
     code: '',
     key: '',
   });
-  const [selected1depth, setSelected1depth] = useState<string>('');
-  const [selected2depth, setSelected2depth] = useState<string>('');
-  const [selected3depth, setSelected3depth] = useState<string>('');
-  const [selected4depth, setSelected4depth] = useState<string>('');
-  const [selected5depth, setSelected5depth] = useState<string>('');
-  const [selected6depth, setSelected6depth] = useState<string>('');
-  const [selected7depth, setSelected7depth] = useState<string>('');
-
-  const [changeVlaue1depth, setChangeVlaue1depth] = useState<string>('');
-  const [changeVlaue2depth, setChangeVlaue2depth] = useState<string>('');
-  const [changeVlaue3depth, setChangeVlaue3depth] = useState<string>('');
-  const [changeVlaue4depth, setChangeVlaue4depth] = useState<string>('');
-  const [changeVlaue5depth, setChangeVlaue5depth] = useState<string>('');
-  const [changeVlaue6depth, setChangeVlaue6depth] = useState<string>('');
-  const [radioChangeCheck, setRadioChangeCheck] = useState<
-    { title: string; checkValue: number }[]
-  >([]);
+  // // States for item3
+  // const [changeVlaue1depth, setChangeVlaue1depth] = useState<string>('');
+  // const [changeVlaue2depth, setChangeVlaue2depth] = useState<string>('');
+  // const [changeVlaue3depth, setChangeVlaue3depth] = useState<string>('');
+  // const [changeVlaue4depth, setChangeVlaue4depth] = useState<string>('');
+  // const [changeVlaue5depth, setChangeVlaue5depth] = useState<string>('');
+  // const [changeVlaue6depth, setChangeVlaue6depth] = useState<string>('');
+  // const [radio1depthChangeCheck, setRadio1depthChangeCheck] =
+  //   useState<RadioStateType>({
+  //     title: '',
+  //     checkValue: 0,
+  //     code: '',
+  //     key: '',
+  //   });
+  // const [radio2depthChangeCheck, setRadio2depthChangeCheck] =
+  //   useState<RadioStateType>({
+  //     title: '',
+  //     checkValue: 0,
+  //     code: '',
+  //     key: '',
+  //   });
+  // const [radio3depthChangeCheck, setRadio3depthChangeCheck] =
+  //   useState<RadioStateType>({
+  //     title: '',
+  //     checkValue: 0,
+  //     code: '',
+  //     key: '',
+  //   });
+  // const [radio4depthChangeCheck, setRadio4depthChangeCheck] =
+  //   useState<RadioStateType>({
+  //     title: '',
+  //     checkValue: 0,
+  //     code: '',
+  //     key: '',
+  //   });
+  // const [radio5depthChangeCheck, setRadio5depthChangeCheck] =
+  //   useState<RadioStateType>({
+  //     title: '',
+  //     checkValue: 0,
+  //     code: '',
+  //     key: '',
+  //   });
+  // const [radio6depthChangeCheck, setRadio6depthChangeCheck] =
+  //   useState<RadioStateType>({
+  //     title: '',
+  //     checkValue: 0,
+  //     code: '',
+  //     key: '',
+  //   });
 
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
@@ -125,11 +168,26 @@ export function ContentCategoryChange() {
     { code: '', idx: 0, name: '' },
   ]);
 
+  // const [nextChangeList1depth, setNextChangeList1depth] = useState([
+  //   { code: '', idx: 0, name: '' },
+  // ]);
+  // const [nextChangeList2depth, setNextChangeList2depth] = useState([
+  //   { code: '', idx: 0, name: '' },
+  // ]);
+  // const [nextChangeList3depth, setNextChangeList3depth] = useState([
+  //   { code: '', idx: 0, name: '' },
+  // ]);
+  // const [nextChangeList4depth, setNextChangeList4depth] = useState([
+  //   { code: '', idx: 0, name: '' },
+  // ]);
+  // const [nextChangeList5depth, setNextChangeList5depth] = useState([
+  //   { code: '', idx: 0, name: '' },
+  // ]);
+
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
-  const [itemTreeList, setItemTreeList] = useState<ItemTreeType[]>([]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
 
   //  카테고리 불러오기 api
@@ -300,6 +358,8 @@ export function ContentCategoryChange() {
           code: e.currentTarget.className,
           key: itemId as string,
         });
+        break;
+      default:
         break;
     }
   };
@@ -586,7 +646,7 @@ export function ContentCategoryChange() {
   //TODO : 임시로 문항 리스트 불러옴 나중에 대체 필요
   const getQuiz = async () => {
     const res = await quizService.get(`/v1/quiz`);
-    console.log(`getQuiz 결과값`, res.data.data);
+    console.log(`getQuiz---- 결과값`, res.data.data);
     return res.data.data;
   };
   const { data: quizData } = useQuery({
@@ -641,12 +701,12 @@ export function ContentCategoryChange() {
 
   const changeButtonDisabled = useMemo(() => {
     if (
-      changeVlaue1depth.length &&
-      changeVlaue2depth.length &&
-      changeVlaue3depth.length &&
-      changeVlaue4depth.length &&
-      changeVlaue5depth.length &&
-      changeVlaue6depth.length &&
+      // changeVlaue1depth.length &&
+      // changeVlaue2depth.length &&
+      // changeVlaue3depth.length &&
+      // changeVlaue4depth.length &&
+      // changeVlaue5depth.length &&
+      // changeVlaue6depth.length &&
       checkedDepthList.length > 0
     ) {
       return false;
@@ -654,12 +714,12 @@ export function ContentCategoryChange() {
       return true;
     }
   }, [
-    changeVlaue1depth,
-    changeVlaue2depth,
-    changeVlaue3depth,
-    changeVlaue4depth,
-    changeVlaue5depth,
-    changeVlaue6depth,
+    // changeVlaue1depth,
+    // changeVlaue2depth,
+    // changeVlaue3depth,
+    // changeVlaue4depth,
+    // changeVlaue5depth,
+    // changeVlaue6depth,
     checkedDepthList,
   ]);
 
@@ -911,8 +971,8 @@ export function ContentCategoryChange() {
                 />
                 <ButtonWrapper className="pagination">
                   <PaginationBox
-                    itemsCountPerPage={quizData.pagination.pageUnit}
-                    totalItemsCount={quizData.pagination.totalCount}
+                    itemsCountPerPage={quizData?.pagination?.pageUnit}
+                    totalItemsCount={quizData?.pagination?.totalCount}
                   />
                 </ButtonWrapper>
               </>
@@ -938,84 +998,66 @@ export function ContentCategoryChange() {
                     <p className="info_total">
                       선택한 문항 총 {checkedList.length} 건
                     </p>
-                    <div className="meta_radio_select">
-                      {/* <div className="1depthChangeValue">
-                        {metaListChange[0].data.map((meta, index) => (
-                          <ButtonFormatRadio
-                            key={`${meta.id}`}
-                            titleText={`${meta.label}`}
-                            list={meta.options}
-                            selected={changeVlaue1depth}
-                            onChange={(e) =>
-                              handleRadioChangeValueCheck(e, meta.value)
-                            }
-                            // defaultChecked={}
-                            checkedInput={radioChangeCheck}
-                            $margin={index === 0 ? `10px 0 0 0` : ''}
-                          />
-                        ))}
-                      </div> */}
-                    </div>
+                    <MetaRadioSelect />
                     <div className="meta_accordion_select">
                       {/* <strong>세부 검색조건</strong> */}
-                      {radioChangeCheck[0] && (
-                        <Accordion
-                          $backgroundColor={`${COLOR.GRAY}`}
-                          title={`${radioChangeCheck[0].title}`}
-                          id={`세부 검색조건 ${radioChangeCheck[0].title}`}
-                          $margin={`0 0 170px 0`}
-                        >
-                          <>
-                            {categoryItemTreeData ? (
-                              <>
-                                {itemTree.length ? (
-                                  <>
-                                    {itemTree.length !== 0 && (
-                                      <>
-                                        {itemTree.map((el, idx) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                key={`depthList${item.code} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item.code}
-                                                name={item.name}
-                                                value={item.idx}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </>
-                                    )}
-                                  </>
-                                ) : (
-                                  <ValueNone
-                                    textOnly
-                                    info="등록된 데이터가 없습니다"
-                                  />
-                                )}
-                              </>
-                            ) : (
-                              <Loader />
-                            )}
-                          </>
-                        </Accordion>
-                      )}
+
+                      <Accordion
+                        $backgroundColor={`${COLOR.GRAY}`}
+                        title={`${0}`}
+                        id={`세부 검색조건 ${0}`}
+                        $margin={`0 0 170px 0`}
+                      >
+                        <>
+                          {categoryItemTreeData ? (
+                            <>
+                              {itemTree.length ? (
+                                <>
+                                  {itemTree.length !== 0 && (
+                                    <>
+                                      {itemTree.map((el, idx) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              key={`depthList${item.code} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item.code}
+                                              name={item.name}
+                                              value={item.idx}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                <ValueNone
+                                  textOnly
+                                  info="등록된 데이터가 없습니다"
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <Loader />
+                          )}
+                        </>
+                      </Accordion>
                     </div>
                   </ChangeInfoWrapper>
                 </PerfectScrollbar>
