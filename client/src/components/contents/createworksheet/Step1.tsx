@@ -752,13 +752,13 @@ export function Step1() {
     questionType?.includes('SHORT_ANSWER') &&
     questionType?.includes('ESSAY_ANSWER');
 
-  const [containMock, setContainMock] = useState<string | null>(null);
-  const selectContainMock = (newValue: string | null) => {
+  const [containMock, setContainMock] = useState<number | null>(null);
+  const selectContainMock = (newValue: number | null) => {
     setContainMock(newValue);
   };
   //배점
-  const [equalScore, setEqualScore] = useState<string | null>(null);
-  const selectEqualScore = (newValue: string | null) => {
+  const [equalScore, setEqualScore] = useState<number | null>(null);
+  const selectEqualScore = (newValue: number | null) => {
     setEqualScore(newValue);
   };
   const [isEqualScoreModal, setIsEqualScoreModal] = useState<boolean>(false);
@@ -770,7 +770,7 @@ export function Step1() {
       setEqualInputValue('0');
     } else {
       alert('문항수 선택해라');
-      selectEqualScore('');
+      selectEqualScore(null);
       setIsSaveEqualValue(false);
     }
   };
@@ -880,13 +880,15 @@ export function Step1() {
   const selectOption2 = () => {
     setIsOption2(!isOption2);
   };
-  const [isOption3, setIsOption3] = useState(false);
-  const selectOption3 = () => {
-    setIsOption3(!isOption3);
+  //문항 수 균등 배분
+  const [isQuizEven, setIsQuizEven] = useState(false);
+  const selectQuizEven = () => {
+    setIsQuizEven(!isQuizEven);
   };
-  const [isOption4, setIsOption4] = useState(false);
-  const selectOption4 = () => {
-    setIsOption4(!isOption4);
+  //내 문항 우선 추천
+  const [isPriority, setIsPriority] = useState(false);
+  const selectPriority = () => {
+    setIsPriority(!isPriority);
   };
 
   //시중교재
@@ -1246,30 +1248,32 @@ export function Step1() {
 
   const makingdata = unitClassificationList.map((item) => ({
     itemTreeKey: {
-      // 교육과정: item[0].title,
-      // 학교급: item[1].title,
-      // 학기: item[2].title,
-      // 학년: item[3].title,
-      교육과정: '8차',
-      학교급: '초등',
-      학년: '1',
-      학기: '1학기',
+      교육과정: item[0].title,
+      학교급: item[1].title,
+      학기: item[2].title,
+      학년: item[3].title,
+      // 교육과정: '8차',
+      // 학교급: '초등',
+      // 학년: '1',
+      // 학기: '1학기',
     },
     itemTreeIdxList: item[6].checkedDepthList,
   }));
 
   const clickNextButton = () => {
+    // const formattedType = questionTypeData
+    //   ?.map((type) => `"${type}"`)
+    //   .join(', ');
     const data = {
       itemTreeKeyList: makingdata,
       count: Number(questionNum),
       difficulty: questionLevel,
-      type: 'MULTIPLE_CHOICE',
-      //questionType?.join(', ')
-      mock: 1,
-      score: 2,
+      type: questionType,
+      mock: containMock,
+      score: equalScore,
       isScoreEven: true,
-      isQuizEven: true,
-      isMePriority: false,
+      isQuizEven: isQuizEven,
+      isMePriority: isPriority,
       filterList: null,
     };
     //console.log(data);
@@ -1321,11 +1325,11 @@ export function Step1() {
     setQuestionNum(null);
     setQuestionLevel('');
     setQuestionType([]);
-    setContainMock('');
+    setContainMock(null);
     setIsOption1(false);
     setIsOption2(false);
-    setIsOption3(false);
-    setIsOption4(false);
+    setIsQuizEven(false);
+    setIsPriority(false);
     //모의시험 버튼 초기화
     setIsDropdown(false);
     setExamGrade([]);
@@ -1887,14 +1891,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectContainMock('포함');
+                      selectContainMock(1);
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'161px'}
                     fontSize="14px"
-                    $normal={containMock !== '포함'}
-                    $filled={containMock === '포함'}
+                    $normal={containMock !== 1}
+                    $filled={containMock === 1}
                     cursor
                   >
                     <span>포함</span>
@@ -1902,14 +1906,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectContainMock('제외');
+                      selectContainMock(2);
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'160px'}
                     fontSize="14px"
-                    $normal={containMock !== '제외'}
-                    $filled={containMock === '제외'}
+                    $normal={containMock !== 2}
+                    $filled={containMock === 2}
                     cursor
                   >
                     <span>제외</span>
@@ -1917,14 +1921,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectContainMock('모의고사만');
+                      selectContainMock(3);
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'160px'}
                     fontSize="14px"
-                    $normal={containMock !== '모의고사만'}
-                    $filled={containMock === '모의고사만'}
+                    $normal={containMock !== 3}
+                    $filled={containMock === 3}
                     cursor
                   >
                     <span>모의고사만</span>
@@ -1935,14 +1939,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectEqualScore('선택안함');
+                      selectEqualScore(1);
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'246px'}
                     fontSize="14px"
-                    $normal={equalScore !== '선택안함'}
-                    $filled={equalScore === '선택안함'}
+                    $normal={equalScore !== 1}
+                    $filled={equalScore === 1}
                     cursor
                   >
                     <span>선택안함</span>
@@ -1954,8 +1958,8 @@ export function Step1() {
                     height={'34px'}
                     width={'245px'}
                     fontSize="14px"
-                    $normal={equalScore !== '균등배점'}
-                    $filled={equalScore === '균등배점'}
+                    $normal={equalScore !== 2}
+                    $filled={equalScore === 2}
                     cursor
                   >
                     <span>균등 배점</span>
@@ -1972,13 +1976,13 @@ export function Step1() {
                     교육 과정 외 유형 제외
                   </AdditionOption> */}
                   <AdditionOption>
-                    <CheckBox isChecked={isOption3} onClick={selectOption3} />
+                    <CheckBox isChecked={isQuizEven} onClick={selectQuizEven} />
                     문항 수 균등 배분
                   </AdditionOption>
                   <AdditionOption>
                     <CheckBox
-                      isChecked={isOption4}
-                      onClick={selectOption4}
+                      isChecked={isPriority}
+                      onClick={selectPriority}
                     ></CheckBox>
                     내 문항 우선 추천
                   </AdditionOption>
@@ -2497,14 +2501,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('포함');
+                          selectContainMock(1);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'161px'}
                         fontSize="14px"
-                        $normal={containMock !== '포함'}
-                        $filled={containMock === '포함'}
+                        $normal={containMock !== 1}
+                        $filled={containMock === 1}
                         cursor
                       >
                         <span>포함</span>
@@ -2512,14 +2516,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('제외');
+                          selectContainMock(2);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '제외'}
-                        $filled={containMock === '제외'}
+                        $normal={containMock !== 2}
+                        $filled={containMock === 2}
                         cursor
                       >
                         <span>제외</span>
@@ -2527,14 +2531,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('모의고사만');
+                          selectContainMock(3);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '모의고사만'}
-                        $filled={containMock === '모의고사만'}
+                        $normal={containMock !== 3}
+                        $filled={containMock === 3}
                         cursor
                       >
                         <span>모의고사만</span>
@@ -2545,14 +2549,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectEqualScore('선택안함');
+                          selectEqualScore(1);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'246px'}
                         fontSize="14px"
-                        $normal={equalScore !== '선택안함'}
-                        $filled={equalScore === '선택안함'}
+                        $normal={equalScore !== 1}
+                        $filled={equalScore === 1}
                         cursor
                       >
                         <span>선택안함</span>
@@ -2564,8 +2568,8 @@ export function Step1() {
                         height={'34px'}
                         width={'245px'}
                         fontSize="14px"
-                        $normal={equalScore !== '균등배점'}
-                        $filled={equalScore === '균등배점'}
+                        $normal={equalScore !== 2}
+                        $filled={equalScore === 2}
                         cursor
                       >
                         <span>균등 배점</span>
@@ -2575,15 +2579,15 @@ export function Step1() {
                       <Label value="추가 옵션" fontSize="16px" width="200px" />
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption3}
-                          onClick={selectOption3}
+                          isChecked={isQuizEven}
+                          onClick={selectQuizEven}
                         />
                         문항 수 균등 배분
                       </AdditionOption>
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption4}
-                          onClick={selectOption4}
+                          isChecked={isPriority}
+                          onClick={selectPriority}
                         ></CheckBox>
                         내 문항 우선 추천
                       </AdditionOption>
@@ -2955,14 +2959,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('포함');
+                          selectContainMock(1);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'161px'}
                         fontSize="14px"
-                        $normal={containMock !== '포함'}
-                        $filled={containMock === '포함'}
+                        $normal={containMock !== 1}
+                        $filled={containMock === 1}
                         cursor
                       >
                         <span>포함</span>
@@ -2970,14 +2974,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('제외');
+                          selectContainMock(2);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '제외'}
-                        $filled={containMock === '제외'}
+                        $normal={containMock !== 2}
+                        $filled={containMock === 2}
                         cursor
                       >
                         <span>제외</span>
@@ -2985,14 +2989,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('모의고사만');
+                          selectContainMock(3);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '모의고사만'}
-                        $filled={containMock === '모의고사만'}
+                        $normal={containMock !== 3}
+                        $filled={containMock === 3}
                         cursor
                       >
                         <span>모의고사만</span>
@@ -3003,14 +3007,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectEqualScore('선택안함');
+                          selectEqualScore(1);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'246px'}
                         fontSize="14px"
-                        $normal={equalScore !== '선택안함'}
-                        $filled={equalScore === '선택안함'}
+                        $normal={equalScore !== 1}
+                        $filled={equalScore === 1}
                         cursor
                       >
                         <span>선택안함</span>
@@ -3022,8 +3026,8 @@ export function Step1() {
                         height={'34px'}
                         width={'245px'}
                         fontSize="14px"
-                        $normal={equalScore !== '균등배점'}
-                        $filled={equalScore === '균등배점'}
+                        $normal={equalScore !== 2}
+                        $filled={equalScore === 2}
                         cursor
                       >
                         <span>균등 배점</span>
@@ -3033,15 +3037,15 @@ export function Step1() {
                       <Label value="추가 옵션" fontSize="16px" width="200px" />
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption3}
-                          onClick={selectOption3}
+                          isChecked={isQuizEven}
+                          onClick={selectQuizEven}
                         />
                         문항 수 균등 배분
                       </AdditionOption>
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption4}
-                          onClick={selectOption4}
+                          isChecked={isPriority}
+                          onClick={selectPriority}
                         ></CheckBox>
                         내 문항 우선 추천
                       </AdditionOption>
