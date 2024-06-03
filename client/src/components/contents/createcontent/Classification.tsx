@@ -361,24 +361,23 @@ export function Classification() {
   // 체크값 변경시 초기화
   useEffect(() => {
     setSelected2depth('');
-    setItemTree([]);
     setCheckedDepthList([]);
   }, [selected1depth]);
   useEffect(() => {
     setSelected3depth('');
-    setItemTree([]);
+    setCheckedDepthList([]);
   }, [selected2depth]);
   useEffect(() => {
     setSelected4depth('');
     setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
-    setItemTree([]);
+    setCheckedDepthList([]);
   }, [selected3depth]);
   useEffect(() => {
     setSelectedCategoryEtc1('');
     setSelectedCategoryEtc2('');
     setRadioEtc1Check({ title: '', checkValue: 0, code: '', key: '' });
     setRadioEtc2Check({ title: '', checkValue: 0, code: '', key: '' });
-    setItemTree([]);
+    setCheckedDepthList([]);
   }, [selected4depth]);
 
   // 카테고리 선택후 아이템트리

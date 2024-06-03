@@ -75,7 +75,7 @@ export function QuizManagementList() {
   const getQuiz = async () => {
     if (tabVeiw == '문항 리스트') {
       const res = await quizService.get(
-        `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}`,
+        `/v1/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${false}&searchKeyword=${searchKeywordValue}`,
       );
       console.log(`getQuiz 결과값`, res.data.data);
       return res.data.data;
@@ -190,6 +190,7 @@ export function QuizManagementList() {
       fetchCategoryItems(groupsData, setCategoryList);
     }
   }, [groupsData]);
+
   // 카테고리의 그룹 유형 조회 (출처)
   const getCategoryGroupsE = async () => {
     const response = await classificationInstance.get('/v1/category/group/E');
@@ -305,7 +306,7 @@ export function QuizManagementList() {
   // 문항 검색 불러오기 api
   const getSearchQuiz = async () => {
     const res = await quizService.get(
-      `/v1/search/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+      `/v1/search/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${false}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
     );
     console.log(`getSearchQuiz 결과값`, res.data.data);
     return res.data.data;

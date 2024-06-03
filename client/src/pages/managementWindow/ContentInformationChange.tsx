@@ -547,7 +547,8 @@ export function ContentInformationChange() {
                           $backgroundColor={`${COLOR.GRAY}`}
                           title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
                           id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                          $margin={`0`}
+                          $margin={`0 0 170px 0`}
+                          defaultChecked={true}
                         >
                           <>
                             {categoryItemTreeData ? (

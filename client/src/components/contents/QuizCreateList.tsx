@@ -201,8 +201,8 @@ export function QuizCreateList() {
       setStartDate('');
       setEndDate('');
       setSearchKeywordValue('');
-      setOnSearch(false);
     }
+
     switch (defaultValue) {
       case categoryTitles[16]?.code:
         setSelectedSource('');
@@ -234,6 +234,8 @@ export function QuizCreateList() {
       default:
         break;
     }
+
+    setOnSearch(false);
   };
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -260,7 +262,7 @@ export function QuizCreateList() {
   // 문항 검색 불러오기 api
   const getSearchQuiz = async () => {
     const res = await quizService.get(
-      `/v1/search/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+      `/v1/search/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${tabVeiw == '즐겨찾는 문항'}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
     );
     console.log(`getSearchQuiz 결과값`, res.data.data);
     return res.data.data;
