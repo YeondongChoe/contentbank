@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
-import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
@@ -186,6 +186,67 @@ export function Step2() {
     setBookmarkCategory((prevContent) => [...prevContent, value]);
   };
   // 새 문항 추가
+  // 새 문항 문항 불러오기 api
+  const postnewQuizList = async (data: any) => {
+    return await quizService.post(`/v1/search/quiz/step/1`, data);
+  };
+
+  const { mutate: postNewQuizData } = useMutation({
+    mutationFn: postnewQuizList,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      // if (context.response.data.code == 'GE-002') {
+      //   postRefreshToken();
+      // }
+    },
+    onSuccess: (response) => {
+      saveLocalData(response.data.data);
+      //navigate('/content-create/exam/step2');
+      // openToastifyAlert({
+      //   type: 'success',
+      //   text: response.data.message,
+      // });
+    },
+  });
+
+  const makingdata = [
+    {
+      itemTreeKey: {
+        교육과정: '8차',
+        학교급: '초등',
+        학년: '1',
+        학기: '1학기',
+      },
+      itemTreeIdxList: [1, 2],
+    },
+  ];
+
+  const clickGetNewQuiz = () => {
+    const data = {
+      itemTreeKeyList: makingdata,
+      //count: Number(questionNum),
+      count: 10,
+      // difficulty: questionLevel === '선택안함' ? null : questionLevel,
+      difficulty: 'BEST',
+      //type: questionType,
+      type: ['MULTIPLE_CHOICE'],
+      //mock: containMock,
+      mock: 1,
+      //score: equalScore,
+      score: 2,
+      isScoreEven: true,
+      isQuizEven: true,
+      isMePriority: true,
+      filterList: null,
+    };
+    //   //console.log(data);
+    postNewQuizData(data);
+  };
   const [isRangeSetting, setIsRangeSetting] = useState<boolean>(false);
   const openRangeSetting = () => {
     setIsRangeSetting(true);
@@ -736,10 +797,10 @@ export function Step2() {
 
   //신고하기
   const { openModal } = useModal();
-  const openReportProcess = () => {
+  const openReportProcess = (idx: number) => {
     openModal({
       title: '',
-      content: <ReportProcessModal registorReport={true} />,
+      content: <ReportProcessModal registorReport={true} reportIdx={idx} />,
       callback: () => {},
     });
   };
@@ -1003,7 +1064,7 @@ export function Step2() {
                               quizNum={item.idx}
                               selectedCardIndex={selectedCardIndex}
                               onSelectCard={setSelectedCardIndex}
-                              reportQuizitem={openReportProcess}
+                              reportQuizitem={() => openReportProcess(item.idx)}
                               changeQuizitem={() =>
                                 clickSwapQuizItem(
                                   similarItems,
@@ -1124,6 +1185,7 @@ export function Step2() {
                             <AddNewContentIcon>
                               <PiArrowClockwiseBold
                                 style={{ fontSize: '22px', cursor: 'pointer' }}
+                                onClick={clickGetNewQuiz}
                               />
                               새로 불러오기
                             </AddNewContentIcon>
@@ -1478,7 +1540,9 @@ export function Step2() {
                                   index={item.idx}
                                   selectedCardIndex={selectedCardIndex}
                                   onSelectCard={setSelectedCardIndex}
-                                  reportQuizitem={openReportProcess}
+                                  reportQuizitem={() =>
+                                    openReportProcess(item.idx)
+                                  }
                                 ></MathviewerAccordion>
                               ))}
                             </AddNewContensWrapper>
@@ -1622,7 +1686,7 @@ export function Step2() {
                           index={itemIndex}
                           selectedCardIndex={selectedCardIndex}
                           onSelectCard={setSelectedCardIndex}
-                          reportQuizitem={openReportProcess}
+                          reportQuizitem={() => openReportProcess(dragItem.idx)}
                           deleteQuizItem={() => deleteQuizItem(dragItem.code)}
                         ></MathviewerAccordion>
                       </li>

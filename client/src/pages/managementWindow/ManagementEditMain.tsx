@@ -3,16 +3,20 @@ import { useState } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu } from '../../components';
 import { COLOR } from '../../components/constants';
+import { pageAtom } from '../../store/utilAtom';
 
 import { ChangeHistory } from './ChangeHistory';
 import { ContentCategoryChange } from './ContentCategoryChange';
 import { ContentInformationChange } from './ContentInformationChange';
 
 export function ManagementEditMain() {
+  const [page, setPage] = useRecoilState(pageAtom);
+
   const location = useLocation();
   const navigate = useNavigate();
   const menuList = [
@@ -29,6 +33,11 @@ export function ManagementEditMain() {
       value: '히스토리',
     },
   ];
+  // 탭메뉴 클릭시 페이지네이션 초기화
+  const changeTab = () => {
+    setPage(1);
+  };
+
   const [tabVeiw, setTabVeiw] = useState<string>('문항 내용 바꾸기');
 
   const closePopup = () => {
@@ -43,6 +52,7 @@ export function ManagementEditMain() {
           selected={tabVeiw}
           width={'400px'}
           setTabVeiw={setTabVeiw}
+          onClickTab={changeTab}
         />
       </ButtonWrapper>
       {tabVeiw === '문항 내용 바꾸기' && (
