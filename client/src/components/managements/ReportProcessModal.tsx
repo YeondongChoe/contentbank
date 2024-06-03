@@ -1,19 +1,30 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { styled } from 'styled-components';
 
-import { Button, Label, Select } from '../../components/atom';
+import { quizService } from '../../api/axios';
+import {
+  Button,
+  Label,
+  Select,
+  openToastifyAlert,
+} from '../../components/atom';
 import { useModal } from '../../hooks';
 import { COLOR } from '../constants';
 
 type ReportProcessType = {
   registorReport?: boolean;
+  reportIdx?: number;
 };
 
-export function ReportProcessModal({ registorReport }: ReportProcessType) {
+export function ReportProcessModal({
+  registorReport,
+  reportIdx,
+}: ReportProcessType) {
   const { closeModal } = useModal();
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedTypeValue, setSelectedTypeValue] = useState<string>('');
   const [commentValue, setCommentValue] = useState('');
   const [reportType, setReportType] = useState<
     {
@@ -48,10 +59,39 @@ export function ReportProcessModal({ registorReport }: ReportProcessType) {
       name: '기타',
     },
   ]);
+  // 문항 신고
+  const postReportQuiz = async (data: any) => {
+    return await quizService.post(`/v1/report`, data);
+  };
+
+  const { mutate: postReportQuizData } = useMutation({
+    mutationFn: postReportQuiz,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      closeModal();
+    },
+  });
 
   const submitReportProcess = () => {
+    const data = {
+      reportType: registorReport ? 'REPORT' : 'ANSWER',
+      idx: reportIdx,
+      type: selectedTypeValue,
+      content: commentValue,
+    };
+    postReportQuizData(data);
     //해당 신고내역에 처리된 상태 보내기
-    closeModal();
   };
 
   return (
@@ -73,7 +113,7 @@ export function ReportProcessModal({ registorReport }: ReportProcessType) {
               : '처리유형을 선택해주세요'
           }
           options={reportType}
-          setSelectedValue={setSelectedValue}
+          setSelectedTypeValue={setSelectedTypeValue}
         />
       </InputWrapper>
       <InputWrapper>

@@ -924,20 +924,26 @@ export function Step1() {
     setClickedIdx(0);
     setClickedTitle('');
   };
-  // // 시중교재 불러오기 api
-  // const getCategoryExamGroups = async () => {
-  //   const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
-  //   // console.log(response.data.data.typeList);
-  //   return response.data.data.typeList;
-  // };
-  // const { data: examData } = useQuery({
-  //   queryKey: ['get-category-exam-groups'],
-  //   queryFn: getCategoryExamGroups,
-  //   // enabled: !!categoryData,
-  //   meta: {
-  //     errorMessage: 'get-category-exam-groups 에러 메세지',
-  //   },
-  // });
+  // 시중교재 불러오기 api
+  const getTextbook = async () => {
+    const res = await quizService.get(`/v1/textbook`);
+    console.log(`getTextbook 결과값`, res);
+    return res;
+  };
+  const {
+    data: textbookData,
+    isLoading: isTextbookDataLoading,
+    //error: categoryDataError,
+    //refetch: categoryDataRefetch,
+    //isSuccess,
+  } = useQuery({
+    queryKey: ['get-textbook'],
+    queryFn: getTextbook,
+    meta: {
+      errorMessage: 'get-textbook 에러 메세지',
+    },
+    enabled: tabVeiw === '시중교재',
+  });
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number>();
@@ -1043,12 +1049,6 @@ export function Step1() {
 
   const excludedNames = ['1', '2', '8', '12'];
 
-  // console.log(
-  //   categoryList[3].map((el) => {
-  //     return el.name;
-  //   }),
-  // );
-  //console.log(examData);
   // 드롭다운에서 선택한 값으로 더미데이터를 대신해서 넣고 선택 완료를 누르면 서버에 요청해서 값을 저장함
   const [isDropdown, setIsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -1091,9 +1091,9 @@ export function Step1() {
     });
   };
   const isAllSelectedExamGrade =
-    examGrade.includes('고1') &&
-    examGrade.includes('고2') &&
-    examGrade.includes('고3');
+    examGrade.includes('1') &&
+    examGrade.includes('2') &&
+    examGrade.includes('3');
 
   const [examYear, setExamYear] = useState<string[]>([]);
   const selectExamYear = (newValue: string) => {
@@ -1138,8 +1138,8 @@ export function Step1() {
     examMonthly.includes('10') &&
     examMonthly.includes('11');
 
-  const [examOption, setExamOption] = useState<string | null>(null);
-  const selectExamOption = (newValue: string | null) => {
+  const [examOption, setExamOption] = useState<number | null>(null);
+  const selectExamOption = (newValue: number | null) => {
     setExamOption(newValue);
   };
   const selectExamReset = () => {
@@ -1148,8 +1148,17 @@ export function Step1() {
     setExamMonthly([]);
     setExamOption(null);
   };
+  // 수능 모의고사 불러오기 api
   const selectExam = () => {
     setIsDropdown(false);
+    const grades = examGrade.join(',');
+    const years = examYear.join(',');
+    const months = examMonthly.join(',');
+    const res = quizService.get(
+      `/v1/csat?option=${examOption}&level='고등'&subject='수학'&grades=${grades}&years=${years}&months=${months}`,
+    );
+    console.log(`getCsat 결과값`, res);
+    return res;
   };
 
   const mockexamList: MockexamType[] = dummy.Mockexam;
@@ -1259,15 +1268,11 @@ export function Step1() {
     },
     itemTreeIdxList: item[6].checkedDepthList,
   }));
-
   const clickNextButton = () => {
-    // const formattedType = questionTypeData
-    //   ?.map((type) => `"${type}"`)
-    //   .join(', ');
     const data = {
       itemTreeKeyList: makingdata,
       count: Number(questionNum),
-      difficulty: questionLevel,
+      difficulty: questionLevel === '선택안함' ? null : questionLevel,
       type: questionType,
       mock: containMock,
       score: equalScore,
@@ -1977,14 +1982,24 @@ export function Step1() {
                   </AdditionOption> */}
                   <AdditionOption>
                     <CheckBox isChecked={isQuizEven} onClick={selectQuizEven} />
-                    문항 수 균등 배분
+                    <Label
+                      onClick={selectQuizEven}
+                      value="문항 수 균등 배분"
+                      fontSize="16px"
+                      width="140px"
+                    />
                   </AdditionOption>
                   <AdditionOption>
                     <CheckBox
                       isChecked={isPriority}
                       onClick={selectPriority}
                     ></CheckBox>
-                    내 문항 우선 추천
+                    <Label
+                      onClick={selectPriority}
+                      value="내 문항 우선 추천"
+                      fontSize="16px"
+                      width="140px"
+                    />
                   </AdditionOption>
                 </AdditionOptionList>
                 <Summary>
@@ -2582,14 +2597,24 @@ export function Step1() {
                           isChecked={isQuizEven}
                           onClick={selectQuizEven}
                         />
-                        문항 수 균등 배분
+                        <Label
+                          onClick={selectQuizEven}
+                          value="문항 수 균등 배분"
+                          fontSize="16px"
+                          width="140px"
+                        />
                       </AdditionOption>
                       <AdditionOption>
                         <CheckBox
                           isChecked={isPriority}
                           onClick={selectPriority}
                         ></CheckBox>
-                        내 문항 우선 추천
+                        <Label
+                          onClick={selectPriority}
+                          value="내 문항 우선 추천"
+                          fontSize="16px"
+                          width="140px"
+                        />
                       </AdditionOption>
                     </AdditionOptionList>
                     {/* <Summary>
@@ -3040,14 +3065,24 @@ export function Step1() {
                           isChecked={isQuizEven}
                           onClick={selectQuizEven}
                         />
-                        문항 수 균등 배분
+                        <Label
+                          onClick={selectQuizEven}
+                          value="문항 수 균등 배분"
+                          fontSize="16px"
+                          width="140px"
+                        />
                       </AdditionOption>
                       <AdditionOption>
                         <CheckBox
                           isChecked={isPriority}
                           onClick={selectPriority}
                         ></CheckBox>
-                        내 문항 우선 추천
+                        <Label
+                          onClick={selectPriority}
+                          value="내 문항 우선 추천"
+                          fontSize="16px"
+                          width="140px"
+                        />
                       </AdditionOption>
                     </AdditionOptionList>
                     {/* <Summary>
@@ -3134,7 +3169,7 @@ export function Step1() {
                               if (isAllSelectedExamGrade) {
                                 setExamGrade([]);
                               } else {
-                                setExamGrade(['고1', '고2', '고3']);
+                                setExamGrade(['1', '2', '3']);
                               }
                             }}
                             $padding="10px"
@@ -3149,39 +3184,39 @@ export function Step1() {
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamGrade('고1')}
+                            onClick={() => selectExamGrade('1')}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={!examGrade.includes('고1')}
-                            $filled={examGrade.includes('고1')}
+                            $normal={!examGrade.includes('1')}
+                            $filled={examGrade.includes('1')}
                             cursor
                           >
                             <span>고1</span>
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamGrade('고2')}
+                            onClick={() => selectExamGrade('2')}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={!examGrade.includes('고2')}
-                            $filled={examGrade.includes('고2')}
+                            $normal={!examGrade.includes('2')}
+                            $filled={examGrade.includes('2')}
                             cursor
                           >
                             <span>고2</span>
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamGrade('고3')}
+                            onClick={() => selectExamGrade('3')}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={!examGrade.includes('고3')}
-                            $filled={examGrade.includes('고3')}
+                            $normal={!examGrade.includes('3')}
+                            $filled={examGrade.includes('3')}
                             cursor
                           >
                             <span>고3</span>
@@ -3303,26 +3338,26 @@ export function Step1() {
                         <MockExamButtonWrapper>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamOption('문항 번호로 추가')}
+                            onClick={() => selectExamOption(0)}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={examOption !== '문항 번호로 추가'}
-                            $filled={examOption === '문항 번호로 추가'}
+                            $normal={examOption !== 0}
+                            $filled={examOption === 0}
                             cursor
                           >
                             <span>문항 번호로 추가</span>
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamOption('단원으로 추가')}
+                            onClick={() => selectExamOption(1)}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={examOption !== '단원으로 추가'}
-                            $filled={examOption === '단원으로 추가'}
+                            $normal={examOption !== 1}
+                            $filled={examOption === 1}
                             cursor
                           >
                             <span>단원으로 추가</span>

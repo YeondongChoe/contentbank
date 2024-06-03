@@ -36,6 +36,7 @@ type SelectProps = {
   setSelectedValue?: React.Dispatch<React.SetStateAction<string>>;
   onDefaultSelect?: () => void;
   selectedValue?: string;
+  setSelectedTypeValue?: any;
 };
 
 export function Select({
@@ -53,6 +54,7 @@ export function Select({
   setSelectedValue,
   onDefaultSelect,
   selectedValue,
+  setSelectedTypeValue,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -61,6 +63,12 @@ export function Select({
   useEffect(() => {
     setSelected(selectedValue);
   }, [selectedValue]);
+
+  useEffect(() => {
+    if (selected !== undefined && selected !== null) {
+      setSelectedTypeValue(selected);
+    }
+  }, [selected]);
 
   if (setSelectedValue !== undefined && selected && code) {
     setSelectedValue(code);
