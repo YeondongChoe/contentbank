@@ -74,22 +74,13 @@ export function QuizCreateList() {
 
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
-    if (tabVeiw == '문항 리스트') {
-      const res = await quizService.get(
-        !onSearch
-          ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성'}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
-      );
-      // console.log(`getQuiz 결과값`, res.data.data);
-      return res.data.data;
-    }
-    if (tabVeiw == '즐겨찾는 문항') {
-      const res = await quizService.get(
-        `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`,
-      );
-      console.log(`getQuizfavorite 결과값`, res.data.data);
-      return res.data.data;
-    }
+    const res = await quizService.get(
+      !onSearch
+        ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${tabVeiw == '즐겨찾는 문항' ? true : ''}`
+        : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${tabVeiw == '즐겨찾는 문항' ? true : ''}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성'}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+    );
+    // console.log(`getQuiz 결과값`, res.data.data);
+    return res.data.data;
   };
 
   const {
@@ -269,8 +260,8 @@ export function QuizCreateList() {
     // console.log('selectedCourse', selectedCourse);
     // console.log('selectedQuestionType', selectedQuestionType);
     // console.log('selectedOpenStatus', selectedOpenStatus);
-    // console.log('startDate', startDate);
-    // console.log('endDate', endDate);
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
     // console.log('searchKeywordValue', searchKeywordValue);
     quizDataRefetch();
     setOnSearch(true);
