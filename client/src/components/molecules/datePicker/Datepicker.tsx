@@ -22,7 +22,7 @@ export const CommonDate = ({
     if (pickDate) {
       console.log('날자 pickDate :', pickDate);
       //const date = pickDate.toISOString().slice(0, 19);
-      const formattedDate = format(pickDate, 'yyyy-MM-dd HH:mm:ss');
+      const formattedDate = format(pickDate, "yyyy-MM-dd'T'HH:mm:ss");
       setDate(formattedDate);
     }
   }, [pickDate, setDate]);

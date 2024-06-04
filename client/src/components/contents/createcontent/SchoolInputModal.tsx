@@ -167,6 +167,7 @@ export function SchoolInputModal({
         <SubTitle>출처 학교 직접 입력</SubTitle>
         <SelectWrapper>
           <>
+            {/* TODO : 그룹유형검색 api 로 변경 */}
             {[
               {
                 id: '1',
