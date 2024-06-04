@@ -61,6 +61,7 @@ const Container = styled.div<{ $margin?: string; $backgroundColor?: string }>`
   }
   .accordion input:checked ~ .accordion_content {
     max-height: inherit;
+    padding: 10px 0;
   }
 
   .accordion > label {

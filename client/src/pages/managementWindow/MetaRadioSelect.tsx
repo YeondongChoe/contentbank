@@ -113,6 +113,7 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -144,18 +145,16 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      setIsCategoryLoaded(true);
-    }
-  }, [isSuccess]);
-
   // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A');
     return response.data.data.typeList;
   };
-  const { data: groupsData } = useQuery({
+  const {
+    data: groupsData,
+    isFetching: groupsDataAIsFetching,
+    refetch: groupsDataARefetch,
+  } = useQuery({
     queryKey: ['get-category-groups-A'],
     queryFn: getCategoryGroups,
     enabled: !!categoryData,
@@ -196,8 +195,17 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
   ) => {
     const typeIds = typeList.split(',');
     try {
+      setIsCategoryLoaded(true);
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/${id}`),
+        classificationInstance.get(`/v1/category/${id}`).catch((error) => {
+          console.log(error);
+          if (error.data?.code == 'GE-002' && !refreshTokenCalled) {
+            setRefreshTokenCalled(true);
+            postRefreshToken().then(() => {
+              setRefreshTokenCalled(false);
+            });
+          }
+        }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
@@ -205,8 +213,8 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
       );
       // console.log('itemsList', itemsList);
       setCategory(itemsList);
-    } catch (error: any) {
-      if (error.data?.code == 'GE-002') postRefreshToken();
+    } finally {
+      setIsCategoryLoaded(false);
     }
   };
 
@@ -585,7 +593,12 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
                 선택한 문항 총 {checkedList.length} 건
               </p>
               {/* 라디오 버튼 부분 */}
-              {isCategoryLoaded && categoryItems[0] && categoryList && (
+              {isCategoryLoaded && (
+                <LoaderWrapper>
+                  <Loader height="50px" size="50px" />
+                </LoaderWrapper>
+              )}
+              {categoryItems[0] && categoryList && (
                 <>
                   {/* 교육과정 */}
                   {[categoryItems[0]].map((item) => (
@@ -856,4 +869,10 @@ const ValueNoneWrapper = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
   display: flex;
   height: 100%;
+`;
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-bottom: 30px;
+  padding-left: calc(50% - 35px);
 `;

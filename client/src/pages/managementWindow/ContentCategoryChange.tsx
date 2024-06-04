@@ -119,10 +119,13 @@ export function ContentCategoryChange() {
   ]);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]);
-  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
+  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([
+    [{ code: '', idx: 0, name: '' }],
+  ]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -132,10 +135,9 @@ export function ContentCategoryChange() {
   };
   const {
     data: categoryData,
-    isLoading: isCategoryLoading,
+    isFetching: isCategoryIsFething,
     error: categoryDataError,
     refetch: categoryDataRefetch,
-    isSuccess,
   } = useQuery({
     queryKey: ['get-category'],
     queryFn: getCategory,
@@ -154,18 +156,16 @@ export function ContentCategoryChange() {
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      setIsCategoryLoaded(true);
-    }
-  }, [isSuccess]);
-
   // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A');
     return response.data.data.typeList;
   };
-  const { data: groupsData } = useQuery({
+  const {
+    data: groupsData,
+    isFetching: groupsDataAIsFetching,
+    refetch: groupsDataARefetch,
+  } = useQuery({
     queryKey: ['get-category-groups-A'],
     queryFn: getCategoryGroups,
     enabled: !!categoryData,
@@ -185,7 +185,11 @@ export function ContentCategoryChange() {
     const response = await classificationInstance.get('/v1/category/group/E');
     return response.data.data.typeList;
   };
-  const { data: groupsEData, refetch: groupsDataERefetch } = useQuery({
+  const {
+    data: groupsEData,
+    refetch: groupsDataERefetch,
+    isFetching: groupsDataEIsFetching,
+  } = useQuery({
     queryKey: ['get-category-groups-E'],
     queryFn: getCategoryGroupsE,
     enabled: !!categoryData,
@@ -206,17 +210,28 @@ export function ContentCategoryChange() {
   ) => {
     const typeIds = typeList.split(',');
     try {
+      setIsCategoryLoaded(true);
+
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/${id}`),
+        classificationInstance.get(`/v1/category/${id}`).catch((error) => {
+          // console.log(error);
+          if (error.data?.code == 'GE-002' && !refreshTokenCalled) {
+            setRefreshTokenCalled(true);
+            postRefreshToken().then(() => {
+              setRefreshTokenCalled(false);
+            });
+          }
+        }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      console.log('itemsList', itemsList);
+      console.log('itemsList====', itemsList);
+
       setCategory(itemsList);
-    } catch (error: any) {
-      if (error.data?.code == 'GE-002') postRefreshToken();
+    } finally {
+      setIsCategoryLoaded(false);
     }
   };
 
@@ -632,11 +647,6 @@ export function ContentCategoryChange() {
     checkedDepthList,
   ]);
 
-  // 탭메뉴 클릭시 페이지네이션 초기화
-  // const changeTab = () => {
-  //   setPage(1);
-  // };
-
   return (
     <Container>
       <ResizeLayout
@@ -654,9 +664,17 @@ export function ContentCategoryChange() {
             </Title>
             <ScrollWrapper>
               <PerfectScrollbar>
+                {isCategoryIsFething &&
+                  groupsDataAIsFetching &&
+                  groupsDataEIsFetching &&
+                  isCategoryLoaded && (
+                    <LoaderWrapper>
+                      <Loader height="50px" size="50px" />
+                    </LoaderWrapper>
+                  )}
+                {/* 라디오 버튼 부분 */}
                 <div className="meta_radio_select">
-                  {/* 라디오 버튼 부분 */}
-                  {isCategoryLoaded && categoryItems[0] && categoryList && (
+                  {categoryItems[0] && categoryList && (
                     <>
                       {/* 교육과정 */}
                       {[categoryItems[0]].map((item) => (
@@ -788,6 +806,7 @@ export function ContentCategoryChange() {
                     </>
                   )}
                 </div>
+
                 <div className="meta_accordion_select">
                   {selected1depth &&
                     selected2depth &&
@@ -802,45 +821,55 @@ export function ContentCategoryChange() {
                           $backgroundColor={`${COLOR.GRAY}`}
                           title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
                           id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                          $margin={`0 0 170px 0`}
+                          $margin={`0 0 20px 0`}
                           defaultChecked={true}
                         >
-                          {itemTree && itemTree.length ? (
-                            <>
-                              {itemTree.map((el) => (
-                                <div key={`${el.itemTreeKey}`}>
-                                  {el.itemTreeList.map((item) => (
-                                    <DepthBlock
-                                      defaultChecked
-                                      key={`depthList${item?.idx} ${item.name}`}
-                                      classNameList={`depth-${item.level}`}
-                                      id={item?.code}
-                                      name={item.name}
-                                      value={item?.idx}
-                                      onChange={(e) =>
-                                        handleSingleCheck(
-                                          e.target.checked,
-                                          item?.idx,
-                                        )
-                                      }
-                                      checked={
-                                        checkedDepthList.includes(item?.idx)
-                                          ? true
-                                          : false
-                                      }
-                                    >
-                                      <span>{item.name}</span>
-                                    </DepthBlock>
-                                  ))}
-                                </div>
-                              ))}
-                            </>
-                          ) : (
-                            <ValueNone
-                              textOnly
-                              info="등록된 데이터가 없습니다"
-                            />
-                          )}
+                          <>
+                            {categoryItemTreeData ? (
+                              <>
+                                {itemTree && itemTree.length ? (
+                                  <>
+                                    {itemTree.map((el) => (
+                                      <div key={`${el.itemTreeKey}`}>
+                                        {el.itemTreeList.map((item) => (
+                                          <DepthBlock
+                                            defaultChecked
+                                            key={`depthList${item?.idx} ${item.name}`}
+                                            classNameList={`depth-${item.level}`}
+                                            id={item?.code}
+                                            name={item.name}
+                                            value={item?.idx}
+                                            onChange={(e) =>
+                                              handleSingleCheck(
+                                                e.target.checked,
+                                                item?.idx,
+                                              )
+                                            }
+                                            checked={
+                                              checkedDepthList.includes(
+                                                item?.idx,
+                                              )
+                                                ? true
+                                                : false
+                                            }
+                                          >
+                                            <span>{item.name}</span>
+                                          </DepthBlock>
+                                        ))}
+                                      </div>
+                                    ))}
+                                  </>
+                                ) : (
+                                  <ValueNone
+                                    textOnly
+                                    info="등록된 데이터가 없습니다"
+                                  />
+                                )}
+                              </>
+                            ) : (
+                              <Loader />
+                            )}
+                          </>
                         </Accordion>
                       </>
                     )}
@@ -991,4 +1020,10 @@ const ValueNoneWrapper = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
   display: flex;
   height: 100%;
+`;
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-bottom: 30px;
+  padding-left: calc(50% - 35px);
 `;
