@@ -26,11 +26,15 @@ import {
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import {
-  TextbookType,
   MockexamType,
   ItemCategoryType,
   ItemTreeListType,
 } from '../../../types';
+import {
+  TextbookInfoType,
+  TextbookListType,
+  TextBookDetailType,
+} from '../../../types/TextbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 import dummy from '../../constants/data.json';
@@ -63,8 +67,13 @@ type Page = {
 };
 
 type DataType = {
-  title: string;
-  page: Page[];
+  bookPage: string;
+  subChapter: string;
+  quizList: {
+    idx: number;
+    code: string;
+    bookQuizNumber: string;
+  };
 };
 
 type MockDataType = {
@@ -82,28 +91,32 @@ type MockContent = {
   isChecked?: boolean;
 };
 //시중교재
-const processData = (data: TextbookType): DataType => {
-  const newData: DataType = {
-    title: data.title || '',
-    page:
-      data.type?.flatMap((type) =>
-        type.page?.map((page) => ({
-          seq: page.seq || 0,
-          title: page.title || '',
-          isChecked: false,
-          content:
-            page.content?.map((content) => ({
-              seq: content.seq || 0,
-              title: content.title || '',
-              isChecked: false,
-              pageTitle: page.title,
-            })) || [],
-        })),
-      ) || [],
-  };
+// const processData = (data: TextBookDetailType): DataType => {
+//   const newData: DataType = {
+//     bookPage: data.bookPage || '',
+//     subChapter: data.subChapter || '',
+//     isChecked: false,
+//     quizList:
+//     data.quizList
+//     page:
+//       data.type?.flatMap((type) =>
+//         type.page?.map((page) => ({
+//           seq: page.seq || 0,
+//           title: page.title || '',
+//           isChecked: false,
+//           content:
+//             page.content?.map((content) => ({
+//               seq: content.seq || 0,
+//               title: content.title || '',
+//               isChecked: false,
+//               pageTitle: page.title,
+//             })) || [],
+//         })),
+//       ) || [],
+//   };
 
-  return newData;
-};
+//   return newData;
+// };
 //수능모의고사
 const processMockexam = (dataList: MockexamType[]): MockDataType[] => {
   return dataList.map((data) => {
@@ -906,17 +919,49 @@ export function Step1() {
     console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
   };
 
-  const textbookList: TextbookType[] = dummy.Textbook;
   const [isSelectTextbook, setIsSelectTextbook] = useState(true);
-  const [selectedTextbook, setSelectedTextbook] = useState<TextbookType>();
+  const [selectedTextbookTitle, setSelectedTextbookTitle] = useState<
+    string | null
+  >(null);
+  const [selectedTextbookIdx, setSelectedTextbookIdx] = useState<number | null>(
+    null,
+  );
+  const [selectedTextbook, setSelectedTextbook] = useState<
+    TextBookDetailType[]
+  >([]);
+  console.log(selectedTextbook);
   const [isSelectTextbookContent, setIsSelectTextbookContent] = useState(false);
 
-  const selectTextbook = (book: TextbookType) => {
-    setSelectedTextbook(book);
+  //선택한 시중교재 get api
+  const selectTextbook = async (idx: number, title: string) => {
+    setSelectedTextbookIdx(idx);
+    setSelectedTextbookTitle(title);
     setIsSelectTextbook(false);
     setIsSelectTextbookContent(true);
     setClickedTitle('');
   };
+  const getTextbookDetail = async (idx: number) => {
+    const res = await quizService.get(`/v1/textbook/${idx}`);
+    console.log(`getTextbookDetail 결과값`, res);
+    setSelectedTextbook(res.data.data.textbookList);
+    return res;
+  };
+  const {
+    data: textbookDetailData,
+    //isLoading: isTextbookDataLoading,
+    //error: categoryDataError,
+    //refetch: categoryDataRefetch,
+    //isSuccess,
+  } = useQuery({
+    queryKey: ['get-textbookDetail'],
+    queryFn: () => getTextbookDetail(selectedTextbookIdx as number),
+    meta: {
+      errorMessage: 'get-textbookDetail 에러 메세지',
+    },
+    enabled: !!selectedTextbookIdx,
+  });
+  console.log(textbookDetailData);
+
   const selectOtherTextbook = () => {
     setIsSelectTextbook(true);
     setIsSelectTextbookContent(false);
@@ -944,6 +989,8 @@ export function Step1() {
     },
     enabled: tabVeiw === '시중교재',
   });
+  const textbookList: TextbookInfoType[] = textbookData?.data.data.textbookList;
+  // console.log(textbookData?.data.data.textbookList);
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number>();
@@ -951,13 +998,13 @@ export function Step1() {
 
   const [data, setData] = useState<DataType | undefined>();
 
-  useEffect(() => {
-    if (selectedTextbook && selectedTextbook.type) {
-      setData(() => {
-        return processData(selectedTextbook);
-      });
-    }
-  }, [selectedTextbook, tabVeiw]);
+  // useEffect(() => {
+  //   if (selectedTextbook) {
+  //     setData(() => {
+  //       return processData(selectedTextbook);
+  //     });
+  //   }
+  // }, [selectedTextbook, tabVeiw]);
 
   // 선택시 배경색이 나타남
   const choiceType = (idx: number, title: string) => {
@@ -967,65 +1014,65 @@ export function Step1() {
   };
 
   // 전체 선택
-  const checkAllToggle = (
-    pageSeq: number,
-    isChecked: boolean,
-    contentSeqs: number[],
-  ) => {
-    setData((prevData) => {
-      if (!prevData) return prevData;
+  // const checkAllToggle = (
+  //   pageSeq: number,
+  //   isChecked: boolean,
+  //   contentSeqs: number[],
+  // ) => {
+  //   setData((prevData) => {
+  //     if (!prevData) return prevData;
 
-      const targetPage = prevData.page.find((page) => page.seq === pageSeq);
+  //     const targetPage = prevData.page.find((page) => page.seq === pageSeq);
 
-      if (targetPage) {
-        targetPage.isChecked = !isChecked;
+  //     if (targetPage) {
+  //       targetPage.isChecked = !isChecked;
 
-        if (contentSeqs.length > 0) {
-          targetPage.content.forEach((content) => {
-            if (contentSeqs.includes(content.seq)) {
-              content.isChecked = !isChecked;
-            }
-          });
-        }
-      }
+  //       if (contentSeqs.length > 0) {
+  //         targetPage.content.forEach((content) => {
+  //           if (contentSeqs.includes(content.seq)) {
+  //             content.isChecked = !isChecked;
+  //           }
+  //         });
+  //       }
+  //     }
 
-      return { ...prevData };
-    });
-  };
+  //     return { ...prevData };
+  //   });
+  // };
 
   //부분 선택
-  const checkPartialToggle = (
-    pageSeq: number,
-    contentSeq: number,
-    isChecked: boolean,
-  ) => {
-    setData((prevData) => {
-      if (!prevData) return prevData;
+  // const checkPartialToggle = (
+  //   pageSeq: number,
+  //   contentSeq: number,
+  //   isChecked: boolean,
+  // ) => {
+  //   setData((prevData) => {
+  //     if (!prevData) return prevData;
 
-      const targetPage = prevData.page.find((page) => page.seq === pageSeq);
+  //     const targetPage = prevData.page.find((page) => page.seq === pageSeq);
 
-      if (targetPage) {
-        const targetContent = targetPage.content.find(
-          (content) => content.seq === contentSeq,
-        );
+  //     if (targetPage) {
+  //       const targetContent = targetPage.content.find(
+  //         (content) => content.seq === contentSeq,
+  //       );
 
-        if (targetContent) {
-          targetContent.isChecked = !isChecked;
+  //       if (targetContent) {
+  //         targetContent.isChecked = !isChecked;
 
-          // 모든 컨텐츠가 선택되어 있는지 확인
-          const allContentsChecked = targetPage.content.every(
-            (content) => content.isChecked,
-          );
+  //         // 모든 컨텐츠가 선택되어 있는지 확인
+  //         const allContentsChecked = targetPage.content.every(
+  //           (content) => content.isChecked,
+  //         );
 
-          // 페이지의 isChecked 업데이트
-          targetPage.isChecked = allContentsChecked;
-        }
-      }
+  //         // 페이지의 isChecked 업데이트
+  //         targetPage.isChecked = allContentsChecked;
+  //       }
+  //     }
 
-      const newData = { ...prevData, page: [...prevData.page] };
-      return newData;
-    });
-  };
+  //     const newData = { ...prevData, page: [...prevData.page] };
+  //     return newData;
+  //   });
+  // };
 
   // 수능/모의고사
   const getCategoryExamGroups = async () => {
@@ -2241,12 +2288,15 @@ export function Step1() {
                         <ListTitle className="series">시리즈</ListTitle>
                         <ListTitle className="publisher">출판사</ListTitle>
                       </ListTitleWrapper>
-                      {textbookList.map((book, idx) => (
+                      {textbookList?.map((book, idx) => (
                         <TextbookList
                           key={idx}
-                          onClick={() => selectTextbook(book)}
+                          onClick={() => selectTextbook(book.idx, book.title)}
                         >
-                          <div className="schoolGrade">{book.schoolGrade}</div>
+                          <div className="schoolGrade">
+                            {book.schoolLevel}
+                            {book.grade}-{book.semester}
+                          </div>
                           <div className="title">{book.title}</div>
                           <div className="series">{book.series}</div>
                           <div className="publisher">{book.publisher}</div>
@@ -2638,7 +2688,7 @@ export function Step1() {
                     </TabWrapper>
                     <TextbookTitleWrapper>
                       <Label
-                        value={selectedTextbook?.title as string}
+                        value={selectedTextbookTitle as string}
                         width="500px"
                         fontSize="15px"
                       />
@@ -2656,12 +2706,12 @@ export function Step1() {
                       </Button>
                     </TextbookTitleWrapper>
                     <TextbookWrapper>
-                      {selectedTextbook?.type?.map((types, idx) => (
+                      {selectedTextbook?.map((item, idx) => (
                         <TextbookTypeWrapper key={idx}>
                           <TextbookTypeTitleWrapper>
                             <TextbookTypeTitleWrapperLeft>
                               <Label
-                                value={types.title as string}
+                                value={item.subChapter as string}
                                 width="100%"
                               />
                             </TextbookTypeTitleWrapperLeft>
@@ -2673,55 +2723,6 @@ export function Step1() {
                               />
                             </TextbookTypeTitleWrapperRight>
                           </TextbookTypeTitleWrapper>
-                          {data?.page.map((page) => (
-                            <SelectWrapper key={page.seq}>
-                              <LeftWrapper
-                                onClick={() => choiceType(page.seq, page.title)}
-                                $isChoice={clickedIdx === page.seq}
-                                $choicedIdx={clickedIdx}
-                              >
-                                <CheckBox
-                                  onClick={() =>
-                                    checkAllToggle(
-                                      page.seq,
-                                      page.isChecked as boolean,
-                                      page.content.map((el) => el.seq),
-                                    )
-                                  }
-                                  isChecked={page.isChecked as boolean}
-                                  width="15"
-                                  height="15"
-                                />
-                                <Label value={page.title} width="100px" />
-                              </LeftWrapper>
-                              <RightWrapper>
-                                {/* <Label value="유형UP" /> */}
-                                {page.content.map(
-                                  (content) =>
-                                    clickedTitle === content.pageTitle && (
-                                      <CheckBoxWrapper key={content.seq}>
-                                        <CheckBox
-                                          onClick={() =>
-                                            checkPartialToggle(
-                                              page.seq,
-                                              content.seq,
-                                              content.isChecked || false,
-                                            )
-                                          }
-                                          isChecked={content.isChecked || false}
-                                          width="15"
-                                          height="15"
-                                        />
-                                        <Label
-                                          value={content.title}
-                                          width="30px"
-                                        />
-                                      </CheckBoxWrapper>
-                                    ),
-                                )}
-                              </RightWrapper>
-                            </SelectWrapper>
-                          ))}
                         </TextbookTypeWrapper>
                       ))}
                     </TextbookWrapper>
@@ -4087,3 +4088,56 @@ const EqualScoreModalButtonWrapper = styled.div`
   gap: 10px;
   padding-top: 10px;
 `;
+
+{
+  //   data?.page.map((page) => (
+  //     <SelectWrapper key={page.seq}>
+  //       {/* <LeftWrapper
+  //                                 onClick={() => choiceType(page.seq, page.title)}
+  //                                 $isChoice={clickedIdx === page.seq}
+  //                                 $choicedIdx={clickedIdx}
+  //                               >
+  //                                 <CheckBox
+  //                                   onClick={() =>
+  //                                     checkAllToggle(
+  //                                       page.seq,
+  //                                       page.isChecked as boolean,
+  //                                       page.content.map((el) => el.seq),
+  //                                     )
+  //                                   }
+  //                                   isChecked={page.isChecked as boolean}
+  //                                   width="15"
+  //                                   height="15"
+  //                                 />
+  //                                 <Label value={page.title} width="100px" />
+  //                               </LeftWrapper> */}
+  //       <RightWrapper>
+  //         {/* <Label value="유형UP" /> */}
+  //         {/* {page.content.map(
+  //                                   (content) =>
+  //                                     clickedTitle === content.pageTitle && (
+  //                                       <CheckBoxWrapper key={content.seq}>
+  //                                         <CheckBox
+  //                                           onClick={() =>
+  //                                             checkPartialToggle(
+  //                                               page.seq,
+  //                                               content.seq,
+  //                                               content.isChecked || false,
+  //                                             )
+  //                                           }
+  //                                           isChecked={content.isChecked || false}
+  //                                           width="15"
+  //                                           height="15"
+  //                                         />
+  //                                         <Label
+  //                                           value={content.title}
+  //                                           width="30px"
+  //                                         />
+  //                                       </CheckBoxWrapper>
+  //                                     ),
+  //                                 )} */}
+  //       </RightWrapper>
+  //     </SelectWrapper>
+  //   ));
+  // }
+}
