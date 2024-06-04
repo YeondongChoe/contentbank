@@ -241,4 +241,5 @@ const Component = styled.div<{ $margin?: string }>`
 const Mark = styled.span`
   display: flex;
   background-color: ${COLOR.ALERTBAR_WARNING};
+  color: ${COLOR.PRIMARY};
 `;
