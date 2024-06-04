@@ -32,9 +32,6 @@ export function QuizCreateList() {
   const [page, setPage] = useRecoilState(pageAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-  const [questionSearchList, setQuestionSearchList] = useState<QuizListType[]>(
-    [],
-  );
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
@@ -79,7 +76,9 @@ export function QuizCreateList() {
   const getQuiz = async () => {
     if (tabVeiw == '문항 리스트') {
       const res = await quizService.get(
-        `/v1/quiz?pageIndex=${page}&pageUnit=${8}`,
+        !onSearch
+          ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
+          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성'}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
       // console.log(`getQuiz 결과값`, res.data.data);
       return res.data.data;
@@ -259,29 +258,6 @@ export function QuizCreateList() {
     }
   };
 
-  // 문항 검색 불러오기 api
-  const getSearchQuiz = async () => {
-    const res = await quizService.get(
-      `/v1/search/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${tabVeiw == '즐겨찾는 문항'}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
-    );
-    console.log(`getSearchQuiz 결과값`, res.data.data);
-    return res.data.data;
-  };
-  const {
-    data: quizSearchData,
-    isLoading: quizSearchDataIsLoading,
-    isPending: quizSearchDataIsPending,
-    error: quizSearchDataError,
-    refetch: quizSearchDataRefetch,
-  } = useQuery({
-    queryKey: ['get-quizList-search'],
-    queryFn: getSearchQuiz,
-    enabled: !!onSearch,
-    meta: {
-      errorMessage: 'get-quizList-search 에러 메세지',
-    },
-  });
-
   // 검색용 셀렉트 선택시
   useEffect(() => {
     // console.log('selectedSource', selectedSource);
@@ -296,7 +272,7 @@ export function QuizCreateList() {
     // console.log('startDate', startDate);
     // console.log('endDate', endDate);
     // console.log('searchKeywordValue', searchKeywordValue);
-    quizSearchDataRefetch();
+    quizDataRefetch();
     setOnSearch(true);
   }, [
     selectedSource,
@@ -313,16 +289,9 @@ export function QuizCreateList() {
     searchKeywordValue,
   ]);
 
-  // 검색 이후
-  useEffect(() => {
-    if (quizSearchData) {
-      setQuestionSearchList(quizSearchData.quizList);
-    }
-  }, [quizSearchData]);
-
   useEffect(() => {
     reloadComponent();
-  }, [questionList, questionSearchList]);
+  }, [questionList]);
 
   // 랜더링 초기화
   const reloadComponent = () => {
@@ -334,7 +303,7 @@ export function QuizCreateList() {
     // 쿼리 스트링 변경 로직
     setSearchKeywordValue(searchValue);
     if (searchValue == '') setSearchKeywordValue('');
-    quizSearchDataRefetch();
+    quizDataRefetch();
   };
   const filterSearchValueEnter = (
     event: React.KeyboardEvent<HTMLInputElement>,
@@ -342,7 +311,7 @@ export function QuizCreateList() {
     if (event.key === 'Enter') {
       console.log('searchValue', searchValue);
       setSearchKeywordValue(searchValue);
-      quizSearchDataRefetch();
+      quizDataRefetch();
     }
     if (event.key === 'Backspace') {
       setSearchKeywordValue('');
@@ -368,12 +337,10 @@ export function QuizCreateList() {
   // 탭 바뀔시 초기화
   useEffect(() => {
     setOnSearch(false);
-    quizSearchDataRefetch();
     quizDataRefetch();
   }, [tabVeiw]);
   // 데이터 변경시 리랜더링
   useEffect(() => {
-    quizSearchDataRefetch();
     quizDataRefetch();
     setOnSearch(false);
   }, [page]);
@@ -436,17 +403,6 @@ export function QuizCreateList() {
               />
             )}
             {/* 교육과정 학교급 학년 학기 */}
-            {/* {categoryList.map((el, idx) => (
-              <Select
-							onDefaultSelect={() => setOnSearch(false)}
-                width={'130px'}
-                defaultValue={categoryTitles[idx].name}
-                key={categoryTitles[idx].name}
-                options={el}
-                onSelect={(event) => selectCategoryOption(event)}
-                setSelectedValue={() => {}}
-              />
-            ))} */}
             {categoryList && categoryTitles[0] && (
               <Select
                 onDefaultSelect={() =>
@@ -585,14 +541,14 @@ export function QuizCreateList() {
               key={'오픈여부'}
               options={[
                 {
-                  code: '활성화',
-                  idx: '활성화',
-                  name: '활성화',
+                  code: '활성',
+                  idx: 999998,
+                  name: '활성',
                 },
                 {
-                  code: '비활성화',
-                  idx: '비활성화',
-                  name: '비활성화',
+                  code: '비활성',
+                  idx: 999997,
+                  name: '비활성',
                 },
               ]}
               onSelect={(event) => selectCategoryOption(event)}
@@ -618,50 +574,25 @@ export function QuizCreateList() {
               $margin="0 0 0 5px"
             /> */}
           </SelectWrapper>
-          {onSearch ? (
+
+          {quizData && questionList.length > 0 ? (
             <>
-              {!quizSearchDataIsPending && questionSearchList.length > 0 ? (
-                <>
-                  <ContentList
-                    key={key}
-                    list={questionSearchList}
-                    quizDataRefetch={quizSearchDataRefetch}
-                    tabVeiw={tabVeiw}
-                    totalCount={quizSearchData.pagination.totalCount}
-                  />
-                  <PaginationBox
-                    itemsCountPerPage={quizSearchData.pagination.pageUnit}
-                    totalItemsCount={quizSearchData.pagination.totalCount}
-                  />
-                </>
-              ) : (
-                <ValueNoneWrapper>
-                  <ValueNone />
-                </ValueNoneWrapper>
-              )}
+              <ContentList
+                key={key}
+                list={questionList}
+                quizDataRefetch={quizDataRefetch}
+                tabVeiw={tabVeiw}
+                totalCount={quizData?.pagination?.totalCount}
+              />
+              <PaginationBox
+                itemsCountPerPage={quizData?.pagination?.pageUnit}
+                totalItemsCount={quizData?.pagination?.totalCount}
+              />
             </>
           ) : (
-            <>
-              {questionList.length > 0 ? (
-                <>
-                  <ContentList
-                    key={key}
-                    list={questionList}
-                    quizDataRefetch={quizDataRefetch}
-                    tabVeiw={tabVeiw}
-                    totalCount={quizData.pagination.totalCount}
-                  />
-                  <PaginationBox
-                    itemsCountPerPage={quizData.pagination.pageUnit}
-                    totalItemsCount={quizData.pagination.totalCount}
-                  />
-                </>
-              ) : (
-                <ValueNoneWrapper>
-                  <ValueNone />
-                </ValueNoneWrapper>
-              )}
-            </>
+            <ValueNoneWrapper>
+              <ValueNone />
+            </ValueNoneWrapper>
           )}
         </>
       )}

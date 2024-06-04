@@ -402,17 +402,17 @@ export function ContentCategoryChange() {
       setNextList6depth([
         {
           code: '전체',
-          idx: 99,
+          idx: 999999,
           name: '전체',
         },
         {
           code: '활성화',
-          idx: 98,
+          idx: 999998,
           name: '활성화',
         },
         {
           code: '비활성화',
-          idx: 97,
+          idx: 999997,
           name: '비활성화',
         },
       ]);

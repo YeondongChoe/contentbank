@@ -35,7 +35,6 @@ export function QuizManagementList() {
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
-
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
   const [checkListOn, setCheckListOn] = useState<number[]>([]);
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
@@ -75,9 +74,10 @@ export function QuizManagementList() {
   const getQuiz = async () => {
     if (tabVeiw == '문항 리스트') {
       const res = await quizService.get(
-        `/v1/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${false}&searchKeyword=${searchKeywordValue}`,
+        !onSearch
+          ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
+          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성'}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
-      console.log(`getQuiz 결과값`, res.data.data);
       return res.data.data;
     }
   };
@@ -268,7 +268,6 @@ export function QuizManagementList() {
       setStartDate('');
       setEndDate('');
       setSearchKeywordValue('');
-      setOnSearch(false);
     }
     switch (defaultValue) {
       case categoryTitles[16]?.code:
@@ -301,29 +300,9 @@ export function QuizManagementList() {
       default:
         break;
     }
-  };
 
-  // 문항 검색 불러오기 api
-  const getSearchQuiz = async () => {
-    const res = await quizService.get(
-      `/v1/search/quiz?pageIndex=${page}&pageUnit=${8}&isFavorite=${false}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
-    );
-    console.log(`getSearchQuiz 결과값`, res.data.data);
-    return res.data.data;
+    setOnSearch(false);
   };
-  const {
-    data: quizSearchData,
-    isLoading: quizSearchDataIsLoading,
-    error: quizSearchDataError,
-    refetch: quizSearchDataRefetch,
-  } = useQuery({
-    queryKey: ['get-quizList-search'],
-    queryFn: getSearchQuiz,
-    enabled: !!onSearch,
-    meta: {
-      errorMessage: 'get-quizList-search 에러 메세지',
-    },
-  });
 
   // 검색용 셀렉트 선택시
   useEffect(() => {
@@ -339,7 +318,7 @@ export function QuizManagementList() {
     // console.log('startDate', startDate);
     // console.log('endDate', endDate);
     // console.log('searchKeywordValue', searchKeywordValue);
-    quizSearchDataRefetch();
+    quizDataRefetch();
     setOnSearch(true);
   }, [
     selectedSource,
@@ -355,10 +334,6 @@ export function QuizManagementList() {
     endDate,
     searchKeywordValue,
   ]);
-
-  useEffect(() => {
-    if (quizSearchData) setQuestionList(quizSearchData.quizList);
-  }, [quizSearchData]);
 
   useEffect(() => {
     reloadComponent();
@@ -397,7 +372,6 @@ export function QuizManagementList() {
   // 탭 바뀔시 초기화
   useEffect(() => {
     setOnSearch(false);
-    quizSearchDataRefetch();
     quizDataRefetch();
   }, [tabVeiw]);
 
@@ -606,14 +580,14 @@ export function QuizManagementList() {
               key={'오픈여부'}
               options={[
                 {
-                  code: '활성화',
-                  idx: '활성화',
-                  name: '활성화',
+                  code: '활성',
+                  idx: 999998,
+                  name: '활성',
                 },
                 {
-                  code: '비활성화',
-                  idx: '비활성화',
-                  name: '비활성화',
+                  code: '비활성',
+                  idx: 999997,
+                  name: '비활성',
                 },
               ]}
               onSelect={(event) => selectCategoryOption(event)}
@@ -633,7 +607,7 @@ export function QuizManagementList() {
           </SelectWrapper>
           {tabVeiw === '문항 리스트' && (
             <>
-              {questionList.length > 0 ? (
+              {quizData && questionList.length > 0 ? (
                 <>
                   <ContentList
                     key={key}
@@ -645,24 +619,12 @@ export function QuizManagementList() {
                     }}
                     setCheckListOn={setCheckListOn}
                     tabVeiw={tabVeiw}
-                    totalCount={
-                      onSearch
-                        ? quizSearchData.pagination.totalCount
-                        : quizData.pagination.totalCount
-                    }
+                    totalCount={quizData.pagination.totalCount}
                     deleteQuizIsSuccess={deleteQuizIsSuccess}
                   />
                   <PaginationBox
-                    itemsCountPerPage={
-                      onSearch
-                        ? quizSearchData.pagination.pageUnit
-                        : quizData.pagination.pageUnit
-                    }
-                    totalItemsCount={
-                      onSearch
-                        ? quizSearchData.pagination.totalCount
-                        : quizData.pagination.totalCount
-                    }
+                    itemsCountPerPage={quizData.pagination.pageUnit}
+                    totalItemsCount={quizData.pagination.totalCount}
                   />
                 </>
               ) : (
