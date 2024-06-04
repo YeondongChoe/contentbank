@@ -11,7 +11,6 @@ import { COLOR } from '../../components/constants/COLOR';
 import {
   Classification,
   ContentCreating,
-  FileUploading,
   Labeling,
 } from '../../components/contents/createcontent';
 

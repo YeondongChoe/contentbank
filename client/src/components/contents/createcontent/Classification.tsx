@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';

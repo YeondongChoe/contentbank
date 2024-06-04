@@ -24,9 +24,6 @@ import { pageAtom } from '../../../store/utilAtom';
 import { ItemSchoolType } from '../../../types';
 import { COLOR } from '../../constants';
 
-//TODO : 임시 데이터
-import { selectCategory1 } from './contentCreatingCategory';
-
 export function SchoolInputModal({
   setSchoolNameValue,
 }: {
@@ -170,7 +167,26 @@ export function SchoolInputModal({
         <SubTitle>출처 학교 직접 입력</SubTitle>
         <SelectWrapper>
           <>
-            {selectCategory1.map((el) => (
+            {[
+              {
+                id: '1',
+                label: '시도',
+                value: '1',
+                options: [
+                  {
+                    id: '서울특별시',
+                    label: '서울특별시',
+                    value: '서울특별시',
+                  },
+                ],
+              },
+              {
+                id: '2',
+                label: '시군구',
+                value: '2',
+                options: [{ id: '송파구', label: '송파구', value: '송파구' }],
+              },
+            ].map((el) => (
               <Select
                 width={'120px'}
                 defaultValue={el.label}
