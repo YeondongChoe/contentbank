@@ -5,6 +5,7 @@ import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
 import { IoMdClose, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
@@ -23,8 +24,10 @@ import {
   Loader,
   Icon,
   IconButton,
+  PaginationBox,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
+import { pageAtom } from '../../../store/utilAtom';
 import {
   MockexamType,
   ItemCategoryType,
@@ -32,7 +35,6 @@ import {
 } from '../../../types';
 import {
   TextbookInfoType,
-  TextbookListType,
   TextBookDetailType,
 } from '../../../types/TextbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -52,28 +54,17 @@ type UnitClassificationListType = {
   checkedDepthList?: number[];
 };
 
-type Content = {
-  seq: number;
-  title: string;
-  isChecked?: boolean;
-  pageTitle: string;
-};
-
-type Page = {
-  seq: number;
-  title: string;
-  isChecked?: boolean;
-  content: Content[];
-};
-
-type DataType = {
+type ProcessDataType = {
   bookPage: string;
   subChapter: string;
+  isChecked: boolean;
   quizList: {
     idx: number;
     code: string;
     bookQuizNumber: string;
-  };
+    isChecked: boolean;
+    seq: string;
+  }[];
 };
 
 type MockDataType = {
@@ -90,33 +81,21 @@ type MockContent = {
   title: string;
   isChecked?: boolean;
 };
-//시중교재
-// const processData = (data: TextBookDetailType): DataType => {
-//   const newData: DataType = {
-//     bookPage: data.bookPage || '',
-//     subChapter: data.subChapter || '',
-//     isChecked: false,
-//     quizList:
-//     data.quizList
-//     page:
-//       data.type?.flatMap((type) =>
-//         type.page?.map((page) => ({
-//           seq: page.seq || 0,
-//           title: page.title || '',
-//           isChecked: false,
-//           content:
-//             page.content?.map((content) => ({
-//               seq: content.seq || 0,
-//               title: content.title || '',
-//               isChecked: false,
-//               pageTitle: page.title,
-//             })) || [],
-//         })),
-//       ) || [],
-//   };
 
-//   return newData;
-// };
+//시중교재
+const processData = (data: TextBookDetailType): ProcessDataType => {
+  return {
+    bookPage: data.bookPage || '',
+    subChapter: data.subChapter || '',
+    isChecked: false,
+    quizList: data.quizList.map((quiz) => ({
+      ...quiz,
+      isChecked: false,
+      seq: `${quiz.code}${quiz.bookQuizNumber}`,
+    })),
+  };
+};
+
 //수능모의고사
 const processMockexam = (dataList: MockexamType[]): MockDataType[] => {
   return dataList.map((data) => {
@@ -237,7 +216,6 @@ export function Step1() {
 
   // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
   useEffect(() => {
-    // console.log(categoryData && categoryData);
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
     } else if (categoryDataError) {
@@ -283,14 +261,12 @@ export function Step1() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error?.data?.code);
       if (error.data.code == 'GE-002') postRefreshToken();
     }
   };
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
@@ -359,7 +335,6 @@ export function Step1() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -385,7 +360,6 @@ export function Step1() {
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -411,7 +385,6 @@ export function Step1() {
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data.code);
       if (error.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
@@ -476,7 +449,6 @@ export function Step1() {
     );
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    // console.log('itemTreeKeyList :', itemTreeKeyList);
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
     // console.log('classificationInstance 응답:', res);
@@ -501,14 +473,11 @@ export function Step1() {
       }
     },
     onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
-      // setItemTreeList(res.data.data[0].itemTreeList);
       setItemTree(response.data.data);
     },
   });
-  // console.log(categoryItemTreeData);
 
   useEffect(() => {
-    // console.log(radio4depthCheck);
     if (selected4depth == '') return;
     categoryItemTreeDataMutate();
   }, [selected4depth]);
@@ -545,7 +514,6 @@ export function Step1() {
       );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error?.data?.code);
       if (error?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
@@ -568,12 +536,6 @@ export function Step1() {
         ],
       ]);
     }
-    // else {
-    //   openToastifyAlert({
-    //     type: 'error',
-    //     text: '교과정보는 최대 5개 까지 저장 가능합니다',
-    //   });
-    // }
     //선택정보 저장과 함께 체크상태 초기화
     //저장 성공 후
     const reset = { title: '', checkValue: 0, code: '' };
@@ -592,7 +554,7 @@ export function Step1() {
 
   // 수정
   const changeUnitClassification = (idx: number) => {
-    console.log('unitClassificationList', unitClassificationList);
+    // console.log('unitClassificationList', unitClassificationList);
     const selectedClassification = unitClassificationList[idx];
 
     if (selectedClassification) {
@@ -669,14 +631,6 @@ export function Step1() {
 
   useEffect(() => {}, []);
 
-  const onSubmit = () => {
-    // 최종적으로 전송 될 데이터
-  };
-
-  useEffect(() => {
-    // console.log(error);
-  }, [itemTree]);
-
   // 깊이가 있는 리스트 체크박스
   const handleSingleCheck = (checked: boolean, idx: number) => {
     if (checked) {
@@ -685,18 +639,6 @@ export function Step1() {
       setCheckedDepthList(checkedDepthList.filter((el) => el !== idx));
     }
   };
-
-  // const [didMount, setDidMount] = useState(false);
-
-  // useEffect(() => {
-  //   setDidMount(true);
-  // }, []);
-
-  // useEffect(() => {
-  //   if (didMount) {
-  //     //console.log('schoolLevel, schoolYear이 선택 됐을 때 범위 트리 get API');
-  //   }
-  // }, [didMount]);
 
   //단원.유형별
   const [inputValue, setInputValue] = useState('');
@@ -861,7 +803,6 @@ export function Step1() {
 
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
-  // console.log(minQuotient);
 
   useEffect(() => {
     const parsedValue = parseInt(equalInputValue, 10);
@@ -869,7 +810,6 @@ export function Step1() {
 
     if (isSaveEqualValue) {
       const quotient = Math.floor(parsedValue / questionNumValue);
-      // console.log(quotient);
       const remainder = parsedValue % questionNumValue;
       setQuotient(quotient);
       setRemainder(remainder);
@@ -905,8 +845,12 @@ export function Step1() {
   };
 
   //시중교재
-  const [schoolLevel, setSchoolLevel] = useState<string | null>(null);
-  const selectSchoolLevel = (newValue: string | null) => {
+  const [page, setPage] = useRecoilState(pageAtom);
+  const changeTab = () => {
+    setPage(1);
+  };
+  const [schoolLevel, setSchoolLevel] = useState<string>('초등');
+  const selectSchoolLevel = (newValue: string) => {
     setSchoolLevel(newValue);
   };
   const [gradeLevel, setgradeLevel] = useState<string | null>(null);
@@ -915,9 +859,6 @@ export function Step1() {
   };
 
   const [searchValue, setSearchValue] = useState<string>('');
-  const filterSearchValue = () => {
-    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
-  };
 
   const [isSelectTextbook, setIsSelectTextbook] = useState(true);
   const [selectedTextbookTitle, setSelectedTextbookTitle] = useState<
@@ -926,10 +867,9 @@ export function Step1() {
   const [selectedTextbookIdx, setSelectedTextbookIdx] = useState<number | null>(
     null,
   );
-  const [selectedTextbook, setSelectedTextbook] = useState<
-    TextBookDetailType[]
-  >([]);
-  console.log(selectedTextbook);
+  const [selectedTextbook, setSelectedTextbook] = useState<ProcessDataType[]>(
+    [],
+  );
   const [isSelectTextbookContent, setIsSelectTextbookContent] = useState(false);
 
   //선택한 시중교재 get api
@@ -938,21 +878,14 @@ export function Step1() {
     setSelectedTextbookTitle(title);
     setIsSelectTextbook(false);
     setIsSelectTextbookContent(true);
-    setClickedTitle('');
   };
   const getTextbookDetail = async (idx: number) => {
     const res = await quizService.get(`/v1/textbook/${idx}`);
-    console.log(`getTextbookDetail 결과값`, res);
+    // console.log(`getTextbookDetail 결과값`, res);
     setSelectedTextbook(res.data.data.textbookList);
     return res;
   };
-  const {
-    data: textbookDetailData,
-    //isLoading: isTextbookDataLoading,
-    //error: categoryDataError,
-    //refetch: categoryDataRefetch,
-    //isSuccess,
-  } = useQuery({
+  const { data: textbookDetailData } = useQuery({
     queryKey: ['get-textbookDetail'],
     queryFn: () => getTextbookDetail(selectedTextbookIdx as number),
     meta: {
@@ -960,28 +893,24 @@ export function Step1() {
     },
     enabled: !!selectedTextbookIdx,
   });
-  console.log(textbookDetailData);
-
+  //다른 교재 선택
   const selectOtherTextbook = () => {
     setIsSelectTextbook(true);
     setIsSelectTextbookContent(false);
-    setIsChoice(false);
     setClickedIdx(0);
-    setClickedTitle('');
+    setIsChoice(false);
+    setData([]);
+    setSelectedTextbookIdx(null);
   };
   // 시중교재 불러오기 api
   const getTextbook = async () => {
-    const res = await quizService.get(`/v1/textbook`);
-    console.log(`getTextbook 결과값`, res);
+    const res = await quizService.get(
+      `/v1/textbook?pageIndex=${page}&pageUnit=${8}&level=${schoolLevel}&grade=${gradeLevel || ''}&searchKeyword=${searchValue || ''}`,
+    );
+    // console.log(`getTextbook 결과값`, res);
     return res;
   };
-  const {
-    data: textbookData,
-    isLoading: isTextbookDataLoading,
-    //error: categoryDataError,
-    //refetch: categoryDataRefetch,
-    //isSuccess,
-  } = useQuery({
+  const { data: textbookData, refetch: textbookDataRefetch } = useQuery({
     queryKey: ['get-textbook'],
     queryFn: getTextbook,
     meta: {
@@ -990,100 +919,99 @@ export function Step1() {
     enabled: tabVeiw === '시중교재',
   });
   const textbookList: TextbookInfoType[] = textbookData?.data.data.textbookList;
-  // console.log(textbookData?.data.data.textbookList);
+  //조건값이 바뀔때 재검색
+  useEffect(() => {
+    textbookDataRefetch();
+  }, [page, schoolLevel, gradeLevel, searchValue]);
 
   const [isChoice, setIsChoice] = useState(false);
-  const [clickedIdx, setClickedIdx] = useState<number>();
-  const [clickedTitle, setClickedTitle] = useState<string>();
+  const [clickedIdx, setClickedIdx] = useState<number | null>(null);
+  const [data, setData] = useState<ProcessDataType[]>([]);
 
-  const [data, setData] = useState<DataType | undefined>();
-
-  // useEffect(() => {
-  //   if (selectedTextbook) {
-  //     setData(() => {
-  //       return processData(selectedTextbook);
-  //     });
-  //   }
-  // }, [selectedTextbook, tabVeiw]);
+  useEffect(() => {
+    if (selectedTextbook && Array.isArray(selectedTextbook)) {
+      setData(() => {
+        return selectedTextbook.map((textbook) => processData(textbook));
+      });
+    }
+  }, [selectedTextbook]);
 
   // 선택시 배경색이 나타남
-  const choiceType = (idx: number, title: string) => {
+  const choiceType = (idx: number) => {
     setIsChoice(!isChoice);
-    setClickedIdx(idx);
-    setClickedTitle(title);
+    if (clickedIdx === idx) {
+      setClickedIdx(null);
+    } else {
+      setClickedIdx(idx);
+    }
   };
 
   // 전체 선택
-  // const checkAllToggle = (
-  //   pageSeq: number,
-  //   isChecked: boolean,
-  //   contentSeqs: number[],
-  // ) => {
-  //   setData((prevData) => {
-  //     if (!prevData) return prevData;
+  const checkAllToggle = (
+    subChapter: string,
+    isChecked: boolean,
+    contentSeqs: string[],
+  ) => {
+    setData((prevData) => {
+      if (!prevData) return prevData;
 
-  //     const targetPage = prevData.page.find((page) => page.seq === pageSeq);
-
-  //     if (targetPage) {
-  //       targetPage.isChecked = !isChecked;
-
-  //       if (contentSeqs.length > 0) {
-  //         targetPage.content.forEach((content) => {
-  //           if (contentSeqs.includes(content.seq)) {
-  //             content.isChecked = !isChecked;
-  //           }
-  //         });
-  //       }
-  //     }
-
-  //     return { ...prevData };
-  //   });
-  // };
+      return prevData.map((page) => {
+        if (page.subChapter === subChapter) {
+          const updatedQuizList = page.quizList.map((quiz) => {
+            if (contentSeqs.includes(quiz.seq)) {
+              return { ...quiz, isChecked: !isChecked };
+            }
+            return quiz;
+          });
+          return { ...page, isChecked: !isChecked, quizList: updatedQuizList };
+        }
+        return page;
+      });
+    });
+  };
 
   //부분 선택
-  // const checkPartialToggle = (
-  //   pageSeq: number,
-  //   contentSeq: number,
-  //   isChecked: boolean,
-  // ) => {
-  //   setData((prevData) => {
-  //     if (!prevData) return prevData;
+  const checkPartialToggle = (
+    subChapter: string,
+    contentSeq: string,
+    isChecked: boolean,
+  ) => {
+    setData((prevData) => {
+      if (!prevData) return prevData;
 
-  //     const targetPage = prevData.page.find((page) => page.seq === pageSeq);
+      return prevData.map((page) => {
+        if (page.subChapter === subChapter) {
+          const updatedQuizList = page.quizList.map((quiz) => {
+            if (quiz.seq === contentSeq) {
+              return { ...quiz, isChecked: !isChecked };
+            }
+            return quiz;
+          });
 
-  //     if (targetPage) {
-  //       const targetContent = targetPage.content.find(
-  //         (content) => content.seq === contentSeq,
-  //       );
+          // 모든 컨텐츠가 선택되어 있는지 확인
+          const allContentsChecked = updatedQuizList.every(
+            (quiz) => quiz.isChecked,
+          );
 
-  //       if (targetContent) {
-  //         targetContent.isChecked = !isChecked;
-
-  //         // 모든 컨텐츠가 선택되어 있는지 확인
-  //         const allContentsChecked = targetPage.content.every(
-  //           (content) => content.isChecked,
-  //         );
-
-  //         // 페이지의 isChecked 업데이트
-  //         targetPage.isChecked = allContentsChecked;
-  //       }
-  //     }
-
-  //     const newData = { ...prevData, page: [...prevData.page] };
-  //     return newData;
-  //   });
-  // };
+          return {
+            ...page,
+            isChecked: allContentsChecked,
+            quizList: updatedQuizList,
+          };
+        }
+        return page;
+      });
+    });
+  };
 
   // 수능/모의고사
   const getCategoryExamGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
-    // console.log(response.data.data.typeList);
     return response.data.data.typeList;
   };
   const { data: examData } = useQuery({
     queryKey: ['get-category-exam-groups'],
     queryFn: getCategoryExamGroups,
-    // enabled: !!categoryData,
     meta: {
       errorMessage: 'get-category-exam-groups 에러 메세지',
     },
@@ -1204,7 +1132,7 @@ export function Step1() {
     const res = quizService.get(
       `/v1/csat?option=${examOption}&level='고등'&subject='수학'&grades=${grades}&years=${years}&months=${months}`,
     );
-    console.log(`getCsat 결과값`, res);
+    // console.log(`getCsat 결과값`, res);
     return res;
   };
 
@@ -1288,17 +1216,10 @@ export function Step1() {
         type: 'error',
         text: context.response.data.message,
       });
-      // if (context.response.data.code == 'GE-002') {
-      //   postRefreshToken();
-      // }
     },
     onSuccess: (response) => {
       saveLocalData(response.data.data);
-      //navigate('/content-create/exam/step2');
-      // openToastifyAlert({
-      //   type: 'success',
-      //   text: response.data.message,
-      // });
+      navigate('/content-create/exam/step2');
     },
   });
 
@@ -1308,10 +1229,6 @@ export function Step1() {
       학교급: item[1].title,
       학기: item[2].title,
       학년: item[3].title,
-      // 교육과정: '8차',
-      // 학교급: '초등',
-      // 학년: '1',
-      // 학기: '1학기',
     },
     itemTreeIdxList: item[6].checkedDepthList,
   }));
@@ -1328,7 +1245,6 @@ export function Step1() {
       isMePriority: isPriority,
       filterList: null,
     };
-    //console.log(data);
     postStep1Data(data);
   };
 
@@ -1339,7 +1255,7 @@ export function Step1() {
     const data = localStorage.getItem('sendData');
     if (data) {
       const parsedData = JSON.parse(data);
-      console.log('데이터 조회', parsedData);
+      // console.log('데이터 조회', parsedData);
       setSendLocalData(parsedData);
     }
   }, []);
@@ -1359,12 +1275,10 @@ export function Step1() {
     }
   }, [sendLocalData]);
 
-  // console.log(sendLocalData);
-
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
     const sendData = { data: data };
-    console.log(sendData);
+    // console.log(sendData);
     localStorage.setItem('sendData', JSON.stringify(sendData));
   };
 
@@ -1382,6 +1296,10 @@ export function Step1() {
     setIsOption2(false);
     setIsQuizEven(false);
     setIsPriority(false);
+    //시중교재
+    setSearchValue('');
+    setSchoolLevel('초등');
+    setgradeLevel(null);
     //모의시험 버튼 초기화
     setIsDropdown(false);
     setExamGrade([]);
@@ -1410,6 +1328,7 @@ export function Step1() {
                     lineStyle
                     selected={tabVeiw}
                     setTabVeiw={setTabVeiw}
+                    onClickTab={changeTab}
                   />
                 </TabWrapper>
                 <CategoryWrapper>
@@ -2061,10 +1980,10 @@ export function Step1() {
                 <>
                   <CategorySection>
                     <TabWrapper
-                      onClick={() => {
-                        selectSchoolLevel('초');
-                        setgradeLevel('');
-                      }}
+                    // onClick={() => {
+                    //   selectSchoolLevel('초등');
+                    //   setgradeLevel('');
+                    // }}
                     >
                       <TabMenu
                         length={3}
@@ -2080,15 +1999,15 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectSchoolLevel('초');
+                            selectSchoolLevel('초등');
                             selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'97px'}
                           fontSize="14px"
-                          $normal={schoolLevel !== '초'}
-                          $filled={schoolLevel === '초'}
+                          $normal={schoolLevel !== '초등'}
+                          $filled={schoolLevel === '초등'}
                           cursor
                         >
                           <span>초</span>
@@ -2096,15 +2015,15 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectSchoolLevel('중');
+                            selectSchoolLevel('중등');
                             selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'97px'}
                           fontSize="14px"
-                          $normal={schoolLevel !== '중'}
-                          $filled={schoolLevel === '중'}
+                          $normal={schoolLevel !== '중등'}
+                          $filled={schoolLevel === '중등'}
                           cursor
                         >
                           <span>중</span>
@@ -2112,33 +2031,33 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectSchoolLevel('고');
+                            selectSchoolLevel('고등');
                             selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'97px'}
                           fontSize="14px"
-                          $normal={schoolLevel !== '고'}
-                          $filled={schoolLevel === '고'}
+                          $normal={schoolLevel !== '고등'}
+                          $filled={schoolLevel === '고등'}
                           cursor
                         >
                           <span>고</span>
                         </Button>
                         <DivideBar>|</DivideBar>
-                        {schoolLevel === '중' || schoolLevel === '고' ? (
+                        {schoolLevel === '중등' || schoolLevel === '고등' ? (
                           <SelectorGroup>
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('1학년');
+                                selectGradeLevel('1');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '1학년'}
-                              $filled={gradeLevel === '1학년'}
+                              $normal={gradeLevel !== '1'}
+                              $filled={gradeLevel === '1'}
                               cursor
                             >
                               <span>1학년</span>
@@ -2146,14 +2065,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('2학년');
+                                selectGradeLevel('2');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '2학년'}
-                              $filled={gradeLevel === '2학년'}
+                              $normal={gradeLevel !== '2'}
+                              $filled={gradeLevel === '2'}
                               cursor
                             >
                               <span>2학년</span>
@@ -2161,14 +2080,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('3학년');
+                                selectGradeLevel('3');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '3학년'}
-                              $filled={gradeLevel === '3학년'}
+                              $normal={gradeLevel !== '3'}
+                              $filled={gradeLevel === '3'}
                               cursor
                             >
                               <span>3학년</span>
@@ -2179,14 +2098,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('1학년');
+                                selectGradeLevel('1');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '1학년'}
-                              $filled={gradeLevel === '1학년'}
+                              $normal={gradeLevel !== '1'}
+                              $filled={gradeLevel === '1'}
                               cursor
                             >
                               <span>1학년</span>
@@ -2194,14 +2113,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('2학년');
+                                selectGradeLevel('2');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '2학년'}
-                              $filled={gradeLevel === '2학년'}
+                              $normal={gradeLevel !== '2'}
+                              $filled={gradeLevel === '2'}
                               cursor
                             >
                               <span>2학년</span>
@@ -2209,14 +2128,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('3학년');
+                                selectGradeLevel('3');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '3학년'}
-                              $filled={gradeLevel === '3학년'}
+                              $normal={gradeLevel !== '3'}
+                              $filled={gradeLevel === '3'}
                               cursor
                             >
                               <span>3학년</span>
@@ -2224,14 +2143,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('4학년');
+                                selectGradeLevel('4');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '4학년'}
-                              $filled={gradeLevel === '4학년'}
+                              $normal={gradeLevel !== '4'}
+                              $filled={gradeLevel === '4'}
                               cursor
                             >
                               <span>4학년</span>
@@ -2239,14 +2158,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('5학년');
+                                selectGradeLevel('5');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '5학년'}
-                              $filled={gradeLevel === '5학년'}
+                              $normal={gradeLevel !== '5'}
+                              $filled={gradeLevel === '5'}
                               cursor
                             >
                               <span>5학년</span>
@@ -2254,14 +2173,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('6학년');
+                                selectGradeLevel('6');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '6학년'}
-                              $filled={gradeLevel === '6학년'}
+                              $normal={gradeLevel !== '6'}
+                              $filled={gradeLevel === '6'}
                               cursor
                             >
                               <span>6학년</span>
@@ -2275,7 +2194,6 @@ export function Step1() {
                         value={searchValue}
                         width={'50%'}
                         height="40px"
-                        onClick={() => filterSearchValue()}
                         onKeyDown={(e) => {}}
                         onChange={(e) => setSearchValue(e.target.value)}
                         placeholder="교재명 검색"
@@ -2288,21 +2206,37 @@ export function Step1() {
                         <ListTitle className="series">시리즈</ListTitle>
                         <ListTitle className="publisher">출판사</ListTitle>
                       </ListTitleWrapper>
-                      {textbookList?.map((book, idx) => (
-                        <TextbookList
-                          key={idx}
-                          onClick={() => selectTextbook(book.idx, book.title)}
-                        >
-                          <div className="schoolGrade">
-                            {book.schoolLevel}
-                            {book.grade}-{book.semester}
-                          </div>
-                          <div className="title">{book.title}</div>
-                          <div className="series">{book.series}</div>
-                          <div className="publisher">{book.publisher}</div>
-                        </TextbookList>
-                      ))}
+                      {textbookList.length > 0 ? (
+                        <>
+                          {textbookList?.map((book, idx) => (
+                            <TextbookList
+                              key={idx}
+                              onClick={() =>
+                                selectTextbook(book.idx, book.title)
+                              }
+                            >
+                              <div className="schoolGrade">
+                                {book.schoolLevel}
+                                {book.grade}-{book.semester}
+                              </div>
+                              <div className="title">{book.title}</div>
+                              <div className="series">{book.series}</div>
+                              <div className="publisher">{book.publisher}</div>
+                            </TextbookList>
+                          ))}
+                        </>
+                      ) : (
+                        <ValueNone textOnly info="등록된 데이터가 없습니다" />
+                      )}
                     </ListWrapper>
+                    <PaginationBox
+                      itemsCountPerPage={
+                        textbookData?.data.data.pagination.pageUnit as number
+                      }
+                      totalItemsCount={
+                        textbookData?.data.data.pagination.totalCount as number
+                      }
+                    />
                   </CategorySection>
                   <SchoolSelectorSection
                     $isSelectTextbookContent={isSelectTextbookContent}
@@ -2723,6 +2657,65 @@ export function Step1() {
                               />
                             </TextbookTypeTitleWrapperRight>
                           </TextbookTypeTitleWrapper>
+                          <SelectWrapper>
+                            {data.map((item, i) => (
+                              <LeftWrapper
+                                key={i}
+                                onClick={() => choiceType(i)}
+                                $isChoice={clickedIdx === i}
+                              >
+                                {item.quizList.map((quiz, j) => (
+                                  <>
+                                    <CheckBox
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        checkAllToggle(
+                                          item.subChapter,
+                                          quiz.isChecked,
+                                          [quiz.seq],
+                                        );
+                                      }}
+                                      isChecked={quiz.isChecked}
+                                      width="15"
+                                      height="15"
+                                    />
+                                    <Label
+                                      key={j}
+                                      value={`${quiz.bookQuizNumber}P`}
+                                      width="100px"
+                                    />
+                                  </>
+                                ))}
+                              </LeftWrapper>
+                            ))}
+
+                            {!isChoice &&
+                              data.map((item, k) => (
+                                <RightWrapper key={k}>
+                                  {item.quizList.map((quiz, l) => (
+                                    <CheckBoxWrapper key={l}>
+                                      <CheckBox
+                                        onClick={() =>
+                                          checkPartialToggle(
+                                            item.subChapter,
+                                            quiz.seq,
+                                            quiz.isChecked || false,
+                                          )
+                                        }
+                                        isChecked={quiz.isChecked || false}
+                                        width="15"
+                                        height="15"
+                                      />
+                                      <Label
+                                        key={l}
+                                        value={`${quiz.bookQuizNumber}P`}
+                                        width="100px"
+                                      />
+                                    </CheckBoxWrapper>
+                                  ))}
+                                </RightWrapper>
+                              ))}
+                          </SelectWrapper>
                         </TextbookTypeWrapper>
                       ))}
                     </TextbookWrapper>
@@ -3896,15 +3889,14 @@ const SelectWrapper = styled.div`
 `;
 const LeftWrapper = styled.div<{
   $isChoice?: boolean;
-  $choicedIdx?: number;
 }>`
   display: flex;
   align-items: center;
-  flex: 1 0 0;
+  //flex: 1 0 0;
   gap: 5px;
   padding: 5px 10px;
-  background-color: ${({ $isChoice, $choicedIdx }) =>
-    $isChoice && $choicedIdx ? COLOR.SELECT_BLUE : 'white'};
+  background-color: ${({ $isChoice }) =>
+    $isChoice ? COLOR.SELECT_BLUE : 'white'};
 `;
 const RightWrapper = styled.div`
   display: flex;
@@ -4088,56 +4080,3 @@ const EqualScoreModalButtonWrapper = styled.div`
   gap: 10px;
   padding-top: 10px;
 `;
-
-{
-  //   data?.page.map((page) => (
-  //     <SelectWrapper key={page.seq}>
-  //       {/* <LeftWrapper
-  //                                 onClick={() => choiceType(page.seq, page.title)}
-  //                                 $isChoice={clickedIdx === page.seq}
-  //                                 $choicedIdx={clickedIdx}
-  //                               >
-  //                                 <CheckBox
-  //                                   onClick={() =>
-  //                                     checkAllToggle(
-  //                                       page.seq,
-  //                                       page.isChecked as boolean,
-  //                                       page.content.map((el) => el.seq),
-  //                                     )
-  //                                   }
-  //                                   isChecked={page.isChecked as boolean}
-  //                                   width="15"
-  //                                   height="15"
-  //                                 />
-  //                                 <Label value={page.title} width="100px" />
-  //                               </LeftWrapper> */}
-  //       <RightWrapper>
-  //         {/* <Label value="유형UP" /> */}
-  //         {/* {page.content.map(
-  //                                   (content) =>
-  //                                     clickedTitle === content.pageTitle && (
-  //                                       <CheckBoxWrapper key={content.seq}>
-  //                                         <CheckBox
-  //                                           onClick={() =>
-  //                                             checkPartialToggle(
-  //                                               page.seq,
-  //                                               content.seq,
-  //                                               content.isChecked || false,
-  //                                             )
-  //                                           }
-  //                                           isChecked={content.isChecked || false}
-  //                                           width="15"
-  //                                           height="15"
-  //                                         />
-  //                                         <Label
-  //                                           value={content.title}
-  //                                           width="30px"
-  //                                         />
-  //                                       </CheckBoxWrapper>
-  //                                     ),
-  //                                 )} */}
-  //       </RightWrapper>
-  //     </SelectWrapper>
-  //   ));
-  // }
-}

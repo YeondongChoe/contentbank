@@ -17,13 +17,14 @@ export type TextbookInfoType = {
 export type TextbookListType = {
   textbookList: TextbookInfoType[];
 };
+export type TextbookQuizListType = {
+  idx: number;
+  code: string;
+  bookQuizNumber: string;
+};
 
 export type TextBookDetailType = {
   subChapter: string;
   bookPage: string;
-  quizList: {
-    idx: number;
-    code: string;
-    bookQuizNumber: string;
-  };
+  quizList: TextbookQuizListType[];
 };
