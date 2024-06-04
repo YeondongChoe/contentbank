@@ -372,6 +372,7 @@ export function Classification() {
     setRadioEtc1Check({ title: '', checkValue: 0, code: '', key: '' });
     setRadioEtc2Check({ title: '', checkValue: 0, code: '', key: '' });
     setCheckedDepthList([]);
+    setSearchValue('');
   }, [selected4depth]);
 
   // 카테고리 선택후 아이템트리
@@ -1004,12 +1005,22 @@ export function Classification() {
                           }}
                           placeholder="검색어를 입력해주세요.(두글자 이상)"
                         />
-                        <p className="line bottom_text">
-                          Total :
-                          {categoryItemTreeData && itemTree.length
-                            ? itemTree.map((el) => el.itemTreeList.length)
-                            : 0}
-                        </p>
+                        {searchValue.length > 0 && (
+                          <p className="line bottom_text">
+                            {`총 
+                          ${
+                            categoryItemTreeData && itemTree.length
+                              ? itemTree.map(
+                                  (el) =>
+                                    el.itemTreeList.filter((el) =>
+                                      el.name.includes(searchValue),
+                                    ).length,
+                                )
+                              : 0
+                          } 
+                          건`}
+                          </p>
+                        )}
                         {isPending && (
                           <LoaderWrapper>
                             <Loader width="50px" />
@@ -1207,12 +1218,13 @@ const ScrollWrapper = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
 
   .line {
-    border-top: 1px solid ${COLOR.BORDER_GRAY};
-    margin: 10px 0;
+    border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+    padding: 5px 0;
 
     &.bottom_text {
+      text-align: right;
       font-size: 13px;
-      padding-top: 2px;
+      padding-bottom: 2px;
     }
   }
 `;
@@ -1220,6 +1232,7 @@ const DepthBlockScrollWrapper = styled.div`
   overflow-y: auto;
   /* height: 300px; */
   width: 100%;
+  margin-top: 10px;
 `;
 const Title = styled.div`
   padding: 15px;
