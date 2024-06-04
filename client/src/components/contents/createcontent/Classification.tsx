@@ -131,7 +131,7 @@ export function Classification() {
   >([]); // 각 카테고리의 상세 리스트를 저장할 상태
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [isCategoryLoaded, etIsCategoryLoaded] = useState(false);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -161,12 +161,6 @@ export function Classification() {
       categoryDataRefetch();
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      setIsCategoryLoaded(true);
-    }
-  }, [isSuccess]);
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
@@ -905,7 +899,7 @@ export function Classification() {
                 </UnitClassifications>
 
                 {/* 교육과정 라디오 버튼 부분 */}
-                {isCategoryLoaded && categoryItems[0] && categoryList && (
+                {categoryItems[0] && categoryList && (
                   <>
                     {[categoryItems[0]].map((item) => (
                       <div
@@ -1011,7 +1005,10 @@ export function Classification() {
                           placeholder="검색어를 입력해주세요.(두글자 이상)"
                         />
                         <p className="line bottom_text">
-                          {/* Total : {itemTree.length && itemTree.length} */}
+                          Total :
+                          {categoryItemTreeData && itemTree.length
+                            ? itemTree.map((el) => el.itemTreeList.length)
+                            : 0}
                         </p>
                         {isPending && (
                           <LoaderWrapper>
@@ -1028,36 +1025,32 @@ export function Classification() {
                                       <>
                                         {itemTree.map((el) => (
                                           <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList
-                                              .filter((item) =>
-                                                item.name.includes(searchValue),
-                                              )
-                                              .map((item) => (
-                                                <DepthBlock
-                                                  defaultChecked
-                                                  key={`depthList${item?.idx} ${item.name}`}
-                                                  classNameList={`depth-${item.level}`}
-                                                  id={item?.code}
-                                                  name={item.name}
-                                                  value={item?.idx}
-                                                  onChange={(e) =>
-                                                    handleSingleCheck(
-                                                      e.target.checked,
-                                                      item?.idx,
-                                                    )
-                                                  }
-                                                  checked={
-                                                    checkedDepthList.includes(
-                                                      item?.idx,
-                                                    )
-                                                      ? true
-                                                      : false
-                                                  }
-                                                  searchValue={searchValue}
-                                                >
-                                                  <span>{item.name}</span>
-                                                </DepthBlock>
-                                              ))}
+                                            {el.itemTreeList.map((item) => (
+                                              <DepthBlock
+                                                defaultChecked
+                                                key={`depthList${item?.idx} ${item.name}`}
+                                                classNameList={`depth-${item.level}`}
+                                                id={item?.code}
+                                                name={item.name}
+                                                value={item?.idx}
+                                                onChange={(e) =>
+                                                  handleSingleCheck(
+                                                    e.target.checked,
+                                                    item?.idx,
+                                                  )
+                                                }
+                                                checked={
+                                                  checkedDepthList.includes(
+                                                    item?.idx,
+                                                  )
+                                                    ? true
+                                                    : false
+                                                }
+                                                searchValue={searchValue}
+                                              >
+                                                <span>{item.name}</span>
+                                              </DepthBlock>
+                                            ))}
                                           </div>
                                         ))}
                                       </>
