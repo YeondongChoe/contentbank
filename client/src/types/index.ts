@@ -6,3 +6,4 @@ export * from './ItemAuthorityType';
 export * from './ItemCategoryType';
 export * from './ItemTreeType';
 export * from './ReportQuizType';
+export * from './TextbookType';
