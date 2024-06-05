@@ -89,7 +89,7 @@ export function WorkbookList({
     }
   };
 
-  const [workbookIdx, setWorkbookIdx] = useState<number>(1);
+  const [workbookIdx, setWorkbookIdx] = useState<number>(0);
   // 학습지 상세 정보 불러오기 api
   const getWorkbookData = async (idx: number) => {
     const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
@@ -362,7 +362,13 @@ export function WorkbookList({
                     <i className="line"></i>
                     <span>학년{item.grade}</span>
                     <i className="line"></i>
-                    <span>출처{item.tag}</span>
+                    <span>
+                      {(item.tag === 'DAILY_TEST' && '일일테스트') ||
+                        (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
+                        (item.tag === 'EXERCISES' && '연습문제') ||
+                        (item.tag === 'PRACTICE_TEST' && '모의고사') ||
+                        (item.tag === 'TEST_PREP' && '내신대비')}
+                    </span>
                     <i className="line"></i>
                     <span className="width_20">{item.name}</span>
                     <i className="line"></i>

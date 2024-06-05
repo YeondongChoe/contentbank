@@ -945,12 +945,25 @@ export function Step1() {
       setClickedIdx(idx);
     }
   };
+  const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
+  // 선택된 문항 코드 넣기
+  const toggleQuizCode = (quizCode: string) => {
+    setIncludeQuizList((prev) => {
+      if (prev.includes(quizCode)) {
+        return prev.filter((code) => code !== quizCode);
+      } else {
+        return [...prev, quizCode];
+      }
+    });
+  };
+  console.log(includeQuizList);
 
   // 전체 선택
   const checkAllToggle = (
     subChapter: string,
     isChecked: boolean,
     contentSeqs: string[],
+    quizCode: string,
   ) => {
     setData((prevData) => {
       if (!prevData) return prevData;
@@ -968,6 +981,7 @@ export function Step1() {
         return page;
       });
     });
+    toggleQuizCode(quizCode);
   };
 
   //부분 선택
@@ -975,6 +989,7 @@ export function Step1() {
     subChapter: string,
     contentSeq: string,
     isChecked: boolean,
+    quizCode: string,
   ) => {
     setData((prevData) => {
       if (!prevData) return prevData;
@@ -1002,6 +1017,7 @@ export function Step1() {
         return page;
       });
     });
+    toggleQuizCode(quizCode);
   };
 
   // 수능/모의고사
@@ -1219,7 +1235,7 @@ export function Step1() {
     },
     onSuccess: (response) => {
       saveLocalData(response.data.data);
-      navigate('/content-create/exam/step2');
+      //navigate('/content-create/exam/step2');
     },
   });
 
@@ -1234,7 +1250,7 @@ export function Step1() {
   }));
   const clickNextButton = () => {
     const data = {
-      itemTreeKeyList: makingdata,
+      itemTreeKeyList: tabVeiw === '단원·유형별' ? makingdata : null,
       count: Number(questionNum),
       difficulty: questionLevel === '선택안함' ? null : questionLevel,
       type: questionType,
@@ -1244,6 +1260,7 @@ export function Step1() {
       isQuizEven: isQuizEven,
       isMePriority: isPriority,
       filterList: null,
+      includeList: tabVeiw === '단원·유형별' ? null : includeQuizList,
     };
     postStep1Data(data);
   };
@@ -1518,7 +1535,7 @@ export function Step1() {
                               ) : (
                                 <ValueNone
                                   textOnly
-                                  info="등록된 데이터가 없습니다"
+                                  info="등록된 교재가 없습니다"
                                 />
                               )}
                             </>
@@ -2673,6 +2690,7 @@ export function Step1() {
                                           item.subChapter,
                                           quiz.isChecked,
                                           [quiz.seq],
+                                          quiz.code,
                                         );
                                       }}
                                       isChecked={quiz.isChecked}
@@ -2689,7 +2707,7 @@ export function Step1() {
                               </LeftWrapper>
                             ))}
 
-                            {!isChoice &&
+                            {isChoice &&
                               data.map((item, k) => (
                                 <RightWrapper key={k}>
                                   {item.quizList.map((quiz, l) => (
@@ -2700,6 +2718,7 @@ export function Step1() {
                                             item.subChapter,
                                             quiz.seq,
                                             quiz.isChecked || false,
+                                            quiz.code,
                                           )
                                         }
                                         isChecked={quiz.isChecked || false}

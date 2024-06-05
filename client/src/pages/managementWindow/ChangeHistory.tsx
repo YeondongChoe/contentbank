@@ -22,6 +22,7 @@ import {
 } from '../../components';
 import { COLOR } from '../../components/constants';
 import { pageAtom } from '../../store/utilAtom';
+import { HistoryDetailType, HistoryListType } from '../../types';
 
 export function ChangeHistory() {
   const [content, setContent] = useState<string>('');
@@ -30,104 +31,14 @@ export function ChangeHistory() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  //TODO: 임시 가다 데이터
-  const [changesList, setChangesList] = useState([
-    {
-      id: 'dsadadsad',
-      num: '12',
-      manager: '담당자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 (교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'dsadasssssdsds',
-      num: '13',
-      manager: '담당d자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '(교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'dsadadsdsds',
-      num: '14',
-      manager: '담dsddda당ds자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '(교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'dssadadsad',
-      num: '12',
-      manager: '담당자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 (교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'dsadasdsds',
-      num: '13',
-      manager: '담당d자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '(교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'dsaddsaaaddsds',
-      num: '14',
-      manager: '담dsddda당ds자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '(교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'dasadaaaasdsad',
-      num: '12',
-      manager: '담당자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 2줄이상 전체 보이기 (교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'aadsadaddsdsds',
-      num: '13',
-      manager: '담당d자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '(교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-    {
-      id: 'dsadadddsadsasds',
-      num: '14',
-      manager: '담dsddda당ds자',
-      changeAt: '2023.11.11 05:05:55',
-      function: '문항내용 바꾸기',
-      changes:
-        '(교육과정 10차, 학교급 중등, 학년 3학년, 학기 1학기, 교과 수학, 과목 공통수학, 오픈여부 전체) 부채표 >> (교육과정 유지) 부채꼴',
-      totalItem: '203',
-    },
-  ]);
 
   // 히스토리 불러오기 api
   const getHistoryList = async () => {
+    const functionType =
+      (content === '문항 분류 바꾸기' && 'CHANGE_QUIZ_CLASS') ||
+      (content === '문항 내용 바꾸기' && 'CHANGE_QUIZ_CONTENT');
     const res = await historyService.get(
-      `/v1/quiz-manage?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&functionType=${content}&beginDate=${startDate}&endDate=${endDate}`,
+      `/v1/quiz-manage?pageIndex=${page}&pageUnit=${7}&searchKeyword=${searchValue}&functionType=${content}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
     );
     console.log(`히스토리 get 결과값`, res);
     return res;
@@ -135,9 +46,7 @@ export function ChangeHistory() {
 
   const {
     isLoading,
-    error,
     data: historyListData,
-    isFetching,
     refetch,
   } = useQuery({
     queryKey: ['get-historylist'],
@@ -146,15 +55,15 @@ export function ChangeHistory() {
       errorMessage: 'get-historylist 에러 메세지',
     },
   });
-
-  console.log(historyListData);
+  const historyList: HistoryDetailType[] =
+    historyListData?.data.data.quizManageList;
 
   // 검색 기능 함수
-  const filterSearchValue = () => {
-    // 쿼리 스트링 변경 로직
-    setSearchValue(value);
-    getHistoryList();
-  };
+  // const filterSearchValue = () => {
+  //   // 쿼리 스트링 변경 로직
+  //   setSearchValue(value);
+  //   getHistoryList();
+  // };
 
   // 페이지 조건값 변경시 리랜더링
   useEffect(() => {
@@ -163,7 +72,7 @@ export function ChangeHistory() {
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
-    console.log(event.currentTarget);
+    console.log(event.currentTarget.value);
     setContent(value);
   };
 
@@ -174,7 +83,7 @@ export function ChangeHistory() {
       name: '변경 영역',
       options: [
         { id: '0', label: '전체', name: '전체' },
-        { id: '1', label: 'CHANGE_QUIZ_CLASS', name: 'CHANGE_QUIZ_CLASS' },
+        { id: '1', label: '문항 내용 바꾸기', name: '문항 내용 바꾸기' },
         { id: '2', label: '문항 분류 바꾸기', name: '문항 분류 바꾸기' },
       ],
     },
@@ -231,21 +140,19 @@ export function ChangeHistory() {
         </SelectWrapper>
 
         <Search
-          value={value}
-          onClick={() => filterSearchValue()}
+          value={searchValue}
+          //onClick={() => filterSearchValue()}
           onKeyDown={(e) => {}}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => setSearchValue(e.target.value)}
           placeholder="변경사항,담당자 검색"
           width={'50%'}
           height="40px"
         />
       </InputWrapper>
 
-      {/* { list.length ?  */}
       {!isLoading ? (
         <ListWrapper>
-          <Total> Total : {changesList.length}</Total>
-
+          <Total> Total : {historyList.length}</Total>
           <ListTitle>
             <strong className="width_10px">NO</strong>
             <strong>담당자</strong>
@@ -256,39 +163,42 @@ export function ChangeHistory() {
           </ListTitle>
           <ScrollWrapper>
             <PerfectScrollbar>
-              <List margin={`10px 0`}>
-                {changesList.map(
-                  (item: {
-                    id: string;
-                    num: string;
-                    manager: string;
-                    changeAt: string;
-                    function: string;
-                    changes: string;
-                    totalItem: string;
-                  }) => (
-                    <ListItem
-                      key={item.id as string}
-                      isChecked={false}
-                      onClick={() => {}}
-                    >
-                      <ItemLayout>
-                        <span className="width_20px">{item.num} </span>
-                        <div className="line"></div>
-                        <span className="width_10">{item.manager} </span>
-                        <div className="line"></div>
-                        <span>{item.changeAt} </span>
-                        <div className="line"></div>
-                        <span>{item.function} </span>
-                        <div className="line"></div>
-                        <span className="width_50">{item.changes} </span>
-                        <div className="line"></div>
-                        <span className="width_5">{item.totalItem}</span>
-                      </ItemLayout>
-                    </ListItem>
-                  ),
-                )}
-              </List>
+              {historyList.length >= 1 ? (
+                <>
+                  <List
+                    margin={`10px 0`}
+                    width="99%"
+                    noWrap={true}
+                    height="none"
+                  >
+                    {historyList.map((item) => (
+                      <ListItem
+                        key={item.idx.toString()}
+                        isChecked={false}
+                        onClick={() => {}}
+                      >
+                        <ItemLayout>
+                          <span className="width_20px">{item.idx} </span>
+                          <div className="line"></div>
+                          <span className="width_10">{item.changedByName}</span>
+                          <div className="line"></div>
+                          <span>{item.changedAt} </span>
+                          <div className="line"></div>
+                          <span>{item.functionName} </span>
+                          <div className="line"></div>
+                          <span className="width_50">{item.functionType} </span>
+                          <div className="line"></div>
+                          <span className="width_5">{item.changedCnt}</span>
+                        </ItemLayout>
+                      </ListItem>
+                    ))}
+                  </List>
+                </>
+              ) : (
+                <>
+                  <ValueNone />
+                </>
+              )}
             </PerfectScrollbar>
           </ScrollWrapper>
         </ListWrapper>
@@ -296,7 +206,10 @@ export function ChangeHistory() {
         <ValueNone />
       )}
       <div className="position_bottom">
-        <PaginationBox itemsCountPerPage={10} totalItemsCount={10} />
+        <PaginationBox
+          itemsCountPerPage={historyListData?.data.data.pagination.pageUnit}
+          totalItemsCount={historyListData?.data.data.pagination.totalCount}
+        />
       </div>
     </Container>
   );
@@ -369,7 +282,7 @@ const ScrollWrapper = styled.div`
   background-color: #eee;
 `;
 const ListTitle = styled.p`
-  padding: 15px 40px;
+  padding: 15px 70px 15px 40px;
   background-color: #eee;
   border-top: 1px solid ${COLOR.BORDER_GRAY};
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
@@ -405,6 +318,7 @@ const ListTitle = styled.p`
 const ItemLayout = styled.div`
   display: flex;
   width: 100%;
+  //height: 40px;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
