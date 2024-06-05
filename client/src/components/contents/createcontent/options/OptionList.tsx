@@ -21,6 +21,7 @@ interface Props {
   groupsDataF: string;
   groupsDataG: string;
   groupsDataH: string;
+  setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export function OptionList({
@@ -29,6 +30,7 @@ export function OptionList({
   groupsDataF,
   groupsDataG,
   groupsDataH,
+  setSelectedSource,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [count, setCount] = useState(1);
@@ -114,8 +116,6 @@ export function OptionList({
     }
   };
 
-  useEffect(() => {}, [selected]);
-
   // 셀렉트 선택이후 셀렉트에 속한 자식 배열값 보여주기
   const listSwitch = (value: string, index: number) => {
     const list = lists.find((list) => list.name === value);
@@ -178,13 +178,22 @@ export function OptionList({
     return list ? list.categories : [];
   };
 
+  useEffect(() => {
+    console.log('selected', selected);
+  }, [selected]);
+
+  useEffect(() => {
+    // 최종적으로 전체 셀렉트값 부모 요소로 넘김
+    // setSelectedSource();
+  }, []);
+
   return (
     <Container>
       {categoryTitles &&
         sourceOptions.map((index) => (
           <SelectList key={`${index}selectList el`} id={index.toString()}>
             <li>
-              {index === 0 && sourceOptions.length < 2 && (
+              {index === 0 && optionsList1.name == '' && (
                 <p className="info_hight">
                   <p className="info">출처는 최대 5개까지만 추가 가능</p>
                 </p>

@@ -31,6 +31,13 @@ export function ContentCreating({
   const [content, setContent] = useState<string[]>([]);
   const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
 
+  //셀렉트 값
+  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
+  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
+  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
+  const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
+
   //TODO : 임시로 퀴즈데이터 이미 등록된 데이터로 불러옴
   //       나중에 등록버튼으로 등록 완료된 데이터로 전역저장후 다시setQuestionList값으로 넣기
   //TODO : 수정 팝업으로 열렸을시 - 전역에 체크박스데이터 저장후 열릴때 setQuestionList에 값넣기
@@ -170,13 +177,53 @@ export function ContentCreating({
     setContent((prevContent) => [...prevContent, value]);
   };
 
+  // 셀렉트 초기화
+  const handleDefaultSelect = (defaultValue?: string) => {
+    if (defaultValue == 'all') {
+      setSelectedSubject('');
+      setSelectedCourse('');
+    }
+    switch (defaultValue) {
+      case categoryTitles[6]?.code:
+        setSelectedSubject('');
+        break;
+      case categoryTitles[7]?.code:
+        setSelectedCourse('');
+        break;
+
+      default:
+        break;
+    }
+  };
   const submitSave = () => {
-    console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
-    console.log('신규 등록된 문항 리스트 get 요청 API');
+    // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
+    // console.log('신규 등록된 문항 리스트 get 요청 API');
+    //TODO : 임시 문항리스트 데이터
     setQuizList(questionList);
     setIsPostMessage(true);
+
+    // 등록 api
+    console.log('selectedSubject 교과', selectedSubject);
+    console.log('selectedCourse 과목', selectedCourse);
+    console.log('selectedQuestionType 문항타입', selectedQuestionType);
+    console.log('selectedDifficulty 난이도', selectedDifficulty);
+    //출처
+    console.log('selectedSource 난이도', selectedSource);
   };
 
+  // 문항 추가버튼 disable 처리
+  const addButtonBool = useMemo(() => {
+    if (
+      selectedSubject !== '' &&
+      selectedCourse !== '' &&
+      selectedQuestionType !== '' &&
+      selectedSource.length > 0
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedSource]);
   // iframe 에디터에 데이터 삽입시
   useEffect(() => {
     const iframe = document.getElementById('editorIframe') as HTMLIFrameElement;
@@ -249,6 +296,9 @@ export function ContentCreating({
                       {/* 교과 */}
                       {categoriesE && categoryTitles[6] && (
                         <Select
+                          onDefaultSelect={() =>
+                            handleDefaultSelect(categoryTitles[6]?.code)
+                          }
                           $positionTop
                           width={'110px'}
                           height={'30px'}
@@ -256,11 +306,15 @@ export function ContentCreating({
                           key={categoryTitles[6]?.code}
                           options={categoriesE[0]}
                           onSelect={(event) => selectCategoryOption(event)}
+                          setSelectedValue={setSelectedSubject}
                         />
                       )}
                       {/* 과목 */}
                       {categoriesE && categoryTitles[7] && (
                         <Select
+                          onDefaultSelect={() =>
+                            handleDefaultSelect(categoryTitles[7]?.code)
+                          }
                           $positionTop
                           width={'110px'}
                           height={'30px'}
@@ -268,6 +322,7 @@ export function ContentCreating({
                           key={categoryTitles[7]?.code}
                           options={categoriesE[1]}
                           onSelect={(event) => selectCategoryOption(event)}
+                          setSelectedValue={setSelectedCourse}
                         />
                       )}
                     </SelectWrapper>
@@ -285,6 +340,7 @@ export function ContentCreating({
                     groupsDataH &&
                     categoryTitles && (
                       <OptionList
+                        setSelectedSource={setSelectedSource}
                         categoryTitles={categoryTitles}
                         categoriesE={categoriesE[2]}
                         groupsDataF={groupsDataF}
@@ -303,6 +359,9 @@ export function ContentCreating({
                     <SelectWrapper>
                       {categoriesE && categoryTitles[40] && (
                         <Select
+                          onDefaultSelect={() =>
+                            handleDefaultSelect(categoryTitles[40]?.code)
+                          }
                           $positionTop
                           width={'110px'}
                           height={'30px'}
@@ -310,6 +369,7 @@ export function ContentCreating({
                           key={categoryTitles[40]?.code}
                           options={categoriesE[3]}
                           onSelect={(event) => selectCategoryOption(event)}
+                          setSelectedValue={setSelectedQuestionType}
                         />
                       )}
                     </SelectWrapper>
@@ -323,6 +383,9 @@ export function ContentCreating({
                     <SelectWrapper>
                       {categoriesE && categoryTitles[41] && (
                         <Select
+                          onDefaultSelect={() =>
+                            handleDefaultSelect(categoryTitles[41]?.code)
+                          }
                           $positionTop
                           width={'110px'}
                           height={'30px'}
@@ -330,6 +393,7 @@ export function ContentCreating({
                           key={categoryTitles[41]?.code}
                           options={categoriesE[4]}
                           onSelect={(event) => selectCategoryOption(event)}
+                          setSelectedValue={setSelectedDifficulty}
                         />
                       )}
                     </SelectWrapper>
@@ -357,7 +421,8 @@ export function ContentCreating({
         <SubmitButtonWrapper>
           <Button
             buttonType="button"
-            onClick={submitSave}
+            disabled={addButtonBool}
+            onClick={() => submitSave()}
             width={'calc(50% - 5px)'}
             $margin={'0 10px 0 0'}
             $filled

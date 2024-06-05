@@ -84,7 +84,7 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
             setDate={setStartDate}
             $button={
               <IconButton
-                width={'130px'}
+                width={'120px'}
                 height={'30px'}
                 fontSize={'14px'}
                 onClick={() => {}}
