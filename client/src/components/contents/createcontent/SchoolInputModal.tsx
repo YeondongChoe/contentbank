@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -12,6 +12,7 @@ import {
   Loader,
   Select,
   ValueNone,
+  openToastifyAlert,
 } from '../../../components/atom';
 import {
   List,
@@ -22,6 +23,7 @@ import {
 import { useModal } from '../../../hooks';
 import { pageAtom } from '../../../store/utilAtom';
 import { ItemCategoryType, ItemSchoolType } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 
 export type CountryType = {
@@ -134,17 +136,45 @@ export function SchoolInputModal({
   };
 
   const submitSchoolData = () => {
-    console.log('');
+    let data;
     if (nameValue !== '' && selectedCity) {
-      setSchoolNameValue({ cityIdx: selectedCity.idx, schoolName: nameValue });
+      data = { cityIdx: selectedCity.idx, schoolName: nameValue };
+      //학교 정보 등록
+      postSchoolMutate(data);
     } else {
-      setSchoolNameValue({
+      data = {
         cityIdx: submitValue.cityIdx,
         schoolName: submitValue.schoolName,
-      });
+      };
     }
+    setSchoolNameValue(data);
     closeModal();
   };
+
+  const postSchool = async (data: { cityIdx: number; schoolName: string }) => {
+    const res = await classificationInstance.post('/v1/school', data);
+    return res;
+  };
+  const { data: postSchoolData, mutate: postSchoolMutate } = useMutation({
+    mutationFn: postSchool,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data?.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
 
   // 검색 기능
   const filterSearchValue = (
