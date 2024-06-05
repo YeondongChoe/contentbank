@@ -21,10 +21,8 @@ export const CommonDate = ({
   useEffect(() => {
     if (pickDate) {
       console.log('날자 pickDate :', pickDate);
-      const date = pickDate.toISOString().slice(0, 19);
-      console.log('날자 커스텀 :', date);
-      const dateString = parseISO(date);
-      const formattedDate = format(dateString, 'yyyy-MM-dd HH:mm:ss');
+      //const date = pickDate.toISOString().slice(0, 19);
+      const formattedDate = format(pickDate, "yyyy-MM-dd'T'HH:mm:ss");
       setDate(formattedDate);
     }
   }, [pickDate, setDate]);
