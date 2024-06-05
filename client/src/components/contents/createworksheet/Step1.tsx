@@ -32,6 +32,9 @@ import {
   MockexamType,
   ItemCategoryType,
   ItemTreeListType,
+  CastListType,
+  csatListType,
+  CastQuizListType,
 } from '../../../types';
 import {
   TextbookInfoType,
@@ -54,7 +57,7 @@ type UnitClassificationListType = {
   checkedDepthList?: number[];
 };
 
-type ProcessDataType = {
+type ProcessTextbookDataType = {
   bookPage: string;
   subChapter: string;
   isChecked: boolean;
@@ -67,51 +70,35 @@ type ProcessDataType = {
   }[];
 };
 
-type MockDataType = {
-  seq: number;
-  grade: string;
-  year: string;
-  month: string;
-  isChecked?: boolean;
-  content: MockContent[];
+type HierarchicalDataType = {
+  [key: string]: HierarchicalDataType | Array<{ idx: number; code: string }>;
 };
 
-type MockContent = {
-  seq: number;
-  title: string;
-  isChecked?: boolean;
-};
-
-//시중교재
-const processData = (data: TextBookDetailType): ProcessDataType => {
-  return {
-    bookPage: data.bookPage || '',
-    subChapter: data.subChapter || '',
-    isChecked: false,
-    quizList: data.quizList.map((quiz) => ({
-      ...quiz,
-      isChecked: false,
-      seq: `${quiz.code}${quiz.bookQuizNumber}`,
-    })),
+type ProcessCsatListDataType = {
+  grade: number;
+  level: string;
+  month: number;
+  year: number;
+  isChecked: boolean;
+  nodeData: {
+    hierarchicalData: HierarchicalDataType;
+    isChecked: boolean;
   };
 };
 
-//수능모의고사
-const processMockexam = (dataList: MockexamType[]): MockDataType[] => {
-  return dataList.map((data) => {
-    return {
-      seq: data.seq,
-      grade: data.grade,
-      year: data.year,
-      month: data.month,
-      isChecked: false,
-      content: data.content.map((contentItem) => ({
-        seq: contentItem.seq,
-        title: contentItem.title,
-        isChecked: false,
-      })),
-    };
-  });
+type ProcessCsatQuizListDataType = {
+  id: string;
+  grade: number;
+  level: string;
+  month: number;
+  year: number;
+  isChecked: boolean;
+  quizNumberList: {
+    idx: number;
+    code: string;
+    quizNumber: string;
+    isChecked: boolean;
+  }[];
 };
 
 export function Step1() {
@@ -867,9 +854,6 @@ export function Step1() {
   const [selectedTextbookIdx, setSelectedTextbookIdx] = useState<number | null>(
     null,
   );
-  const [selectedTextbook, setSelectedTextbook] = useState<ProcessDataType[]>(
-    [],
-  );
   const [isSelectTextbookContent, setIsSelectTextbookContent] = useState(false);
 
   //선택한 시중교재 get api
@@ -882,7 +866,6 @@ export function Step1() {
   const getTextbookDetail = async (idx: number) => {
     const res = await quizService.get(`/v1/textbook/${idx}`);
     // console.log(`getTextbookDetail 결과값`, res);
-    setSelectedTextbook(res.data.data.textbookList);
     return res;
   };
   const { data: textbookDetailData } = useQuery({
@@ -893,13 +876,15 @@ export function Step1() {
     },
     enabled: !!selectedTextbookIdx,
   });
+  const selectedTextbook: ProcessTextbookDataType[] =
+    textbookDetailData?.data.data.textbookList;
   //다른 교재 선택
   const selectOtherTextbook = () => {
     setIsSelectTextbook(true);
     setIsSelectTextbookContent(false);
     setClickedIdx(0);
     setIsChoice(false);
-    setData([]);
+    setProcessTextbookData([]);
     setSelectedTextbookIdx(null);
   };
   // 시중교재 불러오기 api
@@ -916,23 +901,37 @@ export function Step1() {
     meta: {
       errorMessage: 'get-textbook 에러 메세지',
     },
-    enabled: tabVeiw === '시중교재',
+    enabled: false,
   });
   const textbookList: TextbookInfoType[] = textbookData?.data.data.textbookList;
+
   //조건값이 바뀔때 재검색
   useEffect(() => {
-    textbookDataRefetch();
-  }, [page, schoolLevel, gradeLevel, searchValue]);
+    if (tabVeiw === '시중교재') {
+      textbookDataRefetch();
+    }
+  }, [page, schoolLevel, gradeLevel, searchValue, tabVeiw]);
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number | null>(null);
-  const [data, setData] = useState<ProcessDataType[]>([]);
+  const [processTextbookData, setProcessTextbookData] = useState<
+    ProcessTextbookDataType[]
+  >([]);
 
+  // 시중교재 값을 받아왔을 때 원하는 모양의 데이타로 가공
   useEffect(() => {
-    if (selectedTextbook && Array.isArray(selectedTextbook)) {
-      setData(() => {
-        return selectedTextbook.map((textbook) => processData(textbook));
-      });
+    if (selectedTextbook?.length > 0) {
+      const initialData = selectedTextbook?.map((textbook) => ({
+        bookPage: textbook.bookPage || '',
+        subChapter: textbook.subChapter || '',
+        isChecked: false,
+        quizList: textbook.quizList.map((quiz) => ({
+          ...quiz,
+          isChecked: false,
+          seq: `${quiz.code}${quiz.bookQuizNumber}`,
+        })),
+      }));
+      setProcessTextbookData(initialData);
     }
   }, [selectedTextbook]);
 
@@ -946,17 +945,38 @@ export function Step1() {
     }
   };
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
+  // console.log(includeQuizList);
   // 선택된 문항 코드 넣기
-  const toggleQuizCode = (quizCode: string) => {
-    setIncludeQuizList((prev) => {
-      if (prev.includes(quizCode)) {
-        return prev.filter((code) => code !== quizCode);
-      } else {
-        return [...prev, quizCode];
-      }
-    });
+  const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
+    if (Array.isArray(quizCode)) {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => !quizCode.includes(code));
+        } else {
+          // isChecked가 false일 때: 중복을 제거하고 quizCode를 추가
+          const uniqueCodesToAdd = quizCode.filter(
+            (code, index, self) =>
+              self.indexOf(code) === index && !prev.includes(code),
+          );
+          return [...prev, ...uniqueCodesToAdd];
+        }
+      });
+    } else {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => code !== quizCode);
+        } else {
+          // isChecked가 false일 때: quizCode를 추가
+          if (!prev.includes(quizCode)) {
+            return [...prev, quizCode];
+          }
+          return prev;
+        }
+      });
+    }
   };
-  console.log(includeQuizList);
 
   // 전체 선택
   const checkAllToggle = (
@@ -965,7 +985,7 @@ export function Step1() {
     contentSeqs: string[],
     quizCode: string,
   ) => {
-    setData((prevData) => {
+    setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
       return prevData.map((page) => {
@@ -981,7 +1001,7 @@ export function Step1() {
         return page;
       });
     });
-    toggleQuizCode(quizCode);
+    toggleQuizCode(quizCode, isChecked);
   };
 
   //부분 선택
@@ -991,7 +1011,7 @@ export function Step1() {
     isChecked: boolean,
     quizCode: string,
   ) => {
-    setData((prevData) => {
+    setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
       return prevData.map((page) => {
@@ -1017,10 +1037,10 @@ export function Step1() {
         return page;
       });
     });
-    toggleQuizCode(quizCode);
+    toggleQuizCode(quizCode, isChecked);
   };
-
   // 수능/모의고사
+  // 수능/모의고사 드롭다운 카테고리 get api
   const getCategoryExamGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
     return response.data.data.typeList;
@@ -1139,83 +1159,144 @@ export function Step1() {
     setExamMonthly([]);
     setExamOption(null);
   };
-  // 수능 모의고사 불러오기 api
+
+  // 수능 모의고사 문항 get api
   const selectExam = () => {
     setIsDropdown(false);
+    castDataRefetch();
+  };
+  const getcsat = async () => {
     const grades = examGrade.join(',');
     const years = examYear.join(',');
     const months = examMonthly.join(',');
-    const res = quizService.get(
-      `/v1/csat?option=${examOption}&level='고등'&subject='수학'&grades=${grades}&years=${years}&months=${months}`,
+    const res = await quizService.get(
+      `/v1/csat?option=${examOption}&level=고등&subject=수학&grades=${grades}&years=${years}&months=${months}`,
     );
-    // console.log(`getCsat 결과값`, res);
+    // console.log(`getTextbook 결과값`, res);
     return res;
   };
 
-  const mockexamList: MockexamType[] = dummy.Mockexam;
-  const [processedData, setProcessedData] = useState(
-    processMockexam(mockexamList),
-  );
+  const { data: castData, refetch: castDataRefetch } = useQuery({
+    queryKey: ['get-cast'],
+    queryFn: getcsat,
+    meta: {
+      errorMessage: 'get-cast 에러 메세지',
+    },
+    enabled: false,
+  });
 
-  const removeMockexam = (seq: number) => {
-    setProcessedData((prevData) => prevData.filter((mock) => mock.seq !== seq));
-  };
+  //문항 번호로 추가
+  const castQuizListData: CastQuizListType[] = castData?.data.data.quizList;
+  //문항 번호로 추가 데이터 가공
+  const [processCastQuizListData, setProcessCastQuizListData] = useState<
+    ProcessCsatQuizListDataType[]
+  >([]);
+
+  // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castQuizListData?.length > 0) {
+      const initialData = castQuizListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        ...mock,
+        isChecked: false,
+        quizNumberList: mock.quizNumberList.map((quiz) => ({
+          ...quiz,
+          isChecked: false,
+        })),
+      }));
+      setProcessCastQuizListData(initialData);
+    }
+  }, [castQuizListData]);
+
+  //단원으로 추가
+  const castListData: csatListType[] = castData?.data.data.csatList;
+  //단원으로 추가 데이터 가공
+  const [processCastListData, setProcessCastListData] = useState<
+    ProcessCsatListDataType[]
+  >([]);
+  console.log(castListData);
+  console.log(processCastListData);
+
+  // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castListData?.length > 0) {
+      const initialData = castListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        ...mock,
+        isChecked: false,
+        nodeData: {
+          hierarchicalData: mock.nodeData.hierarchicalData,
+          isChecked: false,
+        },
+      }));
+      setProcessCastListData(initialData);
+    }
+  }, [castListData]);
+
+  // console.log(castQuizListData);
 
   // 전체 선택
-  const checkAllMockexamToggle = (
-    seq: number,
+  const toggleCheckAll = (
+    id: string,
+    quizCode: string[],
     isChecked: boolean,
-    contentSeqs: number[],
   ) => {
-    //setProcessedData에 있는 기존 값을 가져와서 그 값을 순회하며 비교하여 값을 갱신
-    setProcessedData((prevData) => {
-      const newData = prevData.map((mock) => {
-        if (mock.seq === seq) {
-          mock.isChecked = !isChecked;
-
-          if (contentSeqs.length > 0) {
-            mock.content.forEach((content) => {
-              if (contentSeqs.includes(content.seq)) {
-                content.isChecked = !isChecked;
-              }
-            });
-          }
+    setProcessCastQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.id === id) {
+          const isChecked = !item.isChecked;
+          return {
+            ...item,
+            isChecked,
+            quizNumberList: item.quizNumberList.map((quiz) => ({
+              ...quiz,
+              isChecked,
+            })),
+          };
         }
-        // 갱신된 값을 가져오기
-        return mock;
+        return item;
       });
-      //가져온 값을 최종적으로 상태값으로 갱신하기
-      return [...newData];
     });
+    toggleQuizCode(quizCode, isChecked);
+  };
+  // 부분 선택
+  const toggleCheckPartial = (
+    parentId: string,
+    quizNumber: string,
+    quizCode: string,
+    isChecked: boolean,
+  ) => {
+    setProcessCastQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.id === parentId) {
+          const updatedQuizNumberList = item.quizNumberList.map((quiz) => {
+            if (quiz.quizNumber === quizNumber) {
+              return {
+                ...quiz,
+                isChecked: !quiz.isChecked,
+              };
+            }
+            return quiz;
+          });
+          const isChecked = updatedQuizNumberList.every(
+            (quiz) => quiz.isChecked,
+          );
+          return {
+            ...item,
+            isChecked,
+            quizNumberList: updatedQuizNumberList,
+          };
+        }
+        return item;
+      });
+    });
+    toggleQuizCode(quizCode, isChecked);
   };
 
-  //부분 선택
-  const checkPartialMockexamToggle = (
-    seq: number,
-    contentSeq: number,
-    isChecked: boolean,
-  ) => {
-    setProcessedData((prevData) => {
-      const newData = prevData.map((mock) => {
-        if (mock.seq === seq) {
-          const targetContent = mock.content.find(
-            (content) => content.seq === contentSeq,
-          );
-
-          if (targetContent) {
-            targetContent.isChecked = !isChecked;
-
-            const allContentsChecked = mock.content.every(
-              (content) => content.isChecked,
-            );
-            mock.isChecked = allContentsChecked;
-          }
-        }
-        return mock;
-      });
-
-      return [...newData];
-    });
+  const removeMockexam = (id: string) => {
+    setProcessCastQuizListData((prevData) =>
+      prevData.filter((mock) => mock.id !== id),
+    );
   };
 
   // step1 선택된 문항 불러오기 api
@@ -1317,7 +1398,9 @@ export function Step1() {
     setSearchValue('');
     setSchoolLevel('초등');
     setgradeLevel(null);
+    setIncludeQuizList([]);
     //모의시험 버튼 초기화
+    setProcessCastQuizListData([]);
     setIsDropdown(false);
     setExamGrade([]);
     setExamYear([]);
@@ -2223,7 +2306,7 @@ export function Step1() {
                         <ListTitle className="series">시리즈</ListTitle>
                         <ListTitle className="publisher">출판사</ListTitle>
                       </ListTitleWrapper>
-                      {textbookList.length > 0 ? (
+                      {textbookList?.length > 0 ? (
                         <>
                           {textbookList?.map((book, idx) => (
                             <TextbookList
@@ -2675,7 +2758,7 @@ export function Step1() {
                             </TextbookTypeTitleWrapperRight>
                           </TextbookTypeTitleWrapper>
                           <SelectWrapper>
-                            {data.map((item, i) => (
+                            {processTextbookData.map((item, i) => (
                               <LeftWrapper
                                 key={i}
                                 onClick={() => choiceType(i)}
@@ -2708,7 +2791,7 @@ export function Step1() {
                             ))}
 
                             {isChoice &&
-                              data.map((item, k) => (
+                              processTextbookData.map((item, k) => (
                                 <RightWrapper key={k}>
                                   {item.quizList.map((quiz, l) => (
                                     <CheckBoxWrapper key={l}>
@@ -3414,50 +3497,54 @@ export function Step1() {
                     </MockExamDropdownWrapper>
                   )}
                   <MockExamContentWrapper>
-                    {processedData.map((mock) => (
-                      <MockExamBox key={mock.seq}>
+                    {processCastQuizListData.map((mock) => (
+                      <MockExamBox key={mock.id}>
                         <MockExamLabelWrapper>
                           <CheckBoxWrapper>
                             <CheckBox
-                              isChecked={mock.isChecked as boolean}
+                              isChecked={mock.isChecked}
                               width="15"
                               height="15"
                               onClick={() =>
-                                checkAllMockexamToggle(
-                                  mock.seq,
-                                  mock.isChecked as boolean,
-                                  mock.content.map((content) => content.seq),
+                                toggleCheckAll(
+                                  mock.id,
+                                  mock.quizNumberList.map((item) => item.code),
+                                  mock.isChecked,
                                 )
                               }
                             ></CheckBox>
                             <Label
-                              value={`${mock.grade} | ${mock.year} ${mock.month}`}
+                              value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
                               width="150px"
                             />
                           </CheckBoxWrapper>
                           <CloseIconWrapper>
                             <IoMdClose
                               style={{ cursor: 'pointer' }}
-                              onClick={() => removeMockexam(mock.seq)}
+                              onClick={() => removeMockexam(mock.id)}
                             />
                           </CloseIconWrapper>
                         </MockExamLabelWrapper>
                         <MockExamContent>
-                          {mock.content.map((el) => (
-                            <CheckBoxWrapper key={el.seq}>
+                          {mock.quizNumberList.map((el, i) => (
+                            <CheckBoxWrapper key={i}>
                               <CheckBox
-                                isChecked={el.isChecked as boolean}
+                                isChecked={el.isChecked}
                                 width="15"
                                 height="15"
                                 onClick={() =>
-                                  checkPartialMockexamToggle(
-                                    mock.seq,
-                                    el.seq,
-                                    el.isChecked as boolean,
+                                  toggleCheckPartial(
+                                    mock.id,
+                                    el.quizNumber,
+                                    el.code,
+                                    el.isChecked,
                                   )
                                 }
                               ></CheckBox>
-                              <Label value={el.title} width="30px" />
+                              <Label
+                                value={`${el.quizNumber}번`}
+                                width="30px"
+                              />
                             </CheckBoxWrapper>
                           ))}
                         </MockExamContent>

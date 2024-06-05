@@ -60,26 +60,6 @@ export type QuestionTableType = {
   enabled?: boolean;
 };
 
-// 더미데이터 시중교재
-export type TextbookType = {
-  schoolGrade?: string;
-  title?: string;
-  series?: string;
-  publisher?: string;
-  type: {
-    title: string;
-    page: {
-      seq: number;
-      title: string;
-      content: {
-        seq: number;
-        title: string;
-        isChecked?: boolean;
-      }[];
-    }[];
-  }[];
-};
-
 // 더미데이터 _수능/모의고사
 export type MockexamType = {
   seq: number;
