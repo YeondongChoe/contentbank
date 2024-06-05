@@ -586,8 +586,13 @@ export function ContentInformationChange() {
     console.log('changeValue --- ', changeValue);
     console.log('checkedList --- ', checkedList);
 
+    const idxList = questionList
+      .filter((el) => checkedList.includes(el.code))
+      .map((el) => el.idx);
+
+    console.log('idxList', idxList);
     const data = {
-      idxList: checkedList,
+      idxList: idxList,
       before: searchValue,
       after: changeValue,
     };
@@ -595,7 +600,7 @@ export function ContentInformationChange() {
   };
   // 문항 즐겨찾기 토글 api
   const patchQuizFavorite = async (data: {
-    idxList: string[];
+    idxList: number[];
     before: string;
     after: string;
   }) => {
@@ -1012,8 +1017,6 @@ export function ContentInformationChange() {
               <>
                 <ScrollWrapper>
                   <PerfectScrollbar>
-                    {/* TODO: 메타데이터 변경 */}
-
                     <ChangeInfoWrapper>
                       <p className="info_total">
                         선택한 문항 총 {checkedList.length} 건
