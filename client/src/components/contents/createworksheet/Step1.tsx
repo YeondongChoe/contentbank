@@ -70,20 +70,29 @@ type ProcessTextbookDataType = {
   }[];
 };
 
+type QuizType = {
+  idx: number;
+  code: string;
+  isChecked: boolean;
+};
+
 type HierarchicalDataType = {
-  [key: string]: HierarchicalDataType | Array<{ idx: number; code: string }>;
+  [key: string]: HierarchicalDataType | QuizType[];
+};
+
+type NodeDataType = {
+  hierarchicalData: HierarchicalDataType;
+  isChecked: boolean;
 };
 
 type ProcessCsatListDataType = {
+  id: string;
   grade: number;
   level: string;
   month: number;
-  year: number;
+  year: string;
   isChecked: boolean;
-  nodeData: {
-    hierarchicalData: HierarchicalDataType;
-    isChecked: boolean;
-  };
+  nodeData: NodeDataType;
 };
 
 type ProcessCsatQuizListDataType = {
@@ -91,7 +100,7 @@ type ProcessCsatQuizListDataType = {
   grade: number;
   level: string;
   month: number;
-  year: number;
+  year: string;
   isChecked: boolean;
   quizNumberList: {
     idx: number;
@@ -1217,15 +1226,48 @@ export function Step1() {
   console.log(castListData);
   console.log(processCastListData);
 
+  const addIsCheckedToHierarchicalData = (
+    data: HierarchicalDataType | QuizType[],
+  ): HierarchicalDataType => {
+    if (Array.isArray(data)) {
+      // 만약 QuizType[]이면, HierarchicalDataType으로 변환하여 반환합니다.
+      const newData: HierarchicalDataType = {};
+      data.forEach((item: QuizType) => {
+        const key = item.code; // 예시에 따라서 사용할 key를 정의합니다.
+        if (!newData[key]) {
+          newData[key] = [];
+        }
+        (newData[key] as QuizType[]).push({ ...item, isChecked: false });
+      });
+      return newData;
+    } else {
+      // HierarchicalDataType이면, 재귀적으로 호출하여 처리합니다.
+      const newData: HierarchicalDataType = {};
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          newData[key] = addIsCheckedToHierarchicalData(
+            data[key] as HierarchicalDataType | QuizType[],
+          );
+        }
+      }
+      return newData;
+    }
+  };
+
   // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
   useEffect(() => {
     if (castListData?.length > 0) {
       const initialData = castListData.map((mock) => ({
         id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
-        ...mock,
+        grade: mock.grade,
+        level: mock.level,
+        month: mock.month,
+        year: mock.year,
         isChecked: false,
         nodeData: {
-          hierarchicalData: mock.nodeData.hierarchicalData,
+          hierarchicalData: addIsCheckedToHierarchicalData(
+            mock.nodeData.hierarchicalData,
+          ),
           isChecked: false,
         },
       }));
@@ -3496,61 +3538,124 @@ export function Step1() {
                       </MockExamOptionWrapper>
                     </MockExamDropdownWrapper>
                   )}
-                  <MockExamContentWrapper>
-                    {processCastQuizListData.map((mock) => (
-                      <MockExamBox key={mock.id}>
-                        <MockExamLabelWrapper>
-                          <CheckBoxWrapper>
-                            <CheckBox
-                              isChecked={mock.isChecked}
-                              width="15"
-                              height="15"
-                              onClick={() =>
-                                toggleCheckAll(
-                                  mock.id,
-                                  mock.quizNumberList.map((item) => item.code),
-                                  mock.isChecked,
-                                )
-                              }
-                            ></CheckBox>
-                            <Label
-                              value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
-                              width="150px"
-                            />
-                          </CheckBoxWrapper>
-                          <CloseIconWrapper>
-                            <IoMdClose
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => removeMockexam(mock.id)}
-                            />
-                          </CloseIconWrapper>
-                        </MockExamLabelWrapper>
-                        <MockExamContent>
-                          {mock.quizNumberList.map((el, i) => (
-                            <CheckBoxWrapper key={i}>
+                  {examOption === 0 && (
+                    <MockExamContentWrapper>
+                      {processCastQuizListData?.map((mock) => (
+                        <MockExamBox key={mock.id}>
+                          <MockExamLabelWrapper>
+                            <CheckBoxWrapper>
                               <CheckBox
-                                isChecked={el.isChecked}
+                                isChecked={mock.isChecked}
                                 width="15"
                                 height="15"
                                 onClick={() =>
-                                  toggleCheckPartial(
+                                  toggleCheckAll(
                                     mock.id,
-                                    el.quizNumber,
-                                    el.code,
-                                    el.isChecked,
+                                    mock.quizNumberList.map(
+                                      (item) => item.code,
+                                    ),
+                                    mock.isChecked,
                                   )
                                 }
                               ></CheckBox>
                               <Label
-                                value={`${el.quizNumber}번`}
-                                width="30px"
+                                value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                width="150px"
                               />
                             </CheckBoxWrapper>
-                          ))}
-                        </MockExamContent>
-                      </MockExamBox>
-                    ))}
-                  </MockExamContentWrapper>
+                            <CloseIconWrapper>
+                              <IoMdClose
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => removeMockexam(mock.id)}
+                              />
+                            </CloseIconWrapper>
+                          </MockExamLabelWrapper>
+                          <MockExamContent>
+                            {mock.quizNumberList.map((el, i) => (
+                              <CheckBoxWrapper key={i}>
+                                <CheckBox
+                                  isChecked={el.isChecked}
+                                  width="15"
+                                  height="15"
+                                  onClick={() =>
+                                    toggleCheckPartial(
+                                      mock.id,
+                                      el.quizNumber,
+                                      el.code,
+                                      el.isChecked,
+                                    )
+                                  }
+                                ></CheckBox>
+                                <Label
+                                  value={`${el.quizNumber}번`}
+                                  width="30px"
+                                />
+                              </CheckBoxWrapper>
+                            ))}
+                          </MockExamContent>
+                        </MockExamBox>
+                      ))}
+                    </MockExamContentWrapper>
+                  )}
+                  {examOption === 1 && (
+                    <MockExamContentWrapper>
+                      {processCastListData?.map((mock) => (
+                        <MockExamBox key={mock.id}>
+                          <MockExamLabelWrapper>
+                            <CheckBoxWrapper>
+                              <CheckBox
+                                isChecked={mock.isChecked}
+                                width="15"
+                                height="15"
+                                // onClick={() =>
+                                //   toggleCheckAll(
+                                //     mock.id,
+                                //     mock.quizNumberList.map(
+                                //       (item) => item.code,
+                                //     ),
+                                //     mock.isChecked,
+                                //   )
+                                // }
+                              ></CheckBox>
+                              <Label
+                                value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                width="150px"
+                              />
+                            </CheckBoxWrapper>
+                            <CloseIconWrapper>
+                              <IoMdClose
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => removeMockexam(mock.id)}
+                              />
+                            </CloseIconWrapper>
+                          </MockExamLabelWrapper>
+                          <MockExamContent>
+                            {/* {mock.quizNumberList.map((el, i) => (
+                              <CheckBoxWrapper key={i}>
+                                <CheckBox
+                                  isChecked={el.isChecked}
+                                  width="15"
+                                  height="15"
+                                  onClick={() =>
+                                    toggleCheckPartial(
+                                      mock.id,
+                                      el.quizNumber,
+                                      el.code,
+                                      el.isChecked,
+                                    )
+                                  }
+                                ></CheckBox>
+                                <Label
+                                  value={`${el.quizNumber}번`}
+                                  width="30px"
+                                />
+                              </CheckBoxWrapper>
+                            ))} */}
+                          </MockExamContent>
+                        </MockExamBox>
+                      ))}
+                    </MockExamContentWrapper>
+                  )}
                 </MockExamWrapper>
               </CategorySection>
             </>
