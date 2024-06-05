@@ -21,22 +21,45 @@ import {
 } from '../../../components/molecules';
 import { useModal } from '../../../hooks';
 import { pageAtom } from '../../../store/utilAtom';
-import { ItemSchoolType } from '../../../types';
+import { ItemCategoryType, ItemSchoolType } from '../../../types';
 import { COLOR } from '../../constants';
+
+export type CountryType = {
+  idx: number;
+  code: string;
+  name: string;
+  cityList: ItemCategoryType[];
+};
 
 export function SchoolInputModal({
   setSchoolNameValue,
 }: {
-  setSchoolNameValue: React.Dispatch<React.SetStateAction<string>>;
+  setSchoolNameValue: React.Dispatch<
+    React.SetStateAction<{
+      cityIdx: number;
+      schoolName: string;
+    }>
+  >;
 }) {
   const { closeModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
-  const [nameValue, setNameValue] = useState('');
-  const [submitNameValue, setSubmitNameValue] = useState('');
   const [searchValue, setSearchValue] = useState<string>('');
   const [content, setContent] = useState<string[]>([]);
 
-  // 유저 리스트 불러오기 api
+  const [nameValue, setNameValue] = useState<string>('');
+  const [submitValue, setSubmiValue] = useState<{
+    cityIdx: number;
+    schoolName: string;
+  }>({ cityIdx: 0, schoolName: '' });
+
+  const [cityList, setCityList] = useState<ItemCategoryType[]>([]);
+  const [selectedCountry, setSelectedCountry] =
+    useState<ItemCategoryType | null>(null);
+  const [selectedCity, setSelectedCity] = useState<ItemCategoryType | null>(
+    null,
+  );
+
+  // 학교 리스트 불러오기 api
   const getSchoolList = async () => {
     const res = await classificationInstance.get(
       `/v1/school?pageIndex=${page}&pageUnit=${4}&searchKeyword=${searchValue}`,
@@ -53,6 +76,76 @@ export function SchoolInputModal({
   });
   const schoolListData = data && data?.data.data;
 
+  // 지역 리스트 불러오기 api
+  const getCountries = async () => {
+    const res = await classificationInstance.get(`/v1/school/countries`);
+    console.log(`getCountries 결과값`, res);
+    return res.data.data.countryList;
+  };
+  const { data: countriesData } = useQuery<CountryType[]>({
+    queryKey: ['get-countries'],
+    queryFn: getCountries,
+    meta: {
+      errorMessage: 'get-countriesList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const country = countriesData?.find(
+        (country) => country.name === selectedCountry.name,
+      );
+      if (country) {
+        const cityOptions = country.cityList.map((city) => ({
+          code: city.code,
+          name: city.name,
+          idx: city.idx,
+        }));
+        setCityList(cityOptions);
+      } else {
+        setCityList([]);
+      }
+      setSelectedCity(null); // 선택이 바뀔 때 시군구 초기화
+    }
+  }, [selectedCountry, countriesData]);
+
+  const handleCountrySelect = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    code?: string,
+  ) => {
+    const selected = countriesData?.find(
+      (country) => country.name === event.currentTarget.value,
+    );
+    if (selected) {
+      setSelectedCountry(selected);
+    }
+  };
+
+  const handleCitySelect = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    code?: string,
+  ) => {
+    const selected = cityList.find(
+      (city) => city.name === event.currentTarget.value,
+    );
+    if (selected) {
+      setSelectedCity(selected);
+    }
+  };
+
+  const submitSchoolData = () => {
+    console.log('');
+    if (nameValue !== '' && selectedCity) {
+      setSchoolNameValue({ cityIdx: selectedCity.idx, schoolName: nameValue });
+    } else {
+      setSchoolNameValue({
+        cityIdx: submitValue.cityIdx,
+        schoolName: submitValue.schoolName,
+      });
+    }
+    closeModal();
+  };
+
   // 검색 기능
   const filterSearchValue = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -64,17 +157,6 @@ export function SchoolInputModal({
     if (e.key === 'Enter') {
       setSearchValue(e.currentTarget.value);
     }
-  };
-
-  // 셀렉트 기능
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
-  };
-
-  //직접 입력 인풋에 등록시
-  const submitSchoolData = () => {
-    // console.log(submitNameValue);
   };
 
   useEffect(() => {
@@ -116,7 +198,10 @@ export function SchoolInputModal({
                             isChecked={false}
                             $padding="10px"
                             onClick={() => {
-                              setSubmitNameValue(school.schoolName);
+                              setSubmiValue({
+                                cityIdx: school.idx,
+                                schoolName: school.schoolName,
+                              });
                             }}
                           >
                             <ItemLayout>
@@ -134,7 +219,10 @@ export function SchoolInputModal({
                                 $border
                                 cursor
                                 onClick={() => {
-                                  setSubmitNameValue(school.schoolName);
+                                  setSubmiValue({
+                                    cityIdx: school.idx,
+                                    schoolName: school.schoolName,
+                                  });
                                 }}
                               >
                                 선택
@@ -167,35 +255,46 @@ export function SchoolInputModal({
         <SubTitle>출처 학교 직접 입력</SubTitle>
         <SelectWrapper>
           <>
-            {/* TODO : 그룹유형검색 api 로 변경 */}
-            {[
-              {
-                id: '1',
-                label: '시도',
-                value: '1',
-                options: [
-                  {
-                    id: '서울특별시',
-                    label: '서울특별시',
-                    value: '서울특별시',
-                  },
-                ],
-              },
-              {
-                id: '2',
-                label: '시군구',
-                value: '2',
-                options: [{ id: '송파구', label: '송파구', value: '송파구' }],
-              },
-            ].map((el) => (
-              <Select
-                width={'120px'}
-                defaultValue={el.label}
-                key={el.label}
-                options={el.options}
-                onSelect={(event) => selectCategoryOption(event)}
-              />
-            ))}
+            <Select
+              heightScroll="300px"
+              width="140px"
+              options={
+                countriesData
+                  ? countriesData.map((country) => ({
+                      code: country.code,
+                      name: country.name,
+                      idx: country.idx,
+                    }))
+                  : []
+              }
+              onSelect={handleCountrySelect}
+              defaultValue="시도"
+              selectedValue={selectedCountry ? selectedCountry.name : ''}
+              setSelectedValue={(value) => {
+                const selected = countriesData?.find(
+                  (country) => country.name === value,
+                );
+                if (selected) {
+                  setSelectedCountry(selected);
+                }
+              }}
+            />
+
+            <Select
+              heightScroll="300px"
+              width="130px"
+              options={cityList}
+              onSelect={handleCitySelect}
+              defaultValue="시군구"
+              selectedValue={selectedCity ? selectedCity.name : ''}
+              setSelectedValue={(value) => {
+                const selected = cityList.find((city) => city.name === value);
+                if (selected) {
+                  setSelectedCity(selected);
+                }
+              }}
+            />
+
             <InputButtonWrapper>
               <input
                 type="text"
@@ -203,11 +302,10 @@ export function SchoolInputModal({
                 value={nameValue}
                 onChange={(e) => {
                   setNameValue(e.target.value);
-                  setSubmitNameValue(e.target.value);
                 }}
                 placeholder="등록할 이름을 입력해 주세요"
               />
-              <Button
+              {/* <Button
                 width={'80px'}
                 height={'25px'}
                 fontSize={'13px'}
@@ -217,22 +315,18 @@ export function SchoolInputModal({
                 onClick={() => submitSchoolData()}
               >
                 등록
-              </Button>
+              </Button> */}
             </InputButtonWrapper>
           </>
         </SelectWrapper>
       </InputWarpper>
       <SubTitle className="center">
-        등록될 학교 명: {`${submitNameValue}`}
+        등록될 학교 명: {`${nameValue ? nameValue : submitValue.schoolName}`}
       </SubTitle>
       <ButtonWrapper>
         <Button
           buttonType="button"
-          onClick={() => {
-            setSchoolNameValue(submitNameValue);
-            // console.log(nameValue);
-            closeModal();
-          }}
+          onClick={() => submitSchoolData()}
           height={'40px'}
           fontSize="16px"
           $filled

@@ -18,7 +18,10 @@ import { OtionsSelect } from './OtionsSelect';
 export function Options({ listItem }: { listItem: ItemCategoryType }) {
   const { openModal } = useModal();
   const [startDate, setStartDate] = useState<string>('');
-  const [schoolNameValue, setSchoolNameValue] = useState('');
+  const [schoolNameValue, setSchoolNameValue] = useState<{
+    cityIdx: number;
+    schoolName: string;
+  }>({ cityIdx: 0, schoolName: '' });
   const modalData = {
     title: '',
     content: <SchoolInputModal setSchoolNameValue={setSchoolNameValue} />,
@@ -40,8 +43,8 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
   };
 
   const schoolName = useMemo(() => {
-    if (schoolNameValue !== '') {
-      return schoolNameValue;
+    if (schoolNameValue.schoolName !== '') {
+      return schoolNameValue.schoolName;
     } else {
       return '학교명';
     }

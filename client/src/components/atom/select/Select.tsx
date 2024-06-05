@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { IoMdArrowDropdown } from 'react-icons/io';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { styled } from 'styled-components';
 
 import { ItemCategoryType } from '../../../types';
@@ -36,6 +37,7 @@ type SelectProps = {
   setSelectedValue?: React.Dispatch<React.SetStateAction<string>>;
   onDefaultSelect?: () => void;
   selectedValue?: string;
+  heightScroll?: string;
 };
 
 export function Select({
@@ -53,6 +55,7 @@ export function Select({
   setSelectedValue,
   onDefaultSelect,
   selectedValue,
+  heightScroll,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -119,18 +122,22 @@ export function Select({
           $positionTop={$positionTop}
           height={height}
         >
-          {optionsWithDefault.map((el) => (
-            <li key={el.code}>
-              <button
-                disabled={disabled}
-                value={el.name}
-                className={el.code}
-                onClick={(event) => handleOptionSelect(event, el.code)}
-              >
-                <span>{el.name}</span>
-              </button>
-            </li>
-          ))}
+          <ScrollWrapper heightScroll={heightScroll}>
+            <PerfectScrollbar>
+              {optionsWithDefault.map((el) => (
+                <div className="li" key={el.code}>
+                  <button
+                    disabled={disabled}
+                    value={el.name}
+                    className={el.code}
+                    onClick={(event) => handleOptionSelect(event, el.code)}
+                  >
+                    <span>{el.name}</span>
+                  </button>
+                </div>
+              ))}
+            </PerfectScrollbar>
+          </ScrollWrapper>
         </SelectOptionsList>
       )}
     </Component>
@@ -141,7 +148,15 @@ const Component = styled.div<{ $padding?: string }>`
   position: relative;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
-const SelectOptionsList = styled.ul<{
+
+const ScrollWrapper = styled.div<{ heightScroll?: string }>`
+  overflow-y: auto;
+  width: 100%;
+  border-radius: 5px;
+  ${({ heightScroll }) => (heightScroll ? `height: ${heightScroll}` : '')};
+`;
+
+const SelectOptionsList = styled.div<{
   $top?: string;
   $positionTop?: boolean;
   height?: string;
@@ -157,12 +172,13 @@ const SelectOptionsList = styled.ul<{
   z-index: 1;
   width: 100%;
   height: 100%;
+
   ${({ $positionTop }) =>
     $positionTop
       ? `top: auto; bottom: 0; left: 0; right: 0; padding-bottom: 5px;padding-top: 0;height: fit-content;`
       : ''};
 
-  li {
+  .li {
     width: 100%;
     border-left: 1px solid ${COLOR.LIGHT_GRAY};
     border-right: 1px solid ${COLOR.LIGHT_GRAY};
@@ -174,7 +190,7 @@ const SelectOptionsList = styled.ul<{
     }
   }
 
-  li > button {
+  .li > button {
     width: 100%;
     height: 100%;
     font-size: 14px;
@@ -192,13 +208,13 @@ const SelectOptionsList = styled.ul<{
     }
   }
 
-  li:first-child {
+  .li:first-child {
     border-top: 1px solid ${COLOR.LIGHT_GRAY};
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
   }
 
-  li:last-child {
+  .li:last-child {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
   }
