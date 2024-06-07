@@ -77,12 +77,14 @@ type QuizType = {
 };
 
 type HierarchicalDataType = {
-  [key: string]: HierarchicalDataType | QuizType[];
+  title: string;
+  seq: string;
+  value: HierarchicalDataType[] | QuizType[] | any;
+  isChecked: boolean;
 };
 
 type NodeDataType = {
-  hierarchicalData: HierarchicalDataType;
-  isChecked: boolean;
+  hierarchicalData: HierarchicalDataType[];
 };
 
 type ProcessCsatListDataType = {
@@ -954,7 +956,6 @@ export function Step1() {
     }
   };
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
-  // console.log(includeQuizList);
   // 선택된 문항 코드 넣기
   const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
     if (Array.isArray(quizCode)) {
@@ -1162,16 +1163,21 @@ export function Step1() {
   const selectExamOption = (newValue: number | null) => {
     setExamOption(newValue);
   };
+  //선택 초기화
   const selectExamReset = () => {
     setExamGrade([]);
     setExamYear([]);
     setExamMonthly([]);
+    setIncludeQuizList([]);
     setExamOption(null);
+    setProcessCastQuizListData([]);
+    setProcessCastListData([]);
   };
 
-  // 수능 모의고사 문항 get api
+  // 수능 모의고사 문항 get api 선택 완료
   const selectExam = () => {
     setIsDropdown(false);
+    setIncludeQuizList([]);
     castDataRefetch();
   };
   const getcsat = async () => {
@@ -1201,84 +1207,8 @@ export function Step1() {
     ProcessCsatQuizListDataType[]
   >([]);
 
-  // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
-  useEffect(() => {
-    if (castQuizListData?.length > 0) {
-      const initialData = castQuizListData.map((mock) => ({
-        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
-        ...mock,
-        isChecked: false,
-        quizNumberList: mock.quizNumberList.map((quiz) => ({
-          ...quiz,
-          isChecked: false,
-        })),
-      }));
-      setProcessCastQuizListData(initialData);
-    }
-  }, [castQuizListData]);
-
-  //단원으로 추가
-  const castListData: csatListType[] = castData?.data.data.csatList;
-  //단원으로 추가 데이터 가공
-  const [processCastListData, setProcessCastListData] = useState<
-    ProcessCsatListDataType[]
-  >([]);
-  console.log(castListData);
-  console.log(processCastListData);
-
-  const addIsCheckedToHierarchicalData = (
-    data: HierarchicalDataType | QuizType[],
-  ): HierarchicalDataType => {
-    if (Array.isArray(data)) {
-      // 만약 QuizType[]이면, HierarchicalDataType으로 변환하여 반환합니다.
-      const newData: HierarchicalDataType = {};
-      data.forEach((item: QuizType) => {
-        const key = item.code; // 예시에 따라서 사용할 key를 정의합니다.
-        if (!newData[key]) {
-          newData[key] = [];
-        }
-        (newData[key] as QuizType[]).push({ ...item, isChecked: false });
-      });
-      return newData;
-    } else {
-      // HierarchicalDataType이면, 재귀적으로 호출하여 처리합니다.
-      const newData: HierarchicalDataType = {};
-      for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-          newData[key] = addIsCheckedToHierarchicalData(
-            data[key] as HierarchicalDataType | QuizType[],
-          );
-        }
-      }
-      return newData;
-    }
-  };
-
-  // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
-  useEffect(() => {
-    if (castListData?.length > 0) {
-      const initialData = castListData.map((mock) => ({
-        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
-        grade: mock.grade,
-        level: mock.level,
-        month: mock.month,
-        year: mock.year,
-        isChecked: false,
-        nodeData: {
-          hierarchicalData: addIsCheckedToHierarchicalData(
-            mock.nodeData.hierarchicalData,
-          ),
-          isChecked: false,
-        },
-      }));
-      setProcessCastListData(initialData);
-    }
-  }, [castListData]);
-
-  // console.log(castQuizListData);
-
-  // 전체 선택
-  const toggleCheckAll = (
+  // 문항 번호 전체 선택
+  const toggleCheckAllCastQuiz = (
     id: string,
     quizCode: string[],
     isChecked: boolean,
@@ -1301,8 +1231,8 @@ export function Step1() {
     });
     toggleQuizCode(quizCode, isChecked);
   };
-  // 부분 선택
-  const toggleCheckPartial = (
+  // 문항 번호 부분 선택
+  const toggleCheckPartialCastQuiz = (
     parentId: string,
     quizNumber: string,
     quizCode: string,
@@ -1335,6 +1265,259 @@ export function Step1() {
     toggleQuizCode(quizCode, isChecked);
   };
 
+  // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castQuizListData?.length > 0) {
+      const initialData = castQuizListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        ...mock,
+        isChecked: false,
+        quizNumberList: mock.quizNumberList.map((quiz) => ({
+          ...quiz,
+          isChecked: false,
+        })),
+      }));
+      setProcessCastQuizListData(initialData);
+    }
+  }, [castQuizListData, castDataRefetch]);
+
+  //단원으로 추가
+  const castListData: csatListType[] = castData?.data.data.csatList;
+  //단원으로 추가 데이터 가공
+  const [processCastListData, setProcessCastListData] = useState<
+    ProcessCsatListDataType[]
+  >([]);
+  //console.log(castListData);
+
+  // 단원으로 추가 재귀형태 함수
+  const renderHierarchicalData = (
+    data: HierarchicalDataType[],
+    depth: number = 0,
+  ) => {
+    return data.map((item, index) => (
+      <CastListWrapper key={index} style={{ paddingLeft: `${depth * 15}px` }}>
+        {item.title &&
+          item.title !== 'root' && ( // key 값이 존재하고 "root"가 아닌 경우에만 렌더링
+            <CheckBoxWrapper>
+              <CheckBox
+                isChecked={item.isChecked}
+                width="15"
+                height="15"
+                onClick={() =>
+                  toggleCheckPartialCastList(
+                    item.seq,
+                    extractCodesFromHierarchicalData(item.value),
+                    item.isChecked,
+                    depth,
+                  )
+                }
+              />
+              <Label value={item.title} width="100px" />
+            </CheckBoxWrapper>
+          )}
+        {/* key 값이 존재하고 "root"가 아닌 경우에만 하위 요소 렌더링 */}
+        {Array.isArray(item.value) &&
+          renderHierarchicalData(
+            item.value as HierarchicalDataType[],
+            depth + 1,
+          )}
+      </CastListWrapper>
+    ));
+  };
+  // 재귀함수 사용해서 isChecked값 부여
+  const addIsCheckedToHierarchicalData = (
+    data: any,
+    seq: string,
+  ): HierarchicalDataType[] => {
+    if (Array.isArray(data)) {
+      // 배열인 경우
+      return [
+        {
+          title: 'root',
+          seq: seq + 'root',
+          value: data.map((item: any) => ({
+            ...item,
+            isChecked: false,
+          })),
+          isChecked: false,
+        },
+      ];
+    } else {
+      // 객체인 경우, 재귀적으로 호출하여 처리
+      const hierarchicalData: HierarchicalDataType[] = [];
+      for (const title in data) {
+        if (Object.prototype.hasOwnProperty.call(data, title)) {
+          const value = data[title];
+          hierarchicalData.push({
+            title: title,
+            seq: seq + title,
+            value: addIsCheckedToHierarchicalData(value, seq), // 재귀 호출로 하위 항목 처리
+            isChecked: false,
+          });
+        }
+      }
+      return hierarchicalData;
+    }
+  };
+
+  // 수능/모의고사 단원 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castListData?.length > 0) {
+      const initialData = castListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        grade: mock.grade,
+        level: mock.level,
+        month: mock.month,
+        year: mock.year,
+        isChecked: false,
+        nodeData: {
+          hierarchicalData: addIsCheckedToHierarchicalData(
+            mock.nodeData.hierarchicalData,
+            `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+          ),
+        },
+      }));
+      setProcessCastListData(initialData);
+    }
+  }, [castListData, castDataRefetch]);
+
+  // HierarchicalDataType 배열에서 QuizType 객체의 code 값들을 추출하는 함수
+  const extractCodesFromHierarchicalData = (
+    data: HierarchicalDataType[],
+  ): string[] => {
+    const codes: string[] = [];
+
+    const extractCodes = (value: any) => {
+      if (Array.isArray(value)) {
+        value.forEach((item) => extractCodes(item));
+      } else if (value && typeof value === 'object') {
+        if ('code' in value) {
+          codes.push(value.code);
+        } else {
+          Object.values(value).forEach((item) => extractCodes(item));
+        }
+      }
+    };
+
+    data.forEach((item) => {
+      extractCodes(item.value);
+    });
+
+    return codes;
+  };
+
+  // 단원 전체 선택
+  const toggleCheckAllCastList = (
+    id: string,
+    codes: string[],
+    isChecked: boolean,
+  ) => {
+    setProcessCastListData((prevData) =>
+      prevData.map((mock) => {
+        if (mock.id === id) {
+          const updatedHierarchicalData = updateCheckStatus(
+            mock.nodeData.hierarchicalData,
+            isChecked,
+          );
+          return {
+            ...mock,
+            isChecked: !isChecked,
+            nodeData: {
+              ...mock.nodeData,
+              hierarchicalData: updatedHierarchicalData,
+            },
+          };
+        }
+        return mock;
+      }),
+    );
+    toggleQuizCode(codes, isChecked);
+  };
+
+  // 단원 전체 선택 isChecked 값 갱신
+  const updateCheckStatus = (
+    data: HierarchicalDataType[],
+    isChecked: boolean,
+  ): HierarchicalDataType[] => {
+    return data.map((item) => {
+      if (Array.isArray(item.value)) {
+        return {
+          ...item,
+          isChecked: !isChecked,
+          value: updateCheckStatus(
+            item.value as HierarchicalDataType[],
+            isChecked,
+          ),
+        };
+      } else {
+        return {
+          ...item,
+          isChecked: !isChecked,
+        };
+      }
+    });
+  };
+
+  // 단원 부분 선택
+  const toggleCheckPartialCastList = (
+    seq: string,
+    codes: string[],
+    isChecked: boolean,
+    depth: number,
+  ) => {
+    setProcessCastListData((prevData) =>
+      prevData.map((mock) => {
+        const updatedHierarchicalData = updateCheckStatusByKey(
+          mock.nodeData.hierarchicalData,
+          seq,
+          isChecked,
+          depth,
+        );
+        return {
+          ...mock,
+          nodeData: {
+            ...mock.nodeData,
+            hierarchicalData: updatedHierarchicalData,
+          },
+        };
+      }),
+    );
+    toggleQuizCode(codes, isChecked);
+  };
+
+  // 부분 클릭 isChecked 값 갱신
+  const updateCheckStatusByKey = (
+    data: HierarchicalDataType[],
+    seq: string,
+    isChecked: boolean,
+    depth: number,
+  ): HierarchicalDataType[] => {
+    const traverseToDepth = (
+      items: HierarchicalDataType[],
+      currentDepth: number,
+    ): HierarchicalDataType[] => {
+      return items.map((item) => {
+        if (currentDepth === depth) {
+          if (item.seq === seq) {
+            return { ...item, isChecked: !isChecked };
+          }
+        } else if (Array.isArray(item.value)) {
+          return {
+            ...item,
+            value: traverseToDepth(
+              item.value as HierarchicalDataType[],
+              currentDepth + 1,
+            ),
+          };
+        }
+        return item;
+      });
+    };
+
+    return traverseToDepth(data, 0);
+  };
+
+  // 항목 삭제
   const removeMockexam = (id: string) => {
     setProcessCastQuizListData((prevData) =>
       prevData.filter((mock) => mock.id !== id),
@@ -3277,7 +3460,9 @@ export function Step1() {
                     </MockExamSelect>
                     {!isDropdown && (
                       <MockExamSummaryWrapper>
-                        <MockExamSummary>학습지 문항수 {100}개</MockExamSummary>
+                        <MockExamSummary>
+                          학습지 문항수 {includeQuizList.length}개
+                        </MockExamSummary>
                         <Button
                           buttonType="button"
                           onClick={selectExamReset}
@@ -3549,7 +3734,7 @@ export function Step1() {
                                 width="15"
                                 height="15"
                                 onClick={() =>
-                                  toggleCheckAll(
+                                  toggleCheckAllCastQuiz(
                                     mock.id,
                                     mock.quizNumberList.map(
                                       (item) => item.code,
@@ -3578,7 +3763,7 @@ export function Step1() {
                                   width="15"
                                   height="15"
                                   onClick={() =>
-                                    toggleCheckPartial(
+                                    toggleCheckPartialCastQuiz(
                                       mock.id,
                                       el.quizNumber,
                                       el.code,
@@ -3607,15 +3792,15 @@ export function Step1() {
                                 isChecked={mock.isChecked}
                                 width="15"
                                 height="15"
-                                // onClick={() =>
-                                //   toggleCheckAll(
-                                //     mock.id,
-                                //     mock.quizNumberList.map(
-                                //       (item) => item.code,
-                                //     ),
-                                //     mock.isChecked,
-                                //   )
-                                // }
+                                onClick={() =>
+                                  toggleCheckAllCastList(
+                                    mock.id,
+                                    extractCodesFromHierarchicalData(
+                                      mock.nodeData.hierarchicalData,
+                                    ),
+                                    mock.isChecked,
+                                  )
+                                }
                               ></CheckBox>
                               <Label
                                 value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
@@ -3630,27 +3815,9 @@ export function Step1() {
                             </CloseIconWrapper>
                           </MockExamLabelWrapper>
                           <MockExamContent>
-                            {/* {mock.quizNumberList.map((el, i) => (
-                              <CheckBoxWrapper key={i}>
-                                <CheckBox
-                                  isChecked={el.isChecked}
-                                  width="15"
-                                  height="15"
-                                  onClick={() =>
-                                    toggleCheckPartial(
-                                      mock.id,
-                                      el.quizNumber,
-                                      el.code,
-                                      el.isChecked,
-                                    )
-                                  }
-                                ></CheckBox>
-                                <Label
-                                  value={`${el.quizNumber}번`}
-                                  width="30px"
-                                />
-                              </CheckBoxWrapper>
-                            ))} */}
+                            {renderHierarchicalData(
+                              mock.nodeData.hierarchicalData,
+                            )}
                           </MockExamContent>
                         </MockExamBox>
                       ))}
@@ -4227,6 +4394,10 @@ const CloseIconWrapper = styled.div`
 
 const MockExamContent = styled.div`
   padding: 10px;
+`;
+const CastListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 const Overlay = styled.div`
   position: fixed;
