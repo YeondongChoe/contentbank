@@ -1518,10 +1518,17 @@ export function Step1() {
   };
 
   // 항목 삭제
-  const removeMockexam = (id: string) => {
-    setProcessCastQuizListData((prevData) =>
-      prevData.filter((mock) => mock.id !== id),
-    );
+  const removeMockexam = (id: string, title: string) => {
+    if (title === '문항') {
+      setProcessCastQuizListData((prevData) =>
+        prevData.filter((mock) => mock.id !== id),
+      );
+    }
+    if (title === '단원') {
+      setProcessCastListData((prevData) =>
+        prevData.filter((mock) => mock.id !== id),
+      );
+    }
   };
 
   // step1 선택된 문항 불러오기 api
@@ -3751,7 +3758,7 @@ export function Step1() {
                             <CloseIconWrapper>
                               <IoMdClose
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => removeMockexam(mock.id)}
+                                onClick={() => removeMockexam(mock.id, '문항')}
                               />
                             </CloseIconWrapper>
                           </MockExamLabelWrapper>
@@ -3810,7 +3817,7 @@ export function Step1() {
                             <CloseIconWrapper>
                               <IoMdClose
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => removeMockexam(mock.id)}
+                                onClick={() => removeMockexam(mock.id, '단원')}
                               />
                             </CloseIconWrapper>
                           </MockExamLabelWrapper>
