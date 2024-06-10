@@ -720,6 +720,42 @@ export function Classification() {
     radio4depthCheck,
   ]);
 
+  // 검색 단어 하이라이트 이동 처리
+  // const [highlightIndex, setHighlightIndex] = useState(0);
+  // const [highlightIds, setHighlightIds] = useState<string[]>([]);
+  // const handleNextHighlight = () => {
+  //   setHighlightIndex((prevIndex) => {
+  //     const nextIndex =
+  //       highlightIds.length > 0 ? (prevIndex + 1) % highlightIds.length : 0;
+  //     console.log(`Next Highlight Index: ${nextIndex}`);
+  //     return nextIndex;
+  //   });
+  // };
+
+  // const handlePrevHighlight = () => {
+  //   setHighlightIndex((prevIndex) => {
+  //     const prevIndexAdjusted =
+  //       highlightIds.length > 0
+  //         ? (prevIndex - 1 + highlightIds.length) % highlightIds.length
+  //         : 0;
+  //     console.log(`Previous Highlight Index: ${prevIndexAdjusted}`);
+  //     return prevIndexAdjusted;
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   console.log('highlightIds:', highlightIds);
+  //   console.log('highlightIndex:', highlightIndex);
+  //   if (highlightIds.length > 0) {
+  //     const element = document.getElementById(highlightIds[highlightIndex]);
+  //     if (element) {
+  //       console.log('Focusing on:', element);
+  //       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //       element.focus();
+  //     }
+  //   }
+  // }, [highlightIndex, highlightIds]);
+
   return (
     <Container>
       <ResizeLayoutWrapper>
@@ -1006,6 +1042,11 @@ export function Classification() {
                         />
                         {searchValue.length > 0 && (
                           <p className="line bottom_text">
+                            {/* <button onClick={handlePrevHighlight}>
+                              Previous
+                            </button>
+                            <button onClick={handleNextHighlight}>Next</button> */}
+
                             {`총 
                           ${
                             categoryItemTreeData && itemTree.length
@@ -1038,6 +1079,10 @@ export function Classification() {
                                             {el.itemTreeList.map((item) => (
                                               <DepthBlock
                                                 defaultChecked
+                                                // highlightIndex={highlightIndex}
+                                                // setHighlightIds={
+                                                //   setHighlightIds
+                                                // }
                                                 key={`depthList${item?.idx} ${item.name}`}
                                                 classNameList={`depth-${item.level}`}
                                                 id={item?.code}

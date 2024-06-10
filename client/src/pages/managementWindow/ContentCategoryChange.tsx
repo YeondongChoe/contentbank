@@ -949,7 +949,7 @@ const PositionWrapper = styled.div`
 `;
 const ScrollWrapper = styled.div`
   overflow-y: auto;
-  height: calc(100vh - 70px);
+  height: calc(100vh - 220px);
   width: 100%;
   background-color: ${COLOR.LIGHT_GRAY};
 

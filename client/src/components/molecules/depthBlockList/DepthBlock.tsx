@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { styled } from 'styled-components';
 
@@ -18,6 +19,8 @@ type DepthBlockProps = {
   checked: boolean;
   searchValue?: string;
   branchValue?: string;
+  setHighlightIds?: React.Dispatch<React.SetStateAction<string[]>>;
+  highlightIndex?: number;
 };
 
 export function DepthBlock({
@@ -29,11 +32,17 @@ export function DepthBlock({
   id,
   name,
   value,
-  checked,
+  checked: initialChecked,
   disabled,
   searchValue,
   branchValue,
+  setHighlightIds,
+  highlightIndex,
 }: DepthBlockProps) {
+  const [isChecked, setIsChecked] = useState(initialChecked);
+  const highlightIds = useRef<string[]>([]);
+  const [localHighlightIds, setLocalHighlightIds] = useState<string[]>([]);
+
   const onTopMark = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const target = e.currentTarget;
     const parentElement = target.parentElement?.parentElement?.parentElement;
@@ -60,6 +69,7 @@ export function DepthBlock({
     if (target.checked) {
       depthTargets.slice(0, depth).forEach((el) => {
         el?.element?.classList.add('border');
+        el?.element?.classList.add('on');
 
         if (el?.input) {
           el.input.defaultChecked = true;
@@ -68,28 +78,66 @@ export function DepthBlock({
     } else {
       depthTargets.forEach((el) => {
         el?.element?.classList.remove('border');
+        el?.element?.classList.remove('on');
         if (el?.input) el.input.defaultChecked = false;
       });
     }
   };
 
-  React.useEffect(() => {}, [onTopMark]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.target.checked);
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   const highlightText = (text: string, searchValue: string) => {
     if (!searchValue) return text;
     const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
+
     return (
       <span>
-        {parts.map((part, index) =>
-          part.toLowerCase() === searchValue.toLowerCase() ? (
-            <Mark key={index}>{part}</Mark>
+        {parts.map((part, index) => {
+          const id =
+            part.toLowerCase() === searchValue.toLowerCase()
+              ? generateId()
+              : undefined;
+          if (id) highlightIds.current.push(id);
+
+          return part.toLowerCase() === searchValue.toLowerCase() ? (
+            <Mark key={index} id={id} tabIndex={-1}>
+              {part}
+            </Mark>
           ) : (
             part
-          ),
-        )}
+          );
+        })}
       </span>
     );
   };
+
+  const generateId = () => '_' + Math.random().toString(36).substring(2, 11);
+
+  useEffect(() => {
+    setIsChecked(initialChecked);
+  }, [initialChecked]);
+
+  useEffect(() => {
+    if (setHighlightIds) {
+      setHighlightIds(highlightIds.current);
+    }
+  }, [highlightIds.current]);
+
+  useEffect(() => {
+    if (highlightIndex !== undefined && highlightIds.current[highlightIndex]) {
+      highlightIds.current.forEach((id, index) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.toggle('highlight', index === highlightIndex);
+        }
+      });
+    }
+  }, [highlightIndex, highlightIds.current]);
 
   return (
     <Component $margin={$margin}>
@@ -102,8 +150,8 @@ export function DepthBlock({
           name={name}
           id={branchValue ? `${branchValue}_${String(id)}` : String(id)}
           value={value}
-          checked={checked}
-          onChange={onChange}
+          checked={isChecked}
+          onChange={handleChange}
           onClick={(e) => {
             onTopMark(e);
           }}
@@ -111,9 +159,9 @@ export function DepthBlock({
         />
 
         <span
-          className={`label depthButton ${classNameList} ${checked ? 'on' : ''}`}
+          className={`label depthButton ${classNameList} ${isChecked ? 'on' : ''}`}
         >
-          {checked ? (
+          {isChecked ? (
             <svg
               width={10}
               height={10}
@@ -242,4 +290,8 @@ const Mark = styled.span`
   display: flex;
   background-color: ${COLOR.ALERTBAR_WARNING};
   color: ${COLOR.PRIMARY};
+
+  &.highlight {
+    background-color: ${COLOR.ALERTBAR_SUCCESS};
+  }
 `;
