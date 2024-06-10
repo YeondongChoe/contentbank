@@ -32,6 +32,9 @@ import {
   MockexamType,
   ItemCategoryType,
   ItemTreeListType,
+  CastListType,
+  csatListType,
+  CastQuizListType,
 } from '../../../types';
 import {
   TextbookInfoType,
@@ -54,7 +57,7 @@ type UnitClassificationListType = {
   checkedDepthList?: number[];
 };
 
-type ProcessDataType = {
+type ProcessTextbookDataType = {
   bookPage: string;
   subChapter: string;
   isChecked: boolean;
@@ -67,51 +70,46 @@ type ProcessDataType = {
   }[];
 };
 
-type MockDataType = {
-  seq: number;
-  grade: string;
-  year: string;
-  month: string;
-  isChecked?: boolean;
-  content: MockContent[];
+type QuizType = {
+  idx: number;
+  code: string;
+  isChecked: boolean;
 };
 
-type MockContent = {
-  seq: number;
+type HierarchicalDataType = {
   title: string;
-  isChecked?: boolean;
+  seq: string;
+  value: HierarchicalDataType[] | QuizType[] | any;
+  isChecked: boolean;
 };
 
-//시중교재
-const processData = (data: TextBookDetailType): ProcessDataType => {
-  return {
-    bookPage: data.bookPage || '',
-    subChapter: data.subChapter || '',
-    isChecked: false,
-    quizList: data.quizList.map((quiz) => ({
-      ...quiz,
-      isChecked: false,
-      seq: `${quiz.code}${quiz.bookQuizNumber}`,
-    })),
-  };
+type NodeDataType = {
+  hierarchicalData: HierarchicalDataType[];
 };
 
-//수능모의고사
-const processMockexam = (dataList: MockexamType[]): MockDataType[] => {
-  return dataList.map((data) => {
-    return {
-      seq: data.seq,
-      grade: data.grade,
-      year: data.year,
-      month: data.month,
-      isChecked: false,
-      content: data.content.map((contentItem) => ({
-        seq: contentItem.seq,
-        title: contentItem.title,
-        isChecked: false,
-      })),
-    };
-  });
+type ProcessCsatListDataType = {
+  id: string;
+  grade: number;
+  level: string;
+  month: number;
+  year: string;
+  isChecked: boolean;
+  nodeData: NodeDataType;
+};
+
+type ProcessCsatQuizListDataType = {
+  id: string;
+  grade: number;
+  level: string;
+  month: number;
+  year: string;
+  isChecked: boolean;
+  quizNumberList: {
+    idx: number;
+    code: string;
+    quizNumber: string;
+    isChecked: boolean;
+  }[];
 };
 
 export function Step1() {
@@ -185,6 +183,7 @@ export function Step1() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationListType[][]
   >([]);
+  console.log(unitClassificationList);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -641,7 +640,7 @@ export function Step1() {
   };
 
   //단원.유형별
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState<string>('');
   const changeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
 
@@ -649,16 +648,24 @@ export function Step1() {
     inputValue = inputValue.replace(/[^0-9]/g, '');
 
     const parsedValue = parseInt(inputValue, 10);
-
-    if (!isNaN(parsedValue) && parsedValue > 0) {
-      setInputValue(
-        parsedValue < 1 ? '1' : parsedValue >= 100 ? '100' : inputValue,
-      );
+    if (tabVeiw === '시중교재') {
+      if (!isNaN(parsedValue) && parsedValue > 0) {
+        setInputValue(
+          parsedValue < 1 ? '1' : parsedValue >= 5 ? '5' : inputValue,
+        );
+      }
+    } else {
+      if (!isNaN(parsedValue) && parsedValue > 0) {
+        setInputValue(
+          parsedValue < 1 ? '1' : parsedValue >= 100 ? '100' : inputValue,
+        );
+      }
     }
   };
 
   const [questionNum, setQuestionNum] = useState<string | null>(null);
   const selectQuestionNum = (newValue: string | null) => {
+    console.log(typeof newValue);
     setQuestionNum(newValue);
     setInputValue('');
   };
@@ -714,17 +721,27 @@ export function Step1() {
   //배점
   const [equalScore, setEqualScore] = useState<number | null>(null);
   const selectEqualScore = (newValue: number | null) => {
+    if (newValue === null) {
+      setRemainderContent(0);
+      setNextRemainderContent(0);
+      setQuotient(0);
+      setMinQuotient(0);
+      setMaxQuotient(0);
+    }
     setEqualScore(newValue);
   };
   const [isEqualScoreModal, setIsEqualScoreModal] = useState<boolean>(false);
 
   const openEqualScoreSettingModal = () => {
-    if (questionNum || inputValue) {
+    if (questionNum || inputValue || includeQuizList.length > 0) {
       setIsEqualScoreModal(true);
       setIsSaveEqualValue(false);
       setEqualInputValue('0');
     } else {
-      alert('문항수 선택해라');
+      openToastifyAlert({
+        type: 'error',
+        text: '문항을 먼저 선택해주세요',
+      });
       selectEqualScore(null);
       setIsSaveEqualValue(false);
     }
@@ -775,7 +792,12 @@ export function Step1() {
 
   const saveEqualInputValue = () => {
     const parsedValue = parseInt(equalInputValue, 10);
-    const questionNumValue = parseInt(questionNum || inputValue, 10);
+    const questionNumValue = parseInt(
+      questionNum ||
+        inputValue ||
+        (includeQuizList.length as unknown as string),
+      10,
+    );
     if (equalInputValue === '') {
       openToastifyAlert({
         type: 'error',
@@ -789,7 +811,11 @@ export function Step1() {
         type: 'error',
         text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
       });
-      setEqualInputValue(questionNum || inputValue);
+      setEqualInputValue(
+        questionNum ||
+          inputValue ||
+          (includeQuizList.length as unknown as string),
+      );
       setIsSaveEqualValue(false);
     } else {
       openToastifyAlert({
@@ -806,7 +832,12 @@ export function Step1() {
 
   useEffect(() => {
     const parsedValue = parseInt(equalInputValue, 10);
-    const questionNumValue = parseInt(questionNum || inputValue, 10);
+    const questionNumValue = parseInt(
+      questionNum ||
+        inputValue ||
+        (includeQuizList.length as unknown as string),
+      10,
+    );
 
     if (isSaveEqualValue) {
       const quotient = Math.floor(parsedValue / questionNumValue);
@@ -867,9 +898,6 @@ export function Step1() {
   const [selectedTextbookIdx, setSelectedTextbookIdx] = useState<number | null>(
     null,
   );
-  const [selectedTextbook, setSelectedTextbook] = useState<ProcessDataType[]>(
-    [],
-  );
   const [isSelectTextbookContent, setIsSelectTextbookContent] = useState(false);
 
   //선택한 시중교재 get api
@@ -882,7 +910,6 @@ export function Step1() {
   const getTextbookDetail = async (idx: number) => {
     const res = await quizService.get(`/v1/textbook/${idx}`);
     // console.log(`getTextbookDetail 결과값`, res);
-    setSelectedTextbook(res.data.data.textbookList);
     return res;
   };
   const { data: textbookDetailData } = useQuery({
@@ -893,13 +920,15 @@ export function Step1() {
     },
     enabled: !!selectedTextbookIdx,
   });
+  const selectedTextbook: ProcessTextbookDataType[] =
+    textbookDetailData?.data.data.textbookList;
   //다른 교재 선택
   const selectOtherTextbook = () => {
     setIsSelectTextbook(true);
     setIsSelectTextbookContent(false);
     setClickedIdx(0);
     setIsChoice(false);
-    setData([]);
+    setProcessTextbookData([]);
     setSelectedTextbookIdx(null);
   };
   // 시중교재 불러오기 api
@@ -916,23 +945,37 @@ export function Step1() {
     meta: {
       errorMessage: 'get-textbook 에러 메세지',
     },
-    enabled: tabVeiw === '시중교재',
+    enabled: false,
   });
   const textbookList: TextbookInfoType[] = textbookData?.data.data.textbookList;
+
   //조건값이 바뀔때 재검색
   useEffect(() => {
-    textbookDataRefetch();
-  }, [page, schoolLevel, gradeLevel, searchValue]);
+    if (tabVeiw === '시중교재') {
+      textbookDataRefetch();
+    }
+  }, [page, schoolLevel, gradeLevel, searchValue, tabVeiw]);
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number | null>(null);
-  const [data, setData] = useState<ProcessDataType[]>([]);
+  const [processTextbookData, setProcessTextbookData] = useState<
+    ProcessTextbookDataType[]
+  >([]);
 
+  // 시중교재 값을 받아왔을 때 원하는 모양의 데이타로 가공
   useEffect(() => {
-    if (selectedTextbook && Array.isArray(selectedTextbook)) {
-      setData(() => {
-        return selectedTextbook.map((textbook) => processData(textbook));
-      });
+    if (selectedTextbook?.length > 0) {
+      const initialData = selectedTextbook?.map((textbook) => ({
+        bookPage: textbook.bookPage || '',
+        subChapter: textbook.subChapter || '',
+        isChecked: false,
+        quizList: textbook.quizList.map((quiz) => ({
+          ...quiz,
+          isChecked: false,
+          seq: `${quiz.code}${quiz.bookQuizNumber}`,
+        })),
+      }));
+      setProcessTextbookData(initialData);
     }
   }, [selectedTextbook]);
 
@@ -947,16 +990,36 @@ export function Step1() {
   };
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
   // 선택된 문항 코드 넣기
-  const toggleQuizCode = (quizCode: string) => {
-    setIncludeQuizList((prev) => {
-      if (prev.includes(quizCode)) {
-        return prev.filter((code) => code !== quizCode);
-      } else {
-        return [...prev, quizCode];
-      }
-    });
+  const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
+    if (Array.isArray(quizCode)) {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => !quizCode.includes(code));
+        } else {
+          // isChecked가 false일 때: 중복을 제거하고 quizCode를 추가
+          const uniqueCodesToAdd = quizCode.filter(
+            (code, index, self) =>
+              self.indexOf(code) === index && !prev.includes(code),
+          );
+          return [...prev, ...uniqueCodesToAdd];
+        }
+      });
+    } else {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => code !== quizCode);
+        } else {
+          // isChecked가 false일 때: quizCode를 추가
+          if (!prev.includes(quizCode)) {
+            return [...prev, quizCode];
+          }
+          return prev;
+        }
+      });
+    }
   };
-  console.log(includeQuizList);
 
   // 전체 선택
   const checkAllToggle = (
@@ -965,7 +1028,7 @@ export function Step1() {
     contentSeqs: string[],
     quizCode: string,
   ) => {
-    setData((prevData) => {
+    setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
       return prevData.map((page) => {
@@ -981,7 +1044,7 @@ export function Step1() {
         return page;
       });
     });
-    toggleQuizCode(quizCode);
+    toggleQuizCode(quizCode, isChecked);
   };
 
   //부분 선택
@@ -991,7 +1054,7 @@ export function Step1() {
     isChecked: boolean,
     quizCode: string,
   ) => {
-    setData((prevData) => {
+    setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
       return prevData.map((page) => {
@@ -1017,10 +1080,10 @@ export function Step1() {
         return page;
       });
     });
-    toggleQuizCode(quizCode);
+    toggleQuizCode(quizCode, isChecked);
   };
-
   // 수능/모의고사
+  // 수능/모의고사 드롭다운 카테고리 get api
   const getCategoryExamGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
     return response.data.data.typeList;
@@ -1133,89 +1196,372 @@ export function Step1() {
   const selectExamOption = (newValue: number | null) => {
     setExamOption(newValue);
   };
+  //선택 초기화
   const selectExamReset = () => {
     setExamGrade([]);
     setExamYear([]);
     setExamMonthly([]);
+    setIncludeQuizList([]);
     setExamOption(null);
+    setProcessCastQuizListData([]);
+    setProcessCastListData([]);
   };
-  // 수능 모의고사 불러오기 api
+
+  // 수능 모의고사 문항 get api 선택 완료
   const selectExam = () => {
     setIsDropdown(false);
+    setIncludeQuizList([]);
+    castDataRefetch();
+  };
+  const getcsat = async () => {
     const grades = examGrade.join(',');
     const years = examYear.join(',');
     const months = examMonthly.join(',');
-    const res = quizService.get(
-      `/v1/csat?option=${examOption}&level='고등'&subject='수학'&grades=${grades}&years=${years}&months=${months}`,
+    const res = await quizService.get(
+      `/v1/csat?option=${examOption}&level=고등&subject=수학&grades=${grades}&years=${years}&months=${months}`,
     );
-    // console.log(`getCsat 결과값`, res);
+    // console.log(`getTextbook 결과값`, res);
     return res;
   };
 
-  const mockexamList: MockexamType[] = dummy.Mockexam;
-  const [processedData, setProcessedData] = useState(
-    processMockexam(mockexamList),
-  );
+  const { data: castData, refetch: castDataRefetch } = useQuery({
+    queryKey: ['get-cast'],
+    queryFn: getcsat,
+    meta: {
+      errorMessage: 'get-cast 에러 메세지',
+    },
+    enabled: false,
+  });
 
-  const removeMockexam = (seq: number) => {
-    setProcessedData((prevData) => prevData.filter((mock) => mock.seq !== seq));
-  };
+  //문항 번호로 추가
+  const castQuizListData: CastQuizListType[] = castData?.data.data.quizList;
+  //문항 번호로 추가 데이터 가공
+  const [processCastQuizListData, setProcessCastQuizListData] = useState<
+    ProcessCsatQuizListDataType[]
+  >([]);
 
-  // 전체 선택
-  const checkAllMockexamToggle = (
-    seq: number,
+  // 문항 번호 전체 선택
+  const toggleCheckAllCastQuiz = (
+    id: string,
+    quizCode: string[],
     isChecked: boolean,
-    contentSeqs: number[],
   ) => {
-    //setProcessedData에 있는 기존 값을 가져와서 그 값을 순회하며 비교하여 값을 갱신
-    setProcessedData((prevData) => {
-      const newData = prevData.map((mock) => {
-        if (mock.seq === seq) {
-          mock.isChecked = !isChecked;
-
-          if (contentSeqs.length > 0) {
-            mock.content.forEach((content) => {
-              if (contentSeqs.includes(content.seq)) {
-                content.isChecked = !isChecked;
-              }
-            });
-          }
+    setProcessCastQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.id === id) {
+          const isChecked = !item.isChecked;
+          return {
+            ...item,
+            isChecked,
+            quizNumberList: item.quizNumberList.map((quiz) => ({
+              ...quiz,
+              isChecked,
+            })),
+          };
         }
-        // 갱신된 값을 가져오기
-        return mock;
+        return item;
       });
-      //가져온 값을 최종적으로 상태값으로 갱신하기
-      return [...newData];
     });
+    toggleQuizCode(quizCode, isChecked);
   };
-
-  //부분 선택
-  const checkPartialMockexamToggle = (
-    seq: number,
-    contentSeq: number,
+  // 문항 번호 부분 선택
+  const toggleCheckPartialCastQuiz = (
+    parentId: string,
+    quizNumber: string,
+    quizCode: string,
     isChecked: boolean,
   ) => {
-    setProcessedData((prevData) => {
-      const newData = prevData.map((mock) => {
-        if (mock.seq === seq) {
-          const targetContent = mock.content.find(
-            (content) => content.seq === contentSeq,
+    setProcessCastQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.id === parentId) {
+          const updatedQuizNumberList = item.quizNumberList.map((quiz) => {
+            if (quiz.quizNumber === quizNumber) {
+              return {
+                ...quiz,
+                isChecked: !quiz.isChecked,
+              };
+            }
+            return quiz;
+          });
+          const isChecked = updatedQuizNumberList.every(
+            (quiz) => quiz.isChecked,
           );
+          return {
+            ...item,
+            isChecked,
+            quizNumberList: updatedQuizNumberList,
+          };
+        }
+        return item;
+      });
+    });
+    toggleQuizCode(quizCode, isChecked);
+  };
 
-          if (targetContent) {
-            targetContent.isChecked = !isChecked;
+  // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castQuizListData?.length > 0) {
+      const initialData = castQuizListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        ...mock,
+        isChecked: false,
+        quizNumberList: mock.quizNumberList.map((quiz) => ({
+          ...quiz,
+          isChecked: false,
+        })),
+      }));
+      setProcessCastQuizListData(initialData);
+    }
+  }, [castQuizListData, castDataRefetch]);
 
-            const allContentsChecked = mock.content.every(
-              (content) => content.isChecked,
-            );
-            mock.isChecked = allContentsChecked;
-          }
+  //단원으로 추가
+  const castListData: csatListType[] = castData?.data.data.csatList;
+  //단원으로 추가 데이터 가공
+  const [processCastListData, setProcessCastListData] = useState<
+    ProcessCsatListDataType[]
+  >([]);
+  //console.log(castListData);
+
+  // 단원으로 추가 재귀형태 함수
+  const renderHierarchicalData = (
+    data: HierarchicalDataType[],
+    depth: number = 0,
+  ) => {
+    return data.map((item, index) => (
+      <CastListWrapper key={index} style={{ paddingLeft: `${depth * 15}px` }}>
+        {item.title &&
+          item.title !== 'root' && ( // key 값이 존재하고 "root"가 아닌 경우에만 렌더링
+            <CheckBoxWrapper>
+              <CheckBox
+                isChecked={item.isChecked}
+                width="15"
+                height="15"
+                onClick={() =>
+                  toggleCheckPartialCastList(
+                    item.seq,
+                    extractCodesFromHierarchicalData(item.value),
+                    item.isChecked,
+                    depth,
+                  )
+                }
+              />
+              <Label value={item.title} width="100px" />
+            </CheckBoxWrapper>
+          )}
+        {/* key 값이 존재하고 "root"가 아닌 경우에만 하위 요소 렌더링 */}
+        {Array.isArray(item.value) &&
+          renderHierarchicalData(
+            item.value as HierarchicalDataType[],
+            depth + 1,
+          )}
+      </CastListWrapper>
+    ));
+  };
+  // 재귀함수 사용해서 isChecked값 부여
+  const addIsCheckedToHierarchicalData = (
+    data: any,
+    seq: string,
+  ): HierarchicalDataType[] => {
+    if (Array.isArray(data)) {
+      // 배열인 경우
+      return [
+        {
+          title: 'root',
+          seq: seq + 'root',
+          value: data.map((item: any) => ({
+            ...item,
+            isChecked: false,
+          })),
+          isChecked: false,
+        },
+      ];
+    } else {
+      // 객체인 경우, 재귀적으로 호출하여 처리
+      const hierarchicalData: HierarchicalDataType[] = [];
+      for (const title in data) {
+        if (Object.prototype.hasOwnProperty.call(data, title)) {
+          const value = data[title];
+          hierarchicalData.push({
+            title: title,
+            seq: seq + title,
+            value: addIsCheckedToHierarchicalData(value, seq), // 재귀 호출로 하위 항목 처리
+            isChecked: false,
+          });
+        }
+      }
+      return hierarchicalData;
+    }
+  };
+
+  // 수능/모의고사 단원 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castListData?.length > 0) {
+      const initialData = castListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        grade: mock.grade,
+        level: mock.level,
+        month: mock.month,
+        year: mock.year,
+        isChecked: false,
+        nodeData: {
+          hierarchicalData: addIsCheckedToHierarchicalData(
+            mock.nodeData.hierarchicalData,
+            `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+          ),
+        },
+      }));
+      setProcessCastListData(initialData);
+    }
+  }, [castListData, castDataRefetch]);
+
+  // HierarchicalDataType 배열에서 QuizType 객체의 code 값들을 추출하는 함수
+  const extractCodesFromHierarchicalData = (
+    data: HierarchicalDataType[],
+  ): string[] => {
+    const codes: string[] = [];
+
+    const extractCodes = (value: any) => {
+      if (Array.isArray(value)) {
+        value.forEach((item) => extractCodes(item));
+      } else if (value && typeof value === 'object') {
+        if ('code' in value) {
+          codes.push(value.code);
+        } else {
+          Object.values(value).forEach((item) => extractCodes(item));
+        }
+      }
+    };
+
+    data.forEach((item) => {
+      extractCodes(item.value);
+    });
+
+    return codes;
+  };
+
+  // 단원 전체 선택
+  const toggleCheckAllCastList = (
+    id: string,
+    codes: string[],
+    isChecked: boolean,
+  ) => {
+    setProcessCastListData((prevData) =>
+      prevData.map((mock) => {
+        if (mock.id === id) {
+          const updatedHierarchicalData = updateCheckStatus(
+            mock.nodeData.hierarchicalData,
+            isChecked,
+          );
+          return {
+            ...mock,
+            isChecked: !isChecked,
+            nodeData: {
+              ...mock.nodeData,
+              hierarchicalData: updatedHierarchicalData,
+            },
+          };
         }
         return mock;
-      });
+      }),
+    );
+    toggleQuizCode(codes, isChecked);
+  };
 
-      return [...newData];
+  // 단원 전체 선택 isChecked 값 갱신
+  const updateCheckStatus = (
+    data: HierarchicalDataType[],
+    isChecked: boolean,
+  ): HierarchicalDataType[] => {
+    return data.map((item) => {
+      if (Array.isArray(item.value)) {
+        return {
+          ...item,
+          isChecked: !isChecked,
+          value: updateCheckStatus(
+            item.value as HierarchicalDataType[],
+            isChecked,
+          ),
+        };
+      } else {
+        return {
+          ...item,
+          isChecked: !isChecked,
+        };
+      }
     });
+  };
+
+  // 단원 부분 선택
+  const toggleCheckPartialCastList = (
+    seq: string,
+    codes: string[],
+    isChecked: boolean,
+    depth: number,
+  ) => {
+    setProcessCastListData((prevData) =>
+      prevData.map((mock) => {
+        const updatedHierarchicalData = updateCheckStatusByKey(
+          mock.nodeData.hierarchicalData,
+          seq,
+          isChecked,
+          depth,
+        );
+        return {
+          ...mock,
+          nodeData: {
+            ...mock.nodeData,
+            hierarchicalData: updatedHierarchicalData,
+          },
+        };
+      }),
+    );
+    toggleQuizCode(codes, isChecked);
+  };
+
+  // 부분 클릭 isChecked 값 갱신
+  const updateCheckStatusByKey = (
+    data: HierarchicalDataType[],
+    seq: string,
+    isChecked: boolean,
+    depth: number,
+  ): HierarchicalDataType[] => {
+    const traverseToDepth = (
+      items: HierarchicalDataType[],
+      currentDepth: number,
+    ): HierarchicalDataType[] => {
+      return items.map((item) => {
+        if (currentDepth === depth) {
+          if (item.seq === seq) {
+            return { ...item, isChecked: !isChecked };
+          }
+        } else if (Array.isArray(item.value)) {
+          return {
+            ...item,
+            value: traverseToDepth(
+              item.value as HierarchicalDataType[],
+              currentDepth + 1,
+            ),
+          };
+        }
+        return item;
+      });
+    };
+
+    return traverseToDepth(data, 0);
+  };
+
+  // 항목 삭제
+  const removeMockexam = (id: string, title: string) => {
+    if (title === '문항') {
+      setProcessCastQuizListData((prevData) =>
+        prevData.filter((mock) => mock.id !== id),
+      );
+    }
+    if (title === '단원') {
+      setProcessCastListData((prevData) =>
+        prevData.filter((mock) => mock.id !== id),
+      );
+    }
   };
 
   // step1 선택된 문항 불러오기 api
@@ -1235,7 +1581,7 @@ export function Step1() {
     },
     onSuccess: (response) => {
       saveLocalData(response.data.data);
-      //navigate('/content-create/exam/step2');
+      navigate('/content-create/exam/step2');
     },
   });
 
@@ -1251,8 +1597,10 @@ export function Step1() {
   const clickNextButton = () => {
     const data = {
       itemTreeKeyList: tabVeiw === '단원·유형별' ? makingdata : null,
-      count: Number(questionNum),
-      difficulty: questionLevel === '선택안함' ? null : questionLevel,
+      count: Number(questionNum) || Number(includeQuizList.length),
+      //수능/모의고사 경우 어떻게 보내야할지 나중에 수정해야함
+      difficulty:
+        questionLevel === '선택안함' ? null : questionLevel || 'MEDIUM',
       type: questionType,
       mock: containMock,
       score: equalScore,
@@ -1294,13 +1642,66 @@ export function Step1() {
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
+    const sendQuotientData = {
+      remainderContent: remainderContent,
+      quotient: quotient,
+      nextRemainderContent: nextRemainderContent,
+      minQuotient: minQuotient,
+      maxQuotient: maxQuotient,
+    };
     const sendData = { data: data };
     // console.log(sendData);
     localStorage.setItem('sendData', JSON.stringify(sendData));
+    localStorage.setItem('sendQuotientData', JSON.stringify(sendQuotientData));
   };
 
   const moveStep2 = () => {
-    clickNextButton();
+    if (tabVeiw === '단원·유형별')
+      if (
+        inputValue !== '' ||
+        (questionNum !== null &&
+          questionNum !== '' &&
+          unitClassificationList.length > 0 &&
+          questionLevel !== null &&
+          questionType !== null &&
+          containMock !== null &&
+          equalScore !== null)
+      ) {
+        clickNextButton();
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '필수항목을 선택해주세요',
+        });
+      }
+    else if (tabVeiw === '시중교재') {
+      if (
+        inputValue !== '' ||
+        (questionNum !== null &&
+          questionNum !== '' &&
+          includeQuizList.length > 0 &&
+          questionLevel !== null &&
+          questionType !== null &&
+          containMock !== null &&
+          equalScore !== null)
+      ) {
+        clickNextButton();
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '필수항목을 선택해주세요',
+        });
+      }
+    } else if (tabVeiw === '수능/모의고사') {
+      if (includeQuizList.length > 0 && equalScore !== null) {
+        clickNextButton();
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '필수항목을 선택해주세요',
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -1313,11 +1714,14 @@ export function Step1() {
     setIsOption2(false);
     setIsQuizEven(false);
     setIsPriority(false);
+    setEqualScore(null);
     //시중교재
     setSearchValue('');
     setSchoolLevel('초등');
     setgradeLevel(null);
+    setIncludeQuizList([]);
     //모의시험 버튼 초기화
+    setProcessCastQuizListData([]);
     setIsDropdown(false);
     setExamGrade([]);
     setExamYear([]);
@@ -1996,12 +2400,7 @@ export function Step1() {
               {isSelectTextbook && (
                 <>
                   <CategorySection>
-                    <TabWrapper
-                    // onClick={() => {
-                    //   selectSchoolLevel('초등');
-                    //   setgradeLevel('');
-                    // }}
-                    >
+                    <TabWrapper>
                       <TabMenu
                         length={3}
                         menu={menuList}
@@ -2223,7 +2622,7 @@ export function Step1() {
                         <ListTitle className="series">시리즈</ListTitle>
                         <ListTitle className="publisher">출판사</ListTitle>
                       </ListTitleWrapper>
-                      {textbookList.length > 0 ? (
+                      {textbookList?.length > 0 ? (
                         <>
                           {textbookList?.map((book, idx) => (
                             <TextbookList
@@ -2262,7 +2661,7 @@ export function Step1() {
                     <SubTitleWrapper>
                       <Label value="*문항수" fontSize="16px" width="60px" />
                       <Label
-                        value="최대 100문항"
+                        value="한 문제당 최대 유사문항수"
                         fontSize="12px"
                         width="440px"
                       />
@@ -2272,47 +2671,47 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('25');
+                            selectQuestionNum('1');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '25'}
-                          $filled={questionNum === '25'}
+                          $normal={questionNum !== '1'}
+                          $filled={questionNum === '1'}
                           cursor
                         >
-                          <span>25</span>
+                          <span>1</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('50');
+                            selectQuestionNum('3');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '50'}
-                          $filled={questionNum === '50'}
+                          $normal={questionNum !== '3'}
+                          $filled={questionNum === '3'}
                           cursor
                         >
-                          <span>50</span>
+                          <span>3</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('100');
+                            selectQuestionNum('5');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '100'}
-                          $filled={questionNum === '100'}
+                          $normal={questionNum !== '5'}
+                          $filled={questionNum === '5'}
                           cursor
                         >
-                          <span>100</span>
+                          <span>5</span>
                         </Button>
                         <DivideBar>|</DivideBar>
                         <NumberInput
@@ -2675,7 +3074,7 @@ export function Step1() {
                             </TextbookTypeTitleWrapperRight>
                           </TextbookTypeTitleWrapper>
                           <SelectWrapper>
-                            {data.map((item, i) => (
+                            {processTextbookData.map((item, i) => (
                               <LeftWrapper
                                 key={i}
                                 onClick={() => choiceType(i)}
@@ -2708,7 +3107,7 @@ export function Step1() {
                             ))}
 
                             {isChoice &&
-                              data.map((item, k) => (
+                              processTextbookData.map((item, k) => (
                                 <RightWrapper key={k}>
                                   {item.quizList.map((quiz, l) => (
                                     <CheckBoxWrapper key={l}>
@@ -2743,7 +3142,7 @@ export function Step1() {
                     <SubTitleWrapper>
                       <Label value="*문항수" fontSize="16px" width="60px" />
                       <Label
-                        value="최대 100문항"
+                        value="한 문제당 최대 유사문항수"
                         fontSize="12px"
                         width="440px"
                       />
@@ -2753,47 +3152,47 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('25');
+                            selectQuestionNum('1');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '25'}
-                          $filled={questionNum === '25'}
+                          $normal={questionNum !== '1'}
+                          $filled={questionNum === '1'}
                           cursor
                         >
-                          <span>25</span>
+                          <span>1</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('50');
+                            selectQuestionNum('3');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '50'}
-                          $filled={questionNum === '50'}
+                          $normal={questionNum !== '3'}
+                          $filled={questionNum === '3'}
                           cursor
                         >
-                          <span>50</span>
+                          <span>3</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('100');
+                            selectQuestionNum('5');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '100'}
-                          $filled={questionNum === '100'}
+                          $normal={questionNum !== '5'}
+                          $filled={questionNum === '5'}
                           cursor
                         >
-                          <span>100</span>
+                          <span>5</span>
                         </Button>
                         <DivideBar>|</DivideBar>
                         <NumberInput
@@ -3152,7 +3551,37 @@ export function Step1() {
                     </MockExamSelect>
                     {!isDropdown && (
                       <MockExamSummaryWrapper>
-                        <MockExamSummary>학습지 문항수 {100}개</MockExamSummary>
+                        <MockExamSummary>
+                          학습지 문항수 {includeQuizList.length}개
+                        </MockExamSummary>
+                        <Button
+                          buttonType="button"
+                          onClick={openEqualScoreSettingModal}
+                          $padding="10px"
+                          height={'35px'}
+                          width={'160px'}
+                          fontSize="13px"
+                          $normal={equalScore !== 2}
+                          $filled={equalScore === 2}
+                          cursor
+                        >
+                          <span>균등 배점</span>
+                        </Button>
+                        <Button
+                          buttonType="button"
+                          onClick={() => {
+                            selectEqualScore(1);
+                          }}
+                          $padding="10px"
+                          height={'35px'}
+                          width={'160px'}
+                          fontSize="13px"
+                          $normal={equalScore !== 1}
+                          $filled={equalScore === 1}
+                          cursor
+                        >
+                          <span>배점 선택안함</span>
+                        </Button>
                         <Button
                           buttonType="button"
                           onClick={selectExamReset}
@@ -3172,8 +3601,12 @@ export function Step1() {
                     <MockExamDropdownWrapper ref={dropdownRef}>
                       <MockExamOptionWrapper>
                         <MockExamTitleWrapper>
-                          <Label value="학년 선택" fontSize="14px" />
-                          <Label value="복수 선택 가능" fontSize="12px" />
+                          <Label value="학년 선택" fontSize="14px" center />
+                          <Label
+                            value="복수 선택 가능"
+                            fontSize="12px"
+                            center
+                          />
                         </MockExamTitleWrapper>
                         <MockExamButtonWrapper>
                           <Button
@@ -3238,8 +3671,12 @@ export function Step1() {
                       </MockExamOptionWrapper>
                       <MockExamOptionWrapper>
                         <MockExamTitleWrapper>
-                          <Label value="년도 선택" fontSize="14px" />
-                          <Label value="복수 선택 가능" fontSize="12px" />
+                          <Label value="년도 선택" fontSize="14px" center />
+                          <Label
+                            value="복수 선택 가능"
+                            fontSize="12px"
+                            center
+                          />
                         </MockExamTitleWrapper>
                         <MockExamHalfButtonWrapper>
                           <Button
@@ -3286,8 +3723,12 @@ export function Step1() {
                       </MockExamOptionWrapper>
                       <MockExamOptionWrapper>
                         <MockExamTitleWrapper>
-                          <Label value="월 선택" fontSize="14px" />
-                          <Label value="복수 선택 가능" fontSize="12px" />
+                          <Label value="월 선택" fontSize="14px" center />
+                          <Label
+                            value="복수 선택 가능"
+                            fontSize="12px"
+                            center
+                          />
                         </MockExamTitleWrapper>
                         <MockExamHalfButtonWrapper>
                           <Button
@@ -3345,7 +3786,8 @@ export function Step1() {
                           <Label
                             value="문항 추가 옵션"
                             fontSize="14px"
-                            width="100px"
+                            //width="100px"
+                            center
                           />
                         </MockExamSingleTitleWrapper>
                         <MockExamButtonWrapper>
@@ -3413,57 +3855,106 @@ export function Step1() {
                       </MockExamOptionWrapper>
                     </MockExamDropdownWrapper>
                   )}
-                  <MockExamContentWrapper>
-                    {processedData.map((mock) => (
-                      <MockExamBox key={mock.seq}>
-                        <MockExamLabelWrapper>
-                          <CheckBoxWrapper>
-                            <CheckBox
-                              isChecked={mock.isChecked as boolean}
-                              width="15"
-                              height="15"
-                              onClick={() =>
-                                checkAllMockexamToggle(
-                                  mock.seq,
-                                  mock.isChecked as boolean,
-                                  mock.content.map((content) => content.seq),
-                                )
-                              }
-                            ></CheckBox>
-                            <Label
-                              value={`${mock.grade} | ${mock.year} ${mock.month}`}
-                              width="150px"
-                            />
-                          </CheckBoxWrapper>
-                          <CloseIconWrapper>
-                            <IoMdClose
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => removeMockexam(mock.seq)}
-                            />
-                          </CloseIconWrapper>
-                        </MockExamLabelWrapper>
-                        <MockExamContent>
-                          {mock.content.map((el) => (
-                            <CheckBoxWrapper key={el.seq}>
+                  {examOption === 0 && (
+                    <MockExamContentWrapper>
+                      {processCastQuizListData?.map((mock) => (
+                        <MockExamBox key={mock.id}>
+                          <MockExamLabelWrapper>
+                            <CheckBoxWrapper>
                               <CheckBox
-                                isChecked={el.isChecked as boolean}
+                                isChecked={mock.isChecked}
                                 width="15"
                                 height="15"
                                 onClick={() =>
-                                  checkPartialMockexamToggle(
-                                    mock.seq,
-                                    el.seq,
-                                    el.isChecked as boolean,
+                                  toggleCheckAllCastQuiz(
+                                    mock.id,
+                                    mock.quizNumberList.map(
+                                      (item) => item.code,
+                                    ),
+                                    mock.isChecked,
                                   )
                                 }
                               ></CheckBox>
-                              <Label value={el.title} width="30px" />
+                              <Label
+                                value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                width="150px"
+                              />
                             </CheckBoxWrapper>
-                          ))}
-                        </MockExamContent>
-                      </MockExamBox>
-                    ))}
-                  </MockExamContentWrapper>
+                            <CloseIconWrapper>
+                              <IoMdClose
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => removeMockexam(mock.id, '문항')}
+                              />
+                            </CloseIconWrapper>
+                          </MockExamLabelWrapper>
+                          <MockExamContent>
+                            {mock.quizNumberList.map((el, i) => (
+                              <CheckBoxWrapper key={i}>
+                                <CheckBox
+                                  isChecked={el.isChecked}
+                                  width="15"
+                                  height="15"
+                                  onClick={() =>
+                                    toggleCheckPartialCastQuiz(
+                                      mock.id,
+                                      el.quizNumber,
+                                      el.code,
+                                      el.isChecked,
+                                    )
+                                  }
+                                ></CheckBox>
+                                <Label
+                                  value={`${el.quizNumber}번`}
+                                  width="30px"
+                                />
+                              </CheckBoxWrapper>
+                            ))}
+                          </MockExamContent>
+                        </MockExamBox>
+                      ))}
+                    </MockExamContentWrapper>
+                  )}
+                  {examOption === 1 && (
+                    <MockExamContentWrapper>
+                      {processCastListData?.map((mock) => (
+                        <MockExamBox key={mock.id}>
+                          <MockExamLabelWrapper>
+                            <CheckBoxWrapper>
+                              <CheckBox
+                                isChecked={mock.isChecked}
+                                width="15"
+                                height="15"
+                                onClick={() =>
+                                  toggleCheckAllCastList(
+                                    mock.id,
+                                    extractCodesFromHierarchicalData(
+                                      mock.nodeData.hierarchicalData,
+                                    ),
+                                    mock.isChecked,
+                                  )
+                                }
+                              ></CheckBox>
+                              <Label
+                                value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                width="150px"
+                              />
+                            </CheckBoxWrapper>
+                            <CloseIconWrapper>
+                              <IoMdClose
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => removeMockexam(mock.id, '단원')}
+                              />
+                            </CloseIconWrapper>
+                          </MockExamLabelWrapper>
+                          <MockExamContent>
+                            {renderHierarchicalData(
+                              mock.nodeData.hierarchicalData,
+                            )}
+                          </MockExamContent>
+                        </MockExamBox>
+                      ))}
+                    </MockExamContentWrapper>
+                  )}
                 </MockExamWrapper>
               </CategorySection>
             </>
@@ -3495,7 +3986,7 @@ export function Step1() {
             <EqualScoreModalWrapper>
               <EqualScoreModalTitleWrapper>
                 <Label
-                  value={`총 ${questionNum || inputValue} 문항`}
+                  value={`총 ${questionNum || inputValue || includeQuizList.length} 문항`}
                   fontSize="25px"
                   width="160px"
                 />
@@ -3539,7 +4030,9 @@ export function Step1() {
                   <>
                     {/* 나머지가 없는경우 */}
                     <div>
-                      01번 문항부터 {questionNum || inputValue}번 문항까지
+                      01번 문항부터
+                      {questionNum || inputValue || includeQuizList.length}번
+                      문항까지
                       {quotient || 0}점
                     </div>
                     {isSaveEqualValue ? (
@@ -3554,13 +4047,13 @@ export function Step1() {
                   <>
                     {/* 나머지가 있는경우 */}
                     <div>
-                      01번 문항부터 {remainderContent}번 문항까지{' '}
+                      01번 문항부터 {remainderContent}번 문항까지
                       {quotient || 0}점
                     </div>
                     <div>
-                      {nextRemainderContent}번 문항부터{' '}
-                      {questionNum || inputValue}번 문항까지 {quotient + 1 || 0}
-                      점
+                      {nextRemainderContent}번 문항부터
+                      {questionNum || inputValue || includeQuizList.length}번
+                      문항까지 {quotient + 1 || 0}점
                     </div>
                     {isSaveEqualValue ? (
                       <div className="pointsPerQuestion">
@@ -4035,6 +4528,10 @@ const CloseIconWrapper = styled.div`
 
 const MockExamContent = styled.div`
   padding: 10px;
+`;
+const CastListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 const Overlay = styled.div`
   position: fixed;

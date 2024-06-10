@@ -60,6 +60,14 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     sendLocalData?.data.quizList || [],
   );
+  //나머지 시작 컨텐츠
+  const [remainderContent, setRemainderContent] = useState<number>();
+  //나머지 시작 전 컨텐츠
+  const [nextRemainderContent, setNextRemainderContent] = useState<number>();
+  //문항당 배점
+  const [quotient, setQuotient] = useState<number>(0);
+  const [minQuotient, setMinQuotient] = useState<number>();
+  const [maxQuotient, setMaxQuotient] = useState<number>();
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
