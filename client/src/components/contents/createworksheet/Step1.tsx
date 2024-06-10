@@ -730,13 +730,14 @@ export function Step1() {
     }
     setEqualScore(newValue);
   };
+  //배점 모달 띄우는 값
   const [isEqualScoreModal, setIsEqualScoreModal] = useState<boolean>(false);
 
   const openEqualScoreSettingModal = () => {
     if (questionNum || inputValue || includeQuizList.length > 0) {
       setIsEqualScoreModal(true);
       setIsSaveEqualValue(false);
-      setEqualInputValue('0');
+      setEqualTotlaValue('0');
     } else {
       openToastifyAlert({
         type: 'error',
@@ -746,7 +747,9 @@ export function Step1() {
       setIsSaveEqualValue(false);
     }
   };
-  const [equalInputValue, setEqualInputValue] = useState('0');
+  //총 배점
+  const [equalTotalValue, setEqualTotlaValue] = useState('0');
+  // 문항당 배점
   const [isSaveEqualValue, setIsSaveEqualValue] = useState<boolean>(false);
 
   //나머지 시작 컨텐츠
@@ -757,16 +760,17 @@ export function Step1() {
   const [quotient, setQuotient] = useState<number>(0);
   const [remainder, setRemainder] = useState<number>();
 
+  // 균등배점 모달 닫기
   const closeEqualScoreSettingModal = () => {
     setIsEqualScoreModal(false);
-    setEqualInputValue('0');
   };
+  //균등배점 저장
   const saveEqualScoreSettingModal = () => {
     if (isSaveEqualValue) {
       setIsEqualScoreModal(false);
       closeEqualScoreSettingModal();
     } else {
-      if (equalInputValue) {
+      if (equalTotalValue) {
         openToastifyAlert({
           type: 'error',
           text: '저장을 눌러주세요.',
@@ -779,39 +783,50 @@ export function Step1() {
       }
     }
   };
+  //균등배점 취소
+  const cancelEqualScoreSettingModal = () => {
+    closeEqualScoreSettingModal();
+    setEqualScore(null);
+    setEqualTotlaValue('0');
+    setRemainderContent(0);
+    setNextRemainderContent(0);
+    setQuotient(0);
+    setMinQuotient(0);
+    setMaxQuotient(0);
+  };
 
   const changeEqualInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let equalInputValue = e.target.value;
+    let equalTotalValue = e.target.value;
 
     // 정규표현식을 사용하여 숫자 이외의 문자 제거
-    equalInputValue = equalInputValue.replace(/[^0-9]/g, '');
+    equalTotalValue = equalTotalValue.replace(/[^0-9]/g, '');
 
-    const parsedValue = parseInt(equalInputValue, 10);
-    setEqualInputValue(parsedValue >= 200 ? '200' : equalInputValue);
+    const parsedValue = parseInt(equalTotalValue, 10);
+    setEqualTotlaValue(parsedValue >= 200 ? '200' : equalTotalValue);
   };
 
   const saveEqualInputValue = () => {
-    const parsedValue = parseInt(equalInputValue, 10);
+    const parsedValue = parseInt(equalTotalValue, 10);
     const questionNumValue = parseInt(
       questionNum ||
         inputValue ||
         (includeQuizList.length as unknown as string),
       10,
     );
-    if (equalInputValue === '') {
+    if (equalTotalValue === '') {
       openToastifyAlert({
         type: 'error',
         text: '총 배점을 입력해주세요.',
       });
       setIsSaveEqualValue(false);
-      setEqualInputValue('0');
+      setEqualTotlaValue('0');
       setQuotient(0);
-    } else if (equalInputValue && parsedValue < questionNumValue) {
+    } else if (equalTotalValue && parsedValue < questionNumValue) {
       openToastifyAlert({
         type: 'error',
         text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
       });
-      setEqualInputValue(
+      setEqualTotlaValue(
         questionNum ||
           inputValue ||
           (includeQuizList.length as unknown as string),
@@ -822,7 +837,7 @@ export function Step1() {
         type: 'success',
         text: '저장되었습니다.',
       });
-      setEqualInputValue(equalInputValue);
+      setEqualTotlaValue(equalTotalValue);
       setIsSaveEqualValue(true);
     }
   };
@@ -831,7 +846,7 @@ export function Step1() {
   const [maxQuotient, setMaxQuotient] = useState<number>();
 
   useEffect(() => {
-    const parsedValue = parseInt(equalInputValue, 10);
+    const parsedValue = parseInt(equalTotalValue, 10);
     const questionNumValue = parseInt(
       questionNum ||
         inputValue ||
@@ -847,14 +862,14 @@ export function Step1() {
       if (quotient || remainder) {
         const remainderContent = questionNumValue - remainder;
         const minQuotient = quotient - 1;
-        const maxQuotient = quotient + 2;
+        const maxQuotient = quotient + 1;
         setRemainderContent(remainderContent);
         setNextRemainderContent(remainderContent + 1);
         setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
         setMaxQuotient(maxQuotient);
       }
     }
-  }, [isSaveEqualValue, equalInputValue]);
+  }, [isSaveEqualValue, equalTotalValue]);
 
   const [isOption1, setIsOption1] = useState(false);
   const selectOption1 = () => {
@@ -1643,6 +1658,7 @@ export function Step1() {
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
     const sendQuotientData = {
+      equalTotalValue: equalTotalValue,
       remainderContent: remainderContent,
       quotient: quotient,
       nextRemainderContent: nextRemainderContent,
@@ -1652,7 +1668,12 @@ export function Step1() {
     const sendData = { data: data };
     // console.log(sendData);
     localStorage.setItem('sendData', JSON.stringify(sendData));
-    localStorage.setItem('sendQuotientData', JSON.stringify(sendQuotientData));
+    if (equalScore === 2) {
+      localStorage.setItem(
+        'sendQuotientData',
+        JSON.stringify(sendQuotientData),
+      );
+    }
   };
 
   const moveStep2 = () => {
@@ -2345,7 +2366,10 @@ export function Step1() {
                   </Button>
                   <Button
                     buttonType="button"
-                    onClick={openEqualScoreSettingModal}
+                    onClick={() => {
+                      selectEqualScore(2);
+                      openEqualScoreSettingModal();
+                    }}
                     $padding="10px"
                     height={'34px'}
                     width={'245px'}
@@ -2978,7 +3002,10 @@ export function Step1() {
                       </Button>
                       <Button
                         buttonType="button"
-                        onClick={openEqualScoreSettingModal}
+                        onClick={() => {
+                          selectEqualScore(2);
+                          openEqualScoreSettingModal();
+                        }}
                         $padding="10px"
                         height={'34px'}
                         width={'245px'}
@@ -3458,7 +3485,10 @@ export function Step1() {
                       </Button>
                       <Button
                         buttonType="button"
-                        onClick={openEqualScoreSettingModal}
+                        onClick={() => {
+                          selectEqualScore(2);
+                          openEqualScoreSettingModal();
+                        }}
                         $padding="10px"
                         height={'34px'}
                         width={'245px'}
@@ -3556,7 +3586,10 @@ export function Step1() {
                         </MockExamSummary>
                         <Button
                           buttonType="button"
-                          onClick={openEqualScoreSettingModal}
+                          onClick={() => {
+                            selectEqualScore(2);
+                            openEqualScoreSettingModal();
+                          }}
                           $padding="10px"
                           height={'35px'}
                           width={'160px'}
@@ -4000,11 +4033,11 @@ export function Step1() {
                     padding="10px"
                     fontSize="16px"
                     type="text"
-                    value={equalInputValue}
+                    value={equalTotalValue}
                     maxLength={10}
                     minLength={2}
                     onClick={() => {
-                      setEqualInputValue('');
+                      setEqualTotlaValue('');
                       setIsSaveEqualValue(false);
                     }}
                     onChange={(e) => {
@@ -4068,7 +4101,7 @@ export function Step1() {
               <EqualScoreModalButtonWrapper>
                 <Button
                   buttonType="button"
-                  onClick={closeEqualScoreSettingModal}
+                  onClick={cancelEqualScoreSettingModal}
                   $padding="10px"
                   height={'100%'}
                   width={'100%'}

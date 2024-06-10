@@ -40,6 +40,7 @@ import { useModal } from '../../../hooks';
 import { ItemCategoryType, ItemTreeListType } from '../../../types';
 import {
   WorkbookData,
+  WorkbookQuotientData,
   QuizList,
   SimilarQuizList,
   QuizCategory,
@@ -56,10 +57,14 @@ interface RadioState {
 }
 
 export function Step2() {
-  const [sendLocalData, setSendLocalData] = useState<WorkbookData | null>(null);
+  const [getLocalData, setGetLocalData] = useState<WorkbookData | null>(null);
+  const [getQuotientLocalData, setGetQuotientLocalData] =
+    useState<WorkbookQuotientData | null>(null);
+
   const [initialItems, setInitialItems] = useState<QuizList[]>(
-    sendLocalData?.data.quizList || [],
+    getLocalData?.data.quizList || [],
   );
+
   //나머지 시작 컨텐츠
   const [remainderContent, setRemainderContent] = useState<number>();
   //나머지 시작 전 컨텐츠
@@ -69,15 +74,34 @@ export function Step2() {
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
 
+  useEffect(() => {
+    if (getQuotientLocalData) {
+      setRemainderContent(getQuotientLocalData.remainderContent);
+      setNextRemainderContent(getQuotientLocalData.nextRemainderContent);
+      setQuotient(getQuotientLocalData.quotient);
+      setMinQuotient(getQuotientLocalData.minQuotient);
+      setMaxQuotient(getQuotientLocalData.maxQuotient);
+    }
+  }, [getQuotientLocalData]);
+  // console.log(getQuotientLocalData);
+  // console.log(remainderContent);
+  // console.log(nextRemainderContent);
+  // console.log(quotient);
+  // console.log(minQuotient);
+  // console.log(maxQuotient);
+
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendData');
+      const quotientData = localStorage.getItem('sendQuotientData');
       if (data) {
         try {
           const parsedData = JSON.parse(data);
+          const parsedquotientData = JSON.parse(quotientData as string);
           console.log('데이터 조회', parsedData);
-          setSendLocalData(parsedData);
+          setGetLocalData(parsedData);
+          setGetQuotientLocalData(parsedquotientData);
         } catch (error) {
           console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
@@ -92,31 +116,13 @@ export function Step2() {
 
     return () => clearTimeout(retryTimeout);
   }, []);
-  // useEffect(() => {
-  //   const isDataInStorage = localStorage.getItem('sendData') !== null;
-
-  //   if (isDataInStorage) {
-  //     console.log('로컬 스토리지에 데이터가 남아있습니다.');
-  //     const data = localStorage.getItem('sendData');
-
-  //     try {
-  //       const parsedData = JSON.parse(data as string);
-  //       console.log('데이터 조회', parsedData);
-  //       setSendLocalData(parsedData);
-  //     } catch (error) {
-  //       console.error('로컬 스토리지 데이터 파싱 에러:', error);
-  //     }
-  //   } else {
-  //     console.log('로컬 스토리지에 데이터가 없습니다.');
-  //   }
-  // }, []);
 
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
-    if (sendLocalData) {
+    if (getLocalData) {
       window.opener.localStorage.clear();
     }
-  }, [sendLocalData]);
+  }, [getLocalData]);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
@@ -957,20 +963,17 @@ export function Step2() {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
 
   useEffect(() => {
-    if (sendLocalData?.data.quizList) {
-      setInitialItems(sendLocalData.data.quizList);
+    if (getLocalData?.data.quizList) {
+      setInitialItems(getLocalData.data.quizList);
     }
-  }, [sendLocalData]);
+  }, [getLocalData]);
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
     console.log('@드래그끝났을떄', newList);
   };
 
-  const handleButtonCheck = (
-    e: React.MouseEvent<HTMLDivElement>,
-    id: string,
-  ) => {
+  const handleButtonCheck = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     const target = e.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
@@ -1106,7 +1109,7 @@ export function Step2() {
                           <Label value="문항 통계" fontSize="16px" />
                           <Discription>
                             <DiscriptionOutline>
-                              <div>총 {sendLocalData?.data.quizCnt} 문항</div>
+                              <div>총 {initialItems.length} 문항</div>
                               <DiscriptionType>객관식 20</DiscriptionType>
                               <DiscriptionType>주관식 10</DiscriptionType>
                               <DiscriptionType>서술형 15</DiscriptionType>
@@ -1132,7 +1135,7 @@ export function Step2() {
                               dragSectionName={'학습지요약'}
                               doubleDnD
                             >
-                              {(dragItem, ref, isDragging) => (
+                              {(dragItem, ref, isDragging, itemIndex) => (
                                 <li
                                   ref={ref}
                                   className={`${isDragging ? 'opacity' : ''}`}
@@ -1140,10 +1143,12 @@ export function Step2() {
                                   <Content
                                     // key={i}
                                     onClick={(e) => {
-                                      handleButtonCheck(e, dragItem.idx);
+                                      handleButtonCheck(e);
                                     }}
                                   >
-                                    <div className="number">{dragItem.idx}</div>
+                                    <div className="number">
+                                      {itemIndex + 1}
+                                    </div>
                                     <div className="type">
                                       {
                                         dragItem.quizCategoryList[0]
@@ -1689,7 +1694,7 @@ export function Step2() {
                           }}
                           isSimilar={isSimilar}
                           data={dragItem}
-                          quizNum={dragItem.idx}
+                          quizNum={itemIndex + 1}
                           title={dragItem.code}
                           index={itemIndex}
                           selectedCardIndex={selectedCardIndex}
