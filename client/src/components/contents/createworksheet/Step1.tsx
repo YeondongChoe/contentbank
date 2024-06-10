@@ -1658,6 +1658,7 @@ export function Step1() {
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
     const sendQuotientData = {
+      equalScore: equalScore,
       equalTotalValue: equalTotalValue,
       remainderContent: remainderContent,
       quotient: quotient,

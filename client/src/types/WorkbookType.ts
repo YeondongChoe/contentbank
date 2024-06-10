@@ -95,7 +95,8 @@ export interface WorkbookData {
 }
 
 export interface WorkbookQuotientData {
-  equalTotalValue: number;
+  equalScore: number;
+  equalTotalValue: string;
   maxQuotient: number;
   minQuotient: number;
   nextRemainderContent: number;
