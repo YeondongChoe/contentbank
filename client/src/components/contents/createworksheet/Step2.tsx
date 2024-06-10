@@ -40,6 +40,7 @@ import { useModal } from '../../../hooks';
 import { ItemCategoryType, ItemTreeListType } from '../../../types';
 import {
   WorkbookData,
+  WorkbookQuotientData,
   QuizList,
   SimilarQuizList,
   QuizCategory,
@@ -55,11 +56,20 @@ interface RadioState {
   code: string;
 }
 
+interface ContentItem {
+  quizNum: number;
+  value: string;
+}
+
 export function Step2() {
-  const [sendLocalData, setSendLocalData] = useState<WorkbookData | null>(null);
+  const [getLocalData, setGetLocalData] = useState<WorkbookData | null>(null);
+  const [getQuotientLocalData, setGetQuotientLocalData] =
+    useState<WorkbookQuotientData | null>(null);
+
   const [initialItems, setInitialItems] = useState<QuizList[]>(
-    sendLocalData?.data.quizList || [],
+    getLocalData?.data.quizList || [],
   );
+
   //나머지 시작 컨텐츠
   const [remainderContent, setRemainderContent] = useState<number>();
   //나머지 시작 전 컨텐츠
@@ -68,16 +78,40 @@ export function Step2() {
   const [quotient, setQuotient] = useState<number>(0);
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
+  const [equalScore, setEqualScore] = useState<number | null>(null);
+  const [equalTotalValue, setEqualTotlaValue] = useState('0');
+  //총 문항 점수
+  const [totalEqualScore, setTotalEqualScore] = useState<number>();
+  //문제와 점수 관리
+  const [contentWithScore, setContentWithScore] = useState<ContentItem[]>([]);
+  useEffect(() => {
+    setContentWithScore([]);
+  }, []);
+
+  useEffect(() => {
+    if (getQuotientLocalData) {
+      setEqualScore(getQuotientLocalData.equalScore);
+      setEqualTotlaValue(getQuotientLocalData.equalTotalValue);
+      setRemainderContent(getQuotientLocalData.remainderContent);
+      setNextRemainderContent(getQuotientLocalData.nextRemainderContent);
+      setQuotient(getQuotientLocalData.quotient);
+      setMinQuotient(getQuotientLocalData.minQuotient);
+      setMaxQuotient(getQuotientLocalData.maxQuotient);
+    }
+  }, [getQuotientLocalData]);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendData');
+      const quotientData = localStorage.getItem('sendQuotientData');
       if (data) {
         try {
           const parsedData = JSON.parse(data);
+          const parsedquotientData = JSON.parse(quotientData as string);
           console.log('데이터 조회', parsedData);
-          setSendLocalData(parsedData);
+          setGetLocalData(parsedData);
+          setGetQuotientLocalData(parsedquotientData);
         } catch (error) {
           console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
@@ -92,31 +126,13 @@ export function Step2() {
 
     return () => clearTimeout(retryTimeout);
   }, []);
-  // useEffect(() => {
-  //   const isDataInStorage = localStorage.getItem('sendData') !== null;
-
-  //   if (isDataInStorage) {
-  //     console.log('로컬 스토리지에 데이터가 남아있습니다.');
-  //     const data = localStorage.getItem('sendData');
-
-  //     try {
-  //       const parsedData = JSON.parse(data as string);
-  //       console.log('데이터 조회', parsedData);
-  //       setSendLocalData(parsedData);
-  //     } catch (error) {
-  //       console.error('로컬 스토리지 데이터 파싱 에러:', error);
-  //     }
-  //   } else {
-  //     console.log('로컬 스토리지에 데이터가 없습니다.');
-  //   }
-  // }, []);
 
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
-    if (sendLocalData) {
+    if (getLocalData) {
       window.opener.localStorage.clear();
     }
-  }, [sendLocalData]);
+  }, [getLocalData]);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
@@ -144,7 +160,11 @@ export function Step2() {
     { value: 0, label: '상' },
     { value: 0, label: '최상' },
   ];
+
+  //즐겨찾기
   const bookmark: any[] = [];
+
+  //선택한 문항 목록 정렬
   const selectCategory = [
     {
       id: '1',
@@ -193,7 +213,13 @@ export function Step2() {
     const value = event.currentTarget.value;
     setBookmarkCategory((prevContent) => [...prevContent, value]);
   };
+
   // 새 문항 추가
+  const [newQuizItems, setNewQuizItems] = useState<SimilarQuizList>();
+  const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
+    [],
+  );
+
   // 새 문항 문항 불러오기 api
   const postnewQuizList = async (data: any) => {
     return await quizService.post(`/v1/search/quiz/step/1`, data);
@@ -213,12 +239,7 @@ export function Step2() {
       // }
     },
     onSuccess: (response) => {
-      saveLocalData(response.data.data);
-      //navigate('/content-create/exam/step2');
-      // openToastifyAlert({
-      //   type: 'success',
-      //   text: response.data.message,
-      // });
+      setNewQuizItems(response.data.data);
     },
   });
 
@@ -234,11 +255,15 @@ export function Step2() {
     },
   ];
 
+  //새로 불러오기
   const clickGetNewQuiz = () => {
+    if (newQuizItems) {
+      setNewQuizPrevItems((prevItem) => [...prevItem, newQuizItems]);
+    }
     const data = {
       itemTreeKeyList: makingdata,
       //count: Number(questionNum),
-      count: 10,
+      count: 1,
       // difficulty: questionLevel === '선택안함' ? null : questionLevel,
       difficulty: 'BEST',
       //type: questionType,
@@ -252,9 +277,27 @@ export function Step2() {
       isMePriority: true,
       filterList: null,
     };
-    //   //console.log(data);
+    //console.log(data);
     postNewQuizData(data);
   };
+
+  //이전 불러오기
+  const clickPrevNewQuizList = () => {
+    if (newQuizPrevItems.length > 0) {
+      // 마지막 요소를 추출
+      const lastItem = newQuizPrevItems[newQuizPrevItems.length - 1];
+      setNewQuizItems(lastItem);
+      // 마지막 요소 제거
+      setNewQuizPrevItems((prevItems) => prevItems.slice(0, -1));
+    } else {
+      openToastifyAlert({
+        type: 'warning',
+        text: '불러올 이전 문항이 없습니다.',
+      });
+    }
+  };
+
+  //범위 변경
   const [isRangeSetting, setIsRangeSetting] = useState<boolean>(false);
   const openRangeSetting = () => {
     setIsRangeSetting(true);
@@ -833,6 +876,7 @@ export function Step2() {
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
+  //console.log('');
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
@@ -860,12 +904,11 @@ export function Step2() {
         type: 'error',
         text: context.response.data.message,
       });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
-      }
+      // if (context.response.data.code == 'GE-002') {
+      //   postRefreshToken();
+      // }
     },
     onSuccess: (response: { data: { data: SimilarQuizList } }) => {
-      console.log('성공');
       setSimilarItems(response.data.data);
     },
   });
@@ -924,6 +967,24 @@ export function Step2() {
           return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
         });
       }
+    } else if (newQuizItems) {
+      const selectedQuizItem = newQuizItems.quizList.find(
+        (item) => item.code === code,
+      );
+      if (selectedQuizItem) {
+        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+        setNewQuizItems((prevItems) => {
+          if (prevItems) {
+            return {
+              ...prevItems,
+              quizList: prevItems.quizList.filter(
+                (item) => item !== selectedQuizItem,
+              ),
+            };
+          }
+          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+        });
+      }
     }
   };
 
@@ -957,20 +1018,17 @@ export function Step2() {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
 
   useEffect(() => {
-    if (sendLocalData?.data.quizList) {
-      setInitialItems(sendLocalData.data.quizList);
+    if (getLocalData?.data.quizList) {
+      setInitialItems(getLocalData.data.quizList);
     }
-  }, [sendLocalData]);
+  }, [getLocalData]);
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
     console.log('@드래그끝났을떄', newList);
   };
 
-  const handleButtonCheck = (
-    e: React.MouseEvent<HTMLDivElement>,
-    id: string,
-  ) => {
+  const handleButtonCheck = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     const target = e.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
@@ -996,6 +1054,10 @@ export function Step2() {
   };
 
   const moveStep3 = () => {
+    const data = {
+      data: initialItems,
+    };
+    saveLocalData(data);
     navigate('/content-create/exam/step3');
   };
 
@@ -1062,7 +1124,7 @@ export function Step2() {
                               componentWidth="600px"
                               width="450px"
                               componentHeight="150px"
-                              onClick={() => showSimilarContent(item.code, i)}
+                              onClick={() => {}}
                               isBorder={true}
                               isNewQuiz={true}
                               isSimilarQuiz={true}
@@ -1106,7 +1168,7 @@ export function Step2() {
                           <Label value="문항 통계" fontSize="16px" />
                           <Discription>
                             <DiscriptionOutline>
-                              <div>총 {sendLocalData?.data.quizCnt} 문항</div>
+                              <div>총 {initialItems.length} 문항</div>
                               <DiscriptionType>객관식 20</DiscriptionType>
                               <DiscriptionType>주관식 10</DiscriptionType>
                               <DiscriptionType>서술형 15</DiscriptionType>
@@ -1132,7 +1194,7 @@ export function Step2() {
                               dragSectionName={'학습지요약'}
                               doubleDnD
                             >
-                              {(dragItem, ref, isDragging) => (
+                              {(dragItem, ref, isDragging, itemIndex) => (
                                 <li
                                   ref={ref}
                                   className={`${isDragging ? 'opacity' : ''}`}
@@ -1140,10 +1202,12 @@ export function Step2() {
                                   <Content
                                     // key={i}
                                     onClick={(e) => {
-                                      handleButtonCheck(e, dragItem.idx);
+                                      handleButtonCheck(e);
                                     }}
                                   >
-                                    <div className="number">{dragItem.idx}</div>
+                                    <div className="number">
+                                      {itemIndex + 1}
+                                    </div>
                                     <div className="type">
                                       {
                                         dragItem.quizCategoryList[0]
@@ -1187,6 +1251,7 @@ export function Step2() {
                             <AddNewContentIcon>
                               <PiArrowCounterClockwiseBold
                                 style={{ fontSize: '22px', cursor: 'pointer' }}
+                                onClick={clickPrevNewQuizList}
                               />
                               이전 불러오기
                             </AddNewContentIcon>
@@ -1533,15 +1598,13 @@ export function Step2() {
                             </AddNewContensWrapper>
                           ) : (
                             <AddNewContensWrapper>
-                              {initialItems.map((item, i) => (
+                              {newQuizItems?.quizList.map((item, i) => (
                                 <MathviewerAccordion
                                   key={item.idx}
                                   componentWidth="600px"
                                   width="450px"
                                   componentHeight="150px"
-                                  onClick={() =>
-                                    showSimilarContent(item.code, i)
-                                  }
+                                  onClick={() => {}}
                                   isBorder={true}
                                   isNewQuiz={true}
                                   data={item}
@@ -1550,6 +1613,9 @@ export function Step2() {
                                   onSelectCard={setSelectedCardIndex}
                                   reportQuizitem={() =>
                                     openReportProcess(item.idx)
+                                  }
+                                  addQuizItem={() =>
+                                    clickAddQuizItem(item.code)
                                   }
                                 ></MathviewerAccordion>
                               ))}
@@ -1671,8 +1737,9 @@ export function Step2() {
                     doubleDnD
                     isStartDnD={isStartDnD}
                     setIsStartDnd={setIsStartDnd}
+                    quotient={quotient}
                   >
-                    {(dragItem, ref, isDragging, itemIndex) => (
+                    {(dragItem, ref, isDragging, itemIndex, quotient) => (
                       <li
                         ref={ref}
                         className={`${isDragging ? 'opacity' : ''}`}
@@ -1681,21 +1748,25 @@ export function Step2() {
                           componentWidth="750px"
                           width="550px"
                           onClick={() => {
-                            // const similarIndex = getIndex(
-                            //   dragItem,
-                            //   dragItem.idx,
-                            // );
                             showSimilarContent(dragItem.code, itemIndex);
                           }}
                           isSimilar={isSimilar}
                           data={dragItem}
-                          quizNum={dragItem.idx}
+                          quizNum={itemIndex + 1}
                           title={dragItem.code}
                           index={itemIndex}
                           selectedCardIndex={selectedCardIndex}
                           onSelectCard={setSelectedCardIndex}
                           reportQuizitem={() => openReportProcess(dragItem.idx)}
                           deleteQuizItem={() => deleteQuizItem(dragItem.code)}
+                          quotient={quotient}
+                          minQuotient={minQuotient}
+                          maxQuotient={maxQuotient}
+                          equalScore={equalScore as number}
+                          remainderContent={remainderContent}
+                          nextRemainderContent={nextRemainderContent}
+                          totalContent={initialItems.length}
+                          setTotalEqualScore={setTotalEqualScore}
                         ></MathviewerAccordion>
                       </li>
                     )}
@@ -1705,7 +1776,8 @@ export function Step2() {
             </MainWrapper>
             <NextStepButtonWrapper>
               <p>
-                총 배점: <Span>100점</Span>/<Span>100점</Span>
+                총 배점: <Span>{totalEqualScore}점</Span>/
+                <Span>{equalTotalValue}점</Span>
               </p>
               {/* <Button
               buttonType="button"

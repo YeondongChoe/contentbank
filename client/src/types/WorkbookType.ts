@@ -93,3 +93,13 @@ export interface WorkbookData {
   timestamp: string;
   data: Data;
 }
+
+export interface WorkbookQuotientData {
+  equalScore: number;
+  equalTotalValue: string;
+  maxQuotient: number;
+  minQuotient: number;
+  nextRemainderContent: number;
+  quotient: number;
+  remainderContent: number;
+}

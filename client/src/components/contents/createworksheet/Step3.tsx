@@ -12,13 +12,14 @@ import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
-import { makingworkbookInstance } from '../../../api/axios';
+import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
 import Contents2 from '../../../components/mathViewer/test2.json';
 import Contents3 from '../../../components/mathViewer/test3.json';
 import Contents4 from '../../../components/mathViewer/test4.json';
 import { useModal } from '../../../hooks';
 import { ItemQuestionType } from '../../../types';
-import { Input, Label, Button, CheckBox } from '../../atom';
+import { QuizList } from '../../../types/WorkbookType';
+import { Input, Label, Button, CheckBox, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
 import {
   RedTheme,
@@ -32,6 +33,50 @@ import { TypeA, TypeB } from '../worksheetType';
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 export function Step3() {
   const [didMount, setDidMount] = useState(false);
+  const [getLocalData, setGetLocalData] = useState<any>(null);
+
+  // 로컬 스토리지에서 데이터 가져오기
+  useEffect(() => {
+    const fetchDataFromStorage = () => {
+      const data = localStorage.getItem('sendData');
+      const quotientData = localStorage.getItem('sendQuotientData');
+      if (data) {
+        try {
+          const parsedData = JSON.parse(data);
+          //const parsedquotientData = JSON.parse(quotientData as string);
+          console.log('데이터 조회', parsedData);
+          setGetLocalData(parsedData);
+          //setGetQuotientLocalData(parsedquotientData);
+        } catch (error) {
+          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 데이터가 없습니다.');
+      }
+    };
+
+    fetchDataFromStorage();
+
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+
+    return () => clearTimeout(retryTimeout);
+  }, []);
+
+  const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
+
+  useEffect(() => {
+    if (getLocalData) {
+      setInitialItems(getLocalData.data);
+    }
+  }, [getLocalData]);
+
+  // 로컬 스토리지 값 다 받은 뒤 초기화
+  useEffect(() => {
+    if (getLocalData) {
+      window.opener.localStorage.clear();
+    }
+  }, [getLocalData]);
+
   const navigate = useNavigate();
   const { closeModal } = useModal();
 
@@ -95,7 +140,21 @@ export function Step3() {
     setIsContentTypeTitle(!isContentTypeTitle);
   };
 
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = (data: any) => {
+    //const sendData = { data: data };
+    if (data) {
+      localStorage.setItem('sendData', JSON.stringify(data));
+    }
+  };
+
   const goBackMainPopup = () => {
+    const data = {
+      code: '',
+      timestamp: '',
+      data: { quizList: initialItems },
+    };
+    saveLocalData(data);
     navigate('/content-create/exam/step2');
   };
 
@@ -227,8 +286,57 @@ export function Step3() {
     },
     onSuccess: (data) => {
       console.log('post-workbook 성공:', data);
-
+      postNewWorkbookData();
       // 성공 처리 로직 추가
+    },
+  });
+
+  // 새 학습지 만들기 api
+  const postNewWorkbook = async () => {
+    const data: any = {
+      commandCode: 0,
+      workSheetIdx: null,
+      name: 'Sample Workbook',
+      examiner: 'John Doe',
+      grade: '3',
+      quizCnt: 5,
+      tag: 'EXERCISES',
+      autoGrade: true,
+      article: {
+        type: 'PDF',
+        originalName: 'sample.pdf',
+        storedPath: '/path/to/sample.pdf',
+        extension: '.pdf',
+      },
+      template: {
+        color: '#FF0000',
+        type: 'MCQ',
+        multiLevel: 'Single',
+        assign: 'Random',
+        date: true,
+        quizType: false,
+        itemType: 1,
+      },
+      quizList: initialItems,
+    };
+    return await workbookInstance.post(`/v1/workbook`, data);
+  };
+
+  const { mutate: postNewWorkbookData } = useMutation({
+    mutationFn: postNewWorkbook,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      // if (context.response.data.code == 'GE-002') {
+      //   postRefreshToken();
+      // }
+    },
+    onSuccess: (response) => {
+      //setNewQuizItems(response.data.data);
     },
   });
 
@@ -239,23 +347,23 @@ export function Step3() {
     //pdf 생성 후 데이터와 pdf경로/파일명을 서버로 보내기
   };
 
-  const loadData = () => {
-    // 데이터 불러오기
+  // const loadData = () => {
+  //   // 데이터 불러오기
 
-    // 리스트 초기화
-    setColList(list);
-    console.log(colList);
-  };
+  //   // 리스트 초기화
+  //   setColList(list);
+  //   console.log(colList);
+  // };
 
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
+  // useEffect(() => {
+  //   setDidMount(true);
+  // }, []);
 
-  useEffect(() => {
-    if (done) {
-      loadData();
-    }
-  }, [done]);
+  // useEffect(() => {
+  //   if (done) {
+  //     loadData();
+  //   }
+  // }, [done]);
   //console.log(done);
   //didMount 아직 안씀
   useEffect(() => {

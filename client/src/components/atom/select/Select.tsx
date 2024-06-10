@@ -38,6 +38,7 @@ type SelectProps = {
   onDefaultSelect?: () => void;
   selectedValue?: string;
   heightScroll?: string;
+  isnormalizedOptions?: boolean;
 };
 
 export function Select({
@@ -56,6 +57,7 @@ export function Select({
   onDefaultSelect,
   selectedValue,
   heightScroll,
+  isnormalizedOptions,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -124,18 +126,31 @@ export function Select({
         >
           <ScrollWrapper heightScroll={heightScroll}>
             <PerfectScrollbar>
-              {optionsWithDefault.map((el) => (
-                <div className="li" key={el.code}>
-                  <button
-                    disabled={disabled}
-                    value={el.name}
-                    className={el.code}
-                    onClick={(event) => handleOptionSelect(event, el.code)}
-                  >
-                    <span>{el.name}</span>
-                  </button>
-                </div>
-              ))}
+              {isnormalizedOptions
+                ? normalizedOptions.map((el) => (
+                    <div className="li" key={el.code}>
+                      <button
+                        disabled={disabled}
+                        value={el.name}
+                        className={el.code}
+                        onClick={(event) => handleOptionSelect(event, el.code)}
+                      >
+                        <span>{el.name}</span>
+                      </button>
+                    </div>
+                  ))
+                : optionsWithDefault.map((el) => (
+                    <div className="li" key={el.code}>
+                      <button
+                        disabled={disabled}
+                        value={el.name}
+                        className={el.code}
+                        onClick={(event) => handleOptionSelect(event, el.code)}
+                      >
+                        <span>{el.name}</span>
+                      </button>
+                    </div>
+                  ))}
             </PerfectScrollbar>
           </ScrollWrapper>
         </SelectOptionsList>
