@@ -1581,7 +1581,7 @@ export function Step1() {
     },
     onSuccess: (response) => {
       saveLocalData(response.data.data);
-      //navigate('/content-create/exam/step2');
+      navigate('/content-create/exam/step2');
     },
   });
 
@@ -1654,13 +1654,6 @@ export function Step1() {
     localStorage.setItem('sendData', JSON.stringify(sendData));
     localStorage.setItem('sendQuotientData', JSON.stringify(sendQuotientData));
   };
-  console.log(inputValue);
-  console.log(questionNum);
-  console.log(unitClassificationList.length);
-  console.log(questionLevel);
-  console.log(questionType);
-  console.log(containMock);
-  console.log(equalScore);
 
   const moveStep2 = () => {
     if (tabVeiw === '단원·유형별')
@@ -1721,6 +1714,7 @@ export function Step1() {
     setIsOption2(false);
     setIsQuizEven(false);
     setIsPriority(false);
+    setEqualScore(null);
     //시중교재
     setSearchValue('');
     setSchoolLevel('초등');
