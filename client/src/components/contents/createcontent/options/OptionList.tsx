@@ -184,7 +184,8 @@ export function OptionList({
 
   useEffect(() => {
     // 최종적으로 전체 셀렉트값 부모 요소로 넘김
-    // setSelectedSource();
+    // TODO : 데이터 형식 맞추기
+    setSelectedSource([{ code: selected, idx: selected, name: selected }]);
   }, []);
 
   return (
