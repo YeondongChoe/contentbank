@@ -30,6 +30,7 @@ type InputProps = {
   innerRef?: React.Ref<HTMLInputElement>;
   maxLength?: number;
   minLength?: number;
+  error?: boolean;
 };
 
 export function Input({
@@ -57,6 +58,7 @@ export function Input({
   minLength,
   readOnly,
   onKeyUp,
+  error,
 }: InputProps) {
   useEffect(() => {}, [errorMessage]);
   return (
@@ -78,6 +80,7 @@ export function Input({
         $borderRadius={borderradius}
         $borderBottom={borderbottom}
         $margin={margin}
+        $error={error}
         onClick={onClick}
         onChange={onChange}
         ref={innerRef}
@@ -103,6 +106,7 @@ type InputStyleProps = {
   $placeholderTextAlign?: boolean;
   $margin?: string;
   disabled?: boolean;
+  $error?: boolean;
 };
 
 const Warpper = styled.div`
@@ -133,6 +137,10 @@ const Component = styled.input<InputStyleProps>`
         : 'border: none;'}
   ${({ $borderBottom }) =>
     $borderBottom && `border: none; border-bottom: 1px solid ${COLOR.ERROR};`};
+
+  ${({ $error }) =>
+    $error && `color: ${COLOR.ERROR}; border: 1px solid ${COLOR.ERROR};`};
+
   &::placeholder {
     ${({ $placeholderSize }) =>
       $placeholderSize ? `font-size: ${$placeholderSize};` : '16px;'};
