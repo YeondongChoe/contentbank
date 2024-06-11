@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
+import { IoMdArrowDropup, IoMdArrowDropdown } from 'react-icons/io';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -721,40 +722,50 @@ export function Classification() {
   ]);
 
   // 검색 단어 하이라이트 이동 처리
-  // const [highlightIndex, setHighlightIndex] = useState(0);
-  // const [highlightIds, setHighlightIds] = useState<string[]>([]);
-  // const handleNextHighlight = () => {
-  //   setHighlightIndex((prevIndex) => {
-  //     const nextIndex =
-  //       highlightIds.length > 0 ? (prevIndex + 1) % highlightIds.length : 0;
-  //     console.log(`Next Highlight Index: ${nextIndex}`);
-  //     return nextIndex;
-  //   });
-  // };
+  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  // const handlePrevHighlight = () => {
-  //   setHighlightIndex((prevIndex) => {
-  //     const prevIndexAdjusted =
-  //       highlightIds.length > 0
-  //         ? (prevIndex - 1 + highlightIds.length) % highlightIds.length
-  //         : 0;
-  //     console.log(`Previous Highlight Index: ${prevIndexAdjusted}`);
-  //     return prevIndexAdjusted;
-  //   });
-  // };
+  const highlightText = (text: string, searchValue: string) => {
+    if (searchValue.length < 2) return text;
+    const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
+    const highlightedText = (
+      <span className="text">
+        {parts.map((part, index) => {
+          const className =
+            part.toLowerCase() === searchValue.toLowerCase() ? 'highlight' : '';
+          return part.toLowerCase() === searchValue.toLowerCase() ? (
+            <span key={index} className={className}>
+              {part}
+            </span>
+          ) : (
+            <span>{part}</span>
+          );
+        })}
+      </span>
+    );
+    return highlightedText;
+  };
 
-  // useEffect(() => {
-  //   console.log('highlightIds:', highlightIds);
-  //   console.log('highlightIndex:', highlightIndex);
-  //   if (highlightIds.length > 0) {
-  //     const element = document.getElementById(highlightIds[highlightIndex]);
-  //     if (element) {
-  //       console.log('Focusing on:', element);
-  //       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  //       element.focus();
-  //     }
-  //   }
-  // }, [highlightIndex, highlightIds]);
+  const prevHighlight = () => {
+    setHighlightIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
+
+  const nextHighlight = () => {
+    setHighlightIndex((prevIndex) => prevIndex + 1);
+  };
+
+  useEffect(() => {
+    const highlightedElements = document.querySelectorAll('.highlight');
+    if (highlightedElements.length > 0 && highlightIndex !== -1) {
+      highlightedElements.forEach((el) => el.classList.remove('current'));
+      const currentElement =
+        highlightedElements[highlightIndex % highlightedElements.length];
+      if (currentElement) {
+        currentElement.classList.add('current');
+        currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [highlightIndex]);
 
   return (
     <Container>
@@ -1040,13 +1051,8 @@ export function Classification() {
                           }}
                           placeholder="검색어를 입력해주세요.(두글자 이상)"
                         />
-                        {searchValue.length > 0 && (
+                        {searchValue.length > 1 && (
                           <p className="line bottom_text">
-                            {/* <button onClick={handlePrevHighlight}>
-                              Previous
-                            </button>
-                            <button onClick={handleNextHighlight}>Next</button> */}
-
                             {`총 
                           ${
                             categoryItemTreeData && itemTree.length
@@ -1059,6 +1065,14 @@ export function Classification() {
                               : 0
                           } 
                           건`}
+                            <ArrowButtonWrapper>
+                              <button onClick={() => nextHighlight()}>
+                                <IoMdArrowDropup />
+                              </button>
+                              <button onClick={() => prevHighlight()}>
+                                <IoMdArrowDropdown />
+                              </button>
+                            </ArrowButtonWrapper>
                           </p>
                         )}
                         {isPending && (
@@ -1071,18 +1085,15 @@ export function Classification() {
                             {categoryItemTreeData ? (
                               <>
                                 {itemTree.length ? (
-                                  <>
+                                  <div ref={contentRef} className="content">
                                     {searchValue.length > 0 ? (
                                       <>
                                         {itemTree.map((el) => (
                                           <div key={`${el.itemTreeKey}`}>
                                             {el.itemTreeList.map((item) => (
                                               <DepthBlock
+                                                highlightText={highlightText}
                                                 defaultChecked
-                                                // highlightIndex={highlightIndex}
-                                                // setHighlightIds={
-                                                //   setHighlightIds
-                                                // }
                                                 key={`depthList${item?.idx} ${item.name}`}
                                                 classNameList={`depth-${item.level}`}
                                                 id={item?.code}
@@ -1143,7 +1154,7 @@ export function Classification() {
                                         ))}
                                       </>
                                     )}
-                                  </>
+                                  </div>
                                 ) : (
                                   <ValueNone
                                     textOnly
@@ -1361,4 +1372,14 @@ const LoaderWrapper = styled.div`
 `;
 const MathViewerWrapper = styled.div`
   padding: 20px;
+`;
+
+const ArrowButtonWrapper = styled.span`
+  padding: 0 10px;
+  > button {
+    cursor: pointer;
+    padding: 4px;
+    background-color: transparent;
+    border: none;
+  }
 `;

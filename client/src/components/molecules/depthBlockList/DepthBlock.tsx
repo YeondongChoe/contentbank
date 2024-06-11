@@ -19,8 +19,7 @@ type DepthBlockProps = {
   checked: boolean;
   searchValue?: string;
   branchValue?: string;
-  setHighlightIds?: React.Dispatch<React.SetStateAction<string[]>>;
-  highlightIndex?: number;
+  highlightText?: (text: string, searchValue: string) => JSX.Element | string;
 };
 
 export function DepthBlock({
@@ -36,12 +35,9 @@ export function DepthBlock({
   disabled,
   searchValue,
   branchValue,
-  setHighlightIds,
-  highlightIndex,
+  highlightText,
 }: DepthBlockProps) {
   const [isChecked, setIsChecked] = useState(initialChecked);
-  const highlightIds = useRef<string[]>([]);
-  const [localHighlightIds, setLocalHighlightIds] = useState<string[]>([]);
 
   const onTopMark = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const target = e.currentTarget;
@@ -91,53 +87,9 @@ export function DepthBlock({
     }
   };
 
-  const highlightText = (text: string, searchValue: string) => {
-    if (!searchValue) return text;
-    const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
-
-    return (
-      <span>
-        {parts.map((part, index) => {
-          const id =
-            part.toLowerCase() === searchValue.toLowerCase()
-              ? generateId()
-              : undefined;
-          if (id) highlightIds.current.push(id);
-
-          return part.toLowerCase() === searchValue.toLowerCase() ? (
-            <Mark key={index} id={id} tabIndex={-1}>
-              {part}
-            </Mark>
-          ) : (
-            part
-          );
-        })}
-      </span>
-    );
-  };
-
-  const generateId = () => '_' + Math.random().toString(36).substring(2, 11);
-
   useEffect(() => {
     setIsChecked(initialChecked);
   }, [initialChecked]);
-
-  useEffect(() => {
-    if (setHighlightIds) {
-      setHighlightIds(highlightIds.current);
-    }
-  }, [highlightIds.current]);
-
-  useEffect(() => {
-    if (highlightIndex !== undefined && highlightIds.current[highlightIndex]) {
-      highlightIds.current.forEach((id, index) => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.classList.toggle('highlight', index === highlightIndex);
-        }
-      });
-    }
-  }, [highlightIndex, highlightIds.current]);
 
   return (
     <Component $margin={$margin}>
@@ -159,7 +111,7 @@ export function DepthBlock({
         />
 
         <span
-          className={`label depthButton ${classNameList} ${isChecked ? 'on' : ''}`}
+          className={`label content depthButton ${classNameList} ${isChecked ? 'on' : ''}`}
         >
           {isChecked ? (
             <svg
@@ -192,7 +144,9 @@ export function DepthBlock({
               <circle cx="10" cy="10" r="9.5" fill="white" stroke="#A0A0A0" />
             </svg>
           )}
-          {searchValue ? highlightText(name, searchValue) : children}
+          {searchValue && highlightText
+            ? highlightText(name, searchValue)
+            : children}
         </span>
       </label>
     </Component>
@@ -207,6 +161,10 @@ const Component = styled.div<{ $margin?: string }>`
   margin: ${({ $margin }) => $margin || '0px'};
   padding: 2px 10px;
 
+  .current {
+    border: 2px solid ${COLOR.ALERTBAR_SUCCESS};
+  }
+
   > label {
     position: relative;
     display: flex;
@@ -220,7 +178,6 @@ const Component = styled.div<{ $margin?: string }>`
       display: flex;
       /* align-items: center; */
       cursor: pointer;
-      justify-content: space-between;
       flex-wrap: wrap;
       flex-direction: row;
       > svg {
@@ -229,9 +186,14 @@ const Component = styled.div<{ $margin?: string }>`
       }
       > span {
         width: calc(100% - 15px);
-        display: flex;
-        flex-direction: row;
+        display: inline-block;
       }
+    }
+
+    .highlight {
+      display: inline-block;
+      background-color: ${COLOR.ALERTBAR_WARNING};
+      color: ${COLOR.PRIMARY};
     }
   }
 
@@ -283,15 +245,5 @@ const Component = styled.div<{ $margin?: string }>`
 
   .depth-5 {
     margin-left: 5rem;
-  }
-`;
-
-const Mark = styled.span`
-  display: flex;
-  background-color: ${COLOR.ALERTBAR_WARNING};
-  color: ${COLOR.PRIMARY};
-
-  &.highlight {
-    background-color: ${COLOR.ALERTBAR_SUCCESS};
   }
 `;
