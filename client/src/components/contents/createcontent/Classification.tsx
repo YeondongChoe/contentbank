@@ -1050,6 +1050,7 @@ export function Classification() {
                             setSearchValue(e.target.value);
                           }}
                           placeholder="검색어를 입력해주세요.(두글자 이상)"
+                          maxLength={20}
                         />
                         {searchValue.length > 1 && (
                           <p className="line bottom_text">
