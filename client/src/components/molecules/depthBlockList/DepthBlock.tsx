@@ -16,6 +16,7 @@ type DepthBlockProps = {
   id: string | number;
   name: string;
   value: string | number;
+  level?: number;
   checked: boolean;
   searchValue?: string;
   branchValue?: string;
@@ -36,60 +37,21 @@ export function DepthBlock({
   searchValue,
   branchValue,
   highlightText,
+  level,
 }: DepthBlockProps) {
   const [isChecked, setIsChecked] = useState(initialChecked);
-
-  const onTopMark = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    const target = e.currentTarget;
-    const parentElement = target.parentElement?.parentElement?.parentElement;
-
-    if (!parentElement) return; // 상위 엘리먼트가 존재하지 않는 경우 조기 반환
-
-    const depthTargets = Array.from(parentElement.children)
-      .map((child) => {
-        const inputElement = child.querySelector('input[type="checkbox"]');
-        const element = child.children[0]?.children[1];
-        return element
-          ? {
-              element: element as HTMLSpanElement,
-              input: inputElement as HTMLInputElement,
-            }
-          : null;
-      })
-      .filter((el) => el !== null);
-
-    const nextSibling = target.nextSibling as HTMLSpanElement;
-    const depthClass = nextSibling.className.split(' ')[2];
-    const depth = parseInt(depthClass.split('-')[1], 10);
-
-    if (target.checked) {
-      depthTargets.slice(0, depth).forEach((el) => {
-        el?.element?.classList.add('border');
-        el?.element?.classList.add('on');
-
-        if (el?.input) {
-          el.input.defaultChecked = true;
-        }
-      });
-    } else {
-      depthTargets.forEach((el) => {
-        el?.element?.classList.remove('border');
-        el?.element?.classList.remove('on');
-        if (el?.input) el.input.defaultChecked = false;
-      });
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(e.target.checked);
-    if (onChange) {
-      onChange(e);
-    }
-  };
 
   useEffect(() => {
     setIsChecked(initialChecked);
   }, [initialChecked]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setIsChecked(checked);
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   return (
     <Component $margin={$margin}>
@@ -104,9 +66,6 @@ export function DepthBlock({
           value={value}
           checked={isChecked}
           onChange={handleChange}
-          onClick={(e) => {
-            onTopMark(e);
-          }}
           disabled={disabled}
         />
 

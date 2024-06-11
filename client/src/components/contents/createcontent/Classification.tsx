@@ -672,14 +672,65 @@ export function Classification() {
     }
   };
 
-  // 깊이가 있는 리스트 체크박스
-  const handleSingleCheck = (checked: boolean, id: number) => {
-    if (checked) {
-      setCheckedDepthList((prev) => [...prev, id]);
-    } else {
-      setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
-    }
+  // 깊이가 있는 리스트 DepthBlock 체크박스
+  const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
+    setCheckedDepthList((prev) => {
+      let updatedList = checked
+        ? [...prev, idx]
+        : prev.filter((item) => item !== idx);
+
+      // 상위 요소를 모두 체크/해제
+      if (checked) {
+        for (let i = level - 1; i >= 0; i--) {
+          const parentItems = findParentItemsByLevel(i, idx);
+          parentItems.forEach((parentItem) => {
+            if (!updatedList.includes(parentItem.idx)) {
+              updatedList.push(parentItem.idx);
+            }
+          });
+        }
+      } else {
+        // 하위 요소를 모두 체크 해제
+        updatedList = updatedList.filter((itemIdx) => {
+          const item = findItemByIdx(itemIdx);
+          return item ? item.level < level : true;
+        });
+      }
+
+      return updatedList;
+    });
   };
+
+  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
+    for (const tree of itemTree) {
+      for (const item of tree.itemTreeList) {
+        if (item.idx === idx) {
+          return item;
+        }
+      }
+    }
+    return undefined;
+  };
+
+  const findParentItemsByLevel = (
+    level: number,
+    idx: number,
+  ): ItemTreeType[] => {
+    const parents: ItemTreeType[] = [];
+    const currentItem = findItemByIdx(idx);
+    if (currentItem) {
+      for (const tree of itemTree) {
+        parents.push(
+          ...tree.itemTreeList.filter(
+            (item) => item.level === level && item.idx < currentItem.idx,
+          ),
+        );
+      }
+    }
+    return parents;
+  };
+
+  useEffect(() => {}, [checkedDepthList]);
 
   // 추가된 문항 데이터 TODO : 전역으로 저장한 추가된 문항 데이터들 불러오기
   // 화면 진입시 문항 데이터들 리스트ui에넣기
@@ -707,7 +758,8 @@ export function Classification() {
       radio1depthCheck?.code !== '' &&
       radio2depthCheck?.code !== '' &&
       radio3depthCheck?.code !== '' &&
-      radio4depthCheck?.code !== ''
+      radio4depthCheck?.code !== '' &&
+      checkedDepthList.length > 0
     ) {
       return false;
     } else {
@@ -719,9 +771,10 @@ export function Classification() {
     radio2depthCheck,
     radio3depthCheck,
     radio4depthCheck,
+    checkedDepthList,
   ]);
 
-  // 검색 단어 하이라이트 이동 처리
+  // 검색 단어 하이라이트 && 하이라이트간 이동 처리
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -1100,10 +1153,12 @@ export function Classification() {
                                                 id={item?.code}
                                                 name={item.name}
                                                 value={item?.idx}
+                                                level={item?.level}
                                                 onChange={(e) =>
                                                   handleSingleCheck(
                                                     e.target.checked,
                                                     item?.idx,
+                                                    item?.level,
                                                   )
                                                 }
                                                 checked={
@@ -1133,10 +1188,12 @@ export function Classification() {
                                                 id={item?.code}
                                                 name={item.name}
                                                 value={item?.idx}
+                                                level={item?.level}
                                                 onChange={(e) =>
                                                   handleSingleCheck(
                                                     e.target.checked,
                                                     item?.idx,
+                                                    item?.level,
                                                   )
                                                 }
                                                 checked={

@@ -1,4 +1,5 @@
 export type ItemTreeType = {
+  parentIdx?: number;
   idx: number;
   name: string;
   code: string;
