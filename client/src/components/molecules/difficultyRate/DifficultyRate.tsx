@@ -155,16 +155,30 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               }}
             />
           ))}
-          <Input
-            width="80px"
-            height="40px"
-            padding="10px"
-            border="normal"
-            fontSize="14px"
-            type="text"
-            placeholderTextAlign
-            value={bestValuesum}
-          />
+          {Number(bestValuesum) > 100 ? (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              error
+              value={bestValuesum}
+            />
+          ) : (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              value={bestValuesum}
+            />
+          )}
         </InputWrapper>
         <InputWrapper>
           <Label value="상 선택시" fontSize="16px" width="200px" />
@@ -198,17 +212,30 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               }}
             />
           ))}
-          <Input
-            width="80px"
-            height="40px"
-            padding="10px"
-            border="normal"
-            fontSize="14px"
-            type="text"
-            placeholder="0"
-            placeholderTextAlign
-            value={upperValuesum}
-          />
+          {Number(upperValuesum) > 100 ? (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              error
+              value={upperValuesum}
+            />
+          ) : (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              value={upperValuesum}
+            />
+          )}
         </InputWrapper>
         <InputWrapper>
           <Label value="중 선택시" fontSize="16px" width="200px" />
@@ -243,17 +270,30 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               }}
             />
           ))}
-          <Input
-            width="80px"
-            height="40px"
-            padding="10px"
-            border="normal"
-            fontSize="14px"
-            type="text"
-            placeholder="0"
-            placeholderTextAlign
-            value={middleValuesum}
-          />
+          {Number(middleValuesum) > 100 ? (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              error
+              value={middleValuesum}
+            />
+          ) : (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              value={middleValuesum}
+            />
+          )}
         </InputWrapper>
         <InputWrapper>
           <Label value="중하 선택시" fontSize="16px" width="200px" />
@@ -287,17 +327,30 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               }}
             />
           ))}
-          <Input
-            width="80px"
-            height="40px"
-            padding="10px"
-            border="normal"
-            fontSize="14px"
-            type="text"
-            placeholder="0"
-            placeholderTextAlign
-            value={lowerMiddleValuesum}
-          />
+          {Number(lowerMiddleValuesum) > 100 ? (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              error
+              value={lowerMiddleValuesum}
+            />
+          ) : (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              value={lowerMiddleValuesum}
+            />
+          )}
         </InputWrapper>
         <InputWrapper>
           <Label value="하 선택시" fontSize="16px" width="200px" />
@@ -331,17 +384,30 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               }}
             />
           ))}
-          <Input
-            width="80px"
-            height="40px"
-            padding="10px"
-            border="normal"
-            fontSize="14px"
-            type="text"
-            placeholder="0"
-            placeholderTextAlign
-            value={lowerValuesum}
-          />
+          {Number(lowerValuesum) > 100 ? (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              error
+              value={lowerValuesum}
+            />
+          ) : (
+            <Input
+              width="80px"
+              height="40px"
+              padding="10px"
+              border="normal"
+              fontSize="14px"
+              type="text"
+              placeholderTextAlign
+              value={lowerValuesum}
+            />
+          )}
         </InputWrapper>
       </div>
       <ModalButtonWrapper>

@@ -165,22 +165,6 @@ type MathviewerCardProps = {
 };
 
 export interface ContentItem {
-  idx: number;
-  code: string;
-  num: number;
-  type: string;
-  score: number;
-  userKey: string;
-  createdBy: string;
-  createdAt: string;
-  lastModifiedBy: string;
-  lastModifiedAt: string;
-  lastArticle: LastArticle | null;
-  quizItemList: QuizItemList[];
-  quizCategoryList: QuizCategoryList[];
-  favorite: boolean;
-  isUse: boolean;
-  delete: boolean;
   quizNum: number;
   quotient: number;
 }
@@ -218,7 +202,15 @@ export function MathviewerAccordion({
   const [isRemainderContent, setIsRemainderContent] = useState(false);
   const [isNextRemainderContent, setIsNextRemainderContent] = useState(false);
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
-  const [content, setContent] = useState<ContentItem[]>([]);
+  const [contentQuotient, setContentQuotient] = useState<ContentItem[]>([]);
+
+  useEffect(() => {
+    const data = { quizNum: quizNum as number, quotient: quotient as number };
+    setContentQuotient([data]);
+  }, [quizNum, quotient]);
+
+  console.log(contentQuotient);
+
   // console.log(quotient);
 
   // const selectCategoryOption = (
@@ -322,7 +314,6 @@ export function MathviewerAccordion({
                     ? `${quotientAddOne?.toString()}점`
                     : undefined
               }
-              //defaultValue={`${quotient?.toString()}점`}
               // onSelect={(event) =>
               //   selectCategoryOption(event, quizNum as number)
               // }
