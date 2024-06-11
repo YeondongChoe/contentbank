@@ -17,7 +17,12 @@ import {
   Button,
 } from '../../components';
 import { COLOR } from '../../components/constants';
-import { ItemCategoryType, ItemTreeListType, QuizListType } from '../../types';
+import {
+  ItemCategoryType,
+  ItemTreeListType,
+  ItemTreeType,
+  QuizListType,
+} from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 
 interface RadioStateType {
@@ -475,15 +480,60 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
     console.log('questionList', questionList);
   }, [questionList]);
 
-  // 깊이가 있는 리스트 체크박스
-  const handleSingleCheck = (checked: boolean, id: number) => {
-    // console.log('click');
+  // 깊이가 있는 리스트 DepthBlock 체크박스
+  const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
+    setCheckedDepthList((prev) => {
+      let updatedList = checked
+        ? [...prev, idx]
+        : prev.filter((item) => item !== idx);
 
-    if (checked) {
-      setCheckedDepthList((prev) => [...prev, id]);
-    } else {
-      setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
+      // 상위 요소를 모두 체크/해제
+      if (checked) {
+        for (let i = level - 1; i >= 0; i--) {
+          const parentItems = findParentItemsByLevel(i, idx);
+          parentItems.forEach((parentItem) => {
+            if (!updatedList.includes(parentItem.idx)) {
+              updatedList.push(parentItem.idx);
+            }
+          });
+        }
+      } else {
+        // 하위 요소를 모두 체크 해제
+        updatedList = updatedList.filter((itemIdx) => {
+          const item = findItemByIdx(itemIdx);
+          return item ? item.level < level : true;
+        });
+      }
+
+      return updatedList;
+    });
+  };
+  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
+    for (const tree of itemTree) {
+      for (const item of tree.itemTreeList) {
+        if (item.idx === idx) {
+          return item;
+        }
+      }
     }
+    return undefined;
+  };
+  const findParentItemsByLevel = (
+    level: number,
+    idx: number,
+  ): ItemTreeType[] => {
+    const parents: ItemTreeType[] = [];
+    const currentItem = findItemByIdx(idx);
+    if (currentItem) {
+      for (const tree of itemTree) {
+        parents.push(
+          ...tree.itemTreeList.filter(
+            (item) => item.level === level && item.idx < currentItem.idx,
+          ),
+        );
+      }
+    }
+    return parents;
   };
 
   // 변경 분류값 전송 버튼
@@ -746,10 +796,12 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
                                               branchValue={'change'}
                                               name={item.name}
                                               value={item.idx}
+                                              level={item?.level}
                                               onChange={(e) =>
                                                 handleSingleCheck(
                                                   e.target.checked,
                                                   item?.idx,
+                                                  item?.level,
                                                 )
                                               }
                                               checked={

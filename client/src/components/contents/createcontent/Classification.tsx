@@ -700,7 +700,6 @@ export function Classification() {
       return updatedList;
     });
   };
-
   const findItemByIdx = (idx: number): ItemTreeType | undefined => {
     for (const tree of itemTree) {
       for (const item of tree.itemTreeList) {
@@ -711,7 +710,6 @@ export function Classification() {
     }
     return undefined;
   };
-
   const findParentItemsByLevel = (
     level: number,
     idx: number,
@@ -729,8 +727,6 @@ export function Classification() {
     }
     return parents;
   };
-
-  useEffect(() => {}, [checkedDepthList]);
 
   // 추가된 문항 데이터 TODO : 전역으로 저장한 추가된 문항 데이터들 불러오기
   // 화면 진입시 문항 데이터들 리스트ui에넣기
