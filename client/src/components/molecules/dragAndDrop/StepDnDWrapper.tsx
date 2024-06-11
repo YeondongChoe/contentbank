@@ -15,11 +15,13 @@ interface DnDWrapperPropsType {
     ref: React.RefObject<HTMLLIElement>,
     isDragging: boolean,
     itemIndex: number,
+    quotient?: number,
   ) => React.ReactNode; // 각 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름(각  드래그리스트는 섹션 이름을 다르게 해야 각 섹션 아이템간 이동이 불가)
   doubleDnD?: boolean; // 한페이지 드래그 2개일때(Cannot have two HTML5 backends at the same time 해결)
   isStartDnD?: boolean;
   setIsStartDnd?: React.Dispatch<React.SetStateAction<boolean>>;
+  quotient?: number;
 }
 
 interface DraggableItemProps {
@@ -32,8 +34,10 @@ interface DraggableItemProps {
     ref: React.RefObject<HTMLLIElement>,
     isDragging: boolean,
     itemIndex: number,
+    quotient: number,
   ) => React.ReactNode; // 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름
+  quotient?: number;
 }
 
 // 드래그 앤 드랍을 처리하는 래퍼 컴포넌트를 정의한다.
@@ -46,8 +50,32 @@ export const StepDnDWrapper = ({
   doubleDnD,
   isStartDnD,
   setIsStartDnd,
+  quotient,
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
+  //console.log(dragList);
+  //console.log(quotient);
+
+  // useEffect(() => {
+  //   if (dragList) {
+  //     const initialData = dragList.map((content) => ({
+  //       code: content.code,
+  //       createdAt: content.createdAt,
+  //       createdBy: content.createdBy,
+  //       idx: content.idx,
+  //       isDelete: content.isDelete,
+  //       isFavorite: content.isFavorite,
+  //       isUse: content.isUse,
+  //       lastArticle: content.lastArticle,
+  //       lastModifiedAt: content.lastModifiedAt,
+  //       lastModifiedBy: content.lastModifiedBy,
+  //       quizCategoryList: content.quizCategoryList,
+  //       quizItemList: content.quizItemList,
+  //       userKey: content.userKey,
+  //     }));
+  //     setCurrentItems(initialData);
+  //   }
+  // }, [dragList]);
 
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
@@ -93,6 +121,7 @@ export const StepDnDWrapper = ({
                 onMove={handleItemMove}
                 itemRenderer={children}
                 dragSectionName={dragSectionName}
+                quotient={quotient}
               />
             ))
           ) : (
@@ -110,6 +139,7 @@ export const StepDnDWrapper = ({
                 onMove={handleItemMove}
                 itemRenderer={children}
                 dragSectionName={dragSectionName}
+                quotient={quotient}
               />
             ))
           ) : (
@@ -128,7 +158,11 @@ const DraggableItem = ({
   onMove,
   itemRenderer,
   dragSectionName,
+  quotient,
 }: DraggableItemProps) => {
   const { ref, isDragging } = useDnD({ itemIndex, onMove, dragSectionName }); // useDnD 훅을 사용하여 드래그 앤 드랍을 처리.
-  return dragItem && itemRenderer(dragItem, ref, isDragging, itemIndex); // 항목 랜더링.
+  return (
+    dragItem &&
+    itemRenderer(dragItem, ref, isDragging, itemIndex, quotient as number)
+  ); // 항목 랜더링.
 };

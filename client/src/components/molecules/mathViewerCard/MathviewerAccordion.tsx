@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import { GoFold, GoUnfold } from 'react-icons/go';
@@ -9,8 +9,13 @@ import { styled } from 'styled-components';
 
 import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { ItemQuestionType } from '../../../types/ItemQuestionType';
-import { QuizList } from '../../../types/WorkbookType';
-import { Button } from '../../atom';
+import {
+  QuizList,
+  LastArticle,
+  QuizItemList,
+  QuizCategoryList,
+} from '../../../types/WorkbookType';
+import { Button, Select } from '../../atom';
 import { COLOR } from '../../constants';
 import { MathViewer } from '../../mathViewer/MathViewer';
 
@@ -96,7 +101,7 @@ function Accordion({
               ) : (
                 <Button
                   buttonType="button"
-                  onClick={() => {}}
+                  onClick={addQuizItem}
                   $padding="10px"
                   height={'30px'}
                   width={'70px'}
@@ -149,7 +154,36 @@ type MathviewerCardProps = {
   componentHeight?: string;
   className?: string;
   title?: string;
+  quotient?: number;
+  minQuotient?: number;
+  maxQuotient?: number;
+  equalScore?: number;
+  remainderContent?: number;
+  nextRemainderContent?: number;
+  totalContent?: number;
+  setTotalEqualScore?: React.Dispatch<React.SetStateAction<number | undefined>>;
 };
+
+export interface ContentItem {
+  idx: number;
+  code: string;
+  num: number;
+  type: string;
+  score: number;
+  userKey: string;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+  lastArticle: LastArticle | null;
+  quizItemList: QuizItemList[];
+  quizCategoryList: QuizCategoryList[];
+  favorite: boolean;
+  isUse: boolean;
+  delete: boolean;
+  quizNum: number;
+  quotient: number;
+}
 
 export function MathviewerAccordion({
   onClick,
@@ -171,7 +205,88 @@ export function MathviewerAccordion({
   componentHeight,
   className,
   title,
+  quotient,
+  minQuotient,
+  maxQuotient,
+  equalScore,
+  remainderContent,
+  nextRemainderContent,
+  totalContent,
+  setTotalEqualScore,
 }: MathviewerCardProps) {
+  const [quotientOption, setQuotientOption] = useState<any>([]);
+  const [isRemainderContent, setIsRemainderContent] = useState(false);
+  const [isNextRemainderContent, setIsNextRemainderContent] = useState(false);
+  const [quotientAddOne, setQuotientAddOne] = useState<number>();
+  const [content, setContent] = useState<ContentItem[]>([]);
+  // console.log(quotient);
+
+  // const selectCategoryOption = (
+  //   event: React.MouseEvent<HTMLButtonElement>,
+  //   quizNum: number,
+  // ) => {
+  //   const value = event.currentTarget.value;
+
+  //   setContent((prevContent) => {
+  //     const existingIndex = prevContent.findIndex(
+  //       (item) => item.quizNum === quizNum,
+  //     );
+
+  //     if (existingIndex !== -1) {
+  //       // quizNum이 이미 존재하면 해당 객체의 value 값을 업데이트
+  //       const updatedContent = [...prevContent];
+  //       updatedContent[existingIndex].value = value;
+  //       return updatedContent;
+  //     } else {
+  //       // quizNum이 존재하지 않으면 새로운 객체를 추가
+  //       return [...prevContent, { quizNum, value }];
+  //     }
+  //   });
+  // };
+
+  useEffect(() => {
+    if (quotient !== undefined) {
+      setQuotientAddOne(quotient + 1);
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   if (quotient && remainderContent && totalContent && quotientAddOne) {
+  //     const preRemainderQuotient = remainderContent * quotient;
+  //     const remainderContentQuotient = totalContent - remainderContent;
+  //     const nextRemainderContentQuotient =
+  //       remainderContentQuotient * quotientAddOne;
+  //     if (setTotalEqualScore) {
+  //       setTotalEqualScore(preRemainderQuotient + nextRemainderContentQuotient);
+  //     }
+  //   }
+  // }, [
+  //   quotient,
+  //   remainderContent,
+  //   nextRemainderContent,
+  //   quotientAddOne,
+  //   setTotalEqualScore,
+  // ]);
+
+  useEffect(() => {
+    setQuotientOption([
+      { code: '0', idx: 0, name: `${minQuotient}점` },
+      { code: '1', idx: 0, name: `${quotient}점` },
+      { code: '2', idx: 1, name: `${maxQuotient}점` },
+    ]);
+  }, [quotient, minQuotient, maxQuotient]);
+
+  useEffect(() => {
+    if (
+      quizNum !== undefined &&
+      remainderContent !== undefined &&
+      nextRemainderContent !== undefined
+    ) {
+      setIsRemainderContent(quizNum <= remainderContent);
+      setIsNextRemainderContent(quizNum >= nextRemainderContent);
+    }
+  }, [quizNum, remainderContent, nextRemainderContent]);
+
   return (
     <Accordion
       onClick={onClick}
@@ -195,6 +310,24 @@ export function MathviewerAccordion({
           />
           <div>중</div>
           <div>객관식</div>
+          {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (
+            <Select
+              width={'90px'}
+              options={quotientOption}
+              isnormalizedOptions
+              defaultValue={
+                isRemainderContent
+                  ? `${quotient?.toString()}점`
+                  : isNextRemainderContent
+                    ? `${quotientAddOne?.toString()}점`
+                    : undefined
+              }
+              //defaultValue={`${quotient?.toString()}점`}
+              // onSelect={(event) =>
+              //   selectCategoryOption(event, quizNum as number)
+              // }
+            ></Select>
+          )}
         </div>
         <WorkbookMathViewer data={data} width={width}></WorkbookMathViewer>
         {isNewQuiz ? (
@@ -281,7 +414,7 @@ const Component = styled.div<{
   border-radius: 15px;
 
   .leftInfomation {
-    width: 70px;
+    width: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
