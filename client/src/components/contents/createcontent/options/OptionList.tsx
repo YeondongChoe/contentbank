@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
+import { Alert } from '../../../../components/molecules';
 import { ItemCategoryType } from '../../../../types';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
@@ -33,6 +34,12 @@ export function OptionList({
   setSelectedSource,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [currentRemoveIndex, setCurrentRemoveIndex] = useState<number | null>(
+    null,
+  );
+  const [currentTarget, setCurrentTarget] = useState<EventTarget | null>(null);
+
   const [count, setCount] = useState(1);
   const [selected, setSelected] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -159,19 +166,60 @@ export function OptionList({
   };
   useEffect(() => {}, [disabled]);
 
-  const removeSourceOptions = (
+  //얼럿
+  const openUpdateAlert = (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    const target = event.currentTarget;
-    const id = target.parentElement?.parentElement?.id;
+    setCurrentRemoveIndex(index);
+    setCurrentTarget(event.currentTarget);
+    setIsAlertOpen(true);
+  };
+  const removeSourceOptions = (target: EventTarget, index: number) => {
+    const id = (target as HTMLElement).parentElement?.parentElement?.id;
     const arr = sourceOptions.filter((el) => el !== Number(id));
     setSourceOptions(arr);
 
     const newSelectedValues = { ...selectedValues };
     delete newSelectedValues[index];
     setSelectedValues(newSelectedValues);
+
+    setIsAlertOpen(false);
+    setCurrentRemoveIndex(null);
+    setCurrentTarget(null);
   };
+
+  const handleConfirm = () => {
+    if (currentRemoveIndex !== null && currentTarget !== null) {
+      removeSourceOptions(currentTarget, currentRemoveIndex);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsAlertOpen(false);
+    setCurrentRemoveIndex(null);
+    setCurrentTarget(null);
+  };
+
+  // const removeSourceOptions = (
+  //   event: React.MouseEvent<HTMLButtonElement>,
+  //   index: number,
+  // ) => {
+  //   // 확인 얼럿
+  //   if (isRemove) {
+  //     const target = event.currentTarget;
+  //     const id = target.parentElement?.parentElement?.id;
+  //     const arr = sourceOptions.filter((el) => el !== Number(id));
+  //     setSourceOptions(arr);
+
+  //     const newSelectedValues = { ...selectedValues };
+  //     delete newSelectedValues[index];
+  //     setSelectedValues(newSelectedValues);
+
+  //     setIsAlertOpen(false);
+  //     setIsRemove(false);
+  //   }
+  // };
 
   const getCategoryList = (value: string): ItemCategoryType[] => {
     const list = lists.find((list) => list.name === value);
@@ -220,7 +268,7 @@ export function OptionList({
                   $padding={'5px'}
                   $filled
                   cursor
-                  onClick={(event) => removeSourceOptions(event, index)}
+                  onClick={(event) => openUpdateAlert(event, index)}
                 >
                   -
                 </Button>
@@ -255,6 +303,16 @@ export function OptionList({
             </li>
           </SelectList>
         ))}
+
+      <Alert
+        top="calc(50% - 100px)"
+        isAlertOpen={isAlertOpen}
+        description={`해당 출처를 삭제하시겠습니까?`}
+        action="삭제"
+        isWarning={true}
+        onClick={() => handleConfirm()}
+        onClose={() => handleCancel()}
+      />
     </Container>
   );
 }
