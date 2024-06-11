@@ -51,5 +51,50 @@ export type QuizListType = {
   type: string;
   userKey: string;
 
-  quizCategoryList: any[]; //TODO : 데이터 다 들어갈시 명확히
+  // quizCategoryList: any[]; //TODO : 데이터 다 들어갈시 명확히
+  quizCategoryList: QuizCategoryList[];
+};
+
+type QuizCategoryList = {
+  quizCategory: QuizCategory;
+};
+
+//TODO : 데이터 다 들어갈시 명확히
+export type Source = {
+  출처: string;
+  문항번호?: string;
+  출제년도?: string;
+  교재속성?: string;
+  출판사?: string;
+  시리즈?: string;
+  교재명?: string;
+  교재페이지?: string;
+  교재번호?: string;
+  출판년도?: string;
+  내신형식?: string;
+  학교명?: string;
+  학사일정?: string;
+  내신페이지?: string;
+  내신배점?: string;
+  기출속성?: string;
+  주관사?: string;
+  기출명?: string;
+  시행학제?: string;
+  시행학년?: string;
+  시험지타입?: string;
+  기출배점?: string;
+  기출일시?: string;
+};
+
+type QuizCategory = {
+  교과?: string;
+  과목?: string;
+  학년?: number;
+  난이도?: string;
+  학교급?: string;
+  문항타입?: string;
+  대단원?: string;
+  소단원?: string;
+  중단원?: string;
+  sources?: Source[] | any[];
 };
