@@ -206,6 +206,7 @@ export function SchoolInputModal({
             setSearchValue(e.target.value);
           }}
           placeholder="학교명 검색"
+          maxLength={20}
         />
       </SearchWarpper>
       <ListWrapper>
