@@ -16,6 +16,7 @@ type SearchProps = {
   fontSize?: string;
   margin?: string;
   errorMessage?: string;
+  maxLength?: number;
 };
 
 export function Search({
@@ -29,6 +30,7 @@ export function Search({
   height,
   margin,
   errorMessage,
+  maxLength,
 }: SearchProps) {
   return (
     <Component
@@ -42,6 +44,7 @@ export function Search({
         onChange={onChange}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
+        maxLength={maxLength}
       />
       <button onClick={onClick} type="button">
         <IoSearch />
