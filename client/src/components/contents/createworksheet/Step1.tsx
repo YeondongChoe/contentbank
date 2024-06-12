@@ -1669,6 +1669,9 @@ export function Step1() {
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response) => {
       saveLocalData(response.data.data);
@@ -1681,7 +1684,6 @@ export function Step1() {
   ): item is RadioStateType => {
     return (item as RadioStateType).title !== undefined;
   };
-  console.log(unitClassificationList);
 
   const makingdata = unitClassificationList.map((item) => {
     // 타입 가드로 RadioStateType인지 확인 후 title에 접근
@@ -1819,6 +1821,30 @@ export function Step1() {
       }
     }
   };
+
+  //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
+  useEffect(() => {
+    if (
+      tabVeiw == '단원·유형별' ||
+      tabVeiw == '시중교재' ||
+      tabVeiw == '수능/모의고사'
+    ) {
+      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        // 사용자에게 경고 메시지를 표시하도록 설정
+        const message =
+          '저장 버튼을 누르지 않을시 저장되지 않습니다. 정말 나가시겠습니까?';
+        event.preventDefault();
+        event.returnValue = message; // 표준에 따른 설정 (Chrome에서는 무시됨)
+        return message; // 대부분의 브라우저에서 필요
+      };
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [tabVeiw]);
 
   useEffect(() => {
     //단원 유형별버튼 초기화

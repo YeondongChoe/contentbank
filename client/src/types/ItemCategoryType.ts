@@ -3,4 +3,5 @@ export type ItemCategoryType = {
   idx: number;
   name: string;
   type?: string;
+  value?: number;
 };
