@@ -88,6 +88,7 @@ export function ReportProcessModal({
     setContent(value);
   };
 
+  console.log(content);
   const submitReportProcess = () => {
     const data = {
       reportType: registorReport ? 'REPORT' : 'ANSWER',
@@ -95,7 +96,15 @@ export function ReportProcessModal({
       type: content,
       content: commentValue,
     };
-    postReportQuizData(data);
+    if (content === undefined) {
+      openToastifyAlert({
+        type: 'error',
+        text: '신고유형을 선택해주세요',
+      });
+    } else {
+      postReportQuizData(data);
+    }
+
     //해당 신고내역에 처리된 상태 보내기
   };
 
@@ -118,6 +127,7 @@ export function ReportProcessModal({
               : '처리유형을 선택해주세요'
           }
           options={reportType}
+          isnormalizedOptions
           onSelect={(event) => selectCategoryOption(event)}
         />
       </InputWrapper>
@@ -132,6 +142,7 @@ export function ReportProcessModal({
             onChange={(e) => {
               setCommentValue(e.target.value);
             }}
+            maxLength={1000}
           />
         </div>
       </InputWrapper>
