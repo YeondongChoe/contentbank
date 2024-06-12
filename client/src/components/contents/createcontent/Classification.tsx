@@ -21,6 +21,7 @@ import { classificationInstance } from '../../../api/axios';
 import {
   Accordion,
   ButtonFormatRadio,
+  ButtonFormatMultiRadio,
   DepthBlock,
   Search,
 } from '../../../components/molecules';
@@ -47,7 +48,10 @@ interface ItemTreeIdxListType {
   itemTreeIdxList: number[];
 }
 
-type UnitClassificationType = RadioStateType | ItemTreeIdxListType;
+type UnitClassificationType =
+  | RadioStateType
+  | ItemTreeIdxListType
+  | RadioStateType[];
 
 interface ClassificationStateType {
   quizCodeList: string[];
@@ -86,24 +90,32 @@ export function Classification() {
     code: '',
     key: '',
   });
-  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
+  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([
+    {
+      title: '',
+      checkValue: 0,
+      code: '',
+      key: '',
+    },
+  ]);
+  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([
+    {
+      title: '',
+      checkValue: 0,
+      code: '',
+      key: '',
+    },
+  ]);
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
   const [selected4depth, setSelected4depth] = useState<string>('');
-  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string>('');
-  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string>('');
+  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
+    '',
+  ]);
+  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string[]>([
+    '',
+  ]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
   const [nextList1depth, setNextList1depth] = useState([
@@ -208,6 +220,7 @@ export function Classification() {
     const itemId =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
+
     switch (depth) {
       case '1depth':
         setSelected1depth(e.currentTarget.id);
@@ -245,24 +258,89 @@ export function Classification() {
           key: itemId as string,
         });
         break;
+    }
+  };
+  // 다중 라디오 버튼 설정
+  const handleMultiRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const depth =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.classList[0];
+    const itemId =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.id;
 
+    console.log('e.currentTarget.value', e.currentTarget?.value);
+    const value = e.currentTarget.value;
+
+    switch (depth) {
       case 'etc1':
-        setSelectedCategoryEtc1(e.currentTarget.value);
-        setRadioEtc1Check({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
+        setSelectedCategoryEtc1(() => {
+          if (selectedCategoryEtc1.includes(value)) {
+            const updated = selectedCategoryEtc1.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc1, value];
+            return updated;
+          }
+        });
+
+        setRadioEtc1Check((prev) => {
+          if (
+            prev.some(
+              (item) => item.checkValue == Number(e.currentTarget?.value),
+            )
+          ) {
+            return prev.filter(
+              (item) => item.checkValue !== Number(e.currentTarget?.value),
+            );
+          } else {
+            return [
+              ...prev,
+              {
+                title: e.currentTarget?.name,
+                checkValue: Number(e.currentTarget?.value),
+                code: e.currentTarget?.className,
+                key: itemId as string,
+              },
+            ];
+          }
         });
         break;
+
       case 'etc2':
-        setSelectedCategoryEtc2(e.currentTarget.value);
-        setRadioEtc2Check({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
+        setSelectedCategoryEtc2(() => {
+          if (selectedCategoryEtc2.includes(value)) {
+            const updated = selectedCategoryEtc2.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc2, value];
+            return updated;
+          }
         });
+
+        setRadioEtc2Check((prev) => {
+          if (
+            prev.some(
+              (item) => item.checkValue == Number(e.currentTarget?.value),
+            )
+          ) {
+            return prev.filter(
+              (item) => item.checkValue !== Number(e.currentTarget?.value),
+            );
+          } else {
+            return [
+              ...prev,
+              {
+                title: e.currentTarget?.name,
+                checkValue: Number(e.currentTarget?.value),
+                code: e.currentTarget?.className,
+                key: itemId as string,
+              },
+            ];
+          }
+        });
+        break;
+      default:
         break;
     }
   };
@@ -367,10 +445,10 @@ export function Classification() {
     setCheckedDepthList([]);
   }, [selected3depth]);
   useEffect(() => {
-    setSelectedCategoryEtc1('');
-    setSelectedCategoryEtc2('');
-    setRadioEtc1Check({ title: '', checkValue: 0, code: '', key: '' });
-    setRadioEtc2Check({ title: '', checkValue: 0, code: '', key: '' });
+    setSelectedCategoryEtc1([]);
+    setSelectedCategoryEtc2([]);
+    setRadioEtc1Check([{ title: '', checkValue: 0, code: '', key: '' }]);
+    setRadioEtc2Check([{ title: '', checkValue: 0, code: '', key: '' }]);
     setCheckedDepthList([]);
     setSearchValue('');
   }, [selected4depth]);
@@ -510,19 +588,20 @@ export function Classification() {
   //분류 리스트 리셋
   const onResetList = () => {
     const reset = { title: '', checkValue: 0, code: '', key: '' };
+    const resetArr = [{ title: '', checkValue: 0, code: '', key: '' }];
     setRadio1depthCheck(reset);
     setRadio2depthCheck(reset);
     setRadio3depthCheck(reset);
     setRadio4depthCheck(reset);
-    setRadioEtc1Check(reset);
-    setRadioEtc2Check(reset);
+    setRadioEtc1Check(resetArr);
+    setRadioEtc2Check(resetArr);
 
     setSelected1depth('');
     setSelected2depth('');
     setSelected3depth('');
     setSelected4depth('');
-    setSelectedCategoryEtc1('');
-    setSelectedCategoryEtc2('');
+    setSelectedCategoryEtc1([]);
+    setSelectedCategoryEtc2([]);
     setCheckedDepthList([]);
   };
 
@@ -571,12 +650,14 @@ export function Classification() {
       const classification = selectedClassification[4] as ItemTreeIdxListType;
       setCheckedDepthList(classification.itemTreeIdxList);
 
-      const classificationEtc1 = selectedClassification[5] as RadioStateType;
-      setSelectedCategoryEtc1(classificationEtc1?.checkValue?.toString() || '');
+      const classificationEtc1 = selectedClassification[5] as RadioStateType[];
+      // 배열값일경우로 다시
+      // setSelectedCategoryEtc1(classificationEtc1?.checkValue?.toString() || '');
       setRadioEtc1Check(classificationEtc1);
 
-      const classificationEtc2 = selectedClassification[6] as RadioStateType;
-      setSelectedCategoryEtc2(classificationEtc2?.checkValue?.toString() || '');
+      const classificationEtc2 = selectedClassification[6] as RadioStateType[];
+
+      // setSelectedCategoryEtc2(classificationEtc2?.checkValue?.toString() || '');
       setRadioEtc2Check(classificationEtc2);
 
       //초기화
@@ -1239,13 +1320,12 @@ export function Classification() {
                                 className={`etc1`}
                                 key={`etc1 ${item.idx}`}
                               >
-                                <ButtonFormatRadio
+                                <ButtonFormatMultiRadio
                                   titleText={`${item.name}`}
                                   list={categoryAddInfoList[0]}
                                   selected={selectedCategoryEtc1}
-                                  onChange={(e) => handleRadioCheck(e)}
-                                  // defaultChecked={}
-                                  checkedInput={radioEtc1Check}
+                                  onChange={(e) => handleMultiRadioCheck(e)}
+                                  checkedInputs={radioEtc1Check}
                                 />
                               </div>
                             ))}
@@ -1255,13 +1335,12 @@ export function Classification() {
                                 className={`etc2`}
                                 key={`etc2 ${item.idx}`}
                               >
-                                <ButtonFormatRadio
+                                <ButtonFormatMultiRadio
                                   titleText={`${item.name}`}
                                   list={categoryAddInfoList[1]}
                                   selected={selectedCategoryEtc2}
-                                  onChange={(e) => handleRadioCheck(e)}
-                                  // defaultChecked={}
-                                  checkedInput={radioEtc2Check}
+                                  onChange={(e) => handleMultiRadioCheck(e)}
+                                  checkedInputs={radioEtc2Check}
                                 />
                               </div>
                             ))}
@@ -1285,6 +1364,7 @@ export function Classification() {
           }
         />
       </ResizeLayoutWrapper>
+
       <BorderWrapper>
         <SubmitButtonWrapper>
           <Button
