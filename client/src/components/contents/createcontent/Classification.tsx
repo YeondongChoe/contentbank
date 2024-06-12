@@ -90,22 +90,8 @@ export function Classification() {
     code: '',
     key: '',
   });
-  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([
-    {
-      title: '',
-      checkValue: 0,
-      code: '',
-      key: '',
-    },
-  ]);
-  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([
-    {
-      title: '',
-      checkValue: 0,
-      code: '',
-      key: '',
-    },
-  ]);
+  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
+  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
@@ -269,7 +255,9 @@ export function Classification() {
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
 
-    console.log('e.currentTarget.value', e.currentTarget?.value);
+    // console.log('e.currentTarget.value', e.currentTarget?.value);
+    const title = e.currentTarget.name;
+    const code = e.currentTarget.className;
     const value = e.currentTarget.value;
 
     switch (depth) {
@@ -284,22 +272,18 @@ export function Classification() {
           }
         });
 
-        setRadioEtc1Check((prev) => {
-          if (
-            prev.some(
-              (item) => item.checkValue == Number(e.currentTarget?.value),
-            )
-          ) {
-            return prev.filter(
-              (item) => item.checkValue !== Number(e.currentTarget?.value),
+        setRadioEtc1Check(() => {
+          if (radioEtc1Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc1Check.filter(
+              (item) => item.checkValue !== Number(value),
             );
           } else {
             return [
-              ...prev,
+              ...radioEtc1Check,
               {
-                title: e.currentTarget?.name,
-                checkValue: Number(e.currentTarget?.value),
-                code: e.currentTarget?.className,
+                title: title,
+                checkValue: Number(value),
+                code: code,
                 key: itemId as string,
               },
             ];
@@ -318,22 +302,18 @@ export function Classification() {
           }
         });
 
-        setRadioEtc2Check((prev) => {
-          if (
-            prev.some(
-              (item) => item.checkValue == Number(e.currentTarget?.value),
-            )
-          ) {
-            return prev.filter(
-              (item) => item.checkValue !== Number(e.currentTarget?.value),
+        setRadioEtc2Check(() => {
+          if (radioEtc2Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc2Check.filter(
+              (item) => item.checkValue !== Number(value),
             );
           } else {
             return [
-              ...prev,
+              ...radioEtc2Check,
               {
-                title: e.currentTarget?.name,
-                checkValue: Number(e.currentTarget?.value),
-                code: e.currentTarget?.className,
+                title: title,
+                checkValue: Number(value),
+                code: code,
                 key: itemId as string,
               },
             ];
@@ -447,8 +427,8 @@ export function Classification() {
   useEffect(() => {
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
-    setRadioEtc1Check([{ title: '', checkValue: 0, code: '', key: '' }]);
-    setRadioEtc2Check([{ title: '', checkValue: 0, code: '', key: '' }]);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
     setCheckedDepthList([]);
     setSearchValue('');
   }, [selected4depth]);
@@ -552,6 +532,11 @@ export function Classification() {
   };
 
   const saveCheckItems = () => {
+    console.log(
+      'radioEtc1Check,radioEtc2Check',
+      radioEtc1Check,
+      radioEtc2Check,
+    );
     const newClassification: UnitClassificationType[] = [
       radio1depthCheck,
       radio2depthCheck,
@@ -588,13 +573,13 @@ export function Classification() {
   //분류 리스트 리셋
   const onResetList = () => {
     const reset = { title: '', checkValue: 0, code: '', key: '' };
-    const resetArr = [{ title: '', checkValue: 0, code: '', key: '' }];
+
     setRadio1depthCheck(reset);
     setRadio2depthCheck(reset);
     setRadio3depthCheck(reset);
     setRadio4depthCheck(reset);
-    setRadioEtc1Check(resetArr);
-    setRadioEtc2Check(resetArr);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
 
     setSelected1depth('');
     setSelected2depth('');
@@ -651,13 +636,17 @@ export function Classification() {
       setCheckedDepthList(classification.itemTreeIdxList);
 
       const classificationEtc1 = selectedClassification[5] as RadioStateType[];
-      // 배열값일경우로 다시
-      // setSelectedCategoryEtc1(classificationEtc1?.checkValue?.toString() || '');
+      // 저장되었던 행동 요소1
+      setSelectedCategoryEtc1(
+        classificationEtc1.map((el) => el.checkValue?.toString()),
+      );
       setRadioEtc1Check(classificationEtc1);
 
       const classificationEtc2 = selectedClassification[6] as RadioStateType[];
-
-      // setSelectedCategoryEtc2(classificationEtc2?.checkValue?.toString() || '');
+      // 저장되었던 행동 요소2
+      setSelectedCategoryEtc2(
+        classificationEtc2.map((el) => el.checkValue?.toString()),
+      );
       setRadioEtc2Check(classificationEtc2);
 
       //초기화

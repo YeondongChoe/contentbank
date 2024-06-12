@@ -24,7 +24,8 @@ export function ButtonFormatMultiRadio({
   branchValue,
 }: ButtonFormatMultiRadioProps) {
   // console.log(list && list);
-  // console.log(selected && selected);
+  //스트링 배열값 내보냄
+  console.log(selected && selected);
 
   const isSelected = (itemIdx: number) =>
     selected.some((item) => item == itemIdx);
