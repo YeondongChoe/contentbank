@@ -10,7 +10,9 @@ import {
   Label,
   Select,
   openToastifyAlert,
+  AlertBar,
 } from '../../components/atom';
+import { Alert } from '../../components/molecules';
 import { useModal } from '../../hooks';
 import { COLOR } from '../constants';
 
@@ -26,6 +28,7 @@ export function ReportProcessModal({
   const { closeModal } = useModal();
   const [content, setContent] = useState<string>();
   const [commentValue, setCommentValue] = useState('');
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [reportType, setReportType] = useState<
     {
       id: string;
@@ -160,7 +163,7 @@ export function ReportProcessModal({
         </Button>
         <Button
           buttonType="button"
-          onClick={() => submitReportProcess()}
+          onClick={() => setIsAlertOpen(true)}
           $padding="10px"
           height={'40px'}
           fontSize="16px"
@@ -170,6 +173,19 @@ export function ReportProcessModal({
           <span>등록</span>
         </Button>
       </ButtonGroup>
+
+      <Alert
+        top="calc(50% - 100px)"
+        isAlertOpen={isAlertOpen}
+        description={'해당 문항을 신고하시겠습니까?'}
+        subDescription={
+          '신고 후 해당 문항은 리스트에서 사라지며, 취소는 불가합니다.'
+        }
+        action="확인"
+        isWarning={true}
+        onClick={() => submitReportProcess()}
+        onClose={() => setIsAlertOpen(false)}
+      />
     </Container>
   );
 }
