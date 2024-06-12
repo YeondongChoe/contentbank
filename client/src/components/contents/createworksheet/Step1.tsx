@@ -1669,6 +1669,9 @@ export function Step1() {
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response) => {
       saveLocalData(response.data.data);
@@ -1681,7 +1684,6 @@ export function Step1() {
   ): item is RadioStateType => {
     return (item as RadioStateType).title !== undefined;
   };
-  console.log(unitClassificationList);
 
   const makingdata = unitClassificationList.map((item) => {
     // 타입 가드로 RadioStateType인지 확인 후 title에 접근
