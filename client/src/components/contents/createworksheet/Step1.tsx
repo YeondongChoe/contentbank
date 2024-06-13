@@ -717,6 +717,7 @@ export function Step1() {
 
   //단원.유형별
   const [inputValue, setInputValue] = useState<string>('');
+
   const changeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
 
@@ -1654,6 +1655,14 @@ export function Step1() {
       );
     }
   };
+  //선택한 유형 확인
+  const [selectedItemTreeCount, setSelectedItemTreeCount] = useState<number[]>(
+    [],
+  );
+  console.log(selectedItemTreeCount);
+  //문항수 확인
+  const [receivedQuizCount, setReceivedQuizCount] = useState<number>();
+  console.log(receivedQuizCount);
 
   // step1 선택된 문항 불러오기 api
   const postWorkbookStep1 = async (data: any) => {
@@ -1674,8 +1683,24 @@ export function Step1() {
       }
     },
     onSuccess: (response) => {
-      saveLocalData(response.data.data);
-      navigate('/content-create/exam/step2');
+      //성공했을 때 문항 수 카운트
+
+      setReceivedQuizCount(response.data.data.quizList.length);
+      //받아온 문항수와 선택한 문항수가 같을경우 다음단계
+      if (receivedQuizCount && receivedQuizCount === Number(questionNum)) {
+        saveLocalData(response.data.data);
+        navigate('/content-create/exam/step2');
+      } else {
+        //받아온 문항수가 선택한 문항수만큼 안될 경우
+        openToastifyAlert({
+          type: 'error',
+          text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+        });
+        //문항수 초기화
+        setQuestionNum('');
+        //배점 초기화
+        selectEqualScore(null);
+      }
     },
   });
 
@@ -1685,24 +1710,36 @@ export function Step1() {
     return (item as RadioStateType).title !== undefined;
   };
 
-  const makingdata = unitClassificationList.map((item) => {
-    // 타입 가드로 RadioStateType인지 확인 후 title에 접근
-    const itemTreeKey = {
-      교육과정: isRadioStateType(item[0]) ? item[0].title : '',
-      학교급: isRadioStateType(item[1]) ? item[1].title : '',
-      학기: isRadioStateType(item[2]) ? item[2].title : '',
-      학년: isRadioStateType(item[3]) ? item[3].title : '',
-    };
+  //useMemo를 사용하여 makingdata값을 기억하며 unitClassificationList가 변경될때 업데이트
+  const makingdata = useMemo(
+    () =>
+      unitClassificationList.map((item) => {
+        // 타입 가드로 RadioStateType인지 확인 후 title에 접근
+        const itemTreeKey = {
+          교육과정: isRadioStateType(item[0]) ? item[0].title : '',
+          학교급: isRadioStateType(item[1]) ? item[1].title : '',
+          학기: isRadioStateType(item[2]) ? item[2].title : '',
+          학년: isRadioStateType(item[3]) ? item[3].title : '',
+        };
 
-    // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
-    const itemTreeIdxList =
-      (item[4] as ItemTreeIdxListType).itemTreeIdxList || [];
+        // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
+        const itemTreeIdxList =
+          (item[4] as ItemTreeIdxListType).itemTreeIdxList || [];
 
-    return {
-      itemTreeKey,
-      itemTreeIdxList,
-    };
-  });
+        return {
+          itemTreeKey,
+          itemTreeIdxList,
+        };
+      }),
+    [unitClassificationList],
+  );
+
+  useEffect(() => {
+    const allItemTreeIdxList = makingdata.flatMap(
+      (data) => data.itemTreeIdxList,
+    );
+    setSelectedItemTreeCount(allItemTreeIdxList);
+  }, [makingdata]);
 
   const clickNextButton = () => {
     const data = {
@@ -1720,6 +1757,7 @@ export function Step1() {
       filterList: null,
       includeList: tabVeiw === '단원·유형별' ? null : includeQuizList,
     };
+
     console.log(data);
     postStep1Data(data);
   };
@@ -2608,7 +2646,8 @@ export function Step1() {
                   </AdditionOption>
                 </AdditionOptionList>
                 <Summary>
-                  학습지 문항수 {inputValue || questionNum} 개 | 유형 3개
+                  학습지 문항수 {inputValue || questionNum} 개 | 유형
+                  {selectedItemTreeCount.length}개
                 </Summary>
               </SchoolSelectorSection>
             </>

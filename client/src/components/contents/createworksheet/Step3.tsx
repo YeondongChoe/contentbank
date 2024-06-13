@@ -912,6 +912,7 @@ export function Step3() {
               isWeather={isWeather}
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
+              initialItems={initialItems}
             ></TypeA>
           )}
           {templateType === 'B' && (
