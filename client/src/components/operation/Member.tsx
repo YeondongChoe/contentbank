@@ -267,7 +267,7 @@ export function Member() {
     refetch();
   }, [page, searchKeywordValue, isUseFilter, changeUse]);
 
-  useEffect(() => {}, [memberList]);
+  useEffect(() => {}, [memberList, totalMemberList]);
 
   return (
     <Container ref={backgroundRef}>
@@ -338,7 +338,7 @@ export function Member() {
             </LoaderWrapper>
           ) : (
             <>
-              {totalMemberList && totalMemberList.length > 0 ? (
+              {totalMemberList && memberList.list.length !== 0 ? (
                 <>
                   <ButtonWrapper>
                     <CheckBoxWrapper>
@@ -370,7 +370,6 @@ export function Member() {
                       </Button>
                     )}
                   </ButtonWrapper>
-
                   <List margin={`10px 0`}>
                     {memberList.list.map((list: MemberType) => (
                       <ListItem
@@ -450,7 +449,7 @@ export function Member() {
                   {searchKeywordValue ? (
                     <ValueNoneWrapper>
                       <ValueNone
-                        info={`${searchKeywordValue}로 검색결과 데이터가 없습니다`}
+                        info={`${searchKeywordValue} (으)로 검색결과 데이터가 없습니다`}
                       />
                     </ValueNoneWrapper>
                   ) : (

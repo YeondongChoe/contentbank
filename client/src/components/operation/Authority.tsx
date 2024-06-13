@@ -100,6 +100,7 @@ export function Authority() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isUpdateAuthority, setIsUpdateAuthority] = useState(false);
   const [isCreateNameError, setIsCreateNameError] = useState(false);
+  const [isCheckNullError, setIsCheckNullError] = useState(false);
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
 
   const [checkList, setCheckList] =
@@ -834,19 +835,25 @@ export function Authority() {
   }, []);
 
   useEffect(() => {
-    // console.log('checkList');
-    // console.log(checkList);
+    console.log('checkList');
+    console.log(checkList);
   }, [checkList, setCheckList]);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
+
     if (inputValue === '') {
       setIsCreateNameError(true);
       setIsUpdateAuthority(false);
     }
-    if (inputValue) {
-      setIsCreateNameError(false);
+
+    // 체크리스트 내부에 PermissionInput[] 객체값내부에 checked키값이 true인것이 없으면
+    const hasChecked = checkList.some((item) => item.checked);
+    setIsCheckNullError(!hasChecked);
+
+    if (inputValue && !isCheckNullError) {
       setIsUpdateAuthority(true);
+      setIsCreateNameError(false);
     }
   };
 
@@ -1545,6 +1552,14 @@ export function Authority() {
           isAlertOpen={isAlertOpen}
           notice
           description="권한명을 작성해주세요."
+          onClose={() => setIsAlertOpen(false)}
+        />
+      )}
+      {isCheckNullError && (
+        <Alert
+          isAlertOpen={isAlertOpen}
+          notice
+          description="권한을 선택해주세요."
           onClose={() => setIsAlertOpen(false)}
         />
       )}
