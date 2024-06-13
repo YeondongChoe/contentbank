@@ -103,3 +103,8 @@ export interface WorkbookQuotientData {
   quotient: number;
   remainderContent: number;
 }
+
+export interface ContentNumQuotient {
+  quizNum: number;
+  quotient: number;
+}

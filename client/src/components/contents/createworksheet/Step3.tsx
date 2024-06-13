@@ -321,6 +321,11 @@ export function Step3() {
     };
     return await workbookInstance.post(`/v1/workbook`, data);
   };
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    setIsComplete(false);
+  }, []);
 
   const { mutate: postNewWorkbookData } = useMutation({
     mutationFn: postNewWorkbook,
@@ -336,7 +341,8 @@ export function Step3() {
       // }
     },
     onSuccess: (response) => {
-      //setNewQuizItems(response.data.data);
+      setIsComplete(true);
+      //stpe3가 닫힐 때  setIsComplete(false)로 변경해주기
     },
   });
 
@@ -378,6 +384,26 @@ export function Step3() {
   //     getHeight();
   //   }
   // }, [colList, doneAgain]);
+
+  //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
+  useEffect(() => {
+    if (!isComplete) {
+      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        // 사용자에게 경고 메시지를 표시하도록 설정
+        const message =
+          '저장 버튼을 누르지 않을시 저장되지 않습니다. 정말 나가시겠습니까?';
+        event.preventDefault();
+        event.returnValue = message; // 표준에 따른 설정 (Chrome에서는 무시됨)
+        return message; // 대부분의 브라우저에서 필요
+      };
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [isComplete]);
 
   return (
     <Container>

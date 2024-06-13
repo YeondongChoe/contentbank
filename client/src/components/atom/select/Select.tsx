@@ -35,6 +35,10 @@ type SelectProps = {
   disabled?: boolean;
   $positionTop?: boolean;
   setSelectedValue?: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedQuotientValue?: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
+
   onDefaultSelect?: () => void;
   selectedValue?: string;
   heightScroll?: string;
@@ -54,6 +58,7 @@ export function Select({
   disabled,
   $positionTop,
   setSelectedValue,
+  setSelectedQuotientValue,
   onDefaultSelect,
   selectedValue,
   heightScroll,
@@ -80,6 +85,13 @@ export function Select({
   const optionsWithDefault = defaultValue
     ? [{ code: '', name: defaultValue }, ...normalizedOptions]
     : normalizedOptions;
+
+  const clickQuotientValue = (value: number) => {
+    console.log(value);
+    if (value !== undefined && setSelectedQuotientValue) {
+      setSelectedQuotientValue(value);
+    }
+  };
 
   const handleOptionSelect = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -133,7 +145,10 @@ export function Select({
                         disabled={disabled}
                         value={el.name}
                         className={el.code}
-                        onClick={(event) => handleOptionSelect(event, el.code)}
+                        onClick={(event) => {
+                          handleOptionSelect(event, el.code);
+                          clickQuotientValue(el.value as number);
+                        }}
                       >
                         <span>{el.name}</span>
                       </button>

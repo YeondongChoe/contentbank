@@ -1053,6 +1053,31 @@ export function Step2() {
     navigate('/content-create/exam/step1');
   };
 
+  //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
+  useEffect(() => {
+    if (
+      tabVeiw == '학습지 요약' ||
+      tabVeiw == '새 문항 추가' ||
+      tabVeiw == '즐겨찾는 문항' ||
+      tabVeiw == '개념'
+    ) {
+      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        // 사용자에게 경고 메시지를 표시하도록 설정
+        const message =
+          '저장 버튼을 누르지 않을시 저장되지 않습니다. 정말 나가시겠습니까?';
+        event.preventDefault();
+        event.returnValue = message; // 표준에 따른 설정 (Chrome에서는 무시됨)
+        return message; // 대부분의 브라우저에서 필요
+      };
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [tabVeiw]);
+
   const moveStep3 = () => {
     const data = {
       data: initialItems,

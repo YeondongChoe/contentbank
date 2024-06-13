@@ -1,5 +1,7 @@
 import { atom } from 'recoil';
 
+import { ContentNumQuotient } from '../types/WorkbookType';
+
 // 페이지네이션 공통아톰
 export const totalPageAtom = atom({
   key: 'totalPageAtom',
@@ -21,4 +23,10 @@ export const openNaviationBoolAtom = atom({
 export const pageIndexAtom = atom({
   key: 'pageIndexAtom',
   default: ['콘텐츠 제작', '문항 제작'],
+});
+
+//학습지 총점 누적 아톰
+export const contentQuotient = atom<ContentNumQuotient[]>({
+  key: 'contentQuotient',
+  default: [],
 });
