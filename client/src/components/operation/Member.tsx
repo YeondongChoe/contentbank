@@ -330,6 +330,7 @@ export function Member() {
                 setSearchValue(e.target.value);
               }}
               placeholder="이름, 권한 검색"
+              maxLength={20}
             />
           </InputWrapper>
           {isPendingChangeUse ? (

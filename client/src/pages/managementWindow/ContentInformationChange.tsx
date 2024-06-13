@@ -999,6 +999,7 @@ export function ContentInformationChange() {
                 <input
                   type="text"
                   minLength={2}
+                  maxLength={20}
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   placeholder="찾을값을 입력해주세요(두글자 이상)"
@@ -1108,6 +1109,7 @@ export function ContentInformationChange() {
                 <input
                   type="text"
                   minLength={2}
+                  maxLength={20}
                   value={changeValue}
                   onChange={(e) => setChangeValue(e.target.value)}
                   placeholder="변경값을 입력해주세요"
