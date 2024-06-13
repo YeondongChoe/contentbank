@@ -12,6 +12,7 @@ type TooltiptProps = {
   children: JSX.Element;
   className?: string;
   arrowPosition?: string;
+  ref?: React.RefObject<HTMLDivElement>;
 };
 
 export function Tooltip({
@@ -21,6 +22,7 @@ export function Tooltip({
   children,
   className,
   arrowPosition,
+  ref,
 }: TooltiptProps) {
   return (
     <Component
@@ -29,6 +31,7 @@ export function Tooltip({
       $margin={margin}
       className={` ${className}`}
       arrowPosition={arrowPosition}
+      ref={ref}
     >
       <TooltipText>{children}</TooltipText>
     </Component>

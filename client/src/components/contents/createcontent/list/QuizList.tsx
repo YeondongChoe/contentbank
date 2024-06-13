@@ -33,6 +33,8 @@ export function QuizList({
   // const ContentList = dummy.ContentInfo;
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -70,11 +72,41 @@ export function QuizList({
     }
   };
 
-  const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    const target = e.currentTarget.children[1];
-    // console.log(target.classList);
-    target.classList.add('on');
+  // 툴팁 토글
+  const calculateTextWidth = (nodes: NodeList) => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (context && textRef.current) {
+      const style = window.getComputedStyle(textRef.current);
+      context.font = `${style.fontSize} ${style.fontFamily}`;
+
+      let totalWidth = 0;
+      nodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          totalWidth += context.measureText(node.textContent || '').width;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          totalWidth += context.measureText(
+            (node as HTMLElement).innerText,
+          ).width;
+        }
+      });
+      return totalWidth;
+    }
+    return 0;
   };
+
+  const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    const textNodes = e.currentTarget.children[0].childNodes; // 말줄임 요소
+    const target = e.currentTarget.children[1]; // 숨겨진 툴팁박스
+    const textWidth = calculateTextWidth(textNodes);
+    const containerWidth = textRef.current?.clientWidth || 0;
+
+    // console.log(textWidth, containerWidth);
+    if (textWidth > containerWidth) {
+      target.classList.add('on');
+    }
+  };
+
   const hideTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     const target = e.currentTarget.children[1];
     // console.log(target.classList);
@@ -182,16 +214,47 @@ export function QuizList({
                       onMouseOver={(e) => showTooltip(e)}
                       onMouseLeave={(e) => hideTooltip(e)}
                     >
-                      <span className="sub_title ellipsis">
-                        {dragItem.quizCategoryList[0]?.quizCategory?.교과},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.과목},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.학년},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.난이도},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.학교급},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.대단원},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.소단원},
-                        {dragItem.quizCategoryList[0]?.quizCategory?.중단원},
+                      <span className="sub_title ellipsis" ref={textRef}>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.교과 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.교과} ,`}
+                        </span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.과목 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.과목} ,`}
+                        </span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.학년 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.학년} ,`}
+                        </span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.난이도 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.난이도} ,`}
+                        </span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.학교급 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.학교급} ,`}
+                        </span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory
+                            ?.문항타입 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.문항타입} ,`}
+                        </span>
+
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.대단원 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
+                        </span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.소단원 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
+                        </span>
+
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
+                        </span>
+
                         {dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
                           (item: Source) => (
                             <span key={`출처 배열 ${item.출처}`}>
@@ -224,7 +287,7 @@ export function QuizList({
                         )}
                       </span>
 
-                      <Tooltip>
+                      <Tooltip className="tooltip" ref={tooltipRef}>
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.교과},
                           {dragItem.quizCategoryList[0]?.quizCategory?.과목},
@@ -436,7 +499,7 @@ const MetaGroup = styled.span`
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
 `;
