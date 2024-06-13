@@ -17,9 +17,14 @@ export interface QuizItemList {
 }
 
 export interface QuizCategory {
-  출처: string;
+  sources: {
+    출처: string;
+    기출명: string;
+  };
   난이도: string;
   문항타입: string;
+  교과: string;
+  학교급: string;
 }
 
 export interface QuizCategoryList {
@@ -40,9 +45,9 @@ export interface QuizList {
   lastArticle: LastArticle | null;
   quizItemList: QuizItemList[];
   quizCategoryList: QuizCategoryList[];
-  favorite: boolean;
+  isFavorite: boolean;
   isUse: boolean;
-  delete: boolean;
+  isDelete: boolean;
 }
 
 export interface SimilarQuizList {

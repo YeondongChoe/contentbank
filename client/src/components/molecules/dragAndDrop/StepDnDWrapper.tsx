@@ -53,29 +53,6 @@ export const StepDnDWrapper = ({
   quotient,
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
-  //console.log(dragList);
-  //console.log(quotient);
-
-  // useEffect(() => {
-  //   if (dragList) {
-  //     const initialData = dragList.map((content) => ({
-  //       code: content.code,
-  //       createdAt: content.createdAt,
-  //       createdBy: content.createdBy,
-  //       idx: content.idx,
-  //       isDelete: content.isDelete,
-  //       isFavorite: content.isFavorite,
-  //       isUse: content.isUse,
-  //       lastArticle: content.lastArticle,
-  //       lastModifiedAt: content.lastModifiedAt,
-  //       lastModifiedBy: content.lastModifiedBy,
-  //       quizCategoryList: content.quizCategoryList,
-  //       quizItemList: content.quizItemList,
-  //       userKey: content.userKey,
-  //     }));
-  //     setCurrentItems(initialData);
-  //   }
-  // }, [dragList]);
 
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
@@ -83,6 +60,11 @@ export const StepDnDWrapper = ({
     hoverIndex: number,
     isFinished: boolean,
   ) => {
+    //드레그 시작
+    if (setIsStartDnd) {
+      setIsStartDnd(true);
+    }
+
     // 상태 업데이트 로직을 함수 밖으로 빼내서, 렌더링 중에 호출되지 않도록 함
     const newItems = updateItems(dragIndex, hoverIndex);
 
