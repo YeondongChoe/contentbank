@@ -807,7 +807,7 @@ export function Classification() {
 
   const sortList = () => {
     const sorted = questionList.filter((el) => checkedList.includes(el.code));
-    // console.log('sortedList------------', sorted);
+    console.log('sortedList------------', sorted);
     setSortedList(sorted);
   };
 
@@ -915,85 +915,55 @@ export function Classification() {
                       sortedList[sortedList.length - 1]?.quizItemList?.map(
                         (el) => (
                           <div key={`${el?.code} quizItemList sortedList`}>
-                            <MathViewer>
-                              {el?.type == 'TITLE' ? (
-                                el.content && (
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: el.content || '',
-                                    }}
-                                  ></div>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                              {el?.type == 'QUESTION' ? (
-                                el.content && (
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: el.content || '',
-                                    }}
-                                  ></div>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                              {el?.type == 'EXAMPLE' ? (
-                                el.content && (
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: el.content || '',
-                                    }}
-                                  ></div>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                              {el?.type == 'ANSWER' ? (
-                                el.content && (
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: el.content || '',
-                                    }}
-                                  ></div>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                              {el?.type == 'TIP' ? (
-                                el.content && (
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: el.content || '',
-                                    }}
-                                  ></div>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                              {el?.type == 'COMMENTARY' ? (
-                                el.content && (
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: el.content || '',
-                                    }}
-                                  ></div>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                              {el?.type == 'HINT' ? (
-                                el.content && (
-                                  <div
-                                    dangerouslySetInnerHTML={{
-                                      __html: el.content || '',
-                                    }}
-                                  ></div>
-                                )
-                              ) : (
-                                <></>
-                              )}
-                            </MathViewer>
+                            {el?.type == 'TITLE' ? (
+                              el.content && (
+                                <MathViewer data={el.content}></MathViewer>
+                              )
+                            ) : (
+                              <></>
+                            )}
+                            {el?.type == 'QUESTION' ? (
+                              el.content && (
+                                <MathViewer data={el.content}></MathViewer>
+                              )
+                            ) : (
+                              <></>
+                            )}
+                            {el?.type == 'EXAMPLE' ? (
+                              el.content && (
+                                <MathViewer data={el.content}></MathViewer>
+                              )
+                            ) : (
+                              <></>
+                            )}
+                            {el?.type == 'ANSWER' ? (
+                              el.content && (
+                                <MathViewer data={el.content}></MathViewer>
+                              )
+                            ) : (
+                              <></>
+                            )}
+                            {el?.type == 'TIP' ? (
+                              el.content && (
+                                <MathViewer data={el.content}></MathViewer>
+                              )
+                            ) : (
+                              <></>
+                            )}
+                            {el?.type == 'COMMENTARY' ? (
+                              el.content && (
+                                <MathViewer data={el.content}></MathViewer>
+                              )
+                            ) : (
+                              <></>
+                            )}
+                            {el?.type == 'HINT' ? (
+                              el.content && (
+                                <MathViewer data={el.content}></MathViewer>
+                              )
+                            ) : (
+                              <></>
+                            )}
                           </div>
                         ),
                       )

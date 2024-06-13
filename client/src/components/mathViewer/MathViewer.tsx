@@ -6,10 +6,10 @@ import styled from 'styled-components';
 
 import { ItemQuestionType } from '../../types';
 import { QuizList } from '../../types/WorkbookType';
-import { Loader } from '../atom/Loader';
+import { Loader, ValueNone } from '../atom';
 
 type MathViewerProps = {
-  data?: QuizList | any;
+  data?: QuizList | ItemQuestionType | any;
   // display?: string;
   width?: string;
   padding?: string;
@@ -22,7 +22,18 @@ const config = {
     load: ['[tex]/html'],
   },
   tex: {
-    packages: { '[+]': ['html'] },
+    packages: {
+      '[+]': [
+        'html',
+        'amsmath',
+        'amscd',
+        'amsopn',
+        'amsxtra',
+        'mathtools',
+        'color',
+        'mhchem',
+      ],
+    },
     inlineMath: [
       ['$', '$'],
       ['\\(', '\\)'],
@@ -31,6 +42,22 @@ const config = {
       ['$$', '$$'],
       ['\\[', '\\]'],
     ],
+    processEscapes: true,
+    processEnvironments: true,
+    autoload: {
+      color: [],
+      colorV2: ['color'],
+      mhchem: ['mhchem'],
+    },
+    tags: 'ams',
+    macros: {
+      '\\RR': '\\mathbb{R}',
+    },
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process',
   },
 };
 
@@ -41,76 +68,65 @@ export function MathViewer({
   padding,
   height,
 }: MathViewerProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
+
+  useEffect(() => {
+    if (mathJax && data) {
+      mathJax.startup.promise
+        .then(() => {
+          mathJax.typeset();
+        })
+        .catch((err: any) => {
+          console.error('MathJax typeset error:', err);
+        });
+
+      // return () => {
+      //   mathJax.texReset();
+      // };
+    }
+  }, [mathJax, data]);
+
+  useEffect(() => {
+    console.log('뷰어로 들어온 데이터 0---', data);
+    setIsLoading(!data);
+  }, [data]);
 
   const createMarkup = (data: string) => {
     return { __html: data || '' };
   };
 
-  useEffect(() => {
-    if (mathJax && data) {
-      console.log('MathJax and data are ready');
-      mathJax.startup.promise.then(() => {
-        mathJax
-          .typeset()
-          .then(() => {
-            console.log('MathJax typeset complete');
-            setIsLoaded(true); // Set loaded to true once typesetting is complete
-          })
-          .catch((err: any) => {
-            console.error('MathJax typeset error:', err);
-          });
-      });
-
-      return () => {
-        mathJax.texReset();
-      };
-    }
-  }, [mathJax, data]);
-
-  useEffect(() => {
+  const renderCalculations = () => {
     if (!data) {
-      setIsLoaded(true);
-    } else {
-      setIsLoaded(false);
+      return <ValueNone info={`데이터가 없습니다`} textOnly />;
     }
-  }, [data]);
+
+    return (
+      <div>
+        <MathJax inline dynamic>
+          <ContentQuestion dangerouslySetInnerHTML={createMarkup(data)} />
+        </MathJax>
+      </div>
+    );
+  };
 
   return (
-    <>
-      {!isLoaded && <Loader height={'50px'} size="35px" />}
-
-      {isLoaded && (
-        <Component width={width} height={height} $padding={padding}>
-          <MathJaxContext
-            version={3}
-            config={config}
-            onStartup={(mathJax) => {
-              console.log('MathJax initialized');
-              setMathJax(mathJax);
-            }}
-          >
-            <MathJax inline dynamic>
-              {data &&
-                data.quizItemList &&
-                data.quizItemList.map(
-                  (
-                    item: { content: string },
-                    index: React.Key | null | undefined,
-                  ) => (
-                    <ContentQuestion
-                      key={index}
-                      dangerouslySetInnerHTML={createMarkup(item.content)}
-                    />
-                  ),
-                )}
-              {children}
-            </MathJax>
-          </MathJaxContext>
-        </Component>
-      )}
-    </>
+    <Component width={width} height={height} $padding={padding}>
+      <MathJaxContext
+        version={3}
+        config={config}
+        onStartup={(mathJaxInstance) => {
+          console.log('MathJax initialized');
+          setMathJax(mathJaxInstance);
+        }}
+      >
+        {isLoading ? (
+          <Loader height={'50px'} size="35px" />
+        ) : (
+          renderCalculations()
+        )}
+      </MathJaxContext>
+    </Component>
   );
 }
 
@@ -127,4 +143,7 @@ const Component = styled.div<MathViewerStyleProps>`
   padding: ${({ $padding }) => ($padding ? `${$padding}` : '0')};
 `;
 
-const ContentQuestion = styled.div``;
+const ContentQuestion = styled.div`
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
