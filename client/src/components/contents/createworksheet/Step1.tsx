@@ -1684,22 +1684,39 @@ export function Step1() {
     },
     onSuccess: (response) => {
       //성공했을 때 문항 수 카운트
-
       setReceivedQuizCount(response.data.data.quizList.length);
       //받아온 문항수와 선택한 문항수가 같을경우 다음단계
-      if (receivedQuizCount && receivedQuizCount === Number(questionNum)) {
+      if (tabVeiw === '단원·유형별') {
+        if (receivedQuizCount && receivedQuizCount === Number(questionNum)) {
+          saveLocalData(response.data.data);
+          navigate('/content-create/exam/step2');
+        } else {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          //문항수 초기화
+          setQuestionNum('');
+          //배점 초기화
+          selectEqualScore(null);
+        }
+      } else if (tabVeiw === '시중교재') {
+        if (receivedQuizCount && receivedQuizCount === Number(questionNum)) {
+          saveLocalData(response.data.data);
+          navigate('/content-create/exam/step2');
+        } else {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          //문항수 초기화
+          setQuestionNum('');
+          //배점 초기화
+          selectEqualScore(null);
+        }
+      } else if (tabVeiw === '수능/모의고사') {
         saveLocalData(response.data.data);
         navigate('/content-create/exam/step2');
-      } else {
-        //받아온 문항수가 선택한 문항수만큼 안될 경우
-        openToastifyAlert({
-          type: 'error',
-          text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
-        });
-        //문항수 초기화
-        setQuestionNum('');
-        //배점 초기화
-        selectEqualScore(null);
       }
     },
   });
@@ -1863,9 +1880,9 @@ export function Step1() {
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (
-      tabVeiw == '단원·유형별' ||
-      tabVeiw == '시중교재' ||
-      tabVeiw == '수능/모의고사'
+      tabVeiw === '단원·유형별' ||
+      tabVeiw === '시중교재' ||
+      tabVeiw === '수능/모의고사'
     ) {
       const handleBeforeUnload = (event: BeforeUnloadEvent) => {
         // 사용자에게 경고 메시지를 표시하도록 설정
