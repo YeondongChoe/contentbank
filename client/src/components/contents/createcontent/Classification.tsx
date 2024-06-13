@@ -192,8 +192,12 @@ export function Classification() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error?.data?.code);
-      if (error.data?.code == 'GE-002') postRefreshToken();
+      console.log('error--------------', error.response.data.code);
+
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          groupsDataRefetch();
+        });
     }
   };
 
@@ -337,8 +341,11 @@ export function Classification() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data?.code);
-      if (error.data?.code == 'GE-002') postRefreshToken();
+      // console.log('error--------------', error.response.data.code);
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          groupsDataRefetch();
+        });
       return undefined;
     }
   };
@@ -363,8 +370,12 @@ export function Classification() {
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data?.code);
-      if (error.data?.code == 'GE-002') postRefreshToken();
+      console.log('error--------------', error.response.data.code);
+
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          nextListData1Refetch();
+        });
       return undefined;
     }
   };
@@ -382,15 +393,21 @@ export function Classification() {
   const getNextList3 = async () => {
     const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
+    console.log('row--------------4-------');
     try {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
+      console.log('4-------', res?.data.data.categoryClassList);
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error.data?.code);
-      if (error.data?.code == 'GE-002') postRefreshToken();
+      console.log('error--------------', error.response.data.code);
+
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          nextListData2Refetch();
+        });
       return undefined;
     }
   };
@@ -523,7 +540,7 @@ export function Classification() {
       );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
-      // console.error('Error fetching next list: ', error?.data??.code);
+      console.error('Error fetching next list: ', error?.data?.code);
       if (error?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();

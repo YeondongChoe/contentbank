@@ -213,7 +213,7 @@ export function ContentInformationChange() {
       const requests = typeIds.map((id) =>
         classificationInstance.get(`/v1/category/${id}`).catch((error) => {
           // console.log(error);
-          if (error.data?.code == 'GE-002' && !refreshTokenCalled) {
+          if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
             setRefreshTokenCalled(true);
             postRefreshToken().then(() => {
               groupsDataARefetch();
@@ -321,11 +321,7 @@ export function ContentInformationChange() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      console.error(
-        'Error fetching next list 1뎁스 선택시 2뎁스 설정되게 리프레쉬 호출: ',
-        error.data.code,
-      );
-      if (error.data.code == 'GE-002')
+      if (error.response?.data?.code == 'GE-002')
         postRefreshToken().then(() => {
           console.error('1뎁스 선택시 2뎁스 설정되게 리프레쉬 토큰 호출이후');
           nextListData1Refetch();
@@ -354,11 +350,7 @@ export function ContentInformationChange() {
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      console.error(
-        'Error fetching next list 2뎁스 선택시 3뎁스 설정되게 리프레쉬 호출: ',
-        error.data.code,
-      );
-      if (error.data.code == 'GE-002')
+      if (error.response?.data?.code == 'GE-002')
         postRefreshToken().then(() => {
           console.error('2뎁스 선택시 3뎁스 설정되게 리프레쉬 토큰 호출이후');
           nextListData1Refetch();

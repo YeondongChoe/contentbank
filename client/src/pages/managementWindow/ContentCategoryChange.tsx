@@ -215,7 +215,7 @@ export function ContentCategoryChange() {
       const requests = typeIds.map((id) =>
         classificationInstance.get(`/v1/category/${id}`).catch((error) => {
           // console.log(error);
-          if (error.data?.code == 'GE-002' && !refreshTokenCalled) {
+          if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
             setRefreshTokenCalled(true);
             postRefreshToken().then(() => {
               setRefreshTokenCalled(false);
@@ -325,8 +325,7 @@ export function ContentCategoryChange() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      console.error('Error fetching next list: ', error.data.code);
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.response?.data?.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
