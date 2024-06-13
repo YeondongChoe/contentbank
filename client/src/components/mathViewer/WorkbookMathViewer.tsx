@@ -42,22 +42,11 @@ export function WorkbookMathViewer({
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
-  // const setMathJax = (mathJax: MathJax3Object) => {
-  //   return mathJax;
-  // };
 
   const offLoader = () => {
     // console.log('off loader');
     setDisplay('block');
   };
-  // console.log(data.quizItemList[1].content);
-  // console.log(Contents2.it_quest);
-
-  // 안정성 문제로 리액트에서 권장하는 방식
-  // const createMarkup = (data: string) => {
-  //   // console.log('on load');
-  //   return { __html: data };
-  // };
 
   const createMarkup = (data: string) => {
     return { __html: data || '' };
@@ -97,7 +86,9 @@ export function WorkbookMathViewer({
           {/* <strong>{data.it_title}</strong> */}
           <MathJax inline dynamic onInitTypeset={() => offLoader()}>
             <ContentQuestion
-              dangerouslySetInnerHTML={createMarkup(Contents2.it_quest)}
+              dangerouslySetInnerHTML={createMarkup(
+                data?.quizItemList[1]?.content,
+              )}
             ></ContentQuestion>
             {/* <ContentAnswer
               dangerouslySetInnerHTML={createMarkup(data.it_answer[0])}

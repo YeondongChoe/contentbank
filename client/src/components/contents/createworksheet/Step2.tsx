@@ -61,6 +61,19 @@ interface ContentItem {
   value: string;
 }
 
+interface Option {
+  idx: number;
+  name: string;
+  value: string;
+}
+
+interface SelectCategory {
+  idx: number;
+  name: string;
+  value: string;
+  options: Option[];
+}
+
 export function Step2() {
   const [getLocalData, setGetLocalData] = useState<WorkbookData | null>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
@@ -69,6 +82,7 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
+  console.log(initialItems);
 
   //나머지 시작 컨텐츠
   const [remainderContent, setRemainderContent] = useState<number>();
@@ -164,36 +178,67 @@ export function Step2() {
   //즐겨찾기
   const bookmark: any[] = [];
 
-  //선택한 문항 목록 정렬
-  const selectCategory = [
+  const [isStartDnD, setIsStartDnd] = useState(false);
+  console.log(isStartDnD);
+
+  // 선택한 문항 배열 정렬
+  const selectArrange: SelectCategory[] = [
     {
-      id: '1',
-      label: '사용자 정렬',
+      idx: 1,
+      name: '사용자 정렬',
       value: '1',
       options: [
-        { id: '0', label: '사용자 정렬', value: '0' },
-        { id: '1', label: '객관식 상단배치', value: '1' },
-        { id: '2', label: '무작위 정렬', value: '2' },
-      ],
-    },
-    {
-      id: '2',
-      label: '문제만 보기',
-      value: '2',
-      options: [
-        { id: '0', label: '문제만 보기', value: '0' },
-        { id: '1', label: '문제+정답', value: '1' },
-        { id: '2', label: '문제+정답+해설', value: '2' },
+        { idx: 0, name: '객관식 상단배치', value: '0' },
+        { idx: 1, name: '무작위 정렬', value: '1' },
       ],
     },
   ];
-  const [listCategory, setListCategory] = useState<string[]>([]);
+
+  const initialValues: { [key: number]: string } = selectArrange.reduce(
+    (acc, el) => {
+      acc[el.idx] = el.name;
+      return acc;
+    },
+    {} as { [key: number]: string },
+  );
+
+  const [defaultValues, setDefaultValues] = useState(initialValues);
+
+  useEffect(() => {
+    if (isStartDnD) {
+      setDefaultValues(initialValues);
+    }
+  }, [isStartDnD]);
+
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
+    idx: number,
   ) => {
-    const value = event.currentTarget.value;
-    setListCategory((prevContent) => [...prevContent, value]);
+    const newValue = (event.target as HTMLButtonElement).value;
+    setDefaultValues((prev) => ({ ...prev, [idx]: newValue }));
   };
+
+  //선택한 문항 보기 정렬
+  const selectCategory = [
+    {
+      idx: '1',
+      name: '문제만 보기',
+      value: '2',
+      options: [
+        { idx: '0', name: '문제만 보기', value: '0' },
+        { idx: '1', name: '문제+정답', value: '1' },
+        { idx: '2', name: '문제+정답+해설', value: '2' },
+      ],
+    },
+  ];
+
+  const [listCategory, setListCategory] = useState<string[]>([]);
+  // const selectListCategoryOption = (
+  //   event: React.MouseEvent<HTMLButtonElement>,
+  // ) => {
+  //   const value = event.currentTarget.value;
+  //   setListCategory((prevContent) => [...prevContent, value]);
+  // };
   const bookmarkSelectCategory = [
     {
       id: '1',
@@ -1033,7 +1078,6 @@ export function Step2() {
     const target = e.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
   };
-  const [isStartDnD, setIsStartDnd] = useState(false);
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
@@ -1218,6 +1262,8 @@ export function Step2() {
                               onDragEnd={whenDragEnd}
                               dragSectionName={'학습지요약'}
                               doubleDnD
+                              isStartDnD={isStartDnD}
+                              setIsStartDnd={setIsStartDnd}
                             >
                               {(dragItem, ref, isDragging, itemIndex) => (
                                 <li
@@ -1739,15 +1785,33 @@ export function Step2() {
               </DiscriptionSection>
               <ContentListSection>
                 <ListFilter>
-                  <Label value="선택한 문항 목록(총45문항)" fontSize="16px" />
+                  <Label
+                    value={`선택한 문항 목록 (총 ${initialItems.length} 문항)`}
+                    fontSize="16px"
+                  />
                   <SelectWrapper>
+                    {selectArrange.map((el) => (
+                      <Select
+                        width={'150px'}
+                        isnormalizedOptions
+                        key={el.idx}
+                        defaultValue={defaultValues[el.idx]}
+                        options={el.options}
+                        onSelect={(event) =>
+                          selectListCategoryOption(event, el.idx)
+                        }
+                        blackMode
+                        isStartDnD={isStartDnD}
+                      ></Select>
+                    ))}
                     {selectCategory.map((el) => (
                       <Select
                         width={'150px'}
-                        key={el.label}
-                        defaultValue={el.label}
+                        isnormalizedOptions
+                        key={el.idx}
+                        defaultValue={el.name}
                         options={el.options}
-                        onSelect={(event) => selectListCategoryOption(event)}
+                        //onSelect={(event) => selectListCategoryOption(event, el.idx)}
                         blackMode
                       ></Select>
                     ))}
