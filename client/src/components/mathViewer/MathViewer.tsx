@@ -81,9 +81,9 @@ export function MathViewer({
           console.error('MathJax typeset error:', err);
         });
 
-      // return () => {
-      //   mathJax.texReset();
-      // };
+      return () => {
+        mathJax.texReset();
+      };
     }
   }, [mathJax, data]);
 
