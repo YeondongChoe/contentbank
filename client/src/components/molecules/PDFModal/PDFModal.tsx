@@ -49,55 +49,18 @@ export function PDFModal({ list }: PDFModalProps) {
                   {item.quizItemList.length ? (
                     item.quizItemList.map((el) => (
                       <div key={`${el?.code} quizItemList sortedList`}>
-                        {el?.type == 'TITLE' ? (
-                          el.content && (
+                        {[
+                          'TITLE',
+                          'QUESTION',
+                          'EXAMPLE',
+                          'ANSWER',
+                          'TIP',
+                          'COMMENTARY',
+                          'HINT',
+                        ].includes(el?.type) &&
+                          el?.content && (
                             <MathViewer data={el.content}></MathViewer>
-                          )
-                        ) : (
-                          <></>
-                        )}
-                        {el?.type == 'QUESTION' ? (
-                          el.content && (
-                            <MathViewer data={el.content}></MathViewer>
-                          )
-                        ) : (
-                          <></>
-                        )}
-                        {el?.type == 'EXAMPLE' ? (
-                          el.content && (
-                            <MathViewer data={el.content}></MathViewer>
-                          )
-                        ) : (
-                          <></>
-                        )}
-                        {el?.type == 'ANSWER' ? (
-                          el.content && (
-                            <MathViewer data={el.content}></MathViewer>
-                          )
-                        ) : (
-                          <></>
-                        )}
-                        {el?.type == 'TIP' ? (
-                          el.content && (
-                            <MathViewer data={el.content}></MathViewer>
-                          )
-                        ) : (
-                          <></>
-                        )}
-                        {el?.type == 'COMMENTARY' ? (
-                          el.content && (
-                            <MathViewer data={el.content}></MathViewer>
-                          )
-                        ) : (
-                          <></>
-                        )}
-                        {el?.type == 'HINT' ? (
-                          el.content && (
-                            <MathViewer data={el.content}></MathViewer>
-                          )
-                        ) : (
-                          <></>
-                        )}
+                          )}
                       </div>
                     ))
                   ) : (
