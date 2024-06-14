@@ -340,14 +340,14 @@ export function ContentList({
     const containerWidth = textRef.current?.clientWidth || 0;
 
     if (textWidth > containerWidth) {
-      target.classList.add('on');
+      target?.classList.add('on');
     }
   };
 
   const hideTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     const target = e.currentTarget.children[2];
     // console.log(target.classList);
-    target.classList.remove('on');
+    target?.classList.remove('on');
   };
 
   return (
@@ -530,184 +530,357 @@ export function ContentList({
                   </Tooltip>
                 </span>
                 <i className="line"></i>
-                <span className="width_80px">
+                <span
+                  className="width_80px tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
                   <strong className="title">교육과정</strong>
-                  <span className="tag">
-                    {item.quizCategoryList ? (
-                      <>
-                        {item.quizCategoryList.length !== 0 ? (
-                          item.quizCategoryList.map((el, idx) => (
-                            <span
-                              key={`quizCategoryList quizCategory:교육과정 ${idx}`}
-                            >
-                              {el.quizCategory.교육과정
-                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교육과정}`
-                                : ''}
-                            </span>
-                          ))
-                        ) : (
-                          <span></span>
-                        )}
-                      </>
-                    ) : (
-                      <span></span>
-                    )}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span className="width_50px">
-                  <strong className="title">학교급</strong>
-                  <span className="tag">
-                    {item.quizCategoryList ? (
-                      <>
-                        {item.quizCategoryList.length !== 0 ? (
-                          item.quizCategoryList.map((el, idx) => (
-                            <span
-                              key={`quizCategoryList quizCategory:학교급 ${idx}`}
-                            >
-                              {el.quizCategory.학교급
-                                ? `${el.quizCategory.학교급}`
-                                : ''}
-                            </span>
-                          ))
-                        ) : (
-                          <span></span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="tag"></span>
-                    )}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span className="width_50px">
-                  <strong className="title">학년</strong>
-                  <span className="tag">
-                    {item.quizCategoryList ? (
-                      <>
-                        {item.quizCategoryList.length !== 0 ? (
-                          item.quizCategoryList.map((el, idx) => (
-                            <span
-                              key={`quizCategoryList quizCategory:학년 ${idx}`}
-                            >
-                              {el.quizCategory.학년
-                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학년}`
-                                : ''}
-                            </span>
-                          ))
-                        ) : (
-                          <span></span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="tag"></span>
-                    )}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span className="width_60px">
-                  <strong className="title">학기</strong>
-                  <span className="tag">
-                    {item.quizCategoryList ? (
-                      <>
-                        {item.quizCategoryList.length !== 0 ? (
-                          item.quizCategoryList.map((el, idx) => (
-                            <span
-                              key={`quizCategoryList quizCategory:학기 ${idx}`}
-                            >
-                              {el.quizCategory.학기
-                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학기}`
-                                : ''}
-                            </span>
-                          ))
-                        ) : (
-                          <span></span>
-                        )}
-                      </>
-                    ) : (
-                      <span></span>
-                    )}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span className="width_60px">
-                  <strong className="title">교과</strong>
-                  <span className="tag">
-                    {item.quizCategoryList ? (
-                      <>
-                        {item.quizCategoryList.length !== 0 ? (
-                          item.quizCategoryList.map((el, idx) => (
-                            <span
-                              key={`quizCategoryList quizCategory:교과 ${idx}`}
-                            >
-                              {el.quizCategory.교과
-                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교과}`
-                                : ''}
-                            </span>
-                          ))
-                        ) : (
-                          <span></span>
-                        )}
-                      </>
-                    ) : (
-                      <span></span>
-                    )}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span className="width_80px">
-                  <strong className="title">과목</strong>
-                  <span className="tag">
-                    {item.quizCategoryList ? (
-                      <>
-                        {item.quizCategoryList.length !== 0 ? (
-                          item.quizCategoryList.map((el, idx) => (
-                            <span
-                              key={`quizCategoryList quizCategory:과목 ${idx}`}
-                            >
-                              {el.quizCategory.과목
-                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.과목}`
-                                : ''}
-                            </span>
-                          ))
-                        ) : (
-                          <span></span>
-                        )}
-                      </>
-                    ) : (
-                      <span></span>
-                    )}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span>
-                  <strong className="title">대단원</strong>
-                  <span className="tag">
-                    {item.quizCategoryList ? (
-                      <>
-                        {item.quizCategoryList.length !== 0 ? (
-                          item.quizCategoryList.map((el, idx) => (
-                            <span
-                              key={`quizCategoryList quizCategory:대단원 ${idx}`}
-                            >
-                              {el.quizCategory.대단원
-                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
-                                : ''}
-                            </span>
-                          ))
-                        ) : (
-                          <span></span>
-                        )}
-                      </>
-                    ) : (
-                      <span></span>
-                    )}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span className="width_50px tag_s">
+
                   {item.quizCategoryList ? (
-                    <>
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:교육과정 ${idx}`}
+                          >
+                            {el.quizCategory.교육과정
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교육과정}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:교육과정 ${idx}`}
+                          >
+                            {el.quizCategory.교육과정
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교육과정}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
+                </span>
+                <i className="line"></i>
+                <span
+                  className="width_50px tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">학교급</strong>
+
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:학교급 ${idx}`}
+                          >
+                            {el.quizCategory.학교급
+                              ? `${el.quizCategory.학교급}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:학교급 ${idx}`}
+                          >
+                            {el.quizCategory.학교급
+                              ? `${el.quizCategory.학교급}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
+                </span>
+                <i className="line"></i>
+                <span
+                  className="width_50px tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">학년</strong>
+
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:학년 ${idx}`}
+                          >
+                            {el.quizCategory.학년
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학년}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:학년 ${idx}`}
+                          >
+                            {el.quizCategory.학년
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학년}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
+                </span>
+                <i className="line"></i>
+                <span
+                  className="width_60px tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">학기</strong>
+
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:학기 ${idx}`}
+                          >
+                            {el.quizCategory.학기
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학기}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:학기 ${idx}`}
+                          >
+                            {el.quizCategory.학기
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학기}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
+                </span>
+                <i className="line"></i>
+                <span
+                  className="width_60px tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">교과</strong>
+
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:교과 ${idx}`}
+                          >
+                            {el.quizCategory.교과
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교과}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:교과 ${idx}`}
+                          >
+                            {el.quizCategory.교과
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교과}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
+                </span>
+                <i className="line"></i>
+                <span
+                  className="width_80px tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">과목</strong>
+
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:과목 ${idx}`}
+                          >
+                            {el.quizCategory.과목
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.과목}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:과목 ${idx}`}
+                          >
+                            {el.quizCategory.과목
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.과목}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
+                </span>
+                <i className="line"></i>
+                <span
+                  className=" tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">대단원</strong>
+
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:대단원 ${idx}`}
+                          >
+                            {el.quizCategory.대단원
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span
+                            key={`quizCategoryList quizCategory:대단원 ${idx}`}
+                          >
+                            {el.quizCategory.대단원
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
+                              : ''}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
+                </span>
+                <i className="line"></i>
+                <span
+                  className="width_50px tag_s tooltip_wrapper "
+                  onMouseOver={(e) => showTooltip(e)}
+                  onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length > 0 ? (
                         item.quizCategoryList.map((item, idx) => (
                           <span key={`문항타입 ${idx}`}>
@@ -720,10 +893,30 @@ export function ContentList({
                       ) : (
                         <span></span>
                       )}
-                    </>
+                    </span>
                   ) : (
-                    <span></span>
+                    <span className="tag"></span>
                   )}
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
+                    <span>
+                      {item.quizCategoryList.length > 0 ? (
+                        item.quizCategoryList.map((item, idx) => (
+                          <span key={`문항타입 ${idx}`}>
+                            {item.quizCategory.문항타입 &&
+                            item.quizCategory.문항타입.length > 1
+                              ? `${item.quizCategory.문항타입}`
+                              : ``}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  </Tooltip>
                 </span>
                 <i className="line"></i>
                 <span className="width_10">{item.createdBy} </span>
