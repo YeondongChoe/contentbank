@@ -929,61 +929,73 @@ export function Classification() {
                   </Title>
                   <MathViewerWrapper>
                     {sortedList.length > 0 ? (
-                      sortedList[sortedList.length - 1]?.quizItemList?.map(
-                        (el) => (
-                          <div key={`${el?.code} quizItemList sortedList`}>
-                            {el?.type == 'TITLE' ? (
-                              el.content && (
-                                <MathViewer data={el.content}></MathViewer>
-                              )
-                            ) : (
-                              <></>
-                            )}
-                            {el?.type == 'QUESTION' ? (
-                              el.content && (
-                                <MathViewer data={el.content}></MathViewer>
-                              )
-                            ) : (
-                              <></>
-                            )}
-                            {el?.type == 'EXAMPLE' ? (
-                              el.content && (
-                                <MathViewer data={el.content}></MathViewer>
-                              )
-                            ) : (
-                              <></>
-                            )}
-                            {el?.type == 'ANSWER' ? (
-                              el.content && (
-                                <MathViewer data={el.content}></MathViewer>
-                              )
-                            ) : (
-                              <></>
-                            )}
-                            {el?.type == 'TIP' ? (
-                              el.content && (
-                                <MathViewer data={el.content}></MathViewer>
-                              )
-                            ) : (
-                              <></>
-                            )}
-                            {el?.type == 'COMMENTARY' ? (
-                              el.content && (
-                                <MathViewer data={el.content}></MathViewer>
-                              )
-                            ) : (
-                              <></>
-                            )}
-                            {el?.type == 'HINT' ? (
-                              el.content && (
-                                <MathViewer data={el.content}></MathViewer>
-                              )
-                            ) : (
-                              <></>
-                            )}
-                          </div>
-                        ),
-                      )
+                      <>
+                        {sortedList[sortedList.length - 1]?.quizItemList
+                          .length ? (
+                          sortedList[sortedList.length - 1]?.quizItemList?.map(
+                            (el) => (
+                              <div key={`${el?.code} quizItemList sortedList`}>
+                                {el?.type == 'TITLE' ? (
+                                  el.content && (
+                                    <MathViewer data={el.content}></MathViewer>
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                                {el?.type == 'QUESTION' ? (
+                                  el.content && (
+                                    <MathViewer data={el.content}></MathViewer>
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                                {el?.type == 'EXAMPLE' ? (
+                                  el.content && (
+                                    <MathViewer data={el.content}></MathViewer>
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                                {el?.type == 'ANSWER' ? (
+                                  el.content && (
+                                    <MathViewer data={el.content}></MathViewer>
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                                {el?.type == 'TIP' ? (
+                                  el.content && (
+                                    <MathViewer data={el.content}></MathViewer>
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                                {el?.type == 'COMMENTARY' ? (
+                                  el.content && (
+                                    <MathViewer data={el.content}></MathViewer>
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                                {el?.type == 'HINT' ? (
+                                  el.content && (
+                                    <MathViewer data={el.content}></MathViewer>
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                            ),
+                          )
+                        ) : (
+                          <>
+                            <ValueNone
+                              info="등록된 데이터가 없습니다"
+                              textOnly
+                            />
+                          </>
+                        )}
+                      </>
                     ) : (
                       <>
                         <ValueNone info="문항을 선택해 주세요" textOnly />
@@ -1013,16 +1025,6 @@ export function Classification() {
                             height="35px"
                             textAlign="left"
                             $padding="0 50px 0 10px"
-                            // rightIconSrc={
-                            //   <IconWrapper>
-                            //     <button
-                            //       type="button"
-                            //       className="icon_button primery"
-                            //     >
-                            //       수정
-                            //     </button>
-                            //   </IconWrapper>
-                            // }
                             onClick={() => changeUnitClassification(idx)}
                           >
                             <span>
@@ -1052,81 +1054,90 @@ export function Classification() {
                 </UnitClassifications>
 
                 {/* 교육과정 라디오 버튼 부분 */}
-                {categoryItems[0] && categoryList && (
+                {/* 체크박스에 선택된 리스트없을시 안보이게 */}
+                {sortedList.length > 0 ? (
                   <>
-                    {[categoryItems[0]].map((item) => (
-                      <div
-                        className={`1depth`}
-                        id={`${item.name}`}
-                        key={`selected1depth ${item.idx}`}
-                      >
-                        <ButtonFormatRadio
-                          titleText={`${item.name}`}
-                          list={categoryList[0]}
-                          selected={selected1depth}
-                          onChange={(e) => handleRadioCheck(e)}
-                          // defaultChecked={}
-                          checkedInput={radio1depthCheck}
-                          $margin={`10px 0 0 0`}
-                        />
-                      </div>
-                    ))}
+                    {categoryItems[0] && categoryList && (
+                      <>
+                        {[categoryItems[0]].map((item) => (
+                          <div
+                            className={`1depth`}
+                            id={`${item.name}`}
+                            key={`selected1depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              titleText={`${item.name}`}
+                              list={categoryList[0]}
+                              selected={selected1depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio1depthCheck}
+                              $margin={`10px 0 0 0`}
+                            />
+                          </div>
+                        ))}
 
-                    {radio1depthCheck?.code !== '' &&
-                      selected1depth !== '' &&
-                      [categoryItems[1]].map((item) => (
-                        <div
-                          className={`2depth`}
-                          id={`${item.name}`}
-                          key={`selected2depth ${item.idx}`}
-                        >
-                          <ButtonFormatRadio
-                            titleText={`${item.name}`}
-                            list={nextList1depth}
-                            selected={selected2depth}
-                            onChange={(e) => handleRadioCheck(e)}
-                            // defaultChecked={}
-                            checkedInput={radio2depthCheck}
-                          />
-                        </div>
-                      ))}
+                        {radio1depthCheck?.code !== '' &&
+                          selected1depth !== '' &&
+                          [categoryItems[1]].map((item) => (
+                            <div
+                              className={`2depth`}
+                              id={`${item.name}`}
+                              key={`selected2depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                titleText={`${item.name}`}
+                                list={nextList1depth}
+                                selected={selected2depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio2depthCheck}
+                              />
+                            </div>
+                          ))}
 
-                    {radio2depthCheck?.code !== '' &&
-                      selected2depth !== '' &&
-                      [categoryItems[2]].map((item) => (
-                        <div
-                          className={`3depth`}
-                          id={`${item.name}`}
-                          key={`selected3depth ${item.idx}`}
-                        >
-                          <ButtonFormatRadio
-                            titleText={`${item.name}`}
-                            list={nextList2depth}
-                            selected={selected3depth}
-                            onChange={(e) => handleRadioCheck(e)}
-                            // defaultChecked={}
-                            checkedInput={radio3depthCheck}
-                          />
-                        </div>
-                      ))}
-                    {radio3depthCheck?.code !== '' &&
-                      selected3depth !== '' &&
-                      [categoryItems[3]].map((item) => (
-                        <div
-                          className={`4depth`}
-                          id={`${item.name}`}
-                          key={`selected4depth ${item.idx}`}
-                        >
-                          <ButtonFormatRadio
-                            titleText={`${item.name}`}
-                            list={nextList3depth}
-                            selected={selected4depth}
-                            onChange={(e) => handleRadioCheck(e)}
-                            // defaultChecked={}
-                            checkedInput={radio4depthCheck}
-                          />
-                        </div>
-                      ))}
+                        {radio2depthCheck?.code !== '' &&
+                          selected2depth !== '' &&
+                          [categoryItems[2]].map((item) => (
+                            <div
+                              className={`3depth`}
+                              id={`${item.name}`}
+                              key={`selected3depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                titleText={`${item.name}`}
+                                list={nextList2depth}
+                                selected={selected3depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio3depthCheck}
+                              />
+                            </div>
+                          ))}
+                        {radio3depthCheck?.code !== '' &&
+                          selected3depth !== '' &&
+                          [categoryItems[3]].map((item) => (
+                            <div
+                              className={`4depth`}
+                              id={`${item.name}`}
+                              key={`selected4depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                titleText={`${item.name}`}
+                                list={nextList3depth}
+                                selected={selected4depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio4depthCheck}
+                              />
+                            </div>
+                          ))}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <ValueNone info="문항을 선택해 주세요" textOnly />
                   </>
                 )}
 
