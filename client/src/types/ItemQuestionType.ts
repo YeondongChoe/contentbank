@@ -87,9 +87,11 @@ export type Source = {
 };
 
 type QuizCategory = {
+  교육과정?: string;
   교과?: string;
   과목?: string;
   학년?: number;
+  학기?: number;
   난이도?: string;
   학교급?: string;
   문항타입?: string;

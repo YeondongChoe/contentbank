@@ -339,8 +339,6 @@ export function ContentList({
     const textWidth = calculateTextWidth(textNodes);
     const containerWidth = textRef.current?.clientWidth || 0;
 
-    console.log(target);
-    console.log(textWidth, containerWidth);
     if (textWidth > containerWidth) {
       target.classList.add('on');
     }
@@ -499,29 +497,33 @@ export function ContentList({
                             {el.quizCategory.sources
                               ? el.quizCategory.sources.map(
                                   (el) =>
-                                    `${el.출처 ? `${el.출처}` : ''} ${el.문항번호 ? `${el.문항번호}` : ''} ${el.출제년도 ? `${el.출제년도}` : ''} ${el.교재속성 ? `${el.교재속성}` : ''} ${el.출판사 ? `${el.출판사}` : ''} ${el.시리즈 ? `${el.시리즈}` : ''} ${el.교재명 ? `${el.교재명}` : ''} ${el.교재페이지 ? `${el.교재페이지}` : ''} ${el.교재번호 ? `${el.교재번호}` : ''} ${el.출판년도 ? `${el.출판년도}` : ''} ${el.내신형식 ? `${el.내신형식}` : ''} ${el.학교명 ? `${el.학교명}` : ''} ${el.학사일정 ? `${el.학사일정}` : ''} ${el.내신페이지 ? `${el.내신페이지}` : ''} ${el.내신배점 ? `${el.내신배점}` : ''} ${el.기출속성 ? `${el.기출속성}` : ''} ${el.주관사 ? `${el.주관사}` : ''} ${el.기출명 ? `${el.기출명}` : ''} ${el.시행학제 ? `${el.시행학제}` : ''} ${el.시행학년 ? `${el.시행학년}` : ''} ${el.시험지타입 ? `${el.시험지타입}` : ''} ${el.기출배점 ? `${el.기출배점}` : ''} ${el.기출일시 ? `${el.기출일시}` : ''} `,
+                                    `${el.출처 ? `${el.출처}` : ''} ${el.문항번호 ? `${el.문항번호}` : ''} ${el.출제년도 ? `${el.출제년도}` : ''} ${el.교재속성 ? `${el.교재속성}` : ''} ${el.출판사 ? `${el.출판사}` : ''} ${el.시리즈 ? `${el.시리즈}` : ''} ${el.교재명 ? `${el.교재명}` : ''} ${el.교재페이지 ? `${el.교재페이지}` : ''} ${el.교재번호 ? `${el.교재번호}` : ''} ${el.출판년도 ? `${el.출판년도}` : ''} ${el.내신형식 ? `${el.내신형식}` : ''} ${el.학교명 ? `${el.학교명}` : ''} ${el.학사일정 ? `${el.학사일정}` : ''} ${el.내신페이지 ? `${el.내신페이지}` : ''} ${el.내신배점 ? `${el.내신배점}` : ''} ${el.기출속성 ? `${el.기출속성}` : ''} ${el.주관사 ? `${el.주관사}` : ''} ${el.기출명 ? `${el.기출명}` : ''} ${el.시행학제 ? `${el.시행학제}` : ''} ${el.시행학년 ? `${el.시행학년} 학년` : ''} ${el.시험지타입 ? `${el.시험지타입}` : ''} ${el.기출배점 ? `${el.기출배점}` : ''} ${el.기출일시 ? `${el.기출일시}` : ''} `,
                                 )
-                              : '-'}
+                              : ''}
                           </span>
                         ))
                       ) : (
-                        <span>-</span>
+                        <span></span>
                       )}
                     </span>
                   ) : (
-                    <span className="tag">-</span>
+                    <span className="tag"></span>
                   )}
 
-                  <Tooltip arrowPosition={`left: 50%`} ref={tooltipRef}>
+                  <Tooltip
+                    arrowPosition={`left: 50%`}
+                    width={'130px'}
+                    ref={tooltipRef}
+                  >
                     <span>
                       {item.quizCategoryList.map((el, idx) => (
                         <span key={`quizCategoryList quizCategory: ${idx}`}>
                           {el.quizCategory.sources
                             ? el.quizCategory.sources.map(
                                 (el) =>
-                                  `${el.출처 ? `${el.출처}` : ''} ${el.문항번호 ? `${el.문항번호}` : ''} ${el.출제년도 ? `${el.출제년도}` : ''} ${el.교재속성 ? `${el.교재속성}` : ''} ${el.출판사 ? `${el.출판사}` : ''} ${el.시리즈 ? `${el.시리즈}` : ''} ${el.교재명 ? `${el.교재명}` : ''} ${el.교재페이지 ? `${el.교재페이지}` : ''} ${el.교재번호 ? `${el.교재번호}` : ''} ${el.출판년도 ? `${el.출판년도}` : ''} ${el.내신형식 ? `${el.내신형식}` : ''} ${el.학교명 ? `${el.학교명}` : ''} ${el.학사일정 ? `${el.학사일정}` : ''} ${el.내신페이지 ? `${el.내신페이지}` : ''} ${el.내신배점 ? `${el.내신배점}` : ''} ${el.기출속성 ? `${el.기출속성}` : ''} ${el.주관사 ? `${el.주관사}` : ''} ${el.기출명 ? `${el.기출명}` : ''} ${el.시행학제 ? `${el.시행학제}` : ''} ${el.시행학년 ? `${el.시행학년}` : ''} ${el.시험지타입 ? `${el.시험지타입}` : ''} ${el.기출배점 ? `${el.기출배점}` : ''} ${el.기출일시 ? `${el.기출일시}` : ''} `,
+                                  `${el.출처 ? `${el.출처}` : ''} ${el.문항번호 ? `,${el.문항번호}` : ''} ${el.출제년도 ? `,${el.출제년도}` : ''} ${el.교재속성 ? `,${el.교재속성}` : ''} ${el.출판사 ? `,${el.출판사}` : ''} ${el.시리즈 ? `,${el.시리즈}` : ''} ${el.교재명 ? `,${el.교재명}` : ''} ${el.교재페이지 ? `,${el.교재페이지}` : ''} ${el.교재번호 ? `,${el.교재번호}` : ''} ${el.출판년도 ? `,${el.출판년도}` : ''} ${el.내신형식 ? `,${el.내신형식}` : ''} ${el.학교명 ? `,${el.학교명}` : ''} ${el.학사일정 ? `,${el.학사일정}` : ''} ${el.내신페이지 ? `,${el.내신페이지}` : ''} ${el.내신배점 ? `,${el.내신배점}` : ''} ${el.기출속성 ? `,${el.기출속성}` : ''} ${el.주관사 ? `,${el.주관사}` : ''} ${el.기출명 ? `,${el.기출명}` : ''} ${el.시행학제 ? `,${el.시행학제}` : ''} ${el.시행학년 ? `,${el.시행학년} 학년` : ''} ${el.시험지타입 ? `,${el.시험지타입}` : ''} ${el.기출배점 ? `,${el.기출배점}` : ''} ${el.기출일시 ? `,${el.기출일시}` : ''} `,
                               )
-                            : '-'}
+                            : ''}
                         </span>
                       ))}
                     </span>
@@ -530,45 +532,198 @@ export function ContentList({
                 <i className="line"></i>
                 <span className="width_80px">
                   <strong className="title">교육과정</strong>
-                  <span className="tag">{item.idx}</span>
+                  <span className="tag">
+                    {item.quizCategoryList ? (
+                      <>
+                        {item.quizCategoryList.length !== 0 ? (
+                          item.quizCategoryList.map((el, idx) => (
+                            <span
+                              key={`quizCategoryList quizCategory:교육과정 ${idx}`}
+                            >
+                              {el.quizCategory.교육과정
+                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교육과정}`
+                                : ''}
+                            </span>
+                          ))
+                        ) : (
+                          <span></span>
+                        )}
+                      </>
+                    ) : (
+                      <span></span>
+                    )}
+                  </span>
                 </span>
                 <i className="line"></i>
                 <span className="width_50px">
                   <strong className="title">학교급</strong>
-                  <span className="tag">{item.idx}</span>
+                  <span className="tag">
+                    {item.quizCategoryList ? (
+                      <>
+                        {item.quizCategoryList.length !== 0 ? (
+                          item.quizCategoryList.map((el, idx) => (
+                            <span
+                              key={`quizCategoryList quizCategory:학교급 ${idx}`}
+                            >
+                              {el.quizCategory.학교급
+                                ? `${el.quizCategory.학교급}`
+                                : ''}
+                            </span>
+                          ))
+                        ) : (
+                          <span></span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="tag"></span>
+                    )}
+                  </span>
                 </span>
                 <i className="line"></i>
                 <span className="width_50px">
                   <strong className="title">학년</strong>
-                  <span className="tag">{item.idx}</span>
+                  <span className="tag">
+                    {item.quizCategoryList ? (
+                      <>
+                        {item.quizCategoryList.length !== 0 ? (
+                          item.quizCategoryList.map((el, idx) => (
+                            <span
+                              key={`quizCategoryList quizCategory:학년 ${idx}`}
+                            >
+                              {el.quizCategory.학년
+                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학년}`
+                                : ''}
+                            </span>
+                          ))
+                        ) : (
+                          <span></span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="tag"></span>
+                    )}
+                  </span>
                 </span>
                 <i className="line"></i>
-                <span className="width_50px">
+                <span className="width_60px">
                   <strong className="title">학기</strong>
-                  <span className="tag">{item.idx}</span>
+                  <span className="tag">
+                    {item.quizCategoryList ? (
+                      <>
+                        {item.quizCategoryList.length !== 0 ? (
+                          item.quizCategoryList.map((el, idx) => (
+                            <span
+                              key={`quizCategoryList quizCategory:학기 ${idx}`}
+                            >
+                              {el.quizCategory.학기
+                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학기}`
+                                : ''}
+                            </span>
+                          ))
+                        ) : (
+                          <span></span>
+                        )}
+                      </>
+                    ) : (
+                      <span></span>
+                    )}
+                  </span>
                 </span>
                 <i className="line"></i>
-                <span className="width_50px">
+                <span className="width_60px">
                   <strong className="title">교과</strong>
-                  <span className="tag">{item.idx}</span>
+                  <span className="tag">
+                    {item.quizCategoryList ? (
+                      <>
+                        {item.quizCategoryList.length !== 0 ? (
+                          item.quizCategoryList.map((el, idx) => (
+                            <span
+                              key={`quizCategoryList quizCategory:교과 ${idx}`}
+                            >
+                              {el.quizCategory.교과
+                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교과}`
+                                : ''}
+                            </span>
+                          ))
+                        ) : (
+                          <span></span>
+                        )}
+                      </>
+                    ) : (
+                      <span></span>
+                    )}
+                  </span>
                 </span>
                 <i className="line"></i>
-                <span>
+                <span className="width_80px">
                   <strong className="title">과목</strong>
-                  <span className="tag">{item.idx}</span>
+                  <span className="tag">
+                    {item.quizCategoryList ? (
+                      <>
+                        {item.quizCategoryList.length !== 0 ? (
+                          item.quizCategoryList.map((el, idx) => (
+                            <span
+                              key={`quizCategoryList quizCategory:과목 ${idx}`}
+                            >
+                              {el.quizCategory.과목
+                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.과목}`
+                                : ''}
+                            </span>
+                          ))
+                        ) : (
+                          <span></span>
+                        )}
+                      </>
+                    ) : (
+                      <span></span>
+                    )}
+                  </span>
                 </span>
                 <i className="line"></i>
                 <span>
-                  <strong className="title"> 대단원</strong>
-                  <span className="tag">{item.idx}</span>
+                  <strong className="title">대단원</strong>
+                  <span className="tag">
+                    {item.quizCategoryList ? (
+                      <>
+                        {item.quizCategoryList.length !== 0 ? (
+                          item.quizCategoryList.map((el, idx) => (
+                            <span
+                              key={`quizCategoryList quizCategory:대단원 ${idx}`}
+                            >
+                              {el.quizCategory.대단원
+                                ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
+                                : ''}
+                            </span>
+                          ))
+                        ) : (
+                          <span></span>
+                        )}
+                      </>
+                    ) : (
+                      <span></span>
+                    )}
+                  </span>
                 </span>
                 <i className="line"></i>
-                <span className="width_50px">
-                  {item.quizCategoryList.length == 0 && <>-</>}
-                  {item.quizCategoryList.length > 0 &&
-                    item.quizCategoryList.map((item) => (
-                      <>{item.quizCategory.문항타입}</>
-                    ))}
+                <span className="width_50px tag_s">
+                  {item.quizCategoryList ? (
+                    <>
+                      {item.quizCategoryList.length > 0 ? (
+                        item.quizCategoryList.map((item, idx) => (
+                          <span key={`문항타입 ${idx}`}>
+                            {item.quizCategory.문항타입 &&
+                            item.quizCategory.문항타입.length > 1
+                              ? `${item.quizCategory.문항타입}`
+                              : ``}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </>
+                  ) : (
+                    <span></span>
+                  )}
                 </span>
                 <i className="line"></i>
                 <span className="width_10">{item.createdBy} </span>
@@ -723,6 +878,13 @@ const ItemLayout = styled.span`
     border-radius: 5px;
     background-color: ${COLOR.BORDER_GRAY};
   }
+  .tag_s {
+    font-weight: bold;
+    font-size: 12px;
+    padding: 2px;
+    border-radius: 5px;
+    background-color: ${COLOR.BORDER_GRAY};
+  }
   .line {
     width: 1px;
     height: 15px;
@@ -739,6 +901,9 @@ const ItemLayout = styled.span`
   }
   .width_50px {
     width: 50px;
+  }
+  .width_60px {
+    width: 60px;
   }
   .width_80px {
     width: 80px;
