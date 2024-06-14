@@ -13,11 +13,18 @@ const StyleDatePicker = styled(DatePicker)`
 export const CommonDate = ({
   $button,
   setDate,
+  minDate,
 }: {
   $button?: JSX.Element;
   setDate: React.Dispatch<React.SetStateAction<string>>;
+  minDate?: Date | string | null;
 }) => {
   const [pickDate, setPickDate] = useState<Date | null>(null);
+
+  // minDate가 문자열인 경우 Date 객체로 변환
+  const parsedMinDate =
+    typeof minDate === 'string' ? parseISO(minDate) : minDate;
+
   useEffect(() => {
     if (pickDate) {
       console.log('날자 pickDate :', pickDate);
@@ -26,15 +33,6 @@ export const CommonDate = ({
       setDate(formattedDate);
     }
   }, [pickDate, setDate]);
-
-  // useEffect(() => {
-  //   if (pickDate) {
-  //     console.log('날자 pickDate :', pickDate);
-  //     //const date = pickDate.toISOString().slice(0, 19);
-  //     const formattedDate = format(pickDate, 'yyyy-MM-dd HH:mm:ss');
-  //     setDate(formattedDate);
-  //   }
-  // }, [pickDate, setDate]);
 
   return (
     <span>
@@ -50,6 +48,7 @@ export const CommonDate = ({
         showMonthDropdown
         showYearDropdown
         customInput={$button}
+        minDate={parsedMinDate}
       />
     </span>
   );

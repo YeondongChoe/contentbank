@@ -95,6 +95,7 @@ export function ChangeHistory() {
         <SelectWrapper>
           <CommonDate
             setDate={setStartDate}
+            minDate={startDate}
             $button={
               <IconButton
                 width={'140px'}

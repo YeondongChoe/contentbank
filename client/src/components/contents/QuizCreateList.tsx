@@ -518,6 +518,7 @@ export function QuizCreateList() {
             <span> ~ </span>
             <CommonDate
               setDate={setEndDate}
+              minDate={startDate}
               $button={
                 <IconButton
                   width={'125px'}

@@ -540,6 +540,7 @@ export function QuizManagementList() {
             )}
             <CommonDate
               setDate={setStartDate}
+              minDate={startDate}
               $button={
                 <IconButton
                   width={'125px'}
