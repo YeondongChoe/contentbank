@@ -581,21 +581,21 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_50px tooltip_wrapper "
+                  className="width_60px tooltip_wrapper "
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">학교급</strong>
 
                   {item.quizCategoryList ? (
-                    <span className="tag ellipsis" ref={textRef}>
+                    <span className=" tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
                         item.quizCategoryList.map((el, idx) => (
                           <span
                             key={`quizCategoryList quizCategory:학교급 ${idx}`}
                           >
                             {el.quizCategory.학교급
-                              ? `${el.quizCategory.학교급}`
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학교급}`
                               : ''}
                           </span>
                         ))
@@ -618,7 +618,7 @@ export function ContentList({
                             key={`quizCategoryList quizCategory:학교급 ${idx}`}
                           >
                             {el.quizCategory.학교급
-                              ? `${el.quizCategory.학교급}`
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학교급}`
                               : ''}
                           </span>
                         ))
@@ -875,10 +875,11 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_50px tag_s tooltip_wrapper "
+                  className="width_60px tag_s tooltip_wrapper "
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
+                  <span></span>
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length > 0 ? (
@@ -908,7 +909,7 @@ export function ContentList({
                           <span key={`문항타입 ${idx}`}>
                             {item.quizCategory.문항타입 &&
                             item.quizCategory.문항타입.length > 1
-                              ? `${item.quizCategory.문항타입}`
+                              ? `${idx != 0 ? ',' : ''} ${item.quizCategory.문항타입}`
                               : ``}
                           </span>
                         ))
