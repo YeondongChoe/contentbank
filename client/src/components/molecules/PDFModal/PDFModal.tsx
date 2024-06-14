@@ -6,7 +6,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReactToPrint from 'react-to-print';
 import { styled } from 'styled-components';
 
-import { Icon, IconButton } from '../../../components/atom';
+import { Icon, IconButton, ValueNone } from '../../../components/atom';
 import { MathViewer } from '../../../components/mathViewer';
 import { QuizListType } from '../../../types';
 import { COLOR } from '../../constants';
@@ -27,13 +27,6 @@ export function PDFModal({ list }: PDFModalProps) {
 
   return (
     <>
-      {/* <Icon
-        width={'20px'}
-        height={'20px'}
-        src={''}
-        onClick={() => printPDF()}
-        cursor
-      /> */}
       <IconButtonWrapper>
         <IconButton
           $iconOlny
@@ -53,90 +46,65 @@ export function PDFModal({ list }: PDFModalProps) {
             {sortedList.map((item) => (
               <div key={`${item.idx} pdf list`} className="A4_paper">
                 <Contents>
-                  {item.quizItemList &&
+                  {item.quizItemList.length ? (
                     item.quizItemList.map((el) => (
                       <div key={`${el?.code} quizItemList sortedList`}>
-                        <MathViewer>
-                          {el?.type == 'TITLE' ? (
-                            el.content && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: el.content || '',
-                                }}
-                              ></div>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                          {el?.type == 'QUESTION' ? (
-                            el.content && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: el.content || '',
-                                }}
-                              ></div>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                          {el?.type == 'EXAMPLE' ? (
-                            el.content && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: el.content || '',
-                                }}
-                              ></div>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                          {el?.type == 'ANSWER' ? (
-                            el.content && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: el.content || '',
-                                }}
-                              ></div>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                          {el?.type == 'TIP' ? (
-                            el.content && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: el.content || '',
-                                }}
-                              ></div>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                          {el?.type == 'COMMENTARY' ? (
-                            el.content && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: el.content || '',
-                                }}
-                              ></div>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                          {el?.type == 'HINT' ? (
-                            el.content && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: el.content || '',
-                                }}
-                              ></div>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                        </MathViewer>
+                        {el?.type == 'TITLE' ? (
+                          el.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )
+                        ) : (
+                          <></>
+                        )}
+                        {el?.type == 'QUESTION' ? (
+                          el.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )
+                        ) : (
+                          <></>
+                        )}
+                        {el?.type == 'EXAMPLE' ? (
+                          el.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )
+                        ) : (
+                          <></>
+                        )}
+                        {el?.type == 'ANSWER' ? (
+                          el.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )
+                        ) : (
+                          <></>
+                        )}
+                        {el?.type == 'TIP' ? (
+                          el.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )
+                        ) : (
+                          <></>
+                        )}
+                        {el?.type == 'COMMENTARY' ? (
+                          el.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )
+                        ) : (
+                          <></>
+                        )}
+                        {el?.type == 'HINT' ? (
+                          el.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )
+                        ) : (
+                          <></>
+                        )}
                       </div>
-                    ))}
+                    ))
+                  ) : (
+                    <>
+                      <ValueNone info="문항 데이터가 없습니다" textOnly />
+                    </>
+                  )}
                 </Contents>
               </div>
             ))}
