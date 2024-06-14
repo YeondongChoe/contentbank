@@ -68,6 +68,8 @@ export function ContentList({
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   const dropDownList: DropDownItemProps[] = [
     {
@@ -296,28 +298,59 @@ export function ContentList({
     setCheckList([]);
   }, [tabVeiw, page]);
 
-  const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    const target = e.currentTarget.children[2];
-    // console.log(target.classList);
-    target.classList.add('on');
+  useEffect(() => {
+    // console.log('list/----------*', list);
+  }, [list]);
+  useEffect(() => {
+    // console.log('list/----------*list', list);
+    setQuestionList(list);
+  }, []);
+
+  useEffect(() => {
+    // console.log('questionList/----------*', questionList);
+  }, [questionList]);
+
+  // 툴팁 토글
+  const calculateTextWidth = (nodes: NodeList) => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (context && textRef.current) {
+      const style = window.getComputedStyle(textRef.current);
+      context.font = `${style.fontSize} ${style.fontFamily}`;
+
+      let totalWidth = 0;
+      nodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          totalWidth += context.measureText(node.textContent || '').width;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          totalWidth += context.measureText(
+            (node as HTMLElement).innerText,
+          ).width;
+        }
+      });
+      return totalWidth;
+    }
+    return 0;
   };
+
+  const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    const textNodes = e.currentTarget.children[1].childNodes; // 말줄임 요소
+    const target = e.currentTarget.children[2]; // 숨겨진 툴팁박스
+    const textWidth = calculateTextWidth(textNodes);
+    const containerWidth = textRef.current?.clientWidth || 0;
+
+    console.log(target);
+    console.log(textWidth, containerWidth);
+    if (textWidth > containerWidth) {
+      target.classList.add('on');
+    }
+  };
+
   const hideTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     const target = e.currentTarget.children[2];
     // console.log(target.classList);
     target.classList.remove('on');
   };
-
-  useEffect(() => {
-    console.log('list/----------*', list);
-  }, [list]);
-  useEffect(() => {
-    console.log('list/----------*list', list);
-    setQuestionList(list);
-  }, []);
-
-  useEffect(() => {
-    console.log('questionList/----------*', questionList);
-  }, [questionList]);
 
   return (
     <>
@@ -452,15 +485,46 @@ export function ContentList({
               )}
               <ItemLayout>
                 <span
-                  className="width_80px tooltip_wrapper"
+                  className="width_80px tooltip_wrapper "
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">출처</strong>
 
-                  <span className="tag">{item.idx}</span>
-                  <Tooltip arrowPosition={`left: 50%`}>
-                    <span>출처 툴팁</span>
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length !== 0 ? (
+                        item.quizCategoryList.map((el, idx) => (
+                          <span key={`quizCategoryList quizCategory: ${idx}`}>
+                            {el.quizCategory.sources
+                              ? el.quizCategory.sources.map(
+                                  (el) =>
+                                    `${el.출처 ? `${el.출처}` : ''} ${el.문항번호 ? `${el.문항번호}` : ''} ${el.출제년도 ? `${el.출제년도}` : ''} ${el.교재속성 ? `${el.교재속성}` : ''} ${el.출판사 ? `${el.출판사}` : ''} ${el.시리즈 ? `${el.시리즈}` : ''} ${el.교재명 ? `${el.교재명}` : ''} ${el.교재페이지 ? `${el.교재페이지}` : ''} ${el.교재번호 ? `${el.교재번호}` : ''} ${el.출판년도 ? `${el.출판년도}` : ''} ${el.내신형식 ? `${el.내신형식}` : ''} ${el.학교명 ? `${el.학교명}` : ''} ${el.학사일정 ? `${el.학사일정}` : ''} ${el.내신페이지 ? `${el.내신페이지}` : ''} ${el.내신배점 ? `${el.내신배점}` : ''} ${el.기출속성 ? `${el.기출속성}` : ''} ${el.주관사 ? `${el.주관사}` : ''} ${el.기출명 ? `${el.기출명}` : ''} ${el.시행학제 ? `${el.시행학제}` : ''} ${el.시행학년 ? `${el.시행학년}` : ''} ${el.시험지타입 ? `${el.시험지타입}` : ''} ${el.기출배점 ? `${el.기출배점}` : ''} ${el.기출일시 ? `${el.기출일시}` : ''} `,
+                                )
+                              : '-'}
+                          </span>
+                        ))
+                      ) : (
+                        <span>-</span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag">-</span>
+                  )}
+
+                  <Tooltip arrowPosition={`left: 50%`} ref={tooltipRef}>
+                    <span>
+                      {item.quizCategoryList.map((el, idx) => (
+                        <span key={`quizCategoryList quizCategory: ${idx}`}>
+                          {el.quizCategory.sources
+                            ? el.quizCategory.sources.map(
+                                (el) =>
+                                  `${el.출처 ? `${el.출처}` : ''} ${el.문항번호 ? `${el.문항번호}` : ''} ${el.출제년도 ? `${el.출제년도}` : ''} ${el.교재속성 ? `${el.교재속성}` : ''} ${el.출판사 ? `${el.출판사}` : ''} ${el.시리즈 ? `${el.시리즈}` : ''} ${el.교재명 ? `${el.교재명}` : ''} ${el.교재페이지 ? `${el.교재페이지}` : ''} ${el.교재번호 ? `${el.교재번호}` : ''} ${el.출판년도 ? `${el.출판년도}` : ''} ${el.내신형식 ? `${el.내신형식}` : ''} ${el.학교명 ? `${el.학교명}` : ''} ${el.학사일정 ? `${el.학사일정}` : ''} ${el.내신페이지 ? `${el.내신페이지}` : ''} ${el.내신배점 ? `${el.내신배점}` : ''} ${el.기출속성 ? `${el.기출속성}` : ''} ${el.주관사 ? `${el.주관사}` : ''} ${el.기출명 ? `${el.기출명}` : ''} ${el.시행학제 ? `${el.시행학제}` : ''} ${el.시행학년 ? `${el.시행학년}` : ''} ${el.시험지타입 ? `${el.시험지타입}` : ''} ${el.기출배점 ? `${el.기출배점}` : ''} ${el.기출일시 ? `${el.기출일시}` : ''} `,
+                              )
+                            : '-'}
+                        </span>
+                      ))}
+                    </span>
                   </Tooltip>
                 </span>
                 <i className="line"></i>
@@ -633,20 +697,31 @@ const ItemLayout = styled.span`
     max-width: 150px;
     font-weight: normal;
   }
+
+  /* 두줄 이상 ellipsis 처리  */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
   .title {
     width: 100%;
     font-weight: 600;
     margin-bottom: 2px;
   }
   .tag {
-    display: flex;
+    /* display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 5px; */
+    margin: 0 5px;
     padding: 3px 5px;
-    border-radius: 10px;
-    background-color: #aeaeae;
+    border-radius: 5px;
+    background-color: ${COLOR.BORDER_GRAY};
   }
   .line {
     width: 1px;

@@ -97,11 +97,6 @@ export function Login() {
         removeAuthorityCookie('username', { path: '/' });
       }
 
-      // console.log(
-      //   'response.data=== ',
-      //   response.data.code,
-      //   response.data.data.initPasswordCode,
-      // );
       // 코드값 S-005 일시 최초 비번등록 페이지로
       if (response.data.code == 'S-005') {
         navigate(`/init-change-password`, {

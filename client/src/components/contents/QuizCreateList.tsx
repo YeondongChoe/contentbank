@@ -78,14 +78,14 @@ export function QuizCreateList() {
       const res = await quizService.get(
         !onSearch
           ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성'}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+          : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
       return res.data.data;
     } else {
       const res = await quizService.get(
         !onSearch
           ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성'}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
       return res.data.data;
     }
@@ -309,12 +309,12 @@ export function QuizCreateList() {
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === 'Enter') {
-      console.log('searchValue', searchValue);
       setSearchKeywordValue(searchValue);
       quizDataRefetch();
     }
     if (event.key === 'Backspace') {
       setSearchKeywordValue('');
+      quizDataRefetch();
     }
   };
 

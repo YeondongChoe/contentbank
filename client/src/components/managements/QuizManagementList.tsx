@@ -76,7 +76,7 @@ export function QuizManagementList() {
       const res = await quizService.get(
         !onSearch
           ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성'}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
       return res.data.data;
     }
@@ -142,15 +142,18 @@ export function QuizManagementList() {
     // 쿼리 스트링 변경 로직
     setSearchKeywordValue(searchValue);
     if (searchValue == '') setSearchKeywordValue('');
+    quizDataRefetch();
   };
   const filterSearchValueEnter = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === 'Enter') {
       setSearchKeywordValue(searchValue);
+      quizDataRefetch();
     }
     if (event.key === 'Backspace') {
       setSearchKeywordValue('');
+      quizDataRefetch();
     }
   };
 
@@ -601,7 +604,7 @@ export function QuizManagementList() {
               onChange={(e) => {
                 setSearchValue(e.target.value);
               }}
-              placeholder="문항코드, 중단원, 담당자 검색"
+              placeholder="대단원, 담당자를 입력해주세요"
               width={'30%'}
               height="40px"
             />
