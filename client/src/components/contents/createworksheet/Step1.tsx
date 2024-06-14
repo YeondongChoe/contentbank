@@ -285,7 +285,7 @@ export function Step1() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.response.data.code == 'GE-002') postRefreshToken();
     }
   };
 
@@ -369,7 +369,7 @@ export function Step1() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.response.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -394,7 +394,7 @@ export function Step1() {
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.response.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -419,7 +419,7 @@ export function Step1() {
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.response.data.code == 'GE-002') postRefreshToken();
       return undefined;
     }
   };
@@ -549,7 +549,7 @@ export function Step1() {
       );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
-      if (error?.data?.code == 'GE-002') {
+      if (error.response?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
       }

@@ -541,7 +541,7 @@ export function Classification() {
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
       console.error('Error fetching next list: ', error?.data?.code);
-      if (error?.data?.code == 'GE-002') {
+      if (error.response?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
       }

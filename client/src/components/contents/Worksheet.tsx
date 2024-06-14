@@ -114,7 +114,7 @@ export function Worksheet() {
       //console.log('data', data);
       setCategory(data);
     } catch (error: any) {
-      if (error.data.code == 'GE-002') postRefreshToken();
+      if (error.response.data.code == 'GE-002') postRefreshToken();
     }
   };
   useEffect(() => {

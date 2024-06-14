@@ -178,7 +178,7 @@ export function QuizCreateList() {
       console.log('itemsList', itemsList);
       setCategory(itemsList);
     } catch (error: any) {
-      if (error.data?.code == 'GE-002') postRefreshToken();
+      if (error.response.data?.code == 'GE-002') postRefreshToken();
     }
   };
   useEffect(() => {

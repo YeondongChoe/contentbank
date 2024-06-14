@@ -255,50 +255,8 @@ export function QuizList({
                             `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
                         </span>
 
-                        {dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
-                          (item: Source) => (
-                            <span key={`출처 배열 ${item.출처}`}>
-                              {item?.출처}
-                              {item?.기출명}
-                              {item?.문항번호}
-                              {item?.출제년도}
-                              {item?.교재속성}
-                              {item?.출판사}
-                              {item?.시리즈}
-                              {item?.교재명}
-                              {item?.교재페이지}
-                              {item?.교재번호}
-                              {item?.출판년도}
-                              {item?.내신형식}
-                              {item?.학교명}
-                              {item?.학사일정}
-                              {item?.내신페이지}
-                              {item?.내신배점}
-                              {item?.기출속성}
-                              {item?.주관사}
-                              {item?.기출명}
-                              {item?.시행학제}
-                              {item?.시행학년}
-                              {item?.시험지타입}
-                              {item?.기출배점}
-                              {item?.기출일시}
-                            </span>
-                          ),
-                        )}
-                      </span>
-
-                      <Tooltip className="tooltip" ref={tooltipRef}>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.교과},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.과목},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.학년},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.난이도},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.학교급},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
-                          ,{dragItem.quizCategoryList[0]?.quizCategory?.대단원},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.소단원},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
+                        {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
+                          dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
                             (item: Source) => (
                               <span key={`출처 배열 ${item.출처}`}>
                                 {item?.출처}
@@ -328,6 +286,51 @@ export function QuizList({
                               </span>
                             ),
                           )}
+                      </span>
+
+                      <Tooltip className="tooltip" ref={tooltipRef}>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.교과},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.과목},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.학년},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.난이도},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.학교급},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                          ,{dragItem.quizCategoryList[0]?.quizCategory?.대단원},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.소단원},
+                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원},
+                          {dragItem.quizCategoryList[0]?.quizCategory
+                            ?.sources &&
+                            dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
+                              (item: Source) => (
+                                <span key={`출처 배열 ${item.출처}`}>
+                                  {item?.출처}
+                                  {item?.기출명}
+                                  {item?.문항번호}
+                                  {item?.출제년도}
+                                  {item?.교재속성}
+                                  {item?.출판사}
+                                  {item?.시리즈}
+                                  {item?.교재명}
+                                  {item?.교재페이지}
+                                  {item?.교재번호}
+                                  {item?.출판년도}
+                                  {item?.내신형식}
+                                  {item?.학교명}
+                                  {item?.학사일정}
+                                  {item?.내신페이지}
+                                  {item?.내신배점}
+                                  {item?.기출속성}
+                                  {item?.주관사}
+                                  {item?.기출명}
+                                  {item?.시행학제}
+                                  {item?.시행학년}
+                                  {item?.시험지타입}
+                                  {item?.기출배점}
+                                  {item?.기출일시}
+                                </span>
+                              ),
+                            )}
                         </span>
                       </Tooltip>
                     </MetaGroup>
