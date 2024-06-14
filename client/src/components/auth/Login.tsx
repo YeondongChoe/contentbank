@@ -115,7 +115,19 @@ export function Login() {
   });
 
   const submitLogin: SubmitHandler<LoginType> = (auth) => {
-    onLogin(auth);
+    if (IdInputRef.current?.value == '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '아이디를 입력해 주세요.',
+      });
+    } else if (PasswordInputRef.current?.value == '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '비밀번호를 입력해 주세요.',
+      });
+    } else {
+      onLogin(auth);
+    }
   };
 
   const checkIconselected = () => {
