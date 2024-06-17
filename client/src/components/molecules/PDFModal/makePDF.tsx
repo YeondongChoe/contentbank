@@ -1,10 +1,10 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-export const makePdf = () => {
+export const makePdf = (): { viewWithPdf: () => Promise<File> } => {
   // Convert a single HTML element to an image
   const converToImg = async (element: HTMLElement): Promise<string> => {
-    const canvas = await html2canvas(element, { scale: 1.5 });
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
     return canvas.toDataURL('image/png', 1.0);
   };
 

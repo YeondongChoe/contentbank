@@ -826,7 +826,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className=" tooltip_wrapper "
+                  className="width_150px tooltip_wrapper "
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
