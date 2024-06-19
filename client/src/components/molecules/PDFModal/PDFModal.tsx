@@ -22,6 +22,7 @@ export function PDFModal({ list }: PDFModalProps) {
   const pdf = makePdf();
   const printDivRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [scrollIndex, setScrollIndex] = useState(0);
 
   // const printPDF = async () => {
   //   await pdf.viewWithPdf();
@@ -51,9 +52,13 @@ export function PDFModal({ list }: PDFModalProps) {
 
       <Component>
         <ScrollWrapper>
-          <PerfectScrollbar>
+          <PerfectScrollbar
+          // onScrollY={(container) =>
+          //   console.log(`scrolled to: ${container.scrollTop}. ${scrollIndex}`)
+          // }
+          >
             <ContentsWrapper ref={printDivRef}>
-              {sortedList.map((item) => (
+              {sortedList.map((item, idx) => (
                 <MathViewerList
                   key={`${item.idx} pdf list`}
                   className="A4_paper"

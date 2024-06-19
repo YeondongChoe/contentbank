@@ -1147,10 +1147,10 @@ export function Classification() {
                           } 
                           건`}
                             <ArrowButtonWrapper>
-                              <button onClick={() => nextHighlight()}>
+                              <button onClick={() => prevHighlight()}>
                                 <IoMdArrowDropup />
                               </button>
-                              <button onClick={() => prevHighlight()}>
+                              <button onClick={() => nextHighlight()}>
                                 <IoMdArrowDropdown />
                               </button>
                             </ArrowButtonWrapper>
