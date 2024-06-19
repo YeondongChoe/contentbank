@@ -123,6 +123,8 @@ export function QuizCreateList() {
       setCategoryTitles(categoryData.data.data.categoryItemList);
     }
   }, [categoryData]);
+  console.log(categoryTitles);
+  console.log(categoryList);
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {

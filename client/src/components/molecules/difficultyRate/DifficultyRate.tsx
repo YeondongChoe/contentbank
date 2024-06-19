@@ -1,104 +1,130 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
+import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
 import { IoMdClose } from 'react-icons/io';
 import styled from 'styled-components';
 
+import { quizService } from '../../../api/axios';
+import { DifficultyDataType } from '../../../types/WorkbookType';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Input, Button, Label, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
 
 type DifficultyRateProps = {
   onClose: () => void;
+  difficultyData: DifficultyDataType[];
+  setDifficultyData: React.Dispatch<React.SetStateAction<DifficultyDataType[]>>;
 };
 
-export function DifficultyRate({ onClose }: DifficultyRateProps) {
-  const [bestValue, setBestValue] = useState([
-    { lower: '0' },
-    { lowerMiddle: '0' },
-    { middle: '30' },
-    { upper: '30' },
-    { best: '40' },
-  ]);
-  const bestValuesum = bestValue
-    .reduce((acc, curr) => {
-      return acc + parseInt(Object.values(curr)[0], 10);
-    }, 0)
-    .toString();
-  const [upperValue, setUpperValue] = useState([
-    { lower: '0' },
-    { lowerMiddle: '20' },
-    { middle: '30' },
-    { upper: '30' },
-    { best: '20' },
-  ]);
-  const upperValuesum = upperValue
-    .reduce((acc, curr) => {
-      return acc + parseInt(Object.values(curr)[0], 10);
-    }, 0)
-    .toString();
-  const [middleValue, setMiddleValue] = useState([
-    { lower: '10' },
-    { lowerMiddle: '20' },
-    { middle: '40' },
-    { upper: '20' },
-    { best: '10' },
-  ]);
-  const middleValuesum = middleValue
-    .reduce((acc, curr) => {
-      return acc + parseInt(Object.values(curr)[0], 10);
-    }, 0)
-    .toString();
-  const [lowerMiddleValue, setLowerMiddleValue] = useState([
-    { lower: '20' },
-    { lowerMiddle: '40' },
-    { middle: '30' },
-    { upper: '10' },
-    { best: '0' },
-  ]);
-  const lowerMiddleValuesum = lowerMiddleValue
-    .reduce((acc, curr) => {
-      return acc + parseInt(Object.values(curr)[0], 10);
-    }, 0)
-    .toString();
-  const [lowerValue, setLowerValue] = useState([
-    { lower: '40' },
-    { lowerMiddle: '40' },
-    { middle: '20' },
-    { upper: '0' },
-    { best: '0' },
-  ]);
-  const lowerValuesum = lowerValue
-    .reduce((acc, curr) => {
-      return acc + parseInt(Object.values(curr)[0], 10);
-    }, 0)
-    .toString();
+export function DifficultyRate({
+  onClose,
+  difficultyData,
+  setDifficultyData,
+}: DifficultyRateProps) {
+  const [processDifficultyData, setProcessDifficultyData] = useState<
+    DifficultyDataType[]
+  >([]);
+  //최초 값이 들어왔을때 총점 가공 데이타
+  useEffect(() => {
+    if (difficultyData && difficultyData.length > 0) {
+      const updatedData = difficultyData.map((data) => ({
+        ...data,
+        title: `${data.type === 'LOWER' ? '하' : data.type === 'INTERMEDIATE' ? '중하' : data.type === 'MEDIUM' ? '중' : data.type === 'UPPER' ? '상' : data.type === 'BEST' ? '최상' : 0} 선택시`,
+        total:
+          data.best + data.upper + data.medium + data.intermediate + data.lower,
+      }));
+      setProcessDifficultyData(updatedData);
+    }
+  }, [difficultyData]);
+
+  //인풋의 값을 바꿜을 때 갱신하며 총점도 갱신
+  const handleInputChange = (
+    index: number,
+    field: keyof DifficultyDataType,
+    value: string,
+  ) => {
+    const newValue = parseInt(value, 10);
+    const boundedValue = isNaN(newValue)
+      ? 0
+      : Math.min(Math.max(newValue, 0), 100);
+
+    setProcessDifficultyData((prevState) => {
+      const updatedData = [...prevState];
+      updatedData[index] = {
+        ...updatedData[index],
+        [field]: boundedValue,
+        total:
+          updatedData[index].best +
+          updatedData[index].upper +
+          updatedData[index].medium +
+          updatedData[index].intermediate +
+          updatedData[index].lower +
+          (field === 'best'
+            ? boundedValue - updatedData[index].best
+            : field === 'upper'
+              ? boundedValue - updatedData[index].upper
+              : field === 'medium'
+                ? boundedValue - updatedData[index].medium
+                : field === 'intermediate'
+                  ? boundedValue - updatedData[index].intermediate
+                  : field === 'lower'
+                    ? boundedValue - updatedData[index].lower
+                    : 0),
+      };
+
+      return updatedData;
+    });
+  };
 
   const saveDifficultyRate = () => {
-    const bestValuesumNum = parseInt(bestValuesum);
-    const upperValuesumNum = parseInt(upperValuesum);
-    const middleValuesumNum = parseInt(middleValuesum);
-    const lowerMiddleValuesumNum = parseInt(lowerMiddleValuesum);
-    const lowerValuesumNum = parseInt(lowerValuesum);
+    const allTotalsAreHundred = processDifficultyData.every(
+      (el) => el.total === 100,
+    );
+    const data = prepareDataForServer(processDifficultyData);
 
-    if (
-      bestValuesumNum !== 100 ||
-      upperValuesumNum !== 100 ||
-      middleValuesumNum !== 100 ||
-      lowerMiddleValuesumNum !== 100 ||
-      lowerValuesumNum !== 100
-    ) {
+    if (!allTotalsAreHundred) {
       openToastifyAlert({
         type: 'error',
         text: '난이도 별로 출제 비율의 총 합은 각각 100이 되어야합니다. 다시 확인해주세요.',
       });
     } else {
+      setDifficultyData(data);
+      putDifficultyData({ difficultyList: data });
+    }
+  };
+
+  //서버로 요청보낼 데이터 추출
+  const prepareDataForServer = (data: DifficultyDataType[]) => {
+    return data.map(({ total, title, ...rest }) => rest);
+  };
+
+  // 난이도 비율 수정 api
+  const putDifficulty = async (data: any) => {
+    return await quizService.put(`/v1/difficulty`, data);
+  };
+
+  const { mutate: putDifficultyData } = useMutation({
+    mutationFn: putDifficulty,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
       openToastifyAlert({
         type: 'success',
         text: '난이도 별로 출제 비율이 저장되었습니다.',
       });
       onClose();
-    }
-  };
+    },
+  });
 
   return (
     <Container>
@@ -122,12 +148,12 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
         <CategoryOption>최상</CategoryOption>
         <CategoryOption>총합</CategoryOption>
       </Category>
-      <div>
-        <InputWrapper>
-          <Label value="최상 선택시" fontSize="16px" width="200px" />
-          {bestValue.map((best, i) => (
+      <InputContainer>
+        {processDifficultyData.map((item, i) => (
+          <InputWrapper key={i}>
+            <Label value={item.title as string} fontSize="16px" width="200px" />
             <Input
-              key={i}
+              className="하"
               width="80px"
               height="40px"
               padding="10px"
@@ -135,28 +161,11 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               fontSize="14px"
               type="text"
               placeholderTextAlign
-              value={Object.values(best)[0]}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                setBestValue((prevState) => {
-                  const updatedValue = [...prevState];
-                  const parsedValue = parseInt(newValue, 10);
-                  const newValueToSet = isNaN(parsedValue)
-                    ? 0
-                    : Math.min(Math.max(parsedValue, 0), 100);
-                  // 상태 업데이트
-                  updatedValue[i] = {
-                    ...updatedValue[i],
-                    [Object.keys(best)[0]]: newValueToSet.toString(),
-                  };
-
-                  return updatedValue;
-                });
-              }}
-            />
-          ))}
-          {Number(bestValuesum) > 100 ? (
+              value={item.lower.toString()}
+              onChange={(e) => handleInputChange(i, 'lower', e.target.value)}
+            ></Input>
             <Input
+              className="중하"
               width="80px"
               height="40px"
               padding="10px"
@@ -164,11 +173,13 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               fontSize="14px"
               type="text"
               placeholderTextAlign
-              error
-              value={bestValuesum}
-            />
-          ) : (
+              value={item.intermediate.toString()}
+              onChange={(e) =>
+                handleInputChange(i, 'intermediate', e.target.value)
+              }
+            ></Input>
             <Input
+              className="중"
               width="80px"
               height="40px"
               padding="10px"
@@ -176,15 +187,11 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               fontSize="14px"
               type="text"
               placeholderTextAlign
-              value={bestValuesum}
-            />
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <Label value="상 선택시" fontSize="16px" width="200px" />
-          {upperValue.map((upper, i) => (
+              value={item.medium.toString()}
+              onChange={(e) => handleInputChange(i, 'medium', e.target.value)}
+            ></Input>
             <Input
-              key={i}
+              className="상"
               width="80px"
               height="40px"
               padding="10px"
@@ -192,28 +199,11 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               fontSize="14px"
               type="text"
               placeholderTextAlign
-              value={Object.values(upper)[0]}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                setUpperValue((prevState) => {
-                  const updatedValue = [...prevState];
-                  const parsedValue = parseInt(newValue, 10);
-                  const newValueToSet = isNaN(parsedValue)
-                    ? 0
-                    : Math.min(Math.max(parsedValue, 0), 100);
-                  // 상태 업데이트
-                  updatedValue[i] = {
-                    ...updatedValue[i],
-                    [Object.keys(upper)[0]]: newValueToSet.toString(),
-                  };
-
-                  return updatedValue;
-                });
-              }}
-            />
-          ))}
-          {Number(upperValuesum) > 100 ? (
+              value={item.upper.toString()}
+              onChange={(e) => handleInputChange(i, 'upper', e.target.value)}
+            ></Input>
             <Input
+              className="최상"
               width="80px"
               height="40px"
               padding="10px"
@@ -221,11 +211,11 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               fontSize="14px"
               type="text"
               placeholderTextAlign
-              error
-              value={upperValuesum}
-            />
-          ) : (
+              value={item.best.toString()}
+              onChange={(e) => handleInputChange(i, 'best', e.target.value)}
+            ></Input>
             <Input
+              className="총합"
               width="80px"
               height="40px"
               padding="10px"
@@ -233,183 +223,12 @@ export function DifficultyRate({ onClose }: DifficultyRateProps) {
               fontSize="14px"
               type="text"
               placeholderTextAlign
-              value={upperValuesum}
-            />
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <Label value="중 선택시" fontSize="16px" width="200px" />
-          {middleValue.map((middle, i) => (
-            <Input
-              key={i}
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              placeholderSize="14px"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              value={Object.values(middle)[0]}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                setMiddleValue((prevState) => {
-                  const updatedValue = [...prevState];
-                  const parsedValue = parseInt(newValue, 10);
-                  const newValueToSet = isNaN(parsedValue)
-                    ? 0
-                    : Math.min(Math.max(parsedValue, 0), 100);
-                  // 상태 업데이트
-                  updatedValue[i] = {
-                    ...updatedValue[i],
-                    [Object.keys(middle)[0]]: newValueToSet.toString(),
-                  };
-
-                  return updatedValue;
-                });
-              }}
-            />
-          ))}
-          {Number(middleValuesum) > 100 ? (
-            <Input
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              error
-              value={middleValuesum}
-            />
-          ) : (
-            <Input
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              value={middleValuesum}
-            />
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <Label value="중하 선택시" fontSize="16px" width="200px" />
-          {lowerMiddleValue.map((lowerMiddle, i) => (
-            <Input
-              key={i}
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              value={Object.values(lowerMiddle)[0]}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                setLowerMiddleValue((prevState) => {
-                  const updatedValue = [...prevState];
-                  const parsedValue = parseInt(newValue, 10);
-                  const newValueToSet = isNaN(parsedValue)
-                    ? 0
-                    : Math.min(Math.max(parsedValue, 0), 100);
-                  // 상태 업데이트
-                  updatedValue[i] = {
-                    ...updatedValue[i],
-                    [Object.keys(lowerMiddle)[0]]: newValueToSet.toString(),
-                  };
-
-                  return updatedValue;
-                });
-              }}
-            />
-          ))}
-          {Number(lowerMiddleValuesum) > 100 ? (
-            <Input
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              error
-              value={lowerMiddleValuesum}
-            />
-          ) : (
-            <Input
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              value={lowerMiddleValuesum}
-            />
-          )}
-        </InputWrapper>
-        <InputWrapper>
-          <Label value="하 선택시" fontSize="16px" width="200px" />
-          {lowerValue.map((lower, i) => (
-            <Input
-              key={i}
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              value={Object.values(lower)[0]}
-              onChange={(e) => {
-                const newValue = e.target.value;
-                setLowerValue((prevState) => {
-                  const updatedValue = [...prevState];
-                  const parsedValue = parseInt(newValue, 10);
-                  const newValueToSet = isNaN(parsedValue)
-                    ? 0
-                    : Math.min(Math.max(parsedValue, 0), 100);
-                  // 상태 업데이트
-                  updatedValue[i] = {
-                    ...updatedValue[i],
-                    [Object.keys(lower)[0]]: newValueToSet.toString(),
-                  };
-
-                  return updatedValue;
-                });
-              }}
-            />
-          ))}
-          {Number(lowerValuesum) > 100 ? (
-            <Input
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              error
-              value={lowerValuesum}
-            />
-          ) : (
-            <Input
-              width="80px"
-              height="40px"
-              padding="10px"
-              border="normal"
-              fontSize="14px"
-              type="text"
-              placeholderTextAlign
-              value={lowerValuesum}
-            />
-          )}
-        </InputWrapper>
-      </div>
+              error={item.total !== 100}
+              value={item.total?.toString()}
+            ></Input>
+          </InputWrapper>
+        ))}
+      </InputContainer>
       <ModalButtonWrapper>
         <Button
           buttonType="button"
@@ -462,6 +281,10 @@ const CategoryOption = styled.div`
   display: flex;
   justify-content: center;
   width: 45px;
+`;
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 const InputWrapper = styled.div`
   display: flex;

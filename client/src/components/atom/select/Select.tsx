@@ -75,7 +75,7 @@ export function Select({
   }, [selectedValue]);
 
   if (setSelectedValue !== undefined && selected && code) {
-    setSelectedValue(code);
+    setSelectedValue(selected);
   }
 
   const normalizedOptions = Array.isArray(options)
