@@ -199,6 +199,7 @@ export function Login() {
                     onChange={field.onChange}
                     value={field.value}
                     innerRef={PasswordInputRef}
+                    maxLength={20}
                   />
                 )}
               />
