@@ -370,6 +370,7 @@ export function EditModal({
                   <Textarea
                     onChange={field.onChange}
                     value={field.value}
+                    maxLength={1000}
                   ></Textarea>
                 )}
               />

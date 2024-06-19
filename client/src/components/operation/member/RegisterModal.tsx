@@ -336,6 +336,7 @@ export function RegisterModal({
             <InputWrapper>
               <Label width="130px" fontSize="15px" value="비고" />
               <Textarea
+                maxLength={1000}
                 onChange={(e) => {
                   setCommentValue(e.target.value);
                 }}
