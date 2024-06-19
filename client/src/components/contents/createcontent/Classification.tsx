@@ -898,7 +898,18 @@ export function Classification() {
         highlightedElements[highlightIndex % highlightedElements.length];
       if (currentElement) {
         currentElement.classList.add('current');
-        currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const container = document.getElementById('scrollTopWrapper');
+        // console.log('container', container?.offsetTop);
+        if (
+          container instanceof HTMLElement &&
+          currentElement instanceof HTMLElement
+        ) {
+          const elementPosition =
+            currentElement.parentElement?.parentElement?.parentElement
+              ?.parentElement?.offsetTop;
+          // console.log('elementPosition', elementPosition);
+          container.scrollTop = elementPosition as number;
+        }
       }
     }
   }, [highlightIndex]);
@@ -972,7 +983,7 @@ export function Classification() {
           item3Width={600}
           item3={
             <ScrollWrapper>
-              <PerfectScrollbar>
+              <PerfectScrollbar id="scrollTopWrapper">
                 <Title>
                   <span className="title_top">문항단원분류</span>
                 </Title>
