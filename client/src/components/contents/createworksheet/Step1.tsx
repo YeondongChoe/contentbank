@@ -111,13 +111,6 @@ interface ItemTreeIdxListType {
   itemTreeIdxList: number[];
 }
 
-type UnitClassificationListType = {
-  title: string;
-  checkValue: number;
-  code: string;
-  checkedDepthList?: number[];
-};
-
 type UnitClassificationType = RadioStateType | ItemTreeIdxListType;
 
 export function Step1() {
@@ -1675,11 +1668,13 @@ export function Step1() {
   const [selectedItemTreeCount, setSelectedItemTreeCount] = useState<number[]>(
     [],
   );
-  console.log(selectedItemTreeCount);
-  //문항수 확인
-  const [receivedQuizCount, setReceivedQuizCount] = useState<number>();
-  console.log(receivedQuizCount);
 
+  //문항수 확인
+  const [receivedQuizCount, setReceivedQuizCount] = useState<number | null>(
+    null,
+  );
+  console.log(receivedQuizCount);
+  console.log(questionNum);
   // step1 선택된 문항 불러오기 api
   const postWorkbookStep1 = async (data: any) => {
     return await quizService.post(`/v1/search/quiz/step/1`, data);
@@ -1703,10 +1698,16 @@ export function Step1() {
       setReceivedQuizCount(response.data.data.quizList.length);
       //받아온 문항수와 선택한 문항수가 같을경우 다음단계
       if (tabVeiw === '단원·유형별') {
-        if (receivedQuizCount && receivedQuizCount === Number(questionNum)) {
+        if (
+          (receivedQuizCount && receivedQuizCount === Number(questionNum)) ||
+          Number(inputValue)
+        ) {
           saveLocalData(response.data.data);
           navigate('/content-create/exam/step2');
         } else {
+          // if (receivedQuizCount) {
+          //   setReceivedQuizCount(null);
+          // }
           openToastifyAlert({
             type: 'error',
             text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
@@ -1717,7 +1718,10 @@ export function Step1() {
           selectEqualScore(null);
         }
       } else if (tabVeiw === '시중교재') {
-        if (receivedQuizCount && receivedQuizCount === Number(questionNum)) {
+        if (
+          (receivedQuizCount && receivedQuizCount === Number(questionNum)) ||
+          Number(inputValue)
+        ) {
           saveLocalData(response.data.data);
           navigate('/content-create/exam/step2');
         } else {
@@ -1751,13 +1755,14 @@ export function Step1() {
         const itemTreeKey = {
           교육과정: isRadioStateType(item[0]) ? item[0].title : '',
           학교급: isRadioStateType(item[1]) ? item[1].title : '',
-          학기: isRadioStateType(item[2]) ? item[2].title : '',
-          학년: isRadioStateType(item[3]) ? item[3].title : '',
+          학년: isRadioStateType(item[2]) ? item[2].title : '',
+          학기: isRadioStateType(item[3]) ? item[3].title : '',
         };
 
         // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
         const itemTreeIdxList =
           (item[4] as ItemTreeIdxListType).itemTreeIdxList || [];
+        //const itemTreeIdxList = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         return {
           itemTreeKey,
@@ -1777,10 +1782,12 @@ export function Step1() {
   const clickNextButton = () => {
     const data = {
       itemTreeKeyList: tabVeiw === '단원·유형별' ? makingdata : null,
-      count: Number(questionNum) || Number(includeQuizList.length),
+      count:
+        tabVeiw !== '수능/모의고사'
+          ? Number(questionNum) || Number(inputValue)
+          : Number(includeQuizList.length),
       //수능/모의고사 경우 어떻게 보내야할지 나중에 수정해야함
-      difficulty:
-        questionLevel === '선택안함' ? null : questionLevel || 'MEDIUM',
+      difficulty: questionLevel === '선택안함' ? null : questionLevel || '',
       type: questionType,
       mock: containMock,
       score: equalScore,
@@ -1791,7 +1798,6 @@ export function Step1() {
       includeList: tabVeiw === '단원·유형별' ? null : includeQuizList,
     };
 
-    console.log(data);
     postStep1Data(data);
   };
 
@@ -1824,6 +1830,10 @@ export function Step1() {
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
+    const sendData = { data: data };
+    const categoryData = makingdata;
+    localStorage.setItem('sendData', JSON.stringify(sendData));
+    localStorage.setItem('sendCategoryData', JSON.stringify(categoryData));
     const sendQuotientData = {
       equalScore: equalScore,
       equalTotalValue: equalTotalValue,
@@ -1833,9 +1843,6 @@ export function Step1() {
       minQuotient: minQuotient,
       maxQuotient: maxQuotient,
     };
-    const sendData = { data: data };
-    // console.log(sendData);
-    localStorage.setItem('sendData', JSON.stringify(sendData));
     if (equalScore === 2) {
       localStorage.setItem(
         'sendQuotientData',
@@ -4437,6 +4444,8 @@ const CategorySection = styled.section`
   flex-direction: column;
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
+  max-height: 750px;
+  overflow-y: auto;
 `;
 const TabWrapper = styled.div`
   width: 100%;
@@ -4453,6 +4462,7 @@ const DivideBar = styled.div`
 `;
 const CategoryWrapper = styled.div`
   width: 100%;
+
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   padding: 10px;
   .line {

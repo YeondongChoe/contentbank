@@ -108,6 +108,15 @@ export interface WorkbookQuotientData {
   quotient: number;
   remainderContent: number;
 }
+export interface WorkbookCategoryData {
+  itemTreeKey: {
+    교육과정: string;
+    학교급: string;
+    학기: string;
+    학년: string;
+  };
+  itemTreeIdxList: number[];
+}
 
 export interface ContentNumQuotient {
   quizNum: number;
