@@ -113,3 +113,14 @@ export interface ContentNumQuotient {
   quizNum: number;
   quotient: number;
 }
+
+export type DifficultyDataType = {
+  type: string;
+  lower: number;
+  medium: number;
+  intermediate: number;
+  upper: number;
+  best: number;
+  total?: number;
+  title?: string;
+};

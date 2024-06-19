@@ -31,6 +31,10 @@ export function Worksheet() {
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
+  // 셀렉트
+  const [selectedSource, setSelectedSource] = useState<string>(''); //출처
+  const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
+  const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
 
   const [page, setPage] = useRecoilState(pageAtom);
 
@@ -55,6 +59,8 @@ export function Worksheet() {
       setCategoryTitles(categoryData.data.data.categoryItemList);
     }
   }, [categoryData]);
+  console.log(categoryTitles);
+  console.log(categoryList);
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
@@ -108,17 +114,17 @@ export function Worksheet() {
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      //console.log('itemsList', itemsList);
+      console.log('itemsList', itemsList);
       //itemsList에서마지막 인덱스(학기) 빼기
-      const data = itemsList.slice(1, 3);
+      //const data = itemsList.slice(0, 3);
       //console.log('data', data);
-      setCategory(data);
+      setCategory(itemsList);
     } catch (error: any) {
       if (error.response.data.code == 'GE-002') postRefreshToken();
     }
   };
   useEffect(() => {
-    //console.log('categoryList', categoryList);
+    console.log('categoryList', categoryList);
   }, [categoryList]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -126,13 +132,27 @@ export function Worksheet() {
     setContent((prevContent) => [...prevContent, value]);
   };
 
+  const [onSearch, setOnSearch] = useState<boolean>(false);
+
   // 학습지 리스트 불러오기 api
   const getWorkbookList = async () => {
-    const res = await workbookInstance.get(
-      `${tabVeiw == '즐겨찾는 학습지' ? `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}` : `/v1/workbook?pageIndex=${page}&pageUnit=${8}`}`,
-    );
-    console.log(`getWorkbook 결과값`, res);
-    return res;
+    if (tabVeiw == '즐겨찾는 학습지') {
+      const res = await workbookInstance.get(
+        !onSearch
+          ? `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}`
+          : `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+      );
+      console.log(`getWorkbook 즐겨찾기 결과값`, res);
+      return res;
+    } else {
+      const res = await workbookInstance.get(
+        !onSearch
+          ? `/v1/workbook?pageIndex=${page}&pageUnit=${8}`
+          : `/v1/workbook?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+      );
+      console.log(`getWorkbook 결과값`, res);
+      return res;
+    }
   };
 
   const {
@@ -158,8 +178,32 @@ export function Worksheet() {
 
   // 검색 기능 함수
   const filterSearchValue = () => {
-    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+    workbookListRefetch();
   };
+
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    // if (event.key === 'Enter') {
+    //   workbookListRefetch();
+    // }
+    if (event.key === 'Backspace') {
+      setSearchValue('');
+      workbookListRefetch();
+    }
+  };
+
+  // 검색용 셀렉트 선택시
+  useEffect(() => {
+    workbookListRefetch();
+  }, [
+    searchValue,
+    selectedSource,
+    selectedCurriculum,
+    selectedLevel,
+    startDate,
+    endDate,
+  ]);
 
   // 학습지 만들기 페이지로 이동
   const openWindowCreateWorksheet = () => {
@@ -223,53 +267,44 @@ export function Worksheet() {
               {/* 출처 */}
               {categoriesE && categoryTitles[16] && (
                 <Select
+                  // onDefaultSelect={() =>
+                  //   handleDefaultSelect(categoryTitles[16]?.code)
+                  // }
                   width={'130px'}
-                  defaultValue={categoryTitles[16].code}
-                  key={categoryTitles[16].code}
-                  options={categoriesE[1]}
+                  defaultValue={categoryTitles[16]?.code}
+                  key={categoryTitles[16]?.code}
+                  options={categoriesE[2]}
                   onSelect={(event) => selectCategoryOption(event)}
+                  setSelectedValue={setSelectedSource}
                 />
               )}
               {/* 교육과정 학교급 학년 학기 */}
-              {categoryList.map((el, idx) => (
+              {categoryList && categoryTitles[0] && (
                 <Select
+                  // onDefaultSelect={() =>
+                  //   handleDefaultSelect(categoryTitles[0]?.code)
+                  // }
                   width={'130px'}
-                  defaultValue={categoryTitles[idx].name}
-                  key={categoryTitles[idx].name}
-                  options={el}
+                  defaultValue={categoryTitles[0]?.code}
+                  key={categoryTitles[0]?.code}
+                  options={categoryList[0]}
                   onSelect={(event) => selectCategoryOption(event)}
+                  setSelectedValue={setSelectedCurriculum}
                 />
-              ))}
-              {/* 교과 */}
-              {/* {categoriesE && categoryTitles[6] && (
+              )}
+              {categoryList && categoryTitles[1] && (
                 <Select
+                  // onDefaultSelect={() =>
+                  //   handleDefaultSelect(categoryTitles[1]?.code)
+                  // }
                   width={'130px'}
-                  defaultValue={categoryTitles[6].code}
-                  key={categoryTitles[6].code}
-                  options={categoriesE[0]}
+                  defaultValue={categoryTitles[1]?.code}
+                  key={categoryTitles[1]?.code}
+                  options={categoryList[1]}
                   onSelect={(event) => selectCategoryOption(event)}
+                  setSelectedValue={setSelectedLevel}
                 />
-              )} */}
-              {/* 과목 */}
-              {/* {categoriesE && categoryTitles[7] && (
-                <Select
-                  width={'130px'}
-                  defaultValue={categoryTitles[7].code}
-                  key={categoryTitles[7].code}
-                  options={categoriesE[1]}
-                  onSelect={(event) => selectCategoryOption(event)}
-                />
-              )} */}
-              {/* 문항타입 */}
-              {/* {categoriesE && categoryTitles[40] && (
-                <Select
-                  width={'130px'}
-                  defaultValue={categoryTitles[40].code}
-                  key={categoryTitles[40].code}
-                  options={categoriesE[3]}
-                  onSelect={(event) => selectCategoryOption(event)}
-                />
-              )} */}
+              )}
               <CommonDate
                 setDate={setStartDate}
                 $button={
@@ -290,6 +325,7 @@ export function Worksheet() {
               <span> ~ </span>
               <CommonDate
                 setDate={setEndDate}
+                minDate={startDate}
                 $button={
                   <IconButton
                     width={'125px'}
@@ -308,10 +344,15 @@ export function Worksheet() {
                 value={searchValue}
                 width={'25%'}
                 height="40px"
-                onClick={() => filterSearchValue()}
-                onKeyDown={(e) => {}}
-                onChange={(e) => setSearchValue(e.target.value)}
-                placeholder="학습지명, 학년, 태그, 작성자 검색."
+                onClick={(e) => filterSearchValue()}
+                onKeyDown={(e) => {
+                  filterSearchValueEnter(e);
+                }}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                  setOnSearch(true);
+                }}
+                placeholder="학습지명, 작성자 검색."
               />
             </SelectWrapper>
             <WorkbookList

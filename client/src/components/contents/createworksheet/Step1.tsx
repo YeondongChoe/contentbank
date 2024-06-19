@@ -40,15 +40,9 @@ import {
   TextbookInfoType,
   TextBookDetailType,
 } from '../../../types/TextbookType';
+import { DifficultyDataType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
-import dummy from '../../constants/data.json';
-
-type RadioState = {
-  title: string;
-  checkValue: number;
-  code: string;
-};
 
 type ProcessTextbookDataType = {
   bookPage: string;
@@ -771,14 +765,36 @@ export function Step1() {
       }
     });
   };
-
+  //난이도
   const [isDifficulty, setIsDifficulty] = useState(false);
+  const [difficultyData, setDifficultyData] = useState<DifficultyDataType[]>(
+    [],
+  );
+
   const openDifficultySetting = () => {
     setIsDifficulty(true);
   };
   const closeDifficultySetting = () => {
     setIsDifficulty(false);
   };
+
+  const getDifficulty = async () => {
+    const res = await quizService.get(`/v1/difficulty`);
+    console.log(res.data.data.difficultyList);
+    return res;
+  };
+  const { data: difficultyRate } = useQuery({
+    queryKey: ['get-difficultyDetail'],
+    queryFn: getDifficulty,
+    meta: {
+      errorMessage: 'get-difficultyDetail 에러 메세지',
+    },
+    //enabled: !!selectedTextbookIdx,
+  });
+
+  useEffect(() => {
+    setDifficultyData(difficultyRate?.data.data.difficultyList);
+  }, [difficultyRate]);
 
   const [isAutoGrading, setIsAutoGrading] = useState(false);
   const checkAutoGrading = () => {
@@ -4263,7 +4279,11 @@ export function Step1() {
       </Wrapper>
       {isDifficulty && (
         <Overlay>
-          <DifficultyRate onClose={closeDifficultySetting} />
+          <DifficultyRate
+            onClose={closeDifficultySetting}
+            difficultyData={difficultyData}
+            setDifficultyData={setDifficultyData}
+          />
         </Overlay>
       )}
       {isEqualScoreModal && (
