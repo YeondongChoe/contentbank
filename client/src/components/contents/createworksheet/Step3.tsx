@@ -63,6 +63,7 @@ export function Step3() {
   }, []);
 
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
+  console.log(initialItems);
 
   useEffect(() => {
     if (getLocalData) {
@@ -275,7 +276,19 @@ export function Step3() {
       //fileName: `${nameValue}_${currentTime}.pdf`,
       fileName: `testYD.pdf`,
     };
-    workbookData(data);
+    if (
+      nameValue === '' ||
+      contentAuthor === '' ||
+      gradeValue === '' ||
+      tag === ''
+    ) {
+      openToastifyAlert({
+        type: 'error',
+        text: '필수 항목을 선택해 주세요.',
+      });
+    } else {
+      workbookData(data);
+    }
   };
 
   const { mutate: workbookData } = useMutation({
@@ -296,11 +309,22 @@ export function Step3() {
     const data: any = {
       commandCode: 0,
       workSheetIdx: null,
-      name: 'Sample Workbook',
-      examiner: 'John Doe',
-      grade: '3',
-      quizCnt: 5,
-      tag: 'EXERCISES',
+      name: nameValue,
+      examiner: contentAuthor,
+      grade: gradeValue,
+      quizCnt: initialItems.length,
+      tag:
+        tag === '연습문제'
+          ? 'EXERCISES'
+          : tag === '일일테스트'
+            ? 'DAILY_TEST'
+            : tag === '모의고사'
+              ? 'PRACTICE_TEST'
+              : tag === '내신대비'
+                ? 'TEST_PREP'
+                : tag === '월말테스트'
+                  ? 'MONTHLY_TEST'
+                  : '',
       autoGrade: true,
       article: {
         type: 'PDF',

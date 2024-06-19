@@ -266,7 +266,6 @@ export function MathviewerAccordion({
       }
     }
   }, [didMount, quizNum]);
-  console.log(contentNumQuotient);
 
   useEffect(() => {
     if (
