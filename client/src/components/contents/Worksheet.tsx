@@ -184,9 +184,9 @@ export function Worksheet() {
   const filterSearchValueEnter = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
-    if (event.key === 'Enter') {
-      workbookListRefetch();
-    }
+    // if (event.key === 'Enter') {
+    //   workbookListRefetch();
+    // }
     if (event.key === 'Backspace') {
       setSearchValue('');
       workbookListRefetch();
@@ -196,8 +196,14 @@ export function Worksheet() {
   // 검색용 셀렉트 선택시
   useEffect(() => {
     workbookListRefetch();
-    setOnSearch(true);
-  }, [selectedSource, selectedCurriculum, selectedLevel, startDate, endDate]);
+  }, [
+    searchValue,
+    selectedSource,
+    selectedCurriculum,
+    selectedLevel,
+    startDate,
+    endDate,
+  ]);
 
   // 학습지 만들기 페이지로 이동
   const openWindowCreateWorksheet = () => {
@@ -342,7 +348,10 @@ export function Worksheet() {
                 onKeyDown={(e) => {
                   filterSearchValueEnter(e);
                 }}
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                  setOnSearch(true);
+                }}
                 placeholder="학습지명, 작성자 검색."
               />
             </SelectWrapper>
