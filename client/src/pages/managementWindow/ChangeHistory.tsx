@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { GrPlan } from 'react-icons/gr';
@@ -7,14 +7,12 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { userInstance, historyService } from '../../api/axios';
+import { historyService } from '../../api/axios';
 import {
-  Button,
   CommonDate,
   IconButton,
   List,
   ListItem,
-  Loader,
   PaginationBox,
   Search,
   Select,
@@ -22,7 +20,7 @@ import {
 } from '../../components';
 import { COLOR } from '../../components/constants';
 import { pageAtom } from '../../store/utilAtom';
-import { HistoryDetailType, HistoryListType } from '../../types';
+import { HistoryDetailType } from '../../types';
 
 export function ChangeHistory() {
   const [content, setContent] = useState<string>('');
@@ -34,11 +32,8 @@ export function ChangeHistory() {
 
   // 히스토리 불러오기 api
   const getHistoryList = async () => {
-    const functionType =
-      (content === '문항 분류 바꾸기' && 'CHANGE_QUIZ_CLASS') ||
-      (content === '문항 내용 바꾸기' && 'CHANGE_QUIZ_CONTENT');
     const res = await historyService.get(
-      `/v1/quiz-manage?pageIndex=${page}&pageUnit=${7}&searchKeyword=${searchValue}&functionType=${content}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+      `/v1/quiz-manage?pageIndex=${page}&pageUnit=${7}&searchKeyword=${searchValue}&functionType=${content === '문항 분류 바꾸기' ? 'CHANGE_QUIZ_CLASS' : content === '문항 내용 바꾸기' ? 'CHANGE_QUIZ_CONTENT' : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
     );
     console.log(`히스토리 get 결과값`, res);
     return res;
@@ -59,11 +54,22 @@ export function ChangeHistory() {
     historyListData?.data.data.quizManageList;
 
   // 검색 기능 함수
-  // const filterSearchValue = () => {
-  //   // 쿼리 스트링 변경 로직
-  //   setSearchValue(value);
-  //   getHistoryList();
-  // };
+  const filterSearchValue = () => {
+    // 쿼리 스트링 변경 로직
+    refetch();
+  };
+
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    // if (event.key === 'Enter') {
+    //   refetch();
+    // }
+    if (event.key === 'Backspace') {
+      setSearchValue('');
+      refetch();
+    }
+  };
 
   // 페이지 조건값 변경시 리랜더링
   useEffect(() => {
@@ -72,7 +78,6 @@ export function ChangeHistory() {
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
-    console.log(event.currentTarget.value);
     setContent(value);
   };
 
@@ -114,6 +119,7 @@ export function ChangeHistory() {
           <span> ~ </span>
           <CommonDate
             setDate={setEndDate}
+            minDate={startDate}
             $button={
               <IconButton
                 width={'140px'}
@@ -131,6 +137,7 @@ export function ChangeHistory() {
 
           {selectCategory.map((el) => (
             <Select
+              isnormalizedOptions
               width={'150px'}
               defaultValue={el.label}
               key={el.label}
@@ -142,8 +149,10 @@ export function ChangeHistory() {
 
         <Search
           value={searchValue}
-          //onClick={() => filterSearchValue()}
-          onKeyDown={(e) => {}}
+          onClick={() => filterSearchValue()}
+          onKeyDown={(e) => {
+            filterSearchValueEnter(e);
+          }}
           onChange={(e) => setSearchValue(e.target.value)}
           placeholder="변경사항,담당자 검색"
           width={'50%'}
