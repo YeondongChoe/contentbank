@@ -37,7 +37,6 @@ export function Worksheet() {
   const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
 
   const [page, setPage] = useRecoilState(pageAtom);
-  console.log(content);
 
   const changeTab = () => {
     setPage(1);
@@ -179,23 +178,23 @@ export function Worksheet() {
 
   // 검색 기능 함수
   const filterSearchValue = () => {
-    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+    workbookListRefetch();
+  };
+
+  const filterSearchValueEnter = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === 'Enter') {
+      workbookListRefetch();
+    }
+    if (event.key === 'Backspace') {
+      setSearchValue('');
+      workbookListRefetch();
+    }
   };
 
   // 검색용 셀렉트 선택시
   useEffect(() => {
-    // console.log('selectedSource', selectedSource);
-    // console.log('selectedCurriculum', selectedCurriculum);
-    // console.log('selectedLevel', selectedLevel);
-    // console.log('selectedGrade', selectedGrade);
-    // console.log('selectedSemester', selectedSemester);
-    // console.log('selectedSubject', selectedSubject);
-    // console.log('selectedCourse', selectedCourse);
-    // console.log('selectedQuestionType', selectedQuestionType);
-    // console.log('selectedOpenStatus', selectedOpenStatus);
-    // console.log('startDate', startDate);
-    // console.log('endDate', endDate);
-    // console.log('searchKeywordValue', searchKeywordValue);
     workbookListRefetch();
     setOnSearch(true);
   }, [selectedSource, selectedCurriculum, selectedLevel, startDate, endDate]);
@@ -320,6 +319,7 @@ export function Worksheet() {
               <span> ~ </span>
               <CommonDate
                 setDate={setEndDate}
+                minDate={startDate}
                 $button={
                   <IconButton
                     width={'125px'}
@@ -338,8 +338,10 @@ export function Worksheet() {
                 value={searchValue}
                 width={'25%'}
                 height="40px"
-                onClick={() => filterSearchValue()}
-                onKeyDown={(e) => {}}
+                onClick={(e) => filterSearchValue()}
+                onKeyDown={(e) => {
+                  filterSearchValueEnter(e);
+                }}
                 onChange={(e) => setSearchValue(e.target.value)}
                 placeholder="학습지명, 작성자 검색."
               />
