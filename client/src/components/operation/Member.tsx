@@ -331,6 +331,7 @@ export function Member() {
               }}
               placeholder="이름, 권한 검색"
               maxLength={20}
+              minLength={2}
             />
           </InputWrapper>
           {isPendingChangeUse ? (

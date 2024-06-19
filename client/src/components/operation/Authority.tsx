@@ -270,33 +270,36 @@ export function Authority() {
   };
 
   // 선택된 권한 수정하기 api
-  const { data: changeAuthorityData, mutate: mutateChangeAuthority } =
-    useMutation({
-      mutationFn: putChangeAuthority,
-      onError: (context: {
-        response: { data: { message: string; code: string } };
-      }) => {
-        openToastifyAlert({
-          type: 'error',
-          text: context.response.data.message,
-        });
-        if (context.response.data.code == 'GE-002') {
-          postRefreshToken();
-        }
-      },
-      onSuccess: (response: { data: { message: string } }) => {
-        openToastifyAlert({
-          type: 'success',
-          text: response.data.message,
-        });
-        //초기화
-        setIsAlertOpen(false);
-        authorityListDataRefetch();
-        setInputValue('');
-        setCheckList([...defaultPermissions]);
-        setIsClickedName(false);
-      },
-    });
+  const {
+    data: changeAuthorityData,
+    mutate: mutateChangeAuthority,
+    isPending: changeAuthorityisPending,
+  } = useMutation({
+    mutationFn: putChangeAuthority,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      //초기화
+      setIsAlertOpen(false);
+      authorityListDataRefetch();
+      setInputValue('');
+      setCheckList([...defaultPermissions]);
+      setIsClickedName(false);
+    },
+  });
   // 선택된 권한 생성하기 api
   const { data: createAuthorityData, mutate: mutateCreateAuthority } =
     useMutation({
@@ -847,11 +850,10 @@ export function Authority() {
       setIsUpdateAuthority(false);
     }
 
-    // 체크리스트 내부에 PermissionInput[] 객체값내부에 checked키값이 true인것이 없으면
     const hasChecked = checkList.some((item) => item.checked);
     setIsCheckNullError(!hasChecked);
 
-    if (inputValue && !isCheckNullError) {
+    if (!isCheckNullError) {
       setIsUpdateAuthority(true);
       setIsCreateNameError(false);
     }
@@ -1521,6 +1523,7 @@ export function Authority() {
                   )}
                 </>
               )}
+              {changeAuthorityisPending && <Loader />}
             </AuthorityListWrapper>
           </PerfectScrollbar>
         </ScrollWrapper>

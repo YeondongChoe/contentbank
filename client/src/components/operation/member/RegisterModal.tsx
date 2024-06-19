@@ -119,9 +119,17 @@ export function RegisterModal({
     //필수 항목 에러처리
     if (Name === '') {
       setIsNameError(true);
-      setNameErrorMessage('필수 항목을 입력해주세요');
+      setNameErrorMessage('이름을 입력해주세요');
       return;
     }
+
+    console.log('Name.lenth', Name.length);
+    if (Name.length < 2) {
+      setIsNameError(true);
+      setNameErrorMessage('이름은 최소 2자 이상입니다');
+      return;
+    }
+
     if (!nameRegex.test(Name)) {
       setIsNameError(true);
       setNameErrorMessage('이름 형식을 맞춰주세요');
@@ -129,12 +137,12 @@ export function RegisterModal({
     }
     if (Id === '') {
       setIsIdError(true);
-      setIdErrorMessage('필수 항목을 입력해주세요');
+      setIdErrorMessage('아이디를 입력해주세요');
       return;
     }
     if (selectedAuthority === '') {
       setIsAuthorityError(true);
-      setAuthorityErrorMessage('필수 항목을 입력해주세요');
+      setAuthorityErrorMessage('권한을 선택해주세요');
       return;
     }
 
