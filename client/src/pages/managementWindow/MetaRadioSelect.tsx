@@ -792,10 +792,10 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
                                             <DepthBlock
                                               key={`depthList${item.code} ${item.name}`}
                                               classNameList={`depth-${item.level}`}
-                                              id={item.code}
+                                              id={item.idx}
                                               branchValue={'change'}
                                               name={item.name}
-                                              value={item.idx}
+                                              value={item?.idx}
                                               level={item?.level}
                                               onChange={(e) =>
                                                 handleSingleCheck(

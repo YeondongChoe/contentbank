@@ -880,7 +880,7 @@ export function ContentCategoryChange() {
                                             defaultChecked
                                             key={`depthList${item?.idx} ${item.name}`}
                                             classNameList={`depth-${item.level}`}
-                                            id={item?.code}
+                                            id={item?.idx}
                                             name={item.name}
                                             value={item?.idx}
                                             level={item?.level}
