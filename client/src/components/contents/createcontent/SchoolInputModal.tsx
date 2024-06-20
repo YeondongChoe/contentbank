@@ -330,6 +330,7 @@ export function SchoolInputModal({
               <input
                 type="text"
                 minLength={2}
+                maxLength={20}
                 value={nameValue}
                 onChange={(e) => {
                   setNameValue(e.target.value);
@@ -425,7 +426,7 @@ const InputButtonWrapper = styled.div`
   height: 40px;
 
   > input {
-    width: calc(100% - 85px);
+    width: 100%;
     border: none;
     border-radius: 5px;
     font-size: 15px;
