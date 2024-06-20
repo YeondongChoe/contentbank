@@ -86,7 +86,7 @@ export type Source = {
   기출일시?: string;
 };
 
-type QuizCategory = {
+export type QuizCategory = {
   교육과정?: string;
   교과?: string;
   과목?: string;

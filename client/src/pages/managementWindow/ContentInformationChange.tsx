@@ -27,6 +27,7 @@ import {
   ItemCategoryType,
   ItemTreeListType,
   ItemTreeType,
+  PaginationType,
   QuizListType,
 } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
@@ -569,7 +570,15 @@ export function ContentInformationChange() {
     };
 
     const res = await quizService.post('/v1/search/quiz/category', data);
-    console.log('/v1/search/quiz/category 응답:', res);
+    console.log(
+      '/v1/search/quiz/category 응답:--------',
+      res.data.data.pagination,
+    );
+    console.log(
+      '/v1/search/quiz/category 응답:--------',
+      res.data.data.quizList,
+    );
+
     return res;
   };
 
@@ -577,6 +586,7 @@ export function ContentInformationChange() {
     data: searchCategoryData,
     mutate: searchCategoryDataMutate,
     isPending,
+    isSuccess,
   } = useMutation({
     mutationFn: postSearchCategory,
     onError: (context: {
@@ -592,10 +602,12 @@ export function ContentInformationChange() {
         });
       }
     },
-    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+    onSuccess: (response: {
+      data: { data: { quizList: any[]; pagination: PaginationType } };
+    }) => {
       // 응답 리스트 스텝2로
       // TODO : api 데이터 세부조건 미완성됨. 임시로 문항 리스트 불러옴 나중에 대체 필요
-      setQuestionList(quizData.quizList);
+      setQuestionList(response.data?.data?.quizList);
     },
   });
 
@@ -649,24 +661,10 @@ export function ContentInformationChange() {
     },
   });
 
-  //TODO : 임시로 문항 리스트 불러옴 나중에 대체 필요
-  const getQuiz = async () => {
-    const res = await quizService.get(`/v1/quiz`);
-    console.log(`getQuiz---- 결과값`, res.data.data);
-    return res.data.data;
-  };
-  const { data: quizData } = useQuery({
-    queryKey: ['get-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-quizList 에러 메세지',
-    },
-  });
-
   // 리스트 업데이트
   useEffect(() => {
     console.log('questionList', questionList);
-  }, [questionList, searchCategoryData]);
+  }, [searchCategoryData]);
 
   // 깊이가 있는 리스트 DepthBlock 체크박스
   const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
@@ -1051,6 +1049,7 @@ export function ContentInformationChange() {
                 <span className="point_text">STEP2</span> 문항 선택
               </span>
             </Title>
+            {/*TODO : 데이터 확인 */}
             {questionList.length ? (
               <>
                 <QuizList
@@ -1062,12 +1061,25 @@ export function ContentInformationChange() {
                   setCheckedList={setCheckedList}
                 />
                 <ButtonWrapper className="pagination">
-                  <PaginationBox itemsCountPerPage={7} totalItemsCount={100} />
+                  <PaginationBox
+                    itemsCountPerPage={
+                      searchCategoryData?.data.data.pagination
+                        .pageUnit as number
+                    }
+                    totalItemsCount={
+                      searchCategoryData?.data.data.pagination
+                        .totalCount as number
+                    }
+                  />
                 </ButtonWrapper>
               </>
             ) : (
               <ValueNoneWrapper>
-                <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
+                {isSuccess ? (
+                  <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
+                ) : (
+                  <ValueNone textOnly info={'데이터가 없습니다'} />
+                )}
               </ValueNoneWrapper>
             )}
           </QuizListWrapper>

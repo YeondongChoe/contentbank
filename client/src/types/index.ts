@@ -9,3 +9,4 @@ export * from './ReportQuizType';
 export * from './TextbookType';
 export * from './HistoryType';
 export * from './CsatType';
+export * from './PaginationType';
