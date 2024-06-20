@@ -128,6 +128,7 @@ export function ContentInformationChange() {
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
+  const [IsSearchOn, setIsSearchOn] = useState(false);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -608,6 +609,7 @@ export function ContentInformationChange() {
       // 응답 리스트 스텝2로
       // TODO : api 데이터 세부조건 미완성됨. 임시로 문항 리스트 불러옴 나중에 대체 필요
       setQuestionList(response.data?.data?.quizList);
+      setIsSearchOn(true);
     },
   });
 
@@ -1075,9 +1077,10 @@ export function ContentInformationChange() {
               </>
             ) : (
               <ValueNoneWrapper>
-                {isSuccess ? (
+                {searchValue.length < 1 && !isSuccess && (
                   <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
-                ) : (
+                )}
+                {IsSearchOn && (
                   <ValueNone textOnly info={'데이터가 없습니다'} />
                 )}
               </ValueNoneWrapper>
