@@ -319,13 +319,13 @@ export function RegisterModal({
                   <SelectWrapper>
                     <Select
                       width="100%"
-                      height="50px"
                       padding="5px 0px 0px 0px"
                       defaultValue={'권한을 선택하세요'}
                       onClick={() => setIsAuthorityError(false)}
                       options={authoritySelectList}
                       setSelectedValue={setSelectedAuthority}
                       setSelectedCode={setSelectedCode}
+                      heightScroll="150px"
                     />
                   </SelectWrapper>
                 )}
