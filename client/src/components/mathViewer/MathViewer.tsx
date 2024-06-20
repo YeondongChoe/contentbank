@@ -88,7 +88,7 @@ export function MathViewer({
   }, [mathJax, data]);
 
   useEffect(() => {
-    console.log('뷰어로 들어온 데이터 0---', data);
+    // console.log('뷰어로 들어온 데이터 0---', data);
     setIsLoading(!data);
   }, [data]);
 
