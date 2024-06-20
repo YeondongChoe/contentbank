@@ -59,6 +59,7 @@ export function EditModal({
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<ItemSelectProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState<string>('');
+  const [selectedCode, setSelectedCode] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const { control, setValue, watch } = useForm();
@@ -116,7 +117,7 @@ export function EditModal({
       );
       const userInfo = {
         name: Name as string,
-        authorityCode: authorityCode,
+        authorityCode: selectedCode,
         note: Comment as string,
         isUseNot: memberDatas?.isLock ? 'Y' : 'N',
       };
@@ -173,7 +174,7 @@ export function EditModal({
           idx: el.idx,
           label: `${el.name}`,
           code: `${el.code}`,
-          value: `${el.name}`,
+          value: `${el.code}`,
           name: `${el.name}`,
         });
       });
@@ -331,10 +332,11 @@ export function EditModal({
                   <SelectWrapper>
                     <Select
                       width="100%"
-                      height="50px"
+                      heightScroll="150px"
                       padding="5px 0px 0px 0px"
                       defaultValue={member.authority}
                       setSelectedValue={setAuthorityCode}
+                      setSelectedCode={setSelectedCode}
                       options={authorityList}
                     />
                   </SelectWrapper>

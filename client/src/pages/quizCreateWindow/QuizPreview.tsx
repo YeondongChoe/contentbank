@@ -6,9 +6,13 @@ import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { MathViewer, ValueNone } from '../../components';
+import { QuizListType } from '../../types';
+
 export function QuizPreview() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [sortedList, setSortedList] = useState<QuizListType[]>([]);
 
   //iframe 데이터 통신시
   const receiveMessage = (event: any) => {
@@ -28,6 +32,8 @@ export function QuizPreview() {
 
     console.log('데이터 조회', sendData && sendData.data);
 
+    // setSortedList() // 문항데이터 넣기
+
     // 로컬스토리지 값 다받은 뒤 초기화
     window.opener.localStorage.clear();
   };
@@ -36,7 +42,34 @@ export function QuizPreview() {
     getLocalData();
   }, []);
 
-  return <Container>문항 이미지</Container>;
+  useEffect(() => {}, [sortedList]);
+
+  return (
+    <Container>
+      <MathViewerWrapper>
+        {sortedList[sortedList.length - 1]?.quizItemList.length ? (
+          sortedList[sortedList.length - 1]?.quizItemList?.map((el) => (
+            <div key={`${el?.code} quizItemList sortedList`}>
+              {[
+                'TITLE',
+                'QUESTION',
+                'EXAMPLE',
+                'ANSWER',
+                'TIP',
+                'COMMENTARY',
+                'HINT',
+              ].includes(el?.type) &&
+                el?.content && <MathViewer data={el.content}></MathViewer>}
+            </div>
+          ))
+        ) : (
+          <>
+            <ValueNone info="등록된 데이터가 없습니다" textOnly />
+          </>
+        )}
+      </MathViewerWrapper>
+    </Container>
+  );
 }
 
 const Container = styled.div`
@@ -44,4 +77,8 @@ const Container = styled.div`
   flex-direction: column;
   margin-top: -40px;
   position: relative;
+`;
+
+const MathViewerWrapper = styled.div`
+  padding: 20px;
 `;

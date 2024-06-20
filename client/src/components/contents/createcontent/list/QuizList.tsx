@@ -35,6 +35,8 @@ export function QuizList({
   const [checkList, setCheckList] = useState<string[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const [isPostMessage, setIsPostMessage] = useState(false);
+  const quizpreviewRef = useRef(null);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -112,6 +114,32 @@ export function QuizList({
     // console.log(target.classList);
     target.classList.remove('on');
   };
+
+  // 전체보기 버튼 누를시
+  const openViewer = (code: string) => {
+    const quiz = questionList.filter((el) => el.code === code);
+    console.log('선택된 요소', quiz[0]);
+
+    // quizpreviewRef.current = window.open(
+    //   '/quizpreview',
+    //   'quizpreview',
+    //   'width=600,height=400',
+    // );
+    windowOpenHandler({
+      name: 'quizpreview',
+      url: '/quizpreview',
+      $width: 500,
+      $height: 500,
+    });
+
+    setIsPostMessage(true);
+  };
+
+  // useEffect(() => {
+  //   if (isPostMessage && childWindowRef.current) {
+  //     childWindowRef.current.postMessage({ data: 'Hello from Parent' }, '*');
+  //   }
+  // }, [isPostMessage]);
 
   useEffect(() => {
     setCheckedList(checkList);
@@ -338,14 +366,7 @@ export function QuizList({
                       <ViewAllButton>
                         <button
                           type="button"
-                          onClick={() => {
-                            windowOpenHandler({
-                              name: 'quizpreview',
-                              url: '/quizpreview',
-                              $width: 500,
-                              $height: 500,
-                            });
-                          }}
+                          onClick={() => openViewer(dragItem.code)}
                         >
                           전체보기
                           <Icon
@@ -507,13 +528,13 @@ const MetaGroup = styled.span`
   }
 `;
 const ViewAllButton = styled.p`
+  padding-top: 10px;
   width: 100%;
   text-align: right;
   > button {
     font-size: 13px;
     font-weight: bold;
-    height: 15px;
-    margin-top: 0;
+    height: 20px;
     display: inline-block;
     border: none;
     background-color: #fff;
