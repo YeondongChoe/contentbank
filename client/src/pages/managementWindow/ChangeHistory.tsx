@@ -196,7 +196,7 @@ export function ChangeHistory() {
                           <div className="line"></div>
                           <span>{item.functionName} </span>
                           <div className="line"></div>
-                          <span className="width_50">{item.functionType} </span>
+                          <span className="width_50">{item.content} </span>
                           <div className="line"></div>
                           <span className="width_5">{item.changedCnt}</span>
                         </ItemLayout>
