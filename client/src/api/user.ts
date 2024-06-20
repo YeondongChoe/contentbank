@@ -32,19 +32,19 @@ export const getMyInfo = async () => {
 
 type PostCreateAccountFn = MutationFunction<
   { code: string; message: string },
-  { Id: string; Name: string; selectedAuthority: string; Comment: string }
+  { Id: string; Name: string; selectedCode: string; Comment: string }
 >;
 // 계정 등록하기 api
 export const postCreateAccount: PostCreateAccountFn = async ({
   Id,
   Name,
-  selectedAuthority,
+  selectedCode,
   Comment,
 }) => {
   const account = {
     id: Id,
     name: Name,
-    authorityCode: selectedAuthority,
+    authorityCode: selectedCode,
     note: Comment,
   };
   const response: AxiosResponse<{ code: string; message: string }> =

@@ -46,6 +46,8 @@ export function RegisterModal({
   const [isDuplicate, setIsDuplicate] = useState<boolean>(true);
   const [idErrorMessage, setIdErrorMessage] = useState('');
   const [selectedAuthority, setSelectedAuthority] = useState('');
+  const [selectedCode, setSelectedCode] = useState('');
+
   const [commentValue, setCommentValue] = useState('');
   const [authoritySelectList, setAuthoritySelectList] = useState<
     ItemSelectProps[]
@@ -146,7 +148,7 @@ export function RegisterModal({
       return;
     }
 
-    onCreateAccount({ Id, Name, selectedAuthority, Comment });
+    onCreateAccount({ Id, Name, selectedCode, Comment });
     //버튼 disable 처리
   };
 
@@ -166,9 +168,9 @@ export function RegisterModal({
       const list: ItemSelectProps[] = authorityData.data.data.authorityList.map(
         (item: ItemAuthorityType) => ({
           id: item.idx,
-          label: item.name,
+          label: item.code,
           code: item.code,
-          value: item.name,
+          value: item.code,
           name: item.name,
         }),
       );
@@ -323,6 +325,7 @@ export function RegisterModal({
                       onClick={() => setIsAuthorityError(false)}
                       options={authoritySelectList}
                       setSelectedValue={setSelectedAuthority}
+                      setSelectedCode={setSelectedCode}
                     />
                   </SelectWrapper>
                 )}

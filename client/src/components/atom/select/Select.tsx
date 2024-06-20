@@ -35,6 +35,7 @@ type SelectProps = {
   disabled?: boolean;
   $positionTop?: boolean;
   setSelectedValue?: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedCode?: React.Dispatch<React.SetStateAction<string>>;
   setSelectedQuotientValue?: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
@@ -65,6 +66,7 @@ export function Select({
   heightScroll,
   isnormalizedOptions,
   isStartDnD,
+  setSelectedCode,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -76,6 +78,11 @@ export function Select({
 
   if (setSelectedValue !== undefined && selected && code) {
     setSelectedValue(selected);
+  }
+
+  // 권한 코드
+  if (setSelectedCode !== undefined && selected && code) {
+    setSelectedCode(code);
   }
 
   const normalizedOptions = Array.isArray(options)
