@@ -202,7 +202,6 @@ export function MathviewerAccordion({
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentNumQuotient[]>(contentQuotient);
 
-  console.log(contentNumQuotient);
   const totalEqualScore = contentNumQuotient.reduce(
     (acc, el) => acc + el.quotient,
     0,
@@ -238,16 +237,23 @@ export function MathviewerAccordion({
   }, [selectedValue]);
 
   useEffect(() => {
-    setQuotientOption([
-      { code: '0', idx: 0, name: `${minQuotient}점`, value: minQuotient },
-      {
-        code: '1',
-        idx: 0,
-        name: `${quotient ? quotient + 1 : 0}점`,
-        value: quotient ? quotient + 1 : 0,
-      },
-      { code: '2', idx: 1, name: `${maxQuotient}점`, value: maxQuotient },
-    ]);
+    if (minQuotient === quotient) {
+      setQuotientOption([
+        { code: '0', idx: 0, name: `${minQuotient}점`, value: minQuotient },
+        { code: '1', idx: 1, name: `${maxQuotient}점`, value: maxQuotient },
+      ]);
+    } else {
+      setQuotientOption([
+        { code: '0', idx: 0, name: `${minQuotient}점`, value: minQuotient },
+        {
+          code: '1',
+          idx: 1,
+          name: `${quotient ? quotient : 0}점`,
+          value: quotient ? quotient : 0,
+        },
+        { code: '2', idx: 2, name: `${maxQuotient}점`, value: maxQuotient },
+      ]);
+    }
   }, [quotient, minQuotient, maxQuotient]);
 
   useEffect(() => {

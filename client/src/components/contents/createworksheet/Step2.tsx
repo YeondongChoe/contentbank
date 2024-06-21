@@ -99,6 +99,28 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
+  console.log(initialItems);
+
+  const categoryType = initialItems.map(
+    (item) => item.quizCategoryList[0]?.quizCategory.문항타입,
+  );
+  const categoryLevel = initialItems.map(
+    (item) => item.quizCategoryList[0]?.quizCategory.난이도,
+  );
+  const subjectiveType = categoryType.filter(
+    (type) => type === '주관식',
+  ).length;
+  const multipleType = categoryType.filter((type) => type === '객관식').length;
+  const descriptiveType = categoryType.filter(
+    (type) => type === '서술형',
+  ).length;
+  const levelLower = categoryLevel.filter((type) => type === '하').length;
+  const levelInterMediate = categoryLevel.filter(
+    (type) => type === '중하',
+  ).length;
+  const levelMedium = categoryLevel.filter((type) => type === '중').length;
+  const levelUpper = categoryLevel.filter((type) => type === '상').length;
+  const levelBest = categoryLevel.filter((type) => type === '최상').length;
 
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentNumQuotient[]>(contentQuotient);
@@ -190,12 +212,13 @@ export function Step2() {
       value: '개념',
     },
   ];
-  const Data = [
-    { value: 0, label: '하' },
-    { value: 0, label: '중하' },
-    { value: 100, label: '중' },
-    { value: 0, label: '상' },
-    { value: 0, label: '최상' },
+
+  const levelRateData = [
+    { value: levelLower, label: '하' },
+    { value: levelInterMediate, label: '중하' },
+    { value: levelMedium, label: '중' },
+    { value: levelUpper, label: '상' },
+    { value: levelBest, label: '최상' },
   ];
 
   //즐겨찾기
@@ -988,7 +1011,6 @@ export function Step2() {
       }
     }
   };
-  console.log(initialItems);
 
   // 유사문항
   const [isSimilar, setIsSimilar] = useState(false);
@@ -1171,6 +1193,7 @@ export function Step2() {
       문항타입: '객관식',
     };
     saveLocalData(data);
+    setContentNumQuotient([]);
     navigate('/content-create/exam/step1');
   };
 
@@ -1315,11 +1338,17 @@ export function Step2() {
                           <Discription>
                             <DiscriptionOutline>
                               <div>총 {initialItems.length} 문항</div>
-                              <DiscriptionType>객관식 20</DiscriptionType>
-                              <DiscriptionType>주관식 10</DiscriptionType>
-                              <DiscriptionType>서술형 15</DiscriptionType>
+                              <DiscriptionType>
+                                객관식 {multipleType}
+                              </DiscriptionType>
+                              <DiscriptionType>
+                                주관식 {subjectiveType}
+                              </DiscriptionType>
+                              <DiscriptionType>
+                                서술형 {descriptiveType}
+                              </DiscriptionType>
                             </DiscriptionOutline>
-                            <BarChart data={Data}></BarChart>
+                            <BarChart data={levelRateData}></BarChart>
                           </Discription>
                           <Label
                             value="문항 상세 내용 및 순서 변경"
