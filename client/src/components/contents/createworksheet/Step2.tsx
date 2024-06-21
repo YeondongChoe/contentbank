@@ -38,12 +38,17 @@ import {
 import { classificationInstance, quizService } from '../../../api/axios';
 import { ReportProcessModal } from '../../../components/managements/ReportProcessModal';
 import { useModal } from '../../../hooks';
-import { contentQuotient } from '../../../store/utilAtom';
-import { ItemCategoryType, ItemTreeListType } from '../../../types';
+import { contentQuotient, pageAtom } from '../../../store/utilAtom';
+import {
+  ItemCategoryType,
+  ItemTreeListType,
+  QuizListType,
+} from '../../../types';
 import {
   WorkbookData,
   WorkbookQuotientData,
   WorkbookCategoryData,
+  FavoriteQuizList,
   QuizList,
   SimilarQuizList,
   Data,
@@ -99,7 +104,6 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-  console.log(initialItems);
 
   const categoryType = initialItems.map(
     (item) => item.quizCategoryList[0]?.quizCategory.문항타입,
@@ -167,7 +171,6 @@ export function Step2() {
           const parsedData = JSON.parse(data);
           const parsedQuotientData = JSON.parse(quotientData as string);
           const parsedCategoryData = JSON.parse(categoryData as string);
-          //console.log('데이터 조회', parsedData);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedQuotientData);
           setGetCategoryLocalData(parsedCategoryData);
@@ -222,7 +225,37 @@ export function Step2() {
   ];
 
   //즐겨찾기
-  const bookmark: any[] = [];
+  const [page, setPage] = useRecoilState(pageAtom);
+  const [questionList, setQuestionList] = useState<FavoriteQuizList>();
+
+  // 문항 즐겨찾기리스트 불러오기 api
+  const getFavoriteQuiz = async () => {
+    const res = await quizService.get(
+      `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`,
+    );
+    // const res = await quizService.get(
+    //     ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
+    //     : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+    // );
+    console.log(`getFavoriteQuiz 결과값`, res.data.data);
+    return res.data.data;
+  };
+
+  const { data: favoriteQuizData, refetch: favoriteQuizDataRefetch } = useQuery(
+    {
+      queryKey: ['get-favoriteQuizList'],
+      queryFn: getFavoriteQuiz,
+      meta: {
+        errorMessage: 'get-favoriteQuizList 에러 메세지',
+      },
+    },
+  );
+
+  useEffect(() => {
+    if (favoriteQuizData) {
+      setQuestionList(favoriteQuizData);
+    }
+  }, [favoriteQuizData]);
 
   const [isStartDnD, setIsStartDnd] = useState(false);
 
@@ -521,7 +554,6 @@ export function Step2() {
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
@@ -1873,7 +1905,7 @@ export function Step2() {
                       )}
                       {tabVeiw === '즐겨찾는 문항' && (
                         <>
-                          {bookmark.length !== 0 ? (
+                          {favoriteQuizData && questionList ? (
                             <>
                               <BookmarkContentOption>
                                 <SelectWrapper>
@@ -1910,26 +1942,27 @@ export function Step2() {
                                 </Button>
                               </BookmarkContentOption>
                               <BookmarkContensWrapper>
-                                {/* {list.map((card, i) => (
-                              <div
-                                key={i}
-                                // draggable
-                                // onDragStart={(e) => dragStart(e, i)}
-                                // onDragEnter={(e) => dragEnter(e, i)}
-                                // onDragOver={dragOver}
-                                // onDragEnd={drop}
-                              >
-                                <MathviewerCard
-                                  width="300px"
-                                  onClick={() => {}}
-                                  isSimilarQuiz={true}
-                                  index={i + 1}
-                                  data={card}
-                                  selectedCardIndex={selectedCardIndex}
-                                  onSelectCard={setSelectedCardIndex}
-                                ></MathviewerCard>
-                              </div>
-                            ))} */}
+                                {questionList.quizList?.map((item) => (
+                                  <MathviewerAccordion
+                                    key={item.idx}
+                                    componentWidth="600px"
+                                    width="450px"
+                                    componentHeight="150px"
+                                    onClick={() => {}}
+                                    isBorder={true}
+                                    isNewQuiz={true}
+                                    data={item}
+                                    index={item.idx}
+                                    selectedCardIndex={selectedCardIndex}
+                                    onSelectCard={setSelectedCardIndex}
+                                    reportQuizitem={() =>
+                                      openReportProcess(item.idx)
+                                    }
+                                    addQuizItem={() =>
+                                      clickAddQuizItem(item.code)
+                                    }
+                                  ></MathviewerAccordion>
+                                ))}
                               </BookmarkContensWrapper>
                             </>
                           ) : (
