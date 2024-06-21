@@ -163,8 +163,7 @@ type MathviewerCardProps = {
   equalScore?: number;
   remainderContent?: number;
   nextRemainderContent?: number;
-  totalContent?: number;
-  setTotalEqualScore?: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setTotalEqualScore?: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export function MathviewerAccordion({
@@ -193,7 +192,6 @@ export function MathviewerAccordion({
   equalScore,
   remainderContent,
   nextRemainderContent,
-  totalContent,
   setTotalEqualScore,
 }: MathviewerCardProps) {
   const [didMount, setDidMount] = useState(false);
@@ -204,11 +202,17 @@ export function MathviewerAccordion({
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentNumQuotient[]>(contentQuotient);
 
-  let totalEqualScore = 0;
-  contentNumQuotient.forEach((el) => (totalEqualScore += el.quotient));
-  if (setTotalEqualScore) {
-    setTotalEqualScore(totalEqualScore);
-  }
+  console.log(contentNumQuotient);
+  const totalEqualScore = contentNumQuotient.reduce(
+    (acc, el) => acc + el.quotient,
+    0,
+  );
+
+  useEffect(() => {
+    if (setTotalEqualScore) {
+      setTotalEqualScore(totalEqualScore);
+    }
+  }, [contentNumQuotient]);
 
   useEffect(() => {
     if (quotient !== undefined) {
@@ -236,7 +240,12 @@ export function MathviewerAccordion({
   useEffect(() => {
     setQuotientOption([
       { code: '0', idx: 0, name: `${minQuotient}점`, value: minQuotient },
-      { code: '1', idx: 0, name: `${quotient}점`, value: quotient },
+      {
+        code: '1',
+        idx: 0,
+        name: `${quotient ? quotient + 1 : 0}점`,
+        value: quotient ? quotient + 1 : 0,
+      },
       { code: '2', idx: 1, name: `${maxQuotient}점`, value: maxQuotient },
     ]);
   }, [quotient, minQuotient, maxQuotient]);
@@ -258,6 +267,7 @@ export function MathviewerAccordion({
           : isNextRemainderContent
             ? (quotientAddOne as number)
             : 0,
+        code: data.code,
       };
 
       if (!isQuizNumExists) {

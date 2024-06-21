@@ -121,6 +121,7 @@ export interface WorkbookCategoryData {
 export interface ContentNumQuotient {
   quizNum: number;
   quotient: number;
+  code: string;
 }
 
 export type DifficultyDataType = {

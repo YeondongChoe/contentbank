@@ -25,6 +25,7 @@ import {
   Icon,
   IconButton,
   PaginationBox,
+  Alert,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { pageAtom } from '../../../store/utilAtom';
@@ -208,7 +209,6 @@ export function Step1() {
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
-    // console.log(`getCategory 결과값`, res);
     return res;
   };
   const {
@@ -278,7 +278,6 @@ export function Step1() {
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
@@ -473,7 +472,6 @@ export function Step1() {
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    // console.log('classificationInstance 응답:', res);
     return res;
   };
 
@@ -773,7 +771,6 @@ export function Step1() {
 
   const getDifficulty = async () => {
     const res = await quizService.get(`/v1/difficulty`);
-    console.log(res.data.data.difficultyList);
     return res;
   };
   const { data: difficultyRate } = useQuery({
@@ -788,11 +785,6 @@ export function Step1() {
   useEffect(() => {
     setDifficultyData(difficultyRate?.data.data.difficultyList);
   }, [difficultyRate]);
-
-  const [isAutoGrading, setIsAutoGrading] = useState(false);
-  const checkAutoGrading = () => {
-    setIsAutoGrading(!isAutoGrading);
-  };
 
   const isAllSelectedQuestionType =
     questionType?.includes('MULTIPLE_CHOICE') &&
@@ -822,7 +814,7 @@ export function Step1() {
     if (questionNum || inputValue || includeQuizList.length > 0) {
       setIsEqualScoreModal(true);
       setIsSaveEqualValue(false);
-      setEqualTotlaValue('0');
+      //setEqualTotlaValue('0');
     } else {
       openToastifyAlert({
         type: 'error',
@@ -844,6 +836,12 @@ export function Step1() {
   //문항당 배점
   const [quotient, setQuotient] = useState<number>(0);
   const [remainder, setRemainder] = useState<number>();
+  //문항수 확인
+  const [receivedQuizCount, setReceivedQuizCount] = useState<number>();
+  //문항 재배점
+  const [isResaveEqualValue, setIsResaveEqualValue] = useState(false);
+  //최종 확인
+  const [isConfirm, setIsConfirm] = useState(false);
 
   // 균등배점 모달 닫기
   const closeEqualScoreSettingModal = () => {
@@ -852,8 +850,15 @@ export function Step1() {
   //균등배점 저장
   const saveEqualScoreSettingModal = () => {
     if (isSaveEqualValue) {
-      setIsEqualScoreModal(false);
-      closeEqualScoreSettingModal();
+      //재균등배점
+      if (isResaveEqualValue) {
+        setIsConfirm(true);
+        closeEqualScoreSettingModal();
+        //로컬에 배점 저장하기
+        saveLocalQutientData();
+      } else {
+        closeEqualScoreSettingModal();
+      }
     } else {
       if (equalTotalValue) {
         openToastifyAlert({
@@ -882,16 +887,32 @@ export function Step1() {
 
   const changeEqualInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     let equalTotalValue = e.target.value;
-
     // 정규표현식을 사용하여 숫자 이외의 문자 제거
     equalTotalValue = equalTotalValue.replace(/[^0-9]/g, '');
 
     const parsedValue = parseInt(equalTotalValue, 10);
+
     setEqualTotlaValue(parsedValue >= 200 ? '200' : equalTotalValue);
   };
 
+  useEffect(() => {
+    if (receivedQuizCount) {
+      setEqualTotlaValue(receivedQuizCount.toString());
+      //값초기화
+      setRemainderContent(0);
+      setNextRemainderContent(0);
+    }
+  }, [receivedQuizCount]);
+
   const saveEqualInputValue = () => {
+    //받아온 문항 수 넘버타입 변경
+    const parsedreceivedQuiz = receivedQuizCount?.toString();
+    //받아온 문항 수 넘버타입 변경
+    const parsedreceivedQuizValue = parseInt(parsedreceivedQuiz as string, 10);
+    //총배점 타입 변경
     const parsedValue = parseInt(equalTotalValue, 10);
+
+    //선택된 문항 수
     const questionNumValue = parseInt(
       questionNum ||
         inputValue ||
@@ -906,7 +927,12 @@ export function Step1() {
       setIsSaveEqualValue(false);
       setEqualTotlaValue('0');
       setQuotient(0);
-    } else if (equalTotalValue && parsedValue < questionNumValue) {
+    } else if (
+      !receivedQuizCount &&
+      !parsedreceivedQuizValue &&
+      equalTotalValue &&
+      parsedValue < questionNumValue
+    ) {
       openToastifyAlert({
         type: 'error',
         text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
@@ -916,6 +942,15 @@ export function Step1() {
           inputValue ||
           (includeQuizList.length as unknown as string),
       );
+      setIsSaveEqualValue(false);
+    } else if (equalTotalValue && parsedValue < parsedreceivedQuizValue) {
+      openToastifyAlert({
+        type: 'error',
+        text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
+      });
+      if (receivedQuizCount) {
+        setEqualTotlaValue(receivedQuizCount.toString());
+      }
       setIsSaveEqualValue(false);
     } else {
       openToastifyAlert({
@@ -939,7 +974,22 @@ export function Step1() {
       10,
     );
 
-    if (isSaveEqualValue) {
+    if (isSaveEqualValue && receivedQuizCount) {
+      const quotient = Math.floor(parsedValue / receivedQuizCount);
+      const remainder = parsedValue % receivedQuizCount;
+      setQuotient(quotient);
+      setRemainder(remainder);
+      if (quotient || remainder) {
+        const remainderContent = receivedQuizCount - remainder;
+        const minQuotient = quotient - 1;
+        const maxQuotient = quotient + 2;
+        console.log('remainderContent', remainderContent);
+        setRemainderContent(remainderContent);
+        setNextRemainderContent(remainderContent + 1);
+        setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
+        setMaxQuotient(maxQuotient);
+      }
+    } else if (isSaveEqualValue && !receivedQuizCount) {
       const quotient = Math.floor(parsedValue / questionNumValue);
       const remainder = parsedValue % questionNumValue;
       setQuotient(quotient);
@@ -947,23 +997,15 @@ export function Step1() {
       if (quotient || remainder) {
         const remainderContent = questionNumValue - remainder;
         const minQuotient = quotient - 1;
-        const maxQuotient = quotient + 1;
+        const maxQuotient = quotient + 2;
         setRemainderContent(remainderContent);
         setNextRemainderContent(remainderContent + 1);
         setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
         setMaxQuotient(maxQuotient);
       }
     }
-  }, [isSaveEqualValue, equalTotalValue]);
+  }, [isSaveEqualValue, equalTotalValue, receivedQuizCount]);
 
-  const [isOption1, setIsOption1] = useState(false);
-  const selectOption1 = () => {
-    setIsOption1(!isOption1);
-  };
-  const [isOption2, setIsOption2] = useState(false);
-  const selectOption2 = () => {
-    setIsOption2(!isOption2);
-  };
   //문항 수 균등 배분
   const [isQuizEven, setIsQuizEven] = useState(false);
   const selectQuizEven = () => {
@@ -1009,7 +1051,6 @@ export function Step1() {
   };
   const getTextbookDetail = async (idx: number) => {
     const res = await quizService.get(`/v1/textbook/${idx}`);
-    // console.log(`getTextbookDetail 결과값`, res);
     return res;
   };
   const { data: textbookDetailData } = useQuery({
@@ -1037,7 +1078,6 @@ export function Step1() {
     const res = await quizService.get(
       `/v1/textbook?pageIndex=${page}&pageUnit=${8}&level=${schoolLevel}&grade=${gradeLevel || ''}&searchKeyword=${searchValue || ''}`,
     );
-    // console.log(`getTextbook 결과값`, res);
     return res;
   };
   const { data: textbookData, refetch: textbookDataRefetch } = useQuery({
@@ -1321,7 +1361,6 @@ export function Step1() {
     const res = await quizService.get(
       `/v1/csat?option=${examOption}&level=고등&subject=수학&grades=${grades}&years=${years}&months=${months}`,
     );
-    // console.log(`getTextbook 결과값`, res);
     return res;
   };
 
@@ -1421,7 +1460,6 @@ export function Step1() {
   const [processCastListData, setProcessCastListData] = useState<
     ProcessCsatListDataType[]
   >([]);
-  //console.log(castListData);
 
   // 단원으로 추가 재귀형태 함수
   const renderHierarchicalData = (
@@ -1669,12 +1707,40 @@ export function Step1() {
     [],
   );
 
-  //문항수 확인
-  const [receivedQuizCount, setReceivedQuizCount] = useState<number | null>(
-    null,
-  );
-  console.log(receivedQuizCount);
-  console.log(questionNum);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  //alert 취소클릭
+  const cancelAlert = () => {
+    //alert 끄기
+    setIsAlertOpen(false);
+    //선택된 값 초기화
+    setQuestionNum('');
+    selectEqualScore(null);
+    setQuestionLevel('');
+    setQuestionType([]);
+    setContainMock(null);
+    setIsQuizEven(false);
+    setIsPriority(false);
+  };
+
+  //alert 진행클릭
+  const keepGoingAlert = () => {
+    //난이도 설정 다시 열기
+    if (equalScore === 2) {
+      setIsEqualScoreModal(true);
+      setIsAlertOpen(false);
+      setIsResaveEqualValue(true);
+      setIsSaveEqualValue(false);
+    } else {
+      navigate('/content-create/exam/step2');
+    }
+  };
+
+  useEffect(() => {
+    if (isConfirm) {
+      navigate('/content-create/exam/step2');
+    }
+  }, [isConfirm]);
+
   // step1 선택된 문항 불러오기 api
   const postWorkbookStep1 = async (data: any) => {
     return await quizService.post(`/v1/search/quiz/step/1`, data);
@@ -1696,26 +1762,16 @@ export function Step1() {
     onSuccess: (response) => {
       //성공했을 때 문항 수 카운트
       setReceivedQuizCount(response.data.data.quizList.length);
+      saveLocalData(response.data.data);
       //받아온 문항수와 선택한 문항수가 같을경우 다음단계
       if (tabVeiw === '단원·유형별') {
         if (
           (receivedQuizCount && receivedQuizCount === Number(questionNum)) ||
-          Number(inputValue)
+          receivedQuizCount === Number(inputValue)
         ) {
-          saveLocalData(response.data.data);
           navigate('/content-create/exam/step2');
         } else {
-          // if (receivedQuizCount) {
-          //   setReceivedQuizCount(null);
-          // }
-          openToastifyAlert({
-            type: 'error',
-            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
-          });
-          //문항수 초기화
-          setQuestionNum('');
-          //배점 초기화
-          selectEqualScore(null);
+          setIsAlertOpen(true);
         }
       } else if (tabVeiw === '시중교재') {
         if (
@@ -1808,7 +1864,6 @@ export function Step1() {
     const data = localStorage.getItem('sendData');
     if (data) {
       const parsedData = JSON.parse(data);
-      // console.log('데이터 조회', parsedData);
       setSendLocalData(parsedData);
     }
   }, []);
@@ -1834,6 +1889,9 @@ export function Step1() {
     const categoryData = makingdata;
     localStorage.setItem('sendData', JSON.stringify(sendData));
     localStorage.setItem('sendCategoryData', JSON.stringify(categoryData));
+  };
+
+  const saveLocalQutientData = () => {
     const sendQuotientData = {
       equalScore: equalScore,
       equalTotalValue: equalTotalValue,
@@ -1930,11 +1988,9 @@ export function Step1() {
     setQuestionLevel('');
     setQuestionType([]);
     setContainMock(null);
-    setIsOption1(false);
-    setIsOption2(false);
+    selectEqualScore(null);
     setIsQuizEven(false);
     setIsPriority(false);
-    setEqualScore(null);
     //시중교재
     setSearchValue('');
     setSchoolLevel('초등');
@@ -4284,6 +4340,20 @@ export function Step1() {
           </Button>
         </NextStepButtonWrapper>
       </Wrapper>
+      <Alert
+        top="calc(50% - 100px)"
+        isAlertOpen={isAlertOpen}
+        description={`가지고 올 수 있는 문항의 수가 ${receivedQuizCount}개 입니다.`}
+        subDescription={
+          equalScore === 2
+            ? '이대로 진행할 경우 균등 배점을 다시 설정해야합니다.'
+            : '이대로 진행하시겠습니까?'
+        }
+        action="진행"
+        isWarning={true}
+        onClick={keepGoingAlert}
+        onClose={cancelAlert}
+      />
       {isDifficulty && (
         <Overlay>
           <DifficultyRate
@@ -4299,7 +4369,7 @@ export function Step1() {
             <EqualScoreModalWrapper>
               <EqualScoreModalTitleWrapper>
                 <Label
-                  value={`총 ${questionNum || inputValue || includeQuizList.length} 문항`}
+                  value={`총 ${receivedQuizCount ? receivedQuizCount : questionNum || inputValue || includeQuizList.length} 문항`}
                   fontSize="25px"
                   width="160px"
                 />
@@ -4319,6 +4389,8 @@ export function Step1() {
                     onClick={() => {
                       setEqualTotlaValue('');
                       setIsSaveEqualValue(false);
+                      setRemainderContent(0);
+                      setNextRemainderContent(0);
                     }}
                     onChange={(e) => {
                       changeEqualInputValue(e);
@@ -4344,8 +4416,10 @@ export function Step1() {
                     {/* 나머지가 없는경우 */}
                     <div>
                       01번 문항부터
-                      {questionNum || inputValue || includeQuizList.length}번
-                      문항까지
+                      {receivedQuizCount
+                        ? receivedQuizCount
+                        : questionNum || inputValue || includeQuizList.length}
+                      번 문항까지
                       {quotient || 0}점
                     </div>
                     {isSaveEqualValue ? (
@@ -4360,13 +4434,15 @@ export function Step1() {
                   <>
                     {/* 나머지가 있는경우 */}
                     <div>
-                      01번 문항부터 {remainderContent}번 문항까지
-                      {quotient || 0}점
+                      01번 문항부터
+                      {remainderContent}번 문항까지 {quotient || 0}점
                     </div>
                     <div>
                       {nextRemainderContent}번 문항부터
-                      {questionNum || inputValue || includeQuizList.length}번
-                      문항까지 {quotient + 1 || 0}점
+                      {receivedQuizCount
+                        ? receivedQuizCount
+                        : questionNum || inputValue || includeQuizList.length}
+                      번 문항까지 {quotient + 1 || 0}점
                     </div>
                     {isSaveEqualValue ? (
                       <div className="pointsPerQuestion">

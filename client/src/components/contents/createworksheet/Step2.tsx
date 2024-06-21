@@ -12,6 +12,7 @@ import {
 } from 'react-icons/pi';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
@@ -37,6 +38,7 @@ import {
 import { classificationInstance, quizService } from '../../../api/axios';
 import { ReportProcessModal } from '../../../components/managements/ReportProcessModal';
 import { useModal } from '../../../hooks';
+import { contentQuotient } from '../../../store/utilAtom';
 import { ItemCategoryType, ItemTreeListType } from '../../../types';
 import {
   WorkbookData,
@@ -44,13 +46,11 @@ import {
   WorkbookCategoryData,
   QuizList,
   SimilarQuizList,
-  QuizCategory,
-  QuizCategoryList,
   Data,
+  ContentNumQuotient,
 } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
-
 interface RadioState {
   title: string;
   checkValue: number;
@@ -100,6 +100,9 @@ export function Step2() {
     getLocalData?.data.quizList || [],
   );
 
+  const [contentNumQuotient, setContentNumQuotient] =
+    useRecoilState<ContentNumQuotient[]>(contentQuotient);
+
   //나머지 시작 컨텐츠
   const [remainderContent, setRemainderContent] = useState<number>();
   //나머지 시작 전 컨텐츠
@@ -111,7 +114,8 @@ export function Step2() {
   const [equalScore, setEqualScore] = useState<number | null>(null);
   const [equalTotalValue, setEqualTotlaValue] = useState('0');
   //총 문항 점수
-  const [totalEqualScore, setTotalEqualScore] = useState<number>();
+  const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
+  //console.log(totalEqualScore);
   //문제와 점수 관리
   const [contentWithScore, setContentWithScore] = useState<ContentItem[]>([]);
   useEffect(() => {
@@ -141,7 +145,7 @@ export function Step2() {
           const parsedData = JSON.parse(data);
           const parsedQuotientData = JSON.parse(quotientData as string);
           const parsedCategoryData = JSON.parse(categoryData as string);
-          console.log('데이터 조회', parsedData);
+          //console.log('데이터 조회', parsedData);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedQuotientData);
           setGetCategoryLocalData(parsedCategoryData);
@@ -163,7 +167,7 @@ export function Step2() {
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      window.opener.localStorage.clear();
+      //window.opener.localStorage.clear();
     }
   }, [getLocalData]);
 
@@ -975,13 +979,23 @@ export function Step2() {
   const deleteQuizItem = (code: string) => {
     if (initialItems) {
       const selectedQuizItem = initialItems.find((item) => item.code === code);
+      const isQuizNumExists = contentNumQuotient.find(
+        (item) => item.code === code,
+      );
       if (selectedQuizItem) {
         setInitialItems((prevItems) =>
           prevItems.filter((item) => item !== selectedQuizItem),
         );
       }
+      //총 배점 관리를 위해서 전역 데이터 업데이트
+      if (isQuizNumExists) {
+        setContentNumQuotient((prevItems) =>
+          prevItems.filter((item) => item !== isQuizNumExists),
+        );
+      }
     }
   };
+  console.log(initialItems);
 
   // 유사문항
   const [isSimilar, setIsSimilar] = useState(false);
@@ -1335,46 +1349,46 @@ export function Step2() {
                               isStartDnD={isStartDnD}
                               setIsStartDnd={setIsStartDnd}
                             >
-                              {(dragItem, ref, isDragging, itemIndex) => (
-                                <li
-                                  ref={ref}
-                                  className={`${isDragging ? 'opacity' : ''}`}
-                                >
-                                  <Content
-                                    // key={i}
-                                    onClick={(e) => {
-                                      handleButtonCheck(e);
-                                    }}
+                              {(dragItem, ref, isDragging, itemIndex) => {
+                                // dragItem과 그 속성들을 안전하게 접근하기 위해 옵셔널 체이닝 사용
+                                const quizCategory =
+                                  dragItem.quizCategoryList?.[0]?.quizCategory;
+
+                                return (
+                                  <li
+                                    ref={ref}
+                                    className={`${isDragging ? 'opacity' : ''}`}
                                   >
-                                    <div className="number">
-                                      {itemIndex + 1}
-                                    </div>
-                                    <div className="type">
-                                      {
-                                        dragItem.quizCategoryList[0]
-                                          .quizCategory.문항타입
-                                      }
-                                    </div>
-                                    <div className="level">
-                                      {
-                                        dragItem.quizCategoryList[0]
-                                          .quizCategory.난이도
-                                      }
-                                    </div>
-                                    <div className="title">
-                                      {
-                                        dragItem.quizCategoryList[0]
-                                          .quizCategory.출처
-                                      }
-                                    </div>
-                                    <div className="icon">
-                                      <IoMenuOutline
-                                        style={{ cursor: 'grab' }}
-                                      />
-                                    </div>
-                                  </Content>
-                                </li>
-                              )}
+                                    <Content
+                                      // key={i}
+                                      onClick={(e) => {
+                                        handleButtonCheck(e);
+                                      }}
+                                    >
+                                      <div className="number">
+                                        {itemIndex + 1}
+                                      </div>
+                                      <div className="type">
+                                        {quizCategory?.문항타입 || 'N/A'}
+                                        {/* 값이 없으면 'N/A' 출력 */}
+                                      </div>
+                                      <div className="level">
+                                        {quizCategory?.난이도 || 'N/A'}
+                                        {/* 값이 없으면 'N/A' 출력 */}
+                                      </div>
+                                      <div className="title">
+                                        {quizCategory?.출처 || 'N/A'}
+                                        {/* 값이 없으면 'N/A' 출력 */}
+                                      </div>
+                                      <div className="icon">
+                                        <IoMenuOutline
+                                          style={{ cursor: 'grab' }}
+                                        />
+                                      </div>
+                                    </Content>
+                                  </li>
+                                );
+                              }}
                             </StepDnDWrapper>
                           </ContentsList>
                         </>
@@ -1930,7 +1944,8 @@ export function Step2() {
                     value={`선택한 문항 목록 (총 ${initialItems.length} 문항)`}
                     fontSize="16px"
                   />
-                  <SelectWrapper>
+                  {/* 사용자정렬 */}
+                  {/* <SelectWrapper>
                     {selectArrange.map((el) => (
                       <Select
                         width={'150px'}
@@ -1956,7 +1971,7 @@ export function Step2() {
                         blackMode
                       ></Select>
                     ))}
-                  </SelectWrapper>
+                  </SelectWrapper> */}
                 </ListFilter>
                 <ContentListWrapper>
                   <StepDnDWrapper
@@ -1995,7 +2010,6 @@ export function Step2() {
                           equalScore={equalScore as number}
                           remainderContent={remainderContent}
                           nextRemainderContent={nextRemainderContent}
-                          totalContent={initialItems.length}
                           setTotalEqualScore={setTotalEqualScore}
                         ></MathviewerAccordion>
                       </li>
