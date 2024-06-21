@@ -134,3 +134,7 @@ export type DifficultyDataType = {
   total?: number;
   title?: string;
 };
+
+export type FavoriteQuizList = {
+  quizList: QuizList[];
+};

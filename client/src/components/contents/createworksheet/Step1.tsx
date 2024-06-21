@@ -837,7 +837,9 @@ export function Step1() {
   const [quotient, setQuotient] = useState<number>(0);
   const [remainder, setRemainder] = useState<number>();
   //문항수 확인
-  const [receivedQuizCount, setReceivedQuizCount] = useState<number>();
+  const [receivedQuizCount, setReceivedQuizCount] = useState<number | null>(
+    null,
+  );
   //문항 재배점
   const [isResaveEqualValue, setIsResaveEqualValue] = useState(false);
   //최종 확인
@@ -982,7 +984,7 @@ export function Step1() {
       if (quotient || remainder) {
         const remainderContent = receivedQuizCount - remainder;
         const minQuotient = quotient - 1;
-        const maxQuotient = quotient + 2;
+        const maxQuotient = quotient + 1;
         console.log('remainderContent', remainderContent);
         setRemainderContent(remainderContent);
         setNextRemainderContent(remainderContent + 1);
@@ -997,7 +999,7 @@ export function Step1() {
       if (quotient || remainder) {
         const remainderContent = questionNumValue - remainder;
         const minQuotient = quotient - 1;
-        const maxQuotient = quotient + 2;
+        const maxQuotient = quotient + 1;
         setRemainderContent(remainderContent);
         setNextRemainderContent(remainderContent + 1);
         setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
@@ -1720,6 +1722,13 @@ export function Step1() {
     setContainMock(null);
     setIsQuizEven(false);
     setIsPriority(false);
+    setReceivedQuizCount(null);
+    setRemainderContent(0);
+    setNextRemainderContent(0);
+    setQuotient(0);
+    setMinQuotient(0);
+    setMaxQuotient(0);
+    setEqualTotlaValue('');
   };
 
   //alert 진행클릭
