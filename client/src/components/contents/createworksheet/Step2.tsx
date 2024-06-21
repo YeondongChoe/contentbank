@@ -254,13 +254,6 @@ export function Step2() {
     },
   ];
 
-  const [listCategory, setListCategory] = useState<string[]>([]);
-  // const selectListCategoryOption = (
-  //   event: React.MouseEvent<HTMLButtonElement>,
-  // ) => {
-  //   const value = event.currentTarget.value;
-  //   setListCategory((prevContent) => [...prevContent, value]);
-  // };
   const bookmarkSelectCategory = [
     {
       id: '1',
