@@ -30,7 +30,7 @@ export function Alert({
   return (
     <>
       {isAlertOpen && (
-        <Overlay top={top}>
+        <Overlay $top={top}>
           <Container>
             <AlertWrapper>
               {isWarning && (
@@ -105,9 +105,9 @@ export function Alert({
   );
 }
 
-const Overlay = styled.div<{ top?: string }>`
+const Overlay = styled.div<{ $top?: string }>`
   position: fixed;
-  top: ${({ top }) => (top ? `${top};` : '0px')};
+  top: ${({ $top }) => ($top ? `${$top};` : '0px')};
   left: 0;
   width: 100%;
   height: 100%;
