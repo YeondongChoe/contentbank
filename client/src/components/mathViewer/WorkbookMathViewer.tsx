@@ -105,14 +105,6 @@ export function WorkbookMathViewer({
               {answerCommentary === '정답만' && (
                 <>
                   {data?.quizItemList
-                    .filter((quiz) => quiz.type === 'EXAMPLE')
-                    .map((quiz) => (
-                      <ContentQuestion
-                        key={quiz.idx}
-                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
-                      ></ContentQuestion>
-                    ))}
-                  {data?.quizItemList
                     .filter((quiz) => quiz.type === 'ANSWER')
                     .map((quiz) => (
                       <ContentQuestion
