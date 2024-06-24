@@ -13,6 +13,7 @@ import { ItemCategoryType, QuizListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
+import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
@@ -41,25 +42,25 @@ export function ContentCreating({
   //TODO : 임시로 퀴즈데이터 이미 등록된 데이터로 불러옴
   //       나중에 등록버튼으로 등록 완료된 데이터로 전역저장후 다시setQuestionList값으로 넣기
   //TODO : 수정 팝업으로 열렸을시 - 전역에 체크박스데이터 저장후 열릴때 setQuestionList에 값넣기
-  const getQuiz = async () => {
-    const res = await quizService.get(`/v1/quiz`);
-    console.log(`getQuiz 결과값`, res.data.data);
-    return res.data.data;
-  };
-  const { data: quizData } = useQuery({
-    queryKey: ['get-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-quizList 에러 메세지',
-    },
-  });
+  // const getQuiz = async () => {
+  //   const res = await quizService.get(`/v1/quiz`);
+  //   console.log(`getQuiz 결과값`, res.data.data);
+  //   return res.data.data;
+  // };
+  // const { data: quizData } = useQuery({
+  //   queryKey: ['get-quizList'],
+  //   queryFn: getQuiz,
+  //   meta: {
+  //     errorMessage: 'get-quizList 에러 메세지',
+  //   },
+  // });
 
-  useEffect(() => {
-    if (quizData) {
-      console.log('초기값 임시로 불러와서 넣기', quizData.quizList);
-      setQuestionList(quizData.quizList);
-    }
-  }, [quizData]);
+  // useEffect(() => {
+  //   if (quizData) {
+  //     console.log('초기값 임시로 불러와서 넣기', quizData.quizList);
+  //     setQuestionList(quizData.quizList);
+  //   }
+  // }, [quizData]);
 
   // 카테고리 api 불러오기
   const getCategory = async () => {
@@ -271,7 +272,7 @@ export function ContentCreating({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <iframe
+              {/* <iframe
                 ref={iframeRef}
                 width="100%"
                 height="672"
@@ -280,9 +281,10 @@ export function ContentCreating({
                 frameBorder={0}
                 id="editorIframe"
                 //allow="fullscreen"
-                // sandbox="allow-forms allow-modals allow-same-origin"
-                // referrerPolicy="no-referrer"
-              ></iframe>
+                sandbox="allow-forms allow-modals allow-same-origin"
+                referrerPolicy="no-referrer"
+              ></iframe> */}
+              <EditerOneFile />
             </EditWrapper>
 
             <BackgroundWrapper>
@@ -468,7 +470,11 @@ const EditWrapper = styled.div`
   border-top: none;
   width: 100%;
 
-  > iframe {
+  /* > iframe {
+    width: 100%;
+    height: calc(100vh - 100px);
+  } */
+  > div {
     width: 100%;
     height: calc(100vh - 100px);
   }

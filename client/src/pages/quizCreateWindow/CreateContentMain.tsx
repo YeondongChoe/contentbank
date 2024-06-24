@@ -116,6 +116,7 @@ export function CreateContentMain() {
             <ContentCreating setTabVeiw={setTabVeiw} />
           ) : (
             // <FileUploading setTabVeiw={setTabVeiw} />
+            // <FileUploading setTabVeiw={setTabVeiw} />
             <ContentCreating setTabVeiw={setTabVeiw} />
           )}
         </ContentBox>

@@ -1112,9 +1112,9 @@ export function Classification() {
                     )}
                   </>
                 ) : (
-                  <>
+                  <ValueNoneWrapper>
                     <ValueNone info="문항을 선택해 주세요" textOnly />
-                  </>
+                  </ValueNoneWrapper>
                 )}
 
                 <p className="line"></p>

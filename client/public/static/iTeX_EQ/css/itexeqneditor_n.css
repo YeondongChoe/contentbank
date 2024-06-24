@@ -1,0 +1,1037 @@
+/*#mjx-editing-area {
+    position: fixed;
+    display: block;
+    width: 48%;
+    height: 150px;
+    top:0;
+    left:0;
+    padding: 20px 0 20px 0;
+    border: 5px solid gray;
+    background-color: beige;
+    z-index: 99;
+}
+#mjx-editing-area{
+    text-align: center;
+    font-size: x-large;
+}*/
+#mjx-editing-area > .MathJax {
+  cursor: default;
+  font-size: x-large;
+}
+.select_box {
+  opacity: 0;
+}
+.itexblank .select_box {
+  fill: rgba(44, 172, 247, 0.8);
+  opacity: 0.2;
+}
+.itexblank .select_box.cs_box {
+  fill: rgba(44, 172, 247, 0.8);
+  opacity: 0.7;
+}
+
+.cs_box {
+  fill: rgba(44, 172, 247, 0.8);
+  opacity: 0.2;
+}
+.cs_blink {
+  opacity: 0;
+  fill: black;
+  animation: 1s blink step-end infinite;
+}
+@keyframes blink {
+  from,
+  to {
+    opacity: transparent;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.grp_select_box {
+  fill: rgba(44, 172, 247, 0.8);
+  opacity: 0.3;
+}
+.ds-selected + use {
+  fill: rgba(247, 44, 247, 0.8);
+}
+.grp_select rect,
+.grp_select use {
+  fill: rgba(247, 44, 247, 0.8);
+}
+.itexblank use {
+  opacity: 0;
+  /*color: rgba(0, 0, 0, 0);
+border: 1px dashed lightblue;*/
+}
+
+.itexmainicon {
+  display: inline-block;
+  position: relative;
+  top: 30px;
+  width: 40px;
+  margin: 5px;
+}
+.itexcursorblock {
+  background-color: #ffffff;
+  border-right: 1px solid red;
+  opacity: 0.7;
+  animation: cursorcolor ease-in-out 0.7s infinite normal;
+}
+.itexcursorblock2 {
+  background-color: #ffffff;
+  border-left: 1px solid red;
+  opacity: 1;
+  animation: cursorcolor2 ease-in-out 0.7s infinite normal;
+}
+.itexcursorhead {
+  border-right: none;
+  border-left: 1px solid red;
+  animation: cursorcolor2 ease-in-out 0.7s infinite normal;
+}
+.itexcursorwrap {
+  background-color: #d7eff7;
+}
+
+@keyframes cursorcolor {
+  0% {
+    border-right: 1px solid white;
+  }
+  50% {
+    border-right: 1px solid red;
+  }
+  100% {
+    border-right: 1px solid white;
+  }
+}
+@-webkit-keyframes cursorcolor {
+  0% {
+    border-right: 1px solid white;
+  }
+  50% {
+    border-right: 1px solid red;
+  }
+  100% {
+    border-right: 1px solid white;
+  }
+}
+@keyframes cursorcolor2 {
+  0% {
+    border-left: 1px solid white;
+  }
+  50% {
+    border-left: 1px solid red;
+  }
+  100% {
+    border-left: 1px solid white;
+  }
+}
+@-webkit-keyframes cursorcolor2 {
+  0% {
+    border-left: 1px solid white;
+  }
+  50% {
+    border-left: 1px solid red;
+  }
+  100% {
+    border-left: 1px solid white;
+  }
+}
+#itexcursorbox {
+  position: absolute;
+  display: none;
+}
+#itexcursor {
+  background-color: red;
+  width: 2px;
+  height: 0.5em;
+  position: absolute;
+  animation: cloud_low ease-in-out 0.7s infinite normal;
+}
+@keyframes cloud_low {
+  0% {
+    background-color: white;
+  }
+  50% {
+    background-color: red;
+  }
+  100% {
+    background-color: white;
+  }
+}
+@-webkit-keyframes cloud_low {
+  0% {
+    background-color: white;
+  }
+  50% {
+    background-color: red;
+  }
+  100% {
+    background-color: white;
+  }
+}
+#equation_board.itexeq_normal {
+  /*display: none;
+position: absolute;*/
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  text-align: center;
+  touch-action: manipulation;
+}
+#itexinnerbox.itexeq_normal {
+  display: block;
+  background: #efefef;
+  text-align: left;
+  position: relative;
+}
+#itexinnerbox.itexeq_normal:after {
+  display: table;
+  content: "";
+  clear: both;
+}
+
+#itexdisplaywindow.itexeq_normal {
+  overflow: auto;
+  min-height: 150px;
+  text-align: left;
+  background-color: #ffffff;
+  padding: 5px;
+  box-shadow: inset 0px 0px 3px #000000;
+  vertical-align: middle;
+  padding-right: 40px;
+  /*padding-top: 20px;
+padding-bottom: 20px;*/
+  border-top: 1px solid #dedede;
+  border-bottom: 1px solid #dcdcdc;
+  border-left: 1px solid #f5f5f5;
+  border-right: 1px solid #f5f5f5;
+  /* box-shadow: inset 0 0px 5px rgba(0,0,0,0.1); */
+  box-sizing: border-box;
+  position: relative;
+  font-size: 1em;
+}
+
+#equation_board.itexeq_custom {
+  height: 100px;
+  padding: 15px 60px 15px 20px;
+  background: #f6f6f6;
+  width: 100%;
+}
+
+#itexscreen {
+  position: absolute;
+  display: none;
+  background: green;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  opacity: 0.1;
+  left: 0;
+}
+#itexmaindel {
+  padding-top: 10px;
+  box-sizing: border-box;
+  height: 35px;
+}
+#itexscriptmode {
+  display: none;
+  padding-top: 10px;
+  box-sizing: border-box;
+  height: 35px;
+}
+#itexscriptmode.active {
+  border: 3px solid #05a7ed;
+  padding-top: 7px;
+}
+
+#itexbox_close {
+  /* width: 30px;
+  position: absolute;
+  right: 5px;
+  top: 5px; */
+  /* background: rgba(255,255,255,0.7); */
+  /* padding: 3px; */
+  /* border-radius: 50%; */
+  /* box-shadow: 1px 1px 2px rgba(0,0,0,0.6); */
+  /* opacity: 0.5; */
+  cursor: pointer;
+  z-index: 100;
+}
+#itexfuncionbox {
+  display: inline-block;
+  position: absolute;
+  top: 4px;
+  left: 25px;
+  height: 32px;
+  text-align: left;
+}
+#itexiconbasic {
+  text-align: left;
+  margin-top: 10px;
+}
+.itexinbasic {
+  display: inline-block;
+  margin-right: 5px;
+  width: 150px;
+  vertical-align: top;
+}
+.itexicon {
+  display: inline-block;
+  height: 35px;
+  width: 35px;
+  margin-top: 1px;
+  margin-right: 2px;
+  border-radius: 5px;
+  box-shadow: 1px 2px 0px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  opacity: 1;
+}
+.itexicon img {
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
+}
+
+.itexicon:active {
+  box-shadow: inset 1px 2px 0px rgba(0, 0, 0, 0.2);
+}
+.itexicon:active img {
+  opacity: 0.5;
+}
+
+.itexinkeypad {
+  display: inline-block;
+  width: 180px;
+  text-align: center;
+}
+#itexcharkeypad,
+#itexcapkeypad,
+#itexgreekkeypad,
+#itexeqnkeypad1,
+#itexeqnkeypad2,
+#itexeqnkeypad3,
+#itexromansmallkeypad,
+#itexromancapkeypad,
+#itexitgreekkeypad {
+  width: 100%;
+  /*max-width:835px;*/
+  margin-top: 0;
+}
+.itexcharkey,
+.itexnumkey,
+.itexcapkey,
+.itexgreekkey,
+.itexeqnkey,
+.itexromansmallkey,
+.itexromancapkey,
+.itexitgreekkey {
+  width: 9.4%;
+  height: 30px;
+  background: white;
+  font-size: 18pt;
+  text-align: center;
+  margin-top: 7px;
+  margin-left: 0.3%;
+  margin-right: 0.3%;
+  line-height: 36px;
+  /*display:table-cell;
+vertical-align:middle;*/
+
+  -webkit-transition: background 0.2s;
+  transition: background 0.2s;
+  float: left;
+}
+.itexcharkey:active,
+.itexnumkey:active,
+.itexcapkey:active,
+.itexgreekkey:active,
+.itexeqnkey:active,
+.itexromansmallkey:active,
+.itexromancapkey:active,
+.itexitgreekkey:active {
+  background: #f7f7f7;
+}
+.itexeqnkey {
+  width: 7%;
+}
+
+.hiddenkeypad {
+  display: none;
+}
+.viewkeypad {
+  display: block;
+  text-align: center;
+}
+.itexarrow,
+.itexfunction {
+  width: 45px;
+  height: 35px;
+  background: #ccc;
+  font-size: 20pt;
+  text-align: center;
+  vertical-align: middle;
+  padding-top: 7px;
+  box-sizing: border-box;
+}
+#itexinnerbox-wrap:after {
+  display: table;
+  content: "";
+  clear: both;
+  touch-action: manipulation;
+}
+
+#itexinnerbox-wrap img {
+  vertical-align: top;
+}
+.itexarrow img,
+.itexfunction img {
+  vertical-align: top;
+}
+
+#itexfunckey {
+  display: block;
+  text-align: center;
+  margin: auto 0;
+  padding-top: 15px;
+  padding-bottom: 10px;
+}
+.itexarrow {
+  width: 8%;
+  padding-top: 10px;
+  box-sizing: border-box;
+  height: 35px;
+}
+#itexcharchange,
+#func_shift,
+#func_sp1romk,
+#func_sp1gk,
+#func_sp2shift,
+#func_sp2romk,
+#func_sp2gk,
+#func_sp3romk,
+#func_sp3gk,
+#func_sp4shift,
+#func_sp4romk,
+#func_sp4gk,
+#func_sp5shift,
+#func_sp5romk,
+#func_sp5gk,
+#func_sp6romk,
+#func_sp6gk {
+  background: #cccccc;
+}
+#itexscriptbox {
+  text-align: center;
+  margin-top: 0;
+  clear: both;
+  padding-top: 5px;
+}
+#itexscriptbox:after {
+  display: block;
+  content: "";
+  position: relative;
+  width: 100%;
+  border-bottom: 1px solid #e0e0e0;
+  /* padding: 5px 0; */
+  width: 90%;
+  margin: 5px auto;
+  border-top: 1px solid #fbfbfb;
+}
+
+#itexlatexbox {
+  display: inline-block;
+  height: 40px;
+  width: 100%;
+  margin: 0;
+  padding: 3px 4px;
+  border: 1px solid #ccc;
+  outline: none;
+  box-shadow: inset 1px 2px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  resize: vertical;
+  font-size: 15px;
+  color: #404040;
+  min-height: 50px;
+}
+#itexcontentbox2 {
+  opacity: 0;
+  position: absolute;
+  top: -10px;
+  height: 1px;
+  width: 1px;
+}
+#pback {
+  height: 30px;
+  cursor: pointer;
+}
+#itexstep {
+  border: 1px solid #07acf2;
+  border-radius: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  background-color: #05a7ed;
+  color: white;
+  width: 100px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  margin-left: 7px;
+  box-shadow: 1px 2px 0px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  margin-right: 4.3%;
+  font-size: 13px;
+  text-align: center;
+  float: right;
+
+  line-height: 30px;
+}
+#itexstep:active {
+  box-shadow: inset 1px 2px 0px rgba(0, 0, 0, 0.2);
+}
+#itexeqn_temp {
+  display: inline-block;
+  width: 20px;
+  height: 15px;
+  border: 1px dashed lightblue;
+}
+
+#itexnumkeypad:after {
+  display: table;
+  content: "";
+  clear: both;
+}
+
+#itexinnerbox-wrap:after {
+  display: table;
+  content: "";
+  clear: both;
+  padding-bottom: 20px;
+}
+
+#itexfunckey1,
+#itexfunckey2 {
+  display: block;
+}
+
+#itexfunckey1:after,
+#itexfunckey2:after {
+  display: table;
+  content: "";
+  clear: both;
+}
+
+#itexeqnkeypad1 > .itexeqnkey-col:after,
+#itexeqnkeypad2 > .itexeqnkey-col:after,
+#itexeqnkeypad3 > .itexeqnkey-col:after,
+#itexeqnkeypad4 > .itexeqnkey-col:after,
+#itexeqnkeypad5 > .itexeqnkey-col:after,
+#itexeqnkeypad6 > .itexeqnkey-col:after {
+  display: table;
+  content: "";
+  clear: both;
+}
+
+#itexeqnkeypad1 > .itexeqnkey-col.col1,
+#itexeqnkeypad1 > .itexeqnkey-col.col2,
+#itexeqnkeypad1 > .itexeqnkey-col.col3,
+#itexeqnkeypad2 > .itexeqnkey-col.col1,
+#itexeqnkeypad2 > .itexeqnkey-col.col2,
+#itexeqnkeypad2 > .itexeqnkey-col.col3,
+#itexeqnkeypad3 > .itexeqnkey-col.col1,
+#itexeqnkeypad3 > .itexeqnkey-col.col2,
+#itexeqnkeypad3 > .itexeqnkey-col.col3,
+#itexeqnkeypad4 > .itexeqnkey-col.col1,
+#itexeqnkeypad4 > .itexeqnkey-col.col2,
+#itexeqnkeypad4 > .itexeqnkey-col.col3,
+#itexeqnkeypad5 > .itexeqnkey-col.col1,
+#itexeqnkeypad5 > .itexeqnkey-col.col2,
+#itexeqnkeypad5 > .itexeqnkey-col.col3,
+#itexeqnkeypad6 > .itexeqnkey-col.col1,
+#itexeqnkeypad6 > .itexeqnkey-col.col2,
+#itexeqnkeypad6 > .itexeqnkey-col.col3 {
+  float: left;
+  width: 33.333333%;
+  box-sizing: border-box;
+}
+
+#itexeqnkeypad1 > .itexeqnkey-col.col1,
+#itexeqnkeypad2 > .itexeqnkey-col.col1,
+#itexeqnkeypad3 > .itexeqnkey-col.col1,
+#itexeqnkeypad4 > .itexeqnkey-col.col1,
+#itexeqnkeypad5 > .itexeqnkey-col.col1,
+#itexeqnkeypad6 > .itexeqnkey-col.col1 {
+  padding-right: 5px;
+}
+
+#itexeqnkeypad1 > .itexeqnkey-col.col2,
+#itexeqnkeypad2 > .itexeqnkey-col.col2,
+#itexeqnkeypad3 > .itexeqnkey-col.col2,
+#itexeqnkeypad4 > .itexeqnkey-col.col2,
+#itexeqnkeypad5 > .itexeqnkey-col.col2,
+#itexeqnkeypad6 > .itexeqnkey-col.col2 {
+  padding-right: 2.5px;
+  padding-left: 2.5px;
+}
+#itexeqnkeypad1 > .itexeqnkey-col.col3,
+#itexeqnkeypad2 > .itexeqnkey-col.col3,
+#itexeqnkeypad3 > .itexeqnkey-col.col3,
+#itexeqnkeypad4 > .itexeqnkey-col.col3,
+#itexeqnkeypad5 > .itexeqnkey-col.col3,
+#itexeqnkeypad6 > .itexeqnkey-col.col3 {
+  padding-left: 5px;
+}
+
+#itexeqnkeypad1 > .itexeqnkey-col > .itexeqnkey,
+#itexeqnkeypad2 > .itexeqnkey-col > .itexeqnkey,
+#itexeqnkeypad3 > .itexeqnkey-col > .itexeqnkey,
+#itexeqnkeypad4 > .itexeqnkey-col > .itexeqnkey,
+#itexeqnkeypad5 > .itexeqnkey-col > .itexeqnkey,
+#itexeqnkeypad6 > .itexeqnkey-col > .itexeqnkey {
+  width: 31.3333%;
+  box-sizing: border-box;
+  margin: 7px 1% 0 1%;
+}
+
+#itexmaindel {
+  background-color: #9a9a9a;
+}
+
+.keyboardselect {
+  background-color: #9a9a9a;
+}
+
+#itexeqnkeypad1:after,
+#itexeqnkeypad2:after,
+#itexeqnkeypad3:after,
+#itexeqnkeypad4:after,
+#itexeqnkeypad5:after,
+#itexeqnkeypad6:after,
+#itexcharkeypad:after,
+#itexcapkeypad:after,
+#itexgreekkeypad:after,
+#itexromansmallkeypad:after,
+#itexromancapkeypad:after,
+#itexitgreekkeypad:after {
+  display: table;
+  content: "";
+  clear: both;
+}
+
+@media screen and (min-width: 769px) {
+  #itexinnerbox-wrap {
+    margin: 0 auto;
+    max-width: 90%;
+  }
+
+  #itexeqnkeypad1,
+  #itexeqnkeypad2,
+  #itexeqnkeypad3,
+  #itexeqnkeypad4,
+  #itexeqnkeypad5,
+  #itexeqnkeypad6,
+  #itexcharkeypad,
+  #itexcapkeypad,
+  #itexgreekkeypad,
+  #itexromansmallkeypad,
+  #itexromancapkeypad,
+  #itexitgreekkeypad {
+    float: left;
+    width: 75%;
+    text-align: left;
+    margin-top: 0;
+    box-sizing: border-box;
+  }
+
+  #itexcharkeypad > .itexcharkey,
+  #itexcharkeypad > .itexnumkey,
+  #itexcharkeypad > .itexcapkey,
+  #itexcharkeypad > .itexgreekkey,
+  #itexcharkeypad > .itexeqnkey,
+  #itexcharkeypad > .itexromansmallkey,
+  #itexcharkeypad > .itexromancapkey,
+  #itexcharkeypad > .itexitgreekkey,
+  #itexcapkeypad > .itexcharkey,
+  #itexcapkeypad > .itexnumkey,
+  #itexcapkeypad > .itexcapkey,
+  #itexcapkeypad > .itexgreekkey,
+  #itexcapkeypad > .itexeqnkey,
+  #itexcapkeypad > .itexromansmallkey,
+  #itexcapkeypad > .itexromancapkey,
+  #itexcapkeypad > .itexitgreekkey,
+  #itexgreekkeypad > .itexcharkey,
+  #itexgreekkeypad > .itexnumkey,
+  #itexgreekkeypad > .itexcapkey,
+  #itexgreekkeypad > .itexgreekkey,
+  #itexgreekkeypad > .itexeqnkey,
+  #itexgreekkeypad > .itexromansmallkey,
+  #itexgreekkeypad > .itexromancapkey,
+  #itexgreekkeypad > .itexitgreekkey,
+  #itexitgreekkeypad > .itexcharkey,
+  #itexitgreekkeypad > .itexnumkey,
+  #itexitgreekkeypad > .itexcapkey,
+  #itexitgreekkeypad > .itexgreekkey,
+  #itexitgreekkeypad > .itexeqnkey,
+  #itexitgreekkeypad > .itexromansmallkey,
+  #itexitgreekkeypad > .itexromancapkey,
+  #itexitgreekkeypad > .itexitgreekkey,
+  #itexromansmallkeypad > .itexcharkey,
+  #itexromansmallkeypad > .itexnumkey,
+  #itexromansmallkeypad > .itexcapkey,
+  #itexromansmallkeypad > .itexgreekkey,
+  #itexromansmallkeypad > .itexeqnkey,
+  #itexromansmallkeypad > .itexromansmallkey,
+  #itexromansmallkeypad > .itexromancapkey,
+  #itexromansmallkeypad > .itexitgreekkey {
+    width: 9%;
+  }
+
+  .itexinnumkeypad {
+    float: right;
+    width: 25%;
+    box-sizing: border-box;
+    padding-left: 10px;
+  }
+
+  .itexnumkey {
+    float: left;
+    width: 23%;
+    margin: 7px 1% 0 1%;
+  }
+
+  #itexfunckey1 {
+    float: left;
+    clear: both;
+    width: 75%;
+    text-align: right;
+    padding-right: 0;
+    box-sizing: border-box;
+    padding-top: 20px;
+  }
+  #itexfunckey1 > .itexfunction {
+    min-width: 9%;
+    font-size: 1em;
+    padding-top: 10px;
+  }
+
+  #itexfunckey2 {
+    float: right;
+    width: 25%;
+    text-align: left;
+    box-sizing: border-box;
+    padding-top: 20px;
+    padding-left: 10px;
+  }
+
+  #itexfunckey2 > .itexarrow,
+  #itexfunckey2 > #itexstep {
+    width: 31.333333%;
+    margin: 0 1% 0 1%;
+    box-sizing: border-box;
+    float: left;
+  }
+
+  #itexfunckey2 > #itexstep {
+    display: inline-block;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #itexnumkeypad {
+    margin-bottom: 5px;
+  }
+
+  #itexeqnkeypad1 > .itexeqnkey-col.col1,
+  #itexeqnkeypad2 > .itexeqnkey-col.col1 {
+    padding-right: 3px;
+  }
+
+  #itexeqnkeypad1 > .itexeqnkey-col.col2,
+  #itexeqnkeypad2 > .itexeqnkey-col.col2 {
+    padding-right: 1.5px;
+    padding-left: 1.5px;
+  }
+  #itexeqnkeypad1 > .itexeqnkey-col.col3,
+  #itexeqnkeypad2 > .itexeqnkey-col.col3 {
+    padding-left: 3px;
+  }
+
+  #itexlatexbox {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  #itexinnerbox-wrap {
+    text-align: center;
+    padding: 5px 10px;
+  }
+
+  #itexfunckey1 {
+    padding-top: 10px;
+    margin-bottom: 0;
+  }
+
+  #itexfunckey2 {
+    margin-top: 5px;
+    clear: both;
+  }
+
+  #itexfunckey1,
+  #itexfunckey2 {
+    display: inline-block;
+  }
+
+  #itexfunckey1 > .itexicon,
+  #itexfunckey2 > .itexicon,
+  #itexfunckey2 > #itexstep {
+    min-width: 40px;
+    margin: 0 2px;
+  }
+
+  #itexfunckey2 > #itexstep {
+    max-width: 60px;
+    margin-left: 10px;
+  }
+
+  .itexinnumkeypad #itex_tnum_dot,
+  .itexinnumkeypad #itex_tnum_enter {
+    display: none;
+  }
+}
+
+.itexnumkey,
+.itexromansmallkey,
+.itexromancapkey,
+.itexeqnkey {
+  font-family: serif;
+  font-size: 14pt;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.itexgreekkey {
+  font-family: sans-serif;
+  font-size: 14pt;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.itexcharkey,
+.itexcapkey,
+.itexitgreekkey,
+.itexromancapkey {
+  font-family: serif;
+  font-size: 14pt;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+#itex_gkalpha,
+#itex_gkbeta,
+#itex_gkgamma,
+#itex_gkdelta,
+#itex_gkvarepsilon,
+#itex_gkzeta,
+#itex_gketa,
+#itex_gktheta,
+#itex_gkiota,
+#itex_gkkappa,
+#itex_gklambda,
+#itex_gkmu,
+#itex_gknu,
+#itex_gkxi,
+#itex_gkomicron,
+#itex_gkpi,
+#itex_gkrho,
+#itex_gksigma,
+#itex_gktau,
+#itex_gkupsilon,
+#itex_gkphi,
+#itex_gkchi,
+#itex_gkpsi,
+#itex_gkomega,
+#itex_spbbi,
+#itex_spbbn,
+#itex_spbbq,
+#itex_spbbr {
+  font-family: "MJXc-TeX-math-I", "MJXc-TeX-math-Ix", "MJXc-TeX-math-Iw";
+  font-size: 14pt;
+}
+
+.itexcharkey#func_shift,
+.itexcapkey#func_sp2shift,
+.itexromansmallkey#func_sp4shift,
+.itexcharkey#func_sp1romk,
+.itexcharkey#func_sp1gk,
+.itexcapkey#func_sp2romk,
+.itexcapkey#func_sp2gk,
+.itexgreekkey#func_sp3romk,
+.itexgreekkey#func_sp3gk,
+.itexromansmallkey#func_sp4romk,
+.itexromansmallkey#func_sp4gk,
+.itexromancapkey#func_sp5romk,
+.itexromancapkey#func_sp5gk,
+.itexitgreekkey#func_sp6romk,
+.itexitgreekkey#func_sp6gk,
+.itexcharkey#itex_sp1bar,
+.itexcharkey#itex_sp1bar2,
+.itexcharkey#itex_sp1bar3,
+.itexcharkey#itex_sp1bar4,
+.itexcharkey#itex_sp1bar5,
+.itexcharkey#itex_sp1bar6,
+.itexcharkey#itex_sp1bar7,
+.itexcharkey#itex_sp1bar8,
+.itexcharkey#itex_sp1bar9,
+.itexcapkey#itex_sp2bar,
+.itexcapkey#itex_sp2bar2,
+.itexcapkey#itex_sp2bar3,
+.itexcapkey#itex_sp2bar4,
+.itexcapkey#itex_sp2bar5,
+.itexcapkey#itex_sp2bar6,
+.itexcapkey#itex_sp2bar7,
+.itexcapkey#itex_sp2bar8,
+.itexcapkey#itex_sp2bar9,
+.itexromancapkey#itex_sp5bar,
+.itexromancapkey#itex_sp5bar2,
+.itexromancapkey#itex_sp5bar3,
+.itexromancapkey#itex_sp5bar4,
+.itexromancapkey#itex_sp5bar5,
+.itexromancapkey#itex_sp5bar6,
+.itexromancapkey#itex_sp5bar7,
+.itexromancapkey#itex_sp5bar8,
+.itexromancapkey#itex_sp5bar9,
+.itexromansmallkey#itex_sp4bar,
+.itexromansmallkey#itex_sp4bar2,
+.itexromansmallkey#itex_sp4bar3,
+.itexromansmallkey#itex_sp4bar4,
+.itexromansmallkey#itex_sp4bar5,
+.itexromansmallkey#itex_sp4bar6,
+.itexromansmallkey#itex_sp4bar7,
+.itexromansmallkey#itex_sp4bar8,
+.itexromansmallkey#itex_sp4bar9 {
+  font-size: 18pt;
+}
+.itexeqnkey-col.col1 > .itexeqnkey {
+  font-size: 18pt;
+}
+.itexeqnkey-col.col2 > .itexeqnkey {
+  font-size: 18pt;
+}
+.itexeqnkey#itex_varnothing,
+.itexnumkey#itex_tnum_enter {
+  font-size: 18pt;
+}
+
+#hanboxouter {
+  display: block;
+  position: absolute;
+  z-index: 9999;
+  text-align: center;
+  width: 100%;
+  top: 30px;
+}
+
+#haninputbox {
+  width: 500px;
+  height: 40px;
+  border: 2px;
+  padding: 10px;
+  box-shadow: 3px 3px 5px 2px gray;
+}
+
+.texselect {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+.texselect[value="latex"] {
+  margin-left: 400px;
+}
+
+.itexmath {
+  cursor: default;
+}
+
+#texselectbox > label {
+  margin-right: 20px;
+}
+
+#modal_block {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #2c3e50a6;
+  z-index: 999;
+  text-align: center;
+  padding-top: 15%;
+}
+
+#iframe_ocr_box {
+  display: none;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  /*height: 100%;*/
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  text-align: center;
+  border: 1px solid darkgrey;
+}
+#itex_frame_area {
+  /* background: white; */
+  vertical-align: bottom;
+}
+
+.eq_config_show {
+  width: 100%;
+  left: 0px;
+  position: fixed;
+  box-shadow: 1px 1px 1px grey;
+  z-index: 99;
+  bottom: 0px;
+  /*animation-duration: 0.6s;
+animation-name: config_slidein;*/
+}
+@keyframes config_slidein {
+  from {
+    bottom: -470px;
+  }
+  to {
+    bottom: 0px;
+  }
+}
+.eq_config_hidden {
+  width: 100%;
+  left: 0px;
+  position: fixed;
+  box-shadow: 1px 1px 1px grey;
+  z-index: 99;
+  bottom: -470px;
+  /*animation-duration: 0.3s;
+animation-name: config_slideout;*/
+}
+@keyframes config_slideout {
+  from {
+    bottom: 0px;
+  }
+  to {
+    bottom: -470px;
+  }
+}
+.itexfunct_hidden {
+  display: none;
+}
+
+.tools_wrap {
+  width: 100%;
+  bottom: 0px;
+  left: 0px;
+  position: fixed;
+  box-shadow: 1px 1px 1px grey;
+  z-index: 99;
+}

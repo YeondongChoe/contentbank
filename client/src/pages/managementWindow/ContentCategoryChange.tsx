@@ -555,12 +555,12 @@ export function ContentCategoryChange() {
     }, {});
 
     const data = {
-      // searchKeyword: '',
-      // pageIndex: page,
-      // pageUnit: 8,
+      searchKeyword: '',
+      pageIndex: page,
+      pageUnit: 8,
       itemTreeKey: itemTreeKey,
       itemTreeIdxList: checkedDepthList,
-      isUse: radio7depthCheck.title !== '비활성화',
+      isUse: radio7depthCheck.title !== '비활성화' ? null : false,
     };
 
     const res = await quizService.post('/v1/search/quiz/category', data);

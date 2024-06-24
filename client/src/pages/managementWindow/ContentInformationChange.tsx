@@ -568,7 +568,7 @@ export function ContentInformationChange() {
       pageUnit: 10,
       itemTreeKey: itemTreeKey,
       itemTreeIdxList: checkedDepthList,
-      isUse: radio7depthCheck.title !== '비활성화',
+      isUse: radio7depthCheck.title !== '비활성화' ? null : false,
     };
 
     const res = await quizService.post('/v1/search/quiz/category', data);
