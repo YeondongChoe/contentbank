@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import { GoFold, GoUnfold } from 'react-icons/go';
@@ -164,6 +164,7 @@ type MathviewerCardProps = {
   remainderContent?: number;
   nextRemainderContent?: number;
   setTotalEqualScore?: React.Dispatch<React.SetStateAction<number>>;
+  category?: any;
 };
 
 export function MathviewerAccordion({
@@ -192,6 +193,7 @@ export function MathviewerAccordion({
   equalScore,
   remainderContent,
   nextRemainderContent,
+  category,
   setTotalEqualScore,
 }: MathviewerCardProps) {
   const [didMount, setDidMount] = useState(false);
@@ -202,16 +204,17 @@ export function MathviewerAccordion({
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentNumQuotient[]>(contentQuotient);
 
-  const totalEqualScore = contentNumQuotient.reduce(
-    (acc, el) => acc + el.quotient,
-    0,
+  //문항 삭제될때마다 총점 변경
+  const totalEqualScore = useMemo(
+    () => contentNumQuotient.reduce((acc, el) => acc + el.quotient, 0),
+    [contentNumQuotient, deleteQuizItem],
   );
 
   useEffect(() => {
     if (setTotalEqualScore) {
       setTotalEqualScore(totalEqualScore);
     }
-  }, [contentNumQuotient]);
+  }, [contentNumQuotient, totalEqualScore]);
 
   useEffect(() => {
     if (quotient !== undefined) {
@@ -315,8 +318,8 @@ export function MathviewerAccordion({
             fontSize={'25px'}
             style={{ cursor: 'pointer', color: 'gray' }}
           />
-          <div>중</div>
-          <div>객관식</div>
+          <div>{category?.난이도 || 'N/A'}</div>
+          <div>{category?.문항타입 || 'N/A'}</div>
           {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (
             <Select
               width={'90px'}

@@ -15,6 +15,8 @@ type WorkbookMathViewerProps = {
   width?: string;
   padding?: string;
   height?: string;
+  isSetp3?: boolean;
+  answerCommentary?: string;
 };
 
 const config = {
@@ -39,12 +41,13 @@ export function WorkbookMathViewer({
   width,
   padding,
   height,
+  isSetp3,
+  answerCommentary,
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
 
   const offLoader = () => {
-    // console.log('off loader');
     setDisplay('block');
   };
 
@@ -58,7 +61,6 @@ export function WorkbookMathViewer({
       mathJax.startup.promise.then(() => {
         // Typesetting 완료 후 호출될 콜백
         mathJax.typeset();
-        //offLoader();
       });
 
       // 컴포넌트가 언마운트 될 때 MathJax 정리
@@ -83,17 +85,77 @@ export function WorkbookMathViewer({
           config={config}
           onStartup={(mathJax) => setMathJax(mathJax)}
         >
-          {/* <strong>{data.it_title}</strong> */}
-          <MathJax inline dynamic onInitTypeset={() => offLoader()}>
-            <ContentQuestion
-              dangerouslySetInnerHTML={createMarkup(
-                data?.quizItemList[1]?.content,
+          <MathJaxWrapper>
+            {isSetp3 && (
+              <strong>{data.num < 10 ? `0${data.num}` : `${data.num}`}</strong>
+            )}
+            <MathJax inline dynamic onInitTypeset={() => offLoader()}>
+              {answerCommentary === '문제만' && (
+                <>
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'QUESTION')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                </>
               )}
-            ></ContentQuestion>
-            {/* <ContentAnswer
-              dangerouslySetInnerHTML={createMarkup(data.it_answer[0])}
-            ></ContentAnswer> */}
-          </MathJax>
+              {answerCommentary === '정답만' && (
+                <>
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'ANSWER')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                </>
+              )}
+              {answerCommentary === '문제+해설별도' && (
+                <>
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'QUESTION')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                </>
+              )}
+              {answerCommentary === '문제+해설같이' && (
+                <>
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'QUESTION')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'EXAMPLE')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'ANSWER')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                </>
+              )}
+            </MathJax>
+          </MathJaxWrapper>
         </MathJaxContext>
       </Component>
     </>
@@ -113,5 +175,11 @@ const Component = styled.div<MathViewerStyleProps>`
   display: ${({ display }) => (display ? `${display}` : 'block')};
   padding: ${({ $padding }) => ($padding ? `${$padding}` : '0')};
 `;
+const MathJaxWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
 
-const ContentQuestion = styled.div``;
+const ContentQuestion = styled.div`
+  padding-bottom: 10px;
+`;

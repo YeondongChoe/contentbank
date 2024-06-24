@@ -226,7 +226,8 @@ export function Step2() {
 
   //즐겨찾기
   const [page, setPage] = useRecoilState(pageAtom);
-  const [questionList, setQuestionList] = useState<FavoriteQuizList>();
+  const [favoriteQuestionList, setFavoriteQuestionList] =
+    useState<FavoriteQuizList>();
 
   // 문항 즐겨찾기리스트 불러오기 api
   const getFavoriteQuiz = async () => {
@@ -237,7 +238,7 @@ export function Step2() {
     //     ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
     //     : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
     // );
-    console.log(`getFavoriteQuiz 결과값`, res.data.data);
+    // console.log(`getFavoriteQuiz 결과값`, res.data.data);
     return res.data.data;
   };
 
@@ -248,12 +249,13 @@ export function Step2() {
       meta: {
         errorMessage: 'get-favoriteQuizList 에러 메세지',
       },
+      enabled: tabVeiw == '즐겨찾는 문항',
     },
   );
 
   useEffect(() => {
     if (favoriteQuizData) {
-      setQuestionList(favoriteQuizData);
+      setFavoriteQuestionList(favoriteQuizData);
     }
   }, [favoriteQuizData]);
 
@@ -335,6 +337,7 @@ export function Step2() {
   const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
+  console.log(newQuizItems?.quizList);
 
   // 새 문항 문항 불러오기 api
   const postnewQuizList = async (data: any) => {
@@ -355,7 +358,15 @@ export function Step2() {
       }
     },
     onSuccess: (response) => {
-      setNewQuizItems(response.data.data);
+      if (response.data.data.quizList.length <= 0) {
+        openToastifyAlert({
+          type: 'error',
+          text: '가지고 올 수 있는 문항이 없습니다.',
+        });
+      } else {
+        setNewQuizItems(response.data.data);
+        setIsRangeSetting(false);
+      }
     },
   });
 
@@ -1122,9 +1133,46 @@ export function Step2() {
       });
     }
   };
+  console.log('newQuizItems', newQuizItems);
+  //리스트 문항 전체 추가
+  const clickAddAllQuizItem = () => {
+    //새문항 전체추가
+    if (newQuizItems) {
+      const allNewQuizItems = newQuizItems.quizList;
+      console.log('newQuizItems', newQuizItems);
+      console.log('allNewQuizItems', allNewQuizItems);
+      setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+      setNewQuizItems((prevItems) => {
+        if (prevItems) {
+          return {
+            ...prevItems,
+            quizList: [],
+          };
+        }
+        return prevItems;
+      });
+    }
+    //즐겨찾기 전체추가
+    else if (favoriteQuestionList) {
+      const allNewQuizItems = favoriteQuestionList.quizList;
+      console.log('newQuizItems', newQuizItems);
+      console.log('allNewQuizItems', allNewQuizItems);
+      setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+      setFavoriteQuestionList((prevItems) => {
+        if (prevItems) {
+          return {
+            ...prevItems,
+            quizList: [],
+          };
+        }
+        return prevItems;
+      });
+    }
+  };
 
   // 리스트에 문항 추가하기(객체인 경우)
   const clickAddQuizItem = (code: string) => {
+    // 우사문항 불러오기 리스트
     if (similarItems) {
       const selectedQuizItem = similarItems.quizList.find(
         (item) => item.code === code,
@@ -1143,13 +1191,35 @@ export function Step2() {
           return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
         });
       }
-    } else if (newQuizItems) {
+    }
+    // 새문항 불러오기 리스트
+    else if (newQuizItems) {
       const selectedQuizItem = newQuizItems.quizList.find(
         (item) => item.code === code,
       );
       if (selectedQuizItem) {
         setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
         setNewQuizItems((prevItems) => {
+          if (prevItems) {
+            return {
+              ...prevItems,
+              quizList: prevItems.quizList.filter(
+                (item) => item !== selectedQuizItem,
+              ),
+            };
+          }
+          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+        });
+      }
+    }
+    // 즐겨찾기 리스트
+    else if (favoriteQuestionList) {
+      const selectedQuizItem = favoriteQuestionList.quizList.find(
+        (item) => item.code === code,
+      );
+      if (selectedQuizItem) {
+        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+        setFavoriteQuestionList((prevItems) => {
           if (prevItems) {
             return {
               ...prevItems,
@@ -1470,7 +1540,7 @@ export function Step2() {
                             </AddNewContentIcon>
                             <Button
                               buttonType="button"
-                              onClick={() => {}}
+                              onClick={clickAddAllQuizItem}
                               $padding="10px"
                               height={'30px'}
                               width={'100px'}
@@ -1889,6 +1959,8 @@ export function Step2() {
                                   isNewQuiz={true}
                                   data={item}
                                   index={item.idx}
+                                  title={item.code}
+                                  quizNum={i + 1}
                                   selectedCardIndex={selectedCardIndex}
                                   onSelectCard={setSelectedCardIndex}
                                   reportQuizitem={() =>
@@ -1905,7 +1977,7 @@ export function Step2() {
                       )}
                       {tabVeiw === '즐겨찾는 문항' && (
                         <>
-                          {favoriteQuizData && questionList ? (
+                          {favoriteQuizData && favoriteQuestionList ? (
                             <>
                               <BookmarkContentOption>
                                 <SelectWrapper>
@@ -1921,16 +1993,16 @@ export function Step2() {
                                     />
                                   ))}
                                 </SelectWrapper>
-                                <BookmarkContentCheckWrapper>
+                                {/* <BookmarkContentCheckWrapper>
                                   <CheckBox
                                     isChecked={recommend}
                                     onClick={() => setRecommend(!recommend)}
                                   ></CheckBox>
                                   내 문항 우선 추천
-                                </BookmarkContentCheckWrapper>
+                                </BookmarkContentCheckWrapper> */}
                                 <Button
                                   buttonType="button"
-                                  onClick={() => {}}
+                                  onClick={clickAddAllQuizItem}
                                   $padding="10px"
                                   height={'30px'}
                                   width={'100px'}
@@ -1942,27 +2014,31 @@ export function Step2() {
                                 </Button>
                               </BookmarkContentOption>
                               <BookmarkContensWrapper>
-                                {questionList.quizList?.map((item) => (
-                                  <MathviewerAccordion
-                                    key={item.idx}
-                                    componentWidth="600px"
-                                    width="450px"
-                                    componentHeight="150px"
-                                    onClick={() => {}}
-                                    isBorder={true}
-                                    isNewQuiz={true}
-                                    data={item}
-                                    index={item.idx}
-                                    selectedCardIndex={selectedCardIndex}
-                                    onSelectCard={setSelectedCardIndex}
-                                    reportQuizitem={() =>
-                                      openReportProcess(item.idx)
-                                    }
-                                    addQuizItem={() =>
-                                      clickAddQuizItem(item.code)
-                                    }
-                                  ></MathviewerAccordion>
-                                ))}
+                                {favoriteQuestionList.quizList?.map(
+                                  (item, i) => (
+                                    <MathviewerAccordion
+                                      key={item.idx}
+                                      componentWidth="600px"
+                                      width="450px"
+                                      componentHeight="150px"
+                                      onClick={() => {}}
+                                      isBorder={true}
+                                      isNewQuiz={true}
+                                      data={item}
+                                      index={item.idx}
+                                      title={item.code}
+                                      quizNum={i + 1}
+                                      selectedCardIndex={selectedCardIndex}
+                                      onSelectCard={setSelectedCardIndex}
+                                      reportQuizitem={() =>
+                                        openReportProcess(item.idx)
+                                      }
+                                      addQuizItem={() =>
+                                        clickAddQuizItem(item.code)
+                                      }
+                                    ></MathviewerAccordion>
+                                  ),
+                                )}
                               </BookmarkContensWrapper>
                             </>
                           ) : (
@@ -2066,6 +2142,9 @@ export function Step2() {
                           remainderContent={remainderContent}
                           nextRemainderContent={nextRemainderContent}
                           setTotalEqualScore={setTotalEqualScore}
+                          category={
+                            dragItem.quizCategoryList?.[0]?.quizCategory
+                          }
                         ></MathviewerAccordion>
                       </li>
                     )}
@@ -2317,7 +2396,7 @@ const SubmitButtonWrapper = styled.div`
 const BookmarkContentOption = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 25px;
   padding: 10px 0;
 `;

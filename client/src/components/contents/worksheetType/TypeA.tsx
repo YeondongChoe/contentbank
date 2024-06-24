@@ -1,17 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import styled, { ThemeProvider, css } from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 
 import { Label } from '../../../components/atom';
-import { MathViewer, WorkbookMathViewer } from '../../../components/mathViewer';
-import Contents1 from '../../../components/mathViewer/test1.json';
-import Contents2 from '../../../components/mathViewer/test2.json';
-import Contents3 from '../../../components/mathViewer/test3.json';
-import Contents4 from '../../../components/mathViewer/test4.json';
-import { ItemQuestionType } from '../../../types/ItemQuestionType';
-import { QuizList, QuizItemList } from '../../../types/WorkbookType';
-import { COLOR } from '../../constants';
+import { WorkbookMathViewer } from '../../../components/mathViewer';
+import { QuizList } from '../../../types/WorkbookType';
 type TypeAProps = {
   title?: string;
   grade?: string;
@@ -21,6 +15,8 @@ type TypeAProps = {
   isContentTypeTitle?: boolean;
   theme?: object;
   initialItems?: QuizList[];
+  answerCommentary?: string;
+  column?: string;
 };
 
 export const TypeA = ({
@@ -32,39 +28,49 @@ export const TypeA = ({
   isContentTypeTitle,
   theme,
   initialItems,
+  answerCommentary,
+  column,
 }: TypeAProps) => {
   const [leftList, setLeftList] = useState<QuizList[]>([]);
   const [rightList, setRightList] = useState<QuizList[]>([]);
-  console.log(
-    initialItems?.map((item) =>
-      item.quizItemList
-        .filter((quizItem) => quizItem.type === 'QUESTION')
-        .map((quizItem) => quizItem),
-    ),
-  );
-  console.log(initialItems);
-  console.log(leftList);
-  console.log(rightList);
 
   useEffect(() => {
-    if (contentQuantity === '최대' && initialItems) {
-      setLeftList(initialItems.slice(0, 4));
-      setRightList(initialItems.slice(4, 8));
+    if (column === '2단') {
+      if (contentQuantity === '최대' && initialItems) {
+        setLeftList(initialItems.slice(0, 4));
+        setRightList(initialItems.slice(4, 8));
+      }
+      if (contentQuantity === '6문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 3));
+        setRightList(initialItems.slice(3, 6));
+      }
+      if (contentQuantity === '4문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 2));
+        setRightList(initialItems.slice(2, 4));
+      }
+      if (contentQuantity === '2문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 1));
+        setRightList(initialItems.slice(1, 2));
+      }
+    } else {
+      if (contentQuantity === '최대' && initialItems) {
+        setLeftList(initialItems.slice(0, 6));
+        setRightList([]);
+      }
+      if (contentQuantity === '6문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 6));
+        setRightList([]);
+      }
+      if (contentQuantity === '4문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 4));
+        setRightList([]);
+      }
+      if (contentQuantity === '2문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 2));
+        setRightList([]);
+      }
     }
-    if (contentQuantity === '6문제' && initialItems) {
-      setLeftList(initialItems.slice(0, 3));
-      setRightList(initialItems.slice(3, 6));
-    }
-    if (contentQuantity === '4문제' && initialItems) {
-      setLeftList(initialItems.slice(0, 2));
-      setRightList(initialItems.slice(2, 4));
-    }
-    if (contentQuantity === '2문제' && initialItems) {
-      setLeftList(initialItems.slice(0, 1));
-      setRightList(initialItems.slice(1, 2));
-    }
-  }, [contentQuantity, initialItems]);
-  //console.log(contentQuantity);
+  }, [contentQuantity, initialItems, column]);
 
   return (
     <Container>
@@ -103,13 +109,6 @@ export const TypeA = ({
                 </div>
               </div>
             </ColorTextWrapper>
-            {/* {isContentTypeTitle ? (
-              <p>
-                <Label value="문항 유형명" fontSize="14px" />
-              </p>
-            ) : (
-              <p></p>
-            )} */}
           </WorksheetHeader>
           <HeaderTriangle></HeaderTriangle>
 
@@ -134,11 +133,6 @@ export const TypeA = ({
                         </div>
                       )}
                       <MathJaxWrapper>
-                        <strong>
-                          {Contents2.seq < 10
-                            ? `0${Contents2.seq}`
-                            : `${Contents2.seq}`}
-                        </strong>
                         <WorkbookMathViewer
                           data={quizItemList}
                           padding={
@@ -150,6 +144,8 @@ export const TypeA = ({
                                   ? '0 0 50px 0'
                                   : '0'
                           }
+                          isSetp3
+                          answerCommentary={answerCommentary}
                         ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
@@ -177,11 +173,6 @@ export const TypeA = ({
                         </div>
                       )}
                       <MathJaxWrapper>
-                        <strong>
-                          {Contents2.seq < 10
-                            ? `0${Contents2.seq}`
-                            : `${Contents2.seq}`}
-                        </strong>
                         <WorkbookMathViewer
                           data={quizItemList}
                           padding={
@@ -193,6 +184,8 @@ export const TypeA = ({
                                   ? '0 0 50px 0'
                                   : '0'
                           }
+                          isSetp3
+                          answerCommentary={answerCommentary}
                         ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
