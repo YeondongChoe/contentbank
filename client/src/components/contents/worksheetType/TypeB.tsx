@@ -4,14 +4,8 @@ import { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { Label } from '../../../components/atom';
-import { MathViewer, WorkbookMathViewer } from '../../../components/mathViewer';
-import Contents1 from '../../../components/mathViewer/test1.json';
-import Contents2 from '../../../components/mathViewer/test2.json';
-import Contents3 from '../../../components/mathViewer/test3.json';
-import Contents4 from '../../../components/mathViewer/test4.json';
-import { ItemQuestionType } from '../../../types/ItemQuestionType';
+import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { QuizList } from '../../../types/WorkbookType';
-import { COLOR } from '../../constants';
 
 type TypeBProps = {
   title?: string;
@@ -21,6 +15,7 @@ type TypeBProps = {
   isWeather?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
+  initialItems?: QuizList[];
 };
 
 export const TypeB = ({
@@ -31,25 +26,29 @@ export const TypeB = ({
   isWeather,
   isContentTypeTitle,
   theme,
+  initialItems,
 }: TypeBProps) => {
-  const [list, setList] = useState<any[]>([]);
-  const [list1, setList1] = useState<any[]>([]);
+  const [leftList, setLeftList] = useState<QuizList[]>([]);
+  const [rightList, setRightList] = useState<QuizList[]>([]);
 
   useEffect(() => {
-    if (contentQuantity === '최대') {
-      setList([Contents2, Contents2, Contents3, Contents4]);
-      setList1([Contents2, Contents3, Contents4]);
+    if (contentQuantity === '최대' && initialItems) {
+      setLeftList(initialItems.slice(0, 4));
+      setRightList(initialItems.slice(4, 8));
     }
-    if (contentQuantity === '6문제') {
-      setList([Contents2, Contents2, Contents3]);
+    if (contentQuantity === '6문제' && initialItems) {
+      setLeftList(initialItems.slice(0, 3));
+      setRightList(initialItems.slice(3, 6));
     }
-    if (contentQuantity === '4문제') {
-      setList([Contents1, Contents2]);
+    if (contentQuantity === '4문제' && initialItems) {
+      setLeftList(initialItems.slice(0, 2));
+      setRightList(initialItems.slice(2, 4));
     }
-    if (contentQuantity === '2문제') {
-      setList([Contents1]);
+    if (contentQuantity === '2문제' && initialItems) {
+      setLeftList(initialItems.slice(0, 1));
+      setRightList(initialItems.slice(1, 2));
     }
-  }, [contentQuantity]);
+  }, [contentQuantity, initialItems]);
 
   return (
     <Container>
@@ -84,82 +83,27 @@ export const TypeB = ({
           </WorksheetHeader>
           <WorksheetBody $contentQuantity={contentQuantity}>
             <WorksheetBodyLeft>
-              {list.map((card, i) => (
-                <MathViewerWrapper key={i}>
-                  {isContentTypeTitle && (
-                    <div>
-                      <ContentTitle>|{Contents2.it_title}|</ContentTitle>
-                      <ContentScript>{Contents2.it_code}</ContentScript>
-                    </div>
-                  )}
-                  <MathJaxWrapper>
-                    <strong>
-                      {Contents2.seq < 10
-                        ? `0${Contents2.seq}`
-                        : `${Contents2.seq}`}
-                    </strong>
-                    <WorkbookMathViewer
-                      data={card}
-                      padding={
-                        contentQuantity === '4문제'
-                          ? '0 0 60px 0'
-                          : contentQuantity === '6문제'
-                            ? '0 0 60px 0'
-                            : contentQuantity === '최대'
-                              ? '0 0 50px 0'
-                              : '0'
-                      }
-                    ></WorkbookMathViewer>
-                  </MathJaxWrapper>
-                </MathViewerWrapper>
-              ))}
-            </WorksheetBodyLeft>
-            <Divider />
-            <WorksheetBodyRight>
-              {contentQuantity === '최대' ? (
-                <>
-                  {list1.map((card, i) => (
+              {leftList?.map((quizItemList) =>
+                quizItemList.quizItemList
+                  .filter((quizItem) => quizItem.type === 'QUESTION')
+                  .map((quizItem, i) => (
                     <MathViewerWrapper key={i}>
                       {isContentTypeTitle && (
                         <div>
-                          <ContentTitle>|{Contents2.it_title}|</ContentTitle>
-                          <ContentScript>{Contents2.it_code}</ContentScript>
+                          <ContentTitle>
+                            |
+                            {
+                              quizItemList.quizCategoryList[0].quizCategory
+                                .문항타입
+                            }
+                            |
+                          </ContentTitle>
+                          <ContentScript>{quizItem.code}</ContentScript>
                         </div>
                       )}
                       <MathJaxWrapper>
-                        <strong>
-                          {Contents2.seq < 10
-                            ? `0${Contents2.seq}`
-                            : `${Contents2.seq}`}
-                        </strong>
                         <WorkbookMathViewer
-                          data={card}
-                          padding={
-                            contentQuantity === '최대' ? '0 0 80px 0' : '0'
-                          }
-                        ></WorkbookMathViewer>
-                      </MathJaxWrapper>
-                    </MathViewerWrapper>
-                  ))}
-                </>
-              ) : (
-                <>
-                  {list.map((card, i) => (
-                    <MathViewerWrapper key={i}>
-                      {isContentTypeTitle && (
-                        <div>
-                          <ContentTitle>|{Contents2.it_title}|</ContentTitle>
-                          <ContentScript>{Contents2.it_code}</ContentScript>
-                        </div>
-                      )}
-                      <MathJaxWrapper>
-                        <strong>
-                          {Contents2.seq < 10
-                            ? `0${Contents2.seq}`
-                            : `${Contents2.seq}`}
-                        </strong>
-                        <WorkbookMathViewer
-                          data={card}
+                          data={quizItemList}
                           padding={
                             contentQuantity === '4문제'
                               ? '0 0 60px 0'
@@ -172,8 +116,45 @@ export const TypeB = ({
                         ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
-                  ))}
-                </>
+                  )),
+              )}
+            </WorksheetBodyLeft>
+            <Divider />
+            <WorksheetBodyRight>
+              {rightList?.map((quizItemList) =>
+                quizItemList.quizItemList
+                  .filter((quizItem) => quizItem.type === 'QUESTION')
+                  .map((quizItem, i) => (
+                    <MathViewerWrapper key={i}>
+                      {isContentTypeTitle && (
+                        <div>
+                          <ContentTitle>
+                            |
+                            {
+                              quizItemList.quizCategoryList[0].quizCategory
+                                .문항타입
+                            }
+                            |
+                          </ContentTitle>
+                          <ContentScript>{quizItem.code}</ContentScript>
+                        </div>
+                      )}
+                      <MathJaxWrapper>
+                        <WorkbookMathViewer
+                          data={quizItemList}
+                          padding={
+                            contentQuantity === '4문제'
+                              ? '0 0 60px 0'
+                              : contentQuantity === '6문제'
+                                ? '0 0 60px 0'
+                                : contentQuantity === '최대'
+                                  ? '0 0 50px 0'
+                                  : '0'
+                          }
+                        ></WorkbookMathViewer>
+                      </MathJaxWrapper>
+                    </MathViewerWrapper>
+                  )),
               )}
             </WorksheetBodyRight>
           </WorksheetBody>
@@ -231,7 +212,7 @@ const ContentScript = styled.div`
 const HeaderCircle = styled.div`
   position: relative;
   top: 10px;
-  right: -30px;
+  right: -22px;
   width: 120px;
   height: 20px;
   border-top-right-radius: 15px;
@@ -338,10 +319,11 @@ const WorksheetAdditionalInformation = styled.div<{ $isWeather?: boolean }>`
   margin: 0 auto;
   display: flex;
   padding-top: 10px;
+  padding-right: 10px;
   align-items: center;
   justify-content: flex-end;
   border-top: 2px solid #e8e8e8;
-  gap: 650px;
+  gap: 630px;
   margin-top: 80px;
   margin-bottom: 30px;
 

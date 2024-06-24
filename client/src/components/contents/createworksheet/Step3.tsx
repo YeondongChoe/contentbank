@@ -67,7 +67,13 @@ export function Step3() {
 
   useEffect(() => {
     if (getLocalData) {
-      setInitialItems(getLocalData.data);
+      const itemsWithNum = getLocalData.data.map(
+        (item: QuizList, index: number) => ({
+          ...item,
+          num: index + 1,
+        }),
+      );
+      setInitialItems(itemsWithNum);
     }
   }, [getLocalData]);
 
@@ -948,6 +954,7 @@ export function Step3() {
               isWeather={isWeather}
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
+              initialItems={initialItems}
             ></TypeB>
           )}
           {/* <ThemeProvider theme={selectedTheme}>

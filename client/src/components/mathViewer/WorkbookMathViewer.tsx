@@ -83,17 +83,19 @@ export function WorkbookMathViewer({
           config={config}
           onStartup={(mathJax) => setMathJax(mathJax)}
         >
-          {/* <strong>{data.it_title}</strong> */}
-          <MathJax inline dynamic onInitTypeset={() => offLoader()}>
-            <ContentQuestion
-              dangerouslySetInnerHTML={createMarkup(
-                data?.quizItemList[1]?.content,
-              )}
-            ></ContentQuestion>
-            {/* <ContentAnswer
+          <MathJaxWrapper>
+            <strong>{data.num < 10 ? `0${data.num}` : `${data.num}`}</strong>
+            <MathJax inline dynamic onInitTypeset={() => offLoader()}>
+              <ContentQuestion
+                dangerouslySetInnerHTML={createMarkup(
+                  data?.quizItemList[1]?.content,
+                )}
+              ></ContentQuestion>
+              {/* <ContentAnswer
               dangerouslySetInnerHTML={createMarkup(data.it_answer[0])}
             ></ContentAnswer> */}
-          </MathJax>
+            </MathJax>
+          </MathJaxWrapper>
         </MathJaxContext>
       </Component>
     </>
@@ -112,6 +114,10 @@ const Component = styled.div<MathViewerStyleProps>`
   min-height: ${({ height }) => height && ` ${height};`};
   display: ${({ display }) => (display ? `${display}` : 'block')};
   padding: ${({ $padding }) => ($padding ? `${$padding}` : '0')};
+`;
+const MathJaxWrapper = styled.div`
+  display: flex;
+  gap: 10px;
 `;
 
 const ContentQuestion = styled.div``;
