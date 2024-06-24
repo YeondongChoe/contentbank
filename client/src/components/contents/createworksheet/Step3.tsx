@@ -88,8 +88,10 @@ export function Step3() {
   const [contentAuthor, setContentAuthor] = useState('');
 
   const [tag, setTag] = useState<string>('');
+  console.log(tag);
 
   const selectTag = (newValue: string) => {
+    console.log(newValue);
     setTag(newValue);
   };
 
@@ -246,6 +248,7 @@ export function Step3() {
       },
       quizList: initialItems,
     };
+    console.log(data);
     //백엔드 서버로 생성 요청
     return await workbookInstance.post(`/v1/workbook`, data);
   };
