@@ -19,6 +19,7 @@ import Contents4 from '../../../components/mathViewer/test4.json';
 import { useModal } from '../../../hooks';
 import { ItemQuestionType } from '../../../types';
 import { QuizList } from '../../../types/WorkbookType';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Input, Label, Button, CheckBox, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
 import {
@@ -28,11 +29,9 @@ import {
   BlueTheme,
   PurpleTheme,
 } from '../../constants/THEME';
-import { MathViewer } from '../../mathViewer/MathViewer';
 import { TypeA, TypeB } from '../worksheetType';
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 export function Step3() {
-  const [didMount, setDidMount] = useState(false);
   const [getLocalData, setGetLocalData] = useState<any>(null);
 
   // 로컬 스토리지에서 데이터 가져오기
@@ -85,7 +84,6 @@ export function Step3() {
   }, [getLocalData]);
 
   const navigate = useNavigate();
-  const { closeModal } = useModal();
 
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
@@ -165,107 +163,7 @@ export function Step3() {
     navigate('/content-create/exam/step2');
   };
 
-  //오른쪽 템플릿 부분
-  // 더미 데이터
-  const list = [
-    Contents2,
-    Contents3,
-    Contents4,
-    Contents4,
-    Contents3,
-    Contents2,
-  ];
-  const [heightList, setHeightList] = useState<number[]>([]);
-  const [colList, setColList] = useState<ItemQuestionType[]>([]);
-  const [colList2, setColList2] = useState<ItemQuestionType[]>([]);
-  const [existList, setExistList] = useState<ItemQuestionType[]>([]);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [done, setDone] = useState<boolean>(false);
-  const [doneAgain, setDoneAgain] = useState<boolean>(false);
-  const doneButton = () => {
-    setDone(true);
-  };
-
-  const cardHeight = () => {
-    const rowDiv = document.querySelectorAll('.row'); //문항 요소
-    //문항 요소들의 높이값
-    const rowHeightArr: number[] = [];
-
-    for (let i = 0; i < rowDiv.length; i++) {
-      const rowElement = rowDiv[i];
-      if (rowElement) {
-        const rowHeight = rowElement.clientHeight; // clientHeight 얻기
-        if (rowHeight !== null && rowHeight !== undefined) {
-          rowHeightArr.push(rowHeight);
-          //console.log(rowHeight);
-          //console.log(rowHeightArr);
-        }
-      }
-    }
-
-    setHeightList(rowHeightArr);
-    setDoneAgain(true);
-    //console.log('rowHeightArr', rowHeightArr);
-    //console.log('doneagain', doneAgain);
-
-    if (doneAgain) {
-      let total: number = 0;
-      const sortList: ItemQuestionType[] = [] || null;
-      const existList: ItemQuestionType[] = [] || null;
-      //console.log('rowHeightArr', rowHeightArr);
-      for (let i = 0; i < rowHeightArr.length; i++) {
-        //console.log('rowHeightArr', rowHeightArr);
-        //const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
-        const num = (total += rowHeightArr[i]); // 문항의 누적 높이
-        //console.log(num);
-        //console.log(750 / 2 - 150);
-        //console.log(750 / 2 - 150 > num);
-        if (900 / 2 - 150 < num) {
-          sortList.push(list[i]);
-          //console.log('작동함');
-        } else {
-          existList.push(list[i]);
-        }
-      }
-      //console.log('sortList', sortList);
-      setColList2(sortList);
-      //console.log('existList', existList);
-      setExistList(existList);
-    } else {
-      //console.error('Element not found.');
-    }
-  };
-  //console.log('heightList', heightList);
-
-  // const getHeight = () => {
-  //   // 문항의 높이 합이 A4_HEIGHT 를 넘을 때
-  //   let total: number = 0;
-  //   const sortList: ItemQuestionType[] = [] || null;
-  //   const existList: ItemQuestionType[] = [] || null;
-  //   console.log('heightList', heightList);
-  //   for (let i = 0; i < heightList.length; i++) {
-  //     // const printDivHeight = printDivRef.current?.clientHeight; // pdf 인쇄 높이
-  //     const num = (total += heightList[i]); // 문항의 누적 높이
-  //     console.log(num);
-  //     console.log(750 / 2 - 150);
-  //     console.log(750 / 2 - 150 > num);
-  //     if (750 / 2 - 150 < num) {
-  //       sortList.push(list[i]);
-  //       console.log('작동함');
-  //     } else {
-  //       existList.push(list[i]);
-  //     }
-  //   }
-
-  //   console.log('sortList', sortList);
-  //   setColList2(sortList);
-  //   console.log('existList', existList);
-  //   setExistList(existList);
-  // };
-  // 210.124.177.36:5050'
-  // localhost:5000
-
-  // 학습지 만들기 api
+  // node 서버 학습지 만들기 api
   const postWorkbook = async (data: any) => {
     const res = await makingworkbookInstance.post(`/get-pdf`, data);
     console.log(`학습지 만들기결과값`, res);
@@ -310,7 +208,7 @@ export function Step3() {
     },
   });
 
-  // 새 학습지 만들기 api
+  // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
     const data: any = {
       commandCode: 0,
@@ -349,6 +247,7 @@ export function Step3() {
       },
       quizList: initialItems,
     };
+    //백엔드 서버로 생성 요청
     return await workbookInstance.post(`/v1/workbook`, data);
   };
   const [isComplete, setIsComplete] = useState(false);
@@ -366,9 +265,9 @@ export function Step3() {
         type: 'error',
         text: context.response.data.message,
       });
-      // if (context.response.data.code == 'GE-002') {
-      //   postRefreshToken();
-      // }
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response) => {
       setIsComplete(true);
@@ -379,41 +278,7 @@ export function Step3() {
   const submitCreateWorksheet = (nameValue: string) => {
     //node 서버에서 pdf 생성
     makingWorkbook(nameValue);
-    //getPdf();
-    //pdf 생성 후 데이터와 pdf경로/파일명을 서버로 보내기
   };
-
-  // const loadData = () => {
-  //   // 데이터 불러오기
-
-  //   // 리스트 초기화
-  //   setColList(list);
-  //   console.log(colList);
-  // };
-
-  // useEffect(() => {
-  //   setDidMount(true);
-  // }, []);
-
-  // useEffect(() => {
-  //   if (done) {
-  //     loadData();
-  //   }
-  // }, [done]);
-  //console.log(done);
-  //didMount 아직 안씀
-  useEffect(() => {
-    if (colList) {
-      cardHeight();
-    }
-  }, [colList]);
-
-  // useEffect(() => {
-  //   if (colList && doneAgain && colList.length > 0) {
-  //     console.log('이거는 작동함?');
-  //     getHeight();
-  //   }
-  // }, [colList, doneAgain]);
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
@@ -928,7 +793,6 @@ export function Step3() {
               >
                 <span>문제+해설(같이)</span>
               </Button>
-              <button onClick={doneButton}>버튼</button>
             </ButtonGroup>
           </AnswerCommentaryWrapper>
         </WorksheetSettingSection>
@@ -957,109 +821,6 @@ export function Step3() {
               initialItems={initialItems}
             ></TypeB>
           )}
-          {/* <ThemeProvider theme={selectedTheme}>
-            <WorksheetTemplateWrapper>
-              <Label value={'미리보기'}></Label>
-              <WorksheetTemplate>
-                <MathViewerHeader>
-                  <HeaderLeft>
-                    <TemplateTitleWrapper>
-                      <TemplateTitle>
-                        <span className="tag">기본</span>
-                        <span className="grade">중1-1</span>
-                      </TemplateTitle>
-                      <p className="subTitle">소인수분해</p>
-                    </TemplateTitleWrapper>
-                    <Description>50문항 | 콘텐츠뱅츠</Description>
-                  </HeaderLeft>
-                  <HeaderRight>
-                    <ImageWrapper>
-                      <MdAccountBalance style={{ fontSize: '60px' }} />
-                    </ImageWrapper>
-                    <TemplateInputWrapper>
-                      <Description>2024.01.16 이름</Description>
-                      <Input
-                        type={'text'}
-                        width="100px"
-                        border="black"
-                        height="20px"
-                      />
-                    </TemplateInputWrapper>
-                  </HeaderRight>
-                </MathViewerHeader>
-                <MathViewerListWrapper>
-                  {existList && existList.length > 1 ? (
-                    <MathViewerList ref={containerRef}>
-                      {existList.map((card, i) => (
-                        <div
-                          key={card.it_quest + i}
-                          //width={cardWidth}
-                          // onLoad={(e) => {
-                          //   getItemHeight(e);
-                          // }}
-                          className="row"
-                        >
-                          문제 left{i + 1}.
-                          <MathViewer
-                            key={i}
-                            data={card}
-                            padding={`10px 15px 30px 0`}
-                            //width={cardWidth}
-                            //height="150"
-                          ></MathViewer>
-                        </div>
-                      ))}
-                    </MathViewerList>
-                  ) : (
-                    <MathViewerList ref={containerRef}>
-                      {colList.map((card, i) => (
-                        <div
-                          key={card.it_quest + i}
-                          //width={cardWidth}
-                          // onLoad={(e) => {
-                          //   getItemHeight(e);
-                          // }}
-                          className="row"
-                        >
-                          문제{i + 1}.
-                          <MathViewer
-                            key={i}
-                            data={card}
-                            padding={`10px 15px 30px 0`}
-                            //width={cardWidth}
-                            //height="150"
-                          ></MathViewer>
-                        </div>
-                      ))}
-                    </MathViewerList>
-                  )}
-                  {colList2.length > 1 && (
-                    <MathViewerList ref={containerRef}>
-                      {colList2.map((card, i) => (
-                        <div
-                          key={card.it_quest + i}
-                          //width={cardWidth}
-                          // onLoad={(e) => {
-                          //   getItemHeight(e);
-                          // }}
-                          className="row"
-                        >
-                          문제right {i + 1 + 3}.
-                          <MathViewer
-                            key={i}
-                            data={card}
-                            padding={`10px 15px 30px 0`}
-                            //width={cardWidth}
-                            //height="150"
-                          ></MathViewer>
-                        </div>
-                      ))}
-                    </MathViewerList>
-                  )}
-                </MathViewerListWrapper>
-              </WorksheetTemplate>
-            </WorksheetTemplateWrapper>
-          </ThemeProvider> */}
         </WorksheetTemplateViewSection>
       </Wrapper>
       <CreateButtonWrapper>

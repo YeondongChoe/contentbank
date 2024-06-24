@@ -209,9 +209,6 @@ export function MathviewerAccordion({
     () => contentNumQuotient.reduce((acc, el) => acc + el.quotient, 0),
     [contentNumQuotient, deleteQuizItem],
   );
-  console.log(category?.문항타입);
-  //console.log('contentNumQuotient', contentNumQuotient);
-  //console.log('totalEqualScore', totalEqualScore);
 
   useEffect(() => {
     if (setTotalEqualScore) {

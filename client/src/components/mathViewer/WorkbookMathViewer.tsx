@@ -15,6 +15,7 @@ type WorkbookMathViewerProps = {
   width?: string;
   padding?: string;
   height?: string;
+  isSetp3?: boolean;
 };
 
 const config = {
@@ -39,6 +40,7 @@ export function WorkbookMathViewer({
   width,
   padding,
   height,
+  isSetp3,
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
@@ -84,7 +86,9 @@ export function WorkbookMathViewer({
           onStartup={(mathJax) => setMathJax(mathJax)}
         >
           <MathJaxWrapper>
-            <strong>{data.num < 10 ? `0${data.num}` : `${data.num}`}</strong>
+            {isSetp3 && (
+              <strong>{data.num < 10 ? `0${data.num}` : `${data.num}`}</strong>
+            )}
             <MathJax inline dynamic onInitTypeset={() => offLoader()}>
               <ContentQuestion
                 dangerouslySetInnerHTML={createMarkup(

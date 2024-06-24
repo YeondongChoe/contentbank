@@ -104,7 +104,6 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-  console.log('initialItems', initialItems);
 
   const categoryType = initialItems.map(
     (item) => item.quizCategoryList[0]?.quizCategory.문항타입,
@@ -227,7 +226,8 @@ export function Step2() {
 
   //즐겨찾기
   const [page, setPage] = useRecoilState(pageAtom);
-  const [questionList, setQuestionList] = useState<FavoriteQuizList>();
+  const [favoriteQuestionList, setFavoriteQuestionList] =
+    useState<FavoriteQuizList>();
 
   // 문항 즐겨찾기리스트 불러오기 api
   const getFavoriteQuiz = async () => {
@@ -238,7 +238,7 @@ export function Step2() {
     //     ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
     //     : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
     // );
-    console.log(`getFavoriteQuiz 결과값`, res.data.data);
+    // console.log(`getFavoriteQuiz 결과값`, res.data.data);
     return res.data.data;
   };
 
@@ -249,12 +249,13 @@ export function Step2() {
       meta: {
         errorMessage: 'get-favoriteQuizList 에러 메세지',
       },
+      enabled: tabVeiw == '즐겨찾는 문항',
     },
   );
 
   useEffect(() => {
     if (favoriteQuizData) {
-      setQuestionList(favoriteQuizData);
+      setFavoriteQuestionList(favoriteQuizData);
     }
   }, [favoriteQuizData]);
 
@@ -336,7 +337,7 @@ export function Step2() {
   const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-  console.log('newQuizItems', newQuizItems);
+  console.log(newQuizItems?.quizList);
 
   // 새 문항 문항 불러오기 api
   const postnewQuizList = async (data: any) => {
@@ -1132,13 +1133,32 @@ export function Step2() {
       });
     }
   };
-
+  console.log('newQuizItems', newQuizItems);
   //리스트 문항 전체 추가
   const clickAddAllQuizItem = () => {
+    //새문항 전체추가
     if (newQuizItems) {
       const allNewQuizItems = newQuizItems.quizList;
+      console.log('newQuizItems', newQuizItems);
+      console.log('allNewQuizItems', allNewQuizItems);
       setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
       setNewQuizItems((prevItems) => {
+        if (prevItems) {
+          return {
+            ...prevItems,
+            quizList: [],
+          };
+        }
+        return prevItems;
+      });
+    }
+    //즐겨찾기 전체추가
+    else if (favoriteQuestionList) {
+      const allNewQuizItems = favoriteQuestionList.quizList;
+      console.log('newQuizItems', newQuizItems);
+      console.log('allNewQuizItems', allNewQuizItems);
+      setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+      setFavoriteQuestionList((prevItems) => {
         if (prevItems) {
           return {
             ...prevItems,
@@ -1193,13 +1213,13 @@ export function Step2() {
       }
     }
     // 즐겨찾기 리스트
-    else if (questionList) {
-      const selectedQuizItem = questionList.quizList.find(
+    else if (favoriteQuestionList) {
+      const selectedQuizItem = favoriteQuestionList.quizList.find(
         (item) => item.code === code,
       );
       if (selectedQuizItem) {
         setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-        setQuestionList((prevItems) => {
+        setFavoriteQuestionList((prevItems) => {
           if (prevItems) {
             return {
               ...prevItems,
@@ -1957,7 +1977,7 @@ export function Step2() {
                       )}
                       {tabVeiw === '즐겨찾는 문항' && (
                         <>
-                          {favoriteQuizData && questionList ? (
+                          {favoriteQuizData && favoriteQuestionList ? (
                             <>
                               <BookmarkContentOption>
                                 <SelectWrapper>
@@ -1994,29 +2014,31 @@ export function Step2() {
                                 </Button>
                               </BookmarkContentOption>
                               <BookmarkContensWrapper>
-                                {questionList.quizList?.map((item, i) => (
-                                  <MathviewerAccordion
-                                    key={item.idx}
-                                    componentWidth="600px"
-                                    width="450px"
-                                    componentHeight="150px"
-                                    onClick={() => {}}
-                                    isBorder={true}
-                                    isNewQuiz={true}
-                                    data={item}
-                                    index={item.idx}
-                                    title={item.code}
-                                    quizNum={i + 1}
-                                    selectedCardIndex={selectedCardIndex}
-                                    onSelectCard={setSelectedCardIndex}
-                                    reportQuizitem={() =>
-                                      openReportProcess(item.idx)
-                                    }
-                                    addQuizItem={() =>
-                                      clickAddQuizItem(item.code)
-                                    }
-                                  ></MathviewerAccordion>
-                                ))}
+                                {favoriteQuestionList.quizList?.map(
+                                  (item, i) => (
+                                    <MathviewerAccordion
+                                      key={item.idx}
+                                      componentWidth="600px"
+                                      width="450px"
+                                      componentHeight="150px"
+                                      onClick={() => {}}
+                                      isBorder={true}
+                                      isNewQuiz={true}
+                                      data={item}
+                                      index={item.idx}
+                                      title={item.code}
+                                      quizNum={i + 1}
+                                      selectedCardIndex={selectedCardIndex}
+                                      onSelectCard={setSelectedCardIndex}
+                                      reportQuizitem={() =>
+                                        openReportProcess(item.idx)
+                                      }
+                                      addQuizItem={() =>
+                                        clickAddQuizItem(item.code)
+                                      }
+                                    ></MathviewerAccordion>
+                                  ),
+                                )}
                               </BookmarkContensWrapper>
                             </>
                           ) : (

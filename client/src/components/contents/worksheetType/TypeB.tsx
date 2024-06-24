@@ -113,6 +113,7 @@ export const TypeB = ({
                                   ? '0 0 50px 0'
                                   : '0'
                           }
+                          isSetp3
                         ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
@@ -151,6 +152,7 @@ export const TypeB = ({
                                   ? '0 0 50px 0'
                                   : '0'
                           }
+                          isSetp3
                         ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
