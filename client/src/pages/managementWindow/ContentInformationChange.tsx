@@ -562,6 +562,7 @@ export function ContentInformationChange() {
     }, {});
 
     const data = {
+      searchCondition: 'ALL',
       searchKeyword: searchValue,
       pageIndex: page,
       pageUnit: 10,
@@ -1077,7 +1078,7 @@ export function ContentInformationChange() {
               </>
             ) : (
               <ValueNoneWrapper>
-                {searchValue.length < 1 && !isSuccess && (
+                {searchValue.length < 1 && !IsSearchOn && (
                   <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
                 )}
                 {IsSearchOn && (

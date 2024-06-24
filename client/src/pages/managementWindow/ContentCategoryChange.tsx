@@ -26,6 +26,7 @@ import {
   ItemCategoryType,
   ItemTreeListType,
   ItemTreeType,
+  PaginationType,
   QuizListType,
 } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
@@ -126,6 +127,7 @@ export function ContentCategoryChange() {
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
+  const [IsSearchOn, setIsSearchOn] = useState(false);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -583,31 +585,34 @@ export function ContentCategoryChange() {
         postRefreshToken();
       }
     },
-    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+    onSuccess: (response: {
+      data: { data: { quizList: any[]; pagination: PaginationType } };
+    }) => {
       // 응답 리스트 스텝2로
       // TODO : api 데이터 세부조건 미완성됨. 임시로 문항 리스트 불러옴 나중에 대체 필요
-      setQuestionList(quizData.quizList);
+      setQuestionList(response.data?.data?.quizList);
+      setIsSearchOn(true);
     },
   });
 
   //TODO : 임시로 문항 리스트 불러옴 나중에 대체 필요
-  const getQuiz = async () => {
-    const res = await quizService.get(`/v1/quiz`);
-    console.log(`getQuiz---- 결과값`, res.data.data);
-    return res.data.data;
-  };
-  const { data: quizData } = useQuery({
-    queryKey: ['get-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-quizList 에러 메세지',
-    },
-  });
+  // const getQuiz = async () => {
+  //   const res = await quizService.get(`/v1/quiz`);
+  //   console.log(`getQuiz---- 결과값`, res.data.data);
+  //   return res.data.data;
+  // };
+  // const { data: quizData } = useQuery({
+  //   queryKey: ['get-quizList'],
+  //   queryFn: getQuiz,
+  //   meta: {
+  //     errorMessage: 'get-quizList 에러 메세지',
+  //   },
+  // });
 
   // 리스트 업데이트
   useEffect(() => {
     console.log('questionList', questionList);
-  }, [questionList, searchCategoryData]);
+  }, [searchCategoryData]);
 
   // 깊이가 있는 리스트 DepthBlock 체크박스
   const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
@@ -955,14 +960,25 @@ export function ContentCategoryChange() {
                 />
                 <ButtonWrapper className="pagination">
                   <PaginationBox
-                    itemsCountPerPage={quizData?.pagination?.pageUnit}
-                    totalItemsCount={quizData?.pagination?.totalCount}
+                    itemsCountPerPage={
+                      searchCategoryData?.data.data.pagination
+                        .pageUnit as number
+                    }
+                    totalItemsCount={
+                      searchCategoryData?.data.data.pagination
+                        .totalCount as number
+                    }
                   />
                 </ButtonWrapper>
               </>
             ) : (
               <ValueNoneWrapper>
-                <ValueNone textOnly info={'STEP1 찾을 분류를 선택해주세요'} />
+                {!IsSearchOn && (
+                  <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
+                )}
+                {IsSearchOn && (
+                  <ValueNone textOnly info={'데이터가 없습니다'} />
+                )}
               </ValueNoneWrapper>
             )}
           </QuizListWrapper>
