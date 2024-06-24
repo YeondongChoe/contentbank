@@ -555,9 +555,9 @@ export function ContentCategoryChange() {
     }, {});
 
     const data = {
-      searchKeyword: '',
-      pageIndex: page,
-      pageUnit: 10,
+      // searchKeyword: '',
+      // pageIndex: page,
+      // pageUnit: 8,
       itemTreeKey: itemTreeKey,
       itemTreeIdxList: checkedDepthList,
       isUse: radio7depthCheck.title !== '비활성화',
@@ -612,6 +612,7 @@ export function ContentCategoryChange() {
   // 리스트 업데이트
   useEffect(() => {
     console.log('questionList', questionList);
+    console.log('checkedDepthList', checkedDepthList);
   }, [searchCategoryData]);
 
   // 깊이가 있는 리스트 DepthBlock 체크박스
@@ -621,22 +622,32 @@ export function ContentCategoryChange() {
         ? [...prev, idx]
         : prev.filter((item) => item !== idx);
 
-      // 상위 요소를 모두 체크/해제
       if (checked) {
-        for (let i = level - 1; i >= 0; i--) {
-          const parentItems = findParentItemsByLevel(i, idx);
-          parentItems.forEach((parentItem) => {
+        // 상위 요소를 체크
+        let currentItem = findItemByIdx(idx);
+        while (currentItem && currentItem.parentIdx !== 0) {
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
+          if (parentItem) {
             if (!updatedList.includes(parentItem.idx)) {
               updatedList.push(parentItem.idx);
             }
-          });
+            currentItem = parentItem;
+          } else {
+            break;
+          }
         }
       } else {
         // 하위 요소를 모두 체크 해제
-        updatedList = updatedList.filter((itemIdx) => {
-          const item = findItemByIdx(itemIdx);
-          return item ? item.level < level : true;
-        });
+        const removeDescendants = (currentIdx: number) => {
+          const childItems = findChildItems(currentIdx);
+          childItems.forEach((child) => {
+            updatedList = updatedList.filter(
+              (itemIdx) => itemIdx !== child.idx,
+            );
+            removeDescendants(child.idx);
+          });
+        };
+        removeDescendants(idx);
       }
 
       return updatedList;
@@ -652,22 +663,14 @@ export function ContentCategoryChange() {
     }
     return undefined;
   };
-  const findParentItemsByLevel = (
-    level: number,
-    idx: number,
-  ): ItemTreeType[] => {
-    const parents: ItemTreeType[] = [];
-    const currentItem = findItemByIdx(idx);
-    if (currentItem) {
-      for (const tree of itemTree) {
-        parents.push(
-          ...tree.itemTreeList.filter(
-            (item) => item.level === level && item.idx < currentItem.idx,
-          ),
-        );
-      }
+  const findChildItems = (parentIdx: number): ItemTreeType[] => {
+    const children: ItemTreeType[] = [];
+    for (const tree of itemTree) {
+      children.push(
+        ...tree.itemTreeList.filter((item) => item.parentIdx === parentIdx),
+      );
     }
-    return parents;
+    return children;
   };
 
   const buttonDisabled = useMemo(() => {
