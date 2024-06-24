@@ -13,12 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
-import Contents2 from '../../../components/mathViewer/test2.json';
-import Contents3 from '../../../components/mathViewer/test3.json';
-import Contents4 from '../../../components/mathViewer/test4.json';
 import { useModal } from '../../../hooks';
-import { ItemQuestionType } from '../../../types';
-import { QuizList } from '../../../types/WorkbookType';
+import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Input, Label, Button, CheckBox, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
@@ -33,6 +29,8 @@ import { TypeA, TypeB } from '../worksheetType';
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
+  const [getQuotientLocalData, setGetQuotientLocalData] =
+    useState<WorkbookQuotientData | null>(null);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -42,10 +40,10 @@ export function Step3() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          //const parsedquotientData = JSON.parse(quotientData as string);
+          const parsedquotientData = JSON.parse(quotientData as string);
           console.log('데이터 조회', parsedData);
           setGetLocalData(parsedData);
-          //setGetQuotientLocalData(parsedquotientData);
+          setGetQuotientLocalData(parsedquotientData);
         } catch (error) {
           console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
@@ -95,7 +93,7 @@ export function Step3() {
     setTag(newValue);
   };
 
-  const [answerCommentary, setAnswerCommentary] = useState<string>('');
+  const [answerCommentary, setAnswerCommentary] = useState<string>('문제만');
 
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
@@ -174,7 +172,8 @@ export function Step3() {
     const currentTime = new Date().getTime();
     const data = {
       title: nameValue,
-      content: Contents2.it_quest,
+      content: initialItems,
+      // content: Contents2.it_quest,
       column: 2,
       uploadDir: '/usr/share/nginx/html/CB',
       //fileName: `${nameValue}_${currentTime}.pdf`,
@@ -807,6 +806,8 @@ export function Step3() {
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
               initialItems={initialItems}
+              answerCommentary={answerCommentary}
+              column={column}
             ></TypeA>
           )}
           {templateType === 'B' && (
@@ -819,6 +820,8 @@ export function Step3() {
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
               initialItems={initialItems}
+              answerCommentary={answerCommentary}
+              column={column}
             ></TypeB>
           )}
         </WorksheetTemplateViewSection>

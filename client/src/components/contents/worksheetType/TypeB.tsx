@@ -16,6 +16,8 @@ type TypeBProps = {
   isContentTypeTitle?: boolean;
   theme?: object;
   initialItems?: QuizList[];
+  answerCommentary?: string;
+  column?: string;
 };
 
 export const TypeB = ({
@@ -27,28 +29,49 @@ export const TypeB = ({
   isContentTypeTitle,
   theme,
   initialItems,
+  answerCommentary,
+  column,
 }: TypeBProps) => {
   const [leftList, setLeftList] = useState<QuizList[]>([]);
   const [rightList, setRightList] = useState<QuizList[]>([]);
 
   useEffect(() => {
-    if (contentQuantity === '최대' && initialItems) {
-      setLeftList(initialItems.slice(0, 4));
-      setRightList(initialItems.slice(4, 8));
+    if (column === '2단') {
+      if (contentQuantity === '최대' && initialItems) {
+        setLeftList(initialItems.slice(0, 4));
+        setRightList(initialItems.slice(4, 8));
+      }
+      if (contentQuantity === '6문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 3));
+        setRightList(initialItems.slice(3, 6));
+      }
+      if (contentQuantity === '4문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 2));
+        setRightList(initialItems.slice(2, 4));
+      }
+      if (contentQuantity === '2문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 1));
+        setRightList(initialItems.slice(1, 2));
+      }
+    } else {
+      if (contentQuantity === '최대' && initialItems) {
+        setLeftList(initialItems.slice(0, 6));
+        setRightList([]);
+      }
+      if (contentQuantity === '6문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 6));
+        setRightList([]);
+      }
+      if (contentQuantity === '4문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 4));
+        setRightList([]);
+      }
+      if (contentQuantity === '2문제' && initialItems) {
+        setLeftList(initialItems.slice(0, 2));
+        setRightList([]);
+      }
     }
-    if (contentQuantity === '6문제' && initialItems) {
-      setLeftList(initialItems.slice(0, 3));
-      setRightList(initialItems.slice(3, 6));
-    }
-    if (contentQuantity === '4문제' && initialItems) {
-      setLeftList(initialItems.slice(0, 2));
-      setRightList(initialItems.slice(2, 4));
-    }
-    if (contentQuantity === '2문제' && initialItems) {
-      setLeftList(initialItems.slice(0, 1));
-      setRightList(initialItems.slice(1, 2));
-    }
-  }, [contentQuantity, initialItems]);
+  }, [contentQuantity, initialItems, column]);
 
   return (
     <Container>
@@ -114,6 +137,7 @@ export const TypeB = ({
                                   : '0'
                           }
                           isSetp3
+                          answerCommentary={answerCommentary}
                         ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
@@ -153,6 +177,7 @@ export const TypeB = ({
                                   : '0'
                           }
                           isSetp3
+                          answerCommentary={answerCommentary}
                         ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     </MathViewerWrapper>
