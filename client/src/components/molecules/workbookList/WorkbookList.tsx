@@ -230,12 +230,11 @@ export function WorkbookList({
     setShowPdf(false);
   };
 
-  const [pdfUrl, setPdfUrl] = useState<string>(
-    'https://j-dev01.dreamonesys.co.kr/CB/testYD.pdf',
-  );
+  const [pdfUrl, setPdfUrl] = useState<string>('');
 
-  const getPdf = (path: string) => {
+  const getPdf = (fileName: string) => {
     setShowPdf(true);
+    setPdfUrl(`https://j-dev01.dreamonesys.co.kr/CB/${fileName}`);
   };
 
   // 배경 클릭시 체크리스트 초기화
@@ -379,7 +378,9 @@ export function WorkbookList({
                     <span className="width_5">
                       <LuFileSearch2
                         style={{ fontSize: '22px', cursor: 'pointer' }}
-                        //onClick={() => getPdf(item.lastArticle.)}
+                        onClick={() =>
+                          getPdf(item.lastArticle.originalName as string)
+                        }
                       />
                     </span>
                     <i className="line"></i>

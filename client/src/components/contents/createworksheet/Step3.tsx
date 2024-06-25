@@ -161,6 +161,7 @@ export function Step3() {
     saveLocalData(data);
     navigate('/content-create/exam/step2');
   };
+  const [fileName, setFileName] = useState('');
 
   // node 서버 학습지 만들기 api
   const postWorkbook = async (data: any) => {
@@ -191,6 +192,7 @@ export function Step3() {
       });
     } else {
       workbookData(data);
+      setFileName(data.fileName);
     }
   };
 
@@ -231,8 +233,8 @@ export function Step3() {
       autoGrade: true,
       article: {
         type: 'PDF',
-        originalName: 'sample.pdf',
-        storedPath: '/path/to/sample.pdf',
+        originalName: fileName,
+        storedPath: '/usr/share/nginx/html/CB',
         extension: '.pdf',
       },
       template: {
