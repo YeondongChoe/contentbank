@@ -166,6 +166,9 @@ export function Worksheet() {
       errorMessage: 'get-workbookList 에러 메세지',
     },
   });
+  // 학습지 만들어질때 값갱신할 수 있게 하기
+
+  //const [workbookList, setWorkbookList] = useState(workbookListData?.data.data);
 
   const workbookList = workbookListData?.data.data;
   console.log(workbookList);

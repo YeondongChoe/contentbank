@@ -234,7 +234,7 @@ export function WorkbookList({
     'https://j-dev01.dreamonesys.co.kr/CB/testYD.pdf',
   );
 
-  const getPdf = () => {
+  const getPdf = (path: string) => {
     setShowPdf(true);
   };
 
@@ -289,7 +289,7 @@ export function WorkbookList({
         <>
           <Total> Total : {totalCount ? totalCount : 0}</Total>
           <ListButtonWrapper>
-            <InputWrapper>
+            {/* <InputWrapper>
               <ButtonWrapper>
                 <CheckBoxWrapper>
                   <CheckBoxI
@@ -317,7 +317,7 @@ export function WorkbookList({
                   </Button>
                 </ActionButtonWrapper>
               </ButtonWrapper>
-            </InputWrapper>
+            </InputWrapper> */}
           </ListButtonWrapper>
           <ListWrapper ref={backgroundRef}>
             <List margin={`10px 0`}>
@@ -379,7 +379,7 @@ export function WorkbookList({
                     <span className="width_5">
                       <LuFileSearch2
                         style={{ fontSize: '22px', cursor: 'pointer' }}
-                        onClick={getPdf}
+                        //onClick={() => getPdf(item.lastArticle.)}
                       />
                     </span>
                     <i className="line"></i>
