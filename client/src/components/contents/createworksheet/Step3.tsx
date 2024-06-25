@@ -10,6 +10,7 @@ import { IoIosArrowBack } from 'react-icons/io';
 import { MdAccountBalance } from 'react-icons/md';
 import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
@@ -88,10 +89,8 @@ export function Step3() {
   const [contentAuthor, setContentAuthor] = useState('');
 
   const [tag, setTag] = useState<string>('');
-  console.log(tag);
 
   const selectTag = (newValue: string) => {
-    console.log(newValue);
     setTag(newValue);
   };
 
@@ -175,11 +174,10 @@ export function Step3() {
     const data = {
       title: nameValue,
       content: initialItems,
-      // content: Contents2.it_quest,
       column: 2,
       uploadDir: '/usr/share/nginx/html/CB',
-      //fileName: `${nameValue}_${currentTime}.pdf`,
-      fileName: `testYD.pdf`,
+      fileName: `${nameValue}_${currentTime}.pdf`,
+      //fileName: `testYD.pdf`,
     };
     if (
       nameValue === '' ||
