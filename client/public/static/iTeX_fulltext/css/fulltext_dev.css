@@ -3,10 +3,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Noto+Serif+KR&display=swap");
 
-html,
-body {
+/* html,
+.body {
   height: 100%;
-}
+} */
 .modal-body {
   font-family: "Noto Serif KR", serif;
   font-size: 12pt;
@@ -22,7 +22,7 @@ body {
   font-size: 12pt;
 }
 
-p {
+.body p {
   line-height: 180%;
   padding: 0;
   margin: 0;

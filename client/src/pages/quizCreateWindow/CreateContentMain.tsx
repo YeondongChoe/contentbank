@@ -85,6 +85,20 @@ export function CreateContentMain() {
     }
   }, [tabVeiw]);
 
+  // useEffect(() => {
+  //   // 에디터 초기화 코드
+  //   if (window.initEditor) {
+  //     window.initEditor();
+  //   }
+
+  //   // Cleanup function
+  //   return () => {
+  //     if (window.destroyEditor) {
+  //       window.destroyEditor();
+  //     }
+  //   };
+  // }, []);
+
   return (
     <Container>
       <ButtonWrapper>

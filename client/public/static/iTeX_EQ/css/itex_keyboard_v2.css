@@ -1,10 +1,10 @@
-* {
+/* * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-}
+} */
 
-body {
+.body {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -29,13 +29,13 @@ body {
   align-items: center;
 } */
 
-button > img {
+.body button > img {
   /* width: 37px; */
   height: auto;
   pointer-events: none;
 }
 
-aside {
+.body aside {
   font-size: 8px;
   margin-top: 2px;
 }

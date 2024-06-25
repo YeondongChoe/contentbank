@@ -81,6 +81,7 @@ const Component = styled.li<ListItemStyleProps>`
   border-radius: 10px;
   margin-bottom: 10px;
   position: relative;
+  font-size: 14px;
 
   &.on {
     border: 1px solid transparent;

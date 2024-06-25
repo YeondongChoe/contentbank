@@ -391,6 +391,7 @@ const NavigationMenu = styled.li`
     font-weight: 600;
     margin-left: 10px;
     margin-top: 10px;
+    text-align: left;
   }
 
   > button {
