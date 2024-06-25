@@ -203,6 +203,7 @@ export function MathviewerAccordion({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentNumQuotient[]>(contentQuotient);
+  console.log('data', data);
 
   //문항 삭제될때마다 총점 변경
   const totalEqualScore = useMemo(
@@ -337,7 +338,11 @@ export function MathviewerAccordion({
             ></Select>
           )}
         </div>
-        <WorkbookMathViewer data={data} width={width}></WorkbookMathViewer>
+        <WorkbookMathViewer
+          data={data}
+          width={width}
+          answerCommentary={'문제만'}
+        ></WorkbookMathViewer>
         {isNewQuiz ? (
           <ButtonWrapper>
             <div className="menuIcon">
