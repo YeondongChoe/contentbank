@@ -460,8 +460,8 @@ const Container = styled.div`
     position: relative;
   }
 
-  #third {
-  }
+  /* #third {
+  } */
 
   .dragger {
     cursor: ew-resize;
