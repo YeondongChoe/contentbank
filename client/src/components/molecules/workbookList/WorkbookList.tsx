@@ -359,7 +359,7 @@ export function WorkbookList({
                     {/* //TODO */}
                     <span className="width_10px">{item.idx}</span>
                     <i className="line"></i>
-                    <span>학년{item.grade}</span>
+                    <span>{item.grade}</span>
                     <i className="line"></i>
                     <span>
                       {(item.tag === 'DAILY_TEST' && '일일테스트') ||
