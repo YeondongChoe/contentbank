@@ -869,8 +869,8 @@ export function ContentCategoryChange() {
                         <strong>세부 검색조건</strong>
                         <Accordion
                           $backgroundColor={`${COLOR.GRAY}`}
-                          title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                          id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                          title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}/${radio5depthCheck.title}/${radio6depthCheck.title}`}
+                          id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}/${radio5depthCheck.title}/${radio6depthCheck.title}`}
                           $margin={`0 0 20px 0`}
                           defaultChecked={true}
                         >
