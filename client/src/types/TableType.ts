@@ -11,13 +11,23 @@ export type WorksheetListType = {
   isAutoGrade: boolean;
   isDelete: boolean;
   isUse: boolean;
-  lastArticle?: string;
+  lastArticle: LastArticle;
   lastModifiedAt: string;
   lastModifiedBy: string;
   name: string;
   quizCnt: number;
   userKey: string;
   type?: string;
+};
+
+type LastArticle = {
+  createdAt: string;
+  createdBy: string;
+  extension: '.pdf';
+  idx: number;
+  originalName: string;
+  storedPath: string;
+  type: 'PDF';
 };
 
 export type QuestionTableType = {

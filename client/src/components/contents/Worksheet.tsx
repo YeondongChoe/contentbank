@@ -32,7 +32,7 @@ export function Worksheet() {
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   // 셀렉트
-  const [selectedSource, setSelectedSource] = useState<string>(''); //출처
+  const [selectedTag, setSelectedTag] = useState<string>(''); //태그
   const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
   const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
 
@@ -40,6 +40,37 @@ export function Worksheet() {
 
   const changeTab = () => {
     setPage(1);
+  };
+
+  //태그 선택값 하드코딩
+  const tagData = {
+    tageClassList: [
+      {
+        idx: 1,
+        name: '연습문제',
+        code: '태그',
+      },
+      {
+        idx: 2,
+        name: '일일테스트',
+        code: '태그',
+      },
+      {
+        idx: 3,
+        name: '모의고사',
+        code: '태그',
+      },
+      {
+        idx: 4,
+        name: '내신대비',
+        code: '태그',
+      },
+      {
+        idx: 5,
+        name: '월말테스트',
+        code: '태그',
+      },
+    ],
   };
 
   //  카테고리 불러오기 api
@@ -59,8 +90,8 @@ export function Worksheet() {
       setCategoryTitles(categoryData.data.data.categoryItemList);
     }
   }, [categoryData]);
-  console.log(categoryTitles);
-  console.log(categoryList);
+  //console.log(categoryTitles);
+  //console.log(categoryList);
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
@@ -140,7 +171,7 @@ export function Worksheet() {
       const res = await workbookInstance.get(
         !onSearch
           ? `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+          : `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&tag=${selectedTag === '연습문제' ? 'EXERCISES' : selectedTag === '일일테스트' ? 'DAILY_TEST' : selectedTag === '모의고사' ? 'PRACTICE_TEST' : selectedTag === '내신대비' ? 'TEST_PREP' : selectedTag === '월말테스트' ? 'MONTHLY_TEST' : ''}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
       console.log(`getWorkbook 즐겨찾기 결과값`, res);
       return res;
@@ -148,7 +179,7 @@ export function Worksheet() {
       const res = await workbookInstance.get(
         !onSearch
           ? `/v1/workbook?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/workbook?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+          : `/v1/workbook?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&tag=${selectedTag === '연습문제' ? 'EXERCISES' : selectedTag === '일일테스트' ? 'DAILY_TEST' : selectedTag === '모의고사' ? 'PRACTICE_TEST' : selectedTag === '내신대비' ? 'TEST_PREP' : selectedTag === '월말테스트' ? 'MONTHLY_TEST' : ''}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
       console.log(`getWorkbook 결과값`, res);
       return res;
@@ -166,9 +197,12 @@ export function Worksheet() {
       errorMessage: 'get-workbookList 에러 메세지',
     },
   });
+  // 학습지 만들어질때 값갱신할 수 있게 하기
+
+  //const [workbookList, setWorkbookList] = useState(workbookListData?.data.data);
 
   const workbookList = workbookListData?.data.data;
-  console.log(workbookList);
+  //console.log(workbookList);
 
   // 탭 바뀔시 초기화
   useEffect(() => {
@@ -193,12 +227,42 @@ export function Worksheet() {
     }
   };
 
+  //셀렉트 초기화
+  const handleDefaultSelect = (defaultValue?: string) => {
+    if (defaultValue == 'all') {
+      setSelectedTag('');
+      setSelectedCurriculum('');
+      setSelectedLevel('');
+      setStartDate('');
+      setEndDate('');
+    }
+
+    switch (defaultValue) {
+      case '태그':
+        setSelectedTag('');
+        break;
+      case categoryTitles[0]?.code:
+        setSelectedCurriculum('');
+        break;
+      case categoryTitles[1]?.code:
+        setSelectedLevel('');
+        break;
+      default:
+        break;
+    }
+
+    setOnSearch(false);
+  };
+
+  console.log(selectedTag);
+
   // 검색용 셀렉트 선택시
   useEffect(() => {
     workbookListRefetch();
+    setOnSearch(true);
   }, [
     searchValue,
-    selectedSource,
+    selectedTag,
     selectedCurriculum,
     selectedLevel,
     startDate,
@@ -253,6 +317,110 @@ export function Worksheet() {
             onClickTab={changeTab}
           />
         </HeadWrapper>
+        <SelectWrapper>
+          {/* 리스트 셀렉트 */}
+          {/* 태그 */}
+          {tagData && (
+            <Select
+              onDefaultSelect={() => handleDefaultSelect('태그')}
+              width={'130px'}
+              defaultValue="태그"
+              key="태그"
+              options={tagData.tageClassList}
+              onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setSelectedTag}
+            />
+          )}
+          {/* {categoriesE && categoryTitles[16] && (
+            <Select
+              onDefaultSelect={() =>
+                handleDefaultSelect(categoryTitles[16]?.code)
+              }
+              width={'130px'}
+              defaultValue={categoryTitles[16]?.code}
+              key={categoryTitles[16]?.code}
+              options={categoriesE[2]}
+              onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setSelectedSource}
+            />
+          )} */}
+          {/* 교육과정 학교급 학년 학기 */}
+          {categoryList && categoryTitles[0] && (
+            <Select
+              onDefaultSelect={() =>
+                handleDefaultSelect(categoryTitles[0]?.code)
+              }
+              width={'130px'}
+              defaultValue={categoryTitles[0]?.code}
+              key={categoryTitles[0]?.code}
+              options={categoryList[0]}
+              onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setSelectedCurriculum}
+            />
+          )}
+          {categoryList && categoryTitles[1] && (
+            <Select
+              onDefaultSelect={() =>
+                handleDefaultSelect(categoryTitles[1]?.code)
+              }
+              width={'130px'}
+              defaultValue={categoryTitles[1]?.code}
+              key={categoryTitles[1]?.code}
+              options={categoryList[1]}
+              onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setSelectedLevel}
+            />
+          )}
+          <CommonDate
+            setDate={setStartDate}
+            $button={
+              <IconButton
+                width={'125px'}
+                height={'40px'}
+                fontSize={'14px'}
+                onClick={() => {}}
+              >
+                <span className="btn_title">
+                  {startDate === '' ? `시작일` : `${startDate}`}
+                </span>
+                <GrPlan />
+              </IconButton>
+            }
+          />
+
+          <span> ~ </span>
+          <CommonDate
+            setDate={setEndDate}
+            minDate={startDate}
+            $button={
+              <IconButton
+                width={'125px'}
+                height={'40px'}
+                fontSize={'14px'}
+                onClick={() => {}}
+              >
+                <span className="btn_title">
+                  {endDate === '' ? `종료일` : `${endDate}`}
+                </span>
+                <GrPlan />
+              </IconButton>
+            }
+          />
+          <Search
+            value={searchValue}
+            width={'25%'}
+            height="40px"
+            onClick={(e) => filterSearchValue()}
+            onKeyDown={(e) => {
+              filterSearchValueEnter(e);
+            }}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+              setOnSearch(true);
+            }}
+            placeholder="학습지명, 작성자 검색."
+          />
+        </SelectWrapper>
 
         {isLoading && (
           <LoaderWrapper>
@@ -261,107 +429,12 @@ export function Worksheet() {
         )}
 
         {!isLoading && workbookListData && (
-          <>
-            <SelectWrapper>
-              {/* 리스트 셀렉트 */}
-              {/* 출처 */}
-              {categoriesE && categoryTitles[16] && (
-                <Select
-                  // onDefaultSelect={() =>
-                  //   handleDefaultSelect(categoryTitles[16]?.code)
-                  // }
-                  width={'130px'}
-                  defaultValue={categoryTitles[16]?.code}
-                  key={categoryTitles[16]?.code}
-                  options={categoriesE[2]}
-                  onSelect={(event) => selectCategoryOption(event)}
-                  setSelectedValue={setSelectedSource}
-                />
-              )}
-              {/* 교육과정 학교급 학년 학기 */}
-              {categoryList && categoryTitles[0] && (
-                <Select
-                  // onDefaultSelect={() =>
-                  //   handleDefaultSelect(categoryTitles[0]?.code)
-                  // }
-                  width={'130px'}
-                  defaultValue={categoryTitles[0]?.code}
-                  key={categoryTitles[0]?.code}
-                  options={categoryList[0]}
-                  onSelect={(event) => selectCategoryOption(event)}
-                  setSelectedValue={setSelectedCurriculum}
-                />
-              )}
-              {categoryList && categoryTitles[1] && (
-                <Select
-                  // onDefaultSelect={() =>
-                  //   handleDefaultSelect(categoryTitles[1]?.code)
-                  // }
-                  width={'130px'}
-                  defaultValue={categoryTitles[1]?.code}
-                  key={categoryTitles[1]?.code}
-                  options={categoryList[1]}
-                  onSelect={(event) => selectCategoryOption(event)}
-                  setSelectedValue={setSelectedLevel}
-                />
-              )}
-              <CommonDate
-                setDate={setStartDate}
-                $button={
-                  <IconButton
-                    width={'125px'}
-                    height={'40px'}
-                    fontSize={'14px'}
-                    onClick={() => {}}
-                  >
-                    <span className="btn_title">
-                      {startDate === '' ? `시작일` : `${startDate}`}
-                    </span>
-                    <GrPlan />
-                  </IconButton>
-                }
-              />
-
-              <span> ~ </span>
-              <CommonDate
-                setDate={setEndDate}
-                minDate={startDate}
-                $button={
-                  <IconButton
-                    width={'125px'}
-                    height={'40px'}
-                    fontSize={'14px'}
-                    onClick={() => {}}
-                  >
-                    <span className="btn_title">
-                      {endDate === '' ? `종료일` : `${endDate}`}
-                    </span>
-                    <GrPlan />
-                  </IconButton>
-                }
-              />
-              <Search
-                value={searchValue}
-                width={'25%'}
-                height="40px"
-                onClick={(e) => filterSearchValue()}
-                onKeyDown={(e) => {
-                  filterSearchValueEnter(e);
-                }}
-                onChange={(e) => {
-                  setSearchValue(e.target.value);
-                  setOnSearch(true);
-                }}
-                placeholder="학습지명, 작성자 검색."
-              />
-            </SelectWrapper>
-            <WorkbookList
-              list={workbookList.workbookList}
-              totalCount={workbookList.pagination.totalCount}
-              itemsCountPerPage={workbookList.pagination.pageUnit}
-              tabVeiw={tabVeiw}
-            ></WorkbookList>
-          </>
+          <WorkbookList
+            list={workbookList.workbookList}
+            totalCount={workbookList.pagination.totalCount}
+            itemsCountPerPage={workbookList.pagination.pageUnit}
+            tabVeiw={tabVeiw}
+          ></WorkbookList>
         )}
       </>
     </Container>

@@ -230,12 +230,11 @@ export function WorkbookList({
     setShowPdf(false);
   };
 
-  const [pdfUrl, setPdfUrl] = useState<string>(
-    'https://j-dev01.dreamonesys.co.kr/CB/testYD.pdf',
-  );
+  const [pdfUrl, setPdfUrl] = useState<string>('');
 
-  const getPdf = () => {
+  const getPdf = (fileName: string) => {
     setShowPdf(true);
+    setPdfUrl(`https://j-dev01.dreamonesys.co.kr/CB/${fileName}`);
   };
 
   // 배경 클릭시 체크리스트 초기화
@@ -289,7 +288,7 @@ export function WorkbookList({
         <>
           <Total> Total : {totalCount ? totalCount : 0}</Total>
           <ListButtonWrapper>
-            <InputWrapper>
+            {/* <InputWrapper>
               <ButtonWrapper>
                 <CheckBoxWrapper>
                   <CheckBoxI
@@ -317,7 +316,7 @@ export function WorkbookList({
                   </Button>
                 </ActionButtonWrapper>
               </ButtonWrapper>
-            </InputWrapper>
+            </InputWrapper> */}
           </ListButtonWrapper>
           <ListWrapper ref={backgroundRef}>
             <List margin={`10px 0`}>
@@ -360,7 +359,7 @@ export function WorkbookList({
                     {/* //TODO */}
                     <span className="width_10px">{item.idx}</span>
                     <i className="line"></i>
-                    <span>학년{item.grade}</span>
+                    <span>{item.grade}</span>
                     <i className="line"></i>
                     <span>
                       {(item.tag === 'DAILY_TEST' && '일일테스트') ||
@@ -379,7 +378,9 @@ export function WorkbookList({
                     <span className="width_5">
                       <LuFileSearch2
                         style={{ fontSize: '22px', cursor: 'pointer' }}
-                        onClick={getPdf}
+                        onClick={() =>
+                          getPdf(item.lastArticle.originalName as string)
+                        }
                       />
                     </span>
                     <i className="line"></i>
