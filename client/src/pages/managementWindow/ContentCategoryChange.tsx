@@ -470,8 +470,8 @@ export function ContentCategoryChange() {
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
-      // radio5depthCheck,
-      // radio6depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
       // radio7depthCheck,
     ];
 
@@ -543,8 +543,8 @@ export function ContentCategoryChange() {
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
-      // radio5depthCheck, //TODO : api 에 키값 추가될시 주석 해제
-      // radio6depthCheck,
+      radio5depthCheck, //TODO : api 에 키값 추가될시 주석 해제
+      radio6depthCheck,
     ];
 
     const itemTreeKey = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
@@ -560,8 +560,10 @@ export function ContentCategoryChange() {
       pageUnit: 8,
       itemTreeKey: itemTreeKey,
       itemTreeIdxList: checkedDepthList,
-      isUse: radio7depthCheck.title !== '비활성화' ? null : false,
+      isUse: radio7depthCheck.title !== '비활성화' ? true : false,
     };
+
+    console.log('최종적으로 요청되는 데이터', data);
 
     const res = await quizService.post('/v1/search/quiz/category', data);
     console.log('/v1/search/quiz/category 응답:', res);

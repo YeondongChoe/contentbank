@@ -474,8 +474,8 @@ export function ContentInformationChange() {
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
-      // radio5depthCheck,
-      // radio6depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
       // radio7depthCheck,
     ];
 
@@ -550,8 +550,8 @@ export function ContentInformationChange() {
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
-      // radio5depthCheck, //TODO : api 에 키값 추가될시 주석 해제
-      // radio6depthCheck,
+      radio5depthCheck, //TODO : api 에 키값 추가될시 주석 해제
+      radio6depthCheck,
     ];
 
     const itemTreeKey = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
@@ -571,15 +571,10 @@ export function ContentInformationChange() {
       isUse: radio7depthCheck.title !== '비활성화' ? null : false,
     };
 
+    console.log('최종적으로 요청되는 데이터', data);
+
     const res = await quizService.post('/v1/search/quiz/category', data);
-    console.log(
-      '/v1/search/quiz/category 응답:--------',
-      res.data.data.pagination,
-    );
-    console.log(
-      '/v1/search/quiz/category 응답:--------',
-      res.data.data.quizList,
-    );
+    console.log('/v1/search/quiz/category 응답:--------', res.data.data);
 
     return res;
   };
