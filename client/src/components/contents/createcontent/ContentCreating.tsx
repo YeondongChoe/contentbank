@@ -228,7 +228,7 @@ export function ContentCreating({
   // iframe 에디터에 데이터 삽입시
   useEffect(() => {
     const iframe = document.getElementById('editorIframe') as HTMLIFrameElement;
-    console.log('iframe--', iframe);
+    // console.log('iframe--', iframe);
     if (iframe) {
       const contentWindow = iframe.contentWindow;
       console.log('contentWindow', contentWindow);
@@ -474,10 +474,6 @@ const EditWrapper = styled.div`
     width: 100%;
     height: calc(100vh - 100px);
   } */
-  > div {
-    width: 100%;
-    height: calc(100vh - 100px);
-  }
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};

@@ -193,7 +193,7 @@ export function Authority() {
   }, [codeValue, setCodeValue]);
 
   useEffect(() => {
-    if (isSuccess && authorityData) {
+    if (isSuccess && authorityData?.data.data.permissionList) {
       console.log(
         'authorityData.data.data.permissionList',
         authorityData.data.data.permissionList,
@@ -247,25 +247,22 @@ export function Authority() {
 
   // 등록 && 수정 버튼
   const submitAuthority = () => {
-    // console.log('checkList', checkList);
+    console.log('checkList', checkList);
     const permissionList: PermissionOutput[] = createPermissions(checkList);
     setCodeUpdateList(permissionList);
-    // console.log('permissionList', permissionList);
+    console.log('permissionList', permissionList);
 
-    if (isClickedName) {
+    if (isClickedName && permissionList.length > 0) {
       mutateChangeAuthority({
         name: inputValue,
         code: codeValue,
-        permissionList: codeUpdateList,
+        permissionList,
       });
-      return;
-    }
-    if (!isClickedName) {
+    } else if (!isClickedName && permissionList.length > 0) {
       mutateCreateAuthority({
         name: inputValue,
-        permissionList: codeUpdateList,
+        permissionList,
       });
-      return;
     }
   };
 
@@ -832,6 +829,7 @@ export function Authority() {
       setCheckList([...defaultPermissions]);
     }
   }, [isClickedName]);
+
   useEffect(() => {
     //페이지 변경시 초기화
     setCheckList([...defaultPermissions]);

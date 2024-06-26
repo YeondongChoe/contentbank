@@ -62,7 +62,7 @@ export function CreateContentMain() {
   };
 
   useEffect(() => {
-    console.log(isUploadFile);
+    // console.log(isUploadFile);
   }, [isUploadFile]);
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
