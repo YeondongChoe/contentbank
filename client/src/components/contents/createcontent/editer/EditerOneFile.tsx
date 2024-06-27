@@ -1,27 +1,49 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
-import { useScript } from '../../../../hooks/useScript';
 export function EditerOneFile() {
-  useScript('/static/dream_ui/js/data_view_area.js');
-  useScript('/static/dream_ui/js/frame_controller.js');
-  useScript('/static/iTeX_EQ/js/itex_total_eq_origin_32.js');
-  useScript('/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71');
-  useScript('/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12');
-  useScript('/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1');
-  useScript('/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.1');
-  useScript('/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87');
-  useScript('/static/iTeX_fulltext/js/dream_function.js');
-  useScript('/static/iTeX_fulltext/js/hmlupload.js?v=0.1');
-  useScript('/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1');
-  useScript('/static/iTeX_EQ/js/tex-svg-full_3_2_2.js?v=0.1');
-  useScript('/static/OCR/js/main_iframe.js?v=0.1');
-  useScript('/static/iTeX_EQ/js/itexLoader.js');
-  // useScript('/static/');
+  const [isRendered, setRendered] = useState(false);
+
+  useEffect(() => {
+    if (isRendered) {
+      const scripts = [
+        '/static/dream_ui/js/data_view_area.js',
+        '/static/dream_ui/js/frame_controller.js',
+        '/static/iTeX_EQ/js/itex_total_eq_origin_32.js',
+        '/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71',
+        '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12',
+        '/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1',
+        '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.1',
+        '/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87',
+        '/static/iTeX_fulltext/js/dream_function.js',
+        '/static/iTeX_fulltext/js/hmlupload.js?v=0.1',
+        '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
+        '/static/iTeX_EQ/js/tex-svg-full_3_2_2.js?v=0.1',
+        '/static/OCR/js/main_iframe.js?v=0.1',
+        // '/static/iTeX_EQ/js/itexLoader.js',
+        // '/static/',
+      ];
+
+      scripts.forEach((src) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        document.body.appendChild(script);
+        return () => {
+          document.body.removeChild(script);
+        };
+      });
+    }
+  }, [isRendered]);
 
   return (
-    <Container>
+    <Container
+      onLoad={() => {
+        setRendered(true);
+      }}
+    >
       <div className="itex_editor_container">
         <div id="first" className="resizeable">
           <div id="itex_viewer_area">
