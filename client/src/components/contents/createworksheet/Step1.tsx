@@ -517,7 +517,6 @@ export function Step1() {
     setRadioEtc1Check([]);
     setRadioEtc2Check([]);
     setCheckedDepthList([]);
-    //
     setClassificationSearchValue('');
   }, [selected4depth]);
 
@@ -774,11 +773,13 @@ export function Step1() {
   const filterSearchValue = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
+    console.log(e.currentTarget.value);
     // 쿼리 스트링 변경 로직
     setClassificationSearchValue(e.currentTarget.value);
   };
   const filterSearchValueEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      console.log(e.currentTarget.value);
       setClassificationSearchValue(e.currentTarget.value);
     }
   };
@@ -2556,7 +2557,7 @@ export function Step1() {
                                     titleText={`${item.name}`}
                                     list={categoryAddInfoList[1]}
                                     selected={selectedCategoryEtc2}
-                                    onChange={(e) => handleRadioCheck(e)}
+                                    onChange={(e) => handleMultiRadioCheck(e)}
                                     checkedInputs={radioEtc2Check}
                                   />
                                 </div>
