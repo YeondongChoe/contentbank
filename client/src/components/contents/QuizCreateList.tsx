@@ -369,24 +369,23 @@ export function QuizCreateList() {
         </Button>
       </TitleWrapper>
 
-      {isLoading ||
-        (isPending && (
-          <LoaderWrapper>
-            <Loader width="50px" />
-          </LoaderWrapper>
-        ))}
+      <TabMenu
+        length={2}
+        menu={menuList}
+        selected={tabVeiw}
+        width={'300px'}
+        setTabVeiw={setTabVeiw}
+        $margin={'10px 0'}
+        onClickTab={changeTab}
+      />
+      {isLoading && (
+        <LoaderWrapper>
+          <Loader width="50px" />
+        </LoaderWrapper>
+      )}
 
       {!isLoading && quizData && (
         <>
-          <TabMenu
-            length={2}
-            menu={menuList}
-            selected={tabVeiw}
-            width={'300px'}
-            setTabVeiw={setTabVeiw}
-            $margin={'10px 0'}
-            onClickTab={changeTab}
-          />
           {/* 리스트 셀렉트 */}
           <SelectWrapper>
             {/* 출처 */}
