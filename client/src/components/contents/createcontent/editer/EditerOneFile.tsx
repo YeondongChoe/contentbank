@@ -18,6 +18,7 @@ export function EditerOneFile() {
   useScript('/static/iTeX_EQ/js/tex-svg-full_3_2_2.js?v=0.1');
   useScript('/static/OCR/js/main_iframe.js?v=0.1');
   useScript('/static/iTeX_EQ/js/itexLoader.js');
+  // useScript('/static/');
 
   return (
     <Container>

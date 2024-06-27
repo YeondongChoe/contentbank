@@ -419,28 +419,27 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
-    const depthChecks = [
+    const radioChecks = [
       radio1depthChangeCheck,
       radio2depthChangeCheck,
       radio3depthChangeCheck,
       radio4depthChangeCheck,
-      // radio5depthChangeCheck, //TODO : api 키값 추가되면 주석 해제
-      // radio6depthChangeCheck,
+      radio5depthChangeCheck, //TODO : api 키값 추가되면 주석 해제
+      radio6depthChangeCheck,
     ];
 
-    const keyValuePairs = categoryItems.reduce<Record<string, string>>(
-      (acc, item, index) => {
-        const depthCheck = depthChecks[index];
-        if (depthCheck) {
-          acc[item.name] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
-        }
-        return acc;
-      },
-      {},
-    );
+    const keyValuePairs = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
+      if (curr.key && curr.title) {
+        acc[curr.key] = curr.title;
+      }
+      return acc;
+    }, {});
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList : ******', itemTreeKeyList);
+    console.log(
+      'itemTreeKeyList 최종적으로 보내는 탭선택값: ******',
+      itemTreeKeyList,
+    );
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
     console.log('classificationInstance 응답 : ******', res);
@@ -776,8 +775,8 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
 
                       <Accordion
                         $backgroundColor={`${COLOR.GRAY}`}
-                        title={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}`}
-                        id={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}`}
+                        title={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}/${radio5depthChangeCheck.title}/${radio6depthChangeCheck.title}`}
+                        id={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}/${radio5depthChangeCheck.title}/${radio6depthChangeCheck.title}`}
                         $margin={`0 0 170px 0`}
                         defaultChecked={true}
                       >
