@@ -17,7 +17,7 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
-export function ContentCreating({
+export function ContentFileUpload({
   setTabVeiw,
 }: {
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
@@ -284,7 +284,7 @@ export function ContentCreating({
                 sandbox="allow-forms allow-modals allow-same-origin"
                 referrerPolicy="no-referrer"
               ></iframe> */}
-              <p>편집 에디팅</p>
+              <p>로컬에서 대형 파일업로드</p>
               <EditerOneFile />
             </EditWrapper>
 

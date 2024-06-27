@@ -11,6 +11,8 @@ import { COLOR } from '../../components/constants/COLOR';
 import {
   Classification,
   ContentCreating,
+  ContentFileUpload,
+  ContentHTMLUpload,
   Labeling,
 } from '../../components/contents/createcontent';
 
@@ -53,16 +55,21 @@ export function CreateContentMain() {
     if (data) sendData = JSON.parse(data);
 
     console.log('데이터 조회', sendData && sendData.data);
-    if (sendData === undefined) setIsUploadFile('createcontent');
-    if (sendData.data === 'createcontent') setIsUploadFile(sendData.data);
-    if (sendData.data === 'uploadfile') setIsUploadFile(sendData.data);
 
-    // 로컬스토리지 값 다받은 뒤 초기화
-    window.opener.localStorage.clear();
+    if (sendData && sendData.data) {
+      setIsUploadFile(sendData.data);
+      // 로컬스토리지 값 다받은 뒤 초기화
+      window.opener.localStorage.clear();
+      return;
+    }
   };
 
   useEffect(() => {
-    // console.log(isUploadFile);
+    getLocalData();
+  }, []);
+
+  useEffect(() => {
+    console.log(isUploadFile);
   }, [isUploadFile]);
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
@@ -84,20 +91,6 @@ export function CreateContentMain() {
       };
     }
   }, [tabVeiw]);
-
-  // useEffect(() => {
-  //   // 에디터 초기화 코드
-  //   if (window.initEditor) {
-  //     window.initEditor();
-  //   }
-
-  //   // Cleanup function
-  //   return () => {
-  //     if (window.destroyEditor) {
-  //       window.destroyEditor();
-  //     }
-  //   };
-  // }, []);
 
   return (
     <Container>
@@ -126,12 +119,14 @@ export function CreateContentMain() {
       </ButtonWrapper>
       {tabVeiw === 'DT & Editing' && (
         <ContentBox>
-          {isUploadFile && isUploadFile === 'createcontent' ? (
+          {isUploadFile && isUploadFile === 'createcontent' && (
             <ContentCreating setTabVeiw={setTabVeiw} />
-          ) : (
-            // <FileUploading setTabVeiw={setTabVeiw} />
-            // <FileUploading setTabVeiw={setTabVeiw} />
-            <ContentCreating setTabVeiw={setTabVeiw} />
+          )}
+          {isUploadFile && isUploadFile === 'uploadfile' && (
+            <ContentFileUpload setTabVeiw={setTabVeiw} />
+          )}
+          {isUploadFile && isUploadFile === 'uploadhtml' && (
+            <ContentHTMLUpload setTabVeiw={setTabVeiw} />
           )}
         </ContentBox>
       )}

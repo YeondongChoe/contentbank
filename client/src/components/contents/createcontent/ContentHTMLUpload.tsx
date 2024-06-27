@@ -17,7 +17,7 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
-export function ContentCreating({
+export function ContentHTMLUpload({
   setTabVeiw,
 }: {
   setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
@@ -284,7 +284,7 @@ export function ContentCreating({
                 sandbox="allow-forms allow-modals allow-same-origin"
                 referrerPolicy="no-referrer"
               ></iframe> */}
-              <p>편집 에디팅</p>
+              <p>html 직접 업로드(아이프레임으로 할지 고려)</p>
               <EditerOneFile />
             </EditWrapper>
 

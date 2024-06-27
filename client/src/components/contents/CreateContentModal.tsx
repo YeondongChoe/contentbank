@@ -68,21 +68,21 @@ export function CreateContentModal() {
             <MenuDiscription>(PDF, JPG, PNG, HWP 등)</MenuDiscription>
           </TextWrapper>
         </MenuWrapper>
-        {/* <MenuWrapper
+        <MenuWrapper
           onClick={(e) => {
             goToPage(e);
             closeModal();
           }}
-          value="uploadfile"
+          value="uploadhtml"
         >
           <IconWrapper>
             <TbFileUpload style={styleIcon} />
           </IconWrapper>
           <TextWrapper>
             <MenuName>대량 문항 등록</MenuName>
-            <MenuDiscription>(hwp, hml, xml)</MenuDiscription>
+            <MenuDiscription>(HWP, HML 등)</MenuDiscription>
           </TextWrapper>
-        </MenuWrapper> */}
+        </MenuWrapper>
       </MenuListWrapper>
     </Container>
   );

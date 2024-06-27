@@ -551,7 +551,7 @@ export function ContentCategoryChange() {
     }, {});
 
     const data = {
-      searchKeyword: '',
+      // searchKeyword: '',
       pageIndex: page,
       pageUnit: 8,
       itemTreeKey: itemTreeKey,

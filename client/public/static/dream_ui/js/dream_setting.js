@@ -1,3 +1,4 @@
+console.log('맨앞---- test dream_setting.js console log');
 var dream_url = 'dddd';
 
 // 데이터 로드 화면 탭 개수 설정
@@ -43,3 +44,5 @@ var getEQData = () => {
       target.addEventListener('click', iTeXEQ.eqn_click, false);
     });
 };
+
+console.log('맨뒤--- test dream_setting.js console log');
