@@ -17,7 +17,7 @@ import {
   ValueNone,
   openToastifyAlert,
 } from '../..';
-import { classificationInstance } from '../../../api/axios';
+import { classificationInstance, quizService } from '../../../api/axios';
 import {
   Accordion,
   ButtonFormatRadio,
@@ -66,6 +66,7 @@ export function Classification() {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
+  const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
   const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
     title: '',
     checkValue: 0,
@@ -826,9 +827,34 @@ export function Classification() {
 
   const sortList = () => {
     const sorted = questionList.filter((el) => checkedList.includes(el.code));
-    console.log('sortedList------------', sorted);
+    // console.log('sortedList------------', sorted);
     setSortedList(sorted);
   };
+
+  // 문항 뷰어 데이터 api
+  const getQuiz = async () => {
+    const idxArray = sortedList.map((list) => list.idx);
+    const idxList = idxArray.join(',');
+    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    // console.log('list data----------', res);
+    return res.data.data;
+  };
+  const {
+    data: quizData,
+    isLoading,
+    error: quizDataError,
+    refetch: quizDataRefetch,
+  } = useQuery({
+    queryKey: ['get-idx-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-idx-quizList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (quizData) setSortedQuizList(quizData.quizList);
+  }, [quizData]);
 
   useEffect(() => {
     // console.log('checkedList------------', checkedList);
@@ -916,6 +942,10 @@ export function Classification() {
     }
   }, [highlightIndex]);
 
+  const clickIdx = useMemo(() => {
+    return sortedList.length - 1;
+  }, []);
+
   return (
     <Container>
       <ResizeLayoutWrapper>
@@ -943,26 +973,24 @@ export function Classification() {
                   <MathViewerWrapper>
                     {sortedList.length > 0 ? (
                       <>
-                        {sortedList[sortedList.length - 1]?.quizItemList
-                          .length ? (
-                          sortedList[sortedList.length - 1]?.quizItemList?.map(
-                            (el) => (
-                              <div key={`${el?.code} quizItemList sortedList`}>
-                                {[
-                                  'TITLE',
-                                  'QUESTION',
-                                  'EXAMPLE',
-                                  'ANSWER',
-                                  'TIP',
-                                  'COMMENTARY',
-                                  'HINT',
-                                ].includes(el?.type) &&
-                                  el?.content && (
-                                    <MathViewer data={el.content}></MathViewer>
-                                  )}
-                              </div>
-                            ),
-                          )
+                        {sortedQuizList &&
+                        sortedQuizList[clickIdx]?.quizItemList ? (
+                          sortedList[clickIdx]?.quizItemList?.map((el) => (
+                            <div key={`${el?.code} quizItemList sortedList`}>
+                              {[
+                                'TITLE',
+                                'QUESTION',
+                                'EXAMPLE',
+                                'ANSWER',
+                                'TIP',
+                                'COMMENTARY',
+                                'HINT',
+                              ].includes(el?.type) &&
+                                el?.content && (
+                                  <MathViewer data={el.content}></MathViewer>
+                                )}
+                            </div>
+                          ))
                         ) : (
                           <>
                             <ValueNone

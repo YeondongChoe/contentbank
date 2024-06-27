@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReactToPrint from 'react-to-print';
 import { styled } from 'styled-components';
 
+import { quizService } from '../../../api/axios';
 import { Icon, IconButton, ValueNone } from '../../../components/atom';
 import { MathViewer } from '../../../components/mathViewer';
 import { ItemQuestionType, QuizListType } from '../../../types';
@@ -18,15 +20,43 @@ type PDFModalProps = {
 };
 
 export function PDFModal({ list }: PDFModalProps) {
-  const [sortedList, setSortedList] = useState<QuizListType[]>(list);
+  const [sortedList, setSortedList] = useState<QuizListType[]>();
   const pdf = makePdf();
   const printDivRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [scrollIndex, setScrollIndex] = useState(0);
 
+  const getQuiz = async () => {
+    const idxArray = list.map((list) => list.idx);
+    const idxList = idxArray.join(',');
+    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    // console.log('list data----------', res);
+    return res.data.data;
+  };
+  const {
+    data: quizData,
+    isLoading,
+    error: quizDataError,
+    refetch: quizDataRefetch,
+  } = useQuery({
+    queryKey: ['get-idx-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-idx-quizList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (quizData) setSortedList(quizData.quizList);
+  }, [quizData]);
+
   // const printPDF = async () => {
   //   await pdf.viewWithPdf();
   // };
+
+  useEffect(() => {
+    console.log('sortedList', sortedList);
+  }, [sortedList]);
 
   return (
     <>
@@ -58,177 +88,196 @@ export function PDFModal({ list }: PDFModalProps) {
           // }
           >
             <ContentsWrapper ref={printDivRef}>
-              {sortedList.map((item, idx) => (
-                <MathViewerList
-                  key={`${item.idx} pdf list`}
-                  className="A4_paper"
-                  ref={containerRef}
-                >
-                  {item.quizItemList.length ? (
-                    <PrintBox>
-                      <ListWrap>
-                        <RowList>
+              {sortedList &&
+                sortedList.map((item, idx) => (
+                  <MathViewerList
+                    key={`${item.idx} pdf list`}
+                    className="A4_paper"
+                    ref={containerRef}
+                  >
+                    {item?.quizItemList?.length ? (
+                      <PrintBox>
+                        <ListWrap>
+                          <RowList>
+                            <ColumList>
+                              {item.code && (
+                                <span>
+                                  <span className="title">문항번호:</span>
+                                  {item.code}
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory
+                                ?.교육과정 && (
+                                <span>
+                                  <span className="title">교육과정:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.교육과정
+                                  }
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory?.학년 && (
+                                <span>
+                                  <span className="title">
+                                    학&nbsp;&nbsp;&nbsp; 년:
+                                  </span>
+                                  {item.quizCategoryList[0].quizCategory.학년}
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory?.과목 && (
+                                <span>
+                                  <span className="title">
+                                    과&nbsp;&nbsp;&nbsp; 목:
+                                  </span>
+                                  {item.quizCategoryList[0]?.quizCategory?.과목}
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory
+                                ?.대단원 && (
+                                <span>
+                                  <span className="title">대 분 류:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.대단원
+                                  }
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory
+                                ?.소단원 && (
+                                <span>
+                                  <span className="title">소 분 류:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.소단원
+                                  }
+                                </span>
+                              )}
+                            </ColumList>
+                            <ColumList>
+                              {item.quizCategoryList[0]?.quizCategory
+                                ?.학교급 && (
+                                <span>
+                                  <span className="title">학 교 급:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.학교급
+                                  }
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory?.교과 && (
+                                <span>
+                                  <span className="title">
+                                    교&nbsp;&nbsp;&nbsp; 과:
+                                  </span>
+                                  {item.quizCategoryList[0]?.quizCategory?.교과}
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory?.학기 && (
+                                <span>
+                                  <span className="title">
+                                    학&nbsp;&nbsp;&nbsp; 기:
+                                  </span>
+                                  {item.quizCategoryList[0]?.quizCategory?.학기}
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory
+                                ?.중단원 && (
+                                <span>
+                                  <span className="title">중 분 류:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.중단원
+                                  }
+                                </span>
+                              )}
+                              {item.quizCategoryList[0]?.quizCategory
+                                ?.문항타입 && (
+                                <span>
+                                  <span className="title">
+                                    유&nbsp;&nbsp;&nbsp; 형:
+                                  </span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.문항타입
+                                  }
+                                </span>
+                              )}
+                              {/* {item.quizCategoryList[0]?.quizCategory?.기타 && (
+                                <span>
+                                  <span className="title">
+                                    기&nbsp;&nbsp;&nbsp; 타:
+                                  </span>
+                                  {item.quizCategoryList[0]?.quizCategory?.기타}
+                                </span>
+                              )} */}
+                            </ColumList>
+                          </RowList>
+
                           <ColumList>
-                            {item.code && (
+                            {item.quizCategoryList[0]?.quizCategory?.난이도 && (
                               <span>
-                                <span className="title">문항번호:</span>
-                                {item.code}
+                                <span className="title">난 이 도:</span>
+                                {item.quizCategoryList[0]?.quizCategory?.난이도}
                               </span>
                             )}
                             {item.quizCategoryList[0]?.quizCategory
-                              ?.교육과정 && (
+                              ?.행동요소1 && (
                               <span>
-                                <span className="title">교육과정:</span>
+                                <span className="title">행동요소1:</span>
                                 {
                                   item.quizCategoryList[0]?.quizCategory
-                                    ?.교육과정
+                                    ?.행동요소1
                                 }
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory?.학년 && (
-                              <span>
-                                <span className="title">
-                                  학&nbsp;&nbsp;&nbsp; 년:
-                                </span>
-                                {item.quizCategoryList[0].quizCategory.학년}
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory?.과목 && (
-                              <span>
-                                <span className="title">
-                                  과&nbsp;&nbsp;&nbsp; 목:
-                                </span>
-                                {item.quizCategoryList[0]?.quizCategory?.과목}
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory?.대단원 && (
-                              <span>
-                                <span className="title">대 분 류:</span>
-                                {item.quizCategoryList[0]?.quizCategory?.대단원}
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory?.소단원 && (
-                              <span>
-                                <span className="title">소 분 류:</span>
-                                {item.quizCategoryList[0]?.quizCategory?.소단원}
-                              </span>
-                            )}
-                          </ColumList>
-                          <ColumList>
-                            {item.quizCategoryList[0]?.quizCategory?.학교급 && (
-                              <span>
-                                <span className="title">학 교 급:</span>
-                                {item.quizCategoryList[0]?.quizCategory?.학교급}
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory?.교과 && (
-                              <span>
-                                <span className="title">
-                                  교&nbsp;&nbsp;&nbsp; 과:
-                                </span>
-                                {item.quizCategoryList[0]?.quizCategory?.교과}
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory?.학기 && (
-                              <span>
-                                <span className="title">
-                                  학&nbsp;&nbsp;&nbsp; 기:
-                                </span>
-                                {item.quizCategoryList[0]?.quizCategory?.학기}
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory?.중단원 && (
-                              <span>
-                                <span className="title">중 분 류:</span>
-                                {item.quizCategoryList[0]?.quizCategory?.중단원}
                               </span>
                             )}
                             {item.quizCategoryList[0]?.quizCategory
-                              ?.문항타입 && (
+                              ?.행동요소2 && (
                               <span>
-                                <span className="title">
-                                  유&nbsp;&nbsp;&nbsp; 형:
-                                </span>
+                                <span className="title">행동요소2:</span>
                                 {
                                   item.quizCategoryList[0]?.quizCategory
-                                    ?.문항타입
+                                    ?.행동요소2
                                 }
                               </span>
                             )}
-                            {/* {item.quizCategoryList[0]?.quizCategory?.기타 && (
-                            <span>
-                              <span className="title">
-                                기&nbsp;&nbsp;&nbsp; 타:
-                              </span>
-                              {item.quizCategoryList[0]?.quizCategory?.기타}
-                            </span>
-                          )} */}
                           </ColumList>
-                        </RowList>
+                        </ListWrap>
 
-                        <ColumList>
-                          {item.quizCategoryList[0]?.quizCategory?.난이도 && (
-                            <span>
-                              <span className="title">난 이 도:</span>
-                              {item.quizCategoryList[0]?.quizCategory?.난이도}
-                            </span>
-                          )}
-                          {item.quizCategoryList[0]?.quizCategory
-                            ?.행동요소1 && (
-                            <span>
-                              <span className="title">행동요소1:</span>
-                              {
-                                item.quizCategoryList[0]?.quizCategory
-                                  ?.행동요소1
-                              }
-                            </span>
-                          )}
-                          {item.quizCategoryList[0]?.quizCategory
-                            ?.행동요소2 && (
-                            <span>
-                              <span className="title">행동요소2:</span>
-                              {
-                                item.quizCategoryList[0]?.quizCategory
-                                  ?.행동요소2
-                              }
-                            </span>
-                          )}
-                        </ColumList>
-                      </ListWrap>
-
-                      <ListWrap>
-                        <RowList>
-                          <ColumList>
-                            {item.quizItemList.map((el) => (
-                              <MathViewerWrapper
-                                key={`${el?.code} quizItemList sortedList`}
-                                className="row"
-                              >
-                                {[
-                                  'TITLE',
-                                  'QUESTION',
-                                  'EXAMPLE',
-                                  'ANSWER',
-                                  'TIP',
-                                  'COMMENTARY',
-                                  'HINT',
-                                ].includes(el?.type) &&
-                                  el?.content && (
-                                    <MathViewer data={el.content}></MathViewer>
-                                  )}
-                              </MathViewerWrapper>
-                            ))}
-                          </ColumList>
-                        </RowList>
-                      </ListWrap>
-                    </PrintBox>
-                  ) : (
-                    <ValueNoneWrapper>
-                      <ValueNone info="문항 데이터가 없습니다" textOnly />
-                    </ValueNoneWrapper>
-                  )}
-                </MathViewerList>
-              ))}
+                        <ListWrap>
+                          <RowList>
+                            <ColumList>
+                              {item.quizItemList.map((el) => (
+                                <MathViewerWrapper
+                                  key={`${el?.code} quizItemList sortedList`}
+                                  className="row"
+                                >
+                                  {[
+                                    'TITLE',
+                                    'QUESTION',
+                                    'EXAMPLE',
+                                    'ANSWER',
+                                    'TIP',
+                                    'COMMENTARY',
+                                    'HINT',
+                                  ].includes(el?.type) &&
+                                    el?.content && (
+                                      <MathViewer
+                                        data={el.content}
+                                      ></MathViewer>
+                                    )}
+                                </MathViewerWrapper>
+                              ))}
+                            </ColumList>
+                          </RowList>
+                        </ListWrap>
+                      </PrintBox>
+                    ) : (
+                      <ValueNoneWrapper>
+                        <ValueNone info="문항 데이터가 없습니다" textOnly />
+                      </ValueNoneWrapper>
+                    )}
+                  </MathViewerList>
+                ))}
             </ContentsWrapper>
           </PerfectScrollbar>
         </ScrollWrapper>

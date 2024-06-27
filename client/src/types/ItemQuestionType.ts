@@ -51,7 +51,7 @@ export type QuizListType = {
   userKey: string;
   // quizCategoryList: any[]; //TODO : 데이터 다 들어갈시 명확히
   quizCategoryList: QuizCategoryList[];
-  quizItemList: QuizType[];
+  quizItemList?: QuizType[];
   quizList: QuizType[];
 };
 

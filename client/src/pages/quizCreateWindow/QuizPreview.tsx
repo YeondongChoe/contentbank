@@ -1,18 +1,23 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
-// import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { quizService } from '../../api/axios';
 import { MathViewer, ValueNone } from '../../components';
 import { QuizListType } from '../../types';
 
+type QuizPreviewProps = {
+  list?: any[];
+};
+
 export function QuizPreview() {
+  const [sortedList, setSortedList] = useState<QuizListType[]>();
+  const [list, setList] = useState<QuizListType[]>();
   const location = useLocation();
   const navigate = useNavigate();
-  const [sortedList, setSortedList] = useState<QuizListType[]>([]);
 
   //iframe 데이터 통신시
   const receiveMessage = (event: any) => {
@@ -31,23 +36,47 @@ export function QuizPreview() {
     if (data) sendData = JSON.parse(data);
 
     console.log('데이터 조회', sendData && sendData.data);
-
+    setList(sendData.data);
     // setSortedList() // 문항데이터 넣기
 
     // 로컬스토리지 값 다받은 뒤 초기화
     window.opener.localStorage.clear();
   };
 
+  const getQuiz = async () => {
+    const idxList = list && list.join(',');
+    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    return res.data.data;
+  };
+  const {
+    data: quizData,
+    isLoading,
+    error: quizDataError,
+    refetch: quizDataRefetch,
+  } = useQuery({
+    queryKey: ['get-idx-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-idx-quizList 에러 메세지',
+    },
+  });
+
   useEffect(() => {
     getLocalData();
   }, []);
 
-  useEffect(() => {}, [sortedList]);
+  useEffect(() => {
+    quizDataRefetch();
+  }, [list]);
+
+  useEffect(() => {
+    if (quizData) setSortedList(quizData.quizList);
+  }, [quizData]);
 
   return (
     <Container>
       <MathViewerWrapper>
-        {sortedList[sortedList.length - 1]?.quizItemList.length ? (
+        {sortedList && sortedList[sortedList.length - 1]?.quizItemList ? (
           sortedList[sortedList.length - 1]?.quizItemList?.map((el) => (
             <div key={`${el?.code} quizItemList sortedList`}>
               {[
