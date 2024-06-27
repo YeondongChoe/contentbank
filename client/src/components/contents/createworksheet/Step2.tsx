@@ -4,7 +4,12 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { IoMdClose, IoIosArrowBack } from 'react-icons/io';
+import {
+  IoMdClose,
+  IoMdArrowDropdown,
+  IoMdArrowDropup,
+  IoIosArrowBack,
+} from 'react-icons/io';
 import { IoMenuOutline } from 'react-icons/io5';
 import {
   PiArrowClockwiseBold,
@@ -34,6 +39,7 @@ import {
   Icon,
   IconButton,
   Modal,
+  ButtonFormatMultiRadio,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { ReportProcessModal } from '../../../components/managements/ReportProcessModal';
@@ -42,6 +48,7 @@ import { contentQuotient, pageAtom } from '../../../store/utilAtom';
 import {
   ItemCategoryType,
   ItemTreeListType,
+  ItemTreeType,
   QuizListType,
 } from '../../../types';
 import {
@@ -85,14 +92,16 @@ interface RadioStateType {
   checkValue: number;
   code: string;
   key: string;
-  checkedDepthList?: number[];
 }
 
 interface ItemTreeIdxListType {
   itemTreeIdxList: number[];
 }
 
-type UnitClassificationType = RadioStateType | ItemTreeIdxListType;
+type UnitClassificationType =
+  | RadioStateType
+  | ItemTreeIdxListType
+  | RadioStateType[];
 
 export function Step2() {
   const [getLocalData, setGetLocalData] = useState<WorkbookData | null>(null);
@@ -443,25 +452,18 @@ export function Step2() {
     code: '',
     key: '',
   });
-  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
+  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
+  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
   const [selected4depth, setSelected4depth] = useState<string>('');
-  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string>('');
-  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string>('');
-  const [checkedList, setCheckedList] = useState<string[]>([]);
+  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
+    '',
+  ]);
+  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string[]>([
+    '',
+  ]);
   const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
 
   const [nextList1depth, setNextList1depth] = useState([
@@ -559,18 +561,25 @@ export function Step2() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      if (error.response.data.code == 'GE-002') postRefreshToken();
+      // console.log('error--------------', error.response.data.code);
+
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          groupsDataRefetch();
+        });
     }
   };
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
     const itemId =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
+
     switch (depth) {
       case '1depth':
         setSelected1depth(e.currentTarget.id);
@@ -608,24 +617,84 @@ export function Step2() {
           key: itemId as string,
         });
         break;
+    }
+  };
 
+  // 다중 라디오 버튼 설정
+  const handleMultiRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const depth =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.classList[0];
+    const itemId =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.id;
+
+    // console.log('e.currentTarget.value', e.currentTarget?.value);
+    const title = e.currentTarget.name;
+    const code = e.currentTarget.className;
+    const value = e.currentTarget.value;
+
+    switch (depth) {
       case 'etc1':
-        setSelectedCategoryEtc1(e.currentTarget.value);
-        setRadioEtc1Check({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
+        setSelectedCategoryEtc1(() => {
+          if (selectedCategoryEtc1.includes(value)) {
+            const updated = selectedCategoryEtc1.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc1, value];
+            return updated;
+          }
+        });
+
+        setRadioEtc1Check(() => {
+          if (radioEtc1Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc1Check.filter(
+              (item) => item.checkValue !== Number(value),
+            );
+          } else {
+            return [
+              ...radioEtc1Check,
+              {
+                title: title,
+                checkValue: Number(value),
+                code: code,
+                key: itemId as string,
+              },
+            ];
+          }
         });
         break;
+
       case 'etc2':
-        setSelectedCategoryEtc2(e.currentTarget.value);
-        setRadioEtc2Check({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
+        setSelectedCategoryEtc2(() => {
+          if (selectedCategoryEtc2.includes(value)) {
+            const updated = selectedCategoryEtc2.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc2, value];
+            return updated;
+          }
         });
+
+        setRadioEtc2Check(() => {
+          if (radioEtc2Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc2Check.filter(
+              (item) => item.checkValue !== Number(value),
+            );
+          } else {
+            return [
+              ...radioEtc2Check,
+              {
+                title: title,
+                checkValue: Number(value),
+                code: code,
+                key: itemId as string,
+              },
+            ];
+          }
+        });
+        break;
+      default:
         break;
     }
   };
@@ -745,23 +814,24 @@ export function Step2() {
   // 체크값 변경시 초기화
   useEffect(() => {
     setSelected2depth('');
-    setItemTree([]);
+    setCheckedDepthList([]);
   }, [selected1depth]);
   useEffect(() => {
     setSelected3depth('');
-    setItemTree([]);
+    setCheckedDepthList([]);
   }, [selected2depth]);
   useEffect(() => {
     setSelected4depth('');
     setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
-    setItemTree([]);
+    setCheckedDepthList([]);
   }, [selected3depth]);
   useEffect(() => {
-    setSelectedCategoryEtc1('');
-    setSelectedCategoryEtc2('');
-    setRadioEtc1Check({ title: '', checkValue: 0, code: '', key: '' });
-    setRadioEtc2Check({ title: '', checkValue: 0, code: '', key: '' });
-    setItemTree([]);
+    setSelectedCategoryEtc1([]);
+    setSelectedCategoryEtc2([]);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+    setCheckedDepthList([]);
+    setClassificationSearchValue('');
   }, [selected4depth]);
 
   // 카테고리 선택후 아이템트리
@@ -902,15 +972,15 @@ export function Step2() {
     setRadio2depthCheck(reset);
     setRadio3depthCheck(reset);
     setRadio4depthCheck(reset);
-    setRadioEtc1Check(reset);
-    setRadioEtc2Check(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
 
     setSelected1depth('');
     setSelected2depth('');
     setSelected3depth('');
     setSelected4depth('');
-    setSelectedCategoryEtc1('');
-    setSelectedCategoryEtc2('');
+    setSelectedCategoryEtc1([]);
+    setSelectedCategoryEtc2([]);
     setCheckedDepthList([]);
   };
 
@@ -960,12 +1030,18 @@ export function Step2() {
       const classification = selectedClassification[4] as ItemTreeIdxListType;
       setCheckedDepthList(classification.itemTreeIdxList);
 
-      const classificationEtc1 = selectedClassification[5] as RadioStateType;
-      setSelectedCategoryEtc1(classificationEtc1?.checkValue?.toString() || '');
+      const classificationEtc1 = selectedClassification[5] as RadioStateType[];
+      // 저장되었던 행동 요소1
+      setSelectedCategoryEtc1(
+        classificationEtc1.map((el) => el.checkValue?.toString()),
+      );
       setRadioEtc1Check(classificationEtc1);
 
-      const classificationEtc2 = selectedClassification[6] as RadioStateType;
-      setSelectedCategoryEtc2(classificationEtc2?.checkValue?.toString() || '');
+      const classificationEtc2 = selectedClassification[6] as RadioStateType[];
+      // 저장되었던 행동 요소2
+      setSelectedCategoryEtc2(
+        classificationEtc2.map((el) => el.checkValue?.toString()),
+      );
       setRadioEtc2Check(classificationEtc2);
 
       //초기화
@@ -997,6 +1073,10 @@ export function Step2() {
   const [classificationSearchValue, setClassificationSearchValue] =
     useState<string>('');
 
+  useEffect(() => {
+    // console.log('itemTree ------ ', itemTree);
+  }, [itemTree, classificationSearchValue]);
+
   // 검색 기능
   const filterSearchValue = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -1011,13 +1091,119 @@ export function Step2() {
   };
 
   // 깊이가 있는 리스트 체크박스
-  const handleSingleCheck = (checked: boolean, id: number) => {
-    if (checked) {
-      setCheckedDepthList((prev) => [...prev, id]);
-    } else {
-      setCheckedDepthList(checkedDepthList.filter((el) => el !== id));
-    }
+  const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
+    setCheckedDepthList((prev) => {
+      let updatedList = checked
+        ? [...prev, idx]
+        : prev.filter((item) => item !== idx);
+
+      if (checked) {
+        // 상위 요소를 체크
+        let currentItem = findItemByIdx(idx);
+        while (currentItem && currentItem.parentIdx !== 0) {
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
+          if (parentItem) {
+            if (!updatedList.includes(parentItem.idx)) {
+              updatedList.push(parentItem.idx);
+            }
+            currentItem = parentItem;
+          } else {
+            break;
+          }
+        }
+      } else {
+        // 하위 요소를 모두 체크 해제
+        const removeDescendants = (currentIdx: number) => {
+          const childItems = findChildItems(currentIdx);
+          childItems.forEach((child) => {
+            updatedList = updatedList.filter(
+              (itemIdx) => itemIdx !== child.idx,
+            );
+            removeDescendants(child.idx);
+          });
+        };
+        removeDescendants(idx);
+      }
+
+      return updatedList;
+    });
   };
+  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
+    for (const tree of itemTree) {
+      for (const item of tree.itemTreeList) {
+        if (item.idx === idx) {
+          return item;
+        }
+      }
+    }
+    return undefined;
+  };
+  const findChildItems = (parentIdx: number): ItemTreeType[] => {
+    const children: ItemTreeType[] = [];
+    for (const tree of itemTree) {
+      children.push(
+        ...tree.itemTreeList.filter((item) => item.parentIdx === parentIdx),
+      );
+    }
+    return children;
+  };
+
+  // 검색 단어 하이라이트 && 하이라이트간 이동 처리
+  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const highlightText = (text: string, searchValue: string) => {
+    if (searchValue.length < 2) return text;
+    const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
+    const highlightedText = (
+      <span className="text">
+        {parts.map((part, index) => {
+          const className =
+            part.toLowerCase() === searchValue.toLowerCase() ? 'highlight' : '';
+          return part.toLowerCase() === searchValue.toLowerCase() ? (
+            <span key={index} className={className}>
+              {part}
+            </span>
+          ) : (
+            <span>{part}</span>
+          );
+        })}
+      </span>
+    );
+    return highlightedText;
+  };
+
+  const prevHighlight = () => {
+    setHighlightIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
+
+  const nextHighlight = () => {
+    setHighlightIndex((prevIndex) => prevIndex + 1);
+  };
+
+  useEffect(() => {
+    const highlightedElements = document.querySelectorAll('.highlight');
+    if (highlightedElements.length > 0 && highlightIndex !== -1) {
+      highlightedElements.forEach((el) => el.classList.remove('current'));
+      const currentElement =
+        highlightedElements[highlightIndex % highlightedElements.length];
+      if (currentElement) {
+        currentElement.classList.add('current');
+        const container = document.getElementById('scrollTopWrapper');
+        // console.log('container', container?.offsetTop);
+        if (
+          container instanceof HTMLElement &&
+          currentElement instanceof HTMLElement
+        ) {
+          const elementPosition =
+            currentElement.parentElement?.parentElement?.parentElement
+              ?.parentElement?.offsetTop;
+          // console.log('elementPosition', elementPosition);
+          container.scrollTop = elementPosition as number;
+        }
+      }
+    }
+  }, [highlightIndex]);
 
   //즐겨찾는 문항
   const [recommend, setRecommend] = useState<boolean>(false);
@@ -1324,6 +1510,12 @@ export function Step2() {
     }
   }, [tabVeiw]);
 
+  //tab 선택시 선택 초기화
+  useEffect(() => {
+    setUnitClassificationList([]);
+    onResetList();
+  }, [tabVeiw]);
+
   const moveStep3 = () => {
     const data = {
       data: initialItems,
@@ -1578,19 +1770,19 @@ export function Step2() {
                                             height="35px"
                                             textAlign="left"
                                             $padding="0 50px 0 10px"
-                                            rightIconSrc={
-                                              <IconWrapper>
-                                                <button
-                                                  type="button"
-                                                  className="icon_button primery"
-                                                >
-                                                  수정
-                                                </button>
-                                              </IconWrapper>
-                                            }
                                             onClick={() =>
                                               changeUnitClassification(idx)
                                             }
+                                            // rightIconSrc={
+                                            //   <IconWrapper>
+                                            //     <button
+                                            //       type="button"
+                                            //       className="icon_button primery"
+                                            //     >
+                                            //       수정
+                                            //     </button>
+                                            //   </IconWrapper>
+                                            // }
                                           >
                                             <span>
                                               {el
@@ -1632,6 +1824,7 @@ export function Step2() {
                                       {[categoryItems[0]].map((item) => (
                                         <div
                                           className={`1depth`}
+                                          id={`${item.name}`}
                                           key={`selected1depth ${item.idx}`}
                                         >
                                           <ButtonFormatRadio
@@ -1653,6 +1846,7 @@ export function Step2() {
                                         [categoryItems[1]].map((item) => (
                                           <div
                                             className={`2depth`}
+                                            id={`${item.name}`}
                                             key={`selected2depth ${item.idx}`}
                                           >
                                             <ButtonFormatRadio
@@ -1673,6 +1867,7 @@ export function Step2() {
                                         [categoryItems[2]].map((item) => (
                                           <div
                                             className={`3depth`}
+                                            id={`${item.name}`}
                                             key={`selected3depth ${item.idx}`}
                                           >
                                             <ButtonFormatRadio
@@ -1692,6 +1887,7 @@ export function Step2() {
                                         [categoryItems[3]].map((item) => (
                                           <div
                                             className={`4depth`}
+                                            id={`${item.name}`}
                                             key={`selected4depth ${item.idx}`}
                                           >
                                             <ButtonFormatRadio
@@ -1721,6 +1917,7 @@ export function Step2() {
                                 selected3depth !== '' ? (
                                   <AccordionWrapper>
                                     <Accordion
+                                      defaultChecked={isModifying}
                                       title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
                                       id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
                                     >
@@ -1741,7 +1938,7 @@ export function Step2() {
                                           maxLength={20}
                                         />
                                         {classificationSearchValue.length >
-                                          0 && (
+                                          1 && (
                                           <p className="line bottom_text">
                                             {`총 
                           ${
@@ -1757,6 +1954,18 @@ export function Step2() {
                               : 0
                           } 
                           건`}
+                                            <ArrowButtonWrapper>
+                                              <button
+                                                onClick={() => prevHighlight()}
+                                              >
+                                                <IoMdArrowDropup />
+                                              </button>
+                                              <button
+                                                onClick={() => nextHighlight()}
+                                              >
+                                                <IoMdArrowDropdown />
+                                              </button>
+                                            </ArrowButtonWrapper>
                                           </p>
                                         )}
                                         {isPending && (
@@ -1768,7 +1977,10 @@ export function Step2() {
                                         {categoryItemTreeData ? (
                                           <>
                                             {itemTree.length ? (
-                                              <>
+                                              <div
+                                                ref={contentRef}
+                                                className="content"
+                                              >
                                                 {classificationSearchValue.length >
                                                 0 ? (
                                                   <>
@@ -1779,17 +1991,23 @@ export function Step2() {
                                                         {el.itemTreeList.map(
                                                           (item) => (
                                                             <DepthBlock
-                                                              defaultChecked
+                                                              highlightText={
+                                                                highlightText
+                                                              }
                                                               key={`depthList${item?.idx} ${item.name}`}
                                                               classNameList={`depth-${item.level}`}
-                                                              id={item?.code}
+                                                              id={item?.idx}
                                                               name={item.name}
                                                               value={item?.idx}
+                                                              level={
+                                                                item?.level
+                                                              }
                                                               onChange={(e) =>
                                                                 handleSingleCheck(
                                                                   e.target
                                                                     .checked,
                                                                   item?.idx,
+                                                                  item?.level,
                                                                 )
                                                               }
                                                               checked={
@@ -1824,14 +2042,18 @@ export function Step2() {
                                                               defaultChecked
                                                               key={`depthList${item?.idx} ${item.name}`}
                                                               classNameList={`depth-${item.level}`}
-                                                              id={item?.code}
+                                                              id={item?.idx}
                                                               name={item.name}
                                                               value={item?.idx}
+                                                              level={
+                                                                item?.level
+                                                              }
                                                               onChange={(e) =>
                                                                 handleSingleCheck(
                                                                   e.target
                                                                     .checked,
                                                                   item?.idx,
+                                                                  item?.level,
                                                                 )
                                                               }
                                                               checked={
@@ -1855,7 +2077,7 @@ export function Step2() {
                                                     ))}
                                                   </>
                                                 )}
-                                              </>
+                                              </div>
                                             ) : (
                                               <ValueNone
                                                 textOnly
@@ -1873,45 +2095,46 @@ export function Step2() {
                                       title={'추가정보'}
                                       id={'추가정보'}
                                       $margin={'4px 0 0 0 '}
+                                      defaultChecked={isModifying}
                                     >
                                       <RowListWrapper>
                                         {categoryAddInfoList ? (
                                           <>
                                             {[categoryItems[4]].map((item) => (
                                               <div
+                                                id={`${item.name}`}
                                                 className={`etc1`}
                                                 key={`etc1 ${item.idx}`}
                                               >
-                                                <ButtonFormatRadio
+                                                <ButtonFormatMultiRadio
                                                   titleText={`${item.name}`}
                                                   list={categoryAddInfoList[0]}
                                                   selected={
                                                     selectedCategoryEtc1
                                                   }
                                                   onChange={(e) =>
-                                                    handleRadioCheck(e)
+                                                    handleMultiRadioCheck(e)
                                                   }
-                                                  // defaultChecked={}
-                                                  checkedInput={radioEtc1Check}
+                                                  checkedInputs={radioEtc1Check}
                                                 />
                                               </div>
                                             ))}
                                             {[categoryItems[5]].map((item) => (
                                               <div
+                                                id={`${item.name}`}
                                                 className={`etc2`}
                                                 key={`etc2 ${item.idx}`}
                                               >
-                                                <ButtonFormatRadio
+                                                <ButtonFormatMultiRadio
                                                   titleText={`${item.name}`}
                                                   list={categoryAddInfoList[1]}
                                                   selected={
                                                     selectedCategoryEtc2
                                                   }
                                                   onChange={(e) =>
-                                                    handleRadioCheck(e)
+                                                    handleMultiRadioCheck(e)
                                                   }
-                                                  // defaultChecked={}
-                                                  checkedInput={radioEtc2Check}
+                                                  checkedInputs={radioEtc2Check}
                                                 />
                                               </div>
                                             ))}
@@ -2265,6 +2488,15 @@ const DiscriptionType = styled.div`
   padding-top: 10px;
   font-size: 14px;
   color: ${COLOR.TEXT_GRAY};
+`;
+const ArrowButtonWrapper = styled.span`
+  padding: 0 10px;
+  > button {
+    cursor: pointer;
+    padding: 4px;
+    background-color: transparent;
+    border: none;
+  }
 `;
 //유사문항
 const SimilarCloseButtonWrapper = styled.div`
