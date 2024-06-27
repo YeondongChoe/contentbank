@@ -22,7 +22,6 @@ export function EditerOneFile() {
         '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
         '/static/iTeX_EQ/js/tex-svg-full_3_2_2.js?v=0.1',
         '/static/OCR/js/main_iframe.js?v=0.1',
-        // '/static/iTeX_EQ/js/itexLoader.js',
         // '/static/',
       ];
 
