@@ -11,8 +11,14 @@ RUN npm config set cache /tmp/npm-cache --global
 # Clean npm cache to avoid potential issues
 RUN npm cache clean --force
 
-RUN npm install
+RUN npm ci --prefer-offline
+
+# Build the project in development mode
 RUN npm run build:dev --verbose
+
+# Remove node_modules and other unnecessary files
+RUN rm -rf node_modules
+RUN rm -rf /tmp/npm-cache
 
 # nginx 설치
 FROM nginx:stable-alpine
