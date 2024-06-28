@@ -1,20 +1,15 @@
 # 노드 이미지를 최신 버전으로 가져옴
 FROM node:20.10.0 as build
 
-## npm install & build
 WORKDIR /app
-# COPY . .
-COPY package*.json ./
+COPY . .
 
 # npm 캐시 위치를 설정하여 ENOSPC 오류를 피하고, npm 캐시를 정리
 RUN npm config set cache /tmp/npm-cache --global
 RUN npm cache clean --force
 
 # 의존성 설치
-RUN npm ci --prefer-offline
-
-# 나머지 파일들 복사
-COPY . .
+RUN npm install
 
 # 개발 모드에서 프로젝트 빌드
 RUN npm run build:dev --verbose
