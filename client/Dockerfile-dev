@@ -5,28 +5,27 @@ FROM node:20.10.0 as build
 WORKDIR /app
 COPY . .
 
-# Set npm cache location to avoid ENOSPC errors
+# npm 캐시 위치를 설정하여 ENOSPC 오류를 피하고, npm 캐시를 정리
 RUN npm config set cache /tmp/npm-cache --global
-
-# Clean npm cache to avoid potential issues
 RUN npm cache clean --force
 
+# 의존성 설치
 RUN npm ci --prefer-offline
 
-# Build the project in development mode
+# 개발 모드에서 프로젝트 빌드
 RUN npm run build:dev --verbose
 
-# Remove node_modules and other unnecessary files
+# 디스크 공간을 확보하기 위해 node_modules 및 npm 캐시 제거
 RUN rm -rf node_modules
 RUN rm -rf /tmp/npm-cache
 
-# nginx 설치
+# nginx를 사용하여 빌드된 파일을 제공
 FROM nginx:stable-alpine
 
-# 빌드한 폴더를 nginx의 html 으로 Copy
+# 이전 단계에서 빌드된 파일을 nginx html 디렉토리로 복사
 COPY --from=build /app/build /usr/share/nginx/html
 
-# 충돌을 위한 기본 conf 파일 삭제
+# 기본 nginx 설정 파일 삭제
 RUN rm /etc/nginx/conf.d/default.conf
 
 # 커스텀으로 작성한 nginx 설정파일 Copy
