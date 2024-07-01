@@ -4736,7 +4736,7 @@ const MainWrapper = styled.div`
   display: flex;
   gap: 20px;
 `;
-const CategorySection = styled.section`
+const CategorySection = styled.div`
   min-width: 956px;
   display: flex;
   flex-direction: column;
@@ -4827,7 +4827,7 @@ const ArrowButtonWrapper = styled.span`
 `;
 const AccordionItemWrapper = styled.div`
   overflow-y: auto;
-  max-height: 300px;
+  max-height: 250px;
 `;
 const SubmitButtonWrapper = styled.div`
   display: flex;
@@ -4836,7 +4836,7 @@ const SubmitButtonWrapper = styled.div`
 const ValueNoneWrapper = styled.div`
   display: flex;
 `;
-const SchoolSelectorSection = styled.section<{
+const SchoolSelectorSection = styled.div<{
   $isSelectTextbookContent?: boolean;
   $tabVeiw?: string;
 }>`

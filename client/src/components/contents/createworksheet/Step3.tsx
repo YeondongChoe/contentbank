@@ -221,13 +221,13 @@ export function Step3() {
       tag:
         tag === '연습문제'
           ? 'EXERCISES'
-          : tag === '일일테스트'
+          : tag === '일일TEST'
             ? 'DAILY_TEST'
             : tag === '모의고사'
               ? 'PRACTICE_TEST'
               : tag === '내신대비'
                 ? 'TEST_PREP'
-                : tag === '월말테스트'
+                : tag === '월말TEST'
                   ? 'MONTHLY_TEST'
                   : '',
       autoGrade: true,
@@ -272,7 +272,12 @@ export function Step3() {
       }
     },
     onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: '학습지 생성완료.',
+      });
       setIsComplete(true);
+      window.close();
       //stpe3가 닫힐 때  setIsComplete(false)로 변경해주기
     },
   });
@@ -881,7 +886,7 @@ const Wrapper = styled.div`
   gap: 20px;
 `;
 // 왼쪽 section
-const WorksheetSettingSection = styled.section`
+const WorksheetSettingSection = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -980,7 +985,7 @@ const CheckBoxWrapper = styled.div`
   gap: 2px;
   padding-right: 10px;
 `;
-const WorksheetTemplateViewSection = styled.section`
+const WorksheetTemplateViewSection = styled.div`
   /* width: 900px;
   height: 751px; */
   display: flex;
