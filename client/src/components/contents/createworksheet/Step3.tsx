@@ -89,7 +89,7 @@ export function Step3() {
   const [contentAuthor, setContentAuthor] = useState('');
 
   const [tag, setTag] = useState<string>('');
-
+  console.log(tag);
   const selectTag = (newValue: string) => {
     setTag(newValue);
   };
@@ -221,13 +221,13 @@ export function Step3() {
       tag:
         tag === '연습문제'
           ? 'EXERCISES'
-          : tag === '일일TEST'
+          : tag === '일일TEST' //에러남
             ? 'DAILY_TEST'
             : tag === '모의고사'
               ? 'PRACTICE_TEST'
               : tag === '내신대비'
                 ? 'TEST_PREP'
-                : tag === '월말TEST'
+                : tag === '월말TEST' //에러남
                   ? 'MONTHLY_TEST'
                   : '',
       autoGrade: true,
