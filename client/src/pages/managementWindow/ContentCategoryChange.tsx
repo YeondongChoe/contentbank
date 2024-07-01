@@ -949,6 +949,11 @@ export function ContentCategoryChange() {
                 <span className="point_text">STEP2</span> 문항 선택
               </span>
             </Title>
+            {isPending && (
+              <LoaderWrapper>
+                <Loader height="50px" size="50px" />
+              </LoaderWrapper>
+            )}
             {questionList && questionList.length > 0 ? (
               <>
                 <QuizList
@@ -974,10 +979,10 @@ export function ContentCategoryChange() {
               </>
             ) : (
               <ValueNoneWrapper>
-                {!IsSearchOn && (
+                {!IsSearchOn && !isPending && (
                   <ValueNone textOnly info={'STEP1 찾을 내용을 입력해주세요'} />
                 )}
-                {IsSearchOn && (
+                {IsSearchOn && !isPending && (
                   <ValueNone textOnly info={'데이터가 없습니다'} />
                 )}
               </ValueNoneWrapper>
@@ -993,7 +998,12 @@ export function ContentCategoryChange() {
               </span>
             </Title>
             {/* 해당 문항 분류 바꾸기 컴포넌트 */}
-            <MetaRadioSelect checkedList={checkedList} />
+            <MetaRadioSelect
+              checkedList={checkedList}
+              setCheckedList={setCheckedList}
+              setQuestionListReset={setQuestionList}
+              setSelected1depthReset={setSelected1depth}
+            />
           </PositionWrapper>
         }
       />

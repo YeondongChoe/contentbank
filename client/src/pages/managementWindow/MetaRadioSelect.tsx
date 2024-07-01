@@ -44,7 +44,17 @@ interface ItemTreeKeyType {
   [key: string]: string;
 }
 
-export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
+export function MetaRadioSelect({
+  checkedList,
+  setCheckedList,
+  setQuestionListReset,
+  setSelected1depthReset,
+}: {
+  checkedList: string[];
+  setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
+  setQuestionListReset: React.Dispatch<React.SetStateAction<QuizListType[]>>;
+  setSelected1depthReset: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
 
   // States for item3
@@ -576,7 +586,7 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
         },
       ],
     };
-    console.log('최종 전송 데이터 형태', data);
+    console.log('최종 전송 데이터 형태 분류바꾸기', data);
     mutateChangeClassification(data);
   };
   // 분류 바꾸기 (등록) api
@@ -606,7 +616,16 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
           text: response.data.message,
         });
         //초기화
-        // onResetList();
+        setCheckedList([]);
+        setQuestionListReset([]);
+        setSelected1depthReset('');
+        setChangeVlaue1depth('');
+        setRadio1depthChangeCheck({
+          title: '',
+          checkValue: 0,
+          code: '',
+          key: '',
+        });
       },
     });
 
