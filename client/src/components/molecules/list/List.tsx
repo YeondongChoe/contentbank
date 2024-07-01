@@ -40,4 +40,5 @@ const Component = styled.ul<ListStyleProps>`
   width: ${({ width }) => (width ? ` ${width};` : '100%')};
   height: ${({ height }) => (height ? ` ${height};` : '100%')};
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
+  padding-left: 0;
 `;

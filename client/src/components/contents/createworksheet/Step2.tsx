@@ -233,40 +233,7 @@ export function Step2() {
     { value: levelBest, label: '최상' },
   ];
 
-  //즐겨찾기
   const [page, setPage] = useRecoilState(pageAtom);
-  const [favoriteQuestionList, setFavoriteQuestionList] =
-    useState<FavoriteQuizList>();
-
-  // 문항 즐겨찾기리스트 불러오기 api
-  const getFavoriteQuiz = async () => {
-    const res = await quizService.get(
-      `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`,
-    );
-    // const res = await quizService.get(
-    //     ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
-    //     : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
-    // );
-    // console.log(`getFavoriteQuiz 결과값`, res.data.data);
-    return res.data.data;
-  };
-
-  const { data: favoriteQuizData, refetch: favoriteQuizDataRefetch } = useQuery(
-    {
-      queryKey: ['get-favoriteQuizList'],
-      queryFn: getFavoriteQuiz,
-      meta: {
-        errorMessage: 'get-favoriteQuizList 에러 메세지',
-      },
-      enabled: tabVeiw == '즐겨찾는 문항',
-    },
-  );
-
-  useEffect(() => {
-    if (favoriteQuizData) {
-      setFavoriteQuestionList(favoriteQuizData);
-    }
-  }, [favoriteQuizData]);
 
   const [isStartDnD, setIsStartDnd] = useState(false);
 
@@ -346,7 +313,6 @@ export function Step2() {
   const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-  console.log(newQuizItems?.quizList);
 
   // 새 문항 문항 불러오기 api
   const postnewQuizList = async (data: any) => {
@@ -1205,9 +1171,6 @@ export function Step2() {
     }
   }, [highlightIndex]);
 
-  //즐겨찾는 문항
-  const [recommend, setRecommend] = useState<boolean>(false);
-
   const navigate = useNavigate();
 
   //신고하기
@@ -1241,15 +1204,98 @@ export function Step2() {
     }
   };
 
+  //즐겨찾기
+  const [favoriteQuestionList, setFavoriteQuestionList] =
+    useState<FavoriteQuizList | null>(null);
+
+  // 문항 즐겨찾기리스트 불러오기 api
+  const getFavoriteQuiz = async (page: any) => {
+    const res = await quizService.get(
+      `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`,
+    );
+    // const res = await quizService.get(
+    //     ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
+    //     : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
+    // );
+    //console.log(`getFavoriteQuiz 결과값`, res.data.data);
+    return res.data.data;
+  };
+
+  const { data: favoriteQuizData, refetch: favoriteQuizDataRefetch } = useQuery(
+    {
+      queryKey: ['get-favoriteQuizList', page],
+      queryFn: () => getFavoriteQuiz(page),
+      meta: {
+        errorMessage: 'get-favoriteQuizList 에러 메세지',
+      },
+      enabled: tabVeiw == '즐겨찾는 문항',
+    },
+  );
+
+  useEffect(() => {
+    if (favoriteQuizData) {
+      const transformedData = {
+        quizList: Array.isArray(favoriteQuizData.quizList)
+          ? favoriteQuizData.quizList.flat()
+          : [],
+      };
+      setFavoriteQuestionList(transformedData);
+    }
+  }, [favoriteQuizData]);
+
+  // 문항 즐겨찾기 토글 api
+  const patchQuizFavorite = async (data: {
+    idx: number;
+    isFavorite: boolean;
+  }) => {
+    return await quizService.patch(`/v1/quiz/favorite`, data);
+  };
+  const { data: quizFavorite, mutate: mutateQuizFavorite } = useMutation({
+    mutationFn: patchQuizFavorite,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      // console.log('quizFavorite', response);
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
+
+  // 즐겨찾기 토글 버튼
+  const handleFavorite = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data: { idx: number; isFavorite: boolean },
+  ) => {
+    e.stopPropagation();
+
+    const favoriteItem = {
+      idx: data.idx,
+      isFavorite: !data.isFavorite,
+    };
+    mutateQuizFavorite(favoriteItem);
+  };
+
   // 유사문항
   const [isSimilar, setIsSimilar] = useState(false);
-  const [similarItems, setSimilarItems] = useState<SimilarQuizList>();
+  const [similarItems, setSimilarItems] = useState<SimilarQuizList | null>(
+    null,
+  );
   const [similarItemCode, setSimilarItemCode] = useState<string>('');
   const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-  //console.log('');
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
@@ -1291,6 +1337,7 @@ export function Step2() {
     setSimilarItemIndex(index);
     if (isSimilar) {
       setIsSimilar(!isSimilar);
+      setSimilarItems(null);
     } else {
       setIsSimilar(!isSimilar);
       similarDataMutate();
@@ -1319,14 +1366,11 @@ export function Step2() {
       });
     }
   };
-  console.log('newQuizItems', newQuizItems);
   //리스트 문항 전체 추가
   const clickAddAllQuizItem = () => {
     //새문항 전체추가
     if (newQuizItems) {
       const allNewQuizItems = newQuizItems.quizList;
-      console.log('newQuizItems', newQuizItems);
-      console.log('allNewQuizItems', allNewQuizItems);
       setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
       setNewQuizItems((prevItems) => {
         if (prevItems) {
@@ -1341,8 +1385,6 @@ export function Step2() {
     //즐겨찾기 전체추가
     else if (favoriteQuestionList) {
       const allNewQuizItems = favoriteQuestionList.quizList;
-      console.log('newQuizItems', newQuizItems);
-      console.log('allNewQuizItems', allNewQuizItems);
       setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
       setFavoriteQuestionList((prevItems) => {
         if (prevItems) {
@@ -1520,8 +1562,15 @@ export function Step2() {
     const data = {
       data: initialItems,
     };
-    saveLocalData(data);
-    navigate('/content-create/exam/step3');
+    if (totalEqualScore.toString() === equalTotalValue) {
+      saveLocalData(data);
+      navigate('/content-create/exam/step3');
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '총 배점과 현재 배점은 동일해야합니다.',
+      });
+    }
   };
 
   return (
@@ -1550,7 +1599,10 @@ export function Step2() {
                   <>
                     <SimilarCloseButtonWrapper>
                       <IoMdClose
-                        onClick={() => setIsSimilar(false)}
+                        onClick={() => {
+                          setIsSimilar(false);
+                          setSimilarItems(null);
+                        }}
                         style={{ fontSize: '22px', cursor: 'pointer' }}
                       />
                     </SimilarCloseButtonWrapper>
@@ -2203,7 +2255,7 @@ export function Step2() {
                           {favoriteQuizData && favoriteQuestionList ? (
                             <>
                               <BookmarkContentOption>
-                                <SelectWrapper>
+                                {/* <SelectWrapper>
                                   {bookmarkSelectCategory.map((el) => (
                                     <Select
                                       width={'250px'}
@@ -2215,7 +2267,7 @@ export function Step2() {
                                       }
                                     />
                                   ))}
-                                </SelectWrapper>
+                                </SelectWrapper> */}
                                 {/* <BookmarkContentCheckWrapper>
                                   <CheckBox
                                     isChecked={recommend}
@@ -2237,8 +2289,8 @@ export function Step2() {
                                 </Button>
                               </BookmarkContentOption>
                               <BookmarkContensWrapper>
-                                {favoriteQuestionList.quizList?.map(
-                                  (item, i) => (
+                                {favoriteQuestionList.quizList &&
+                                  favoriteQuestionList.quizList.map((item) => (
                                     <MathviewerAccordion
                                       key={item.idx}
                                       componentWidth="600px"
@@ -2250,7 +2302,7 @@ export function Step2() {
                                       data={item}
                                       index={item.idx}
                                       title={item.code}
-                                      quizNum={i + 1}
+                                      quizNum={item.idx}
                                       selectedCardIndex={selectedCardIndex}
                                       onSelectCard={setSelectedCardIndex}
                                       reportQuizitem={() =>
@@ -2260,8 +2312,7 @@ export function Step2() {
                                         clickAddQuizItem(item.code)
                                       }
                                     ></MathviewerAccordion>
-                                  ),
-                                )}
+                                  ))}
                               </BookmarkContensWrapper>
                             </>
                           ) : (
@@ -2450,7 +2501,7 @@ const MainWrapper = styled.div`
   gap: 20px;
 `;
 //왼쪽 section 공용
-const DiscriptionSection = styled.section`
+const DiscriptionSection = styled.div`
   flex: 1 0 0;
   display: flex;
   flex-direction: column;
@@ -2668,7 +2719,7 @@ const ConceptDiscription = styled.div`
   align-items: center;
 `;
 //오른쪽 section
-const ContentListSection = styled.section`
+const ContentListSection = styled.div`
   flex: 1 0 10%;
   border-radius: 25px;
   padding: 10px;

@@ -212,7 +212,7 @@ export function Navigation() {
                 style={{ width: '20px', height: '20px', marginTop: '20px' }}
               />
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-create/quiz'}>
+                <Link to={'/content-create/quiz'} id="nav-link">
                   <svg
                     width="18"
                     height="18"
@@ -373,6 +373,7 @@ const IconWrapper = styled.div`
   padding: 20px 0;
 `;
 const NavigationMenuWrapper = styled.ul`
+  padding-left: 0;
   width: 230px;
   display: flex;
   flex-direction: column;
@@ -440,6 +441,7 @@ const MiniIconWrapper = styled.div`
   }
 `;
 const MiniNavigationMenuWrapper = styled.ul`
+  padding-left: 0;
   width: 40px;
   display: flex;
   flex-direction: column;

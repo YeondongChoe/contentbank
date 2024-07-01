@@ -105,6 +105,7 @@ export function WorkbookList({
     },
     enabled: !!workbookIdx,
   });
+  console.log(workbookData);
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
@@ -538,15 +539,18 @@ const ItemLayout = styled.span`
     width: 50%;
   }
 `;
+
 const SettingButton = styled.button`
   position: relative;
   padding: 5px;
   margin: -5px;
   border: none;
   background-color: white;
+  color: black;
 `;
 
 const SettingList = styled.ul`
+  padding-left: 0;
   display: none;
   position: absolute;
   top: 20px;
@@ -563,6 +567,7 @@ const SettingList = styled.ul`
   }
 
   li {
+    padding-left: 0;
     width: 140px;
     height: 35px;
     display: flex;

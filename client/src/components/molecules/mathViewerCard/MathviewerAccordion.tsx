@@ -18,7 +18,7 @@ import {
   QuizItemList,
   QuizCategoryList,
 } from '../../../types/WorkbookType';
-import { Button, Select } from '../../atom';
+import { Button, Select, CheckBoxI, Icon } from '../../atom';
 import { COLOR } from '../../constants';
 import { MathViewer } from '../../mathViewer/MathViewer';
 
@@ -143,6 +143,7 @@ type MathviewerCardProps = {
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
   deleteQuizItem?: () => void;
+  favoriteQuizItem?: () => void;
   isSimilar?: boolean;
   isBorder?: boolean;
   data: QuizList;
@@ -173,6 +174,7 @@ export function MathviewerAccordion({
   changeQuizitem,
   addQuizItem,
   deleteQuizItem,
+  favoriteQuizItem,
   isSimilar,
   isBorder,
   selectedCardIndex,
@@ -203,7 +205,7 @@ export function MathviewerAccordion({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentNumQuotient[]>(contentQuotient);
-  console.log('data', data);
+  console.log(data);
 
   //문항 삭제될때마다 총점 변경
   const totalEqualScore = useMemo(
@@ -315,10 +317,45 @@ export function MathviewerAccordion({
     >
       <Component className={className} $componentHeight={componentHeight}>
         <div className="leftInfomation">
+          {/* {item.isFavorite ? (
+            <Icon
+              width={`18px`}
+              $margin={'0 0 0 12px'}
+              src={`/images/icon/favorites_on.svg`}
+              onClick={(e) =>
+                handleFavorite(e, {
+                  idx: item.idx,
+                  isFavorite: true,
+                })
+              }
+              cursor
+            />
+          ) : (
+            <Icon
+              width={`18px`}
+              $margin={'0 0 0 12px'}
+              src={`/images/icon/favorites${checkList.includes(item.idx) ? `_off_W` : `_off_B`}.svg`}
+              onClick={(e) =>
+                handleFavorite(e, {
+                  idx: item.idx,
+                  isFavorite: false,
+                })
+              }
+              cursor
+            />
+          )} */}
           <LuBookmarkPlus
             fontSize={'25px'}
             style={{ cursor: 'pointer', color: 'gray' }}
+            onClick={favoriteQuizItem}
           />
+          {/* <Icon
+            width={`18px`}
+            $margin={'0 0 0 12px'}
+            src={`/images/icon/favorites_on.svg`}
+            //onClick={(e) => favoriteQuizItem(e, item.idx, item.isFavorite)}
+            cursor
+          /> */}
           <div>{category?.난이도 || 'N/A'}</div>
           <div>{category?.문항타입 || 'N/A'}</div>
           {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (
