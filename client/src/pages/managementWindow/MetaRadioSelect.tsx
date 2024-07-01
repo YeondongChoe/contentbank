@@ -476,9 +476,9 @@ export function MetaRadioSelect({
     });
 
   useEffect(() => {
-    if (changeVlaue4depth == '') return;
+    if (changeVlaue6depth == '') return;
     categoryItemTreeDataMutate();
-  }, [changeVlaue4depth]);
+  }, [changeVlaue6depth]);
 
   useEffect(() => {
     console.log('itemTree-----', itemTree);
@@ -549,18 +549,6 @@ export function MetaRadioSelect({
 
   // 변경 분류값 전송 버튼
   const onSubmitList = () => {
-    // console.log(
-    //   'selected',
-    //   radio1depthChangeCheck,
-    //   radio2depthChangeCheck,
-    //   radio3depthChangeCheck,
-    //   radio4depthChangeCheck,
-    //   radio5depthChangeCheck,
-    //   radio6depthChangeCheck,
-    // );
-    // console.log('checkedDepthList', checkedDepthList);
-    // console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
-
     const radioChecks: RadioStateType[] = [
       radio1depthChangeCheck,
       radio2depthChangeCheck,
