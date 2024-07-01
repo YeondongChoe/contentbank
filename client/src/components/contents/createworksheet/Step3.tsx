@@ -272,6 +272,10 @@ export function Step3() {
       }
     },
     onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: '학습지 생성완료.',
+      });
       setIsComplete(true);
       window.close();
       //stpe3가 닫힐 때  setIsComplete(false)로 변경해주기
