@@ -437,12 +437,12 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
     console.log(
-      'itemTreeKeyList 최종적으로 보내는 탭선택값: ******',
+      'itemTreeKeyList 최종적으로 보내는 탭선택값: 바꿀 분류',
       itemTreeKeyList,
     );
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    console.log('classificationInstance 응답 : ******', res);
+    console.log('classificationInstance 응답 : ***바꿀 분류***', res);
     return res;
   };
 
@@ -777,7 +777,7 @@ export function MetaRadioSelect({ checkedList }: { checkedList: string[] }) {
                         $backgroundColor={`${COLOR.GRAY}`}
                         title={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}/${radio5depthChangeCheck.title}/${radio6depthChangeCheck.title}`}
                         id={`${radio1depthChangeCheck.title}/${radio2depthChangeCheck.title}/${radio3depthChangeCheck.title}학년/${radio4depthChangeCheck.title}/${radio5depthChangeCheck.title}/${radio6depthChangeCheck.title}`}
-                        $margin={`0 0 170px 0`}
+                        $margin={`0 0 20px 0`}
                         defaultChecked={true}
                       >
                         <>
@@ -865,7 +865,7 @@ const Container = styled.div`
 
 const ScrollWrapper = styled.div`
   overflow-y: auto;
-  height: calc(100vh - 70px);
+  height: calc(100vh - 220px);
   width: 100%;
   background-color: ${COLOR.LIGHT_GRAY};
 
@@ -891,6 +891,8 @@ const ChangeInfoWrapper = styled.div`
   flex-direction: column;
   height: 100%;
   position: relative;
+  margin-bottom: 70px;
+
   .info_total {
     color: #fff;
     font-weight: bold;
