@@ -624,6 +624,19 @@ export function MetaRadioSelect({
       },
     });
 
+  useEffect(() => {
+    if (checkedList.length == 0) {
+      //초기화
+      setChangeVlaue1depth('');
+      setRadio1depthChangeCheck({
+        title: '',
+        checkValue: 0,
+        code: '',
+        key: '',
+      });
+    }
+  }, [checkedList]);
+
   const changeButtonDisabled = useMemo(() => {
     if (
       changeVlaue1depth.length &&
@@ -680,7 +693,7 @@ export function MetaRadioSelect({
                         // defaultChecked={}
                         checkedInput={radio1depthChangeCheck}
                         $margin={`10px 0 0 0`}
-                        branchValue={'change'}
+                        branchValue={`change${item.name}`}
                       />
                     </div>
                   ))}
@@ -698,7 +711,7 @@ export function MetaRadioSelect({
                         onChange={(e) => handleRadioCheck(e)}
                         // defaultChecked={}
                         checkedInput={radio2depthChangeCheck}
-                        branchValue={'change'}
+                        branchValue={`change${item.name}`}
                       />
                     </div>
                   ))}
@@ -716,7 +729,7 @@ export function MetaRadioSelect({
                         onChange={(e) => handleRadioCheck(e)}
                         // defaultChecked={}
                         checkedInput={radio3depthChangeCheck}
-                        branchValue={'change'}
+                        branchValue={`change${item.name}`}
                       />
                     </div>
                   ))}
@@ -734,7 +747,7 @@ export function MetaRadioSelect({
                         onChange={(e) => handleRadioCheck(e)}
                         // defaultChecked={}
                         checkedInput={radio4depthChangeCheck}
-                        branchValue={'change'}
+                        branchValue={`change${item.name}`}
                       />
                     </div>
                   ))}
@@ -752,7 +765,7 @@ export function MetaRadioSelect({
                         onChange={(e) => handleRadioCheck(e)}
                         // defaultChecked={}
                         checkedInput={radio5depthChangeCheck}
-                        branchValue={'change'}
+                        branchValue={`change${item.name}`}
                       />
                     </div>
                   ))}
@@ -770,7 +783,7 @@ export function MetaRadioSelect({
                         onChange={(e) => handleRadioCheck(e)}
                         // defaultChecked={}
                         checkedInput={radio6depthChangeCheck}
-                        branchValue={'change'}
+                        branchValue={`change${item.name}`}
                       />
                     </div>
                   ))}

@@ -442,33 +442,47 @@ export function ContentCategoryChange() {
   useEffect(() => {
     setSelected2depth('');
     setCheckedDepthList([]);
+    setQuestionList([]);
+    setCheckedList([]);
   }, [selected1depth]);
   useEffect(() => {
     setSelected3depth('');
     setCheckedDepthList([]);
+    setQuestionList([]);
+    setCheckedList([]);
   }, [selected2depth]);
   useEffect(() => {
     setSelected4depth('');
     setCheckedDepthList([]);
     setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+    setQuestionList([]);
+    setCheckedList([]);
   }, [selected3depth]);
   useEffect(() => {
     setCheckedDepthList([]);
     setSelected5depth('');
     setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+    setQuestionList([]);
+    setCheckedList([]);
   }, [selected4depth]);
   useEffect(() => {
     setCheckedDepthList([]);
     setSelected6depth('');
     setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+    setQuestionList([]);
+    setCheckedList([]);
   }, [selected5depth]);
   useEffect(() => {
     setCheckedDepthList([]);
     setSelected7depth('');
     setRadio7depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+    setQuestionList([]);
+    setCheckedList([]);
   }, [selected6depth]);
   useEffect(() => {
     setCheckedDepthList([]);
+    setQuestionList([]);
+    setCheckedList([]);
   }, [selected7depth]);
 
   // 카테고리 선택후 아이템트리

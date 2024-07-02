@@ -456,7 +456,7 @@ export function ContentInformationChange() {
     setCheckedDepthList([]);
     setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [selected3depth]);
-	useEffect(() => {
+  useEffect(() => {
     setCheckedDepthList([]);
     setSelected5depth('');
     setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
