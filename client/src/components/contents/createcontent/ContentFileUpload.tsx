@@ -284,13 +284,7 @@ export function ContentFileUpload({
                 sandbox="allow-forms allow-modals allow-same-origin"
                 referrerPolicy="no-referrer"
               ></iframe> */}
-              <EditerOneFile
-                id={''}
-                src={'http://43.201.205.140:40031/type1'}
-                width="100%"
-                height="calc(100vh - 100px)"
-                title={'로컬에서 대형 파일업로드'}
-              />
+              <EditerOneFile />
             </EditWrapper>
 
             <BackgroundWrapper>
@@ -476,10 +470,10 @@ const EditWrapper = styled.div`
   border-top: none;
   width: 100%;
 
-  iframe {
+  /* iframe {
     width: calc(100% - 330px);
     height: calc(100vh - 100px);
-  }
+  } */
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};

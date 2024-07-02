@@ -214,7 +214,7 @@ export function Classification() {
 
     switch (depth) {
       case '1depth':
-        setSelected1depth(e.currentTarget.id);
+        setSelected1depth(e.currentTarget.value);
         setRadio1depthCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
@@ -1070,6 +1070,7 @@ export function Classification() {
                             key={`selected1depth ${item.idx}`}
                           >
                             <ButtonFormatRadio
+                              branchValue={`${item.name}`}
                               titleText={`${item.name}`}
                               list={categoryList[0]}
                               selected={selected1depth}
@@ -1090,6 +1091,7 @@ export function Classification() {
                               key={`selected2depth ${item.idx}`}
                             >
                               <ButtonFormatRadio
+                                branchValue={`${item.name}`}
                                 titleText={`${item.name}`}
                                 list={nextList1depth}
                                 selected={selected2depth}
@@ -1109,6 +1111,7 @@ export function Classification() {
                               key={`selected3depth ${item.idx}`}
                             >
                               <ButtonFormatRadio
+                                branchValue={`${item.name}`}
                                 titleText={`${item.name}`}
                                 list={nextList2depth}
                                 selected={selected3depth}
@@ -1127,6 +1130,7 @@ export function Classification() {
                               key={`selected4depth ${item.idx}`}
                             >
                               <ButtonFormatRadio
+                                branchValue={`${item.name}`}
                                 titleText={`${item.name}`}
                                 list={nextList3depth}
                                 selected={selected4depth}

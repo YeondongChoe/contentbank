@@ -3,21 +3,7 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
-export function EditerOneFile({
-  id,
-  src,
-  width = '100%',
-  height,
-  title,
-  style,
-}: {
-  id: string;
-  src: string;
-  width: string;
-  height: string;
-  title: string;
-  style?: any;
-}) {
+export function EditerOneFile({ style }: { style?: any }) {
   const [htmlContent, setHtmlContent] = useState('');
   const defaultStyle = { border: 'none', ...style };
   // const [isRendered, setRendered] = useState(false);
@@ -53,24 +39,24 @@ export function EditerOneFile({
   //   }
   // }, [isRendered]);
 
-  // useEffect(() => {
-  //   // fetch('/static/iTeX_EQ/ocr_iframe_origin.html')
-  //   fetch('/view/type3.html')
-  //     .then((response) => response.text())
-  //     .then((data) => setHtmlContent(data));
-  // }, []);
+  useEffect(() => {
+    // fetch('/static/iTeX_EQ/ocr_iframe_origin.html')
+    fetch('/view/type3.html')
+      .then((response) => response.text())
+      .then((data) => setHtmlContent(data));
+  }, []);
 
   return (
     <Container>
-      {/* <div dangerouslySetInnerHTML={{ __html: htmlContent }} /> */}
-      <iframe
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      {/* <iframe
         id={id}
         src={src}
         width={width}
         height={height}
         title={title}
         style={defaultStyle}
-      />
+      /> */}
     </Container>
   );
 }
