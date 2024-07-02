@@ -1,23 +1,48 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { quizService } from '../../api/axios';
-import { MathViewer, ValueNone } from '../../components';
+import { Loader, MathViewer, ValueNone } from '../../components';
 import { QuizListType } from '../../types';
-
-type QuizPreviewProps = {
-  list?: any[];
-};
 
 export function QuizPreview() {
   const [sortedList, setSortedList] = useState<QuizListType[]>();
-  const [list, setList] = useState<QuizListType[]>();
+  // const [list, setList] = useState<QuizListType>();
   const location = useLocation();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+
+    const parseJson = (str: string | null) => {
+      try {
+        return str ? JSON.parse(str) : null;
+      } catch (e) {
+        console.error('Parsing error on', str);
+        return null;
+      }
+    };
+    const quizData: QuizListType = {
+      code: queryParams.get('code') || '',
+      createdAt: queryParams.get('createdAt') || '',
+      createdBy: queryParams.get('createdBy') || '',
+      idx: parseInt(queryParams.get('idx') || '0', 10),
+      isDelete: queryParams.get('isDelete') === 'true',
+      isUse: queryParams.get('isUse') === 'true',
+      isFavorite: queryParams.get('isFavorite') === 'true',
+      lastArticle: parseJson(queryParams.get('lastArticle')),
+      lastModifiedAt: queryParams.get('lastModifiedAt') || '',
+      lastModifiedBy: queryParams.get('lastModifiedBy') || '',
+      type: queryParams.get('type') || '',
+      userKey: queryParams.get('userKey') || '',
+      quizCategoryList: parseJson(queryParams.get('quizCategoryList')) || [],
+      quizItemList: parseJson(queryParams.get('quizItemList')) || [],
+      quizList: parseJson(queryParams.get('quizList')) || [],
+    };
+
+    setSortedList([quizData]);
+  }, [location.search]);
 
   //iframe 데이터 통신시
   const receiveMessage = (event: any) => {
@@ -30,51 +55,54 @@ export function QuizPreview() {
   };
 
   // 부모 로컬스토리지에서 데이터 가져오기
-  const getLocalData = () => {
-    const data = localStorage.getItem('sendData');
-    let sendData;
-    if (data) sendData = JSON.parse(data);
+  // const getLocalData = () => {
+  //   const data = localStorage.getItem('sendData');
+  //   let sendData;
+  //   if (data) sendData = JSON.parse(data);
 
-    console.log('데이터 조회', sendData && sendData.data);
-    setList(sendData.data);
-    // setSortedList() // 문항데이터 넣기
+  //   console.log('데이터 조회', sendData && sendData.data);
+  //   setList(sendData.data);
+  //   // setSortedList() // 문항데이터 넣기
 
-    // 로컬스토리지 값 다받은 뒤 초기화
-    window.opener.localStorage.clear();
-  };
+  //   // 로컬스토리지 값 다받은 뒤 초기화
+  //   window.opener.localStorage.clear();
+  // };
 
-  const getQuiz = async () => {
-    const idxList = list && list.join(',');
-    const res = await quizService.get(`/v1/quiz/${idxList}`);
-    return res.data.data;
-  };
-  const {
-    data: quizData,
-    isLoading,
-    error: quizDataError,
-    refetch: quizDataRefetch,
-  } = useQuery({
-    queryKey: ['get-idx-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-idx-quizList 에러 메세지',
-    },
-  });
+  // const getQuiz = async () => {
+  //   const idxList = list && list.join(',');
+  //   const res = await quizService.get(`/v1/quiz/${idxList}`);
+  //   return res.data.data;
+  // };
+  // const {
+  //   data: quizData,
+  //   isLoading,
+  //   error: quizDataError,
+  //   refetch: quizDataRefetch,
+  // } = useQuery({
+  //   queryKey: ['get-idx-quizList'],
+  //   queryFn: getQuiz,
+  //   meta: {
+  //     errorMessage: 'get-idx-quizList 에러 메세지',
+  //   },
+  // });
 
-  useEffect(() => {
-    getLocalData();
-  }, []);
+  // useEffect(() => {
+  //   getLocalData();
+  // }, []);
 
-  useEffect(() => {
-    quizDataRefetch();
-  }, [list]);
+  // useEffect(() => {
+  //   quizDataRefetch();
+  // }, [list]);
 
-  useEffect(() => {
-    if (quizData) setSortedList(quizData.quizList);
-  }, [quizData]);
+  // useEffect(() => {
+  //   if (quizData) setSortedList(quizData.quizList);
+  // }, [quizData]);
+
+  useEffect(() => {}, [sortedList]);
 
   return (
     <Container>
+      {sortedList?.length == 0 && <Loader />}
       <MathViewerWrapper>
         {sortedList && sortedList[sortedList.length - 1]?.quizItemList ? (
           sortedList[sortedList.length - 1]?.quizItemList?.map((el) => (
