@@ -363,7 +363,7 @@ export function QuizCreateList() {
           fontSize="13px"
           $filled
           cursor
-          disabled //TODO : 업로드 가능할때까지 임시로막기
+          // disabled //TODO : 업로드 가능할때까지 임시로막기
         >
           + 문항 업로드
         </Button>

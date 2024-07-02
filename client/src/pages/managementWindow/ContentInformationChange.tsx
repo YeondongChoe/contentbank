@@ -456,15 +456,24 @@ export function ContentInformationChange() {
     setCheckedDepthList([]);
     setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [selected3depth]);
-  useEffect(() => {
+	useEffect(() => {
     setCheckedDepthList([]);
     setSelected5depth('');
     setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected4depth]);
+  useEffect(() => {
+    setCheckedDepthList([]);
     setSelected6depth('');
     setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected5depth]);
+  useEffect(() => {
+    setCheckedDepthList([]);
     setSelected7depth('');
     setRadio7depthCheck({ title: '', checkValue: 0, code: '', key: '' });
-  }, [selected4depth]);
+  }, [selected6depth]);
+  useEffect(() => {
+    setCheckedDepthList([]);
+  }, [selected7depth]);
 
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api

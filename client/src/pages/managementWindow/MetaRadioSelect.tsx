@@ -420,11 +420,18 @@ export function MetaRadioSelect({
     setRadio4depthChangeCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [changeVlaue3depth]);
   useEffect(() => {
+    setCheckedDepthList([]);
     setChangeVlaue5depth('');
-    setChangeVlaue6depth('');
     setRadio5depthChangeCheck({ title: '', checkValue: 0, code: '', key: '' });
-    setRadio6depthChangeCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [changeVlaue4depth]);
+  useEffect(() => {
+    setCheckedDepthList([]);
+    setChangeVlaue6depth('');
+    setRadio6depthChangeCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [changeVlaue5depth]);
+  useEffect(() => {
+    setCheckedDepthList([]);
+  }, [changeVlaue6depth]);
 
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
