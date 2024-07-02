@@ -246,7 +246,7 @@ export function ContentInformationChange() {
 
     switch (depth) {
       case '1depth':
-        setSelected1depth(e.currentTarget.id);
+        setSelected1depth(e.currentTarget.value);
         setRadio1depthCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
@@ -809,6 +809,7 @@ export function ContentInformationChange() {
                           key={`selected1depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
+                            branchValue={`${item.name}`}
                             titleText={`${item.name}`}
                             list={categoryList[0]}
                             selected={selected1depth}
@@ -827,6 +828,7 @@ export function ContentInformationChange() {
                           key={`selected2depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
+                            branchValue={`${item.name}`}
                             titleText={`${item.name}`}
                             list={nextList1depth}
                             selected={selected2depth}
@@ -844,6 +846,7 @@ export function ContentInformationChange() {
                           key={`selected3depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
+                            branchValue={`${item.name}`}
                             titleText={`${item.name}`}
                             list={nextList2depth}
                             selected={selected3depth}
@@ -861,6 +864,7 @@ export function ContentInformationChange() {
                           key={`selected4depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
+                            branchValue={`${item.name}`}
                             titleText={`${item.name}`}
                             list={nextList3depth}
                             selected={selected4depth}
@@ -878,6 +882,7 @@ export function ContentInformationChange() {
                           key={`selected5depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
+                            branchValue={`${item.name}`}
                             titleText={`${item.name}`}
                             list={nextList4depth}
                             selected={selected5depth}
@@ -895,6 +900,7 @@ export function ContentInformationChange() {
                           key={`selected6depth ${item.idx}`}
                         >
                           <ButtonFormatRadio
+                            branchValue={`${item.name}`}
                             titleText={`${item.name}`}
                             list={nextList5depth}
                             selected={selected6depth}

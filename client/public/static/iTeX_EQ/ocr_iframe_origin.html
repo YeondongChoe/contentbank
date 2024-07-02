@@ -10,34 +10,7 @@
     />
     <link rel="shortcut icon" href="css/icon/myicon.ico" type="image/x-icon" />
 
-    <script>
-      MathJax = {
-        tex: {
-          //packages: ['base']
-          multlineWidth: "85%",
-        },
-        options: {
-          renderActions: {
-            addMenu: [0, "", ""],
-            assistiveMML: [],
-          },
-        },
-        startup: {
-          ready() {
-            if (MathJax.version === "3.0.5") {
-              const SVGWrapper = MathJax._.output.svg.Wrapper.SVGWrapper;
-              const CommonWrapper = SVGWrapper.prototype.__proto__;
-              SVGWrapper.prototype.unicodeChars = function (text, variant) {
-                if (!variant) variant = this.variant || "normal";
-                return CommonWrapper.unicodeChars.call(this, text, variant);
-              };
-            }
-            MathJax.startup.defaultReady();
-          },
-        },
-      };
-      window.PlotlyConfig = { MathJaxConfig: "local" };
-    </script>
+    
 
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script

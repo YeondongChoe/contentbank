@@ -61,12 +61,7 @@ export function ButtonFormatRadio({
                   />
                   <span
                     className={`label ${
-                      selected ==
-                      (branchValue
-                        ? `${branchValue}_${item.idx.toString()}`
-                        : item.idx.toString())
-                        ? 'on'
-                        : ''
+                      selected == item.idx.toString() ? 'on' : ''
                     }`}
                   >
                     {item.name}

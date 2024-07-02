@@ -284,8 +284,13 @@ export function ContentCreating({
                 sandbox="allow-forms allow-modals allow-same-origin"
                 referrerPolicy="no-referrer"
               ></iframe> */}
-              <p>편집 에디팅</p>
-              <EditerOneFile />
+              <EditerOneFile
+                id={''}
+                src={'http://43.201.205.140:40031/type3'}
+                width="100%"
+                height="calc(100vh - 100px)"
+                title={'편집 에디팅'}
+              />
             </EditWrapper>
 
             <BackgroundWrapper>
@@ -471,10 +476,10 @@ const EditWrapper = styled.div`
   border-top: none;
   width: 100%;
 
-  /* > iframe {
-    width: 100%;
+  iframe {
+    width: calc(100% - 330px);
     height: calc(100vh - 100px);
-  } */
+  }
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};

@@ -244,7 +244,7 @@ export function MetaRadioSelect({
 
     switch (depth) {
       case '1depth-change':
-        setChangeVlaue1depth(e.currentTarget.id);
+        setChangeVlaue1depth(e.currentTarget.value);
         setRadio1depthChangeCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
@@ -253,7 +253,7 @@ export function MetaRadioSelect({
         });
         break;
       case '2depth-change':
-        setChangeVlaue2depth(e.currentTarget.id);
+        setChangeVlaue2depth(e.currentTarget.value);
         setRadio2depthChangeCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
@@ -262,7 +262,7 @@ export function MetaRadioSelect({
         });
         break;
       case '3depth-change':
-        setChangeVlaue3depth(e.currentTarget.id);
+        setChangeVlaue3depth(e.currentTarget.value);
         setRadio3depthChangeCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
@@ -271,7 +271,7 @@ export function MetaRadioSelect({
         });
         break;
       case '4depth-change':
-        setChangeVlaue4depth(e.currentTarget.id);
+        setChangeVlaue4depth(e.currentTarget.value);
         setRadio4depthChangeCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
@@ -280,7 +280,7 @@ export function MetaRadioSelect({
         });
         break;
       case '5depth-change':
-        setChangeVlaue5depth(e.currentTarget.id);
+        setChangeVlaue5depth(e.currentTarget.value);
         setRadio5depthChangeCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
@@ -289,7 +289,7 @@ export function MetaRadioSelect({
         });
         break;
       case '6depth-change':
-        setChangeVlaue6depth(e.currentTarget.id);
+        setChangeVlaue6depth(e.currentTarget.value);
         setRadio6depthChangeCheck({
           title: e.currentTarget.name,
           checkValue: Number(e.currentTarget.value),
