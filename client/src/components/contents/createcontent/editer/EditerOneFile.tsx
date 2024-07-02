@@ -68,5 +68,4 @@ const Container = styled.div`
   margin: 0;
   display: flex;
   align-items: stretch;
-
 `;
