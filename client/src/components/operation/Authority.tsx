@@ -384,433 +384,253 @@ export function Authority() {
 
     //콘텐츠 제작
     // [0] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
-    if (target.id === 'isEditCreateChecked') {
-      if (target.checked === true) {
-        onList.splice(2, 1, {
-          key: checkList[2].key,
-          checked: true,
-          menuCode: 'QE_isEdit',
-        });
-        onList.splice(4, 1, {
-          key: checkList[4].key,
-          checked: true,
-          menuCode: 'WE_isEdit',
-        });
+    console.log(target.id, target.value);
 
-        setCheckList([...onList]);
-      }
-      if (target.checked === false) {
-        onList.splice(2, 1, {
-          key: checkList[2].key,
-          checked: false,
-          menuCode: 'QE_isEdit',
-        });
-        onList.splice(4, 1, {
-          key: checkList[4].key,
-          checked: false,
-          menuCode: 'WE_isEdit',
-        });
-        // 편집 false일시 관리도 false
-        onList.splice(1, 1, {
-          key: checkList[1].key,
-          checked: false,
-          menuCode: 'isManageCreateChecked',
-        });
-        onList.splice(3, 1, {
-          key: checkList[3].key,
-          checked: false,
-          menuCode: 'QE_isManage',
-        });
-        onList.splice(5, 1, {
-          key: checkList[5].key,
-          checked: false,
-          menuCode: 'WE_isManage',
-        });
-
-        setCheckList([...onList]);
-      }
-      return;
-    }
     // [2][4] 문항 학습지 전체 체크 초기화
-    if (Number(target.value) === 2 || Number(target.value) === 4) {
+    if (Number(target.value) === 2) {
       if (target.checked === false) {
-        onList.splice(0, 1, {
-          key: target.id,
-          checked: false,
-          menuCode: 'isEditCreateChecked',
-        });
-
         // 편집 false일시 관리도 false
-        onList.splice(1, 1, {
-          key: checkList[1].key,
-          checked: false,
-          menuCode: 'isManageCreateChecked',
-        });
         onList.splice(3, 1, {
           key: checkList[3].key,
           checked: false,
           menuCode: 'QE_isManage',
-        });
-        onList.splice(5, 1, {
-          key: checkList[5].key,
-          checked: false,
-          menuCode: 'WE_isManage',
-        });
-
-        setCheckList([...onList]);
-      }
-      if (checkList[2].checked && checkList[4].checked) {
-        onList.splice(0, 1, {
-          key: target.id,
-          checked: true,
-          menuCode: 'isEditCreateChecked',
         });
 
         setCheckList([...onList]);
       }
       return;
     }
-    // [1][3][5] 관리 전체 선택 토글 또는 개별 선택
-    if (
-      Number(target.value) === 1 ||
-      Number(target.value) === 3 ||
-      Number(target.value) === 5
-    ) {
-      if (Number(target.value) === 1 && target.checked === true) {
-        onList.splice(3, 1, {
-          key: checkList[3].key,
-          checked: true,
-          menuCode: 'QE_isManage',
-        });
-        onList.splice(5, 1, {
-          key: checkList[5].key,
-          checked: true,
-          menuCode: 'WE_isManage',
-        });
-        setCheckList([...onList]);
-        return;
-      }
-      if (Number(target.value) === 1 && target.checked === false) {
-        onList.splice(3, 1, {
-          key: checkList[3].key,
-          checked: false,
-          menuCode: 'QE_isManage',
-        });
+    if (Number(target.value) === 4) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
         onList.splice(5, 1, {
           key: checkList[5].key,
           checked: false,
           menuCode: 'WE_isManage',
         });
+
         setCheckList([...onList]);
-        return;
       }
-      if (Number(target.value) === 3 || Number(target.value) === 5) {
-        if (target.checked === false) {
-          onList.splice(1, 1, {
-            key: checkList[1].key,
-            checked: false,
-            menuCode: 'isManageCreateChecked',
-          });
-          setCheckList([...onList]);
-          return;
-        }
-        if (checkList[3].checked && checkList[5].checked) {
-          onList.splice(1, 1, {
-            key: checkList[1].key,
-            checked: true,
-            menuCode: 'isManageCreateChecked',
-          });
-          setCheckList([...onList]);
-          return;
-        }
-      }
+      return;
     }
+
+    // [1][3][5] 관리 전체 선택 토글 또는 개별 선택
 
     //콘텐츠 관리
     // [6] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
-    if (target.id === 'isEditManagementChecked') {
-      if (target.checked === true) {
-        onList.splice(8, 1, {
-          key: checkList[8].key,
-          checked: true,
-          menuCode: 'QM_isEdit',
-        });
-        onList.splice(10, 1, {
-          key: checkList[10].key,
-          checked: true,
-          menuCode: 'isEditTreeChecked',
-        });
 
-        setCheckList([...onList]);
-      }
-      if (target.checked === false) {
-        onList.splice(8, 1, {
-          key: checkList[8].key,
-          checked: false,
-          menuCode: 'QM_isEdit',
-        });
-        onList.splice(10, 1, {
-          key: checkList[10].key,
-          checked: false,
-          menuCode: 'isEditTreeChecked',
-        });
-        // 편집 false일시 관리도 false
-        onList.splice(7, 1, {
-          key: checkList[7].key,
-          checked: false,
-          menuCode: 'isManageManagementChecked',
-        });
-        onList.splice(9, 1, {
-          key: checkList[9].key,
-          checked: false,
-          menuCode: 'QM_isManage',
-        });
-        onList.splice(11, 1, {
-          key: checkList[11].key,
-          checked: false,
-          menuCode: 'isManageTreeChecked',
-        });
-
-        setCheckList([...onList]);
-      }
-      return;
-    }
     // [8][10] 문항 학습지 전체 체크 초기화
-    if (Number(target.value) === 8 || Number(target.value) === 10) {
+    if (Number(target.value) === 8) {
       if (target.checked === false) {
-        onList.splice(6, 1, {
-          key: target.id,
-          checked: false,
-          menuCode: 'isEditManagementChecked',
-        });
-
         // 편집 false일시 관리도 false
-        onList.splice(7, 1, {
-          key: checkList[7].key,
-          checked: false,
-          menuCode: 'isManageManagementChecked',
-        });
         onList.splice(9, 1, {
           key: checkList[9].key,
           checked: false,
           menuCode: 'QM_isManage',
         });
-        onList.splice(11, 1, {
-          key: checkList[11].key,
-          checked: false,
-          menuCode: 'isManageTreeChecked',
-        });
 
         setCheckList([...onList]);
       }
-      if (checkList[8].checked && checkList[10].checked) {
-        onList.splice(6, 1, {
-          key: target.id,
-          checked: true,
-          menuCode: 'isEditManagementChecked',
-        });
 
-        setCheckList([...onList]);
-      }
       return;
     }
     // [7][9][11] 관리 전체 선택 토글 또는 개별 선택
-    if (
-      Number(target.value) === 7 ||
-      Number(target.value) === 9 ||
-      Number(target.value) === 11
-    ) {
-      if (Number(target.value) === 7 && target.checked === true) {
-        onList.splice(9, 1, {
-          key: checkList[9].key,
-          checked: true,
-          menuCode: 'QM_isManage',
-        });
-        onList.splice(11, 1, {
-          key: checkList[11].key,
-          checked: true,
-          menuCode: 'isManageTreeChecked',
-        });
-        setCheckList([...onList]);
-        return;
-      }
-      if (Number(target.value) === 7 && target.checked === false) {
-        onList.splice(9, 1, {
-          key: checkList[9].key,
-          checked: false,
-          menuCode: 'QM_isManage',
-        });
-        onList.splice(11, 1, {
-          key: checkList[11].key,
-          checked: false,
-          menuCode: 'isManageTreeChecked',
-        });
-        setCheckList([...onList]);
-        return;
-      }
-      if (Number(target.value) === 9 || Number(target.value) === 11) {
-        if (target.checked === false) {
-          onList.splice(7, 1, {
-            key: checkList[7].key,
-            checked: false,
-            menuCode: 'isManageManagementChecked',
-          });
-          setCheckList([...onList]);
-          return;
-        }
-        if (checkList[9].checked && checkList[11].checked) {
-          onList.splice(7, 1, {
-            key: checkList[7].key,
-            checked: true,
-            menuCode: 'isManageManagementChecked',
-          });
-          setCheckList([...onList]);
-          return;
-        }
-      }
-    }
+    // if (
+    //   Number(target.value) === 7 ||
+    //   Number(target.value) === 9 ||
+    //   Number(target.value) === 11
+    // ) {
+    //   if (Number(target.value) === 7 && target.checked === true) {
+    //     onList.splice(9, 1, {
+    //       key: checkList[9].key,
+    //       checked: true,
+    //       menuCode: 'QM_isManage',
+    //     });
+    //     onList.splice(11, 1, {
+    //       key: checkList[11].key,
+    //       checked: true,
+    //       menuCode: 'isManageTreeChecked',
+    //     });
+    //     setCheckList([...onList]);
+    //     return;
+    //   }
+    //   if (Number(target.value) === 7 && target.checked === false) {
+    //     onList.splice(9, 1, {
+    //       key: checkList[9].key,
+    //       checked: false,
+    //       menuCode: 'QM_isManage',
+    //     });
+    //     onList.splice(11, 1, {
+    //       key: checkList[11].key,
+    //       checked: false,
+    //       menuCode: 'isManageTreeChecked',
+    //     });
+    //     setCheckList([...onList]);
+    //     return;
+    //   }
+    //   if (Number(target.value) === 9 || Number(target.value) === 11) {
+    //     if (target.checked === false) {
+    //       onList.splice(7, 1, {
+    //         key: checkList[7].key,
+    //         checked: false,
+    //         menuCode: 'isManageManagementChecked',
+    //       });
+    //       setCheckList([...onList]);
+    //       return;
+    //     }
+    //     if (checkList[9].checked && checkList[11].checked) {
+    //       onList.splice(7, 1, {
+    //         key: checkList[7].key,
+    //         checked: true,
+    //         menuCode: 'isManageManagementChecked',
+    //       });
+    //       setCheckList([...onList]);
+    //       return;
+    //     }
+    //   }
+    // }
 
     //운영 관리
     // [12] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
-    if (target.id === 'isEditOperationChecked') {
-      if (target.checked === true) {
-        onList.splice(14, 1, {
-          key: checkList[14].key,
-          checked: true,
-          menuCode: 'AM_isEdit',
-        });
-        onList.splice(16, 1, {
-          key: checkList[16].key,
-          checked: true,
-          menuCode: 'PM_isEdit',
-        });
+    // if (target.id === 'isEditOperationChecked') {
+    //   if (target.checked === true) {
+    //     onList.splice(14, 1, {
+    //       key: checkList[14].key,
+    //       checked: true,
+    //       menuCode: 'AM_isEdit',
+    //     });
+    //     onList.splice(16, 1, {
+    //       key: checkList[16].key,
+    //       checked: true,
+    //       menuCode: 'PM_isEdit',
+    //     });
 
-        setCheckList([...onList]);
-      }
-      if (target.checked === false) {
-        onList.splice(14, 1, {
-          key: checkList[14].key,
-          checked: false,
-          menuCode: 'AM_isEdit',
-        });
-        onList.splice(16, 1, {
-          key: checkList[16].key,
-          checked: false,
-          menuCode: 'PM_isEdit',
-        });
-        // 편집 false일시 관리도 false
-        onList.splice(13, 1, {
-          key: checkList[13].key,
-          checked: false,
-          menuCode: 'isManageOperationChecked',
-        });
-        onList.splice(15, 1, {
-          key: checkList[15].key,
-          checked: false,
-          menuCode: 'AM_isManage',
-        });
-        onList.splice(17, 1, {
-          key: checkList[17].key,
-          checked: false,
-          menuCode: 'PM_isManage',
-        });
+    //     setCheckList([...onList]);
+    //   }
+    //   if (target.checked === false) {
+    //     onList.splice(14, 1, {
+    //       key: checkList[14].key,
+    //       checked: false,
+    //       menuCode: 'AM_isEdit',
+    //     });
+    //     onList.splice(16, 1, {
+    //       key: checkList[16].key,
+    //       checked: false,
+    //       menuCode: 'PM_isEdit',
+    //     });
+    //     // 편집 false일시 관리도 false
+    //     onList.splice(13, 1, {
+    //       key: checkList[13].key,
+    //       checked: false,
+    //       menuCode: 'isManageOperationChecked',
+    //     });
+    //     onList.splice(15, 1, {
+    //       key: checkList[15].key,
+    //       checked: false,
+    //       menuCode: 'AM_isManage',
+    //     });
+    //     onList.splice(17, 1, {
+    //       key: checkList[17].key,
+    //       checked: false,
+    //       menuCode: 'PM_isManage',
+    //     });
 
-        setCheckList([...onList]);
-      }
-      return;
-    }
+    //     setCheckList([...onList]);
+    //   }
+    //   return;
+    // }
     // [14][16] 문항 학습지 전체 체크 초기화
-    if (Number(target.value) === 14 || Number(target.value) === 16) {
-      if (target.checked === false) {
-        onList.splice(12, 1, {
-          key: target.id,
-          checked: false,
-          menuCode: 'isEditOperationChecked',
-        });
+    // if (Number(target.value) === 14 || Number(target.value) === 16) {
+    //   if (target.checked === false) {
+    //     onList.splice(12, 1, {
+    //       key: target.id,
+    //       checked: false,
+    //       menuCode: 'isEditOperationChecked',
+    //     });
 
-        // 편집 false일시 관리도 false
-        onList.splice(13, 1, {
-          key: checkList[13].key,
-          checked: false,
-          menuCode: 'isManageOperationChecked',
-        });
-        onList.splice(15, 1, {
-          key: checkList[15].key,
-          checked: false,
-          menuCode: 'AM_isManage',
-        });
-        onList.splice(17, 1, {
-          key: checkList[17].key,
-          checked: false,
-          menuCode: 'PM_isManage',
-        });
+    //     // 편집 false일시 관리도 false
+    //     onList.splice(13, 1, {
+    //       key: checkList[13].key,
+    //       checked: false,
+    //       menuCode: 'isManageOperationChecked',
+    //     });
+    //     onList.splice(15, 1, {
+    //       key: checkList[15].key,
+    //       checked: false,
+    //       menuCode: 'AM_isManage',
+    //     });
+    //     onList.splice(17, 1, {
+    //       key: checkList[17].key,
+    //       checked: false,
+    //       menuCode: 'PM_isManage',
+    //     });
 
-        setCheckList([...onList]);
-      }
-      if (checkList[14].checked && checkList[16].checked) {
-        onList.splice(12, 1, {
-          key: target.id,
-          checked: true,
-          menuCode: 'isEditOperationChecked',
-        });
+    //     setCheckList([...onList]);
+    //   }
+    //   if (checkList[14].checked && checkList[16].checked) {
+    //     onList.splice(12, 1, {
+    //       key: target.id,
+    //       checked: true,
+    //       menuCode: 'isEditOperationChecked',
+    //     });
 
-        setCheckList([...onList]);
-      }
-      return;
-    }
+    //     setCheckList([...onList]);
+    //   }
+    //   return;
+    // }
     // [13][15][17] 관리 전체 선택 토글 또는 개별 선택
-    if (
-      Number(target.value) === 13 ||
-      Number(target.value) === 15 ||
-      Number(target.value) === 17
-    ) {
-      if (Number(target.value) === 13 && target.checked === true) {
-        onList.splice(15, 1, {
-          key: checkList[15].key,
-          checked: true,
-          menuCode: 'AM_isManage',
-        });
-        onList.splice(17, 1, {
-          key: checkList[17].key,
-          checked: true,
-          menuCode: 'PM_isManage',
-        });
-        setCheckList([...onList]);
-        return;
-      }
-      if (Number(target.value) === 13 && target.checked === false) {
-        onList.splice(15, 1, {
-          key: checkList[15].key,
-          checked: false,
-          menuCode: 'AM_isManage',
-        });
-        onList.splice(17, 1, {
-          key: checkList[17].key,
-          checked: false,
-          menuCode: 'PM_isManage',
-        });
-        setCheckList([...onList]);
-        return;
-      }
-      // if (Number(target.value) === 15 || Number(target.value) === 17) {
-      //   if (target.checked === false) {
-      //     onList.splice(13, 1, {
-      //       key: checkList[13].key,
-      //       checked: false,
-      //     });
-      //     setCheckList([...onList]);
-      //     return;
-      //   }
-      //   if (checkList[15].checked && checkList[17].checked) {
-      //     onList.splice(13, 1, {
-      //       key: checkList[13].key,
-      //       checked: true,
-      //     });
-      //     setCheckList([...onList]);
-      //     return;
-      //   }
-      // }
-    }
+    // if (
+    //   Number(target.value) === 13 ||
+    //   Number(target.value) === 15 ||
+    //   Number(target.value) === 17
+    // ) {
+    //   if (Number(target.value) === 13 && target.checked === true) {
+    //     onList.splice(15, 1, {
+    //       key: checkList[15].key,
+    //       checked: true,
+    //       menuCode: 'AM_isManage',
+    //     });
+    //     onList.splice(17, 1, {
+    //       key: checkList[17].key,
+    //       checked: true,
+    //       menuCode: 'PM_isManage',
+    //     });
+    //     setCheckList([...onList]);
+    //     return;
+    //   }
+    //   if (Number(target.value) === 13 && target.checked === false) {
+    //     onList.splice(15, 1, {
+    //       key: checkList[15].key,
+    //       checked: false,
+    //       menuCode: 'AM_isManage',
+    //     });
+    //     onList.splice(17, 1, {
+    //       key: checkList[17].key,
+    //       checked: false,
+    //       menuCode: 'PM_isManage',
+    //     });
+    //     setCheckList([...onList]);
+    //     return;
+    //   }
+    //   // if (Number(target.value) === 15 || Number(target.value) === 17) {
+    //   //   if (target.checked === false) {
+    //   //     onList.splice(13, 1, {
+    //   //       key: checkList[13].key,
+    //   //       checked: false,
+    //   //     });
+    //   //     setCheckList([...onList]);
+    //   //     return;
+    //   //   }
+    //   //   if (checkList[15].checked && checkList[17].checked) {
+    //   //     onList.splice(13, 1, {
+    //   //       key: checkList[13].key,
+    //   //       checked: true,
+    //   //     });
+    //   //     setCheckList([...onList]);
+    //   //     return;
+    //   //   }
+    //   // }
+    // }
     // console.log(onList);
   };
 
