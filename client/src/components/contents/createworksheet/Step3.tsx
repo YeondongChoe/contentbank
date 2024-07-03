@@ -276,7 +276,7 @@ export function Step3() {
         type: 'success',
         text: '학습지 생성완료.',
       });
-      setIsComplete(true);
+      setIsComplete(false);
       window.close();
       //stpe3가 닫힐 때  setIsComplete(false)로 변경해주기
     },

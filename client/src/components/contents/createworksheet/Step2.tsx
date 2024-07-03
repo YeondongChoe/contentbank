@@ -2679,7 +2679,7 @@ const SubmitButtonWrapper = styled.div`
 const BookmarkContentOption = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 25px;
   padding: 10px 0;
 `;
