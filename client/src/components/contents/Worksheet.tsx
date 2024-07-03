@@ -38,10 +38,32 @@ export function Worksheet() {
   const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
 
   const [page, setPage] = useRecoilState(pageAtom);
-  const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
-    isWorkbookCreatedAtom,
-  );
+
+  const [isWorkbookCreated, setIsWorkbookCreated] = useState();
   console.log(isWorkbookCreated);
+
+  // 로컬 스토리지에서 데이터 가져오기
+  useEffect(() => {
+    const fetchDataFromStorage = () => {
+      const data = localStorage.getItem('isWorkbookCreated');
+      if (data) {
+        try {
+          const parsedData = JSON.parse(data);
+          setIsWorkbookCreated(parsedData);
+        } catch (error) {
+          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 데이터가 없습니다.');
+      }
+    };
+
+    fetchDataFromStorage();
+
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+
+    return () => clearTimeout(retryTimeout);
+  }, []);
 
   const changeTab = () => {
     setPage(1);
@@ -287,7 +309,7 @@ export function Worksheet() {
       options:
         'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
     });
-    setIsWorkbookCreated(false);
+    //setIsWorkbookCreated(false);
   };
 
   const menuList = [
