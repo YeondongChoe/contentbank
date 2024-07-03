@@ -15,9 +15,10 @@ import {
   Select,
   CommonDate,
   IconButton,
+  openToastifyAlert,
 } from '../../components';
 import { WorkbookList } from '../../components/molecules/workbookList';
-import { pageAtom } from '../../store/utilAtom';
+import { isWorkbookCreatedAtom, pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
@@ -37,6 +38,18 @@ export function Worksheet() {
   const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
 
   const [page, setPage] = useRecoilState(pageAtom);
+  const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
+    isWorkbookCreatedAtom,
+  );
+
+  useEffect(() => {
+    if (isWorkbookCreated) {
+      openToastifyAlert({
+        type: 'success',
+        text: '학습지 생성완료.',
+      });
+    }
+  }, [isWorkbookCreated]);
 
   const changeTab = () => {
     setPage(1);
@@ -197,12 +210,15 @@ export function Worksheet() {
       errorMessage: 'get-workbookList 에러 메세지',
     },
   });
-  // 학습지 만들어질때 값갱신할 수 있게 하기
 
-  //const [workbookList, setWorkbookList] = useState(workbookListData?.data.data);
+  // 학습지 만들어질때 값갱신할 수 있게 하기
+  useEffect(() => {
+    if (isWorkbookCreated) {
+      workbookListRefetch();
+    }
+  }, [isWorkbookCreated]);
 
   const workbookList = workbookListData?.data.data;
-  //console.log(workbookList);
 
   // 탭 바뀔시 초기화
   useEffect(() => {
@@ -277,6 +293,7 @@ export function Worksheet() {
       options:
         'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
     });
+    setIsWorkbookCreated(false);
   };
 
   const menuList = [
