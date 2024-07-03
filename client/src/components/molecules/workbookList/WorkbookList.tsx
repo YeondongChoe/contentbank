@@ -107,16 +107,10 @@ export function WorkbookList({
     },
     enabled: !!workbookIdx,
   });
-  // console.log(workbookData);
-
-  //학습지 수정(업데이트) 전역변수값
-  const [isEditWorkbook, setIsEditWorkbook] =
-    useRecoilState(isEditWorkbookAtom);
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
-    setIsEditWorkbook(1);
     refetch();
     windowOpenHandler({
       name: 'step2',
@@ -164,9 +158,9 @@ export function WorkbookList({
     },
   });
 
-  // 로컬스토리지에 보낼데이터 저장
+  // 로컬스토리지에 보낼데이터 저장 수정일 경우 isEditWorkbook
   const saveLocalData = (data: any) => {
-    const sendData = { data: data?.data.data };
+    const sendData = { data: data?.data.data, isEditWorkbook: 1 };
     if (sendData.data && Object.keys(sendData).length !== 0) {
       localStorage.setItem('sendData', JSON.stringify(sendData));
     }

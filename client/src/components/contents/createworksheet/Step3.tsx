@@ -40,8 +40,8 @@ export function Step3() {
     isWorkbookCreatedAtom,
   );
   //학습지 수정 전역상태관리
-  const [isEditWorkbook, setIsEditWorkbook] =
-    useRecoilState(isEditWorkbookAtom);
+  const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
+  console.log(isEditWorkbook);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -82,13 +82,14 @@ export function Step3() {
         }),
       );
       setInitialItems(itemsWithNum);
+      setIsEditWorkbook(getLocalData.isEditWorkbook);
     }
   }, [getLocalData]);
 
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      window.opener.localStorage.clear();
+      //window.opener.localStorage.clear();
     }
   }, [getLocalData]);
 
@@ -99,7 +100,6 @@ export function Step3() {
   const [contentAuthor, setContentAuthor] = useState('');
 
   const [tag, setTag] = useState<string>('');
-  console.log(tag);
   const selectTag = (newValue: string) => {
     setTag(newValue);
   };
@@ -167,6 +167,7 @@ export function Step3() {
       code: '',
       timestamp: '',
       data: { quizList: initialItems },
+      isEditWorkbook: isEditWorkbook,
     };
     saveLocalData(data);
     navigate('/content-create/exam/step2');
