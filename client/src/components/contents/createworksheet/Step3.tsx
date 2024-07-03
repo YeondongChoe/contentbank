@@ -39,6 +39,7 @@ export function Step3() {
   const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
     isWorkbookCreatedAtom,
   );
+  console.log(isWorkbookCreated);
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
@@ -89,7 +90,7 @@ export function Step3() {
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      //window.opener.localStorage.clear();
+      window.opener.localStorage.clear();
     }
   }, [getLocalData]);
 
@@ -220,7 +221,6 @@ export function Step3() {
       setIsComplete(true);
     },
   });
-  console.log(getLocalData);
 
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
@@ -287,7 +287,7 @@ export function Step3() {
     onSuccess: (response) => {
       //학습지 생성완료 전역상태 값
       setIsWorkbookCreated(true);
-      //수정 전역상태 값 초기화
+      //수정 값 초기화
       setIsEditWorkbook(0);
       //모달 닫기
       //window.close();
