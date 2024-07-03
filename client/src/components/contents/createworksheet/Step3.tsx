@@ -18,7 +18,14 @@ import {
 } from '../../../store/utilAtom';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
-import { Input, Label, Button, CheckBox, openToastifyAlert } from '../../atom';
+import {
+  Input,
+  Label,
+  Button,
+  CheckBox,
+  openToastifyAlert,
+  AlertBar,
+} from '../../atom';
 import { COLOR } from '../../constants';
 import {
   RedTheme,
@@ -35,6 +42,11 @@ export function Step3() {
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
 
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+    window.close();
+  };
   // 학습지 생성완료 전역상태 관리
   const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
     isWorkbookCreatedAtom,
@@ -285,14 +297,10 @@ export function Step3() {
       }
     },
     onSuccess: (response) => {
-      //학습지 생성완료 전역상태 값
-      const data = {
-        isWorkbookCreated: true,
-      };
-      localStorage.setItem('isWorkbookCreated', JSON.stringify(data));
       //수정 값 초기화
       setIsEditWorkbook(0);
       //모달 닫기
+      setIsSuccessAlertOpen(true);
       //window.close();
     },
   });
@@ -325,6 +333,12 @@ export function Step3() {
 
   return (
     <Container>
+      <AlertBar
+        type="success"
+        isAlertOpen={isSuccessAlertOpen}
+        closeAlert={closeSuccessAlert}
+        message={'학습지가 생성 되었습니다.'}
+      ></AlertBar>
       <TitleWrapper>
         <IconWrapper>
           <IoIosArrowBack

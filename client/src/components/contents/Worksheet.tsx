@@ -39,43 +39,6 @@ export function Worksheet() {
 
   const [page, setPage] = useRecoilState(pageAtom);
 
-  const [isWorkbookCreated, setIsWorkbookCreated] = useState();
-  console.log(isWorkbookCreated);
-
-  // 로컬 스토리지에서 데이터 가져오기
-  useEffect(() => {
-    const fetchDataFromStorage = () => {
-      const data = localStorage.getItem('isWorkbookCreated');
-      if (data) {
-        try {
-          const parsedData = JSON.parse(data);
-          setIsWorkbookCreated(parsedData.isWorkbookCreated);
-        } catch (error) {
-          console.error('로컬 스토리지 데이터 파싱 에러:', error);
-        }
-      } else {
-        console.log('로컬 스토리지에 데이터가 없습니다.');
-      }
-    };
-
-    const handleStorageChange = (event: any) => {
-      if (event.key === 'isWorkbookCreated') {
-        fetchDataFromStorage();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  // 로컬 스토리지 값 다 받은 뒤 초기화
-  useEffect(() => {
-    if (isWorkbookCreated) {
-      window.opener.localStorage.removeItem('isWorkbookCreated');
-    }
-  }, [isWorkbookCreated]);
-
   const changeTab = () => {
     setPage(1);
   };
@@ -237,15 +200,15 @@ export function Worksheet() {
   });
 
   // 학습지 만들어질때 값갱신할 수 있게 하기
-  useEffect(() => {
-    if (isWorkbookCreated === true) {
-      openToastifyAlert({
-        type: 'success',
-        text: '학습지 생성완료.',
-      });
-      workbookListRefetch();
-    }
-  }, [isWorkbookCreated]);
+  // useEffect(() => {
+  //   if (isWorkbookCreated === true) {
+  //     openToastifyAlert({
+  //       type: 'success',
+  //       text: '학습지 생성완료.',
+  //     });
+  //     workbookListRefetch();
+  //   }
+  // }, [isWorkbookCreated]);
 
   const workbookList = workbookListData?.data.data;
 
