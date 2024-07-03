@@ -1,7 +1,7 @@
 /* eslint-disable no-inner-declarations */
 /* eslint-disable no-undef */
 
-console.log('itexLoader start');
+console.log('itexLoader start', window.MathJax);
 (async function () {
   // MathJax 세팅
   try {
@@ -44,13 +44,13 @@ console.log('itexLoader start');
       checkLoaded();
     });
     const otherScriptUrls = [
-      `/static/iTeX_EQ/js/ds.min.js`,
-      `/static/iTeX_EQ/js/hangul.min.js`,
+      `./static/iTeX_EQ/js/ds.min.js`,
+      `./static/iTeX_EQ/js/hangul.min.js`,
       // "./iTeX_EQ/js/itex_total_eq_origin_32.js?v=0.1.1",
-      `/static/iTeX_EQ/js/itex_eq_common.js?v=0.1`,
-      `/static/iTeX_EQ/js/itex_keyboard_v3.js?v=0.1`,
-      `/static/iTeX_EQ/js/itex_setting.js?v=0.1`,
-      `/static/iTeX_EQ/js/tex_list.js`,
+      `./static/iTeX_EQ/js/itex_eq_common.js?v=0.1`,
+      `./static/iTeX_EQ/js/itex_keyboard_v3.js?v=0.1`,
+      `./static/iTeX_EQ/js/itex_setting.js?v=0.1`,
+      `./static/iTeX_EQ/js/tex_list.js`,
     ];
 
     const loadScript = (url) =>
@@ -140,7 +140,7 @@ console.log('itexLoader start');
       });
   });
 
-const cssUrls = [`/static/iTeX_EQ/css/itex_keyboard_v2.css`];
+const cssUrls = [`./static/iTeX_EQ/css/itex_keyboard_v2.css`];
 
 const loadCss = (url) =>
   new Promise((resolve, reject) => {

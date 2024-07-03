@@ -13,7 +13,6 @@ type ListItemProps = {
   $margin?: string;
   $padding?: string;
   children: JSX.Element | JSX.Element[];
-  key: string;
   isChecked: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
@@ -26,7 +25,6 @@ export function ListItem({
   $margin,
   $padding,
   children,
-  key,
   isChecked,
   onClick,
   className,
@@ -48,7 +46,6 @@ export function ListItem({
       width={width}
       height={height}
       $margin={$margin}
-      key={key}
       ref={ref}
     >
       <Wrapper

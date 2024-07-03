@@ -39,6 +39,8 @@ export function EditerOneFile({ style }: { style?: any }) {
   //   }
   // }, [isRendered]);
   useEffect(() => {
+    // console.log(window.MathJax);
+    // console.log(window.MathJax.getMetricsFor);
     // fetch('/static/OCR/ocr_iframe_origin.html')
     fetch('/view/type3.html')
       .then((response) => response.text())
