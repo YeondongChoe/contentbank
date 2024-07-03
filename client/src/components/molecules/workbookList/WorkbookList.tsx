@@ -11,6 +11,7 @@ import {
 import { AxiosResponse } from 'axios';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
+import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import { workbookInstance } from '../../../api/axios';
@@ -28,6 +29,7 @@ import {
   openToastifyAlert,
   PaginationBox,
 } from '../../../components';
+import { isEditWorkbookAtom } from '../../../store/utilAtom';
 import { WorksheetListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
@@ -105,11 +107,16 @@ export function WorkbookList({
     },
     enabled: !!workbookIdx,
   });
-  console.log(workbookData);
+  // console.log(workbookData);
+
+  //학습지 수정(업데이트) 전역변수값
+  const [isEditWorkbook, setIsEditWorkbook] =
+    useRecoilState(isEditWorkbookAtom);
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
+    setIsEditWorkbook(1);
     refetch();
     windowOpenHandler({
       name: 'step2',
