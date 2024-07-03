@@ -30,3 +30,9 @@ export const contentQuotient = atom<ContentNumQuotient[]>({
   key: 'contentQuotient',
   default: [],
 });
+
+//학습지 생성 여부 아톰
+export const isWorkbookCreatedAtom = atom({
+  key: 'isWorkbookCreatedAtom',
+  default: false,
+});

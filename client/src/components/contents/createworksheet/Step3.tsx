@@ -15,6 +15,7 @@ import styled, { ThemeProvider } from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
 import { useModal } from '../../../hooks';
+import { isWorkbookCreatedAtom } from '../../../store/utilAtom';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Input, Label, Button, CheckBox, openToastifyAlert } from '../../atom';
@@ -27,11 +28,15 @@ import {
   PurpleTheme,
 } from '../../constants/THEME';
 import { TypeA, TypeB } from '../worksheetType';
+
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
+  const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
+    isWorkbookCreatedAtom,
+  );
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -273,10 +278,7 @@ export function Step3() {
       }
     },
     onSuccess: (response) => {
-      openToastifyAlert({
-        type: 'success',
-        text: '학습지 생성완료.',
-      });
+      setIsWorkbookCreated(true);
       window.close();
       //stpe3가 닫힐 때  setIsComplete(false)로 변경해주기
     },
