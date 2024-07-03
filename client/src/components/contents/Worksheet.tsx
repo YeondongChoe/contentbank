@@ -41,15 +41,7 @@ export function Worksheet() {
   const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
     isWorkbookCreatedAtom,
   );
-
-  useEffect(() => {
-    if (isWorkbookCreated) {
-      openToastifyAlert({
-        type: 'success',
-        text: '학습지 생성완료.',
-      });
-    }
-  }, [isWorkbookCreated]);
+  console.log(isWorkbookCreated);
 
   const changeTab = () => {
     setPage(1);
@@ -213,7 +205,11 @@ export function Worksheet() {
 
   // 학습지 만들어질때 값갱신할 수 있게 하기
   useEffect(() => {
-    if (isWorkbookCreated) {
+    if (isWorkbookCreated === true) {
+      openToastifyAlert({
+        type: 'success',
+        text: '학습지 생성완료.',
+      });
       workbookListRefetch();
     }
   }, [isWorkbookCreated]);
