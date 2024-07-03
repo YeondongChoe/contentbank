@@ -102,7 +102,7 @@ console.log('itexLoader start');
     iTeXEQ
       .init({
         mode: 'custom', //normal 또는 custom
-        path: '',
+        path: './static',
         // type: "type1",
         event: 'click', //click 또는 touchstart
         element: '#display_container', //수식편집기 생성 위치 class 또는 id 지정

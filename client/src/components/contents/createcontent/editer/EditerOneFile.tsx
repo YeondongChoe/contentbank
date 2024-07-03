@@ -38,10 +38,10 @@ export function EditerOneFile({ style }: { style?: any }) {
   //     });
   //   }
   // }, [isRendered]);
-
   useEffect(() => {
-    // fetch('/static/iTeX_EQ/ocr_iframe_origin.html')
-    fetch('/view/type3.html')
+    console.log('fetch');
+    fetch('/static/OCR/ocr_iframe_origin.html')
+      // fetch('/view/type3.html')
       .then((response) => response.text())
       .then((data) => setHtmlContent(data));
   }, []);
