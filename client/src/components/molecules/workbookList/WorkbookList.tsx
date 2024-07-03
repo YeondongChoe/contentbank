@@ -107,6 +107,7 @@ export function WorkbookList({
     },
     enabled: !!workbookIdx,
   });
+  console.log(workbookData?.data.data);
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {

@@ -203,7 +203,7 @@ export function Step2() {
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      //window.opener.localStorage.removeItem('sendData');
+      window.opener.localStorage.removeItem('sendData');
     }
   }, [getLocalData]);
 
@@ -1586,11 +1586,13 @@ export function Step2() {
     setUnitClassificationList([]);
     onResetList();
   }, [tabVeiw]);
+  console.log(initialItems);
 
   const moveStep3 = () => {
     const data = {
       data: initialItems,
       isEditWorkbook: isEditWorkbook,
+      workSheetIdx: getLocalData?.data.idx,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
       saveLocalData(data);

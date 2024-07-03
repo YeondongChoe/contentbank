@@ -39,8 +39,9 @@ export function Step3() {
   const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
     isWorkbookCreatedAtom,
   );
-  //학습지 수정 전역상태관리
+  //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
+  const [workSheetIdx, setWorkSheetIdx] = useState<number>();
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -70,7 +71,7 @@ export function Step3() {
   }, []);
 
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-
+  console.log(initialItems);
   useEffect(() => {
     if (getLocalData) {
       const itemsWithNum = getLocalData.data.map(
@@ -81,6 +82,7 @@ export function Step3() {
       );
       setInitialItems(itemsWithNum);
       setIsEditWorkbook(getLocalData.isEditWorkbook);
+      setWorkSheetIdx(getLocalData.workSheetIdx);
     }
   }, [getLocalData]);
 
@@ -218,12 +220,13 @@ export function Step3() {
       setIsComplete(true);
     },
   });
+  console.log(getLocalData);
 
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
     const data: any = {
       commandCode: isEditWorkbook === 1 ? isEditWorkbook : 0,
-      workSheetIdx: isEditWorkbook === 1 ? getLocalData.idx : null,
+      workSheetIdx: isEditWorkbook === 1 ? workSheetIdx : null,
       name: nameValue,
       examiner: contentAuthor,
       grade: gradeValue,
