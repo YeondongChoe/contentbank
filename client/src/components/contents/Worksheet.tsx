@@ -58,12 +58,16 @@ export function Worksheet() {
       }
     };
 
-    fetchDataFromStorage();
+    const handleStorageChange = (event: any) => {
+      if (event.key === 'isWorkbookCreated') {
+        fetchDataFromStorage();
+      }
+    };
 
-    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+    window.addEventListener('storage', handleStorageChange);
 
-    return () => clearTimeout(retryTimeout);
-  }, [isWorkbookCreated]);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
