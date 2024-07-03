@@ -206,6 +206,7 @@ export function Step3() {
       console.log('post-workbook 성공:', data);
       postNewWorkbookData();
       // 성공 처리 로직 추가
+      setIsComplete(true);
     },
   });
 
@@ -276,7 +277,6 @@ export function Step3() {
         type: 'success',
         text: '학습지 생성완료.',
       });
-      setIsComplete(false);
       window.close();
       //stpe3가 닫힐 때  setIsComplete(false)로 변경해주기
     },
@@ -286,7 +286,7 @@ export function Step3() {
     //node 서버에서 pdf 생성
     makingWorkbook(nameValue);
   };
-
+  console.log(isComplete);
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (!isComplete) {
