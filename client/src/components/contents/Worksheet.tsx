@@ -49,7 +49,7 @@ export function Worksheet() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          setIsWorkbookCreated(parsedData);
+          setIsWorkbookCreated(parsedData.isWorkbookCreated);
         } catch (error) {
           console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
@@ -63,7 +63,14 @@ export function Worksheet() {
     const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
 
     return () => clearTimeout(retryTimeout);
-  }, []);
+  }, [isWorkbookCreated]);
+
+  // 로컬 스토리지 값 다 받은 뒤 초기화
+  useEffect(() => {
+    if (isWorkbookCreated) {
+      window.opener.localStorage.removeItem('isWorkbookCreated');
+    }
+  }, [isWorkbookCreated]);
 
   const changeTab = () => {
     setPage(1);
