@@ -87,10 +87,10 @@ export interface Data {
   quizList: QuizList[];
   tagClassList: TagClassList[];
   templateList: TemplateList[];
-  favorite: boolean;
-  use: boolean;
-  delete: boolean;
-  autoGrade: boolean;
+  isFavorite: boolean;
+  isUse: boolean;
+  isDelete: boolean;
+  isAutoGrade: boolean;
 }
 
 export interface WorkbookData {

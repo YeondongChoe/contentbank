@@ -288,7 +288,7 @@ export function Step3() {
       //수정 전역상태 값 초기화
       setIsEditWorkbook(0);
       //모달 닫기
-      window.close();
+      //window.close();
     },
   });
 
