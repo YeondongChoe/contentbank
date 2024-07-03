@@ -286,13 +286,17 @@ export function Step3() {
     },
     onSuccess: (response) => {
       //학습지 생성완료 전역상태 값
-      setIsWorkbookCreated(true);
+      const data = {
+        isWorkbookCreated: true,
+      };
+      localStorage.setItem('isWorkbookCreated', JSON.stringify(data));
       //수정 값 초기화
       setIsEditWorkbook(0);
       //모달 닫기
       //window.close();
     },
   });
+  console.log(isWorkbookCreated);
 
   const submitCreateWorksheet = (nameValue: string) => {
     //node 서버에서 pdf 생성
