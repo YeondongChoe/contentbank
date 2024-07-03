@@ -108,15 +108,9 @@ export function WorkbookList({
     enabled: !!workbookIdx,
   });
 
-  //학습지 수정(업데이트) 전역변수값
-  const [isEditWorkbook, setIsEditWorkbook] =
-    useRecoilState(isEditWorkbookAtom);
-  console.log(isEditWorkbook);
-
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
-    //setIsEditWorkbook(1);
     refetch();
     windowOpenHandler({
       name: 'step2',
