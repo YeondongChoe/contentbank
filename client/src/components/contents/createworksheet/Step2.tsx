@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -314,7 +314,8 @@ export function Step2() {
   const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-
+  const [newQuizItemSetting, setNewQuizItemSetting] = useState<any>();
+  console.log(newQuizItems);
   // 새 문항 문항 불러오기 api
   const postnewQuizList = async (data: any) => {
     return await quizService.post(`/v1/search/quiz/step/1`, data);
@@ -363,6 +364,7 @@ export function Step2() {
       isMePriority: false,
       filterList: initialItems.map((quiz) => quiz.code),
     };
+    setNewQuizItemSetting(data);
     postNewQuizData(data);
   };
 
@@ -1244,6 +1246,8 @@ export function Step2() {
     }
   }, [favoriteQuizData]);
 
+  const queryClient = useQueryClient();
+
   // 문항 즐겨찾기 토글 api
   const patchQuizFavorite = async (data: {
     idx: number;
@@ -1271,6 +1275,13 @@ export function Step2() {
         text: response.data.message,
       });
       favoriteQuizDataRefetch();
+      //similarDataMutate();
+      //postnewQuizList(newQuizItemSetting);
+
+      // queryClient.invalidateQueries({
+      //   queryKey: ['get-workbookList'],
+      //   exact: true,
+      // });
     },
   });
 
@@ -2236,6 +2247,7 @@ export function Step2() {
                                   onClick={() => {}}
                                   isBorder={true}
                                   isNewQuiz={true}
+                                  isFavorite={item.isFavorite}
                                   data={item}
                                   index={item.idx}
                                   title={
@@ -2249,6 +2261,17 @@ export function Step2() {
                                   }
                                   addQuizItem={() =>
                                     clickAddQuizItem(item.code)
+                                  }
+                                  favoriteQuizItem={(e) =>
+                                    item.isFavorite
+                                      ? handleFavorite(e, {
+                                          idx: item.idx,
+                                          isFavorite: true,
+                                        })
+                                      : handleFavorite(e, {
+                                          idx: item.idx,
+                                          isFavorite: false,
+                                        })
                                   }
                                 ></MathviewerAccordion>
                               ))}
