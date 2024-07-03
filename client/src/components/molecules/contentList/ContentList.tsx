@@ -49,7 +49,6 @@ type ContentListProps = {
 };
 
 export function ContentList({
-  key,
   list,
   tabVeiw,
   deleteBtn,

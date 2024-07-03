@@ -39,9 +39,8 @@ export function EditerOneFile({ style }: { style?: any }) {
   //   }
   // }, [isRendered]);
   useEffect(() => {
-    console.log('fetch');
-    fetch('/static/OCR/ocr_iframe_origin.html')
-      // fetch('/view/type3.html')
+    // fetch('/static/OCR/ocr_iframe_origin.html')
+    fetch('/view/type3.html')
       .then((response) => response.text())
       .then((data) => setHtmlContent(data));
   }, []);

@@ -21,7 +21,7 @@ export function Tooltip({
   margin,
   children,
   className,
-  arrowPosition,
+  arrowPosition = 'left: 50%',
   ref,
 }: TooltiptProps) {
   return (
