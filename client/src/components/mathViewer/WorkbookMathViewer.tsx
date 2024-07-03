@@ -178,6 +178,7 @@ const Component = styled.div<MathViewerStyleProps>`
 const MathJaxWrapper = styled.div`
   display: flex;
   gap: 10px;
+  overflow-x: hidden;
 `;
 
 const ContentQuestion = styled.div`
