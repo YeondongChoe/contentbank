@@ -242,7 +242,7 @@ export function Step3() {
                 : tag === '월말TEST' //에러남
                   ? 'MONTHLY_TEST'
                   : '',
-      autoGrade: true,
+      isAutoGrade: true,
       article: {
         type: 'PDF',
         originalName: fileName,
@@ -254,8 +254,8 @@ export function Step3() {
         type: 'MCQ',
         multiLevel: 'Single',
         assign: 'Random',
-        date: true,
-        quizType: false,
+        isDate: true,
+        isQuizType: false,
         itemType: 1,
       },
       quizList: initialItems,
