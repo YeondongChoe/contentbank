@@ -113,7 +113,9 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-  console.log(initialItems);
+  //console.log(initialItems);
+  const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
+  console.log(isEditWorkbook);
 
   const categoryType = initialItems.map(
     (item) => item.quizCategoryList[0]?.quizCategory.문항타입,
@@ -202,9 +204,21 @@ export function Step2() {
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      //window.opener.localStorage.clear();
+      //window.opener.localStorage.removeItem('sendData');
     }
   }, [getLocalData]);
+
+  useEffect(() => {
+    if (getQuotientLocalData) {
+      window.opener.localStorage.removeItem('sendQuotientData');
+    }
+  }, [getQuotientLocalData]);
+
+  useEffect(() => {
+    if (getCategoryLocalData) {
+      window.opener.localStorage.removeItem('sendCategoryData');
+    }
+  }, [getCategoryLocalData]);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
@@ -1510,6 +1524,10 @@ export function Step2() {
     }
   }, [getLocalData]);
 
+  useEffect(() => {
+    if (getLocalData) setIsEditWorkbook(getLocalData.isEditWorkbook);
+  }, [getLocalData]);
+
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
     console.log('@드래그끝났을떄', newList);
@@ -1574,6 +1592,7 @@ export function Step2() {
   const moveStep3 = () => {
     const data = {
       data: initialItems,
+      isEditWorkbook: isEditWorkbook,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
       saveLocalData(data);

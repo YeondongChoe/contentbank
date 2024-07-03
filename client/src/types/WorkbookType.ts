@@ -97,6 +97,7 @@ export interface WorkbookData {
   code: string;
   timestamp: string;
   data: Data;
+  isEditWorkbook?: number;
 }
 
 export interface WorkbookQuotientData {
