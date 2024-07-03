@@ -36,3 +36,9 @@ export const isWorkbookCreatedAtom = atom({
   key: 'isWorkbookCreatedAtom',
   default: false,
 });
+
+//학습지 수정 아톰
+export const isEditWorkbookAtom = atom({
+  key: 'isEditWorkbookAtom',
+  default: 0,
+});

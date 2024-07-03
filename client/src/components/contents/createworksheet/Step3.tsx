@@ -2,20 +2,20 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { backgroundClip } from 'html2canvas/dist/types/css/property-descriptors/background-clip';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
-import { MdAccountBalance } from 'react-icons/md';
 import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
-import { useModal } from '../../../hooks';
-import { isWorkbookCreatedAtom } from '../../../store/utilAtom';
+import {
+  isWorkbookCreatedAtom,
+  isEditWorkbookAtom,
+} from '../../../store/utilAtom';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Input, Label, Button, CheckBox, openToastifyAlert } from '../../atom';
@@ -28,15 +28,20 @@ import {
   PurpleTheme,
 } from '../../constants/THEME';
 import { TypeA, TypeB } from '../worksheetType';
-
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
+
+  // 학습지 생성완료 전역상태 관리
   const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
     isWorkbookCreatedAtom,
   );
+  //학습지 수정 전역상태관리
+  const [isEditWorkbook, setIsEditWorkbook] =
+    useRecoilState(isEditWorkbookAtom);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -218,7 +223,7 @@ export function Step3() {
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
     const data: any = {
-      commandCode: 0,
+      commandCode: isEditWorkbook === 1 ? isEditWorkbook : 0,
       workSheetIdx: null,
       name: nameValue,
       examiner: contentAuthor,
@@ -278,9 +283,12 @@ export function Step3() {
       }
     },
     onSuccess: (response) => {
+      //학습지 생성완료 전역상태 값
       setIsWorkbookCreated(true);
+      //수정 전역상태 값 초기화
+      setIsEditWorkbook(0);
+      //모달 닫기
       window.close();
-      //stpe3가 닫힐 때  setIsComplete(false)로 변경해주기
     },
   });
 
