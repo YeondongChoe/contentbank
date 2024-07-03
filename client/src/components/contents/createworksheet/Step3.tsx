@@ -41,7 +41,6 @@ export function Step3() {
   );
   //학습지 수정 전역상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
-  console.log(isEditWorkbook);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -52,11 +51,11 @@ export function Step3() {
         try {
           const parsedData = JSON.parse(data);
           const parsedquotientData = JSON.parse(quotientData as string);
-          console.log('데이터 조회', parsedData);
+          //console.log('데이터 조회', parsedData);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedquotientData);
         } catch (error) {
-          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+          //console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
       } else {
         console.log('로컬 스토리지에 데이터가 없습니다.');
@@ -71,7 +70,6 @@ export function Step3() {
   }, []);
 
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-  console.log(initialItems);
 
   useEffect(() => {
     if (getLocalData) {
@@ -177,7 +175,7 @@ export function Step3() {
   // node 서버 학습지 만들기 api
   const postWorkbook = async (data: any) => {
     const res = await makingworkbookInstance.post(`/get-pdf`, data);
-    console.log(`학습지 만들기결과값`, res);
+    // console.log(`학습지 만들기결과값`, res);
     return res;
   };
 
@@ -210,11 +208,11 @@ export function Step3() {
   const { mutate: workbookData } = useMutation({
     mutationFn: postWorkbook,
     onError: (error) => {
-      console.error('post-workbook 에러:', error);
+      //console.error('post-workbook 에러:', error);
       // 에러 처리 로직 추가
     },
     onSuccess: (data) => {
-      console.log('post-workbook 성공:', data);
+      //console.log('post-workbook 성공:', data);
       postNewWorkbookData();
       // 성공 처리 로직 추가
       setIsComplete(true);
@@ -225,7 +223,7 @@ export function Step3() {
   const postNewWorkbook = async () => {
     const data: any = {
       commandCode: isEditWorkbook === 1 ? isEditWorkbook : 0,
-      workSheetIdx: null,
+      workSheetIdx: isEditWorkbook === 1 ? getLocalData.idx : null,
       name: nameValue,
       examiner: contentAuthor,
       grade: gradeValue,
@@ -260,7 +258,7 @@ export function Step3() {
       },
       quizList: initialItems,
     };
-    console.log(data);
+    //console.log(data);
     //백엔드 서버로 생성 요청
     return await workbookInstance.post(`/v1/workbook`, data);
   };
@@ -297,7 +295,7 @@ export function Step3() {
     //node 서버에서 pdf 생성
     makingWorkbook(nameValue);
   };
-  console.log(isComplete);
+  //console.log(isComplete);
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (!isComplete) {

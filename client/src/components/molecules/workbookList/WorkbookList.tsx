@@ -95,7 +95,7 @@ export function WorkbookList({
   // 학습지 상세 정보 불러오기 api
   const getWorkbookData = async (idx: number) => {
     const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
-    console.log(`getWorkbook 결과값`, res);
+    // console.log(`getWorkbook 결과값`, res);
     return res;
   };
 
@@ -129,7 +129,7 @@ export function WorkbookList({
 
   const deleteWorkbook = async () => {
     const res = await workbookInstance.delete(`/v1/workbook/${workbookIdx}`);
-    console.log(`문항 삭제 결과값`, res);
+    // console.log(`문항 삭제 결과값`, res);
     return res.data;
   };
 

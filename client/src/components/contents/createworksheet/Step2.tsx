@@ -113,9 +113,8 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-  //console.log(initialItems);
+
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
-  console.log(isEditWorkbook);
 
   const categoryType = initialItems.map(
     (item) => item.quizCategoryList[0]?.quizCategory.문항타입,
@@ -153,7 +152,7 @@ export function Step2() {
   const [equalTotalValue, setEqualTotlaValue] = useState('0');
   //총 문항 점수
   const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
-  //console.log(totalEqualScore);
+
   //문제와 점수 관리
   const [contentWithScore, setContentWithScore] = useState<ContentItem[]>([]);
   useEffect(() => {
@@ -329,7 +328,7 @@ export function Step2() {
     [],
   );
   const [newQuizItemSetting, setNewQuizItemSetting] = useState<any>();
-  console.log(newQuizItems);
+
   // 새 문항 문항 불러오기 api
   const postnewQuizList = async (data: any) => {
     return await quizService.post(`/v1/search/quiz/step/1`, data);
@@ -839,10 +838,10 @@ export function Step2() {
     );
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList :', itemTreeKeyList);
+    //console.log('itemTreeKeyList :', itemTreeKeyList);
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    console.log('classificationInstance 응답:', res);
+    //console.log('classificationInstance 응답:', res);
     return res;
   };
 
@@ -969,7 +968,7 @@ export function Step2() {
 
   // 수정
   const changeUnitClassification = (idx: number) => {
-    console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
+    //console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
     onResetList();
     setSelectedClassification(unitClassificationList[idx]);
     setIsModifying(true);
@@ -1337,7 +1336,7 @@ export function Step2() {
       ].flat(),
     };
     const res = await quizService.post('/v1/quiz/similar', data);
-    console.log('quizService 응답:', res);
+    //console.log('quizService 응답:', res);
     return res;
   };
 
@@ -1530,7 +1529,7 @@ export function Step2() {
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
-    console.log('@드래그끝났을떄', newList);
+    //console.log('@드래그끝났을떄', newList);
   };
 
   const handleButtonCheck = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -1541,7 +1540,6 @@ export function Step2() {
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
-    //const sendData = { data: data };
     if (data) {
       localStorage.setItem('sendData', JSON.stringify(data));
     }

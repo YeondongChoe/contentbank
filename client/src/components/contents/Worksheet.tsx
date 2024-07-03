@@ -160,7 +160,7 @@ export function Worksheet() {
     }
   };
   useEffect(() => {
-    console.log('categoryList', categoryList);
+    //console.log('categoryList', categoryList);
   }, [categoryList]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -178,7 +178,7 @@ export function Worksheet() {
           ? `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}`
           : `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&tag=${selectedTag === '연습문제' ? 'EXERCISES' : selectedTag === '일일테스트' ? 'DAILY_TEST' : selectedTag === '모의고사' ? 'PRACTICE_TEST' : selectedTag === '내신대비' ? 'TEST_PREP' : selectedTag === '월말테스트' ? 'MONTHLY_TEST' : ''}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
-      console.log(`getWorkbook 즐겨찾기 결과값`, res);
+      // console.log(`getWorkbook 즐겨찾기 결과값`, res);
       return res;
     } else {
       const res = await workbookInstance.get(
@@ -186,7 +186,7 @@ export function Worksheet() {
           ? `/v1/workbook?pageIndex=${page}&pageUnit=${8}`
           : `/v1/workbook?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&tag=${selectedTag === '연습문제' ? 'EXERCISES' : selectedTag === '일일테스트' ? 'DAILY_TEST' : selectedTag === '모의고사' ? 'PRACTICE_TEST' : selectedTag === '내신대비' ? 'TEST_PREP' : selectedTag === '월말테스트' ? 'MONTHLY_TEST' : ''}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
-      console.log(`getWorkbook 결과값`, res);
+      // console.log(`getWorkbook 결과값`, res);
       return res;
     }
   };
@@ -265,8 +265,6 @@ export function Worksheet() {
 
     setOnSearch(false);
   };
-
-  console.log(selectedTag);
 
   // 검색용 셀렉트 선택시
   useEffect(() => {
