@@ -6,6 +6,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import { Label } from '../../../components/atom';
 import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { QuizList } from '../../../types/WorkbookType';
+
 type TypeAProps = {
   title?: string;
   grade?: string;
@@ -264,8 +265,6 @@ export const TypeA = ({
 
 const Container = styled.div`
   width: 100%;
-  //height: 100%;
-  display: block;
   border-radius: 25px;
   display: flex;
   flex-direction: column;
@@ -280,20 +279,17 @@ const LabelWrapper = styled.div`
 `;
 const Wrapper = styled.div`
   background-color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  //width: 755px;
   height: 700px;
-  aspect-ratio: 210/157;
+  //aspect-ratio: 210/157;
   overflow-y: auto;
+  border-bottom-left-radius: 20px;
 `;
 
 const WorksheetHeader = styled.div`
   position: relative;
   border: 1px solid
     ${({ theme }) => theme?.color?.backgroundColorTypeA || 'initial'};
-  width: 110%;
+  width: 99%;
   border-bottom-right-radius: 50px;
   background-color: ${({ theme }) =>
     theme?.color?.backgroundColorTypeA || 'initial'};
@@ -305,7 +301,6 @@ const ContentTitle = styled.div`
 `;
 const ContentScript = styled.div`
   color: #888888;
-  padding-bottom: 5px;
 `;
 const HeaderTriangle = styled.div`
   position: relative;
@@ -398,31 +393,28 @@ const WorksheetBodyLeft = styled.div`
 const WorksheetBodyRight = styled.div`
   //flex: 1 0 0;
   width: 48%;
-  padding: 10px 20px 0px 20px;
+  padding: 10px 20px 0px 10px;
   display: flex;
   flex-direction: column;
 `;
 //각 아이템
 const MathViewerWrapper = styled.div`
-  //height: 50%;
-  //width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  //gap: 2px;
   font-size: 12px;
-  // aspect-ratio: 50/10 !important;
 `;
 //비율
 const EachMathViewer = styled.div`
-  width: 100%;
+  scale: 0.8;
+  margin-top: -5px;
+  margin-left: -45px;
   //max-width: 541px; /* 최대 허용 너비 */
   //margin: 0 auto; /* 중앙 정렬 */
-  overflow-x: hidden; /* 가로 스크롤이 생길 경우 숨김 처리 */
+  //overflow-x: hidden; /* 가로 스크롤이 생길 경우 숨김 처리 */
 `;
 const MathJaxWrapper = styled.div`
-  display: flex;
-  gap: 10px;
-
   strong {
     font-size: 25px;
     color: ${({ theme }) => theme?.color?.textColorTypeA || 'initial'};
@@ -430,12 +422,14 @@ const MathJaxWrapper = styled.div`
 `;
 const FooterBarWrapper = styled.div`
   position: relative;
-  top: 570px;
+  overflow: visible;
+  //left: 1px;
+  //border-bottom-left-radius: 30px;
 `;
 const FooterTriangle = styled.div`
   position: relative;
   top: 40px;
-  right: -954px;
+  right: -920px;
   width: 0;
   border-bottom: 40px solid transparent;
   border-top: 40px solid transparent;
@@ -444,18 +438,17 @@ const FooterTriangle = styled.div`
 `;
 const WorksheetAdditionalInformation = styled.div`
   position: relative;
-  left: 23px;
-  width: 110%;
+  left: 20px;
+  width: 98%;
   height: 40px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 0 20px;
   background-color: #e5e5e5;
   border: 1px solid #e5e5e5;
   border-top-left-radius: 30px;
   padding-right: 60px;
-  gap: 550px;
+  gap: 800px;
 
   .weather {
     font-size: 12px;

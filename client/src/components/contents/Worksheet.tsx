@@ -200,7 +200,7 @@ export function Worksheet() {
     },
   });
 
-  // 학습지 만들어질때 값갱신할 수 있게 하기
+  // 학습지 만들어질때 push event 로 새창이 닫혔을 때 리스트 다시 갱신할 수 있게 하기
   // useEffect(() => {
   //   if (isWorkbookCreated === true) {
   //     workbookListRefetch();
