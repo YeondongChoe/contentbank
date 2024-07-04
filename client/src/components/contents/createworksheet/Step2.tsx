@@ -1677,7 +1677,7 @@ export function Step2() {
     const data = {
       data: initialItems,
       isEditWorkbook: isEditWorkbook,
-      workSheetIdx: getLocalData?.data.idx,
+      workSheetIdx: workbookIdx,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
       window.opener.localStorage.clear();
