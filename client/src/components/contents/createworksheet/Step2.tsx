@@ -59,7 +59,7 @@ import {
   QuizList,
   SimilarQuizList,
   Data,
-  ContentNumQuotient,
+  ContentWithScore,
 } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
@@ -113,7 +113,6 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
   const categoryType = initialItems.map(
@@ -137,8 +136,31 @@ export function Step2() {
   const levelUpper = categoryLevel.filter((type) => type === '상').length;
   const levelBest = categoryLevel.filter((type) => type === '최상').length;
 
+  //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
-    useRecoilState<ContentNumQuotient[]>(contentQuotient);
+    useRecoilState<ContentWithScore[]>(contentQuotient);
+  console.log(contentNumQuotient);
+
+  useEffect(() => {
+    const updatedItems = initialItems.map((item) => {
+      // 각 initialItems의 item에 대해 contentNumQuotient 배열을 탐색합니다.
+      const matchingItem = contentNumQuotient.find(
+        (quotient) => quotient.code === item.code,
+      );
+
+      // 일치하는 항목이 있으면 score를 추가합니다.
+      if (matchingItem) {
+        return {
+          ...item,
+          score: matchingItem.score,
+        };
+      }
+
+      // 일치하는 항목이 없으면 원래 항목을 반환합니다.
+      return item;
+    });
+    setInitialItems(updatedItems);
+  }, [contentNumQuotient]);
 
   //나머지 시작 컨텐츠
   const [remainderContent, setRemainderContent] = useState<number>();
@@ -155,9 +177,10 @@ export function Step2() {
 
   //문제와 점수 관리
   const [contentWithScore, setContentWithScore] = useState<ContentItem[]>([]);
-  useEffect(() => {
-    setContentWithScore([]);
-  }, []);
+
+  // useEffect(() => {
+  //   setContentWithScore([]);
+  // }, []);
 
   useEffect(() => {
     if (getQuotientLocalData) {
@@ -1587,7 +1610,7 @@ export function Step2() {
     onResetList();
   }, [tabVeiw]);
   console.log(initialItems);
-
+  //문항에 배점 넣어서 저장하기
   const moveStep3 = () => {
     const data = {
       data: initialItems,

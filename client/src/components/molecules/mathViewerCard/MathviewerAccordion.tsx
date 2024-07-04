@@ -12,7 +12,7 @@ import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { contentQuotient } from '../../../store/utilAtom';
 import { ItemQuestionType } from '../../../types/ItemQuestionType';
 import {
-  ContentNumQuotient,
+  ContentWithScore,
   QuizList,
   LastArticle,
   QuizItemList,
@@ -206,12 +206,11 @@ export function MathviewerAccordion({
   const [isNextRemainderContent, setIsNextRemainderContent] = useState(false);
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
-    useRecoilState<ContentNumQuotient[]>(contentQuotient);
-  //console.log(data);
+    useRecoilState<ContentWithScore[]>(contentQuotient);
 
   //문항 삭제될때마다 총점 변경
   const totalEqualScore = useMemo(
-    () => contentNumQuotient.reduce((acc, el) => acc + el.quotient, 0),
+    () => contentNumQuotient.reduce((acc, el) => acc + el.score, 0),
     [contentNumQuotient, deleteQuizItem],
   );
 
@@ -237,7 +236,7 @@ export function MathviewerAccordion({
 
     const updatedData = contentNumQuotient.map((item) => {
       if (item.quizNum === selectedQuizNum) {
-        return { ...item, quotient: selectedValue as number };
+        return { ...item, score: selectedValue as number };
       }
       return item;
     });
@@ -274,9 +273,9 @@ export function MathviewerAccordion({
         (item) => item.quizNum === quizNum,
       );
 
-      const newData: ContentNumQuotient = {
+      const newData: ContentWithScore = {
         quizNum: quizNum as number,
-        quotient: isRemainderContent
+        score: isRemainderContent
           ? (quotient as number)
           : isNextRemainderContent
             ? (quotientAddOne as number)
