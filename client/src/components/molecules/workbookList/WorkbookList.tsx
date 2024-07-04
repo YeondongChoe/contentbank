@@ -153,7 +153,6 @@ export function WorkbookList({
     }
   };
 
-  // console.log(workbookData);
   useEffect(() => {
     if (workbookIdx) {
       saveLocalData(workbookIdx);

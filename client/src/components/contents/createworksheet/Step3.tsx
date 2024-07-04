@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { backgroundClip } from 'html2canvas/dist/types/css/property-descriptors/background-clip';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
@@ -38,25 +38,17 @@ import { TypeA, TypeB } from '../worksheetType';
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export function Step3() {
-  const queryClient = useQueryClient();
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
 
-  // 학습지 생성완료 전역상태 관리
-  const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
-    isWorkbookCreatedAtom,
-  );
   //학습지 생성 알림
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
     window.opener.localStorage.clear();
     window.close();
-    setIsWorkbookCreated(true);
   };
-
-  console.log(isWorkbookCreated);
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
@@ -306,12 +298,6 @@ export function Step3() {
       setIsEditWorkbook(0);
       //alert 열기
       setIsSuccessAlertOpen(true);
-
-      // 초기화
-      queryClient.invalidateQueries({
-        queryKey: ['get-workbookList'],
-        exact: true,
-      });
     },
   });
 

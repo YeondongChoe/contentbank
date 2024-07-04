@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -20,6 +20,8 @@ type TypeBProps = {
   column?: string;
 };
 
+const A4_HEIGHT = 1122;
+
 export const TypeB = ({
   title,
   grade,
@@ -34,6 +36,8 @@ export const TypeB = ({
 }: TypeBProps) => {
   const [leftList, setLeftList] = useState<QuizList[]>([]);
   const [rightList, setRightList] = useState<QuizList[]>([]);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const rightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (column === '2단') {
@@ -105,7 +109,7 @@ export const TypeB = ({
             </TextWrapper>
           </WorksheetHeader>
           <WorksheetBody $contentQuantity={contentQuantity}>
-            <WorksheetBodyLeft>
+            <WorksheetBodyLeft ref={leftRef}>
               {leftList?.map((quizItemList) =>
                 quizItemList.quizItemList
                   .filter((quizItem) => quizItem.type === 'QUESTION')
@@ -124,28 +128,30 @@ export const TypeB = ({
                           <ContentScript>{quizItem.code}</ContentScript>
                         </div>
                       )}
-                      <MathJaxWrapper>
-                        <WorkbookMathViewer
-                          data={quizItemList}
-                          padding={
-                            contentQuantity === '4문제'
-                              ? '0 0 60px 0'
-                              : contentQuantity === '6문제'
+                      <EachMathViewer>
+                        <MathJaxWrapper>
+                          <WorkbookMathViewer
+                            data={quizItemList}
+                            padding={
+                              contentQuantity === '4문제'
                                 ? '0 0 60px 0'
-                                : contentQuantity === '최대'
-                                  ? '0 0 50px 0'
-                                  : '0'
-                          }
-                          isSetp3
-                          answerCommentary={answerCommentary}
-                        ></WorkbookMathViewer>
-                      </MathJaxWrapper>
+                                : contentQuantity === '6문제'
+                                  ? '0 0 60px 0'
+                                  : contentQuantity === '최대'
+                                    ? '0 0 50px 0'
+                                    : '0'
+                            }
+                            isSetp3
+                            answerCommentary={answerCommentary}
+                          ></WorkbookMathViewer>
+                        </MathJaxWrapper>
+                      </EachMathViewer>
                     </MathViewerWrapper>
                   )),
               )}
             </WorksheetBodyLeft>
             <Divider />
-            <WorksheetBodyRight>
+            <WorksheetBodyRight ref={rightRef}>
               {rightList?.map((quizItemList) =>
                 quizItemList.quizItemList
                   .filter((quizItem) => quizItem.type === 'QUESTION')
@@ -164,22 +170,24 @@ export const TypeB = ({
                           <ContentScript>{quizItem.code}</ContentScript>
                         </div>
                       )}
-                      <MathJaxWrapper>
-                        <WorkbookMathViewer
-                          data={quizItemList}
-                          padding={
-                            contentQuantity === '4문제'
-                              ? '0 0 60px 0'
-                              : contentQuantity === '6문제'
+                      <EachMathViewer>
+                        <MathJaxWrapper>
+                          <WorkbookMathViewer
+                            data={quizItemList}
+                            padding={
+                              contentQuantity === '4문제'
                                 ? '0 0 60px 0'
-                                : contentQuantity === '최대'
-                                  ? '0 0 50px 0'
-                                  : '0'
-                          }
-                          isSetp3
-                          answerCommentary={answerCommentary}
-                        ></WorkbookMathViewer>
-                      </MathJaxWrapper>
+                                : contentQuantity === '6문제'
+                                  ? '0 0 60px 0'
+                                  : contentQuantity === '최대'
+                                    ? '0 0 50px 0'
+                                    : '0'
+                            }
+                            isSetp3
+                            answerCommentary={answerCommentary}
+                          ></WorkbookMathViewer>
+                        </MathJaxWrapper>
+                      </EachMathViewer>
                     </MathViewerWrapper>
                   )),
               )}
@@ -201,7 +209,6 @@ export const TypeB = ({
 
 const Container = styled.div`
   width: 100%;
-  max-height: 100%;
   border-radius: 25px;
   display: flex;
   flex-direction: column;
@@ -216,14 +223,17 @@ const LabelWrapper = styled.div`
 `;
 const Wrapper = styled.div`
   background-color: white;
-  aspect-ratio: 210 / 197;
+  height: 700px;
+  //aspect-ratio: 210/157;
   overflow-y: auto;
+  padding-left: 10px;
+  border-bottom-left-radius: 20px;
 `;
 const WorksheetHeader = styled.div`
   margin: 0 auto;
   margin-top: 10px;
   margin-bottom: 20px;
-  width: 720px;
+  width: 98%;
   height: 72px;
   border: 2px solid ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
   border-radius: 10px;
@@ -234,7 +244,6 @@ const ContentTitle = styled.div`
 `;
 const ContentScript = styled.div`
   color: #888888;
-  padding-bottom: 5px;
 `;
 const HeaderCircle = styled.div`
   position: relative;
@@ -291,7 +300,6 @@ const TextWrapper = styled.div`
     label {
       display: flex;
       justify-content: center;
-      //text-align: center;
     }
   }
 `;
@@ -299,50 +307,59 @@ type WorksheetBodyType = {
   $contentQuantity?: string;
 };
 const WorksheetBody = styled.div<WorksheetBodyType>`
-  ${({ $contentQuantity }) =>
+  /* ${({ $contentQuantity }) =>
     $contentQuantity === '최대' || $contentQuantity === '6문제'
       ? `height: 105%`
-      : `height: calc(100% - 170px);`};
+      : `height: calc(100% - 170px);`}; */
   margin: 0 auto;
   display: flex;
+  width: 1000px;
 `;
 const Divider = styled.span`
   display: inline-block;
-  width: 1px;
-  height: 100%;
+  width: 2px;
+  height: 1400px;
   background-color: #e8e8e8;
   margin: 0 10px;
 `;
-const MathViewerWrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 12px;
-`;
+
 const WorksheetBodyLeft = styled.div`
-  flex: 1 0 0;
+  //flex: 1 0 0;
+  width: 48%;
   padding: 10px 20px 0px 20px;
   display: flex;
   flex-direction: column;
 `;
 const WorksheetBodyRight = styled.div`
-  flex: 1 0 0;
-  padding: 10px 20px 0px 20px;
+  //flex: 1 0 0;
+  width: 48%;
+  padding: 10px 20px 0px 0px;
   display: flex;
   flex-direction: column;
 `;
-const MathJaxWrapper = styled.div`
+const MathViewerWrapper = styled.div`
+  height: 100%;
   display: flex;
-  gap: 10px;
-
+  flex-direction: column;
+  //gap: 2px;
+  font-size: 12px;
+`;
+const EachMathViewer = styled.div`
+  scale: 0.8;
+  margin-top: -5px;
+  margin-left: -45px;
+  //max-width: 541px; /* 최대 허용 너비 */
+  //margin: 0 auto; /* 중앙 정렬 */
+  //overflow-x: hidden; /* 가로 스크롤이 생길 경우 숨김 처리 */
+`;
+const MathJaxWrapper = styled.div`
   strong {
     font-size: 25px;
     color: ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
   }
 `;
 const WorksheetAdditionalInformation = styled.div<{ $isWeather?: boolean }>`
-  width: 720px;
+  width: 98%;
   margin: 0 auto;
   display: flex;
   padding-top: 10px;
