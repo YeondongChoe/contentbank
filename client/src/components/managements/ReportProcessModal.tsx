@@ -10,7 +10,6 @@ import {
   Label,
   Select,
   openToastifyAlert,
-  AlertBar,
 } from '../../components/atom';
 import { Alert } from '../../components/molecules';
 import { useModal } from '../../hooks';

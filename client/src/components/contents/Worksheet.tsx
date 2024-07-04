@@ -41,7 +41,6 @@ export function Worksheet() {
   const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
     isWorkbookCreatedAtom,
   );
-  console.log(isWorkbookCreated);
 
   const changeTab = () => {
     setPage(1);
@@ -95,8 +94,6 @@ export function Worksheet() {
       setCategoryTitles(categoryData.data.data.categoryItemList);
     }
   }, [categoryData]);
-  //console.log(categoryTitles);
-  //console.log(categoryList);
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
@@ -160,7 +157,7 @@ export function Worksheet() {
     }
   };
   useEffect(() => {
-    console.log('categoryList', categoryList);
+    //console.log('categoryList', categoryList);
   }, [categoryList]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -178,7 +175,7 @@ export function Worksheet() {
           ? `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}`
           : `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&tag=${selectedTag === '연습문제' ? 'EXERCISES' : selectedTag === '일일테스트' ? 'DAILY_TEST' : selectedTag === '모의고사' ? 'PRACTICE_TEST' : selectedTag === '내신대비' ? 'TEST_PREP' : selectedTag === '월말테스트' ? 'MONTHLY_TEST' : ''}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
-      console.log(`getWorkbook 즐겨찾기 결과값`, res);
+      // console.log(`getWorkbook 즐겨찾기 결과값`, res);
       return res;
     } else {
       const res = await workbookInstance.get(
@@ -186,7 +183,7 @@ export function Worksheet() {
           ? `/v1/workbook?pageIndex=${page}&pageUnit=${8}`
           : `/v1/workbook?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchValue}&tag=${selectedTag === '연습문제' ? 'EXERCISES' : selectedTag === '일일테스트' ? 'DAILY_TEST' : selectedTag === '모의고사' ? 'PRACTICE_TEST' : selectedTag === '내신대비' ? 'TEST_PREP' : selectedTag === '월말테스트' ? 'MONTHLY_TEST' : ''}&curriculum=${selectedCurriculum}&level=${selectedLevel}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
       );
-      console.log(`getWorkbook 결과값`, res);
+      // console.log(`getWorkbook 결과값`, res);
       return res;
     }
   };
@@ -206,10 +203,6 @@ export function Worksheet() {
   // 학습지 만들어질때 값갱신할 수 있게 하기
   useEffect(() => {
     if (isWorkbookCreated === true) {
-      openToastifyAlert({
-        type: 'success',
-        text: '학습지 생성완료.',
-      });
       workbookListRefetch();
     }
   }, [isWorkbookCreated]);
@@ -266,8 +259,6 @@ export function Worksheet() {
     setOnSearch(false);
   };
 
-  console.log(selectedTag);
-
   // 검색용 셀렉트 선택시
   useEffect(() => {
     workbookListRefetch();
@@ -289,7 +280,7 @@ export function Worksheet() {
       options:
         'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
     });
-    setIsWorkbookCreated(false);
+    //setIsWorkbookCreated(false);
   };
 
   const menuList = [

@@ -18,7 +18,14 @@ import {
 } from '../../../store/utilAtom';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
-import { Input, Label, Button, CheckBox, openToastifyAlert } from '../../atom';
+import {
+  Input,
+  Label,
+  Button,
+  CheckBox,
+  openToastifyAlert,
+  AlertBar,
+} from '../../atom';
 import { COLOR } from '../../constants';
 import {
   RedTheme,
@@ -39,9 +46,18 @@ export function Step3() {
   const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
     isWorkbookCreatedAtom,
   );
-  //학습지 수정 전역상태관리
+  //학습지 생성 알림
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+    window.close();
+    setIsWorkbookCreated(true);
+  };
+
+  console.log(isWorkbookCreated);
+  //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
-  console.log(isEditWorkbook);
+  const [workSheetIdx, setWorkSheetIdx] = useState<number>();
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -52,11 +68,11 @@ export function Step3() {
         try {
           const parsedData = JSON.parse(data);
           const parsedquotientData = JSON.parse(quotientData as string);
-          console.log('데이터 조회', parsedData);
+          //console.log('데이터 조회', parsedData);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedquotientData);
         } catch (error) {
-          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+          //console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
       } else {
         console.log('로컬 스토리지에 데이터가 없습니다.');
@@ -71,7 +87,6 @@ export function Step3() {
   }, []);
 
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-  console.log(initialItems);
 
   useEffect(() => {
     if (getLocalData) {
@@ -83,13 +98,14 @@ export function Step3() {
       );
       setInitialItems(itemsWithNum);
       setIsEditWorkbook(getLocalData.isEditWorkbook);
+      setWorkSheetIdx(getLocalData.workSheetIdx);
     }
   }, [getLocalData]);
 
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      //window.opener.localStorage.clear();
+      window.opener.localStorage.clear();
     }
   }, [getLocalData]);
 
@@ -177,7 +193,7 @@ export function Step3() {
   // node 서버 학습지 만들기 api
   const postWorkbook = async (data: any) => {
     const res = await makingworkbookInstance.post(`/get-pdf`, data);
-    console.log(`학습지 만들기결과값`, res);
+    // console.log(`학습지 만들기결과값`, res);
     return res;
   };
 
@@ -210,11 +226,11 @@ export function Step3() {
   const { mutate: workbookData } = useMutation({
     mutationFn: postWorkbook,
     onError: (error) => {
-      console.error('post-workbook 에러:', error);
+      //console.error('post-workbook 에러:', error);
       // 에러 처리 로직 추가
     },
     onSuccess: (data) => {
-      console.log('post-workbook 성공:', data);
+      //console.log('post-workbook 성공:', data);
       postNewWorkbookData();
       // 성공 처리 로직 추가
       setIsComplete(true);
@@ -225,7 +241,7 @@ export function Step3() {
   const postNewWorkbook = async () => {
     const data: any = {
       commandCode: isEditWorkbook === 1 ? isEditWorkbook : 0,
-      workSheetIdx: null,
+      workSheetIdx: isEditWorkbook === 1 ? workSheetIdx : null,
       name: nameValue,
       examiner: contentAuthor,
       grade: gradeValue,
@@ -242,7 +258,7 @@ export function Step3() {
                 : tag === '월말TEST' //에러남
                   ? 'MONTHLY_TEST'
                   : '',
-      autoGrade: true,
+      isAutoGrade: true,
       article: {
         type: 'PDF',
         originalName: fileName,
@@ -254,13 +270,13 @@ export function Step3() {
         type: 'MCQ',
         multiLevel: 'Single',
         assign: 'Random',
-        date: true,
-        quizType: false,
+        isDate: true,
+        isQuizType: false,
         itemType: 1,
       },
       quizList: initialItems,
     };
-    console.log(data);
+
     //백엔드 서버로 생성 요청
     return await workbookInstance.post(`/v1/workbook`, data);
   };
@@ -284,20 +300,19 @@ export function Step3() {
       }
     },
     onSuccess: (response) => {
-      //학습지 생성완료 전역상태 값
-      setIsWorkbookCreated(true);
-      //수정 전역상태 값 초기화
+      //수정 값 초기화
       setIsEditWorkbook(0);
-      //모달 닫기
-      //window.close();
+      //alert 열기
+      setIsSuccessAlertOpen(true);
     },
   });
+  console.log(isWorkbookCreated);
 
   const submitCreateWorksheet = (nameValue: string) => {
     //node 서버에서 pdf 생성
     makingWorkbook(nameValue);
   };
-  console.log(isComplete);
+  //console.log(isComplete);
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (!isComplete) {
@@ -320,6 +335,12 @@ export function Step3() {
 
   return (
     <Container>
+      <AlertBar
+        type="success"
+        isAlertOpen={isSuccessAlertOpen}
+        closeAlert={closeSuccessAlert}
+        message={'학습지가 생성 되었습니다.'}
+      ></AlertBar>
       <TitleWrapper>
         <IconWrapper>
           <IoIosArrowBack

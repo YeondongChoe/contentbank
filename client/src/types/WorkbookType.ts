@@ -119,9 +119,9 @@ export interface WorkbookCategoryData {
   itemTreeIdxList: number[];
 }
 
-export interface ContentNumQuotient {
+export interface ContentWithScore {
   quizNum: number;
-  quotient: number;
+  score: number;
   code: string;
 }
 
