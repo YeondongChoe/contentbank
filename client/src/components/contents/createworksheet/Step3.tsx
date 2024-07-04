@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { backgroundClip } from 'html2canvas/dist/types/css/property-descriptors/background-clip';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
@@ -38,6 +38,7 @@ import { TypeA, TypeB } from '../worksheetType';
 //pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export function Step3() {
+  const queryClient = useQueryClient();
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
@@ -50,6 +51,7 @@ export function Step3() {
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
+    window.opener.localStorage.clear();
     window.close();
     setIsWorkbookCreated(true);
   };
@@ -105,7 +107,7 @@ export function Step3() {
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      window.opener.localStorage.clear();
+      //window.opener.localStorage.clear();
     }
   }, [getLocalData]);
 
@@ -304,9 +306,14 @@ export function Step3() {
       setIsEditWorkbook(0);
       //alert 열기
       setIsSuccessAlertOpen(true);
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-workbookList'],
+        exact: true,
+      });
     },
   });
-  console.log(isWorkbookCreated);
 
   const submitCreateWorksheet = (nameValue: string) => {
     //node 서버에서 pdf 생성
