@@ -1608,8 +1608,8 @@ export function Step2() {
   }, [getLocalData]);
 
   useEffect(() => {
-    if (getLocalData) setIsEditWorkbook(getLocalData.isEditWorkbook);
-  }, [getLocalData]);
+    if (getEditData) setIsEditWorkbook(getEditData?.isEditWorkbook);
+  }, [getEditData]);
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
