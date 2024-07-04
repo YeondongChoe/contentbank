@@ -41,7 +41,11 @@ import {
   Modal,
   ButtonFormatMultiRadio,
 } from '../..';
-import { classificationInstance, quizService } from '../../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  workbookInstance,
+} from '../../../api/axios';
 import { ReportProcessModal } from '../../../components/managements/ReportProcessModal';
 import { useModal } from '../../../hooks';
 import { contentQuotient, pageAtom } from '../../../store/utilAtom';
@@ -103,12 +107,18 @@ type UnitClassificationType =
   | ItemTreeIdxListType
   | RadioStateType[];
 
+interface EditWorkbookData {
+  isEditWorkbook: number;
+  workbookIdx: number;
+}
+
 export function Step2() {
   const [getLocalData, setGetLocalData] = useState<WorkbookData | null>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
   const [getCategoryLocalData, setGetCategoryLocalData] =
     useState<WorkbookCategoryData | null>(null);
+  const [getEditData, setGetEditData] = useState<EditWorkbookData | null>(null);
 
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
@@ -135,6 +145,41 @@ export function Step2() {
   const levelMedium = categoryLevel.filter((type) => type === '중').length;
   const levelUpper = categoryLevel.filter((type) => type === '상').length;
   const levelBest = categoryLevel.filter((type) => type === '최상').length;
+
+  const [workbookIdx, setWorkbookIdx] = useState<number>(0);
+
+  useEffect(() => {
+    if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
+  }, [getEditData]);
+
+  // 학습지 상세 정보 불러오기 api
+  const getWorkbookData = async (idx: number) => {
+    const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
+    // console.log(`getWorkbook 결과값`, res);
+    return res;
+  };
+
+  const { data: workbookData } = useQuery({
+    queryKey: ['get-workbookData', workbookIdx],
+    queryFn: () => getWorkbookData(workbookIdx as number),
+    meta: {
+      errorMessage: 'get-workbookData 에러 메세지',
+    },
+    enabled: !!workbookIdx,
+  });
+
+  //로컬스토리지에서 Idx받아오면 서버 요청
+  useEffect(() => {
+    if (workbookIdx) {
+      getWorkbookData(workbookIdx);
+    }
+  }, [workbookIdx]);
+  //서버로부터 값을 받아오면 넣어주기
+  useEffect(() => {
+    if (workbookData) {
+      setInitialItems(workbookData?.data.data.quizList);
+    }
+  }, [workbookData]);
 
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
@@ -174,13 +219,6 @@ export function Step2() {
   const [equalTotalValue, setEqualTotlaValue] = useState('0');
   //총 문항 점수
   const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
-
-  //문제와 점수 관리
-  const [contentWithScore, setContentWithScore] = useState<ContentItem[]>([]);
-
-  // useEffect(() => {
-  //   setContentWithScore([]);
-  // }, []);
 
   useEffect(() => {
     if (getQuotientLocalData) {
@@ -223,22 +261,45 @@ export function Step2() {
     return () => clearTimeout(retryTimeout);
   }, []);
 
+  // 학습지 수정시 데이타 가져오기
+  useEffect(() => {
+    const fetchDataFromStorage = () => {
+      const editData = localStorage.getItem('sendEditData');
+      if (editData) {
+        try {
+          const parsedData = JSON.parse(editData);
+          setGetEditData(parsedData);
+        } catch (error) {
+          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 데이터가 없습니다.');
+      }
+    };
+
+    fetchDataFromStorage();
+
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+
+    return () => clearTimeout(retryTimeout);
+  }, []);
+
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
     if (getLocalData) {
-      window.opener.localStorage.removeItem('sendData');
+      //window.opener.localStorage.removeItem('sendData');
     }
   }, [getLocalData]);
 
   useEffect(() => {
     if (getQuotientLocalData) {
-      window.opener.localStorage.removeItem('sendQuotientData');
+      //window.opener.localStorage.removeItem('sendQuotientData');
     }
   }, [getQuotientLocalData]);
 
   useEffect(() => {
     if (getCategoryLocalData) {
-      window.opener.localStorage.removeItem('sendCategoryData');
+      //window.opener.localStorage.removeItem('sendCategoryData');
     }
   }, [getCategoryLocalData]);
 
@@ -1547,8 +1608,8 @@ export function Step2() {
   }, [getLocalData]);
 
   useEffect(() => {
-    if (getLocalData) setIsEditWorkbook(getLocalData.isEditWorkbook);
-  }, [getLocalData]);
+    if (getEditData) setIsEditWorkbook(getEditData?.isEditWorkbook);
+  }, [getEditData]);
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
@@ -1577,6 +1638,7 @@ export function Step2() {
     saveLocalData(data);
     setContentNumQuotient([]);
     navigate('/content-create/exam/step1');
+    window.opener.localStorage.clear();
   };
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
@@ -1600,6 +1662,7 @@ export function Step2() {
 
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
+        //window.opener.localStorage.clear();
       };
     }
   }, [tabVeiw]);
@@ -1614,9 +1677,10 @@ export function Step2() {
     const data = {
       data: initialItems,
       isEditWorkbook: isEditWorkbook,
-      workSheetIdx: getLocalData?.data.idx,
+      workSheetIdx: workbookIdx,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
+      window.opener.localStorage.clear();
       saveLocalData(data);
       navigate('/content-create/exam/step3');
     } else {
@@ -2507,15 +2571,10 @@ export function Step2() {
                             dragItem.quizCategoryList?.[0]?.quizCategory
                           }
                           favoriteQuizItem={(e) =>
-                            dragItem.isFavorite
-                              ? handleFavorite(e, {
-                                  idx: dragItem.idx,
-                                  isFavorite: true,
-                                })
-                              : handleFavorite(e, {
-                                  idx: dragItem.idx,
-                                  isFavorite: false,
-                                })
+                            handleFavorite(e, {
+                              idx: dragItem.idx,
+                              isFavorite: true,
+                            })
                           }
                         ></MathviewerAccordion>
                       </li>

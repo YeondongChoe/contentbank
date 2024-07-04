@@ -201,11 +201,11 @@ export function Worksheet() {
   });
 
   // 학습지 만들어질때 값갱신할 수 있게 하기
-  useEffect(() => {
-    if (isWorkbookCreated === true) {
-      workbookListRefetch();
-    }
-  }, [isWorkbookCreated]);
+  // useEffect(() => {
+  //   if (isWorkbookCreated === true) {
+  //     workbookListRefetch();
+  //   }
+  // }, [isWorkbookCreated]);
 
   const workbookList = workbookListData?.data.data;
 
