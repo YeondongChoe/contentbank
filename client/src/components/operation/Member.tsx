@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { getUserList, getUserListTotal, patchChangeUse } from '../../api/user';

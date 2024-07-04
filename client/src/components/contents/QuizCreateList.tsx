@@ -20,9 +20,7 @@ import {
   Icon,
 } from '..';
 import { classificationInstance, quizService } from '../../api/axios';
-import { getAuthorityItem, getMyInfo } from '../../api/user';
 import { useModal } from '../../hooks';
-import { myAuthorityAtom } from '../../store/myAuthorityAtom';
 import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
@@ -32,7 +30,6 @@ import { CreateContentModal } from './CreateContentModal';
 export function QuizCreateList() {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
-  const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
 
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -75,35 +72,6 @@ export function QuizCreateList() {
     content: <CreateContentModal />,
     callback: () => {},
   };
-
-  // 최초 진입시 유저 권한 조회 후 전역 데이터에 넣기
-  // 마이페이지 데이터 불러오기 api
-  const { data: myInfoData } = useQuery({
-    queryKey: ['get-myInfo'],
-    queryFn: getMyInfo,
-    meta: {
-      errorMessage: 'get-myInfo 에러 메세지',
-    },
-  });
-  const authorityCode = myInfoData?.data.data.authority.code;
-  // 권한 조회 api
-  const { data: authorityData } = useQuery({
-    queryKey: ['get-authority'],
-    queryFn: () => getAuthorityItem(authorityCode),
-    meta: {
-      errorMessage: 'get-authority 에러 메세지',
-    },
-    enabled: !!authorityCode,
-  });
-  const authorityList = authorityData?.data.data.permissionList;
-
-  useEffect(() => {
-    if (myInfoData && authorityData) {
-      // console.log('myInfoData-----------------01', authorityCode);
-      // console.log('authorityList-----------------02', authorityList);
-      setMyAuthority(authorityList);
-    }
-  }, [myInfoData]);
 
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
