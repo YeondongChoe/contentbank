@@ -38,6 +38,9 @@ export function Worksheet() {
   const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
 
   const [page, setPage] = useRecoilState(pageAtom);
+  const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
+    isWorkbookCreatedAtom,
+  );
 
   const changeTab = () => {
     setPage(1);
@@ -91,8 +94,6 @@ export function Worksheet() {
       setCategoryTitles(categoryData.data.data.categoryItemList);
     }
   }, [categoryData]);
-  //console.log(categoryTitles);
-  //console.log(categoryList);
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
@@ -200,15 +201,11 @@ export function Worksheet() {
   });
 
   // 학습지 만들어질때 값갱신할 수 있게 하기
-  // useEffect(() => {
-  //   if (isWorkbookCreated === true) {
-  //     openToastifyAlert({
-  //       type: 'success',
-  //       text: '학습지 생성완료.',
-  //     });
-  //     workbookListRefetch();
-  //   }
-  // }, [isWorkbookCreated]);
+  useEffect(() => {
+    if (isWorkbookCreated === true) {
+      workbookListRefetch();
+    }
+  }, [isWorkbookCreated]);
 
   const workbookList = workbookListData?.data.data;
 

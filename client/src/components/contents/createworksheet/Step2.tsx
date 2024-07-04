@@ -139,8 +139,8 @@ export function Step2() {
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-  console.log(contentNumQuotient);
 
+  //기존 문항 데이타에 배점 넣기
   useEffect(() => {
     const updatedItems = initialItems.map((item) => {
       // 각 initialItems의 item에 대해 contentNumQuotient 배열을 탐색합니다.
@@ -1609,8 +1609,7 @@ export function Step2() {
     setUnitClassificationList([]);
     onResetList();
   }, [tabVeiw]);
-  console.log(initialItems);
-  //문항에 배점 넣어서 저장하기
+
   const moveStep3 = () => {
     const data = {
       data: initialItems,

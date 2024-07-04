@@ -42,16 +42,18 @@ export function Step3() {
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
 
+  // 학습지 생성완료 전역상태 관리
+  const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
+    isWorkbookCreatedAtom,
+  );
   //학습지 생성 알림
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
     window.close();
+    setIsWorkbookCreated(true);
   };
-  // 학습지 생성완료 전역상태 관리
-  const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
-    isWorkbookCreatedAtom,
-  );
+
   console.log(isWorkbookCreated);
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
@@ -85,7 +87,7 @@ export function Step3() {
   }, []);
 
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-  console.log(initialItems);
+
   useEffect(() => {
     if (getLocalData) {
       const itemsWithNum = getLocalData.data.map(
