@@ -92,25 +92,11 @@ export function WorkbookList({
   };
 
   const [workbookIdx, setWorkbookIdx] = useState<number>(0);
-  // 학습지 상세 정보 불러오기 api
-  // const getWorkbookData = async (idx: number) => {
-  //   const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
-  //   // console.log(`getWorkbook 결과값`, res);
-  //   return res;
-  // };
-
-  // const { data: workbookData, refetch } = useQuery({
-  //   queryKey: ['get-workbookData', workbookIdx],
-  //   queryFn: () => getWorkbookData(workbookIdx as number),
-  //   meta: {
-  //     errorMessage: 'get-workbookData 에러 메세지',
-  //   },
-  //   enabled: !!workbookIdx,
-  // });
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
+    saveLocalData(idx);
     windowOpenHandler({
       name: 'step2',
       url: '/content-create/exam/step2',
@@ -158,10 +144,10 @@ export function WorkbookList({
   });
 
   // 로컬스토리지에 보낼데이터 저장 수정일 경우 isEditWorkbook
-  const saveLocalData = () => {
+  const saveLocalData = (idx: number) => {
     const sendData = {
       isEditWorkbook: 1,
-      workbookIdx: workbookIdx,
+      workbookIdx: idx,
     };
     if (workbookIdx) {
       localStorage.setItem('sendEditData', JSON.stringify(sendData));
@@ -169,11 +155,11 @@ export function WorkbookList({
   };
 
   // console.log(workbookData);
-  useEffect(() => {
-    if (workbookIdx) {
-      saveLocalData();
-    }
-  }, [workbookIdx]);
+  // useEffect(() => {
+  //   if (workbookIdx) {
+  //     saveLocalData();
+  //   }
+  // }, [workbookIdx]);
 
   // useEffect(() => {
   //   if (workbookIdx) {
