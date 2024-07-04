@@ -193,7 +193,11 @@ export function Authority() {
   }, [codeValue, setCodeValue]);
 
   useEffect(() => {
-    if (isSuccess && authorityData?.data.data.permissionList) {
+    if (
+      isSuccess &&
+      authorityData?.data.data.permissionList &&
+      inputValue !== ''
+    ) {
       console.log(
         'authorityData.data.data.permissionList',
         authorityData.data.data.permissionList,
@@ -247,10 +251,12 @@ export function Authority() {
 
   // 등록 && 수정 버튼
   const submitAuthority = () => {
-    console.log('checkList', checkList);
+    console.log('checkList----------------', checkList);
     const permissionList: PermissionOutput[] = createPermissions(checkList);
     setCodeUpdateList(permissionList);
-    console.log('permissionList', permissionList);
+    console.log('permissionList----------', permissionList);
+    const onList = defaultPermissions;
+    setCheckList([...onList]);
 
     if (isClickedName && permissionList.length > 0) {
       mutateChangeAuthority({
@@ -258,11 +264,16 @@ export function Authority() {
         code: codeValue,
         permissionList,
       });
-    } else if (!isClickedName && permissionList.length > 0) {
+
+      return;
+    }
+    if (!isClickedName && permissionList.length > 0) {
       mutateCreateAuthority({
         name: inputValue,
         permissionList,
       });
+
+      return;
     }
   };
 
@@ -290,42 +301,45 @@ export function Authority() {
         text: response.data.message,
       });
       //초기화
+      setCheckList([...defaultPermissions]);
       setIsAlertOpen(false);
       authorityListDataRefetch();
       setInputValue('');
-      setCheckList([...defaultPermissions]);
       setIsClickedName(false);
     },
   });
   // 선택된 권한 생성하기 api
-  const { data: createAuthorityData, mutate: mutateCreateAuthority } =
-    useMutation({
-      mutationFn: postCreateAuthority,
-      onError: (context: {
-        response: { data: { message: string; code: string } };
-      }) => {
-        openToastifyAlert({
-          type: 'error',
-          text: context.response.data.message,
-        });
-        if (context.response.data.code == 'GE-002') {
-          postRefreshToken();
-        }
-      },
-      onSuccess: (response: { data: { message: string } }) => {
-        openToastifyAlert({
-          type: 'success',
-          text: response.data.message,
-        });
-        //초기화
-        setIsAlertOpen(false);
-        authorityListDataRefetch();
-        authorityDataRefetch();
-        setInputValue('');
-        setCheckList([...defaultPermissions]);
-        setIsClickedName(false);
-      },
-    });
+  const {
+    data: createAuthorityData,
+    mutate: mutateCreateAuthority,
+    isPending: createAuthorityIsPending,
+  } = useMutation({
+    mutationFn: postCreateAuthority,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      //초기화
+      setCheckList([...defaultPermissions]);
+      setIsAlertOpen(false);
+      authorityListDataRefetch();
+      authorityDataRefetch();
+      setInputValue('');
+      setIsClickedName(false);
+    },
+  });
 
   // 선택된 권한 삭제하기 api
   const { data: deleteAuthorityData, mutate: mutateDeleteAuthority } =
@@ -349,9 +363,9 @@ export function Authority() {
           text: response.data.message,
         });
         //초기화
+        setCheckList([...defaultPermissions]);
         authorityListDataRefetch();
         setInputValue('');
-        setCheckList([...defaultPermissions]);
         setIsClickedName(false);
         //얼럿 닫기
         setIsAlertOpen(false);
@@ -639,8 +653,10 @@ export function Authority() {
   };
 
   const onCancel = () => {
+    // 초기화
     setIsClickedName(false);
     setInputValue('');
+    setCheckList([...defaultPermissions]);
   };
 
   useEffect(() => {
@@ -1341,7 +1357,8 @@ export function Authority() {
                   )}
                 </>
               )}
-              {changeAuthorityisPending && <Loader />}
+              {changeAuthorityisPending ||
+                (createAuthorityIsPending && <Loader />)}
             </AuthorityListWrapper>
           </PerfectScrollbar>
         </ScrollWrapper>
