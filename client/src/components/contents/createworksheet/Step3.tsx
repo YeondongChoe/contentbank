@@ -42,6 +42,7 @@ export function Step3() {
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
 
+  //학습지 생성 알림
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
@@ -273,7 +274,7 @@ export function Step3() {
       },
       quizList: initialItems,
     };
-    //console.log(data);
+
     //백엔드 서버로 생성 요청
     return await workbookInstance.post(`/v1/workbook`, data);
   };
@@ -299,9 +300,8 @@ export function Step3() {
     onSuccess: (response) => {
       //수정 값 초기화
       setIsEditWorkbook(0);
-      //모달 닫기
+      //alert 열기
       setIsSuccessAlertOpen(true);
-      //window.close();
     },
   });
   console.log(isWorkbookCreated);
