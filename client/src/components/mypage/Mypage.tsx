@@ -96,6 +96,10 @@ export function Mypage() {
       setIsNameError(true);
       setNameErrorMessage('띄워쓰기 없이 한글, 영문, 숫자만 입력');
       return;
+    } else if (nameValue.length < 2) {
+      setIsNameError(true);
+      setNameErrorMessage('이름은 최소 2자 이상입니다');
+      return;
     } else {
       saveNameDataMutate(nameValue);
       setIsNameError(false);
