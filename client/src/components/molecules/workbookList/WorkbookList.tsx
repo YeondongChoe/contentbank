@@ -96,7 +96,6 @@ export function WorkbookList({
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
-    saveLocalData(idx);
     windowOpenHandler({
       name: 'step2',
       url: '/content-create/exam/step2',
@@ -155,17 +154,11 @@ export function WorkbookList({
   };
 
   // console.log(workbookData);
-  // useEffect(() => {
-  //   if (workbookIdx) {
-  //     saveLocalData();
-  //   }
-  // }, [workbookIdx]);
-
-  // useEffect(() => {
-  //   if (workbookIdx) {
-  //     refetch();
-  //   }
-  // }, [workbookIdx, refetch]);
+  useEffect(() => {
+    if (workbookIdx) {
+      saveLocalData(workbookIdx);
+    }
+  }, [workbookIdx]);
 
   // 학습지 즐겨찾기 api
   const patchWorkbookFavorite = (data: any) => {
