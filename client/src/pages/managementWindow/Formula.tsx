@@ -15,7 +15,7 @@ export function Formula() {
   };
 
   useEffect(() => {
-    fetch('/static/iTeX_EQ/ocr_iframe_origin.html')
+    fetch('/static/OCR/ocr_iframe_origin.html')
       .then((response) => response.text())
       .then((data) => setHtmlContent(data));
   }, []);

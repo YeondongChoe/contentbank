@@ -24,7 +24,7 @@ export function Header() {
   const navigate = useNavigate();
 
   const openNavigation = () => {
-    setIsOpenNavigation(!isOpenNavigation);
+    // setIsOpenNavigation(!isOpenNavigation); // TODO : 아이콘 배경 변경
   };
 
   // 사이드메뉴 로그아웃 시
@@ -118,7 +118,7 @@ const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-right: 20px;
-  cursor: pointer;
+  /* cursor: pointer; */
 `;
 
 const SideMenuWrapper = styled.div`
