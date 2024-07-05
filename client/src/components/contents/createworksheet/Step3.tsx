@@ -39,8 +39,13 @@ import { TypeA, TypeB } from '../worksheetType';
 
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
+  const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
+  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
+
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
+  const [itemHeights, setItemHeights] = useState<number[]>([]);
+  const measureRef = useRef<HTMLDivElement>(null);
 
   //학습지 생성 알림
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
@@ -52,6 +57,35 @@ export function Step3() {
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
+
+  //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
+  useEffect(() => {
+    const measureHeights = () => {
+      if (measureRef.current) {
+        const heights = Array.from(measureRef.current.children).map(
+          (child) => (child as HTMLElement).offsetHeight,
+        );
+        setItemHeights(heights);
+      }
+    };
+
+    if (initialItems) {
+      measureHeights();
+    }
+  }, [initialItems]);
+
+  // 높이가 측정된 값을 다시 문항의 키값으로 추가
+  useEffect(() => {
+    if (itemHeights.length > 0) {
+      const itemsWithHeight = initialItems.map(
+        (item: QuizList, index: number) => ({
+          ...item,
+          height: itemHeights[index] || 0,
+        }),
+      );
+      setNewInitialItems(itemsWithHeight);
+    }
+  }, [itemHeights]);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -75,13 +109,12 @@ export function Step3() {
 
     fetchDataFromStorage();
 
-    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+    // const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
 
-    return () => clearTimeout(retryTimeout);
+    // return () => clearTimeout(retryTimeout);
   }, []);
 
-  const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-
+  //로컬스토리지에서 데이타를 가져온 후 문항 번호를 넣어서 저장
   useEffect(() => {
     if (getLocalData) {
       const itemsWithNum = getLocalData.data.map(
@@ -93,6 +126,7 @@ export function Step3() {
       setInitialItems(itemsWithNum);
       setIsEditWorkbook(getLocalData.isEditWorkbook);
       setWorkSheetIdx(getLocalData.workSheetIdx);
+      setGetQuotientLocalData(getLocalData.quotientLocalData);
     }
   }, [getLocalData]);
 
@@ -176,11 +210,16 @@ export function Step3() {
     const data = {
       code: '',
       timestamp: '',
-      data: { quizList: initialItems },
+      data: { quizList: newInitialItems },
       isEditWorkbook: isEditWorkbook,
     };
     saveLocalData(data);
+    localStorage.setItem(
+      'sendQuotientData',
+      JSON.stringify(getQuotientLocalData),
+    );
     navigate('/content-create/exam/step2');
+    window.opener.localStorage.clear();
   };
   const [fileName, setFileName] = useState('');
 
@@ -195,7 +234,7 @@ export function Step3() {
     const currentTime = new Date().getTime();
     const data = {
       title: nameValue,
-      content: initialItems,
+      content: newInitialItems,
       column: 2,
       uploadDir: '/usr/share/nginx/html/CB',
       fileName: `${nameValue}_${currentTime}.pdf`,
@@ -239,7 +278,7 @@ export function Step3() {
       name: nameValue,
       examiner: contentAuthor,
       grade: gradeValue,
-      quizCnt: initialItems.length,
+      quizCnt: newInitialItems?.length,
       tag:
         tag === '연습문제'
           ? 'EXERCISES'
@@ -268,7 +307,7 @@ export function Step3() {
         isQuizType: false,
         itemType: 1,
       },
-      quizList: initialItems,
+      quizList: newInitialItems,
     };
 
     //백엔드 서버로 생성 요청
@@ -322,12 +361,31 @@ export function Step3() {
 
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.opener.localStorage.clear();
       };
     }
   }, [isComplete]);
 
   return (
     <Container>
+      {/* 가상의 돔을 그려서 문항의 높이 측정 */}
+      <div>
+        <div
+          ref={measureRef}
+          style={{ visibility: 'hidden', position: 'absolute' }}
+        >
+          {initialItems &&
+            initialItems.map((quizItemList: any) =>
+              quizItemList.quizItemList
+                .filter((quizItem: any) => quizItem.type === 'QUESTION')
+                .map((quizItem: any, index: number) => (
+                  <div key={index}>
+                    <p>{quizItem.content}</p>
+                  </div>
+                )),
+            )}
+        </div>
+      </div>
       <AlertBar
         type="success"
         isAlertOpen={isSuccessAlertOpen}
@@ -838,7 +896,7 @@ export function Step3() {
               isWeather={isWeather}
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
-              initialItems={initialItems}
+              initialItems={newInitialItems}
               answerCommentary={answerCommentary}
               column={column}
             ></TypeA>
@@ -852,7 +910,7 @@ export function Step3() {
               isWeather={isWeather}
               isContentTypeTitle={isContentTypeTitle}
               theme={selectedTheme}
-              initialItems={initialItems}
+              initialItems={newInitialItems}
               answerCommentary={answerCommentary}
               column={column}
             ></TypeB>

@@ -159,13 +159,12 @@ export function Step2() {
     return res;
   };
 
-  const { data: workbookData } = useQuery({
+  const { data: workbookData, isLoading: isWorkbookLoading } = useQuery({
     queryKey: ['get-workbookData', workbookIdx],
     queryFn: () => getWorkbookData(workbookIdx as number),
     meta: {
       errorMessage: 'get-workbookData 에러 메세지',
     },
-    enabled: !!workbookIdx,
   });
 
   //로컬스토리지에서 Idx받아오면 서버 요청
@@ -178,6 +177,7 @@ export function Step2() {
   useEffect(() => {
     if (workbookData) {
       setInitialItems(workbookData?.data.data.quizList);
+      window.opener.localStorage.clear();
     }
   }, [workbookData]);
 
@@ -1662,7 +1662,7 @@ export function Step2() {
 
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
-        //window.opener.localStorage.clear();
+        window.opener.localStorage.clear();
       };
     }
   }, [tabVeiw]);
@@ -1682,6 +1682,10 @@ export function Step2() {
     if (totalEqualScore.toString() === equalTotalValue) {
       window.opener.localStorage.clear();
       saveLocalData(data);
+      localStorage.setItem(
+        'sendQuotientData',
+        JSON.stringify(getQuotientLocalData),
+      );
       navigate('/content-create/exam/step3');
     } else {
       openToastifyAlert({
@@ -2494,93 +2498,108 @@ export function Step2() {
                 )}
               </DiscriptionSection>
               <ContentListSection>
-                <ListFilter>
-                  <Label
-                    value={`선택한 문항 목록 (총 ${initialItems.length} 문항)`}
-                    fontSize="16px"
-                  />
-                  {/* 사용자정렬 */}
-                  {/* <SelectWrapper>
-                    {selectArrange.map((el) => (
-                      <Select
-                        width={'150px'}
-                        isnormalizedOptions
-                        key={el.idx}
-                        defaultValue={defaultValues[el.idx]}
-                        options={el.options}
-                        onSelect={(event) =>
-                          selectListCategoryOption(event, el.idx)
-                        }
-                        blackMode
+                {isWorkbookLoading && (
+                  <LoaderWrapper>
+                    <Loader width="50px" />
+                  </LoaderWrapper>
+                )}
+                {!isWorkbookLoading && (
+                  <>
+                    <ListFilter>
+                      <Label
+                        value={`선택한 문항 목록 (총 ${initialItems.length} 문항)`}
+                        fontSize="16px"
+                      />
+                      {/* 사용자정렬 */}
+                      {/* <SelectWrapper>
+                  {selectArrange.map((el) => (
+                    <Select
+                      width={'150px'}
+                      isnormalizedOptions
+                      key={el.idx}
+                      defaultValue={defaultValues[el.idx]}
+                      options={el.options}
+                      onSelect={(event) =>
+                        selectListCategoryOption(event, el.idx)
+                      }
+                      blackMode
+                      isStartDnD={isStartDnD}
+                    ></Select>
+                  ))}
+                  {selectCategory.map((el) => (
+                    <Select
+                      width={'150px'}
+                      isnormalizedOptions
+                      key={el.idx}
+                      defaultValue={el.name}
+                      options={el.options}
+                      //onSelect={(event) => selectListCategoryOption(event, el.idx)}
+                      blackMode
+                    ></Select>
+                  ))}
+                </SelectWrapper> */}
+                    </ListFilter>
+                    <ContentListWrapper>
+                      <StepDnDWrapper
+                        dragList={initialItems}
+                        onDragging={() => {}}
+                        onDragEnd={whenDragEnd}
+                        dragSectionName={'선택한 문항 목록'}
+                        doubleDnD
                         isStartDnD={isStartDnD}
-                      ></Select>
-                    ))}
-                    {selectCategory.map((el) => (
-                      <Select
-                        width={'150px'}
-                        isnormalizedOptions
-                        key={el.idx}
-                        defaultValue={el.name}
-                        options={el.options}
-                        //onSelect={(event) => selectListCategoryOption(event, el.idx)}
-                        blackMode
-                      ></Select>
-                    ))}
-                  </SelectWrapper> */}
-                </ListFilter>
-                <ContentListWrapper>
-                  <StepDnDWrapper
-                    dragList={initialItems}
-                    onDragging={() => {}}
-                    onDragEnd={whenDragEnd}
-                    dragSectionName={'선택한 문항 목록'}
-                    doubleDnD
-                    isStartDnD={isStartDnD}
-                    setIsStartDnd={setIsStartDnd}
-                    quotient={quotient}
-                  >
-                    {(dragItem, ref, isDragging, itemIndex, quotient) => (
-                      <li
-                        ref={ref}
-                        className={`${isDragging ? 'opacity' : ''}`}
+                        setIsStartDnd={setIsStartDnd}
+                        quotient={quotient}
                       >
-                        <MathviewerAccordion
-                          componentWidth="750px"
-                          width="550px"
-                          onClick={() => {
-                            showSimilarContent(dragItem.code, itemIndex);
-                          }}
-                          isSimilar={isSimilar}
-                          isFavorite={dragItem.isFavorite}
-                          data={dragItem}
-                          quizNum={itemIndex + 1}
-                          title={dragItem.quizCategoryList[0].quizCategory.유형}
-                          index={itemIndex}
-                          selectedCardIndex={selectedCardIndex}
-                          onSelectCard={setSelectedCardIndex}
-                          reportQuizitem={() => openReportProcess(dragItem.idx)}
-                          deleteQuizItem={() => deleteQuizItem(dragItem.code)}
-                          quotient={quotient}
-                          minQuotient={minQuotient}
-                          maxQuotient={maxQuotient}
-                          equalScore={equalScore as number}
-                          remainderContent={remainderContent}
-                          nextRemainderContent={nextRemainderContent}
-                          setTotalEqualScore={setTotalEqualScore}
-                          category={
-                            dragItem.quizCategoryList?.[0]?.quizCategory
-                          }
-                          favoriteQuizItem={(e) =>
-                            handleFavorite(e, {
-                              idx: dragItem.idx,
-                              isFavorite: true,
-                            })
-                          }
-                        ></MathviewerAccordion>
-                      </li>
-                    )}
-                  </StepDnDWrapper>
-                </ContentListWrapper>
+                        {(dragItem, ref, isDragging, itemIndex, quotient) => (
+                          <li
+                            ref={ref}
+                            className={`${isDragging ? 'opacity' : ''}`}
+                          >
+                            <MathviewerAccordion
+                              componentWidth="750px"
+                              width="550px"
+                              onClick={() => {
+                                showSimilarContent(dragItem.code, itemIndex);
+                              }}
+                              isSimilar={isSimilar}
+                              isFavorite={dragItem.isFavorite}
+                              data={dragItem}
+                              quizNum={itemIndex + 1}
+                              title={
+                                dragItem.quizCategoryList[0].quizCategory.유형
+                              }
+                              index={itemIndex}
+                              selectedCardIndex={selectedCardIndex}
+                              onSelectCard={setSelectedCardIndex}
+                              reportQuizitem={() =>
+                                openReportProcess(dragItem.idx)
+                              }
+                              deleteQuizItem={() =>
+                                deleteQuizItem(dragItem.code)
+                              }
+                              quotient={quotient}
+                              minQuotient={minQuotient}
+                              maxQuotient={maxQuotient}
+                              equalScore={equalScore as number}
+                              remainderContent={remainderContent}
+                              nextRemainderContent={nextRemainderContent}
+                              setTotalEqualScore={setTotalEqualScore}
+                              category={
+                                dragItem.quizCategoryList?.[0]?.quizCategory
+                              }
+                              favoriteQuizItem={(e) =>
+                                handleFavorite(e, {
+                                  idx: dragItem.idx,
+                                  isFavorite: true,
+                                })
+                              }
+                            ></MathviewerAccordion>
+                          </li>
+                        )}
+                      </StepDnDWrapper>
+                    </ContentListWrapper>
+                  </>
+                )}
               </ContentListSection>
             </MainWrapper>
             <NextStepButtonWrapper>
@@ -2824,9 +2843,9 @@ const ValueNoneWrapper = styled.div`
 `;
 const LoaderWrapper = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  padding-bottom: 50px;
-  padding-left: calc(50% - 35px);
 `;
 const SubmitButtonWrapper = styled.div`
   display: flex;
