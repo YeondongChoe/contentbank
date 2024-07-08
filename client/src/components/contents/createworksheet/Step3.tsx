@@ -213,9 +213,12 @@ export function Step3() {
   //workSheetIdx 관리해서 넘겨주기
   const goBackMainPopup = () => {
     const data = {
-      data: { quizList: initialItems },
+      data: { quizList: getLocalData.data },
       isEditWorkbook: isEditWorkbook,
-      //workSheetIdx: workbookIdx,
+      title: nameValue,
+      examiner: contentAuthor,
+      grade: gradeValue,
+      tag: tag,
     };
     window.opener.localStorage.clear();
     saveLocalData(data);

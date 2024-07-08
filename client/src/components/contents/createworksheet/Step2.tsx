@@ -147,6 +147,10 @@ export function Step2() {
   const levelBest = categoryLevel.filter((type) => type === '최상').length;
 
   const [workbookIdx, setWorkbookIdx] = useState<number>();
+  const [nameValue, setNameValue] = useState('');
+  const [gradeValue, setGradeValue] = useState('');
+  const [contentAuthor, setContentAuthor] = useState('');
+  const [tag, setTag] = useState<string>('');
 
   useEffect(() => {
     if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
@@ -173,11 +177,16 @@ export function Step2() {
       getWorkbookData(workbookIdx);
     }
   }, [workbookIdx]);
+  //console.log(workbookData);
   //서버로부터 값을 받아오면 넣어주기
   useEffect(() => {
     if (workbookData) {
       setInitialItems(workbookData?.data.data.quizList);
-      window.opener.localStorage.clear();
+      setNameValue(workbookData?.data.data.name);
+      setGradeValue(workbookData?.data.data.grade);
+      setContentAuthor(workbookData?.data.data.examiner);
+      setTag(workbookData?.data.data.tag);
+      //window.opener.localStorage.clear();
     }
   }, [workbookData]);
 
@@ -238,42 +247,58 @@ export function Step2() {
       const data = localStorage.getItem('sendData');
       const quotientData = localStorage.getItem('sendQuotientData');
       const categoryData = localStorage.getItem('sendCategoryData');
+      const editData = localStorage.getItem('sendEditData');
+
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          const parsedQuotientData = JSON.parse(quotientData as string);
-          const parsedCategoryData = JSON.parse(categoryData as string);
+          console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
           setGetLocalData(parsedData);
+          setNameValue(parsedData.title);
+          setGradeValue(parsedData.grade);
+          setContentAuthor(parsedData.examiner);
+          setTag(parsedData.tag);
+        } catch (error) {
+          console.error('로컬 스토리지 sendData 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 sendData가 없습니다.');
+      }
+
+      if (quotientData) {
+        try {
+          const parsedQuotientData = JSON.parse(quotientData);
+          console.log('sendQuotientData:', parsedQuotientData); // 디버깅용 콘솔 로그
           setGetQuotientLocalData(parsedQuotientData);
+        } catch (error) {
+          console.error('로컬 스토리지 sendQuotientData 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 sendQuotientData가 없습니다.');
+      }
+
+      if (categoryData) {
+        try {
+          const parsedCategoryData = JSON.parse(categoryData);
+          console.log('sendCategoryData:', parsedCategoryData); // 디버깅용 콘솔 로그
           setGetCategoryLocalData(parsedCategoryData);
         } catch (error) {
-          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+          console.error('로컬 스토리지 sendCategoryData 파싱 에러:', error);
         }
       } else {
-        console.log('로컬 스토리지에 데이터가 없습니다.');
+        console.log('로컬 스토리지에 sendCategoryData가 없습니다.');
       }
-    };
 
-    fetchDataFromStorage();
-
-    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
-
-    return () => clearTimeout(retryTimeout);
-  }, []);
-
-  // 학습지 수정시 데이타 가져오기
-  useEffect(() => {
-    const fetchDataFromStorage = () => {
-      const editData = localStorage.getItem('sendEditData');
       if (editData) {
         try {
-          const parsedData = JSON.parse(editData);
-          setGetEditData(parsedData);
+          const parsedEditData = JSON.parse(editData);
+          console.log('sendEditData:', parsedEditData); // 디버깅용 콘솔 로그
+          setGetEditData(parsedEditData);
         } catch (error) {
-          console.error('로컬 스토리지 데이터 파싱 에러:', error);
+          console.error('로컬 스토리지 sendEditData 파싱 에러:', error);
         }
       } else {
-        console.log('로컬 스토리지에 데이터가 없습니다.');
+        console.log('로컬 스토리지에 sendEditData가 없습니다.');
       }
     };
 
@@ -1659,10 +1684,10 @@ export function Step2() {
       data: initialItems,
       isEditWorkbook: isEditWorkbook,
       workSheetIdx: workbookIdx,
-      title: workbookData?.data.data.name,
-      examiner: workbookData?.data.data.examiner,
-      grade: workbookData?.data.data.grade,
-      tag: workbookData?.data.data.tag,
+      title: nameValue,
+      examiner: contentAuthor,
+      grade: gradeValue,
+      tag: tag,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
       window.opener.localStorage.clear();
