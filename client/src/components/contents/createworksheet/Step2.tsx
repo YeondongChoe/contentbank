@@ -146,7 +146,7 @@ export function Step2() {
   const levelUpper = categoryLevel.filter((type) => type === '상').length;
   const levelBest = categoryLevel.filter((type) => type === '최상').length;
 
-  const [workbookIdx, setWorkbookIdx] = useState<number>(0);
+  const [workbookIdx, setWorkbookIdx] = useState<number>();
 
   useEffect(() => {
     if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
@@ -283,25 +283,6 @@ export function Step2() {
 
     return () => clearTimeout(retryTimeout);
   }, []);
-
-  // 로컬 스토리지 값 다 받은 뒤 초기화
-  useEffect(() => {
-    if (getLocalData) {
-      //window.opener.localStorage.removeItem('sendData');
-    }
-  }, [getLocalData]);
-
-  useEffect(() => {
-    if (getQuotientLocalData) {
-      //window.opener.localStorage.removeItem('sendQuotientData');
-    }
-  }, [getQuotientLocalData]);
-
-  useEffect(() => {
-    if (getCategoryLocalData) {
-      //window.opener.localStorage.removeItem('sendCategoryData');
-    }
-  }, [getCategoryLocalData]);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
@@ -1600,7 +1581,7 @@ export function Step2() {
 
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
-
+  console.log(getLocalData);
   useEffect(() => {
     if (getLocalData?.data.quizList) {
       setInitialItems(getLocalData.data.quizList);
@@ -1662,7 +1643,7 @@ export function Step2() {
 
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
-        window.opener.localStorage.clear();
+        //window.opener.localStorage.clear();
       };
     }
   }, [tabVeiw]);
@@ -2505,13 +2486,15 @@ export function Step2() {
                 )}
                 {!isWorkbookLoading && (
                   <>
-                    <ListFilter>
-                      <Label
-                        value={`선택한 문항 목록 (총 ${initialItems.length} 문항)`}
-                        fontSize="16px"
-                      />
-                      {/* 사용자정렬 */}
-                      {/* <SelectWrapper>
+                    {initialItems.length > 0 ? (
+                      <>
+                        <ListFilter>
+                          <Label
+                            value={`선택한 문항 목록 (총 ${initialItems.length} 문항)`}
+                            fontSize="16px"
+                          />
+                          {/* 사용자정렬 */}
+                          {/* <SelectWrapper>
                   {selectArrange.map((el) => (
                     <Select
                       width={'150px'}
@@ -2538,66 +2521,82 @@ export function Step2() {
                     ></Select>
                   ))}
                 </SelectWrapper> */}
-                    </ListFilter>
-                    <ContentListWrapper>
-                      <StepDnDWrapper
-                        dragList={initialItems}
-                        onDragging={() => {}}
-                        onDragEnd={whenDragEnd}
-                        dragSectionName={'선택한 문항 목록'}
-                        doubleDnD
-                        isStartDnD={isStartDnD}
-                        setIsStartDnd={setIsStartDnd}
-                        quotient={quotient}
-                      >
-                        {(dragItem, ref, isDragging, itemIndex, quotient) => (
-                          <li
-                            ref={ref}
-                            className={`${isDragging ? 'opacity' : ''}`}
+                        </ListFilter>
+                        <ContentListWrapper>
+                          <StepDnDWrapper
+                            dragList={initialItems}
+                            onDragging={() => {}}
+                            onDragEnd={whenDragEnd}
+                            dragSectionName={'선택한 문항 목록'}
+                            doubleDnD
+                            isStartDnD={isStartDnD}
+                            setIsStartDnd={setIsStartDnd}
+                            quotient={quotient}
                           >
-                            <MathviewerAccordion
-                              componentWidth="750px"
-                              width="550px"
-                              onClick={() => {
-                                showSimilarContent(dragItem.code, itemIndex);
-                              }}
-                              isSimilar={isSimilar}
-                              isFavorite={dragItem.isFavorite}
-                              data={dragItem}
-                              quizNum={itemIndex + 1}
-                              title={
-                                dragItem.quizCategoryList[0].quizCategory.유형
-                              }
-                              index={itemIndex}
-                              selectedCardIndex={selectedCardIndex}
-                              onSelectCard={setSelectedCardIndex}
-                              reportQuizitem={() =>
-                                openReportProcess(dragItem.idx)
-                              }
-                              deleteQuizItem={() =>
-                                deleteQuizItem(dragItem.code)
-                              }
-                              quotient={quotient}
-                              minQuotient={minQuotient}
-                              maxQuotient={maxQuotient}
-                              equalScore={equalScore as number}
-                              remainderContent={remainderContent}
-                              nextRemainderContent={nextRemainderContent}
-                              setTotalEqualScore={setTotalEqualScore}
-                              category={
-                                dragItem.quizCategoryList?.[0]?.quizCategory
-                              }
-                              favoriteQuizItem={(e) =>
-                                handleFavorite(e, {
-                                  idx: dragItem.idx,
-                                  isFavorite: true,
-                                })
-                              }
-                            ></MathviewerAccordion>
-                          </li>
-                        )}
-                      </StepDnDWrapper>
-                    </ContentListWrapper>
+                            {(
+                              dragItem,
+                              ref,
+                              isDragging,
+                              itemIndex,
+                              quotient,
+                            ) => (
+                              <li
+                                ref={ref}
+                                className={`${isDragging ? 'opacity' : ''}`}
+                              >
+                                <MathviewerAccordion
+                                  componentWidth="750px"
+                                  width="550px"
+                                  onClick={() => {
+                                    showSimilarContent(
+                                      dragItem.code,
+                                      itemIndex,
+                                    );
+                                  }}
+                                  isSimilar={isSimilar}
+                                  isFavorite={dragItem.isFavorite}
+                                  data={dragItem}
+                                  quizNum={itemIndex + 1}
+                                  title={
+                                    dragItem.quizCategoryList[0].quizCategory
+                                      .유형
+                                  }
+                                  index={itemIndex}
+                                  selectedCardIndex={selectedCardIndex}
+                                  onSelectCard={setSelectedCardIndex}
+                                  reportQuizitem={() =>
+                                    openReportProcess(dragItem.idx)
+                                  }
+                                  deleteQuizItem={() =>
+                                    deleteQuizItem(dragItem.code)
+                                  }
+                                  quotient={quotient}
+                                  minQuotient={minQuotient}
+                                  maxQuotient={maxQuotient}
+                                  equalScore={equalScore as number}
+                                  remainderContent={remainderContent}
+                                  nextRemainderContent={nextRemainderContent}
+                                  setTotalEqualScore={setTotalEqualScore}
+                                  category={
+                                    dragItem.quizCategoryList?.[0]?.quizCategory
+                                  }
+                                  favoriteQuizItem={(e) =>
+                                    handleFavorite(e, {
+                                      idx: dragItem.idx,
+                                      isFavorite: true,
+                                    })
+                                  }
+                                ></MathviewerAccordion>
+                              </li>
+                            )}
+                          </StepDnDWrapper>
+                        </ContentListWrapper>
+                      </>
+                    ) : (
+                      <>
+                        <ValueNone info="데이터가 없습니다" />
+                      </>
+                    )}
                   </>
                 )}
               </ContentListSection>

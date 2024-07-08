@@ -51,7 +51,7 @@ export function Step3() {
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
-    window.opener.localStorage.clear();
+    //window.opener.localStorage.clear();
     window.close();
   };
   //학습지 수정 상태관리
@@ -205,21 +205,20 @@ export function Step3() {
       localStorage.setItem('sendData', JSON.stringify(data));
     }
   };
-
+  //workSheetIdx 관리해서 넘겨주기
   const goBackMainPopup = () => {
     const data = {
-      code: '',
-      timestamp: '',
-      data: { quizList: newInitialItems },
+      data: { quizList: initialItems },
       isEditWorkbook: isEditWorkbook,
+      //workSheetIdx: workbookIdx,
     };
+    window.opener.localStorage.clear();
     saveLocalData(data);
     localStorage.setItem(
       'sendQuotientData',
       JSON.stringify(getQuotientLocalData),
     );
     navigate('/content-create/exam/step2');
-    window.opener.localStorage.clear();
   };
   const [fileName, setFileName] = useState('');
 
@@ -361,7 +360,7 @@ export function Step3() {
 
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
-        window.opener.localStorage.clear();
+        //window.opener.localStorage.clear();
       };
     }
   }, [isComplete]);

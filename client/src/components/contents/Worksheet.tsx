@@ -147,7 +147,7 @@ export function Worksheet() {
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      console.log('itemsList', itemsList);
+      //console.log('itemsList', itemsList);
       //itemsList에서마지막 인덱스(학기) 빼기
       //const data = itemsList.slice(0, 3);
       //console.log('data', data);
