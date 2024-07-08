@@ -41,6 +41,7 @@ export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
   const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
+  console.log(getLocalData);
 
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
@@ -127,6 +128,10 @@ export function Step3() {
       setIsEditWorkbook(getLocalData.isEditWorkbook);
       setWorkSheetIdx(getLocalData.workSheetIdx);
       setGetQuotientLocalData(getLocalData.quotientLocalData);
+      setNameValue(getLocalData.title);
+      setGradeValue(getLocalData.grade);
+      setContentAuthor(getLocalData.examiner);
+      setTag(getLocalData.tag);
     }
   }, [getLocalData]);
 
@@ -278,18 +283,7 @@ export function Step3() {
       examiner: contentAuthor,
       grade: gradeValue,
       quizCnt: newInitialItems?.length,
-      tag:
-        tag === '연습문제'
-          ? 'EXERCISES'
-          : tag === '일일TEST' //에러남
-            ? 'DAILY_TEST'
-            : tag === '모의고사'
-              ? 'PRACTICE_TEST'
-              : tag === '내신대비'
-                ? 'TEST_PREP'
-                : tag === '월말TEST' //에러남
-                  ? 'MONTHLY_TEST'
-                  : '',
+      tag: tag,
       isAutoGrade: true,
       article: {
         type: 'PDF',
@@ -494,14 +488,14 @@ export function Step3() {
               <Button
                 buttonType="button"
                 onClick={() => {
-                  selectTag('연습문제');
+                  selectTag('EXERCISES');
                 }}
                 $padding="5px"
                 height={'35px'}
                 width={'70px'}
                 fontSize="14px"
-                $normal={tag !== '연습문제'}
-                $filled={tag === '연습문제'}
+                $normal={tag !== 'EXERCISES'}
+                $filled={tag === 'EXERCISES'}
                 cursor
               >
                 <span>연습문제</span>
@@ -509,14 +503,14 @@ export function Step3() {
               <Button
                 buttonType="button"
                 onClick={() => {
-                  selectTag('일일TEST');
+                  selectTag('DAILY_TEST');
                 }}
                 $padding="5px"
                 height={'35px'}
                 width={'80px'}
                 fontSize="14px"
-                $normal={tag !== '일일TEST'}
-                $filled={tag === '일일TEST'}
+                $normal={tag !== 'DAILY_TEST'}
+                $filled={tag === 'DAILY_TEST'}
                 cursor
               >
                 <span>일일TEST</span>
@@ -524,14 +518,14 @@ export function Step3() {
               <Button
                 buttonType="button"
                 onClick={() => {
-                  selectTag('모의고사');
+                  selectTag('PRACTICE_TEST');
                 }}
                 $padding="5px"
                 height={'35px'}
                 width={'70px'}
                 fontSize="14px"
-                $normal={tag !== '모의고사'}
-                $filled={tag === '모의고사'}
+                $normal={tag !== 'PRACTICE_TEST'}
+                $filled={tag === 'PRACTICE_TEST'}
                 cursor
               >
                 <span>모의고사</span>
@@ -539,14 +533,14 @@ export function Step3() {
               <Button
                 buttonType="button"
                 onClick={() => {
-                  selectTag('내신대비');
+                  selectTag('TEST_PREP');
                 }}
                 $padding="5px"
                 height={'35px'}
                 width={'70px'}
                 fontSize="14px"
-                $normal={tag !== '내신대비'}
-                $filled={tag === '내신대비'}
+                $normal={tag !== 'TEST_PREP'}
+                $filled={tag === 'TEST_PREP'}
                 cursor
               >
                 <span>내신대비</span>
@@ -554,14 +548,14 @@ export function Step3() {
               <Button
                 buttonType="button"
                 onClick={() => {
-                  selectTag('월말TEST');
+                  selectTag('MONTHLY_TEST');
                 }}
                 $padding="5px"
                 height={'35px'}
                 width={'80px'}
                 fontSize="14px"
-                $normal={tag !== '월말TEST'}
-                $filled={tag === '월말TEST'}
+                $normal={tag !== 'MONTHLY_TEST'}
+                $filled={tag === 'MONTHLY_TEST'}
                 cursor
               >
                 <span>월말TEST</span>
