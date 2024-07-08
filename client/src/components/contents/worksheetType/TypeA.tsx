@@ -38,9 +38,6 @@ export const TypeA = ({
   const [rightList, setRightList] = useState<QuizList[]>([]);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
-  console.log('initialItems', initialItems);
-  console.log('leftList', leftList);
-  console.log('rightList', rightList);
 
   // useLayoutEffect(() => {
   //   if (initialItems && leftRef.current && rightRef.current) {

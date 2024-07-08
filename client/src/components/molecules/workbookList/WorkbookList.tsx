@@ -156,6 +156,7 @@ export function WorkbookList({
   useEffect(() => {
     if (workbookIdx) {
       saveLocalData(workbookIdx);
+      setWorkbookIdx(0);
     }
   }, [workbookIdx]);
 
@@ -302,7 +303,7 @@ export function WorkbookList({
           </ListButtonWrapper>
           <ListWrapper ref={backgroundRef}>
             <List margin={`10px 0`}>
-              {list.map((item: WorksheetListType) => (
+              {list.map((item: WorksheetListType, i) => (
                 <ListItem
                   height="80px"
                   key={item.code as string}
@@ -339,7 +340,7 @@ export function WorkbookList({
                   )}
                   <ItemLayout>
                     {/* //TODO */}
-                    <span className="width_10px">{item.idx}</span>
+                    <span className="width_10px">{i + 1}</span>
                     <i className="line"></i>
                     <span>{item.grade}</span>
                     <i className="line"></i>

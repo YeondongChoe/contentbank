@@ -248,7 +248,7 @@ const ContentScript = styled.div`
 const HeaderCircle = styled.div`
   position: relative;
   top: 10px;
-  right: -22px;
+  right: -32px;
   width: 120px;
   height: 20px;
   border-top-right-radius: 15px;
