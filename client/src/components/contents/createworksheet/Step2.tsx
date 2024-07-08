@@ -1581,7 +1581,7 @@ export function Step2() {
 
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
-  console.log(getLocalData);
+  //console.log(getLocalData);
   useEffect(() => {
     if (getLocalData?.data.quizList) {
       setInitialItems(getLocalData.data.quizList);
@@ -1659,6 +1659,10 @@ export function Step2() {
       data: initialItems,
       isEditWorkbook: isEditWorkbook,
       workSheetIdx: workbookIdx,
+      title: workbookData?.data.data.name,
+      examiner: workbookData?.data.data.examiner,
+      grade: workbookData?.data.data.grade,
+      tag: workbookData?.data.data.tag,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
       window.opener.localStorage.clear();

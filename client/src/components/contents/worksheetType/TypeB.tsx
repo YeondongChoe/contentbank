@@ -102,7 +102,19 @@ export const TypeB = ({
               </div>
               <div className="Tag">
                 <Label
-                  value={(tag as string) || '학습지 태그'}
+                  value={
+                    (tag === 'EXERCISES'
+                      ? '연습문제'
+                      : tag === 'DAILY_TEST'
+                        ? '일일TEST'
+                        : tag === 'PRACTICE_TEST'
+                          ? '모의고사'
+                          : tag === 'TEST_PREP'
+                            ? '내신대비'
+                            : tag === 'MONTHLY_TEST'
+                              ? '월말TEST'
+                              : ('' as string)) || '학습지 태그'
+                  }
                   fontSize="11px"
                 />
               </div>
