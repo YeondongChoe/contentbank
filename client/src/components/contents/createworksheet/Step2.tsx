@@ -393,7 +393,7 @@ export function Step2() {
       // 상태 업데이트
       setInitialItems(updatedItems);
     }
-  }, [defaultValues]);
+  }, [defaultValues[0]]);
 
   //무작위 정렬
   useEffect(() => {
@@ -406,7 +406,7 @@ export function Step2() {
       // 상태 업데이트
       setInitialItems(shuffleList);
     }
-  }, [defaultValues]);
+  }, [defaultValues[0]]);
 
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -418,6 +418,7 @@ export function Step2() {
       [idx]: newValue,
     }));
   };
+  console.log(defaultValues);
 
   //선택한 문항 보기 정렬
   const selectCategory = [
@@ -2600,7 +2601,9 @@ export function Step2() {
                                 key={el.idx}
                                 defaultValue={el.name}
                                 options={el.options}
-                                //onSelect={(event) => selectListCategoryOption(event, el.idx)}
+                                onSelect={(event) =>
+                                  selectListCategoryOption(event, el.idx)
+                                }
                                 blackMode
                               ></Select>
                             ))}
@@ -2649,6 +2652,7 @@ export function Step2() {
                                         itemIndex,
                                       );
                                     }}
+                                    viewerOption={defaultValues[1]}
                                     isSimilar={isSimilar}
                                     isFavorite={dragItem.isFavorite}
                                     data={dragItem}

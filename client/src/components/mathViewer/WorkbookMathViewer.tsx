@@ -46,6 +46,7 @@ export function WorkbookMathViewer({
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
+  console.log(answerCommentary);
 
   const offLoader = () => {
     setDisplay('block');
@@ -126,18 +127,39 @@ export function WorkbookMathViewer({
                     ))}
                 </>
               )}
-              {answerCommentary === '문제+해설같이' && (
+              {answerCommentary === '문제+해설같이' ||
+                (answerCommentary === '문제+정답+해설' && (
+                  <>
+                    {data?.quizItemList
+                      .filter((quiz) => quiz.type === 'QUESTION')
+                      .map((quiz) => (
+                        <ContentQuestion
+                          key={quiz.idx}
+                          dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                        ></ContentQuestion>
+                      ))}
+                    {data?.quizItemList
+                      .filter((quiz) => quiz.type === 'EXAMPLE')
+                      .map((quiz) => (
+                        <ContentQuestion
+                          key={quiz.idx}
+                          dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                        ></ContentQuestion>
+                      ))}
+                    {data?.quizItemList
+                      .filter((quiz) => quiz.type === 'ANSWER')
+                      .map((quiz) => (
+                        <ContentQuestion
+                          key={quiz.idx}
+                          dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                        ></ContentQuestion>
+                      ))}
+                  </>
+                ))}
+              {answerCommentary === '문제+정답' && (
                 <>
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
-                    .map((quiz) => (
-                      <ContentQuestion
-                        key={quiz.idx}
-                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
-                      ></ContentQuestion>
-                    ))}
-                  {data?.quizItemList
-                    .filter((quiz) => quiz.type === 'EXAMPLE')
                     .map((quiz) => (
                       <ContentQuestion
                         key={quiz.idx}
