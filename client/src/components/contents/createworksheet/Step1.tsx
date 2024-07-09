@@ -188,7 +188,6 @@ export function Step1() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
-  console.log(unitClassificationList.length);
 
   const [selectedClassification, setSelectedClassification] = useState<
     UnitClassificationType[]
@@ -575,7 +574,6 @@ export function Step1() {
   });
 
   useEffect(() => {
-    console.log(radio4depthCheck);
     if (selected4depth == '') return;
     categoryItemTreeDataMutate();
   }, [selected4depth]);
@@ -1988,8 +1986,18 @@ export function Step1() {
             response.data.data.quizList.length === Number(inputValue)
           ) {
             navigate('/content-create/exam/step2');
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
           } else {
             setIsAlertOpen(true);
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
       } else if (tabVeiw === '시중교재') {
@@ -2015,6 +2023,7 @@ export function Step1() {
       }
     },
   });
+  console.log(questionNum || inputValue);
 
   const isRadioStateType = (
     item: UnitClassificationType,
@@ -2456,95 +2465,93 @@ export function Step1() {
                                 <Loader width="50px" />
                               </LoaderWrapper>
                             )}
-                            <PerfectScrollbar>
-                              {categoryItemTreeData ? (
-                                <AccordionItemWrapper id="scrollTopWrapper">
-                                  {itemTree.length ? (
-                                    <div ref={contentRef} className="content">
-                                      {searchValue.length > 0 ? (
-                                        <>
-                                          {itemTree.map((el) => (
-                                            <div key={`${el.itemTreeKey}`}>
-                                              {el.itemTreeList.map((item) => (
-                                                <DepthBlock
-                                                  highlightText={highlightText}
-                                                  defaultChecked
-                                                  key={`depthList${item?.idx} ${item.name}`}
-                                                  classNameList={`depth-${item.level}`}
-                                                  id={item?.idx}
-                                                  name={item.name}
-                                                  value={item?.idx}
-                                                  level={item?.level}
-                                                  onChange={(e) =>
-                                                    handleSingleCheck(
-                                                      e.target.checked,
-                                                      item?.idx,
-                                                      item?.level,
-                                                    )
-                                                  }
-                                                  checked={
-                                                    checkedDepthList.includes(
-                                                      item?.idx,
-                                                    )
-                                                      ? true
-                                                      : false
-                                                  }
-                                                  searchValue={searchValue}
-                                                >
-                                                  <span>{item.name}</span>
-                                                </DepthBlock>
-                                              ))}
-                                            </div>
-                                          ))}
-                                        </>
-                                      ) : (
-                                        <>
-                                          {itemTree.map((el) => (
-                                            <div key={`${el.itemTreeKey}`}>
-                                              {el.itemTreeList.map((item) => (
-                                                <DepthBlock
-                                                  defaultChecked
-                                                  key={`depthList${item?.idx} ${item.name}`}
-                                                  classNameList={`depth-${item.level}`}
-                                                  id={item?.idx}
-                                                  name={item.name}
-                                                  value={item?.idx}
-                                                  level={item?.level}
-                                                  onChange={(e) =>
-                                                    handleSingleCheck(
-                                                      e.target.checked,
-                                                      item?.idx,
-                                                      item?.level,
-                                                    )
-                                                  }
-                                                  checked={
-                                                    checkedDepthList.includes(
-                                                      item?.idx,
-                                                    )
-                                                      ? true
-                                                      : false
-                                                  }
-                                                  searchValue={searchValue}
-                                                >
-                                                  <span>{item.name}</span>
-                                                </DepthBlock>
-                                              ))}
-                                            </div>
-                                          ))}
-                                        </>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <ValueNone
-                                      textOnly
-                                      info="등록된 데이터가 없습니다"
-                                    />
-                                  )}
-                                </AccordionItemWrapper>
-                              ) : (
-                                <Loader />
-                              )}
-                            </PerfectScrollbar>
+                            {categoryItemTreeData ? (
+                              <AccordionItemWrapper id="scrollTopWrapper">
+                                {itemTree.length ? (
+                                  <div ref={contentRef} className="content">
+                                    {searchValue.length > 0 ? (
+                                      <>
+                                        {itemTree.map((el) => (
+                                          <div key={`${el.itemTreeKey}`}>
+                                            {el.itemTreeList.map((item) => (
+                                              <DepthBlock
+                                                highlightText={highlightText}
+                                                defaultChecked
+                                                key={`depthList${item?.idx} ${item.name}`}
+                                                classNameList={`depth-${item.level}`}
+                                                id={item?.idx}
+                                                name={item.name}
+                                                value={item?.idx}
+                                                level={item?.level}
+                                                onChange={(e) =>
+                                                  handleSingleCheck(
+                                                    e.target.checked,
+                                                    item?.idx,
+                                                    item?.level,
+                                                  )
+                                                }
+                                                checked={
+                                                  checkedDepthList.includes(
+                                                    item?.idx,
+                                                  )
+                                                    ? true
+                                                    : false
+                                                }
+                                                searchValue={searchValue}
+                                              >
+                                                <span>{item.name}</span>
+                                              </DepthBlock>
+                                            ))}
+                                          </div>
+                                        ))}
+                                      </>
+                                    ) : (
+                                      <>
+                                        {itemTree.map((el) => (
+                                          <div key={`${el.itemTreeKey}`}>
+                                            {el.itemTreeList.map((item) => (
+                                              <DepthBlock
+                                                defaultChecked
+                                                key={`depthList${item?.idx} ${item.name}`}
+                                                classNameList={`depth-${item.level}`}
+                                                id={item?.idx}
+                                                name={item.name}
+                                                value={item?.idx}
+                                                level={item?.level}
+                                                onChange={(e) =>
+                                                  handleSingleCheck(
+                                                    e.target.checked,
+                                                    item?.idx,
+                                                    item?.level,
+                                                  )
+                                                }
+                                                checked={
+                                                  checkedDepthList.includes(
+                                                    item?.idx,
+                                                  )
+                                                    ? true
+                                                    : false
+                                                }
+                                                searchValue={searchValue}
+                                              >
+                                                <span>{item.name}</span>
+                                              </DepthBlock>
+                                            ))}
+                                          </div>
+                                        ))}
+                                      </>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <ValueNone
+                                    textOnly
+                                    info="등록된 데이터가 없습니다"
+                                  />
+                                )}
+                              </AccordionItemWrapper>
+                            ) : (
+                              <Loader />
+                            )}
                           </RowListWrapper>
                         </Accordion>
 
