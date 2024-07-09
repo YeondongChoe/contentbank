@@ -121,7 +121,8 @@ export function Step2() {
   const [getCategoryLocalData, setGetCategoryLocalData] =
     useState<WorkbookCategoryData | null>(null);
   const [getEditData, setGetEditData] = useState<EditWorkbookData | null>(null);
-
+  const [getItemCountData, setGetItemCountData] = useState<number | null>(null);
+  console.log(getItemCountData);
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
@@ -256,6 +257,7 @@ export function Step2() {
       const quotientData = localStorage.getItem('sendQuotientData');
       const categoryData = localStorage.getItem('sendCategoryData');
       const editData = localStorage.getItem('sendEditData');
+      const itemCount = localStorage.getItem('itemCount');
 
       if (data) {
         try {
@@ -307,6 +309,17 @@ export function Step2() {
         }
       } else {
         console.log('로컬 스토리지에 sendEditData가 없습니다.');
+      }
+      if (itemCount) {
+        try {
+          const parsedItemCountData = JSON.parse(itemCount);
+          console.log('sendItemCount:', parsedItemCountData); // 디버깅용 콘솔 로그
+          setGetItemCountData(parsedItemCountData);
+        } catch (error) {
+          console.error('로컬 스토리지 sendItemCount 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 sendItemCount가 없습니다.');
       }
     };
 
@@ -418,7 +431,6 @@ export function Step2() {
       [idx]: newValue,
     }));
   };
-  console.log(defaultValues);
 
   //선택한 문항 보기 정렬
   const selectCategory = [
@@ -483,7 +495,7 @@ export function Step2() {
       if (response.data.data.quizList.length <= 0) {
         openToastifyAlert({
           type: 'error',
-          text: '가지고 올 수 있는 문항이 없습니다.',
+          text: '범위 변경 버튼을 눌러 새 문항을 추가해보세요.',
         });
       } else {
         setNewQuizItems(response.data.data);
@@ -1527,94 +1539,129 @@ export function Step2() {
   //리스트 문항 전체 추가
   const clickAddAllQuizItem = () => {
     //새문항 전체추가
-    if (newQuizItems) {
+    if (newQuizItems && getItemCountData) {
       const allNewQuizItems = newQuizItems.quizList;
-      setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
-      setNewQuizItems((prevItems) => {
-        if (prevItems) {
-          return {
-            ...prevItems,
-            quizList: [],
-          };
-        }
-        return prevItems;
-      });
+      if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
+        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+        setNewQuizItems((prevItems) => {
+          if (prevItems) {
+            return {
+              ...prevItems,
+              quizList: [],
+            };
+          }
+          return prevItems;
+        });
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+        });
+      }
     }
     //즐겨찾기 전체추가
-    else if (favoriteQuestionList) {
+    else if (favoriteQuestionList && getItemCountData) {
       const allNewQuizItems = favoriteQuestionList.quizList;
-      setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
-      setFavoriteQuestionList((prevItems) => {
-        if (prevItems) {
-          return {
-            ...prevItems,
-            quizList: [],
-          };
-        }
-        return prevItems;
-      });
+      if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
+        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+        setFavoriteQuestionList((prevItems) => {
+          if (prevItems) {
+            return {
+              ...prevItems,
+              quizList: [],
+            };
+          }
+          return prevItems;
+        });
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+        });
+      }
     }
   };
 
   // 리스트에 문항 추가하기(객체인 경우)
   const clickAddQuizItem = (code: string) => {
     // 우사문항 불러오기 리스트
-    if (similarItems) {
+    if (similarItems && getItemCountData) {
       const selectedQuizItem = similarItems.quizList.find(
         (item) => item.code === code,
       );
-      if (selectedQuizItem) {
-        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-        setSimilarItems((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: prevItems.quizList.filter(
-                (item) => item !== selectedQuizItem,
-              ),
-            };
-          }
-          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (initialItems.length + 1 <= getItemCountData) {
+        if (selectedQuizItem) {
+          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+          setSimilarItems((prevItems) => {
+            if (prevItems) {
+              return {
+                ...prevItems,
+                quizList: prevItems.quizList.filter(
+                  (item) => item !== selectedQuizItem,
+                ),
+              };
+            }
+            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+          });
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
         });
       }
     }
     // 새문항 불러오기 리스트
-    else if (newQuizItems) {
+    else if (newQuizItems && getItemCountData) {
       const selectedQuizItem = newQuizItems.quizList.find(
         (item) => item.code === code,
       );
-      if (selectedQuizItem) {
-        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-        setNewQuizItems((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: prevItems.quizList.filter(
-                (item) => item !== selectedQuizItem,
-              ),
-            };
-          }
-          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (initialItems.length + 1 <= getItemCountData) {
+        if (selectedQuizItem) {
+          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+          setNewQuizItems((prevItems) => {
+            if (prevItems) {
+              return {
+                ...prevItems,
+                quizList: prevItems.quizList.filter(
+                  (item) => item !== selectedQuizItem,
+                ),
+              };
+            }
+            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+          });
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
         });
       }
     }
     // 즐겨찾기 리스트
-    else if (favoriteQuestionList) {
+    else if (favoriteQuestionList && getItemCountData) {
       const selectedQuizItem = favoriteQuestionList.quizList.find(
         (item) => item.code === code,
       );
-      if (selectedQuizItem) {
-        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-        setFavoriteQuestionList((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: prevItems.quizList.filter(
-                (item) => item !== selectedQuizItem,
-              ),
-            };
-          }
-          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (initialItems.length + 1 <= getItemCountData) {
+        if (selectedQuizItem) {
+          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+          setFavoriteQuestionList((prevItems) => {
+            if (prevItems) {
+              return {
+                ...prevItems,
+                quizList: prevItems.quizList.filter(
+                  (item) => item !== selectedQuizItem,
+                ),
+              };
+            }
+            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+          });
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
         });
       }
     }
@@ -1648,7 +1695,7 @@ export function Step2() {
 
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
-  //console.log(getLocalData);
+
   useEffect(() => {
     if (getLocalData?.data.quizList) {
       setInitialItems(getLocalData.data.quizList);
@@ -1661,10 +1708,6 @@ export function Step2() {
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
-    //setDefaultValues(initialValues);
-    //setIsStartDnd(false);
-    //selectListCategoryOption(0);
-    //console.log('@드래그끝났을떄', newList);
   };
 
   const handleButtonCheck = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -2213,7 +2256,7 @@ export function Step2() {
                                         )}
 
                                         {categoryItemTreeData ? (
-                                          <>
+                                          <AccordionItemWrapper>
                                             {itemTree.length ? (
                                               <div
                                                 ref={contentRef}
@@ -2322,7 +2365,7 @@ export function Step2() {
                                                 info="등록된 데이터가 없습니다"
                                               />
                                             )}
-                                          </>
+                                          </AccordionItemWrapper>
                                         ) : (
                                           <Loader />
                                         )}
@@ -2941,6 +2984,10 @@ const LoaderWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+`;
+const AccordionItemWrapper = styled.div`
+  overflow-y: auto;
+  max-height: 250px;
 `;
 const SubmitButtonWrapper = styled.div`
   display: flex;

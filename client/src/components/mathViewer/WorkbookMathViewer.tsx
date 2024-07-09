@@ -46,7 +46,6 @@ export function WorkbookMathViewer({
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
-  console.log(answerCommentary);
 
   const offLoader = () => {
     setDisplay('block');
