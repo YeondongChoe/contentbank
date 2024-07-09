@@ -8,14 +8,17 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getAuthorityItem, getMyInfo } from '../api/user';
+import { useJwtDecode } from '../hooks/useJwtDecode';
 import { myAuthorityAtom } from '../store/myAuthorityAtom';
 import { openNaviationBoolAtom, pageIndexAtom } from '../store/utilAtom';
+import { getAuthorityCookie } from '../utils/cookies';
 
 import { Label, openToastifyAlert } from './atom';
 import { COLOR } from './constants';
 
 export function Navigation() {
-  // const decodingInfo = useJwtDecode(token);
+  const token = getAuthorityCookie('accessToken');
+  const decodingInfo = useJwtDecode(token);
   const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const isOpenNavigation = useRecoilValue(openNaviationBoolAtom);
   const setpageIndexValue = useSetRecoilState(pageIndexAtom);
@@ -36,34 +39,15 @@ export function Navigation() {
       setpageIndexValue([depth1Value.innerHTML, depth2Value.innerHTML]);
   };
 
-  // 최초 진입시 유저 권한 조회 후 전역 데이터에 넣기
-  // 마이페이지 데이터 불러오기 api
-  const { data: myInfoData, isLoading } = useQuery({
-    queryKey: ['get-myInfo'],
-    queryFn: getMyInfo,
-    meta: {
-      errorMessage: 'get-myInfo 에러 메세지',
-    },
-  });
-  const authorityCode = myInfoData?.data.data.authority.code;
-  // 권한 조회 api
-  const { data: authorityData, isLoading: authorityIsLoading } = useQuery({
-    queryKey: ['get-authority'],
-    queryFn: () => getAuthorityItem(authorityCode),
-    meta: {
-      errorMessage: 'get-authority 에러 메세지',
-    },
-    enabled: !!authorityCode,
-  });
-  const authorityList = authorityData?.data.data.permissionList;
-
   useEffect(() => {
-    if (myInfoData && authorityData) {
-      // console.log('myInfoData-----------------01', authorityCode);
-      // console.log('내권한 배열-----------------', authorityList);
-      setMyAuthority(authorityList);
+    if (decodingInfo) {
+      console.log(
+        'decodingInfo-----------------01',
+        decodingInfo.permissionList,
+      );
+      setMyAuthority(decodingInfo.permissionList);
     }
-  }, []);
+  }, [decodingInfo]);
 
   return (
     <>
@@ -85,10 +69,9 @@ export function Navigation() {
                 {/* <MdAccountBalance style={{ width: '20px', height: '20px' }} /> */}
                 <Label type="navi" value={'콘텐츠 제작'}></Label>
               </strong>
-              {authorityList &&
-              !authorityIsLoading &&
+              {decodingInfo?.permissionList &&
               // 문항 제작
-              authorityList[0]?.isEdit ? (
+              decodingInfo?.permissionList.QE.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-create/quiz'}>
                     <svg
@@ -133,10 +116,9 @@ export function Navigation() {
                   </Link>
                 </button>
               )}
-              {authorityList &&
-              !authorityIsLoading &&
+              {decodingInfo?.permissionList &&
               // 학습지 제작
-              authorityList[1]?.isEdit ? (
+              decodingInfo?.permissionList.WE.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-create/exam'}>
                     <svg
@@ -203,10 +185,9 @@ export function Navigation() {
                 {/* <MdAccountBalance style={{ width: '20px', height: '20px' }} /> */}
                 <Label type="navi" value={'콘텐츠 관리'}></Label>
               </strong>
-              {authorityList &&
-              !authorityIsLoading &&
+              {decodingInfo?.permissionList &&
               // 문항 관리
-              authorityList[2]?.isEdit ? (
+              decodingInfo?.permissionList.QM.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-manage/quiz'}>
                     <svg
@@ -319,10 +300,9 @@ export function Navigation() {
                 </svg> */}
                 <Label type="navi" value={'운영 관리'}></Label>
               </strong>
-              {authorityList &&
-              !authorityIsLoading &&
+              {decodingInfo?.permissionList &&
               // 회원 관리
-              authorityList[4]?.isManage ? (
+              decodingInfo?.permissionList.AM.isManage ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/operation-manage/member'}>
                     <svg
@@ -367,10 +347,9 @@ export function Navigation() {
                   </Link>
                 </button>
               )}
-              {authorityList &&
-              !authorityIsLoading &&
+              {decodingInfo?.permissionList &&
               // 권한 관리
-              authorityList[5]?.isManage ? (
+              decodingInfo?.permissionList.PM.isManage ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/operation-manage/authority'}>
                     <svg
