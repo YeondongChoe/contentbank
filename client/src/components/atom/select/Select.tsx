@@ -44,7 +44,6 @@ type SelectProps = {
   selectedValue?: string;
   heightScroll?: string;
   isnormalizedOptions?: boolean;
-  isStartDnD?: boolean;
 };
 
 export function Select({
@@ -65,7 +64,6 @@ export function Select({
   selectedValue,
   heightScroll,
   isnormalizedOptions,
-  isStartDnD,
   setSelectedCode,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
@@ -152,7 +150,7 @@ export function Select({
                     <div className="li" key={el.code}>
                       <button
                         disabled={disabled}
-                        value={isStartDnD ? '사용자 정렬' : el.name}
+                        value={el.name}
                         className={el.code}
                         onClick={(event) => {
                           handleOptionSelect(event, el.code);
