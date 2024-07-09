@@ -2623,56 +2623,64 @@ export function Step2() {
                               isDragging,
                               itemIndex,
                               quotient,
-                            ) => (
-                              <li
-                                ref={ref}
-                                className={`${isDragging ? 'opacity' : ''}`}
-                              >
-                                <MathviewerAccordion
-                                  componentWidth="750px"
-                                  width="550px"
-                                  onClick={() => {
-                                    showSimilarContent(
-                                      dragItem.code,
-                                      itemIndex,
-                                    );
-                                  }}
-                                  isSimilar={isSimilar}
-                                  isFavorite={dragItem.isFavorite}
-                                  data={dragItem}
-                                  quizNum={itemIndex + 1}
-                                  title={
-                                    dragItem.quizCategoryList[0].quizCategory
-                                      .유형
-                                  }
-                                  index={itemIndex}
-                                  selectedCardIndex={selectedCardIndex}
-                                  onSelectCard={setSelectedCardIndex}
-                                  reportQuizitem={() =>
-                                    openReportProcess(dragItem.idx)
-                                  }
-                                  deleteQuizItem={() =>
-                                    deleteQuizItem(dragItem.code)
-                                  }
-                                  quotient={quotient}
-                                  minQuotient={minQuotient}
-                                  maxQuotient={maxQuotient}
-                                  equalScore={equalScore as number}
-                                  remainderContent={remainderContent}
-                                  nextRemainderContent={nextRemainderContent}
-                                  setTotalEqualScore={setTotalEqualScore}
-                                  category={
-                                    dragItem.quizCategoryList?.[0]?.quizCategory
-                                  }
-                                  favoriteQuizItem={(e) =>
-                                    handleFavorite(e, {
-                                      idx: dragItem.idx,
-                                      isFavorite: true,
-                                    })
-                                  }
-                                ></MathviewerAccordion>
-                              </li>
-                            )}
+                            ) => {
+                              const quizCategoryType =
+                                dragItem.quizCategoryList.find(
+                                  (quizCategoryItem: any) =>
+                                    quizCategoryItem.quizCategory.문항타입,
+                                )?.quizCategory;
+                              const quizCategory =
+                                dragItem.quizCategoryList.find(
+                                  (quizCategoryItem: any) =>
+                                    quizCategoryItem.quizCategory.유형,
+                                )?.quizCategory;
+
+                              return (
+                                <li
+                                  ref={ref}
+                                  className={`${isDragging ? 'opacity' : ''}`}
+                                >
+                                  <MathviewerAccordion
+                                    componentWidth="750px"
+                                    width="550px"
+                                    onClick={() => {
+                                      showSimilarContent(
+                                        dragItem.code,
+                                        itemIndex,
+                                      );
+                                    }}
+                                    isSimilar={isSimilar}
+                                    isFavorite={dragItem.isFavorite}
+                                    data={dragItem}
+                                    quizNum={itemIndex + 1}
+                                    title={quizCategory.유형}
+                                    index={itemIndex}
+                                    selectedCardIndex={selectedCardIndex}
+                                    onSelectCard={setSelectedCardIndex}
+                                    reportQuizitem={() =>
+                                      openReportProcess(dragItem.idx)
+                                    }
+                                    deleteQuizItem={() =>
+                                      deleteQuizItem(dragItem.code)
+                                    }
+                                    quotient={quotient}
+                                    minQuotient={minQuotient}
+                                    maxQuotient={maxQuotient}
+                                    equalScore={equalScore as number}
+                                    remainderContent={remainderContent}
+                                    nextRemainderContent={nextRemainderContent}
+                                    setTotalEqualScore={setTotalEqualScore}
+                                    category={quizCategoryType}
+                                    favoriteQuizItem={(e) =>
+                                      handleFavorite(e, {
+                                        idx: dragItem.idx,
+                                        isFavorite: true,
+                                      })
+                                    }
+                                  ></MathviewerAccordion>
+                                </li>
+                              );
+                            }}
                           </StepDnDWrapper>
                         </ContentListWrapper>
                       </>

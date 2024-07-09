@@ -207,6 +207,7 @@ export function MathviewerAccordion({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
+  console.log(category);
 
   //문항 삭제될때마다 총점 변경
   const totalEqualScore = useMemo(
