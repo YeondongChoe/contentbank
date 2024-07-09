@@ -188,6 +188,7 @@ export function Step1() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
+  console.log(unitClassificationList.length);
 
   const [selectedClassification, setSelectedClassification] = useState<
     UnitClassificationType[]
@@ -1975,13 +1976,21 @@ export function Step1() {
       saveLocalData(response.data.data);
       //받아온 문항수와 선택한 문항수가 같을경우 다음단계
       if (tabVeiw === '단원·유형별') {
-        if (
-          (receivedQuizCount && receivedQuizCount === Number(questionNum)) ||
-          receivedQuizCount === Number(inputValue)
-        ) {
-          navigate('/content-create/exam/step2');
+        if (response.data.data.quizList.length === 0) {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          return;
         } else {
-          setIsAlertOpen(true);
+          if (
+            response.data.data.quizList.length === Number(questionNum) ||
+            response.data.data.quizList.length === Number(inputValue)
+          ) {
+            navigate('/content-create/exam/step2');
+          } else {
+            setIsAlertOpen(true);
+          }
         }
       } else if (tabVeiw === '시중교재') {
         if (
@@ -2121,21 +2130,27 @@ export function Step1() {
 
   const moveStep2 = () => {
     if (tabVeiw === '단원·유형별')
-      if (
-        inputValue !== '' ||
-        (questionNum !== null &&
-          questionNum !== '' &&
-          unitClassificationList.length > 0 &&
-          questionLevel !== null &&
-          questionType !== null &&
-          containMock !== null &&
-          equalScore !== null)
-      ) {
-        clickNextButton();
+      if (unitClassificationList.length > 0) {
+        if (
+          inputValue !== '' ||
+          (questionNum !== null &&
+            questionNum !== '' &&
+            questionLevel !== null &&
+            questionType !== null &&
+            containMock !== null &&
+            equalScore !== null)
+        ) {
+          clickNextButton();
+        } else {
+          openToastifyAlert({
+            type: 'error',
+            text: '필수항목을 선택해주세요',
+          });
+        }
       } else {
         openToastifyAlert({
           type: 'error',
-          text: '필수항목을 선택해주세요',
+          text: '교과정보 추가버튼을 눌러주세요.',
         });
       }
     else if (tabVeiw === '시중교재') {
@@ -2486,7 +2501,7 @@ export function Step1() {
                                                   defaultChecked
                                                   key={`depthList${item?.idx} ${item.name}`}
                                                   classNameList={`depth-${item.level}`}
-                                                  id={item?.code}
+                                                  id={item?.idx}
                                                   name={item.name}
                                                   value={item?.idx}
                                                   level={item?.level}
@@ -2544,12 +2559,12 @@ export function Step1() {
                                     key={`etc1 ${item.idx}`}
                                   >
                                     <ButtonFormatMultiRadio
+                                      branchValue={`${item.name}`}
                                       titleText={`${item.name}`}
                                       list={categoryAddInfoList[0]}
                                       selected={selectedCategoryEtc1}
                                       onChange={(e) => handleMultiRadioCheck(e)}
                                       checkedInputs={radioEtc1Check}
-                                      branchValue={`etc1`}
                                     />
                                   </div>
                                 ))}
@@ -2560,12 +2575,12 @@ export function Step1() {
                                     key={`etc2 ${item.idx}`}
                                   >
                                     <ButtonFormatMultiRadio
+                                      branchValue={`${item.name}`}
                                       titleText={`${item.name}`}
                                       list={categoryAddInfoList[1]}
                                       selected={selectedCategoryEtc2}
                                       onChange={(e) => handleMultiRadioCheck(e)}
                                       checkedInputs={radioEtc2Check}
-                                      branchValue={`etc2`}
                                     />
                                   </div>
                                 ))}
