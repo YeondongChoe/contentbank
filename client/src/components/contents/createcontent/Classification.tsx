@@ -1180,17 +1180,19 @@ export function Classification() {
                         {searchValue.length > 1 && (
                           <p className="line bottom_text">
                             {`총 
-                          ${
-                            categoryItemTreeData && itemTree.length
-                              ? itemTree.map(
-                                  (el) =>
-                                    el.itemTreeList.filter((el) =>
-                                      el.name.includes(searchValue),
-                                    ).length,
-                                )
-                              : 0
-                          } 
-                          건`}
+															${
+                                categoryItemTreeData && itemTree.length
+                                  ? itemTree.reduce(
+                                      (total, el) =>
+                                        total +
+                                        el.itemTreeList.filter((item) =>
+                                          item.name.includes(searchValue),
+                                        ).length,
+                                      0,
+                                    )
+                                  : 0
+                              } 
+															건`}
                             <ArrowButtonWrapper>
                               <button onClick={() => prevHighlight()}>
                                 <IoMdArrowDropup />
