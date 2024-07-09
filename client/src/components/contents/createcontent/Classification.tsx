@@ -743,10 +743,6 @@ export function Classification() {
       },
     });
 
-  useEffect(() => {
-    console.log('itemTree ------ ', itemTree);
-  }, [itemTree, searchValue]);
-
   // 검색 기능
   const filterSearchValue = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -945,6 +941,11 @@ export function Classification() {
   const clickIdx = useMemo(() => {
     return sortedList.length - 1;
   }, []);
+
+  useEffect(() => {
+    // console.log('itemTree ------ ', itemTree);
+    setHighlightIndex(-1);
+  }, [itemTree, searchValue]);
 
   return (
     <Container>

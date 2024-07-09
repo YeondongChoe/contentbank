@@ -769,10 +769,6 @@ export function Step1() {
 
   const [searchValue, setSearchValue] = useState<string>('');
 
-  useEffect(() => {
-    console.log('itemTree ------ ', itemTree);
-  }, [itemTree, searchValue]);
-
   // 검색 기능
   const filterSearchValue = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -2186,6 +2182,11 @@ export function Step1() {
       }
     }
   };
+
+  useEffect(() => {
+    // console.log('itemTree ------ ', itemTree);
+    setHighlightIndex(-1);
+  }, [itemTree, searchValue]);
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
