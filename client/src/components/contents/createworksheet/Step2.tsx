@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import _shuffle from 'lodash/shuffle';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -349,11 +350,11 @@ export function Step2() {
   const [isStartDnD, setIsStartDnd] = useState(false);
 
   // 선택한 문항 배열 정렬
-  const selectArrange: SelectCategory[] = [
+  const selectArrange = [
     {
-      idx: 1,
+      idx: 0,
       name: '사용자 정렬',
-      value: '1',
+      value: '0',
       options: [
         { idx: 0, name: '객관식 상단배치', value: '0' },
         { idx: 1, name: '무작위 정렬', value: '1' },
@@ -368,33 +369,66 @@ export function Step2() {
     },
     {} as { [key: number]: string },
   );
-
   const [defaultValues, setDefaultValues] = useState(initialValues);
 
+  //객관식 상단배치
   useEffect(() => {
-    if (isStartDnD) {
-      setDefaultValues(initialValues);
+    if (defaultValues[0] === '객관식 상단배치') {
+      const updatedItems = initialItems.slice(); // 초기 상태 복사
+
+      // quizCategoryList에서 객관식인 item을 맨 앞으로 이동
+      updatedItems.sort((a, b) => {
+        // a가 객관식이면 -1, b가 객관식이면 1, 둘 다 아니면 0 반환
+        const aIsObjective = a.quizCategoryList.some(
+          (item) => item.quizCategory.문항타입 === '객관식',
+        );
+        const bIsObjective = b.quizCategoryList.some(
+          (item) => item.quizCategory.문항타입 === '객관식',
+        );
+        if (aIsObjective && !bIsObjective) return -1;
+        if (!aIsObjective && bIsObjective) return 1;
+        return 0;
+      });
+
+      // 상태 업데이트
+      setInitialItems(updatedItems);
     }
-  }, [isStartDnD]);
+  }, [defaultValues]);
+
+  //무작위 정렬
+  useEffect(() => {
+    if (defaultValues[0] === '무작위 정렬') {
+      const updatedItems = initialItems.slice(); // 초기 상태 복사
+
+      // 각 객체의 quizCategoryList를 무작위로 섞음
+      const shuffleList = _shuffle(updatedItems);
+
+      // 상태 업데이트
+      setInitialItems(shuffleList);
+    }
+  }, [defaultValues]);
 
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
     idx: number,
   ) => {
-    const newValue = (event.target as HTMLButtonElement).value;
-    setDefaultValues((prev) => ({ ...prev, [idx]: newValue }));
+    const newValue = (event.target as HTMLButtonElement)?.innerText;
+    setDefaultValues((prev) => ({
+      ...prev,
+      [idx]: newValue,
+    }));
   };
 
   //선택한 문항 보기 정렬
   const selectCategory = [
     {
-      idx: '1',
+      idx: 1,
       name: '문제만 보기',
-      value: '2',
+      value: '1',
       options: [
-        { idx: '0', name: '문제만 보기', value: '0' },
-        { idx: '1', name: '문제+정답', value: '1' },
-        { idx: '2', name: '문제+정답+해설', value: '2' },
+        { idx: 0, name: '문제만 보기', value: '0' },
+        { idx: 1, name: '문제+정답', value: '1' },
+        { idx: 2, name: '문제+정답+해설', value: '2' },
       ],
     },
   ];
@@ -1626,6 +1660,9 @@ export function Step2() {
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
+    //setDefaultValues(initialValues);
+    //setIsStartDnd(false);
+    //selectListCategoryOption(0);
     //console.log('@드래그끝났을떄', newList);
   };
 
@@ -2539,33 +2576,35 @@ export function Step2() {
                             fontSize="16px"
                           />
                           {/* 사용자정렬 */}
-                          {/* <SelectWrapper>
-                  {selectArrange.map((el) => (
-                    <Select
-                      width={'150px'}
-                      isnormalizedOptions
-                      key={el.idx}
-                      defaultValue={defaultValues[el.idx]}
-                      options={el.options}
-                      onSelect={(event) =>
-                        selectListCategoryOption(event, el.idx)
-                      }
-                      blackMode
-                      isStartDnD={isStartDnD}
-                    ></Select>
-                  ))}
-                  {selectCategory.map((el) => (
-                    <Select
-                      width={'150px'}
-                      isnormalizedOptions
-                      key={el.idx}
-                      defaultValue={el.name}
-                      options={el.options}
-                      //onSelect={(event) => selectListCategoryOption(event, el.idx)}
-                      blackMode
-                    ></Select>
-                  ))}
-                </SelectWrapper> */}
+                          <SelectWrapper>
+                            {selectArrange.map((el) => (
+                              <Select
+                                width={'150px'}
+                                isnormalizedOptions
+                                key={el.name}
+                                defaultValue={defaultValues[Number(el.idx)]}
+                                options={el.options}
+                                onSelect={(event) =>
+                                  selectListCategoryOption(
+                                    event,
+                                    Number(el.idx),
+                                  )
+                                }
+                                blackMode
+                              ></Select>
+                            ))}
+                            {selectCategory.map((el) => (
+                              <Select
+                                width={'150px'}
+                                isnormalizedOptions
+                                key={el.idx}
+                                defaultValue={el.name}
+                                options={el.options}
+                                //onSelect={(event) => selectListCategoryOption(event, el.idx)}
+                                blackMode
+                              ></Select>
+                            ))}
+                          </SelectWrapper>
                         </ListFilter>
                         <ContentListWrapper>
                           <StepDnDWrapper
