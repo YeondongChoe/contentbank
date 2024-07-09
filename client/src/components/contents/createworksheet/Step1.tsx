@@ -2565,7 +2565,6 @@ export function Step1() {
                                       selected={selectedCategoryEtc1}
                                       onChange={(e) => handleMultiRadioCheck(e)}
                                       checkedInputs={radioEtc1Check}
-                                      branchValue={`etc1`}
                                     />
                                   </div>
                                 ))}
@@ -2582,7 +2581,6 @@ export function Step1() {
                                       selected={selectedCategoryEtc2}
                                       onChange={(e) => handleMultiRadioCheck(e)}
                                       checkedInputs={radioEtc2Check}
-                                      branchValue={`etc2`}
                                     />
                                   </div>
                                 ))}
