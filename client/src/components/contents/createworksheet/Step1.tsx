@@ -869,11 +869,15 @@ export function Step1() {
   };
 
   const prevHighlight = () => {
-    setHighlightIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    setHighlightIndex((prevIndex) =>
+      prevIndex > 0 ? prevIndex - 1 : prevIndex,
+    );
   };
 
   const nextHighlight = () => {
-    setHighlightIndex((prevIndex) => prevIndex + 1);
+    setHighlightIndex((prevIndex) =>
+      prevIndex < itemTree.length - 1 ? prevIndex + 1 : prevIndex,
+    );
   };
 
   useEffect(() => {
@@ -2241,7 +2245,7 @@ export function Step1() {
                   />
                 </TabWrapper>
                 <CategoryWrapper>
-                  <PerfectScrollbar id="scrollTopWrapper">
+                  <PerfectScrollbar>
                     <UnitClassifications>
                       {unitClassificationList.length > 0 ? (
                         <>
@@ -2438,7 +2442,7 @@ export function Step1() {
                             )}
                             <PerfectScrollbar>
                               {categoryItemTreeData ? (
-                                <AccordionItemWrapper>
+                                <AccordionItemWrapper id="scrollTopWrapper">
                                   {itemTree.length ? (
                                     <div ref={contentRef} className="content">
                                       {searchValue.length > 0 ? (

@@ -1013,7 +1013,7 @@ export function Classification() {
           item3Width={600}
           item3={
             <ScrollWrapper>
-              <PerfectScrollbar id="scrollTopWrapper">
+              <PerfectScrollbar>
                 <Title>
                   <span className="title_top">문항단원분류</span>
                 </Title>
@@ -1209,7 +1209,7 @@ export function Classification() {
                           </LoaderWrapper>
                         )}
                         <DepthBlockScrollWrapper>
-                          <PerfectScrollbar>
+                          <PerfectScrollbar id="scrollTopWrapper">
                             {categoryItemTreeData ? (
                               <>
                                 {itemTree.length ? (
