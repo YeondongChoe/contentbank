@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
-import base64 from 'base-64';
+import { decode } from 'base-64';
 
-const useJwtDecode = (jwtToken: string) => {
+export const useJwtDecode = (jwtToken: string) => {
   const [decodingInfo, setDecodingInfo] = useState<any | null>(null);
 
   useEffect(() => {
@@ -12,7 +12,7 @@ const useJwtDecode = (jwtToken: string) => {
           jwtToken.indexOf('.') + 1,
           jwtToken.lastIndexOf('.'),
         );
-        const decodingInfo = base64.decode(payload);
+        const decodingInfo = decode(payload);
         const decodingInfoJson = JSON.parse(decodingInfo);
         setDecodingInfo(decodingInfoJson);
       } catch (error) {
@@ -24,5 +24,3 @@ const useJwtDecode = (jwtToken: string) => {
 
   return decodingInfo;
 };
-
-export default useJwtDecode;
