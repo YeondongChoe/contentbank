@@ -61,6 +61,7 @@ import {
   WorkbookCategoryData,
   FavoriteQuizList,
   QuizList,
+  QuizCategory,
   SimilarQuizList,
   Data,
   ContentWithScore,
@@ -125,12 +126,18 @@ export function Step2() {
   );
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
-  const categoryType = initialItems.map(
-    (item) => item.quizCategoryList[0]?.quizCategory.문항타입,
-  );
-  const categoryLevel = initialItems.map(
-    (item) => item.quizCategoryList[0]?.quizCategory.난이도,
-  );
+  const categoryType = initialItems.map((item) => {
+    const category = item.quizCategoryList.find(
+      (quizCategoryItem) => quizCategoryItem.quizCategory.문항타입,
+    );
+    return category ? category.quizCategory.문항타입 : undefined;
+  });
+  const categoryLevel = initialItems.map((item) => {
+    const category = item.quizCategoryList.find(
+      (quizCategoryItem) => quizCategoryItem.quizCategory.난이도,
+    );
+    return category ? category.quizCategory.난이도 : undefined;
+  });
   const subjectiveType = categoryType.filter(
     (type) => type === '주관식',
   ).length;
@@ -1853,8 +1860,16 @@ export function Step2() {
                             >
                               {(dragItem, ref, isDragging, itemIndex) => {
                                 // dragItem과 그 속성들을 안전하게 접근하기 위해 옵셔널 체이닝 사용
+                                const quizCategoryType =
+                                  dragItem.quizCategoryList.find(
+                                    (quizCategoryItem: any) =>
+                                      quizCategoryItem.quizCategory.문항타입,
+                                  )?.quizCategory;
                                 const quizCategory =
-                                  dragItem.quizCategoryList?.[0]?.quizCategory;
+                                  dragItem.quizCategoryList.find(
+                                    (quizCategoryItem: any) =>
+                                      quizCategoryItem.quizCategory.유형,
+                                  )?.quizCategory;
 
                                 return (
                                   <li
@@ -1862,7 +1877,6 @@ export function Step2() {
                                     className={`${isDragging ? 'opacity' : ''}`}
                                   >
                                     <Content
-                                      // key={i}
                                       onClick={(e) => {
                                         handleButtonCheck(e);
                                       }}
@@ -1871,15 +1885,15 @@ export function Step2() {
                                         {itemIndex + 1}
                                       </div>
                                       <div className="type">
-                                        {quizCategory?.문항타입 || 'N/A'}
+                                        {quizCategoryType?.문항타입 || 'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="level">
-                                        {quizCategory?.난이도 || 'N/A'}
+                                        {quizCategoryType?.난이도 || 'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="title">
-                                        {quizCategory?.출처 || 'N/A'}
+                                        {quizCategory?.유형 || 'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="icon">
