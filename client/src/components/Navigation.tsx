@@ -15,6 +15,7 @@ import { Label, openToastifyAlert } from './atom';
 import { COLOR } from './constants';
 
 export function Navigation() {
+  // const decodingInfo = useJwtDecode(token);
   const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const isOpenNavigation = useRecoilValue(openNaviationBoolAtom);
   const setpageIndexValue = useSetRecoilState(pageIndexAtom);
@@ -62,7 +63,7 @@ export function Navigation() {
       // console.log('내권한 배열-----------------', authorityList);
       setMyAuthority(authorityList);
     }
-  }, [myInfoData, authorityData, authorityIsLoading]);
+  }, []);
 
   return (
     <>

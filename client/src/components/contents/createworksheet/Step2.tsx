@@ -2302,6 +2302,7 @@ export function Step2() {
                                                     handleMultiRadioCheck(e)
                                                   }
                                                   checkedInputs={radioEtc1Check}
+                                                  branchValue={`etc1`}
                                                 />
                                               </div>
                                             ))}
@@ -2321,6 +2322,7 @@ export function Step2() {
                                                     handleMultiRadioCheck(e)
                                                   }
                                                   checkedInputs={radioEtc2Check}
+                                                  branchValue={`etc2`}
                                                 />
                                               </div>
                                             ))}
