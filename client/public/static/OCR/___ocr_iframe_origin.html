@@ -1,253 +1,157 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <title>iTeX Qn.AI</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <link
-      rel="shortcut icon"
-      href="./static/css/icon/myicon.ico"
-      type="image/x-icon"
-    />
 
-    <script>
-      MathJax = {
-        tex: {
-          //packages: ['base']
-          multlineWidth: "85%",
-        },
-        options: {
-          renderActions: {
-            addMenu: [0, "", ""],
-            assistiveMML: [],
-          },
-        },
-        startup: {
-          ready() {
-            if (MathJax.version === "3.0.5") {
-              const SVGWrapper = MathJax._.output.svg.Wrapper.SVGWrapper;
-              const CommonWrapper = SVGWrapper.prototype.__proto__;
-              SVGWrapper.prototype.unicodeChars = function (text, variant) {
-                if (!variant) variant = this.variant || "normal";
-                return CommonWrapper.unicodeChars.call(this, text, variant);
-              };
-            }
-            MathJax.startup.defaultReady();
-          },
-        },
-      };
-      window.PlotlyConfig = { MathJaxConfig: "local" };
-    </script>
+<head>
+  <title>iTeX Qn.AI</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="shortcut icon" href="./css/icon/myicon.ico" type="image/x-icon" />
 
-    <!--<script type="text/javascript" src="js/mathexp/lib_plot.js"></script>
+  <script>
+    MathJax = {
+      tex: {
+        //packages: ['base']
+        multlineWidth: "85%",
+      },
+      options: {
+        renderActions: {
+          addMenu: [0, "", ""],
+          assistiveMML: [],
+        },
+      },
+      startup: {
+        ready() {
+          if (MathJax.version === "3.0.5") {
+            const SVGWrapper = MathJax._.output.svg.Wrapper.SVGWrapper;
+            const CommonWrapper = SVGWrapper.prototype.__proto__;
+            SVGWrapper.prototype.unicodeChars = function (text, variant) {
+              if (!variant) variant = this.variant || "normal";
+              return CommonWrapper.unicodeChars.call(this, text, variant);
+            };
+          }
+          MathJax.startup.defaultReady();
+        },
+      },
+    };
+    window.PlotlyConfig = { MathJaxConfig: "local" };
+  </script>
+
+  <!--<script type="text/javascript" src="js/mathexp/lib_plot.js"></script>
 	<script type="text/javascript" src="js/mathexp/lib.js"></script>
 	<script type="text/javascript" src="js/mathexp/lib_algvbfb.js"></script>-->
-    <script
-      type="text/javascript"
-      src="./static/OCR/js/mathexp/mathjs_6_2_5.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="./static/OCR/js/mathexp/math-expressions.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="./static/OCR/js/mathexp/algebra-0.2.6.min.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="./static/OCR/js/mathexp/algebrite.bundle-for-browser.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="./static/OCR/js/mathexp/nerdamer.core.js"
-    ></script>
-    <script type="text/javascript" src="./static/OCR/js/mathexp/Algebra.js"></script>
-    <script type="text/javascript" src="./static/OCR/js/mathexp/Calculus.js"></script>
-    <script type="text/javascript" src="./static/OCR/js/mathexp/Extra.js"></script>
-    <script type="text/javascript" src="./static/OCR/js/mathexp/Solve.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/mathjs_6_2_5.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/math-expressions.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/algebra-0.2.6.min.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/algebrite.bundle-for-browser.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/nerdamer.core.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/Algebra.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/Calculus.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/Extra.js"></script>
+  <script type="text/javascript" src="OCR/js/mathexp/Solve.js"></script>
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script
-      type="text/javascript"
-      id="MathJax-script"
-      async
-      src="./static/OCR/js/tex-svg-full_3_1_2.js"
-    ></script>
-    <script src="./static/js/etc/jquery-3.4.1.min.js"></script>
-    <script src="./static/js/etc/jquery-ui.min.js"></script>
-    <script src="./static/js/etc/jquery.ui.touch-punch.min.js"></script>
-    <script src="./static/canvas/atrament.min.js"></script>
-    <!--<script src="canvas/responsive-sketchpad.js"></script>-->
-    <script src="./static/canvas/html2canvas.min.js"></script>
-    <script src="./static/cropper/cropper.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-      crossorigin="anonymous"
-    ></script>
+  <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+  <script type="text/javascript" id="MathJax-script" async src="OCR/js/tex-svg-full_3_1_2.js"></script>
+  <script src="./js/etc/jquery-3.4.1.min.js"></script>
+  <script src="./js/etc/jquery-ui.min.js"></script>
+  <script src="./js/etc/jquery.ui.touch-punch.min.js"></script>
+  <script src="./canvas/atrament.min.js"></script>
+  <!--<script src="canvas/responsive-sketchpad.js"></script>-->
+  <script src="./canvas/html2canvas.min.js"></script>
+  <script src="./cropper/cropper.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="./static/cropper/cropper.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    />
-    <link rel="stylesheet" href="./static/canvas/assets/normalize.css" />
-    <link rel="stylesheet" href="./static/canvas/assets/skeleton.css" />
-    <link rel="stylesheet" href="./static/canvas/assets/custom.css" />
-    <link rel="stylesheet" href="./static/css/main.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
-  </head>
-  <body>
-    <div id="bd_area">
-      <div id="ui_wrap">
-        <div id="eqn_wrap">
-          <span id="mjx-editing-area"></span>
-          <div class="popuptext" id="myPopup"></div>
-        </div>
-        <div class="tab_block screen_block" id="tab_hand_block">
-          <section style="padding: 0; margin-top: 0">
-            <div class="row">
-              <canvas id="sketchpad"></canvas>
-            </div>
-          </section>
-        </div>
-        <div class="tab_block screen_none" id="tab_img_block">
-          <div id="img_box"><img id="img" /></div>
-          <input id="img_file_up" type="file" hidden />
-        </div>
+  <link rel="stylesheet" href="./cropper/cropper.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="./canvas/assets/normalize.css" />
+  <link rel="stylesheet" href="./canvas/assets/skeleton.css" />
+  <link rel="stylesheet" href="./canvas/assets/custom.css" />
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+</head>
+
+<body>
+  <div id="bd_area">
+    <div id="ui_wrap">
+      <div id="eqn_wrap">
+        <span id="mjx-editing-area"></span>
+        <div class="popuptext" id="myPopup"></div>
       </div>
-      <div id="save_eqbox"></div>
-      <div id="main_bt_wrap" style="display: none">
-        <div id="tool_box">
-          <button
-            role="img"
-            class="tool sel_tool"
-            id="wpen"
-            title="필기 모드로 전환합니다."
-          >
-            <span class="tooltip_sub">필기모드</span
-            ><img
-              class="material-icons toolsicons"
-							src="./static/css/icon/reflash.svg"
-            />
-          </button>
-          <button
-            role="img"
-            class="tool"
-            id="eqn_edit"
-            title="수식 심볼을 선택하면 AI가 유사 심볼을 추천합니다."
-          >
-            <span class="tooltip_sub">AI-심볼추천모드</span
-            ><img
-              class="material-icons toolsicons"
-							src="./static/css/icon/reflash.svg"
-            />
-          </button>
-          <button
-            role="img"
-            class="tool"
-            id="eraser"
-            title="지우개 모드로 전환합니다."
-          >
-            <span class="tooltip_sub">지우개모드</span
-            ><img
-              class="material-icons toolsicons"
-							src="./static/css/icon/reflash.svg"
-            />
-          </button>
-          <button
-            role="img"
-            class="tool"
-            id="canvas_clear"
-            title="입력한 모든 내용을 지웁니다."
-          >
-            <img
-              class="material-icons toolsicons"
-							src="./static/css/icon/reflash.svg"
-            />
-          </button>
-          <!--<button role="img" class="tool" id="eqn_reset"><img class="material-icons toolsicons" src="css/icon/refresh_black_24dp.svg"/></button>-->
-          <button
-            role="img"
-            class="tool"
-            id="eqn_change"
-            title="GUI 수식편집기로 이동합니다."
-          >
-            <img
-              class="material-icons toolsicons"
-							src="./static/css/icon/reflash.svg"
-            />
-          </button>
-          <!--<button role="img" class="tool" id="eqn_save" title="수식편집을 완료하고 문서에 삽입합니다."><img class="material-icons toolsicons" src="css/icon/drive_file_move_black_24dp.svg"/></button>-->
-          <button
-            role="img"
-            class="tool"
-            id="eqn_save"
-            title="수식편집을 완료하고 문서에 삽입합니다."
-          >
-            입력
-          </button>
-        </div>
-        <!--<button class="bot_btn eqn_input_mode" id="mathbtn">수식</button>
+      <div class="tab_block screen_block" id="tab_hand_block">
+        <section style="padding: 0; margin-top: 0">
+          <div class="row">
+            <canvas id="sketchpad"></canvas>
+          </div>
+        </section>
+      </div>
+      <div class="tab_block screen_none" id="tab_img_block">
+        <div id="img_box"><img id="img" /></div>
+        <input id="img_file_up" type="file" hidden />
+      </div>
+    </div>
+    <div id="save_eqbox"></div>
+    <div id="main_bt_wrap" style="display: none">
+      <div id="tool_box">
+        <button role="img" class="tool sel_tool" id="wpen" title="필기 모드로 전환합니다.">
+          <span class="tooltip_sub">필기모드</span><img class="material-icons toolsicons"
+            src="css/icon/draw_black_24dp.svg" />
+        </button>
+        <button role="img" class="tool" id="eqn_edit" title="수식 심볼을 선택하면 AI가 유사 심볼을 추천합니다.">
+          <span class="tooltip_sub">AI-심볼추천모드</span><img class="material-icons toolsicons"
+            src="css/icon/222/spellcheck_black_24dp.svg" />
+        </button>
+        <button role="img" class="tool" id="eraser" title="지우개 모드로 전환합니다.">
+          <span class="tooltip_sub">지우개모드</span><img class="material-icons toolsicons"
+            src="css/icon/eraser-solid.svg" />
+        </button>
+        <button role="img" class="tool" id="canvas_clear" title="입력한 모든 내용을 지웁니다.">
+          <img class="material-icons toolsicons" src="css/icon/delete_black_24dp.svg" />
+        </button>
+        <!--<button role="img" class="tool" id="eqn_reset"><img class="material-icons toolsicons" src="css/icon/refresh_black_24dp.svg"/></button>-->
+        <button role="img" class="tool" id="eqn_change" title="GUI 수식편집기로 이동합니다.">
+          <img class="material-icons toolsicons" src="css/icon/keyboard_black_24dp.svg" />
+        </button>
+        <!--<button role="img" class="tool" id="eqn_save" title="수식편집을 완료하고 문서에 삽입합니다."><img class="material-icons toolsicons" src="css/icon/drive_file_move_black_24dp.svg"/></button>-->
+        <button role="img" class="tool" id="eqn_save" title="수식편집을 완료하고 문서에 삽입합니다.">
+          입력
+        </button>
+      </div>
+      <!--<button class="bot_btn eqn_input_mode" id="mathbtn">수식</button>
 			<button class="bot_btn" id="graph"><i class="material-icons tabsicons">bar_chart</i></button>
 			<button class="bot_btn" id="wwwsearch"><i class="material-icons tabsicons">public</i></button>
 			<button class="bot_btn" id="tab_img"><i class="material-icons tabsicons">add_a_photo</i></button>-->
-        <div class="save_btn_box">
-          <span class="side_btn1"></span>
-          <!--<button role="img" class="doc_save_btn" id="eqn_converter" title="필기한 수식을 변환합니다."><img class="material-icons toolsicons" src="css/icon/lens_blur_black_24dp.svg"/></button>-->
-          <button
-            role="img"
-            class="doc_save_btn"
-            id="eqn_converter"
-            title="필기한 수식을 변환합니다."
-          >
-            수식변환
-          </button>
-          <span class="side_btn2"></span>
-        </div>
+      <div class="save_btn_box">
+        <span class="side_btn1"></span>
+        <!--<button role="img" class="doc_save_btn" id="eqn_converter" title="필기한 수식을 변환합니다."><img class="material-icons toolsicons" src="css/icon/lens_blur_black_24dp.svg"/></button>-->
+        <button role="img" class="doc_save_btn" id="eqn_converter" title="필기한 수식을 변환합니다.">
+          수식변환
+        </button>
+        <span class="side_btn2"></span>
       </div>
-      <!--<button type="button" class="btn-close btn-lg" aria-label="Close"></button>-->
-      <img
-        src="./static/css/icon/reflash.svg"
-        class="pen_draw_guide"
-        alt="필기 가이드"
-      />
-
-      <div class="answerbox">
-        <span class="null_box"></span>
-      </div>
-      <div id="test-area"></div>
-      <div id="plot" style="display: none"></div>
-      <input type="text" id="eq_box" data-state="start" />
     </div>
-    <iframe
-      class="site_iframe wf_hidden"
-      src=""
-      frameborder="0"
-      width="100%"
-      height="100%"
-    ></iframe>
-    <div class="web_site">
-      <button class="wsite" id="wolfram">wolfram alpha</button>
-      <button class="wsite" id="mathpapa">mathpapa</button>
-      <!--<button class="wsite" id="cymath">cymath</button>-->
-      <button class="wsite" id="google">google</button>
-    </div>
-  </body>
+    <!--<button type="button" class="btn-close btn-lg" aria-label="Close"></button>-->
+    <img src="css/icon/pen_guide.svg" class="pen_draw_guide" alt="필기 가이드" />
 
-  <script type="text/javascript" src="./static/OCR/js/main_iframe.js?v=0.1"></script>
+    <div class="answerbox">
+      <span class="null_box"></span>
+    </div>
+    <div id="test-area"></div>
+    <div id="plot" style="display: none"></div>
+    <input type="text" id="eq_box" data-state="start" />
+  </div>
+  <iframe class="site_iframe wf_hidden" src="" frameborder="0" width="100%" height="100%"></iframe>
+  <div class="web_site">
+    <button class="wsite" id="wolfram">wolfram alpha</button>
+    <button class="wsite" id="mathpapa">mathpapa</button>
+    <!--<button class="wsite" id="cymath">cymath</button>-->
+    <button class="wsite" id="google">google</button>
+  </div>
+</body>
+
+<script type="text/javascript" src="OCR/js/main_iframe.js?v=0.1"></script>
+
 </html>

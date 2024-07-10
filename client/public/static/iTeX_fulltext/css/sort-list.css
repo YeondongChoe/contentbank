@@ -22,6 +22,7 @@
 }
 
 /* (X) DOES NOT MATTER */
-/* * {
+* {
+  /*font-family: 'Noto Serif KR', serif;*/
   box-sizing: border-box;
-} */
+}

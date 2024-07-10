@@ -19,7 +19,7 @@
         ]
       },
       { "d": "itex_frac", "a": [{ "d": "itex_bigfrac" }] },
-      { "d": "itex_sqrt", "a": [{ "d": "itex_root" }, { "d": "" }] },
+      { "d": "itex_sqrt", "a": [{ "d": "itex_root" }] },
       { "d": "itex_super", "a": [{ "d": "itex_superbox" }] },
       { "e": true, "d": "itex_suber", "a": [{ "d": "itex_suberbox" }] },
       {
@@ -397,7 +397,7 @@
       { "d": "itex_cap" },
       { "e": true, "d": "itex_cup" },
       { "d": "itex_frac", "a": [{ "d": "itex_bigfrac" }] },
-      { "d": "itex_sqrt", "a": [{ "d": "itex_root" }, { "d": "" }] },
+      { "d": "itex_sqrt", "a": [{ "d": "itex_root" }] },
       { "d": "itex_super", "a": [{ "d": "itex_superbox" }] },
       { "e": true, "d": "itex_suber", "a": [{ "d": "itex_suberbox" }] },
       { "d": "itex_varnothing", "b": "itex_nwarrow" },
@@ -441,7 +441,7 @@
     ],
     "key_layer_3": [
       { "d": "itex_fx", "a": [{ "d": "itex_gx" }, { "d": "itex_hx" }] },
-      { "e": true, "d": "itex_equiv", "a": [{ "d": "" }, { "d": "" }] },
+      { "e": true, "d": "itex_equiv" },
       { "d": "itex_addarray" },
       {
         "d": "itex_overline",
@@ -476,9 +476,9 @@
     ],
     "key_layer_4": [
       { "s": true, "e": true, "c": "2", "d": "itex_shift" },
-      { "d": "itex_abs", "a": [{ "d": "" }, { "d": "" }, { "d": "25CE" }] },
-      { "d": "itex_syseq", "a": [{ "d": "" }] },
-      { "d": "itex_arch", "a": [{ "d": "" }] },
+      { "d": "itex_abs", "a": [{ "d": "25CE" }] },
+      { "d": "itex_syseq" },
+      { "d": "itex_arch" },
       {
         "e": true,
         "d": "itex_brace1",
@@ -488,7 +488,7 @@
         "d": "itex_deg",
         "a": [{ "d": "itex_unitCel" }, { "d": "itex_unitFah" }]
       },
-      { "d": "itex_unitper", "a": [{ "d": "" }] },
+      { "d": "itex_unitper" },
       { "d": "itex_parallel" },
       { "d": "itex_maindel", "del": true }
     ]

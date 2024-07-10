@@ -19,34 +19,16 @@
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.0.5/es5/sre/mathmaps/fr.min.js"></script>
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.0.5/es5/sre/mathmaps/mathmaps_ie.min.js"></script>
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.0.5/es5/sre/mathmaps/nemeth.min.js"></script>
-		<!-- <script>
-      MathJax = {
-        tex: {
-          //packages: ['base']
-          multlineWidth: "85%",
-        },
-        options: {
-          renderActions: {
-            addMenu: [0, "", ""],
-            assistiveMML: [],
-          },
-        },
-        startup: {
-          ready() {
-            if (MathJax.version === "3.0.5") {
-              const SVGWrapper = MathJax._.output.svg.Wrapper.SVGWrapper;
-              const CommonWrapper = SVGWrapper.prototype.__proto__;
-              SVGWrapper.prototype.unicodeChars = function (text, variant) {
-                if (!variant) variant = this.variant || "normal";
-                return CommonWrapper.unicodeChars.call(this, text, variant);
-              };
-            }
-            MathJax.startup.defaultReady();
-          },
-        },
-      };
-      window.PlotlyConfig = { MathJaxConfig: "local" };
-    </script> -->
+	
+		<link rel="stylesheet" href="/static/iTeX_fulltext/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/static/OCR/cropper/cropper.css" />
+		<link rel="stylesheet" href="/static/iTeX_fulltext/css/font-awesome-5_15_3_all.min.css" />
+		<link rel="stylesheet" href="/static/iTeX_EQ/css/itexeqneditor_n.css?v=0.11" />
+		<link rel="stylesheet" href="/static/iTeX_EQ/css/jquery-ui.css" />
+		<link rel="stylesheet" href="/static/iTeX_fulltext/css/fulltext_dev.css?v=0.4.5" />
+		<link rel="stylesheet" href="/static/iTeX_fulltext/css/sort-list.css?v=0.1" />
+		<link rel="stylesheet" href="/static/dream_ui/css/add_font.css" />
+		<link rel="stylesheet" href="/static/dream_ui/css/editor_frame.css" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

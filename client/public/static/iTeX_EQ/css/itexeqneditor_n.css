@@ -216,9 +216,12 @@ padding-bottom: 20px;*/
 }
 
 #equation_board.itexeq_custom {
-  height: 100px;
+  /* height: 100px;
   padding: 15px 60px 15px 20px;
+  width: 100%; */
   background: #f6f6f6;
+  height: auto;
+  position: relative;
   width: 100%;
 }
 
