@@ -263,8 +263,6 @@ export function Step1() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      // console.log('error--------------', error.response.data.code);
-
       if (error.response?.data?.code == 'GE-002')
         postRefreshToken().then(() => {
           groupsDataRefetch();
@@ -274,7 +272,6 @@ export function Step1() {
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
@@ -330,7 +327,6 @@ export function Step1() {
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
 
-    // console.log('e.currentTarget.value', e.currentTarget?.value);
     const title = e.currentTarget.name;
     const code = e.currentTarget.className;
     const value = e.currentTarget.value;
@@ -412,7 +408,6 @@ export function Step1() {
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      // console.log('error--------------', error.response.data.code);
       if (error.response?.data?.code == 'GE-002')
         postRefreshToken().then(() => {
           groupsDataRefetch();
@@ -441,8 +436,6 @@ export function Step1() {
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      console.log('error--------------', error.response.data.code);
-
       if (error.response?.data?.code == 'GE-002')
         postRefreshToken().then(() => {
           nextListData1Refetch();
@@ -464,17 +457,13 @@ export function Step1() {
   const getNextList3 = async () => {
     const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
-    console.log('row--------------4-------');
     try {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      console.log('4-------', res?.data.data.categoryClassList);
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
     } catch (error: any) {
-      console.log('error--------------', error.response.data.code);
-
       if (error.response?.data?.code == 'GE-002')
         postRefreshToken().then(() => {
           nextListData2Refetch();
@@ -543,10 +532,8 @@ export function Step1() {
     );
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList :', itemTreeKeyList);
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    console.log('classificationInstance 응답:', res);
     return res;
   };
 
@@ -610,7 +597,6 @@ export function Step1() {
       );
       setCategoryAddInfoList(itemsList);
     } catch (error: any) {
-      console.error('Error fetching next list: ', error?.data?.code);
       if (error.response?.data?.code == 'GE-002') {
         postRefreshToken();
         groupsDataRefetch();
@@ -619,11 +605,6 @@ export function Step1() {
   };
 
   const saveCheckItems = () => {
-    console.log(
-      'radioEtc1Check,radioEtc2Check',
-      radioEtc1Check,
-      radioEtc2Check,
-    );
     const newClassification: UnitClassificationType[] = [
       radio1depthCheck,
       radio2depthCheck,
@@ -679,7 +660,6 @@ export function Step1() {
 
   // 수정
   const changeUnitClassification = (idx: number) => {
-    console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
     onResetList();
     setSelectedClassification(unitClassificationList[idx]);
     setIsModifying(true);
@@ -884,7 +864,6 @@ export function Step1() {
       if (currentElement) {
         currentElement.classList.add('current');
         const container = document.getElementById('scrollTopWrapper');
-        // console.log('container', container?.offsetTop);
         if (
           container instanceof HTMLElement &&
           currentElement instanceof HTMLElement
@@ -892,7 +871,6 @@ export function Step1() {
           const elementPosition =
             currentElement.parentElement?.parentElement?.parentElement
               ?.parentElement?.offsetTop;
-          // console.log('elementPosition', elementPosition);
           container.scrollTop = elementPosition as number;
         }
       }
@@ -929,13 +907,11 @@ export function Step1() {
     setQuestionNum(newValue);
     setInputValue('');
   };
-  console.log(questionNum);
 
   const [questionLevel, setQuestionLevel] = useState<string | null>(null);
   const selectQuestionLevel = (newValue: string | null) => {
     setQuestionLevel(newValue);
   };
-  console.log(questionLevel);
 
   const [questionType, setQuestionType] = useState<string[] | null>(null);
 
@@ -1186,7 +1162,6 @@ export function Step1() {
         const remainderContent = receivedQuizCount - remainder;
         const minQuotient = quotient - 1;
         const maxQuotient = quotient + 1;
-        // console.log('remainderContent', remainderContent);
         setRemainderContent(remainderContent);
         setNextRemainderContent(remainderContent + 1);
         setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
@@ -2047,7 +2022,6 @@ export function Step1() {
         // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
         const itemTreeIdxList =
           (item[4] as ItemTreeIdxListType).itemTreeIdxList || [];
-        //console.log(itemTreeIdxList);
 
         return {
           itemTreeKey,
@@ -2096,7 +2070,6 @@ export function Step1() {
       setGetLocalData(parsedData);
     }
   }, []);
-  console.log(getLocalData);
 
   // 로컬 스토리지 값 다 받은 뒤 초기화
   useEffect(() => {
@@ -2196,7 +2169,6 @@ export function Step1() {
   };
 
   useEffect(() => {
-    // console.log('itemTree ------ ', itemTree);
     setHighlightIndex(-1);
   }, [itemTree, searchValue]);
 

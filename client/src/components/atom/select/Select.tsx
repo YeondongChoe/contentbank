@@ -143,7 +143,7 @@ export function Select({
           $positionTop={$positionTop}
           height={height}
         >
-          <ScrollWrapper heightScroll={heightScroll}>
+          <ScrollWrapper $heightScroll={heightScroll}>
             <PerfectScrollbar>
               {isnormalizedOptions
                 ? normalizedOptions.map((el) => (
@@ -186,11 +186,11 @@ const Component = styled.div<{ $padding?: string }>`
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
 
-const ScrollWrapper = styled.div<{ heightScroll?: string }>`
+const ScrollWrapper = styled.div<{ $heightScroll?: string }>`
   overflow-y: auto;
   width: 100%;
   border-radius: 5px;
-  ${({ heightScroll }) => (heightScroll ? `height: ${heightScroll}` : '')};
+  ${({ $heightScroll }) => ($heightScroll ? `height: ${$heightScroll}` : '')};
 `;
 
 const SelectOptionsList = styled.div<{

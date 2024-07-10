@@ -36,56 +36,61 @@ export const TypeA = ({
 }: TypeAProps) => {
   const [leftList, setLeftList] = useState<QuizList[]>([]);
   const [rightList, setRightList] = useState<QuizList[]>([]);
-  const leftRef = useRef<HTMLDivElement>(null);
-  const rightRef = useRef<HTMLDivElement>(null);
+  console.log(initialItems);
 
-  // useLayoutEffect(() => {
-  //   if (initialItems && leftRef.current && rightRef.current) {
-  //     const leftItems: QuizList[] = [];
-  //     const rightItems: QuizList[] = [];
-  //     let currentLeftHeight = 0;
-  //     let currentRightHeight = 0;
+  useEffect(() => {
+    if (initialItems) {
+      let accumulatedLeftHeight = 0;
+      const newInitialList: any[] = [];
+      const updatedLeftList: any[] = [];
+      const updatedRightList: any[] = [];
 
-  //     initialItems.forEach((item, index) => {
-  //       const tempDiv = document.createElement('div');
-  //       tempDiv.style.visibility = 'hidden';
-  //       tempDiv.style.position = 'absolute';
-  //       tempDiv.style.width = '100%';
-  //       // tempDiv.style.height = '100%';
-  //       tempDiv.style.padding = '10px 20px 0px 20px';
-  //       tempDiv.innerHTML = JSON.stringify(item);
-  //       document.body.appendChild(tempDiv);
+      initialItems.forEach((item) => {
+        const height = item.height !== undefined ? item.height : 0;
+        accumulatedLeftHeight += height;
+        const questionWithHeight = { item, accumulatedLeftHeight };
+        newInitialList.push(questionWithHeight);
+        console.log(newInitialList);
 
-  //       // 실제 DOM 크기를 기반으로 높이 측정
-  //       const leftItemHeight = tempDiv.getBoundingClientRect().height; // 왼쪽 리스트의 높이 측정
-  //       const rightItemHeight = tempDiv.getBoundingClientRect().height; // 오른쪽 리스트의 높이 측정
-  //       console.log('leftItemHeight', leftItemHeight);
-  //       console.log('rightItemHeight', rightItemHeight);
-  //       document.body.removeChild(tempDiv);
+        if (questionWithHeight.accumulatedLeftHeight < 3500) {
+          updatedLeftList.push();
+        }
 
-  //       if (currentLeftHeight + leftItemHeight <= A4_HEIGHT) {
-  //         console.log('currentLeftHeight', currentLeftHeight);
-  //         leftItems.push(item);
-  //         currentLeftHeight += leftItemHeight;
-  //       } else if (currentRightHeight + rightItemHeight <= A4_HEIGHT) {
-  //         console.log('currentRightHeight', currentRightHeight);
-  //         rightItems.push(item);
-  //         currentRightHeight += rightItemHeight;
-  //       }
-  //     });
-  //     console.log('currentRightHeight', currentRightHeight);
+        if (accumulatedLeftHeight < 3500) {
+          updatedLeftList.push(item);
+        } else {
+          updatedRightList.push(item);
+        }
+      });
 
-  //     setLeftList(leftItems);
-  //     setRightList(rightItems);
-  //   }
-  // }, [initialItems]);
+      // 왼쪽 리스트 업데이트
+      setLeftList(updatedLeftList);
+
+      // 오른쪽 리스트 업데이트
+      setRightList(updatedRightList);
+    }
+
+    if (initialItems && column === '1단') {
+      let accumulatedHeight = 0;
+      const updatedLeftList: any[] = [];
+      initialItems.forEach((item) => {
+        // item에서 height를 가져와서 accumulatedHeight에 누적
+        const height = item.height !== undefined ? item.height : 0; // height가 undefined일 경우 0으로 처리
+        accumulatedHeight += height;
+
+        // accumulatedHeight 기준으로 leftList 또는 rightList에 추가
+        if (accumulatedHeight < 3500) {
+          updatedLeftList.push(item);
+        }
+      });
+
+      setLeftList(updatedLeftList);
+      setRightList([]);
+    }
+  }, [initialItems, contentQuantity === '최대', column === '1단']);
 
   useEffect(() => {
     if (column === '2단') {
-      if (contentQuantity === '최대' && initialItems) {
-        setLeftList(initialItems.slice(0, 4));
-        setRightList(initialItems.slice(4, 8));
-      }
       if (contentQuantity === '6문제' && initialItems) {
         setLeftList(initialItems.slice(0, 3));
         setRightList(initialItems.slice(3, 6));
@@ -99,10 +104,6 @@ export const TypeA = ({
         setRightList(initialItems.slice(1, 2));
       }
     } else {
-      if (contentQuantity === '최대' && initialItems) {
-        setLeftList(initialItems.slice(0, 6));
-        setRightList([]);
-      }
       if (contentQuantity === '6문제' && initialItems) {
         setLeftList(initialItems.slice(0, 6));
         setRightList([]);
@@ -171,87 +172,80 @@ export const TypeA = ({
           <HeaderTriangle></HeaderTriangle>
 
           <WorksheetBody $contentQuantity={contentQuantity}>
-            <WorksheetBodyLeft ref={leftRef}>
+            <WorksheetBodyLeft>
               {leftList?.map((quizItemList) =>
                 quizItemList.quizItemList
                   .filter((quizItem) => quizItem.type === 'QUESTION')
-                  .map((quizItem, i) => (
-                    <MathViewerWrapper key={i}>
-                      {isContentTypeTitle && (
-                        <div>
-                          <ContentTitle>
-                            |
-                            {
-                              quizItemList.quizCategoryList[0].quizCategory
-                                .문항타입
-                            }
-                            |
-                          </ContentTitle>
-                          <ContentScript>{quizItem.code}</ContentScript>
-                        </div>
-                      )}
-                      <EachMathViewer>
-                        <MathJaxWrapper>
-                          <WorkbookMathViewer
-                            data={quizItemList}
-                            padding={
-                              contentQuantity === '4문제'
-                                ? '0 0 60px 0'
-                                : contentQuantity === '6문제'
+                  .map((quizItem, i) => {
+                    const quizCategory = quizItemList.quizCategoryList.find(
+                      (quizCategoryItem: any) =>
+                        quizCategoryItem.quizCategory.유형,
+                    )?.quizCategory;
+
+                    return (
+                      <MathViewerWrapper key={i}>
+                        {isContentTypeTitle && (
+                          <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
+                        )}
+                        <EachMathViewer>
+                          <MathJaxWrapper>
+                            <WorkbookMathViewer
+                              data={quizItemList}
+                              padding={
+                                contentQuantity === '4문제'
                                   ? '0 0 60px 0'
-                                  : contentQuantity === '최대'
-                                    ? '0 0 50px 0'
-                                    : '0'
-                            }
-                            isSetp3
-                            answerCommentary={answerCommentary}
-                          ></WorkbookMathViewer>
-                        </MathJaxWrapper>
-                      </EachMathViewer>
-                    </MathViewerWrapper>
-                  )),
+                                  : contentQuantity === '6문제'
+                                    ? '0 0 60px 0'
+                                    : contentQuantity === '최대'
+                                      ? '0 0 50px 0'
+                                      : '0'
+                              }
+                              isSetp3
+                              answerCommentary={answerCommentary}
+                            ></WorkbookMathViewer>
+                          </MathJaxWrapper>
+                        </EachMathViewer>
+                      </MathViewerWrapper>
+                    );
+                  }),
               )}
             </WorksheetBodyLeft>
             <Divider />
-            <WorksheetBodyRight ref={rightRef}>
+            <WorksheetBodyRight>
               {rightList?.map((quizItemList) =>
                 quizItemList.quizItemList
                   .filter((quizItem) => quizItem.type === 'QUESTION')
-                  .map((quizItem, i) => (
-                    <MathViewerWrapper key={i}>
-                      {isContentTypeTitle && (
-                        <div>
-                          <ContentTitle>
-                            |
-                            {
-                              quizItemList.quizCategoryList[0].quizCategory
-                                .문항타입
-                            }
-                            |
-                          </ContentTitle>
-                          <ContentScript>{quizItem.code}</ContentScript>
-                        </div>
-                      )}
-                      <EachMathViewer>
-                        <MathJaxWrapper>
-                          <WorkbookMathViewer
-                            data={quizItemList}
-                            padding={
-                              contentQuantity === '4문제'
-                                ? '0 0 60px 0'
-                                : contentQuantity === '6문제'
+                  .map((quizItem, i) => {
+                    const quizCategory = quizItemList.quizCategoryList.find(
+                      (quizCategoryItem: any) =>
+                        quizCategoryItem.quizCategory.유형,
+                    )?.quizCategory;
+                    return (
+                      <MathViewerWrapper key={i}>
+                        {isContentTypeTitle && (
+                          <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
+                        )}
+                        <EachMathViewer>
+                          <MathJaxWrapper>
+                            <WorkbookMathViewer
+                              data={quizItemList}
+                              padding={
+                                contentQuantity === '4문제'
                                   ? '0 0 60px 0'
-                                  : contentQuantity === '최대'
-                                    ? '0 0 50px 0'
-                                    : '0'
-                            }
-                            isSetp3
-                            answerCommentary={answerCommentary}
-                          ></WorkbookMathViewer>
-                        </MathJaxWrapper>
-                      </EachMathViewer>
-                    </MathViewerWrapper>
-                  )),
+                                  : contentQuantity === '6문제'
+                                    ? '0 0 60px 0'
+                                    : contentQuantity === '최대'
+                                      ? '0 0 50px 0'
+                                      : '0'
+                              }
+                              isSetp3
+                              answerCommentary={answerCommentary}
+                            ></WorkbookMathViewer>
+                          </MathJaxWrapper>
+                        </EachMathViewer>
+                      </MathViewerWrapper>
+                    );
+                  }),
               )}
             </WorksheetBodyRight>
           </WorksheetBody>
