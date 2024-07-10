@@ -319,7 +319,7 @@ export function MathviewerAccordion({
     >
       <Component className={className} $componentHeight={componentHeight}>
         <div className="leftInfomation">
-          {/* {isFavorite ? (
+          {isFavorite ? (
             <Icon
               width={`18px`}
               src={`/images/icon/favorites_on.svg`}
@@ -333,11 +333,11 @@ export function MathviewerAccordion({
               onClick={favoriteQuizItem}
               cursor
             />
-          )} */}
-          <LuBookmarkPlus
+          )}
+          {/* <LuBookmarkPlus
             onClick={favoriteQuizItem}
             style={{ width: '18px', cursor: 'pointer' }}
-          ></LuBookmarkPlus>
+          ></LuBookmarkPlus> */}
           <div>{category?.난이도 || 'N/A'}</div>
           <div>{category?.문항타입 || 'N/A'}</div>
           {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (

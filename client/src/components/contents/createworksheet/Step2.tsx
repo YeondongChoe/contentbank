@@ -122,7 +122,6 @@ export function Step2() {
     useState<WorkbookCategoryData | null>(null);
   const [getEditData, setGetEditData] = useState<EditWorkbookData | null>(null);
   const [getItemCountData, setGetItemCountData] = useState<number | null>(null);
-  console.log(getItemCountData);
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
@@ -1366,7 +1365,7 @@ export function Step2() {
 
   //즐겨찾기
   const [favoriteQuestionList, setFavoriteQuestionList] =
-    useState<FavoriteQuizList | null>(null);
+    useState<FavoriteQuizList>();
 
   // 문항 즐겨찾기리스트 불러오기 api
   const getFavoriteQuiz = async (page: any) => {
@@ -1643,26 +1642,25 @@ export function Step2() {
       const selectedQuizItem = favoriteQuestionList.quizList.find(
         (item) => item.code === code,
       );
-      if (initialItems.length + 1 <= getItemCountData) {
-        if (selectedQuizItem) {
-          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-          setFavoriteQuestionList((prevItems) => {
-            if (prevItems) {
-              return {
-                ...prevItems,
-                quizList: prevItems.quizList.filter(
-                  (item) => item !== selectedQuizItem,
-                ),
-              };
-            }
-            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (selectedQuizItem) {
+        const alreadyExists = initialItems.some(
+          (item) => item.code === selectedQuizItem.code,
+        );
+        if (alreadyExists) {
+          openToastifyAlert({
+            type: 'error',
+            text: `이미 포함되어있는 문항입니다.`,
           });
+        } else {
+          if (initialItems.length + 1 <= getItemCountData) {
+            setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+          } else {
+            openToastifyAlert({
+              type: 'error',
+              text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+            });
+          }
         }
-      } else {
-        openToastifyAlert({
-          type: 'error',
-          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
-        });
       }
     }
   };
@@ -2454,43 +2452,53 @@ export function Step2() {
                             </AddNewContensWrapper>
                           ) : (
                             <AddNewContensWrapper>
-                              {newQuizItems?.quizList.map((item, i) => (
-                                <MathviewerAccordion
-                                  key={item.idx}
-                                  componentWidth="600px"
-                                  width="450px"
-                                  componentHeight="150px"
-                                  onClick={() => {}}
-                                  isBorder={true}
-                                  isNewQuiz={true}
-                                  isFavorite={item.isFavorite}
-                                  data={item}
-                                  index={item.idx}
-                                  title={
-                                    item.quizCategoryList[0].quizCategory.학교급
-                                  }
-                                  quizNum={i + 1}
-                                  selectedCardIndex={selectedCardIndex}
-                                  onSelectCard={setSelectedCardIndex}
-                                  reportQuizitem={() =>
-                                    openReportProcess(item.idx)
-                                  }
-                                  addQuizItem={() =>
-                                    clickAddQuizItem(item.code)
-                                  }
-                                  favoriteQuizItem={(e) =>
-                                    item.isFavorite
-                                      ? handleFavorite(e, {
-                                          idx: item.idx,
-                                          isFavorite: true,
-                                        })
-                                      : handleFavorite(e, {
-                                          idx: item.idx,
-                                          isFavorite: false,
-                                        })
-                                  }
-                                ></MathviewerAccordion>
-                              ))}
+                              {newQuizItems?.quizList.map((item, i) => {
+                                const quizCategoryType =
+                                  item.quizCategoryList.find(
+                                    (quizCategoryItem: any) =>
+                                      quizCategoryItem.quizCategory.문항타입,
+                                  )?.quizCategory;
+                                const quizCategory = item.quizCategoryList.find(
+                                  (quizCategoryItem: any) =>
+                                    quizCategoryItem.quizCategory.유형,
+                                )?.quizCategory;
+                                return (
+                                  <MathviewerAccordion
+                                    key={item.idx}
+                                    componentWidth="600px"
+                                    width="450px"
+                                    componentHeight="150px"
+                                    onClick={() => {}}
+                                    isBorder={true}
+                                    isNewQuiz={true}
+                                    isFavorite={item.isFavorite}
+                                    data={item}
+                                    index={item.idx}
+                                    title={quizCategory?.유형}
+                                    category={quizCategoryType}
+                                    quizNum={i + 1}
+                                    selectedCardIndex={selectedCardIndex}
+                                    onSelectCard={setSelectedCardIndex}
+                                    reportQuizitem={() =>
+                                      openReportProcess(item.idx)
+                                    }
+                                    addQuizItem={() =>
+                                      clickAddQuizItem(item.code)
+                                    }
+                                    favoriteQuizItem={(e) =>
+                                      item.isFavorite
+                                        ? handleFavorite(e, {
+                                            idx: item.idx,
+                                            isFavorite: true,
+                                          })
+                                        : handleFavorite(e, {
+                                            idx: item.idx,
+                                            isFavorite: false,
+                                          })
+                                    }
+                                  ></MathviewerAccordion>
+                                );
+                              })}
                             </AddNewContensWrapper>
                           )}
                         </>
@@ -2535,45 +2543,55 @@ export function Step2() {
                               </BookmarkContentOption>
                               <BookmarkContensWrapper>
                                 {favoriteQuestionList.quizList &&
-                                  favoriteQuestionList.quizList.map((item) => (
-                                    <MathviewerAccordion
-                                      key={item.idx}
-                                      componentWidth="600px"
-                                      width="450px"
-                                      componentHeight="150px"
-                                      onClick={() => {}}
-                                      isBorder={true}
-                                      isNewQuiz={true}
-                                      data={item}
-                                      index={item.idx}
-                                      //유형으로 수정하기
-                                      title={
-                                        item.quizCategoryList[0].quizCategory
-                                          .학교급
-                                      }
-                                      quizNum={item.idx}
-                                      isFavorite={item.isFavorite}
-                                      selectedCardIndex={selectedCardIndex}
-                                      onSelectCard={setSelectedCardIndex}
-                                      reportQuizitem={() =>
-                                        openReportProcess(item.idx)
-                                      }
-                                      addQuizItem={() =>
-                                        clickAddQuizItem(item.code)
-                                      }
-                                      favoriteQuizItem={(e) =>
-                                        item.isFavorite
-                                          ? handleFavorite(e, {
-                                              idx: item.idx,
-                                              isFavorite: true,
-                                            })
-                                          : handleFavorite(e, {
-                                              idx: item.idx,
-                                              isFavorite: false,
-                                            })
-                                      }
-                                    ></MathviewerAccordion>
-                                  ))}
+                                  favoriteQuestionList.quizList.map((item) => {
+                                    const quizCategoryType =
+                                      item.quizCategoryList.find(
+                                        (quizCategoryItem: any) =>
+                                          quizCategoryItem.quizCategory
+                                            .문항타입,
+                                      )?.quizCategory;
+                                    const quizCategory =
+                                      item.quizCategoryList.find(
+                                        (quizCategoryItem: any) =>
+                                          quizCategoryItem.quizCategory.유형,
+                                      )?.quizCategory;
+                                    return (
+                                      <MathviewerAccordion
+                                        key={item.idx}
+                                        componentWidth="600px"
+                                        width="450px"
+                                        componentHeight="150px"
+                                        onClick={() => {}}
+                                        isBorder={true}
+                                        isNewQuiz={true}
+                                        data={item}
+                                        index={item.idx}
+                                        title={quizCategory?.유형}
+                                        category={quizCategoryType}
+                                        quizNum={item.idx}
+                                        isFavorite={item.isFavorite}
+                                        selectedCardIndex={selectedCardIndex}
+                                        onSelectCard={setSelectedCardIndex}
+                                        reportQuizitem={() =>
+                                          openReportProcess(item.idx)
+                                        }
+                                        addQuizItem={() =>
+                                          clickAddQuizItem(item.code)
+                                        }
+                                        favoriteQuizItem={(e) =>
+                                          item.isFavorite
+                                            ? handleFavorite(e, {
+                                                idx: item.idx,
+                                                isFavorite: true,
+                                              })
+                                            : handleFavorite(e, {
+                                                idx: item.idx,
+                                                isFavorite: false,
+                                              })
+                                        }
+                                      ></MathviewerAccordion>
+                                    );
+                                  })}
                               </BookmarkContensWrapper>
                             </>
                           ) : (
@@ -2719,10 +2737,15 @@ export function Step2() {
                                     setTotalEqualScore={setTotalEqualScore}
                                     category={quizCategoryType}
                                     favoriteQuizItem={(e) =>
-                                      handleFavorite(e, {
-                                        idx: dragItem.idx,
-                                        isFavorite: true,
-                                      })
+                                      dragItem.isFavorite
+                                        ? handleFavorite(e, {
+                                            idx: dragItem.idx,
+                                            isFavorite: true,
+                                          })
+                                        : handleFavorite(e, {
+                                            idx: dragItem.idx,
+                                            isFavorite: false,
+                                          })
                                     }
                                   ></MathviewerAccordion>
                                 </li>
