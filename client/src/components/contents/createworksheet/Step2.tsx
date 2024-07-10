@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import _shuffle from 'lodash/shuffle';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -61,6 +62,7 @@ import {
   WorkbookCategoryData,
   FavoriteQuizList,
   QuizList,
+  QuizCategory,
   SimilarQuizList,
   Data,
   ContentWithScore,
@@ -119,18 +121,25 @@ export function Step2() {
   const [getCategoryLocalData, setGetCategoryLocalData] =
     useState<WorkbookCategoryData | null>(null);
   const [getEditData, setGetEditData] = useState<EditWorkbookData | null>(null);
-
+  const [getItemCountData, setGetItemCountData] = useState<number | null>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
+
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
-  const categoryType = initialItems.map(
-    (item) => item.quizCategoryList[0]?.quizCategory.문항타입,
-  );
-  const categoryLevel = initialItems.map(
-    (item) => item.quizCategoryList[0]?.quizCategory.난이도,
-  );
+  const categoryType = initialItems.map((item) => {
+    const category = item.quizCategoryList.find(
+      (quizCategoryItem) => quizCategoryItem.quizCategory.문항타입,
+    );
+    return category ? category.quizCategory.문항타입 : undefined;
+  });
+  const categoryLevel = initialItems.map((item) => {
+    const category = item.quizCategoryList.find(
+      (quizCategoryItem) => quizCategoryItem.quizCategory.난이도,
+    );
+    return category ? category.quizCategory.난이도 : undefined;
+  });
   const subjectiveType = categoryType.filter(
     (type) => type === '주관식',
   ).length;
@@ -189,6 +198,7 @@ export function Step2() {
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
+  console.log(workbookData);
 
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
@@ -248,6 +258,7 @@ export function Step2() {
       const quotientData = localStorage.getItem('sendQuotientData');
       const categoryData = localStorage.getItem('sendCategoryData');
       const editData = localStorage.getItem('sendEditData');
+      const itemCount = localStorage.getItem('itemCount');
 
       if (data) {
         try {
@@ -300,6 +311,17 @@ export function Step2() {
       } else {
         console.log('로컬 스토리지에 sendEditData가 없습니다.');
       }
+      if (itemCount) {
+        try {
+          const parsedItemCountData = JSON.parse(itemCount);
+          console.log('sendItemCount:', parsedItemCountData); // 디버깅용 콘솔 로그
+          setGetItemCountData(parsedItemCountData);
+        } catch (error) {
+          console.error('로컬 스토리지 sendItemCount 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 sendItemCount가 없습니다.');
+      }
     };
 
     fetchDataFromStorage();
@@ -342,11 +364,11 @@ export function Step2() {
   const [isStartDnD, setIsStartDnd] = useState(false);
 
   // 선택한 문항 배열 정렬
-  const selectArrange: SelectCategory[] = [
+  const selectArrange = [
     {
-      idx: 1,
+      idx: 0,
       name: '사용자 정렬',
-      value: '1',
+      value: '0',
       options: [
         { idx: 0, name: '객관식 상단배치', value: '0' },
         { idx: 1, name: '무작위 정렬', value: '1' },
@@ -361,33 +383,66 @@ export function Step2() {
     },
     {} as { [key: number]: string },
   );
-
   const [defaultValues, setDefaultValues] = useState(initialValues);
 
+  //객관식 상단배치
   useEffect(() => {
-    if (isStartDnD) {
-      setDefaultValues(initialValues);
+    if (defaultValues[0] === '객관식 상단배치') {
+      const updatedItems = initialItems.slice(); // 초기 상태 복사
+
+      // quizCategoryList에서 객관식인 item을 맨 앞으로 이동
+      updatedItems.sort((a, b) => {
+        // a가 객관식이면 -1, b가 객관식이면 1, 둘 다 아니면 0 반환
+        const aIsObjective = a.quizCategoryList.some(
+          (item) => item.quizCategory.문항타입 === '객관식',
+        );
+        const bIsObjective = b.quizCategoryList.some(
+          (item) => item.quizCategory.문항타입 === '객관식',
+        );
+        if (aIsObjective && !bIsObjective) return -1;
+        if (!aIsObjective && bIsObjective) return 1;
+        return 0;
+      });
+
+      // 상태 업데이트
+      setInitialItems(updatedItems);
     }
-  }, [isStartDnD]);
+  }, [defaultValues[0]]);
+
+  //무작위 정렬
+  useEffect(() => {
+    if (defaultValues[0] === '무작위 정렬') {
+      const updatedItems = initialItems.slice(); // 초기 상태 복사
+
+      // 각 객체의 quizCategoryList를 무작위로 섞음
+      const shuffleList = _shuffle(updatedItems);
+
+      // 상태 업데이트
+      setInitialItems(shuffleList);
+    }
+  }, [defaultValues[0]]);
 
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
     idx: number,
   ) => {
-    const newValue = (event.target as HTMLButtonElement).value;
-    setDefaultValues((prev) => ({ ...prev, [idx]: newValue }));
+    const newValue = (event.target as HTMLButtonElement)?.innerText;
+    setDefaultValues((prev) => ({
+      ...prev,
+      [idx]: newValue,
+    }));
   };
 
   //선택한 문항 보기 정렬
   const selectCategory = [
     {
-      idx: '1',
+      idx: 1,
       name: '문제만 보기',
-      value: '2',
+      value: '1',
       options: [
-        { idx: '0', name: '문제만 보기', value: '0' },
-        { idx: '1', name: '문제+정답', value: '1' },
-        { idx: '2', name: '문제+정답+해설', value: '2' },
+        { idx: 0, name: '문제만 보기', value: '0' },
+        { idx: 1, name: '문제+정답', value: '1' },
+        { idx: 2, name: '문제+정답+해설', value: '2' },
       ],
     },
   ];
@@ -441,7 +496,7 @@ export function Step2() {
       if (response.data.data.quizList.length <= 0) {
         openToastifyAlert({
           type: 'error',
-          text: '가지고 올 수 있는 문항이 없습니다.',
+          text: '범위 변경 버튼을 눌러 새 문항을 추가해보세요.',
         });
       } else {
         setNewQuizItems(response.data.data);
@@ -1312,7 +1367,7 @@ export function Step2() {
 
   //즐겨찾기
   const [favoriteQuestionList, setFavoriteQuestionList] =
-    useState<FavoriteQuizList | null>(null);
+    useState<FavoriteQuizList>();
 
   // 문항 즐겨찾기리스트 불러오기 api
   const getFavoriteQuiz = async (page: any) => {
@@ -1372,33 +1427,66 @@ export function Step2() {
       }
     },
     onSuccess: (response: { data: { message: string } }) => {
-      // console.log('quizFavorite', response);
+      console.log(response);
       openToastifyAlert({
         type: 'success',
         text: response.data.message,
       });
       favoriteQuizDataRefetch();
-      //similarDataMutate();
-      //postnewQuizList(newQuizItemSetting);
-
-      // queryClient.invalidateQueries({
-      //   queryKey: ['get-workbookList'],
-      //   exact: true,
-      // });
     },
   });
 
   // 즐겨찾기 토글 버튼
   const handleFavorite = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    data: { idx: number; isFavorite: boolean },
+    idx: number,
+    isFavorite: boolean,
   ) => {
     e.stopPropagation();
+    console.log(idx);
+    console.log(isFavorite);
 
     const favoriteItem = {
-      idx: data.idx,
-      isFavorite: !data.isFavorite,
+      idx: idx,
+      isFavorite: !isFavorite,
     };
+    //우측문항 즐겨찾기 아이콘 업데이트
+    setInitialItems((prevItems) =>
+      prevItems.map((item) =>
+        item.idx === favoriteItem.idx
+          ? { ...item, isFavorite: favoriteItem.isFavorite }
+          : item,
+      ),
+    );
+    //유사문항 추가 즐겨찾기 아이콘 업데이트
+    if (similarItems) {
+      setSimilarItems((prevItems) => {
+        if (!prevItems) return prevItems; // prevItems가 null이면 그대로 반환
+        return {
+          ...prevItems,
+          quizList: prevItems.quizList.map((item) =>
+            item.idx === favoriteItem.idx
+              ? { ...item, isFavorite: favoriteItem.isFavorite }
+              : item,
+          ),
+        };
+      });
+    }
+    //새문항 추가 즐겨찾기 아이콘 업데이트
+    if (newQuizItems) {
+      setNewQuizItems((prevItems) => {
+        if (!prevItems) return prevItems; // prevItems가 null이면 그대로 반환
+        return {
+          ...prevItems,
+          quizList: prevItems.quizList.map((item) =>
+            item.idx === favoriteItem.idx
+              ? { ...item, isFavorite: favoriteItem.isFavorite }
+              : item,
+          ),
+        };
+      });
+    }
+
     mutateQuizFavorite(favoriteItem);
   };
 
@@ -1407,6 +1495,7 @@ export function Step2() {
   const [similarItems, setSimilarItems] = useState<SimilarQuizList | null>(
     null,
   );
+  console.log(similarItems);
   const [similarItemCode, setSimilarItemCode] = useState<string>('');
   const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
@@ -1485,95 +1574,129 @@ export function Step2() {
   //리스트 문항 전체 추가
   const clickAddAllQuizItem = () => {
     //새문항 전체추가
-    if (newQuizItems) {
+    if (newQuizItems && getItemCountData) {
       const allNewQuizItems = newQuizItems.quizList;
-      setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
-      setNewQuizItems((prevItems) => {
-        if (prevItems) {
-          return {
-            ...prevItems,
-            quizList: [],
-          };
-        }
-        return prevItems;
-      });
+      if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
+        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+        setNewQuizItems((prevItems) => {
+          if (prevItems) {
+            return {
+              ...prevItems,
+              quizList: [],
+            };
+          }
+          return prevItems;
+        });
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+        });
+      }
     }
     //즐겨찾기 전체추가
-    else if (favoriteQuestionList) {
+    else if (favoriteQuestionList && getItemCountData) {
       const allNewQuizItems = favoriteQuestionList.quizList;
-      setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
-      setFavoriteQuestionList((prevItems) => {
-        if (prevItems) {
-          return {
-            ...prevItems,
-            quizList: [],
-          };
-        }
-        return prevItems;
-      });
+      if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
+        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+        setFavoriteQuestionList((prevItems) => {
+          if (prevItems) {
+            return {
+              ...prevItems,
+              quizList: [],
+            };
+          }
+          return prevItems;
+        });
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+        });
+      }
     }
   };
 
   // 리스트에 문항 추가하기(객체인 경우)
   const clickAddQuizItem = (code: string) => {
     // 우사문항 불러오기 리스트
-    if (similarItems) {
+    if (similarItems && getItemCountData) {
       const selectedQuizItem = similarItems.quizList.find(
         (item) => item.code === code,
       );
-      if (selectedQuizItem) {
-        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-        setSimilarItems((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: prevItems.quizList.filter(
-                (item) => item !== selectedQuizItem,
-              ),
-            };
-          }
-          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (initialItems.length + 1 <= getItemCountData) {
+        if (selectedQuizItem) {
+          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+          setSimilarItems((prevItems) => {
+            if (prevItems) {
+              return {
+                ...prevItems,
+                quizList: prevItems.quizList.filter(
+                  (item) => item !== selectedQuizItem,
+                ),
+              };
+            }
+            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+          });
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
         });
       }
     }
     // 새문항 불러오기 리스트
-    else if (newQuizItems) {
+    else if (newQuizItems && getItemCountData) {
       const selectedQuizItem = newQuizItems.quizList.find(
         (item) => item.code === code,
       );
-      if (selectedQuizItem) {
-        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-        setNewQuizItems((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: prevItems.quizList.filter(
-                (item) => item !== selectedQuizItem,
-              ),
-            };
-          }
-          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (initialItems.length + 1 <= getItemCountData) {
+        if (selectedQuizItem) {
+          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+          setNewQuizItems((prevItems) => {
+            if (prevItems) {
+              return {
+                ...prevItems,
+                quizList: prevItems.quizList.filter(
+                  (item) => item !== selectedQuizItem,
+                ),
+              };
+            }
+            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+          });
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
         });
       }
     }
     // 즐겨찾기 리스트
-    else if (favoriteQuestionList) {
+    else if (favoriteQuestionList && getItemCountData) {
       const selectedQuizItem = favoriteQuestionList.quizList.find(
         (item) => item.code === code,
       );
       if (selectedQuizItem) {
-        setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-        setFavoriteQuestionList((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: prevItems.quizList.filter(
-                (item) => item !== selectedQuizItem,
-              ),
-            };
+        const alreadyExists = initialItems.some(
+          (item) => item.code === selectedQuizItem.code,
+        );
+        if (alreadyExists) {
+          openToastifyAlert({
+            type: 'error',
+            text: `이미 포함되어있는 문항입니다.`,
+          });
+        } else {
+          if (initialItems.length + 1 <= getItemCountData) {
+            setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
+          } else {
+            openToastifyAlert({
+              type: 'error',
+              text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+            });
           }
-          return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
-        });
+        }
       }
     }
   };
@@ -1606,7 +1729,7 @@ export function Step2() {
 
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
-  //console.log(getLocalData);
+
   useEffect(() => {
     if (getLocalData?.data.quizList) {
       setInitialItems(getLocalData.data.quizList);
@@ -1619,7 +1742,6 @@ export function Step2() {
 
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
-    //console.log('@드래그끝났을떄', newList);
   };
 
   const handleButtonCheck = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -1637,14 +1759,14 @@ export function Step2() {
 
   const goBackStep1 = () => {
     const data = {
-      문항수: initialItems.length,
+      문항수: initialItems.length.toString(),
       난이도: '중',
       문항타입: '객관식',
     };
     saveLocalData(data);
     setContentNumQuotient([]);
     navigate('/content-create/exam/step1');
-    window.opener.localStorage.clear();
+    //window.localStorage.clear();
   };
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
@@ -1765,36 +1887,53 @@ export function Step2() {
                       </SimilarTitleWrapper>
                       <SimilarContentsWrapper>
                         <AddNewContensWrapper>
-                          {similarItems?.quizList.map((item, i) => (
-                            <MathviewerAccordion
-                              key={item.idx}
-                              componentWidth="600px"
-                              width="450px"
-                              componentHeight="150px"
-                              onClick={() => {}}
-                              isBorder={true}
-                              isNewQuiz={true}
-                              isSimilarQuiz={true}
-                              data={item}
-                              index={item.idx}
-                              title={
-                                item.quizCategoryList[0].quizCategory.학교급
-                              }
-                              quizNum={item.idx}
-                              selectedCardIndex={selectedCardIndex}
-                              onSelectCard={setSelectedCardIndex}
-                              reportQuizitem={() => openReportProcess(item.idx)}
-                              changeQuizitem={() =>
-                                clickSwapQuizItem(
-                                  similarItems,
-                                  i,
-                                  initialItems,
-                                  similarItemIndex as number,
-                                )
-                              }
-                              addQuizItem={() => clickAddQuizItem(item.code)}
-                            ></MathviewerAccordion>
-                          ))}
+                          {similarItems?.quizList.map((item, i) => {
+                            const quizCategoryType = item.quizCategoryList.find(
+                              (quizCategoryItem: any) =>
+                                quizCategoryItem.quizCategory.문항타입,
+                            )?.quizCategory;
+                            const quizCategory = item.quizCategoryList.find(
+                              (quizCategoryItem: any) =>
+                                quizCategoryItem.quizCategory.유형,
+                            )?.quizCategory;
+                            return (
+                              <MathviewerAccordion
+                                key={item.idx}
+                                componentWidth="600px"
+                                width="450px"
+                                componentHeight="150px"
+                                onClick={() => {}}
+                                isBorder={true}
+                                isNewQuiz={true}
+                                isSimilarQuiz={true}
+                                isFavorite={item.isFavorite}
+                                data={item}
+                                index={item.idx}
+                                title={quizCategory?.유형}
+                                category={quizCategoryType}
+                                quizNum={item.idx}
+                                selectedCardIndex={selectedCardIndex}
+                                onSelectCard={setSelectedCardIndex}
+                                reportQuizitem={() =>
+                                  openReportProcess(item.idx)
+                                }
+                                changeQuizitem={() =>
+                                  clickSwapQuizItem(
+                                    similarItems,
+                                    i,
+                                    initialItems,
+                                    similarItemIndex as number,
+                                  )
+                                }
+                                addQuizItem={() => clickAddQuizItem(item.code)}
+                                favoriteQuizItem={(e) =>
+                                  item.isFavorite
+                                    ? handleFavorite(e, item.idx, true)
+                                    : handleFavorite(e, item.idx, false)
+                                }
+                              ></MathviewerAccordion>
+                            );
+                          })}
                         </AddNewContensWrapper>
                       </SimilarContentsWrapper>
                     </SimilarWrapper>
@@ -1853,8 +1992,16 @@ export function Step2() {
                             >
                               {(dragItem, ref, isDragging, itemIndex) => {
                                 // dragItem과 그 속성들을 안전하게 접근하기 위해 옵셔널 체이닝 사용
+                                const quizCategoryType =
+                                  dragItem.quizCategoryList.find(
+                                    (quizCategoryItem: any) =>
+                                      quizCategoryItem.quizCategory.문항타입,
+                                  )?.quizCategory;
                                 const quizCategory =
-                                  dragItem.quizCategoryList?.[0]?.quizCategory;
+                                  dragItem.quizCategoryList.find(
+                                    (quizCategoryItem: any) =>
+                                      quizCategoryItem.quizCategory.유형,
+                                  )?.quizCategory;
 
                                 return (
                                   <li
@@ -1862,7 +2009,6 @@ export function Step2() {
                                     className={`${isDragging ? 'opacity' : ''}`}
                                   >
                                     <Content
-                                      // key={i}
                                       onClick={(e) => {
                                         handleButtonCheck(e);
                                       }}
@@ -1871,15 +2017,15 @@ export function Step2() {
                                         {itemIndex + 1}
                                       </div>
                                       <div className="type">
-                                        {quizCategory?.문항타입 || 'N/A'}
+                                        {quizCategoryType?.문항타입 || 'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="level">
-                                        {quizCategory?.난이도 || 'N/A'}
+                                        {quizCategoryType?.난이도 || 'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="title">
-                                        {quizCategory?.출처 || 'N/A'}
+                                        {quizCategory?.유형 || 'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="icon">
@@ -2161,7 +2307,7 @@ export function Step2() {
                                         )}
 
                                         {categoryItemTreeData ? (
-                                          <>
+                                          <AccordionItemWrapper>
                                             {itemTree.length ? (
                                               <div
                                                 ref={contentRef}
@@ -2270,7 +2416,7 @@ export function Step2() {
                                                 info="등록된 데이터가 없습니다"
                                               />
                                             )}
-                                          </>
+                                          </AccordionItemWrapper>
                                         ) : (
                                           <Loader />
                                         )}
@@ -2359,43 +2505,47 @@ export function Step2() {
                             </AddNewContensWrapper>
                           ) : (
                             <AddNewContensWrapper>
-                              {newQuizItems?.quizList.map((item, i) => (
-                                <MathviewerAccordion
-                                  key={item.idx}
-                                  componentWidth="600px"
-                                  width="450px"
-                                  componentHeight="150px"
-                                  onClick={() => {}}
-                                  isBorder={true}
-                                  isNewQuiz={true}
-                                  isFavorite={item.isFavorite}
-                                  data={item}
-                                  index={item.idx}
-                                  title={
-                                    item.quizCategoryList[0].quizCategory.학교급
-                                  }
-                                  quizNum={i + 1}
-                                  selectedCardIndex={selectedCardIndex}
-                                  onSelectCard={setSelectedCardIndex}
-                                  reportQuizitem={() =>
-                                    openReportProcess(item.idx)
-                                  }
-                                  addQuizItem={() =>
-                                    clickAddQuizItem(item.code)
-                                  }
-                                  favoriteQuizItem={(e) =>
-                                    item.isFavorite
-                                      ? handleFavorite(e, {
-                                          idx: item.idx,
-                                          isFavorite: true,
-                                        })
-                                      : handleFavorite(e, {
-                                          idx: item.idx,
-                                          isFavorite: false,
-                                        })
-                                  }
-                                ></MathviewerAccordion>
-                              ))}
+                              {newQuizItems?.quizList.map((item, i) => {
+                                const quizCategoryType =
+                                  item.quizCategoryList.find(
+                                    (quizCategoryItem: any) =>
+                                      quizCategoryItem.quizCategory.문항타입,
+                                  )?.quizCategory;
+                                const quizCategory = item.quizCategoryList.find(
+                                  (quizCategoryItem: any) =>
+                                    quizCategoryItem.quizCategory.유형,
+                                )?.quizCategory;
+                                return (
+                                  <MathviewerAccordion
+                                    key={item.idx}
+                                    componentWidth="600px"
+                                    width="450px"
+                                    componentHeight="150px"
+                                    onClick={() => {}}
+                                    isBorder={true}
+                                    isNewQuiz={true}
+                                    isFavorite={item.isFavorite}
+                                    data={item}
+                                    index={item.idx}
+                                    title={quizCategory?.유형}
+                                    category={quizCategoryType}
+                                    quizNum={i + 1}
+                                    selectedCardIndex={selectedCardIndex}
+                                    onSelectCard={setSelectedCardIndex}
+                                    reportQuizitem={() =>
+                                      openReportProcess(item.idx)
+                                    }
+                                    addQuizItem={() =>
+                                      clickAddQuizItem(item.code)
+                                    }
+                                    favoriteQuizItem={(e) =>
+                                      item.isFavorite
+                                        ? handleFavorite(e, item.idx, true)
+                                        : handleFavorite(e, item.idx, false)
+                                    }
+                                  ></MathviewerAccordion>
+                                );
+                              })}
                             </AddNewContensWrapper>
                           )}
                         </>
@@ -2440,45 +2590,49 @@ export function Step2() {
                               </BookmarkContentOption>
                               <BookmarkContensWrapper>
                                 {favoriteQuestionList.quizList &&
-                                  favoriteQuestionList.quizList.map((item) => (
-                                    <MathviewerAccordion
-                                      key={item.idx}
-                                      componentWidth="600px"
-                                      width="450px"
-                                      componentHeight="150px"
-                                      onClick={() => {}}
-                                      isBorder={true}
-                                      isNewQuiz={true}
-                                      data={item}
-                                      index={item.idx}
-                                      //유형으로 수정하기
-                                      title={
-                                        item.quizCategoryList[0].quizCategory
-                                          .학교급
-                                      }
-                                      quizNum={item.idx}
-                                      isFavorite={item.isFavorite}
-                                      selectedCardIndex={selectedCardIndex}
-                                      onSelectCard={setSelectedCardIndex}
-                                      reportQuizitem={() =>
-                                        openReportProcess(item.idx)
-                                      }
-                                      addQuizItem={() =>
-                                        clickAddQuizItem(item.code)
-                                      }
-                                      favoriteQuizItem={(e) =>
-                                        item.isFavorite
-                                          ? handleFavorite(e, {
-                                              idx: item.idx,
-                                              isFavorite: true,
-                                            })
-                                          : handleFavorite(e, {
-                                              idx: item.idx,
-                                              isFavorite: false,
-                                            })
-                                      }
-                                    ></MathviewerAccordion>
-                                  ))}
+                                  favoriteQuestionList.quizList.map((item) => {
+                                    const quizCategoryType =
+                                      item.quizCategoryList.find(
+                                        (quizCategoryItem: any) =>
+                                          quizCategoryItem.quizCategory
+                                            .문항타입,
+                                      )?.quizCategory;
+                                    const quizCategory =
+                                      item.quizCategoryList.find(
+                                        (quizCategoryItem: any) =>
+                                          quizCategoryItem.quizCategory.유형,
+                                      )?.quizCategory;
+                                    return (
+                                      <MathviewerAccordion
+                                        key={item.idx}
+                                        componentWidth="600px"
+                                        width="450px"
+                                        componentHeight="150px"
+                                        onClick={() => {}}
+                                        isBorder={true}
+                                        isNewQuiz={true}
+                                        data={item}
+                                        index={item.idx}
+                                        title={quizCategory?.유형}
+                                        category={quizCategoryType}
+                                        quizNum={item.idx}
+                                        isFavorite={item.isFavorite}
+                                        selectedCardIndex={selectedCardIndex}
+                                        onSelectCard={setSelectedCardIndex}
+                                        reportQuizitem={() =>
+                                          openReportProcess(item.idx)
+                                        }
+                                        addQuizItem={() =>
+                                          clickAddQuizItem(item.code)
+                                        }
+                                        favoriteQuizItem={(e) =>
+                                          item.isFavorite
+                                            ? handleFavorite(e, item.idx, true)
+                                            : handleFavorite(e, item.idx, false)
+                                        }
+                                      ></MathviewerAccordion>
+                                    );
+                                  })}
                               </BookmarkContensWrapper>
                             </>
                           ) : (
@@ -2525,33 +2679,37 @@ export function Step2() {
                             fontSize="16px"
                           />
                           {/* 사용자정렬 */}
-                          {/* <SelectWrapper>
-                  {selectArrange.map((el) => (
-                    <Select
-                      width={'150px'}
-                      isnormalizedOptions
-                      key={el.idx}
-                      defaultValue={defaultValues[el.idx]}
-                      options={el.options}
-                      onSelect={(event) =>
-                        selectListCategoryOption(event, el.idx)
-                      }
-                      blackMode
-                      isStartDnD={isStartDnD}
-                    ></Select>
-                  ))}
-                  {selectCategory.map((el) => (
-                    <Select
-                      width={'150px'}
-                      isnormalizedOptions
-                      key={el.idx}
-                      defaultValue={el.name}
-                      options={el.options}
-                      //onSelect={(event) => selectListCategoryOption(event, el.idx)}
-                      blackMode
-                    ></Select>
-                  ))}
-                </SelectWrapper> */}
+                          <SelectWrapper>
+                            {selectArrange.map((el) => (
+                              <Select
+                                width={'150px'}
+                                isnormalizedOptions
+                                key={el.name}
+                                defaultValue={defaultValues[Number(el.idx)]}
+                                options={el.options}
+                                onSelect={(event) =>
+                                  selectListCategoryOption(
+                                    event,
+                                    Number(el.idx),
+                                  )
+                                }
+                                blackMode
+                              ></Select>
+                            ))}
+                            {selectCategory.map((el) => (
+                              <Select
+                                width={'150px'}
+                                isnormalizedOptions
+                                key={el.idx}
+                                defaultValue={el.name}
+                                options={el.options}
+                                onSelect={(event) =>
+                                  selectListCategoryOption(event, el.idx)
+                                }
+                                blackMode
+                              ></Select>
+                            ))}
+                          </SelectWrapper>
                         </ListFilter>
                         <ContentListWrapper>
                           <StepDnDWrapper
@@ -2570,56 +2728,64 @@ export function Step2() {
                               isDragging,
                               itemIndex,
                               quotient,
-                            ) => (
-                              <li
-                                ref={ref}
-                                className={`${isDragging ? 'opacity' : ''}`}
-                              >
-                                <MathviewerAccordion
-                                  componentWidth="750px"
-                                  width="550px"
-                                  onClick={() => {
-                                    showSimilarContent(
-                                      dragItem.code,
-                                      itemIndex,
-                                    );
-                                  }}
-                                  isSimilar={isSimilar}
-                                  isFavorite={dragItem.isFavorite}
-                                  data={dragItem}
-                                  quizNum={itemIndex + 1}
-                                  title={
-                                    dragItem.quizCategoryList[0].quizCategory
-                                      .유형
-                                  }
-                                  index={itemIndex}
-                                  selectedCardIndex={selectedCardIndex}
-                                  onSelectCard={setSelectedCardIndex}
-                                  reportQuizitem={() =>
-                                    openReportProcess(dragItem.idx)
-                                  }
-                                  deleteQuizItem={() =>
-                                    deleteQuizItem(dragItem.code)
-                                  }
-                                  quotient={quotient}
-                                  minQuotient={minQuotient}
-                                  maxQuotient={maxQuotient}
-                                  equalScore={equalScore as number}
-                                  remainderContent={remainderContent}
-                                  nextRemainderContent={nextRemainderContent}
-                                  setTotalEqualScore={setTotalEqualScore}
-                                  category={
-                                    dragItem.quizCategoryList?.[0]?.quizCategory
-                                  }
-                                  favoriteQuizItem={(e) =>
-                                    handleFavorite(e, {
-                                      idx: dragItem.idx,
-                                      isFavorite: true,
-                                    })
-                                  }
-                                ></MathviewerAccordion>
-                              </li>
-                            )}
+                            ) => {
+                              const quizCategoryType =
+                                dragItem.quizCategoryList.find(
+                                  (quizCategoryItem: any) =>
+                                    quizCategoryItem.quizCategory.문항타입,
+                                )?.quizCategory;
+                              const quizCategory =
+                                dragItem.quizCategoryList.find(
+                                  (quizCategoryItem: any) =>
+                                    quizCategoryItem.quizCategory.유형,
+                                )?.quizCategory;
+
+                              return (
+                                <li
+                                  ref={ref}
+                                  className={`${isDragging ? 'opacity' : ''}`}
+                                >
+                                  <MathviewerAccordion
+                                    componentWidth="750px"
+                                    width="550px"
+                                    onClick={() => {
+                                      showSimilarContent(
+                                        dragItem.code,
+                                        itemIndex,
+                                      );
+                                    }}
+                                    viewerOption={defaultValues[1]}
+                                    isSimilar={isSimilar}
+                                    isFavorite={dragItem.isFavorite}
+                                    data={dragItem}
+                                    quizNum={itemIndex + 1}
+                                    title={quizCategory.유형}
+                                    index={itemIndex}
+                                    selectedCardIndex={selectedCardIndex}
+                                    onSelectCard={setSelectedCardIndex}
+                                    reportQuizitem={() =>
+                                      openReportProcess(dragItem.idx)
+                                    }
+                                    deleteQuizItem={() =>
+                                      deleteQuizItem(dragItem.code)
+                                    }
+                                    quotient={quotient}
+                                    minQuotient={minQuotient}
+                                    maxQuotient={maxQuotient}
+                                    equalScore={equalScore as number}
+                                    remainderContent={remainderContent}
+                                    nextRemainderContent={nextRemainderContent}
+                                    setTotalEqualScore={setTotalEqualScore}
+                                    category={quizCategoryType}
+                                    favoriteQuizItem={(e) =>
+                                      dragItem.isFavorite
+                                        ? handleFavorite(e, dragItem.idx, true)
+                                        : handleFavorite(e, dragItem.idx, false)
+                                    }
+                                  ></MathviewerAccordion>
+                                </li>
+                              );
+                            }}
                           </StepDnDWrapper>
                         </ContentListWrapper>
                       </>
@@ -2876,6 +3042,10 @@ const LoaderWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+`;
+const AccordionItemWrapper = styled.div`
+  overflow-y: auto;
+  max-height: 250px;
 `;
 const SubmitButtonWrapper = styled.div`
   display: flex;

@@ -25,6 +25,7 @@ export interface QuizCategory {
   문항타입: string;
   교과: string;
   학교급: string;
+  유형?: string;
 }
 
 export interface QuizCategoryList {
@@ -50,9 +51,9 @@ export interface QuizList {
   isDelete: boolean;
 }
 
-export interface SimilarQuizList {
+export type SimilarQuizList = {
   quizList: QuizList[];
-}
+};
 
 export interface TagClassList {
   idx: number;

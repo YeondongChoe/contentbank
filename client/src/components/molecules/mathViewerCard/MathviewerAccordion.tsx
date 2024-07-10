@@ -167,6 +167,7 @@ type MathviewerCardProps = {
   nextRemainderContent?: number;
   setTotalEqualScore?: React.Dispatch<React.SetStateAction<number>>;
   category?: any;
+  viewerOption?: string;
 };
 
 export function MathviewerAccordion({
@@ -199,6 +200,7 @@ export function MathviewerAccordion({
   nextRemainderContent,
   category,
   setTotalEqualScore,
+  viewerOption,
 }: MathviewerCardProps) {
   const [didMount, setDidMount] = useState(false);
   const [quotientOption, setQuotientOption] = useState<any>([]);
@@ -207,7 +209,6 @@ export function MathviewerAccordion({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-
   //문항 삭제될때마다 총점 변경
   const totalEqualScore = useMemo(
     () => contentNumQuotient.reduce((acc, el) => acc + el.score, 0),
@@ -318,7 +319,7 @@ export function MathviewerAccordion({
     >
       <Component className={className} $componentHeight={componentHeight}>
         <div className="leftInfomation">
-          {/* {isFavorite ? (
+          {isFavorite ? (
             <Icon
               width={`18px`}
               src={`/images/icon/favorites_on.svg`}
@@ -332,11 +333,7 @@ export function MathviewerAccordion({
               onClick={favoriteQuizItem}
               cursor
             />
-          )} */}
-          <LuBookmarkPlus
-            onClick={favoriteQuizItem}
-            style={{ width: '18px', cursor: 'pointer' }}
-          ></LuBookmarkPlus>
+          )}
           <div>{category?.난이도 || 'N/A'}</div>
           <div>{category?.문항타입 || 'N/A'}</div>
           {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (
@@ -359,7 +356,15 @@ export function MathviewerAccordion({
         <WorkbookMathViewer
           data={data}
           width={width}
-          answerCommentary={'문제만'}
+          answerCommentary={
+            viewerOption === '문제만 보기'
+              ? '문제만'
+              : viewerOption === '문제+정답'
+                ? '문제+정답'
+                : viewerOption === '문제+정답+해설'
+                  ? '문제+정답+해설'
+                  : '문제만'
+          }
         ></WorkbookMathViewer>
         {isNewQuiz ? (
           <ButtonWrapper>

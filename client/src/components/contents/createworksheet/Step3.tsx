@@ -427,6 +427,7 @@ export function Step3() {
                 onChange={(e) => {
                   setNameValue(e.target.value);
                 }}
+                maxLength={20}
                 //innerRef={nameInputRef}
               />
             </InputWrapper>
@@ -449,8 +450,12 @@ export function Step3() {
                 placeholder="출제자명을 작성해주세요."
                 value={contentAuthor}
                 onChange={(e) => {
-                  setContentAuthor(e.target.value);
+                  const value = e.target.value;
+                  // 특수문자 제외한 문자만 남기도록 정규표현식을 사용하여 처리
+                  const filteredValue = value.replace(/[^\w\s]/gi, '');
+                  setContentAuthor(filteredValue); // 필터링된 값을 상태로 설정
                 }}
+                maxLength={10}
                 //innerRef={nameInputRef}
               />
             </InputWrapper>
@@ -475,6 +480,7 @@ export function Step3() {
                 onChange={(e) => {
                   setGradeValue(e.target.value);
                 }}
+                maxLength={10}
                 //innerRef={nameInputRef}
               />
             </InputWrapper>
