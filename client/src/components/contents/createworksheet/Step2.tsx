@@ -186,7 +186,6 @@ export function Step2() {
       getWorkbookData(workbookIdx);
     }
   }, [workbookIdx]);
-  //console.log(workbookData);
   //서버로부터 값을 받아오면 넣어주기
   useEffect(() => {
     if (workbookData) {
@@ -195,10 +194,10 @@ export function Step2() {
       setGradeValue(workbookData?.data.data.grade);
       setContentAuthor(workbookData?.data.data.examiner);
       setTag(workbookData?.data.data.tag);
+      setGetItemCountData(workbookData?.data.data.quizCnt);
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
-  console.log(workbookData);
 
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
@@ -1495,7 +1494,6 @@ export function Step2() {
   const [similarItems, setSimilarItems] = useState<SimilarQuizList | null>(
     null,
   );
-  console.log(similarItems);
   const [similarItemCode, setSimilarItemCode] = useState<string>('');
   const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
@@ -1624,78 +1622,115 @@ export function Step2() {
       const selectedQuizItem = similarItems.quizList.find(
         (item) => item.code === code,
       );
-      if (initialItems.length + 1 <= getItemCountData) {
-        if (selectedQuizItem) {
-          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-          setSimilarItems((prevItems) => {
-            if (prevItems) {
-              return {
-                ...prevItems,
-                quizList: prevItems.quizList.filter(
-                  (item) => item !== selectedQuizItem,
-                ),
-              };
-            }
-            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (selectedQuizItem) {
+        if (initialItems.length + 1 <= getItemCountData) {
+          const alreadyExists = initialItems.some(
+            (item) => item.code === selectedQuizItem.code,
+          );
+          if (alreadyExists) {
+            openToastifyAlert({
+              type: 'error',
+              text: `이미 포함되어있는 문항입니다.`,
+            });
+          } else {
+            setInitialItems((prevItems) => {
+              if (prevItems) {
+                return [...prevItems, selectedQuizItem];
+              }
+              return [selectedQuizItem]; // 초기 상태 설정
+            });
+            setSimilarItems((prevItems) => {
+              if (prevItems) {
+                return {
+                  ...prevItems,
+                  quizList: prevItems.quizList.filter(
+                    (item) => item.code !== selectedQuizItem.code,
+                  ),
+                };
+              }
+              return prevItems; // 초기 상태 설정
+            });
+          }
+        } else {
+          openToastifyAlert({
+            type: 'error',
+            text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
           });
         }
-      } else {
-        openToastifyAlert({
-          type: 'error',
-          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
-        });
       }
     }
+
     // 새문항 불러오기 리스트
-    else if (newQuizItems && getItemCountData) {
+    if (newQuizItems && getItemCountData) {
       const selectedQuizItem = newQuizItems.quizList.find(
         (item) => item.code === code,
       );
-      if (initialItems.length + 1 <= getItemCountData) {
-        if (selectedQuizItem) {
-          setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-          setNewQuizItems((prevItems) => {
-            if (prevItems) {
-              return {
-                ...prevItems,
-                quizList: prevItems.quizList.filter(
-                  (item) => item !== selectedQuizItem,
-                ),
-              };
-            }
-            return prevItems; // 만약 prevItems가 undefined이면 그대로 반환
+      if (selectedQuizItem) {
+        if (initialItems.length + 1 <= getItemCountData) {
+          const alreadyExists = initialItems.some(
+            (item) => item.code === selectedQuizItem.code,
+          );
+          if (alreadyExists) {
+            openToastifyAlert({
+              type: 'error',
+              text: `이미 포함되어있는 문항입니다.`,
+            });
+          } else {
+            setInitialItems((prevItems) => {
+              if (prevItems) {
+                return [...prevItems, selectedQuizItem];
+              }
+              return [selectedQuizItem]; // 초기 상태 설정
+            });
+            setNewQuizItems((prevItems) => {
+              if (prevItems) {
+                return {
+                  ...prevItems,
+                  quizList: prevItems.quizList.filter(
+                    (item) => item.code !== selectedQuizItem.code,
+                  ),
+                };
+              }
+              return prevItems; // 초기 상태 설정
+            });
+          }
+        } else {
+          openToastifyAlert({
+            type: 'error',
+            text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
           });
         }
-      } else {
-        openToastifyAlert({
-          type: 'error',
-          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
-        });
       }
     }
+
     // 즐겨찾기 리스트
-    else if (favoriteQuestionList && getItemCountData) {
+    if (favoriteQuestionList && getItemCountData) {
       const selectedQuizItem = favoriteQuestionList.quizList.find(
         (item) => item.code === code,
       );
       if (selectedQuizItem) {
-        const alreadyExists = initialItems.some(
-          (item) => item.code === selectedQuizItem.code,
-        );
-        if (alreadyExists) {
-          openToastifyAlert({
-            type: 'error',
-            text: `이미 포함되어있는 문항입니다.`,
-          });
-        } else {
-          if (initialItems.length + 1 <= getItemCountData) {
-            setInitialItems((prevItems) => [...prevItems, selectedQuizItem]);
-          } else {
+        if (initialItems.length + 1 <= getItemCountData) {
+          const alreadyExists = initialItems.some(
+            (item) => item.code === selectedQuizItem.code,
+          );
+          if (alreadyExists) {
             openToastifyAlert({
               type: 'error',
-              text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+              text: `이미 포함되어있는 문항입니다.`,
+            });
+          } else {
+            setInitialItems((prevItems) => {
+              if (prevItems) {
+                return [...prevItems, selectedQuizItem];
+              }
+              return [selectedQuizItem]; // 초기 상태 설정
             });
           }
+        } else {
+          openToastifyAlert({
+            type: 'error',
+            text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+          });
         }
       }
     }
