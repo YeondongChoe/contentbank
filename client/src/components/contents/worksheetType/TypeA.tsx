@@ -36,28 +36,37 @@ export const TypeA = ({
 }: TypeAProps) => {
   const [leftList, setLeftList] = useState<QuizList[]>([]);
   const [rightList, setRightList] = useState<QuizList[]>([]);
+  console.log(initialItems);
 
   useEffect(() => {
     if (initialItems) {
-      let accumulatedHeight = 0;
+      let accumulatedLeftHeight = 0;
+      const newInitialList: any[] = [];
       const updatedLeftList: any[] = [];
       const updatedRightList: any[] = [];
 
       initialItems.forEach((item) => {
-        // item에서 height를 가져와서 accumulatedHeight에 누적
-        const height = item.height !== undefined ? item.height : 0; // height가 undefined일 경우 0으로 처리
-        accumulatedHeight += height;
+        const height = item.height !== undefined ? item.height : 0;
+        accumulatedLeftHeight += height;
+        const questionWithHeight = { item, accumulatedLeftHeight };
+        newInitialList.push(questionWithHeight);
+        console.log(newInitialList);
 
-        // accumulatedHeight 기준으로 leftList 또는 rightList에 추가
-        if (accumulatedHeight < 3500) {
+        if (questionWithHeight.accumulatedLeftHeight < 3500) {
+          updatedLeftList.push();
+        }
+
+        if (accumulatedLeftHeight < 3500) {
           updatedLeftList.push(item);
-        } else if (accumulatedHeight >= 3500 && accumulatedHeight < 7000) {
+        } else {
           updatedRightList.push(item);
         }
       });
 
-      // state 업데이트
+      // 왼쪽 리스트 업데이트
       setLeftList(updatedLeftList);
+
+      // 오른쪽 리스트 업데이트
       setRightList(updatedRightList);
     }
 
