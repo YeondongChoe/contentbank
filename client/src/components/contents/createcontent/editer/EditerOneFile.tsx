@@ -13,35 +13,34 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
     return;
   }
 
-  // window.MathJax = {
-  //   startup: {
-  //     ready: () => {
-  //       const { MathJax } = window;
-  //       MathJax.startup.defaultReady();
-  //       console.log('MathJax is loaded, version: ', MathJax.version);
-  //       setLoaded(true);
-  //     },
-  //   },
-  //   tex: {
-  //     inlineMath: [['\\(', '\\)']],
-  //   },
-  //   svg: {
-  //     scale: 0.95,
-  //     fontCache: 'local',
-  //     minScale: 0.6,
-  //   },
-  //   options: {
-  //     renderActions: {
-  //       addMenu: [0, '', ''],
-  //       // assistiveMML: [],
-  //     },
-  //     menuOptions: {
-  //       settings: {
-  //         // assistiveMMl: true,
-  //       },
-  //     },
-  //   },
-  // };
+  (window as any).MathJax = {
+    startup: {
+      ready: () => {
+        const { MathJax } = window as any;
+        MathJax.startup.defaultReady();
+        console.log('MathJax is loaded, version: ', MathJax.version);
+        setLoaded(true);
+      },
+    },
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+    },
+    svg: {
+      scale: 1.0,
+      fontCache: 'local',
+      minScale: 0.1,
+    },
+    options: {
+      renderActions: {
+        addMenu: [
+          /* ... */
+        ],
+      },
+      menuOptions: {
+        settings: {},
+      },
+    },
+  };
 
   const script = document.createElement('script');
   script.id = 'MathJax-script';
@@ -67,9 +66,9 @@ export function EditerOneFile({ style }: { style?: any }) {
 
   return (
     <Container>
-      {isMathJaxLoaded ? <Type1 /> : <p>로딩 ...</p>}
+      {/* {isMathJaxLoaded ? <Type1 /> : <p>로딩 ...</p>} */}
       {/* {isMathJaxLoaded ? <Type2 /> : <p>로딩 ...</p>} */}
-      {/* {isMathJaxLoaded ? <Type3 /> : <p>로딩 ...</p>} */}
+      {isMathJaxLoaded ? <Type3 /> : <p>로딩 ...</p>}
     </Container>
   );
 }
