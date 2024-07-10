@@ -3,61 +3,73 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
+import Type1 from './components/Type1';
+import Type2 from './components/Type2';
+import Type3 from './components/Type3';
+
+const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
+  if (window.MathJax) {
+    setLoaded(true);
+    return;
+  }
+
+  window.MathJax = {
+    startup: {
+      ready: () => {
+        const { MathJax } = window;
+        MathJax.startup.defaultReady();
+        console.log('MathJax is loaded, version: ', MathJax.version);
+        setLoaded(true);
+      },
+    },
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+    },
+    svg: {
+      scale: 0.95,
+      fontCache: 'local',
+      minScale: 0.6,
+    },
+    options: {
+      renderActions: {
+        addMenu: [0, '', ''],
+        // assistiveMML: [],
+      },
+      menuOptions: {
+        settings: {
+          // assistiveMMl: true,
+        },
+      },
+    },
+  };
+
+  const script = document.createElement('script');
+  script.id = 'MathJax-script';
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  script.async = true;
+  script.onload = () => {
+    setLoaded(true);
+  };
+  script.onerror = () => {
+    console.error('Failed to load MathJax.');
+  };
+  document.head.appendChild(script);
+};
+
 export function EditerOneFile({ style }: { style?: any }) {
-  const [htmlContent, setHtmlContent] = useState('');
-  const defaultStyle = { border: 'none', ...style };
-  // const [isRendered, setRendered] = useState(false);
+  const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
 
-  // useEffect(() => {
-  //   if (isRendered) {
-  //     const scripts = [
-  //       '/static/dream_ui/js/data_view_area.js',
-  //       '/static/dream_ui/js/frame_controller.js',
-  //       '/static/iTeX_EQ/js/itex_total_eq_origin_32.js',
-  //       '/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71',
-  //       '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12',
-  //       '/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1',
-  //       '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.1',
-  //       '/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87',
-  //       '/static/iTeX_fulltext/js/dream_function.js',
-  //       '/static/iTeX_fulltext/js/hmlupload.js?v=0.1',
-  //       '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
-  //       '/static/iTeX_EQ/js/tex-svg-full_3_2_2.js?v=0.1',
-  //       '/static/OCR/js/main_iframe.js?v=0.1',
-  //       // '/static/',
-  //     ];
-
-  //     scripts.forEach((src) => {
-  //       const script = document.createElement('script');
-  //       script.src = src;
-  //       script.async = true;
-  //       document.body.appendChild(script);
-  //       return () => {
-  //         document.body.removeChild(script);
-  //       };
-  //     });
-  //   }
-  // }, [isRendered]);
   useEffect(() => {
-    // console.log(window.MathJax);
-    // console.log(window.MathJax.getMetricsFor);
-    // fetch('/static/OCR/ocr_iframe_origin.html')
-    fetch('/view/type3.html')
-      .then((response) => response.text())
-      .then((data) => setHtmlContent(data));
-  }, []);
+    if (!isMathJaxLoaded) {
+      loadMathJax(setMathJaxLoaded);
+    }
+  }, [isMathJaxLoaded]);
 
   return (
     <Container>
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-      {/* <iframe
-        id={id}
-        src={src}
-        width={width}
-        height={height}
-        title={title}
-        style={defaultStyle}
-      /> */}
+      {isMathJaxLoaded ? <Type1 /> : <p>로딩 ...</p>}
+      {/* {isMathJaxLoaded ? <Type2 /> : <p>로딩 ...</p>} */}
+      {/* {isMathJaxLoaded ? <Type3 /> : <p>로딩 ...</p>} */}
     </Container>
   );
 }
