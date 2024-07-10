@@ -334,10 +334,6 @@ export function MathviewerAccordion({
               cursor
             />
           )}
-          {/* <LuBookmarkPlus
-            onClick={favoriteQuizItem}
-            style={{ width: '18px', cursor: 'pointer' }}
-          ></LuBookmarkPlus> */}
           <div>{category?.난이도 || 'N/A'}</div>
           <div>{category?.문항타입 || 'N/A'}</div>
           {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (

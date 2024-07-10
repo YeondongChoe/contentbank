@@ -2023,7 +2023,6 @@ export function Step1() {
       }
     },
   });
-  console.log(questionNum || inputValue);
 
   const isRadioStateType = (
     item: UnitClassificationType,

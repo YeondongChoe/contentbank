@@ -125,6 +125,7 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
+  console.log(initialItems);
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
   const categoryType = initialItems.map((item) => {
@@ -1425,33 +1426,36 @@ export function Step2() {
       }
     },
     onSuccess: (response: { data: { message: string } }) => {
-      // console.log('quizFavorite', response);
+      console.log(response);
       openToastifyAlert({
         type: 'success',
         text: response.data.message,
       });
       favoriteQuizDataRefetch();
-      //similarDataMutate();
-      //postnewQuizList(newQuizItemSetting);
-
-      // queryClient.invalidateQueries({
-      //   queryKey: ['get-workbookList'],
-      //   exact: true,
-      // });
     },
   });
 
   // 즐겨찾기 토글 버튼
   const handleFavorite = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    data: { idx: number; isFavorite: boolean },
+    idx: number,
+    isFavorite: boolean,
   ) => {
     e.stopPropagation();
+    console.log(idx);
+    console.log(isFavorite);
 
     const favoriteItem = {
-      idx: data.idx,
-      isFavorite: !data.isFavorite,
+      idx: idx,
+      isFavorite: !isFavorite,
     };
+    setInitialItems((prevItems) =>
+      prevItems.map((item) =>
+        item.idx === favoriteItem.idx
+          ? { ...item, isFavorite: favoriteItem.isFavorite }
+          : item,
+      ),
+    );
     mutateQuizFavorite(favoriteItem);
   };
 
@@ -2487,14 +2491,8 @@ export function Step2() {
                                     }
                                     favoriteQuizItem={(e) =>
                                       item.isFavorite
-                                        ? handleFavorite(e, {
-                                            idx: item.idx,
-                                            isFavorite: true,
-                                          })
-                                        : handleFavorite(e, {
-                                            idx: item.idx,
-                                            isFavorite: false,
-                                          })
+                                        ? handleFavorite(e, item.idx, true)
+                                        : handleFavorite(e, item.idx, false)
                                     }
                                   ></MathviewerAccordion>
                                 );
@@ -2580,14 +2578,8 @@ export function Step2() {
                                         }
                                         favoriteQuizItem={(e) =>
                                           item.isFavorite
-                                            ? handleFavorite(e, {
-                                                idx: item.idx,
-                                                isFavorite: true,
-                                              })
-                                            : handleFavorite(e, {
-                                                idx: item.idx,
-                                                isFavorite: false,
-                                              })
+                                            ? handleFavorite(e, item.idx, true)
+                                            : handleFavorite(e, item.idx, false)
                                         }
                                       ></MathviewerAccordion>
                                     );
@@ -2738,14 +2730,8 @@ export function Step2() {
                                     category={quizCategoryType}
                                     favoriteQuizItem={(e) =>
                                       dragItem.isFavorite
-                                        ? handleFavorite(e, {
-                                            idx: dragItem.idx,
-                                            isFavorite: true,
-                                          })
-                                        : handleFavorite(e, {
-                                            idx: dragItem.idx,
-                                            isFavorite: false,
-                                          })
+                                        ? handleFavorite(e, dragItem.idx, true)
+                                        : handleFavorite(e, dragItem.idx, false)
                                     }
                                   ></MathviewerAccordion>
                                 </li>
