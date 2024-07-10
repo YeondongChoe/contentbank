@@ -25,6 +25,7 @@ import {
   CheckBox,
   openToastifyAlert,
   AlertBar,
+  Select,
 } from '../../atom';
 import { COLOR } from '../../constants';
 import {
@@ -41,13 +42,13 @@ export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
   const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
-  console.log(getLocalData);
 
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
   const [itemHeights, setItemHeights] = useState<number[]>([]);
+  const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
-
+  console.log(itemHeights);
   //학습지 생성 알림
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
@@ -58,22 +59,6 @@ export function Step3() {
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
-
-  //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
-  useEffect(() => {
-    const measureHeights = () => {
-      if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map(
-          (child) => (child as HTMLElement).offsetHeight,
-        );
-        setItemHeights(heights);
-      }
-    };
-
-    if (initialItems) {
-      measureHeights();
-    }
-  }, [initialItems]);
 
   // 높이가 측정된 값을 다시 문항의 키값으로 추가
   useEffect(() => {
@@ -362,24 +347,147 @@ export function Step3() {
     }
   }, [isComplete]);
 
+  //선택한 문항 보기 정렬
+  const selectSpace = [
+    {
+      idx: 0,
+      name: '0줄',
+      value: '0',
+      options: [
+        { idx: 0, name: '0줄', value: '0' },
+        { idx: 1, name: '1줄', value: '1' },
+        { idx: 2, name: '2줄', value: '2' },
+        { idx: 3, name: '3줄', value: '3' },
+        { idx: 4, name: '4줄', value: '4' },
+        { idx: 5, name: '5줄', value: '5' },
+        { idx: 6, name: '6줄', value: '6' },
+        { idx: 7, name: '7줄', value: '7' },
+        { idx: 8, name: '8줄', value: '8' },
+        { idx: 9, name: '9줄', value: '9' },
+        { idx: 10, name: '10줄', value: '10' },
+      ],
+    },
+  ];
+
+  const selectListCategoryOption = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    const newValue = (event.target as HTMLButtonElement)?.innerText;
+
+    const linesMatch = newValue.match(/^(\d+)줄$/);
+    if (linesMatch) {
+      const lines = parseInt(linesMatch[1], 10); // '1줄'에서 1을 추출하여 숫자로 변환
+      setItemHeights(
+        originalHeightsRef.current.map((height) => height + 30 * lines),
+      );
+    }
+  };
+
+  //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
+  useEffect(() => {
+    const measureHeights = () => {
+      if (measureRef.current) {
+        const heights = Array.from(measureRef.current.children).map(
+          (child) => (child as HTMLElement).offsetHeight,
+        );
+        setItemHeights(heights);
+        originalHeightsRef.current = heights;
+      }
+    };
+
+    if (initialItems) {
+      measureHeights();
+    }
+  }, [initialItems, answerCommentary]);
+
   return (
     <Container>
       {/* 가상의 돔을 그려서 문항의 높이 측정 */}
       <div>
         <div
           ref={measureRef}
-          style={{ visibility: 'hidden', position: 'absolute' }}
+          style={{
+            visibility: 'hidden',
+            position: 'absolute',
+          }}
         >
-          {initialItems &&
-            initialItems.map((quizItemList: any) =>
-              quizItemList.quizItemList
-                .filter((quizItem: any) => quizItem.type === 'QUESTION')
-                .map((quizItem: any, index: number) => (
-                  <div key={index}>
-                    <p>{quizItem.content}</p>
-                  </div>
-                )),
-            )}
+          {answerCommentary === '문제만' && (
+            <>
+              {initialItems &&
+                initialItems.map((quizItemList: any) =>
+                  quizItemList.quizItemList
+                    .filter((quizItem: any) => quizItem.type === 'QUESTION')
+                    .map((quizItem: any, index: number) => (
+                      <div key={index}>
+                        <p>{quizItem.content}</p>
+                      </div>
+                    )),
+                )}
+            </>
+          )}
+          {answerCommentary === '정답만' && (
+            <>
+              {initialItems &&
+                initialItems.map((quizItemList: any) =>
+                  quizItemList.quizItemList
+                    .filter((quizItem: any) => quizItem.type === 'ANSWER')
+                    .map((quizItem: any, index: number) => (
+                      <div key={index}>
+                        <p>{quizItem.content}</p>
+                      </div>
+                    )),
+                )}
+            </>
+          )}
+          {answerCommentary === '문제+해설별도' && (
+            <>
+              {initialItems &&
+                initialItems.map((quizItemList: any) =>
+                  quizItemList.quizItemList
+                    .filter((quizItem: any) => quizItem.type === 'QUESTION')
+                    .map((quizItem: any, index: number) => (
+                      <div key={index}>
+                        <p>{quizItem.content}</p>
+                      </div>
+                    )),
+                )}
+            </>
+          )}
+          {answerCommentary === '문제+해설같이' && (
+            <>
+              {initialItems &&
+                initialItems.map((quizItemList: any) =>
+                  quizItemList.quizItemList
+                    .filter((quizItem: any) => quizItem.type === 'QUESTION')
+                    .map((quizItem: any, index: number) => (
+                      <div key={index}>
+                        <p>{quizItem.content}</p>
+
+                        {quizItemList.quizItemList
+                          .filter(
+                            (exampleItem: any) =>
+                              exampleItem.type === 'EXAMPLE',
+                          )
+                          .map((exampleItem: any, exampleIndex: number) => (
+                            <div key={`example-${index}-${exampleIndex}`}>
+                              <p>{exampleItem.content}</p>
+                            </div>
+                          ))}
+
+                        {quizItemList.quizItemList
+                          .filter(
+                            (answerItem: any) => answerItem.type === 'ANSWER',
+                          )
+                          .map((answerItem: any, answerIndex: number) => (
+                            <div key={`answer-${index}-${answerIndex}`}>
+                              <p>{answerItem.content}</p>
+                            </div>
+                          ))}
+                      </div>
+                    )),
+                )}
+            </>
+          )}
         </div>
       </div>
       <AlertBar
@@ -412,7 +520,6 @@ export function Step3() {
                 fontSize="15px"
                 width="120px"
                 padding="5px 10px"
-                flexEnd
               />
               <Input
                 width="400px"
@@ -437,7 +544,6 @@ export function Step3() {
                 fontSize="15px"
                 width="120px"
                 padding="5px 10px"
-                flexEnd
               />
               <Input
                 width="400px"
@@ -465,7 +571,6 @@ export function Step3() {
                 fontSize="15px"
                 width="120px"
                 padding="5px 10px"
-                flexEnd
               />
               <Input
                 width="400px"
@@ -790,6 +895,28 @@ export function Step3() {
                 </Button>
               </ButtonGroup>
             </ContentQuantity>
+            {contentQuantity === '최대' && (
+              <ContentSpace>
+                <Label
+                  value="풀이공간"
+                  fontSize="15px"
+                  width="120px"
+                  padding="5px 10px"
+                  flexEnd
+                />
+                {selectSpace.map((el) => (
+                  <Select
+                    width={'100px'}
+                    isnormalizedOptions
+                    key={el.idx}
+                    defaultValue={el.name}
+                    options={el.options}
+                    heightScroll={'150px'}
+                    onSelect={(event) => selectListCategoryOption(event)}
+                  ></Select>
+                ))}
+              </ContentSpace>
+            )}
           </PositionOption>
           <AddInformationWrapper>
             <Label
@@ -890,32 +1017,36 @@ export function Step3() {
         </WorksheetSettingSection>
         <WorksheetTemplateViewSection>
           {templateType === 'A' && (
-            <TypeA
-              title={nameValue}
-              grade={gradeValue}
-              tag={tag}
-              contentQuantity={contentQuantity}
-              isWeather={isWeather}
-              isContentTypeTitle={isContentTypeTitle}
-              theme={selectedTheme}
-              initialItems={newInitialItems}
-              answerCommentary={answerCommentary}
-              column={column}
-            ></TypeA>
+            <WorksheetTemplateTypeWrapper>
+              <TypeA
+                title={nameValue}
+                grade={gradeValue}
+                tag={tag}
+                contentQuantity={contentQuantity}
+                isWeather={isWeather}
+                isContentTypeTitle={isContentTypeTitle}
+                theme={selectedTheme}
+                initialItems={newInitialItems}
+                answerCommentary={answerCommentary}
+                column={column}
+              ></TypeA>
+            </WorksheetTemplateTypeWrapper>
           )}
           {templateType === 'B' && (
-            <TypeB
-              title={nameValue}
-              grade={gradeValue}
-              tag={tag}
-              contentQuantity={contentQuantity}
-              isWeather={isWeather}
-              isContentTypeTitle={isContentTypeTitle}
-              theme={selectedTheme}
-              initialItems={newInitialItems}
-              answerCommentary={answerCommentary}
-              column={column}
-            ></TypeB>
+            <WorksheetTemplateTypeWrapper>
+              <TypeB
+                title={nameValue}
+                grade={gradeValue}
+                tag={tag}
+                contentQuantity={contentQuantity}
+                isWeather={isWeather}
+                isContentTypeTitle={isContentTypeTitle}
+                theme={selectedTheme}
+                initialItems={newInitialItems}
+                answerCommentary={answerCommentary}
+                column={column}
+              ></TypeB>
+            </WorksheetTemplateTypeWrapper>
           )}
         </WorksheetTemplateViewSection>
       </Wrapper>
@@ -989,9 +1120,7 @@ const InputGroup = styled.div`
   gap: 10px;
 `;
 const InputWrapper = styled.div`
-  width: 100%;
   display: flex;
-  justify-content: center;
 `;
 const WorksheetNameWrapper = styled.div`
   display: flex;
@@ -1061,6 +1190,10 @@ const ContentQuantity = styled.div`
   display: flex;
   //gap: 5px;
 `;
+const ContentSpace = styled.div`
+  display: flex;
+  //gap: 5px;
+`;
 const AddInformationWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -1071,8 +1204,8 @@ const CheckBoxWrapper = styled.div`
   padding-right: 10px;
 `;
 const WorksheetTemplateViewSection = styled.div`
-  /* width: 900px;
-  height: 751px; */
+  /* width: 900px; */
+  max-height: 751px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1081,6 +1214,11 @@ const WorksheetTemplateViewSection = styled.div`
   border-radius: 25px;
   gap: 10px;
 `;
+const WorksheetTemplateTypeWrapper = styled.div`
+  max-height: 751px;
+  overflow-y: auto;
+`;
+
 const WorksheetTemplateWrapper = styled.div`
   width: 100%;
   height: 100%;
