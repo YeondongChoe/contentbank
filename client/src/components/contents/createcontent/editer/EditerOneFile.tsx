@@ -13,35 +13,35 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
     return;
   }
 
-  window.MathJax = {
-    startup: {
-      ready: () => {
-        const { MathJax } = window;
-        MathJax.startup.defaultReady();
-        console.log('MathJax is loaded, version: ', MathJax.version);
-        setLoaded(true);
-      },
-    },
-    tex: {
-      inlineMath: [['\\(', '\\)']],
-    },
-    svg: {
-      scale: 0.95,
-      fontCache: 'local',
-      minScale: 0.6,
-    },
-    options: {
-      renderActions: {
-        addMenu: [0, '', ''],
-        // assistiveMML: [],
-      },
-      menuOptions: {
-        settings: {
-          // assistiveMMl: true,
-        },
-      },
-    },
-  };
+  // window.MathJax = {
+  //   startup: {
+  //     ready: () => {
+  //       const { MathJax } = window;
+  //       MathJax.startup.defaultReady();
+  //       console.log('MathJax is loaded, version: ', MathJax.version);
+  //       setLoaded(true);
+  //     },
+  //   },
+  //   tex: {
+  //     inlineMath: [['\\(', '\\)']],
+  //   },
+  //   svg: {
+  //     scale: 0.95,
+  //     fontCache: 'local',
+  //     minScale: 0.6,
+  //   },
+  //   options: {
+  //     renderActions: {
+  //       addMenu: [0, '', ''],
+  //       // assistiveMML: [],
+  //     },
+  //     menuOptions: {
+  //       settings: {
+  //         // assistiveMMl: true,
+  //       },
+  //     },
+  //   },
+  // };
 
   const script = document.createElement('script');
   script.id = 'MathJax-script';
