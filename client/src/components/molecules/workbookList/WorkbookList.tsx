@@ -144,6 +144,7 @@ export function WorkbookList({
 
   // 로컬스토리지에 보낼데이터 저장 수정일 경우 isEditWorkbook
   const saveLocalData = (idx: number) => {
+    window.localStorage.clear();
     const sendData = {
       isEditWorkbook: 1,
       workbookIdx: idx,

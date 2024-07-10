@@ -125,7 +125,7 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-  console.log(initialItems);
+
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
   const categoryType = initialItems.map((item) => {
@@ -198,6 +198,7 @@ export function Step2() {
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
+  console.log(workbookData);
 
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
@@ -1449,6 +1450,7 @@ export function Step2() {
       idx: idx,
       isFavorite: !isFavorite,
     };
+    //우측문항 즐겨찾기 아이콘 업데이트
     setInitialItems((prevItems) =>
       prevItems.map((item) =>
         item.idx === favoriteItem.idx
@@ -1456,6 +1458,35 @@ export function Step2() {
           : item,
       ),
     );
+    //유사문항 추가 즐겨찾기 아이콘 업데이트
+    if (similarItems) {
+      setSimilarItems((prevItems) => {
+        if (!prevItems) return prevItems; // prevItems가 null이면 그대로 반환
+        return {
+          ...prevItems,
+          quizList: prevItems.quizList.map((item) =>
+            item.idx === favoriteItem.idx
+              ? { ...item, isFavorite: favoriteItem.isFavorite }
+              : item,
+          ),
+        };
+      });
+    }
+    //새문항 추가 즐겨찾기 아이콘 업데이트
+    if (newQuizItems) {
+      setNewQuizItems((prevItems) => {
+        if (!prevItems) return prevItems; // prevItems가 null이면 그대로 반환
+        return {
+          ...prevItems,
+          quizList: prevItems.quizList.map((item) =>
+            item.idx === favoriteItem.idx
+              ? { ...item, isFavorite: favoriteItem.isFavorite }
+              : item,
+          ),
+        };
+      });
+    }
+
     mutateQuizFavorite(favoriteItem);
   };
 
@@ -1464,6 +1495,7 @@ export function Step2() {
   const [similarItems, setSimilarItems] = useState<SimilarQuizList | null>(
     null,
   );
+  console.log(similarItems);
   const [similarItemCode, setSimilarItemCode] = useState<string>('');
   const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
@@ -1727,14 +1759,14 @@ export function Step2() {
 
   const goBackStep1 = () => {
     const data = {
-      문항수: initialItems.length,
+      문항수: initialItems.length.toString(),
       난이도: '중',
       문항타입: '객관식',
     };
     saveLocalData(data);
     setContentNumQuotient([]);
     navigate('/content-create/exam/step1');
-    window.opener.localStorage.clear();
+    //window.localStorage.clear();
   };
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
@@ -1874,6 +1906,7 @@ export function Step2() {
                                 isBorder={true}
                                 isNewQuiz={true}
                                 isSimilarQuiz={true}
+                                isFavorite={item.isFavorite}
                                 data={item}
                                 index={item.idx}
                                 title={quizCategory?.유형}
@@ -1893,6 +1926,11 @@ export function Step2() {
                                   )
                                 }
                                 addQuizItem={() => clickAddQuizItem(item.code)}
+                                favoriteQuizItem={(e) =>
+                                  item.isFavorite
+                                    ? handleFavorite(e, item.idx, true)
+                                    : handleFavorite(e, item.idx, false)
+                                }
                               ></MathviewerAccordion>
                             );
                           })}
