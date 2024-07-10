@@ -1855,36 +1855,47 @@ export function Step2() {
                       </SimilarTitleWrapper>
                       <SimilarContentsWrapper>
                         <AddNewContensWrapper>
-                          {similarItems?.quizList.map((item, i) => (
-                            <MathviewerAccordion
-                              key={item.idx}
-                              componentWidth="600px"
-                              width="450px"
-                              componentHeight="150px"
-                              onClick={() => {}}
-                              isBorder={true}
-                              isNewQuiz={true}
-                              isSimilarQuiz={true}
-                              data={item}
-                              index={item.idx}
-                              title={
-                                item.quizCategoryList[0].quizCategory.학교급
-                              }
-                              quizNum={item.idx}
-                              selectedCardIndex={selectedCardIndex}
-                              onSelectCard={setSelectedCardIndex}
-                              reportQuizitem={() => openReportProcess(item.idx)}
-                              changeQuizitem={() =>
-                                clickSwapQuizItem(
-                                  similarItems,
-                                  i,
-                                  initialItems,
-                                  similarItemIndex as number,
-                                )
-                              }
-                              addQuizItem={() => clickAddQuizItem(item.code)}
-                            ></MathviewerAccordion>
-                          ))}
+                          {similarItems?.quizList.map((item, i) => {
+                            const quizCategoryType = item.quizCategoryList.find(
+                              (quizCategoryItem: any) =>
+                                quizCategoryItem.quizCategory.문항타입,
+                            )?.quizCategory;
+                            const quizCategory = item.quizCategoryList.find(
+                              (quizCategoryItem: any) =>
+                                quizCategoryItem.quizCategory.유형,
+                            )?.quizCategory;
+                            return (
+                              <MathviewerAccordion
+                                key={item.idx}
+                                componentWidth="600px"
+                                width="450px"
+                                componentHeight="150px"
+                                onClick={() => {}}
+                                isBorder={true}
+                                isNewQuiz={true}
+                                isSimilarQuiz={true}
+                                data={item}
+                                index={item.idx}
+                                title={quizCategory?.유형}
+                                category={quizCategoryType}
+                                quizNum={item.idx}
+                                selectedCardIndex={selectedCardIndex}
+                                onSelectCard={setSelectedCardIndex}
+                                reportQuizitem={() =>
+                                  openReportProcess(item.idx)
+                                }
+                                changeQuizitem={() =>
+                                  clickSwapQuizItem(
+                                    similarItems,
+                                    i,
+                                    initialItems,
+                                    similarItemIndex as number,
+                                  )
+                                }
+                                addQuizItem={() => clickAddQuizItem(item.code)}
+                              ></MathviewerAccordion>
+                            );
+                          })}
                         </AddNewContensWrapper>
                       </SimilarContentsWrapper>
                     </SimilarWrapper>
