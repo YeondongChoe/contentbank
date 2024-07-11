@@ -398,7 +398,7 @@ export function Step3() {
     if (initialItems) {
       measureHeights();
     }
-  }, [initialItems, answerCommentary]);
+  }, [initialItems, answerCommentary, contentQuantity]);
 
   return (
     <Container>
