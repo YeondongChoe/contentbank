@@ -406,7 +406,7 @@ export function Step2() {
       // 상태 업데이트
       setInitialItems(updatedItems);
     }
-  }, [defaultValues[0]]);
+  }, [defaultValues[0] === '객관식 상단배치']);
 
   //무작위 정렬
   useEffect(() => {
@@ -419,7 +419,7 @@ export function Step2() {
       // 상태 업데이트
       setInitialItems(shuffleList);
     }
-  }, [defaultValues[0]]);
+  }, [defaultValues[0] === '무작위 정렬']);
 
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -445,26 +445,6 @@ export function Step2() {
       ],
     },
   ];
-
-  const bookmarkSelectCategory = [
-    {
-      id: '1',
-      label: '1000이 10인 수 알아보기',
-      value: '1',
-      options: [
-        { id: '0', label: '1000이 10인 수 알아보기', value: '0' },
-        { id: '1', label: '객관식 상단배치', value: '1' },
-        { id: '2', label: '무작위 정렬', value: '2' },
-      ],
-    },
-  ];
-  const [bookmarkCategory, setBookmarkCategory] = useState<string[]>([]);
-  const selectBookmarkCategoryOption = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    const value = event.currentTarget.value;
-    setBookmarkCategory((prevContent) => [...prevContent, value]);
-  };
 
   // 새 문항 추가
   const [newQuizItems, setNewQuizItems] = useState<SimilarQuizList>();
@@ -503,6 +483,24 @@ export function Step2() {
       }
     },
   });
+
+  useEffect(() => {
+    if (tabVeiw === '새 문항 추가') {
+      const data = {
+        itemTreeKeyList: isRangeSetting ? makingdata : getCategoryLocalData,
+        count: 10,
+        difficulty: null,
+        type: null,
+        mock: 1,
+        score: 1,
+        isScoreEven: true,
+        isQuizEven: false,
+        isMePriority: false,
+        filterList: initialItems.map((quiz) => quiz.code),
+      };
+      postNewQuizData(data);
+    }
+  }, [tabVeiw]);
 
   //새로 불러오기
   const clickGetNewQuiz = () => {
@@ -1365,19 +1363,67 @@ export function Step2() {
   };
 
   //즐겨찾기
+  //내문항 우선 선택
+  const getFavoriteCategory = async () => {
+    const res = await quizService.get(`/v1/quiz/favorite/select`);
+    return res.data.data;
+  };
+
+  const { data: favoriteCategoryData, refetch: favoriteCategoryDataRefetch } =
+    useQuery({
+      queryKey: ['get-favoriteCategory'],
+      queryFn: getFavoriteCategory,
+      meta: {
+        errorMessage: 'get-favoriteCategory 에러 메세지',
+      },
+      enabled: tabVeiw == '즐겨찾는 문항',
+    });
+
+  const [selectItemList, setSelectItemList] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (favoriteCategoryData && favoriteCategoryData.selectItemList) {
+      setSelectItemList(favoriteCategoryData.selectItemList);
+    }
+  }, [favoriteCategoryData]);
+
+  const bookmarkSelectCategory = [
+    {
+      idx: 2,
+      name: '유형을 선택해주세요.',
+      value: '2',
+      options: selectItemList.map((el: any, i: number) => ({
+        idx: i,
+        name: el,
+        value: i.toString(),
+      })),
+    },
+  ];
+
+  const [onFilter, setOnFilter] = useState<boolean>(false);
+  const [filterValue, setFilterValue] = useState<string>('');
+  useEffect(() => {
+    if (defaultValues[2] === '유형을 선택해주세요.') {
+      setOnFilter(false);
+      favoriteQuizDataRefetch();
+    } else {
+      setOnFilter(true);
+      setFilterValue(defaultValues[2]);
+      favoriteQuizDataRefetch();
+    }
+  }, [defaultValues[2]]);
+
   const [favoriteQuestionList, setFavoriteQuestionList] =
     useState<FavoriteQuizList>();
 
   // 문항 즐겨찾기리스트 불러오기 api
   const getFavoriteQuiz = async (page: any) => {
     const res = await quizService.get(
-      `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`,
+      !onFilter
+        ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${filterValue}&searchCondition=유형`
+        : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`,
     );
-    // const res = await quizService.get(
-    //     ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
-    //     : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&source=${selectedSource}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}&semester=${selectedSemester}&subject=${selectedSubject}&course=${selectedCourse}&type=${selectedQuestionType}&isOpen=${selectedOpenStatus == '활성' ? true : ''}&searchKeywordFrom=${startDate}&searchKeywordTo=${endDate}`,
-    // );
-    //console.log(`getFavoriteQuiz 결과값`, res.data.data);
+    console.log('불러오기', res.data.data);
     return res.data.data;
   };
 
@@ -1402,8 +1448,6 @@ export function Step2() {
       setFavoriteQuestionList(transformedData);
     }
   }, [favoriteQuizData]);
-
-  const queryClient = useQueryClient();
 
   // 문항 즐겨찾기 토글 api
   const patchQuizFavorite = async (data: {
@@ -1487,6 +1531,11 @@ export function Step2() {
     }
 
     mutateQuizFavorite(favoriteItem);
+  };
+
+  const [isPriorityQuiz, setIsPriorityEven] = useState(false);
+  const selectPriorityQuiz = () => {
+    setIsPriorityEven(!isPriorityQuiz);
   };
 
   // 유사문항
@@ -2590,26 +2639,36 @@ export function Step2() {
                           {favoriteQuizData && favoriteQuestionList ? (
                             <>
                               <BookmarkContentOption>
-                                {/* <SelectWrapper>
+                                <SelectWrapper>
                                   {bookmarkSelectCategory.map((el) => (
                                     <Select
                                       width={'250px'}
-                                      defaultValue={el.label}
-                                      key={el.label}
+                                      defaultValue={el.name}
+                                      key={el.name}
                                       options={el.options}
                                       onSelect={(event) =>
-                                        selectBookmarkCategoryOption(event)
+                                        selectListCategoryOption(
+                                          event,
+                                          Number(el.idx),
+                                        )
                                       }
                                     />
                                   ))}
-                                </SelectWrapper> */}
-                                {/* <BookmarkContentCheckWrapper>
+                                </SelectWrapper>
+                                <BookmarkContentCheckWrapper>
                                   <CheckBox
-                                    isChecked={recommend}
-                                    onClick={() => setRecommend(!recommend)}
-                                  ></CheckBox>
-                                  내 문항 우선 추천
-                                </BookmarkContentCheckWrapper> */}
+                                    $margin={`0 0 5px 0`}
+                                    isChecked={isPriorityQuiz}
+                                    onClick={selectPriorityQuiz}
+                                  />
+                                  <Label
+                                    onClick={selectPriorityQuiz}
+                                    value="내 문항 우선 추천"
+                                    fontSize="16px"
+                                    width="140px"
+                                    cursor
+                                  />
+                                </BookmarkContentCheckWrapper>
                                 <Button
                                   buttonType="button"
                                   onClick={clickAddAllQuizItem}
@@ -2719,8 +2778,8 @@ export function Step2() {
                               <Select
                                 width={'150px'}
                                 isnormalizedOptions
-                                key={el.name}
-                                defaultValue={defaultValues[Number(el.idx)]}
+                                key={el.idx}
+                                defaultValue={el.name}
                                 options={el.options}
                                 onSelect={(event) =>
                                   selectListCategoryOption(
@@ -3090,7 +3149,7 @@ const SubmitButtonWrapper = styled.div`
 const BookmarkContentOption = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-around;
   gap: 25px;
   padding: 10px 0;
 `;

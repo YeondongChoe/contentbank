@@ -59,7 +59,7 @@ const Component = styled.span<{ $margin?: string }>`
   width: 20px;
   height: 20px;
   position: relative;
-  margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
+  margin: ${({ $margin }) => $margin || '0px'};
 `;
 const SvgWrapper = styled.span`
   cursor: pointer;
