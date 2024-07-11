@@ -40,36 +40,58 @@ export const TypeB = ({
   useEffect(() => {
     if (initialItems) {
       let accumulatedHeight = 0;
+      const newInitialList: any[] = [];
       const updatedLeftList: any[] = [];
       const updatedRightList: any[] = [];
 
       initialItems.forEach((item) => {
-        // item에서 height를 가져와서 accumulatedHeight에 누적
-        const height = item.height !== undefined ? item.height : 0; // height가 undefined일 경우 0으로 처리
+        const height = item.height !== undefined ? item.height : 0;
         accumulatedHeight += height;
 
-        // accumulatedHeight 기준으로 leftList 또는 rightList에 추가
-        if (accumulatedHeight < 3500) {
+        const questionWithHeight = { item, accumulatedHeight };
+        newInitialList.push(questionWithHeight);
+        console.log(newInitialList);
+
+        if (questionWithHeight.accumulatedHeight <= 1400) {
           updatedLeftList.push(item);
-        } else if (accumulatedHeight >= 3500 && accumulatedHeight < 7000) {
+        } else if (
+          questionWithHeight.accumulatedHeight > 1400 &&
+          questionWithHeight.accumulatedHeight < 2800
+        ) {
           updatedRightList.push(item);
         }
       });
 
-      // state 업데이트
+      // 왼쪽 리스트 업데이트
       setLeftList(updatedLeftList);
+
+      // 오른쪽 리스트 업데이트
       setRightList(updatedRightList);
     }
+
     if (initialItems && column === '1단') {
       let accumulatedHeight = 0;
       const updatedLeftList: any[] = [];
-      initialItems.forEach((item) => {
+
+      // 항목 수 제한 설정
+      const contentLimits: { [key: string]: number } = {
+        최대: Infinity,
+        '6문제': 6,
+        '4문제': 4,
+        '2문제': 2,
+      };
+
+      // Default contentQuantity to '최대' if undefined
+      const validContentQuantity = contentQuantity ?? '최대';
+      const contentLimit = contentLimits[validContentQuantity];
+
+      initialItems.forEach((item, index) => {
         // item에서 height를 가져와서 accumulatedHeight에 누적
         const height = item.height !== undefined ? item.height : 0; // height가 undefined일 경우 0으로 처리
         accumulatedHeight += height;
 
-        // accumulatedHeight 기준으로 leftList 또는 rightList에 추가
-        if (accumulatedHeight < 3500) {
+        // accumulatedHeight 기준으로 leftList에 추가
+        if (accumulatedHeight <= 1400 && index < contentLimit) {
           updatedLeftList.push(item);
         }
       });
@@ -92,19 +114,6 @@ export const TypeB = ({
       if (contentQuantity === '2문제' && initialItems) {
         setLeftList(initialItems.slice(0, 1));
         setRightList(initialItems.slice(1, 2));
-      }
-    } else {
-      if (contentQuantity === '6문제' && initialItems) {
-        setLeftList(initialItems.slice(0, 6));
-        setRightList([]);
-      }
-      if (contentQuantity === '4문제' && initialItems) {
-        setLeftList(initialItems.slice(0, 4));
-        setRightList([]);
-      }
-      if (contentQuantity === '2문제' && initialItems) {
-        setLeftList(initialItems.slice(0, 2));
-        setRightList([]);
       }
     }
   }, [contentQuantity, initialItems, column]);
@@ -152,7 +161,7 @@ export const TypeB = ({
               </div>
             </TextWrapper>
           </WorksheetHeader>
-          <WorksheetBody $contentQuantity={contentQuantity}>
+          <WorksheetBody>
             <WorksheetBodyLeft>
               {leftList?.map((quizItemList) =>
                 quizItemList.quizItemList
@@ -164,7 +173,10 @@ export const TypeB = ({
                     )?.quizCategory;
 
                     return (
-                      <MathViewerWrapper key={i}>
+                      <MathViewerWrapper
+                        key={i}
+                        height={quizItemList.height as number}
+                      >
                         {isContentTypeTitle && (
                           <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
                         )}
@@ -172,15 +184,6 @@ export const TypeB = ({
                           <MathJaxWrapper>
                             <WorkbookMathViewer
                               data={quizItemList}
-                              padding={
-                                contentQuantity === '4문제'
-                                  ? '0 0 60px 0'
-                                  : contentQuantity === '6문제'
-                                    ? '0 0 60px 0'
-                                    : contentQuantity === '최대'
-                                      ? '0 0 50px 0'
-                                      : '0'
-                              }
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
@@ -203,7 +206,10 @@ export const TypeB = ({
                     )?.quizCategory;
 
                     return (
-                      <MathViewerWrapper key={i}>
+                      <MathViewerWrapper
+                        key={i}
+                        height={quizItemList.height as number}
+                      >
                         {isContentTypeTitle && (
                           <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
                         )}
@@ -211,15 +217,6 @@ export const TypeB = ({
                           <MathJaxWrapper>
                             <WorkbookMathViewer
                               data={quizItemList}
-                              padding={
-                                contentQuantity === '4문제'
-                                  ? '0 0 60px 0'
-                                  : contentQuantity === '6문제'
-                                    ? '0 0 60px 0'
-                                    : contentQuantity === '최대'
-                                      ? '0 0 50px 0'
-                                      : '0'
-                              }
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
@@ -262,7 +259,6 @@ const LabelWrapper = styled.div`
 const Wrapper = styled.div`
   background-color: white;
   height: 700px;
-  //aspect-ratio: 210/157;
   overflow-y: auto;
   padding-left: 10px;
   border-bottom-left-radius: 20px;
@@ -279,6 +275,7 @@ const WorksheetHeader = styled.div`
 const ContentTitle = styled.div`
   color: #888888;
   padding-bottom: 2px;
+  margin-left: -10px;
 `;
 const ContentScript = styled.div`
   color: #888888;
@@ -341,18 +338,7 @@ const TextWrapper = styled.div`
     }
   }
 `;
-type WorksheetBodyType = {
-  $contentQuantity?: string;
-};
-const WorksheetBody = styled.div<WorksheetBodyType>`
-  /* ${({ $contentQuantity }) =>
-    $contentQuantity === '최대' || $contentQuantity === '6문제'
-      ? `height: 105%`
-      : `height: calc(100% - 170px);`}; */
-  margin: 0 auto;
-  display: flex;
-  width: 1000px;
-`;
+
 const Divider = styled.span`
   display: inline-block;
   width: 2px;
@@ -361,34 +347,36 @@ const Divider = styled.span`
   margin: 0 10px;
 `;
 
+const WorksheetBody = styled.div`
+  margin: 0 auto;
+  display: flex;
+  width: 1000px;
+`;
+
 const WorksheetBodyLeft = styled.div`
-  //flex: 1 0 0;
   width: 48%;
   padding: 10px 20px 0px 20px;
   display: flex;
   flex-direction: column;
 `;
 const WorksheetBodyRight = styled.div`
-  //flex: 1 0 0;
   width: 48%;
-  padding: 10px 20px 0px 0px;
+  padding: 10px 20px 0px 20px;
   display: flex;
   flex-direction: column;
 `;
-const MathViewerWrapper = styled.div`
-  height: 100%;
+const MathViewerWrapper = styled.div<{ height: number }>`
+  height: ${({ height }) => `${height}px`};
   display: flex;
   flex-direction: column;
-  //gap: 2px;
+  margin-bottom: 40px;
   font-size: 12px;
 `;
 const EachMathViewer = styled.div`
+  max-width: 500px;
   scale: 0.8;
   margin-top: -5px;
-  margin-left: -45px;
-  //max-width: 541px; /* 최대 허용 너비 */
-  //margin: 0 auto; /* 중앙 정렬 */
-  //overflow-x: hidden; /* 가로 스크롤이 생길 경우 숨김 처리 */
+  margin-left: -60px;
 `;
 const MathJaxWrapper = styled.div`
   strong {
