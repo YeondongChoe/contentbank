@@ -69,29 +69,6 @@ import {
 } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
-interface RadioState {
-  title: string;
-  checkValue: number;
-  code: string;
-}
-
-interface ContentItem {
-  quizNum: number;
-  value: string;
-}
-
-interface Option {
-  idx: number;
-  name: string;
-  value: string;
-}
-
-interface SelectCategory {
-  idx: number;
-  name: string;
-  value: string;
-  options: Option[];
-}
 
 interface RadioStateType {
   title: string;
@@ -160,6 +137,13 @@ export function Step2() {
   const [gradeValue, setGradeValue] = useState('');
   const [contentAuthor, setContentAuthor] = useState('');
   const [tag, setTag] = useState<string>('');
+  const [color, setColor] = useState<string>('');
+  const [type, setType] = useState<string>('');
+  const [multiLevel, setMultiLevel] = useState<string>('');
+  const [assign, setAssign] = useState<string>('');
+  const [isDate, setIsDate] = useState<boolean>(false);
+  const [isQuizType, setIsQuizType] = useState<boolean>(false);
+  const [itemType, setItemType] = useState<number>();
 
   useEffect(() => {
     if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
@@ -195,9 +179,17 @@ export function Step2() {
       setContentAuthor(workbookData?.data.data.examiner);
       setTag(workbookData?.data.data.tag);
       setGetItemCountData(workbookData?.data.data.quizCnt);
+      setColor(workbookData?.data.data.templateList.color);
+      setType(workbookData?.data.data.templateList.type);
+      setMultiLevel(workbookData?.data.data.templateList.multiLevel);
+      setAssign(workbookData?.data.data.templateList.assign);
+      setIsDate(workbookData?.data.data.templateList.isDate);
+      setIsQuizType(workbookData?.data.data.templateList.isQuizType);
+      setItemType(workbookData?.data.data.templateList.itemType);
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
+  console.log(workbookData);
 
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
@@ -1894,6 +1886,13 @@ export function Step2() {
       examiner: contentAuthor,
       grade: gradeValue,
       tag: tag,
+      color: color,
+      type: type,
+      multiLevel: multiLevel,
+      assign: assign,
+      isDate: isDate,
+      isQuizType: isQuizType,
+      itemType: itemType,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
       window.opener.localStorage.clear();

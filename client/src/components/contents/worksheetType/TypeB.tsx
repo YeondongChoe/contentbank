@@ -12,7 +12,7 @@ type TypeBProps = {
   grade?: string;
   tag?: string;
   contentQuantity?: string;
-  isWeather?: boolean;
+  isDate?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
   initialItems?: QuizList[];
@@ -27,7 +27,7 @@ export const TypeB = ({
   grade,
   tag,
   contentQuantity,
-  isWeather,
+  isDate,
   isContentTypeTitle,
   theme,
   initialItems,
@@ -229,9 +229,9 @@ export const TypeB = ({
             </WorksheetBodyRight>
           </WorksheetBody>
         </ThemeProvider>
-        <WorksheetAdditionalInformation $isWeather={isWeather}>
-          {isWeather && (
-            <span className="weather">
+        <WorksheetAdditionalInformation>
+          {isDate && (
+            <span className="isDate">
               <Label value="2024/03/19" fontSize="12px"></Label>
             </span>
           )}
@@ -384,7 +384,7 @@ const MathJaxWrapper = styled.div`
     color: ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
   }
 `;
-const WorksheetAdditionalInformation = styled.div<{ $isWeather?: boolean }>`
+const WorksheetAdditionalInformation = styled.div`
   width: 98%;
   margin: 0 auto;
   display: flex;
@@ -397,7 +397,7 @@ const WorksheetAdditionalInformation = styled.div<{ $isWeather?: boolean }>`
   margin-top: 80px;
   margin-bottom: 30px;
 
-  .weather {
+  .isDate {
     font-size: 12px;
     color: #888888;
   }
