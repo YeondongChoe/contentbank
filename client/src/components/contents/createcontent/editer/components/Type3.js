@@ -15,24 +15,27 @@ import PdfIcon from './icons/PdfIcon';
 import TrashIcon from './icons/TrashIcon';
 
 const dynamicallyLoadScripts = (scripts, callback) => {
-  if (scripts.length === 0) {
-    if (callback) callback();
-    return;
-  }
+  const loadScript = (index) => {
+    if (index >= scripts.length) {
+      callback();
+      return;
+    }
 
-  const src = scripts.shift();
-  const script = document.createElement('script');
-  script.src = src;
-  script.async = true;
-  script.onload = () => {
-    // console.log(`${src} loaded successfully`);
-    dynamicallyLoadScripts(scripts, callback);
+    const src = scripts[index];
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = () => {
+      loadScript(index + 1);
+    };
+    script.onerror = () => {
+      console.error(`Failed to load script: ${src}`);
+      loadScript(index + 1);
+    };
+    document.body.appendChild(script);
   };
-  script.onerror = () => {
-    console.error(`Failed to load script: ${src}`);
-    dynamicallyLoadScripts(scripts, callback);
-  };
-  document.body.appendChild(script);
+
+  loadScript(0);
 };
 
 const Type3 = () => {
@@ -66,29 +69,22 @@ const Type3 = () => {
       '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
     ];
 
-    const initComponent = async () => {
-      dynamicallyLoadScripts([...initialScripts], async () => {
+    const initComponent = () => {
+      dynamicallyLoadScripts(initialScripts, () => {
         console.log('Initial scripts loaded');
-
-        // const html = await fetchHtmlContent();
-        // setHtmlContent(html);
-
-        setTimeout(() => {
-          dynamicallyLoadScripts([...subsequentScripts], () => {
-            console.log('Subsequent scripts loaded');
-            // Add the iframe after the subsequent scripts are loaded
-            if (ocrIframeContainer.current) {
-              const iframe = document.createElement('iframe');
-              iframe.width = '0';
-              iframe.height = '0';
-              iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
-              iframe.frameBorder = '0';
-              iframe.scrolling = 'no';
-              iframe.id = 'itex_frame_area';
-              ocrIframeContainer.current.appendChild(iframe);
-            }
-          });
-        }, 0);
+        dynamicallyLoadScripts(subsequentScripts, () => {
+          console.log('Subsequent scripts loaded');
+          if (ocrIframeContainer.current) {
+            const iframe = document.createElement('iframe');
+            iframe.width = '0';
+            iframe.height = '0';
+            iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
+            iframe.frameBorder = '0';
+            iframe.scrolling = 'no';
+            iframe.id = 'itex_frame_area';
+            ocrIframeContainer.current.appendChild(iframe);
+          }
+        });
       });
     };
 
