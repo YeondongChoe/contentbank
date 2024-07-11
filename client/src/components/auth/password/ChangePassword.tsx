@@ -10,6 +10,7 @@ import { Input, Label, Button, Alert, openToastifyAlert } from '../..';
 import { patchPassword, patchPasswordInit } from '../../../api/user';
 import { passwordRegex } from '../../../components/constants';
 import {
+  getAuthorityCookie,
   removeAuthorityCookie,
   setAuthorityCookie,
 } from '../../../utils/cookies';
@@ -97,8 +98,10 @@ export function ChangePassword({
         text: response.data.message,
       });
 
-      postRefreshToken();
-      navigate(`/content-create/quiz`);
+      postRefreshToken().then(() => {
+        console.log('getAuthorityCookie', getAuthorityCookie('accessToken'));
+        navigate(`/content-create/quiz`);
+      });
     },
   });
 
