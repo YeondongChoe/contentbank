@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
+import { Loader } from '../../../../components/atom';
+
 import Type1 from './components/Type1';
 import Type2 from './components/Type2';
 import Type3 from './components/Type3';
@@ -55,7 +57,7 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   document.head.appendChild(script);
 };
 
-export function EditerOneFile({ style }: { style?: any }) {
+export function EditerOneFile({ type }: { type: string }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
 
   useEffect(() => {
@@ -64,20 +66,37 @@ export function EditerOneFile({ style }: { style?: any }) {
     }
   }, [isMathJaxLoaded]);
 
+  useEffect(() => {}, [type]);
+
   return (
     <Container>
-      {/* {isMathJaxLoaded ? <Type1 /> : <p>로딩 ...</p>} */}
-      {/* {isMathJaxLoaded ? <Type2 /> : <p>로딩 ...</p>} */}
-      {isMathJaxLoaded ? <Type3 /> : <p>로딩 ...</p>}
+      {isMathJaxLoaded ? (
+        <>
+          {type === 'type1' && <Type1 />}
+          {type === 'type2' && <Type2 />}
+          {type === 'type3' && <Type3 />}
+        </>
+      ) : (
+        <LoaderWrapper>
+          <Loader width="50px" />
+        </LoaderWrapper>
+      )}
     </Container>
   );
 }
 
 const Container = styled.div`
-  width: 100%;
-  height: calc(100vh - 100px);
+  width: calc(100% - 330px);
+  height: calc(100vh - 100px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   padding: 0;
   margin: 0;
   display: flex;
   align-items: stretch;
+`;
+
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 30px;
+  padding-left: calc(50% - 35px);
 `;

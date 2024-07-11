@@ -272,19 +272,7 @@ export function ContentFileUpload({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              {/* <iframe
-                ref={iframeRef}
-                width="100%"
-                height="672"
-                src="http://43.201.205.140:40031/"
-                name="아이텍솔루션"
-                frameBorder={0}
-                id="editorIframe"
-                //allow="fullscreen"
-                sandbox="allow-forms allow-modals allow-same-origin"
-                referrerPolicy="no-referrer"
-              ></iframe> */}
-              <EditerOneFile />
+              <EditerOneFile type={'type1'} />
             </EditWrapper>
 
             <BackgroundWrapper>
@@ -465,15 +453,9 @@ const EditContainerWrapper = styled.div`
 `;
 
 const EditWrapper = styled.div`
-  height: calc(100vh - 100px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   width: 100%;
-
-  /* iframe {
-    width: calc(100% - 330px);
-    height: calc(100vh - 100px);
-  } */
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
