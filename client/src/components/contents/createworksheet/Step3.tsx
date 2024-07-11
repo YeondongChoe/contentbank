@@ -117,6 +117,51 @@ export function Step3() {
       setGradeValue(getLocalData.grade);
       setContentAuthor(getLocalData.examiner);
       setTag(getLocalData.tag);
+      setColorChoice(
+        getLocalData.color === '#FA8978'
+          ? 'red'
+          : getLocalData.color === '#FFDD94'
+            ? 'orange'
+            : getLocalData.color === '#D0E6A5'
+              ? 'green'
+              : getLocalData.color === '#86aee3'
+                ? 'blue'
+                : getLocalData.color === '#CCABD8'
+                  ? 'purple'
+                  : 'blue',
+      );
+      setTemplateType(getLocalData.type);
+      setColumn(
+        getLocalData.multiLevel === '1'
+          ? '1단'
+          : getLocalData.multiLevel === '2'
+            ? '2단'
+            : '2단',
+      );
+      setContentQuantity(
+        getLocalData.assign === '0'
+          ? '최대'
+          : getLocalData.assign === '2'
+            ? '2문제'
+            : getLocalData.assign === '4'
+              ? '4문제'
+              : getLocalData.assign === '6'
+                ? '6문제'
+                : '최대',
+      );
+      setIsDate(getLocalData.isDate);
+      setIsContentTypeTitle(getLocalData.isQuizType);
+      setAnswerCommentary(
+        getLocalData.itemType === 0
+          ? '문제만'
+          : getLocalData.itemType === 1
+            ? '정답만'
+            : getLocalData.itemType === 2
+              ? '문제+해설별도'
+              : getLocalData.itemType === 3
+                ? '문제+해설같이'
+                : 0,
+      );
     }
   }, [getLocalData]);
 
@@ -138,8 +183,9 @@ export function Step3() {
     setTag(newValue);
   };
 
-  const [answerCommentary, setAnswerCommentary] = useState<string>('문제만');
-
+  const [answerCommentary, setAnswerCommentary] = useState<string | number>(
+    '문제만',
+  );
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
   };
@@ -179,9 +225,9 @@ export function Step3() {
   const selectContentQuantity = (newValue: string) => {
     setContentQuantity(newValue);
   };
-  const [isWeather, setIsWeather] = useState(false);
-  const selectWeather = () => {
-    setIsWeather(!isWeather);
+  const [isDate, setIsDate] = useState(false);
+  const selectDate = () => {
+    setIsDate(!isDate);
   };
   const [isContentTypeTitle, setIsContentTypeTitle] = useState(false);
   const selectContentTypeTitle = () => {
@@ -280,13 +326,42 @@ export function Step3() {
         extension: '.pdf',
       },
       template: {
-        color: '#FF0000',
-        type: 'MCQ',
-        multiLevel: 'Single',
-        assign: 'Random',
-        isDate: true,
-        isQuizType: false,
-        itemType: 1,
+        color:
+          colorChoice === 'red'
+            ? '#FA8978'
+            : colorChoice === 'orange'
+              ? '#FFDD94'
+              : colorChoice === 'green'
+                ? '#D0E6A5'
+                : colorChoice === 'blue'
+                  ? '#86aee3'
+                  : colorChoice === 'purple'
+                    ? '#CCABD8'
+                    : '',
+        type: templateType,
+        multiLevel: column === '1단' ? '1' : column === '2단' ? '2' : '',
+        assign:
+          contentQuantity === '최대'
+            ? '0'
+            : contentQuantity === '2문제'
+              ? '2'
+              : contentQuantity === '4문제'
+                ? '4'
+                : contentQuantity === '6문제'
+                  ? '6'
+                  : '',
+        isDate: isDate,
+        isQuizType: isContentTypeTitle,
+        itemType:
+          answerCommentary === '문제만'
+            ? 0
+            : answerCommentary === '정답만'
+              ? 1
+              : answerCommentary === '문제+해설별도'
+                ? 2
+                : answerCommentary === '문제+해설같이'
+                  ? 3
+                  : 0,
       },
       quizList: newInitialItems,
     };
@@ -927,11 +1002,7 @@ export function Step3() {
               flexEnd
             />
             <CheckBoxWrapper>
-              <CheckBox
-                height="15px"
-                isChecked={isWeather}
-                onClick={selectWeather}
-              />
+              <CheckBox height="15px" isChecked={isDate} onClick={selectDate} />
               날짜 표시
             </CheckBoxWrapper>
             <CheckBoxWrapper>
@@ -1023,11 +1094,11 @@ export function Step3() {
                 grade={gradeValue}
                 tag={tag}
                 contentQuantity={contentQuantity}
-                isWeather={isWeather}
+                isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
                 initialItems={newInitialItems}
-                answerCommentary={answerCommentary}
+                answerCommentary={answerCommentary as string}
                 column={column}
               ></TypeA>
             </WorksheetTemplateTypeWrapper>
@@ -1039,11 +1110,11 @@ export function Step3() {
                 grade={gradeValue}
                 tag={tag}
                 contentQuantity={contentQuantity}
-                isWeather={isWeather}
+                isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
                 initialItems={newInitialItems}
-                answerCommentary={answerCommentary}
+                answerCommentary={answerCommentary as string}
                 column={column}
               ></TypeB>
             </WorksheetTemplateTypeWrapper>
