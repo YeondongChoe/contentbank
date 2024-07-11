@@ -341,7 +341,6 @@ export function WorkbookList({
                   )}
                   <ItemLayout>
                     {/* //TODO */}
-                    <span className="width_10px">{i + 1}</span>
                     <i className="line"></i>
                     <span>{item.grade}</span>
                     <i className="line"></i>

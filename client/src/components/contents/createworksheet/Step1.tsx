@@ -2046,10 +2046,11 @@ export function Step1() {
           ? Number(questionNum) || Number(inputValue)
           : Number(includeQuizList.length),
       //수능/모의고사 경우 어떻게 보내야할지 나중에 수정해야함
-      difficulty: questionLevel === '선택안함' ? null : questionLevel || '',
+      difficulty: questionLevel === '선택안함' ? null : questionLevel || null,
       type: questionType,
       mock: containMock,
       score: equalScore,
+      //isScoreEven 안쓰는거
       isScoreEven: true,
       isQuizEven: isQuizEven,
       isMePriority: isPriority,
@@ -2953,7 +2954,11 @@ export function Step1() {
                     교육 과정 외 유형 제외
                   </AdditionOption> */}
                   <AdditionOption>
-                    <CheckBox isChecked={isQuizEven} onClick={selectQuizEven} />
+                    <CheckBox
+                      $margin={`0 0 5px 0`}
+                      isChecked={isQuizEven}
+                      onClick={selectQuizEven}
+                    />
                     <Label
                       onClick={selectQuizEven}
                       value="문항 수 균등 배분"
@@ -2963,6 +2968,7 @@ export function Step1() {
                   </AdditionOption>
                   <AdditionOption>
                     <CheckBox
+                      $margin={`0 0 5px 0`}
                       isChecked={isPriority}
                       onClick={selectPriority}
                     ></CheckBox>
@@ -3585,6 +3591,7 @@ export function Step1() {
                       <Label value="추가 옵션" fontSize="16px" width="200px" />
                       <AdditionOption>
                         <CheckBox
+                          $margin={`0 0 5px 0`}
                           isChecked={isQuizEven}
                           onClick={selectQuizEven}
                         />
@@ -3597,6 +3604,7 @@ export function Step1() {
                       </AdditionOption>
                       <AdditionOption>
                         <CheckBox
+                          $margin={`0 0 5px 0`}
                           isChecked={isPriority}
                           onClick={selectPriority}
                         ></CheckBox>
