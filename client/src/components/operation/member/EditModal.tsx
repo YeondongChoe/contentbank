@@ -314,7 +314,7 @@ export function EditModal({
                   onClick={handleInitPassword}
                   $padding={'8px'}
                   height={'38px'}
-                  fontSize="15px"
+                  fontSize="13px"
                   $filled
                   cursor
                 >
