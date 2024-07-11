@@ -92,6 +92,7 @@ export function WorkbookList({
   };
 
   const [workbookIdx, setWorkbookIdx] = useState<number>(0);
+  const [isEditWorkbook, setIsEditWorkbook] = useState<boolean>(false);
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
@@ -146,7 +147,7 @@ export function WorkbookList({
   const saveLocalData = (idx: number) => {
     window.localStorage.clear();
     const sendData = {
-      isEditWorkbook: 1,
+      isEditWorkbook: isEditWorkbook ? 1 : 0,
       workbookIdx: idx,
     };
     if (workbookIdx) {
@@ -383,6 +384,7 @@ export function WorkbookList({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 openCreateEditWindow(item.idx);
+                                setIsEditWorkbook(true);
                               }}
                             >
                               수정
@@ -394,6 +396,7 @@ export function WorkbookList({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 openCreateEditWindow(item.idx);
+                                setIsEditWorkbook(false);
                               }}
                             >
                               복제 후 수정

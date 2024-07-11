@@ -484,6 +484,24 @@ export function Step2() {
     },
   });
 
+  useEffect(() => {
+    if (tabVeiw === '새 문항 추가') {
+      const data = {
+        itemTreeKeyList: isRangeSetting ? makingdata : getCategoryLocalData,
+        count: 10,
+        difficulty: null,
+        type: null,
+        mock: 1,
+        score: 1,
+        isScoreEven: true,
+        isQuizEven: false,
+        isMePriority: false,
+        filterList: initialItems.map((quiz) => quiz.code),
+      };
+      postNewQuizData(data);
+    }
+  }, [tabVeiw]);
+
   //새로 불러오기
   const clickGetNewQuiz = () => {
     if (newQuizItems) {
