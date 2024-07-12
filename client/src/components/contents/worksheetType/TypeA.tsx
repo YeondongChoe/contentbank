@@ -12,7 +12,7 @@ type TypeAProps = {
   grade?: string;
   tag?: string;
   contentQuantity?: string;
-  isWeather?: boolean;
+  isDate?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
   initialItems?: QuizList[];
@@ -27,7 +27,7 @@ export const TypeA = ({
   grade,
   tag,
   contentQuantity,
-  isWeather,
+  isDate,
   isContentTypeTitle,
   theme,
   initialItems,
@@ -233,8 +233,8 @@ export const TypeA = ({
         <FooterBarWrapper>
           <FooterTriangle></FooterTriangle>
           <WorksheetAdditionalInformation>
-            {isWeather && (
-              <span className="weather">
+            {isDate && (
+              <span className="isDate">
                 <Label value="2024/03/19" fontSize="12px"></Label>
               </span>
             )}
@@ -420,7 +420,7 @@ const WorksheetAdditionalInformation = styled.div`
   padding-right: 60px;
   gap: 800px;
 
-  .weather {
+  .isDate {
     font-size: 12px;
     color: #888888;
   }
