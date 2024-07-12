@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Loader } from '../../../../components/atom';
+import { useFetchJsonData } from '../../../../hooks';
 
 import Type1 from './components/Type1';
 import Type2 from './components/Type2';
@@ -57,8 +58,25 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   document.head.appendChild(script);
 };
 
+// 출력된 데이터 받아오기
+// async function fetchJsonData(jsonUrl: RequestInfo | URL) {
+//   try {
+//     const response = await fetch(jsonUrl);
+//     if (!response.ok) {
+//       throw new Error(`Network response was not ok from ${jsonUrl}`);
+//     }
+//     const jsonData = await response.json();
+//     // handleData(jsonData);
+//   } catch (error) {
+//     console.error('Error fetching JSON:', error);
+//   }
+// }
+
 export function EditerOneFile({ type }: { type: string }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
+
+  const jsonUrl = '';
+  const { data, loading, error } = useFetchJsonData(jsonUrl);
 
   useEffect(() => {
     if (!isMathJaxLoaded) {
@@ -67,6 +85,10 @@ export function EditerOneFile({ type }: { type: string }) {
   }, [isMathJaxLoaded]);
 
   useEffect(() => {}, [type]);
+
+  useEffect(() => {
+    console.log('data', data);
+  }, [data]);
 
   return (
     <Container>
