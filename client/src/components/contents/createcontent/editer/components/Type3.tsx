@@ -94,10 +94,6 @@ const Type3 = ({ tabView }: { tabView?: string }) => {
     initComponent();
   }, []);
 
-  useEffect(() => {
-    initComponent();
-  }, [tabView]);
-
   return (
     <div className="itex_editor_container">
       <div id="first" className="resizeable" style={{ display: 'none' }}>

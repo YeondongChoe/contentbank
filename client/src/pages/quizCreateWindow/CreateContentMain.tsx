@@ -99,7 +99,10 @@ export function CreateContentMain() {
           {tabView === '문항 분류' && (
             <BackButtonWrapper>
               <IoIosArrowBack
-                onClick={() => setTabView('DT & Editing')}
+                onClick={() => {
+                  setTabView('DT & Editing');
+                  window.location.reload();
+                }}
                 style={{
                   fontSize: '22px',
                   cursor: 'pointer',
@@ -114,6 +117,12 @@ export function CreateContentMain() {
             selected={tabView}
             width={'350px'}
             setTabVeiw={setTabView}
+            onClickTab={() => {
+              if (tabView !== 'DT & Editing') {
+                // 페이지 진입시 에디터 라이브러리 정적파일 불러오기위한 리로딩
+                window.location.reload();
+              }
+            }}
           />
         </TapMenuWrapper>
       </ButtonWrapper>
