@@ -72,7 +72,13 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
 //   }
 // }
 
-export function EditerOneFile({ type }: { type: string }) {
+export function EditerOneFile({
+  type,
+  tabView,
+}: {
+  type: string;
+  tabView?: string;
+}) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
 
   const jsonUrl = '';
@@ -96,7 +102,7 @@ export function EditerOneFile({ type }: { type: string }) {
         <>
           {type === 'type1' && <Type1 />}
           {type === 'type2' && <Type2 />}
-          {type === 'type3' && <Type3 />}
+          {type === 'type3' && <Type3 tabView={tabView} />}
         </>
       ) : (
         <LoaderWrapper>

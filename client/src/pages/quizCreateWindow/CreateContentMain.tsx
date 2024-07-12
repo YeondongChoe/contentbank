@@ -36,7 +36,7 @@ export function CreateContentMain() {
     //   value: '개체 라벨링',
     // },
   ];
-  const [tabVeiw, setTabVeiw] = useState<string>('DT & Editing');
+  const [tabView, setTabView] = useState<string>('DT & Editing');
 
   //iframe 데이터 통신시
   const receiveMessage = (event: any) => {
@@ -74,7 +74,7 @@ export function CreateContentMain() {
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
-    if (tabVeiw == '문항 분류') {
+    if (tabView == '문항 분류') {
       const handleBeforeUnload = (event: BeforeUnloadEvent) => {
         // 사용자에게 경고 메시지를 표시하도록 설정
         const message =
@@ -90,16 +90,16 @@ export function CreateContentMain() {
         window.removeEventListener('beforeunload', handleBeforeUnload);
       };
     }
-  }, [tabVeiw]);
+  }, [tabView]);
 
   return (
     <Container>
       <ButtonWrapper>
         <TapMenuWrapper>
-          {tabVeiw === '문항 분류' && (
+          {tabView === '문항 분류' && (
             <BackButtonWrapper>
               <IoIosArrowBack
-                onClick={() => setTabVeiw('DT & Editing')}
+                onClick={() => setTabView('DT & Editing')}
                 style={{
                   fontSize: '22px',
                   cursor: 'pointer',
@@ -111,31 +111,31 @@ export function CreateContentMain() {
           <TabMenu
             length={3}
             menu={menuList}
-            selected={tabVeiw}
+            selected={tabView}
             width={'350px'}
-            setTabVeiw={setTabVeiw}
+            setTabVeiw={setTabView}
           />
         </TapMenuWrapper>
       </ButtonWrapper>
-      {tabVeiw === 'DT & Editing' && (
+      {tabView === 'DT & Editing' && (
         <ContentBox>
           {isUploadFile && isUploadFile === 'createcontent' && (
-            <ContentCreating setTabVeiw={setTabVeiw} />
+            <ContentCreating setTabView={setTabView} tabView={tabView} />
           )}
           {isUploadFile && isUploadFile === 'uploadfile' && (
-            <ContentFileUpload setTabVeiw={setTabVeiw} />
+            <ContentFileUpload setTabView={setTabView} />
           )}
           {isUploadFile && isUploadFile === 'uploadhtml' && (
-            <ContentHTMLUpload setTabVeiw={setTabVeiw} />
+            <ContentHTMLUpload setTabView={setTabView} />
           )}
         </ContentBox>
       )}
-      {tabVeiw === '문항 분류' && (
+      {tabView === '문항 분류' && (
         <ContentBox>
-          <Classification />
+          <Classification setTabView={setTabView} />
         </ContentBox>
       )}
-      {/* {tabVeiw === '개체 라벨링' && (
+      {/* {tabView === '개체 라벨링' && (
         <ContentBox>
           <Labeling />
         </ContentBox>

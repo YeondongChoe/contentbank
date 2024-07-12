@@ -62,7 +62,11 @@ interface ClassificationStateType {
   }[];
 }
 
-export function Classification() {
+export function Classification({
+  setTabView,
+}: {
+  setTabView: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);

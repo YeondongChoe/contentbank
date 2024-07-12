@@ -18,9 +18,11 @@ import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
 export function ContentCreating({
-  setTabVeiw,
+  setTabView,
+  tabView,
 }: {
-  setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
+  setTabView: React.Dispatch<React.SetStateAction<string>>;
+  tabView: string;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -272,7 +274,7 @@ export function ContentCreating({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile type={'type3'} />
+              <EditerOneFile type={'type3'} tabView={tabView} />
             </EditWrapper>
 
             <BackgroundWrapper>
@@ -422,7 +424,7 @@ export function ContentCreating({
           </Button>
           <Button
             buttonType="button"
-            onClick={() => setTabVeiw('문항 분류')}
+            onClick={() => setTabView('문항 분류')}
             width={'calc(50% - 5px)'}
             cursor
           >

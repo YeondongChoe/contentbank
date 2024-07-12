@@ -14,8 +14,11 @@ import ImageIcon from './icons/ImageIcon';
 import PdfIcon from './icons/PdfIcon';
 import TrashIcon from './icons/TrashIcon';
 
-const dynamicallyLoadScripts = (scripts, callback) => {
-  const loadScript = (index) => {
+const dynamicallyLoadScripts = (
+  scripts: string | any[],
+  callback: { (): void; (): void; (): void },
+) => {
+  const loadScript = (index: number) => {
     if (index >= scripts.length) {
       callback();
       return;
@@ -40,7 +43,7 @@ const dynamicallyLoadScripts = (scripts, callback) => {
 };
 
 const Type1 = () => {
-  const ocrIframeContainer = useRef(null);
+  const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initialScripts = [

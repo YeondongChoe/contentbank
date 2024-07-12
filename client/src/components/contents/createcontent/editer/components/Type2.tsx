@@ -11,8 +11,11 @@ import CloseIcon from './icons/CloseIcon';
 import DocumentIcon from './icons/DocumentIcon';
 import TrashIcon from './icons/TrashIcon';
 
-const dynamicallyLoadScripts = (scripts, callback) => {
-  const loadScript = (index) => {
+const dynamicallyLoadScripts = (
+  scripts: string | any[],
+  callback: { (): void; (): void; (): void },
+) => {
+  const loadScript = (index: number) => {
     if (index >= scripts.length) {
       callback();
       return;
@@ -36,7 +39,7 @@ const dynamicallyLoadScripts = (scripts, callback) => {
 };
 
 const Type2 = () => {
-  const ocrIframeContainer = useRef(null);
+  const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initialScripts = [
@@ -150,7 +153,7 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="왼쪽으로 회전"
-                    disabled="true"
+                    disabled
                   >
                     <ArrowCounterclockwiseIcon />
                   </button>
@@ -163,7 +166,7 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="오른쪽으로 회전"
-                    disabled="true"
+                    disabled
                   >
                     <ArrowClockwiseIcon />
                   </button>
@@ -175,7 +178,7 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="이전 페이지"
-                    disabled="true"
+                    disabled
                   >
                     {' '}
                     <ChevronLeftIcon />
@@ -188,7 +191,7 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="다음 페이지"
-                    disabled="true"
+                    disabled
                   >
                     <ChevronRightIcon />
                   </button>

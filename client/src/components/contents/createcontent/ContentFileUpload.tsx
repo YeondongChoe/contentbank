@@ -18,9 +18,9 @@ import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
 export function ContentFileUpload({
-  setTabVeiw,
+  setTabView,
 }: {
-  setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
+  setTabView: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -422,7 +422,7 @@ export function ContentFileUpload({
           </Button>
           <Button
             buttonType="button"
-            onClick={() => setTabVeiw('문항 분류')}
+            onClick={() => setTabView('문항 분류')}
             width={'calc(50% - 5px)'}
             cursor
           >
