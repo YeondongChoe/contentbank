@@ -28,6 +28,7 @@ import {
   Tooltip,
 } from '../../../components';
 import { useModal } from '../../../hooks';
+import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -59,6 +60,7 @@ export function ContentList({
   quizDataRefetch,
 }: ContentListProps) {
   const { openModal } = useModal();
+  const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<number[]>([]);
@@ -96,6 +98,7 @@ export function ContentList({
     windowOpenHandler({
       name: 'createcontentmain',
       url: '/createcontentmain',
+      queryParams: { state: 'edit' },
     });
   };
 
@@ -243,6 +246,7 @@ export function ContentList({
     const codesSet = new Set(checkList);
     const filteredList = questionList.filter((item) => codesSet.has(item.idx));
     console.log('sortedList------------', filteredList);
+
     setSortedList(filteredList);
   };
 
@@ -264,6 +268,14 @@ export function ContentList({
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
+
+  useEffect(() => {
+    if (sortedList) {
+      // console.log('체크된 리스트값 전역에 넣기', sortedList);
+      setQuizList(sortedList);
+      // setQuestionList(sortedList);
+    }
+  }, [sortedList]);
 
   useEffect(() => {
     // 체크시 활성화 버튼

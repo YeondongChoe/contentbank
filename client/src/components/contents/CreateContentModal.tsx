@@ -32,6 +32,7 @@ export function CreateContentModal() {
       name: 'createcontentmain',
       url: '/createcontentmain',
       $height: 850,
+      queryParams: { state: 'create' },
     });
   };
 

@@ -55,12 +55,12 @@ export function ContentHTMLUpload({
   //   },
   // });
 
-  // useEffect(() => {
-  //   if (quizData) {
-  //     console.log('초기값 임시로 불러와서 넣기', quizData.quizList);
-  //     setQuestionList(quizData.quizList);
-  //   }
-  // }, [quizData]);
+  useEffect(() => {
+    if (checkedList) {
+      console.log('초기값 임시로 불러와서 넣기', checkedList);
+      // setQuestionList(quizData.quizList);
+    }
+  }, [checkedList]);
 
   // 카테고리 api 불러오기
   const getCategory = async () => {

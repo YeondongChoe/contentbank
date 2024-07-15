@@ -9,12 +9,14 @@ export const windowOpenHandler = ({
   options = '', // sendData = '',
   $height = 800,
   $width = 1400,
+  queryParams = {},
 }: {
   name?: string;
   url: string;
   options?: string;
   $width?: number;
   $height?: number;
+  queryParams?: { [key: string]: any };
   // sendData?: unknown;
 }) => {
   const windowWidth = $width;
@@ -24,11 +26,15 @@ export const windowOpenHandler = ({
 
   const target = `${name}`;
   const defaultOption = `width=${windowWidth},height=${windowHeight},top=${top},left=${left},toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no`;
-  //TODO : url 에 ${BASEURL} 추가
 
-  window.open(url, target, options ? options : `${defaultOption}`);
+  // 쿼리 스트링 생성
+  const queryString = Object.keys(queryParams)
+    .map((key) => `${key}=${encodeURIComponent(queryParams[key])}`)
+    .join('&');
+  const finalUrl = queryString ? `${url}?${queryString}` : url;
+
+  window.open(finalUrl, target, options ? options : `${defaultOption}`);
 };
-
 //TODO: 함수 분기 추가 커스텀 필요
 export const parentsWindowHandler = ({
   $id,

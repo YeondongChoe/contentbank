@@ -20,6 +20,7 @@ export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const query = new URLSearchParams(location.search);
   const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
   const menuList = [
@@ -66,6 +67,11 @@ export function CreateContentMain() {
 
   useEffect(() => {
     getLocalData();
+
+    if (query.get('state')?.toString() == 'edit') {
+      console.log('query', query.get('state')); // 수정일시 edit 생성일시 create
+      // 전역에 문항리스트 데이터 저장
+    }
   }, []);
 
   useEffect(() => {

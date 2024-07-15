@@ -67,6 +67,7 @@ export function QuizReportList() {
     windowOpenHandler({
       name: 'createcontentmain',
       url: '/createcontentmain',
+      queryParams: { state: 'edit' },
     });
   };
 
