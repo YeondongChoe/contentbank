@@ -57,12 +57,22 @@ export function ContentCreating({
   //   },
   // });
 
-  // useEffect(() => {
-  //   if (quizData) {
-  //     console.log('초기값 임시로 불러와서 넣기', quizData.quizList);
-  //     setQuestionList(quizData.quizList);
-  //   }
-  // }, [quizData]);
+  useEffect(() => {
+    const storedQuizList = window.localStorage.getItem('quizList');
+
+    console.log(
+      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값',
+      storedQuizList,
+    );
+
+    if (storedQuizList) {
+      setQuizList(JSON.parse(storedQuizList));
+    }
+  }, []);
+
+  useEffect(() => {
+    setQuestionList(quizList);
+  }, [quizList]);
 
   // 카테고리 api 불러오기
   const getCategory = async () => {
@@ -202,7 +212,7 @@ export function ContentCreating({
     // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     // console.log('신규 등록된 문항 리스트 get 요청 API');
     //TODO : 임시 문항리스트 데이터
-    setQuizList(questionList);
+    // setQuizList(questionList);
     setIsPostMessage(true);
 
     // 등록 api

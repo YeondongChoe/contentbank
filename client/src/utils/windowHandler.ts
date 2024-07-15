@@ -33,8 +33,24 @@ export const windowOpenHandler = ({
     .join('&');
   const finalUrl = queryString ? `${url}?${queryString}` : url;
 
-  window.open(finalUrl, target, options ? options : `${defaultOption}`);
+  const newWindow = window.open(
+    finalUrl,
+    target,
+    options ? options : `${defaultOption}`,
+  );
+
+  if (newWindow) {
+    newWindow.onload = () => {
+      const parentQuizList = window.localStorage.getItem('quizList');
+      if (parentQuizList) {
+        newWindow.localStorage.setItem('quizList', parentQuizList);
+      }
+    };
+  } else {
+    console.error('Failed to open new window');
+  }
 };
+
 //TODO: 함수 분기 추가 커스텀 필요
 export const parentsWindowHandler = ({
   $id,

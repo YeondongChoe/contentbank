@@ -104,13 +104,7 @@ export function ContentList({
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = () => {
-    const sendData = { data: false };
-    localStorage.setItem('sendData', JSON.stringify(sendData));
-
-    //새로운 리스트 데이터 조회
-    // window.parentCallback = () => {
-    //   getContents();
-    // };
+    window.localStorage.setItem('quizList', JSON.stringify(quizList));
   };
 
   // 체크박스 설정
@@ -269,11 +263,11 @@ export function ContentList({
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
 
+  //체크된 리스트값 전역에 넣기
   useEffect(() => {
     if (sortedList) {
       // console.log('체크된 리스트값 전역에 넣기', sortedList);
-      setQuizList(sortedList);
-      // setQuestionList(sortedList);
+      setQuizList([...sortedList]);
     }
   }, [sortedList]);
 
