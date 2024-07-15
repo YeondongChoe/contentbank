@@ -189,7 +189,6 @@ export function Step2() {
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
-  console.log(workbookData);
 
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =

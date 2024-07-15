@@ -42,7 +42,7 @@ export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
   const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
-
+  console.log(initialItems);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
   const [itemHeights, setItemHeights] = useState<number[]>([]);
@@ -326,18 +326,7 @@ export function Step3() {
         extension: '.pdf',
       },
       template: {
-        color:
-          colorChoice === 'red'
-            ? '#FA8978'
-            : colorChoice === 'orange'
-              ? '#FFDD94'
-              : colorChoice === 'green'
-                ? '#D0E6A5'
-                : colorChoice === 'blue'
-                  ? '#86aee3'
-                  : colorChoice === 'purple'
-                    ? '#CCABD8'
-                    : '',
+        color: colorChoice,
         type: templateType,
         multiLevel: column === '1단' ? '1' : column === '2단' ? '2' : '',
         assign:
@@ -633,7 +622,10 @@ export function Step3() {
                 onChange={(e) => {
                   const value = e.target.value;
                   // 특수문자 제외한 문자만 남기도록 정규표현식을 사용하여 처리
-                  const filteredValue = value.replace(/[^\w\s]/gi, '');
+                  const filteredValue = value.replace(
+                    /[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]/gi,
+                    '',
+                  );
                   setContentAuthor(filteredValue); // 필터링된 값을 상태로 설정
                 }}
                 maxLength={10}
