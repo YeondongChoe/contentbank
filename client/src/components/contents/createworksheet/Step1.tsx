@@ -49,16 +49,18 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 
 type ProcessTextbookDataType = {
-  bookPage: string;
-  subChapter: string;
-  isChecked: boolean;
-  quizList: {
-    idx: number;
-    code: string;
-    bookQuizNumber: string;
+  pageList: {
+    bookPage: string;
     isChecked: boolean;
-    seq: string;
+    quizList: {
+      idx: number;
+      code: string;
+      bookQuizNumber: string;
+      isChecked: boolean;
+      seq: string;
+    }[];
   }[];
+  subChapter: string;
 };
 
 type QuizType = {
@@ -1240,8 +1242,15 @@ export function Step1() {
     },
     enabled: !!selectedTextbookIdx,
   });
-  const selectedTextbook: ProcessTextbookDataType[] =
-    textbookDetailData?.data.data.textbookList;
+  const [selectedTextbook, setSelectedTextbook] = useState<
+    ProcessTextbookDataType[]
+  >([]);
+  useEffect(() => {
+    if (textbookDetailData) {
+      setSelectedTextbook(textbookDetailData?.data.data.textbookList);
+    }
+  }, [textbookDetailData]);
+
   //다른 교재 선택
   const selectOtherTextbook = () => {
     setQuestionNum('');
@@ -1267,7 +1276,8 @@ export function Step1() {
     },
     enabled: false,
   });
-  const textbookList: TextbookInfoType[] = textbookData?.data.data.textbookList;
+  const textbookList: TextbookInfoType[] =
+    textbookData?.data.data.textbookList || [];
 
   //조건값이 바뀔때 재검색
   useEffect(() => {
@@ -1278,21 +1288,34 @@ export function Step1() {
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number | null>(null);
+  const [clickedPageIdx, setClickedPageIdx] = useState<string | null>(null);
   const [processTextbookData, setProcessTextbookData] = useState<
     ProcessTextbookDataType[]
   >([]);
+  console.log(processTextbookData);
+
+  // 클릭한 페이지 인덱스를 기억하는 함수
+  const handlePageClick = (bookPage: string) => {
+    if (clickedPageIdx !== bookPage) {
+      setClickedPageIdx(bookPage);
+    } else {
+      setClickedPageIdx(null); // 같은 페이지를 다시 클릭하면 숨기기
+    }
+  };
 
   // 시중교재 값을 받아왔을 때 원하는 모양의 데이타로 가공
   useEffect(() => {
-    if (selectedTextbook?.length > 0) {
-      const initialData = selectedTextbook?.map((textbook) => ({
-        bookPage: textbook.bookPage || '',
-        subChapter: textbook.subChapter || '',
-        isChecked: false,
-        quizList: textbook.quizList.map((quiz) => ({
-          ...quiz,
+    if (selectedTextbook && selectedTextbook.length > 0) {
+      const initialData = selectedTextbook.map((textbook) => ({
+        subChapter: textbook?.subChapter || '',
+        pageList: (textbook?.pageList || []).map((page) => ({
+          bookPage: page?.bookPage || '',
           isChecked: false,
-          seq: `${quiz.code}${quiz.bookQuizNumber}`,
+          quizList: (page?.quizList || []).map((quiz) => ({
+            ...quiz,
+            isChecked: false,
+            seq: `${quiz.code}${quiz.bookQuizNumber}`,
+          })),
         })),
       }));
       setProcessTextbookData(initialData);
@@ -1301,11 +1324,12 @@ export function Step1() {
 
   // 선택시 배경색이 나타남
   const choiceType = (idx: number) => {
-    setIsChoice(!isChoice);
-    if (clickedIdx === idx) {
-      setClickedIdx(null);
-    } else {
+    if (clickedIdx !== idx) {
       setClickedIdx(idx);
+      setIsChoice(!isChoice);
+    } else {
+      setClickedIdx(null);
+      setIsChoice(!isChoice);
     }
   };
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
@@ -1351,17 +1375,31 @@ export function Step1() {
     setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
-      return prevData.map((page) => {
-        if (page.subChapter === subChapter) {
-          const updatedQuizList = page.quizList.map((quiz) => {
-            if (contentSeqs.includes(quiz.seq)) {
-              return { ...quiz, isChecked: !isChecked };
-            }
-            return quiz;
+      return prevData.map((textbook) => {
+        if (textbook.subChapter === subChapter) {
+          const updatedPageList = textbook.pageList.map((page) => {
+            const updatedQuizList = page.quizList.map((quiz) => {
+              if (contentSeqs.includes(quiz.seq)) {
+                return { ...quiz, isChecked: !isChecked };
+              }
+              return quiz;
+            });
+
+            // 모든 퀴즈가 선택되어 있는지 확인
+            const allContentsChecked = updatedQuizList.every(
+              (quiz) => quiz.isChecked,
+            );
+
+            return {
+              ...page,
+              isChecked: allContentsChecked,
+              quizList: updatedQuizList,
+            };
           });
-          return { ...page, isChecked: !isChecked, quizList: updatedQuizList };
+
+          return { ...textbook, pageList: updatedPageList };
         }
-        return page;
+        return textbook;
       });
     });
     toggleQuizCode(quizCode, isChecked);
@@ -1377,31 +1415,45 @@ export function Step1() {
     setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
-      return prevData.map((page) => {
-        if (page.subChapter === subChapter) {
-          const updatedQuizList = page.quizList.map((quiz) => {
-            if (quiz.seq === contentSeq) {
-              return { ...quiz, isChecked: !isChecked };
-            }
-            return quiz;
+      return prevData.map((textbook) => {
+        if (textbook.subChapter === subChapter) {
+          const updatedPageList = textbook.pageList.map((page) => {
+            const updatedQuizList = page.quizList.map((quiz) => {
+              if (quiz.seq === contentSeq) {
+                return { ...quiz, isChecked: !isChecked };
+              }
+              return quiz;
+            });
+
+            // 모든 퀴즈가 선택되어 있는지 확인
+            const allContentsChecked = updatedQuizList.every(
+              (quiz) => quiz.isChecked,
+            );
+
+            return {
+              ...page,
+              isChecked: allContentsChecked,
+              quizList: updatedQuizList,
+            };
           });
 
-          // 모든 컨텐츠가 선택되어 있는지 확인
-          const allContentsChecked = updatedQuizList.every(
-            (quiz) => quiz.isChecked,
+          // 모든 페이지가 선택되어 있는지 확인
+          const allPagesChecked = updatedPageList.every(
+            (page) => page.isChecked,
           );
 
           return {
-            ...page,
-            isChecked: allContentsChecked,
-            quizList: updatedQuizList,
+            ...textbook,
+            isChecked: allPagesChecked,
+            pageList: updatedPageList,
           };
         }
-        return page;
+        return textbook;
       });
     });
     toggleQuizCode(quizCode, isChecked);
   };
+
   // 수능/모의고사
   // 수능/모의고사 드롭다운 카테고리 get api
   const getCategoryExamGroups = async () => {
@@ -1978,21 +2030,31 @@ export function Step1() {
           }
         }
       } else if (tabVeiw === '시중교재') {
-        if (
-          (receivedQuizCount && receivedQuizCount === Number(questionNum)) ||
-          Number(inputValue)
-        ) {
-          saveLocalData(response.data.data);
-          navigate('/content-create/exam/step2');
-        } else {
+        if (response.data.data.quizList.length === 0) {
           openToastifyAlert({
             type: 'error',
             text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
           });
-          //문항수 초기화
-          setQuestionNum('');
-          //배점 초기화
-          selectEqualScore(null);
+          return;
+        } else {
+          if (
+            response.data.data.quizList.length === Number(questionNum) ||
+            response.data.data.quizList.length === Number(inputValue)
+          ) {
+            navigate('/content-create/exam/step2');
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          } else {
+            setIsAlertOpen(true);
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          }
         }
       } else if (tabVeiw === '수능/모의고사') {
         saveLocalData(response.data.data);
@@ -3215,7 +3277,7 @@ export function Step1() {
                         <ListTitle className="series">시리즈</ListTitle>
                         <ListTitle className="publisher">출판사</ListTitle>
                       </ListTitleWrapper>
-                      {textbookList?.length > 0 ? (
+                      {textbookList && textbookList?.length > 0 ? (
                         <>
                           {textbookList?.map((book, idx) => (
                             <TextbookList
@@ -3655,86 +3717,116 @@ export function Step1() {
                       </Button>
                     </TextbookTitleWrapper>
                     <TextbookWrapper>
-                      {selectedTextbook?.map((item, idx) => (
-                        <TextbookTypeWrapper key={idx}>
-                          <TextbookTypeTitleWrapper>
-                            <TextbookTypeTitleWrapperLeft>
-                              <Label
-                                value={item.subChapter as string}
-                                width="100%"
-                              />
-                            </TextbookTypeTitleWrapperLeft>
-                            <TextbookTypeTitleWrapperRight>
-                              <Label
-                                value="유형UP"
-                                width="100%"
-                                padding="5px 20px"
-                              />
-                            </TextbookTypeTitleWrapperRight>
-                          </TextbookTypeTitleWrapper>
-                          <SelectWrapper>
-                            {processTextbookData.map((item, i) => (
-                              <LeftWrapper
-                                key={i}
-                                onClick={() => choiceType(i)}
-                                $isChoice={clickedIdx === i}
-                              >
-                                {item.quizList.map((quiz, j) => (
-                                  <>
-                                    <CheckBox
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        checkAllToggle(
-                                          item.subChapter,
-                                          quiz.isChecked,
-                                          [quiz.seq],
-                                          quiz.code,
-                                        );
-                                      }}
-                                      isChecked={quiz.isChecked}
-                                      width="15"
-                                      height="15"
-                                    />
-                                    <Label
-                                      key={j}
-                                      value={`${quiz.bookQuizNumber}P`}
-                                      width="100px"
-                                    />
-                                  </>
+                      {selectedTextbook &&
+                        selectedTextbook?.length > 0 &&
+                        selectedTextbook?.map((item, idx) => (
+                          <TextbookTypeWrapper key={idx}>
+                            <TextbookTypeTitleWrapper>
+                              <TextbookTypeTitleWrapperLeft>
+                                <Label
+                                  value={item.subChapter as string}
+                                  width="100%"
+                                />
+                              </TextbookTypeTitleWrapperLeft>
+                              <TextbookTypeTitleWrapperRight>
+                                <Label
+                                  value="유형UP"
+                                  width="100%"
+                                  padding="5px 20px"
+                                />
+                              </TextbookTypeTitleWrapperRight>
+                            </TextbookTypeTitleWrapper>
+                            <SelectWrapper>
+                              {processTextbookData &&
+                                processTextbookData?.length > 0 &&
+                                processTextbookData?.map((item, i) => (
+                                  <LeftWrapper key={i}>
+                                    {item.pageList.map((page, j) => (
+                                      <TextBookCheckBoxWrapper
+                                        key={j}
+                                        onClick={() => {
+                                          handlePageClick(page.bookPage);
+                                          choiceType(j);
+                                        }}
+                                        $isChoice={clickedIdx === j}
+                                      >
+                                        <CheckBox
+                                          key={`checkbox-${j}`}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            checkAllToggle(
+                                              item.subChapter,
+                                              page.isChecked,
+                                              page.quizList.map(
+                                                (quiz) => quiz.seq,
+                                              ),
+                                              page.quizList[0]?.code || '',
+                                            );
+                                          }}
+                                          isChecked={page.isChecked}
+                                          width="15"
+                                          height="15"
+                                          $margin="0 0 5px 0"
+                                        />
+                                        <Label
+                                          key={`label-${j}`}
+                                          value={`${page.bookPage}P`}
+                                          width="100px"
+                                        />
+                                      </TextBookCheckBoxWrapper>
+                                    ))}
+                                  </LeftWrapper>
                                 ))}
-                              </LeftWrapper>
-                            ))}
 
-                            {isChoice &&
-                              processTextbookData.map((item, k) => (
-                                <RightWrapper key={k}>
-                                  {item.quizList.map((quiz, l) => (
-                                    <CheckBoxWrapper key={l}>
-                                      <CheckBox
-                                        onClick={() =>
-                                          checkPartialToggle(
-                                            item.subChapter,
-                                            quiz.seq,
-                                            quiz.isChecked || false,
-                                            quiz.code,
-                                          )
-                                        }
-                                        isChecked={quiz.isChecked || false}
-                                        width="15"
-                                        height="15"
-                                      />
-                                      <Label
-                                        key={l}
-                                        value={`${quiz.bookQuizNumber}P`}
-                                        width="100px"
-                                      />
-                                    </CheckBoxWrapper>
-                                  ))}
+                              {clickedPageIdx !== null && (
+                                <RightWrapper key={clickedPageIdx}>
+                                  {processTextbookData.map((item) => {
+                                    const page = item.pageList.find(
+                                      (page) =>
+                                        page.bookPage === clickedPageIdx,
+                                    );
+
+                                    if (page) {
+                                      return (
+                                        <BookListWrapper
+                                          key={`page-${clickedPageIdx}`}
+                                        >
+                                          {page.quizList.map((quiz, m) => (
+                                            <CheckBoxWrapper key={`quiz-${m}`}>
+                                              <CheckBox
+                                                onClick={() =>
+                                                  checkPartialToggle(
+                                                    item.subChapter,
+                                                    quiz.seq,
+                                                    quiz.isChecked || false,
+                                                    quiz.code,
+                                                  )
+                                                }
+                                                isChecked={
+                                                  quiz.isChecked || false
+                                                }
+                                                width="15"
+                                                height="15"
+                                                $margin="0 0 5px 0"
+                                              />
+                                              <Label
+                                                key={`label-${m}`}
+                                                value={`${quiz.bookQuizNumber}번`}
+                                                width="40px"
+                                              />
+                                            </CheckBoxWrapper>
+                                          ))}
+                                        </BookListWrapper>
+                                      );
+                                    }
+
+                                    return null;
+                                  })}
                                 </RightWrapper>
-                              ))}
-                          </SelectWrapper>
-                        </TextbookTypeWrapper>
-                      ))}
+                              )}
+                            </SelectWrapper>
+                          </TextbookTypeWrapper>
+                        ))}
                     </TextbookWrapper>
                   </CategorySection>
                   <SchoolSelectorSection>
@@ -5019,7 +5111,7 @@ const TextbookTitleWrapper = styled.div`
 `;
 const TextbookWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: 550px;
   padding: 10px;
   display: flex;
   border-top: 1px solid ${COLOR.BORDER_BLUE};
@@ -5045,20 +5137,38 @@ const SelectWrapper = styled.div`
 const LeftWrapper = styled.div<{
   $isChoice?: boolean;
 }>`
+  height: 550px;
   display: flex;
-  align-items: center;
-  //flex: 1 0 0;
+  flex-direction: column;
   gap: 5px;
   padding: 5px 10px;
   background-color: ${({ $isChoice }) =>
     $isChoice ? COLOR.SELECT_BLUE : 'white'};
+  overflow-y: auto;
 `;
+const TextBookCheckBoxWrapper = styled.div<{
+  $isChoice?: boolean;
+}>`
+  display: flex;
+  align-items: center;
+  background-color: ${({ $isChoice }) =>
+    $isChoice ? COLOR.SELECT_BLUE : 'white'};
+`;
+
 const RightWrapper = styled.div`
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
   flex: 1 0 50%;
   padding-left: 10px;
+`;
+const BookListWrapper = styled.div`
+  width: 794px;
+  height: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  overflow-y: auto;
 `;
 const CheckBoxWrapper = styled.div`
   display: flex;
