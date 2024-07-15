@@ -38,7 +38,7 @@ export interface QuizList {
   num: number;
   type: string;
   score: number;
-  height?: number;
+  height: number;
   userKey: string;
   createdBy: string;
   createdAt: string;
@@ -69,8 +69,8 @@ export interface TemplateList {
   multiLevel: string;
   assign: string;
   itemType: number;
-  date: boolean;
-  quizType: boolean;
+  isDate: boolean;
+  isQuizType: boolean;
 }
 
 export interface Data {

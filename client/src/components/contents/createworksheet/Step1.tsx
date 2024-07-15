@@ -1292,7 +1292,6 @@ export function Step1() {
   const [processTextbookData, setProcessTextbookData] = useState<
     ProcessTextbookDataType[]
   >([]);
-  console.log(processTextbookData);
 
   // 클릭한 페이지 인덱스를 기억하는 함수
   const handlePageClick = (bookPage: string) => {
