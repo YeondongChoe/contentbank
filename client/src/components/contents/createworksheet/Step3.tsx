@@ -130,7 +130,7 @@ export function Step3() {
                   ? 'purple'
                   : 'blue',
       );
-      setTemplateType(getLocalData.type);
+      setTemplateType(getLocalData.type || 'A');
       setColumn(
         getLocalData.multiLevel === '1'
           ? '1단'
@@ -160,7 +160,7 @@ export function Step3() {
               ? '문제+해설별도'
               : getLocalData.itemType === 3
                 ? '문제+해설같이'
-                : 0,
+                : '문제만',
       );
     }
   }, [getLocalData]);
@@ -182,13 +182,13 @@ export function Step3() {
   const selectTag = (newValue: string) => {
     setTag(newValue);
   };
-
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
     '문제만',
   );
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
   };
+  console.log(answerCommentary);
 
   const [colorChoice, setColorChoice] = useState('');
 
@@ -262,51 +262,51 @@ export function Step3() {
   const [fileName, setFileName] = useState('');
 
   // node 서버 학습지 만들기 api
-  const postWorkbook = async (data: any) => {
-    const res = await makingworkbookInstance.post(`/get-pdf`, data);
-    // console.log(`학습지 만들기결과값`, res);
-    return res;
-  };
+  // const postWorkbook = async (data: any) => {
+  //   const res = await makingworkbookInstance.post(`/get-pdf`, data);
+  //   // console.log(`학습지 만들기결과값`, res);
+  //   return res;
+  // };
 
-  const makingWorkbook = (nameValue: string) => {
-    const currentTime = new Date().getTime();
-    const data = {
-      title: nameValue,
-      content: newInitialItems,
-      column: 2,
-      uploadDir: '/usr/share/nginx/html/CB',
-      fileName: `${nameValue}_${currentTime}.pdf`,
-      //fileName: `testYD.pdf`,
-    };
-    if (
-      nameValue === '' ||
-      contentAuthor === '' ||
-      gradeValue === '' ||
-      tag === ''
-    ) {
-      openToastifyAlert({
-        type: 'error',
-        text: '필수 항목을 선택해 주세요.',
-      });
-    } else {
-      workbookData(data);
-      setFileName(data.fileName);
-    }
-  };
+  // const makingWorkbook = (nameValue: string) => {
+  //   const currentTime = new Date().getTime();
+  //   const data = {
+  //     title: nameValue,
+  //     content: newInitialItems,
+  //     column: 2,
+  //     uploadDir: '/usr/share/nginx/html/CB',
+  //     fileName: `${nameValue}_${currentTime}.pdf`,
+  //     //fileName: `testYD.pdf`,
+  //   };
+  //   if (
+  //     nameValue === '' ||
+  //     contentAuthor === '' ||
+  //     gradeValue === '' ||
+  //     tag === ''
+  //   ) {
+  //     openToastifyAlert({
+  //       type: 'error',
+  //       text: '필수 항목을 선택해 주세요.',
+  //     });
+  //   } else {
+  //     workbookData(data);
+  //     setFileName(data.fileName);
+  //   }
+  // };
 
-  const { mutate: workbookData } = useMutation({
-    mutationFn: postWorkbook,
-    onError: (error) => {
-      //console.error('post-workbook 에러:', error);
-      // 에러 처리 로직 추가
-    },
-    onSuccess: (data) => {
-      //console.log('post-workbook 성공:', data);
-      postNewWorkbookData();
-      // 성공 처리 로직 추가
-      setIsComplete(true);
-    },
-  });
+  // const { mutate: workbookData } = useMutation({
+  //   mutationFn: postWorkbook,
+  //   onError: (error) => {
+  //     //console.error('post-workbook 에러:', error);
+  //     // 에러 처리 로직 추가
+  //   },
+  //   onSuccess: (data) => {
+  //     //console.log('post-workbook 성공:', data);
+  //     postNewWorkbookData();
+  //     // 성공 처리 로직 추가
+  //     setIsComplete(true);
+  //   },
+  // });
 
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
@@ -385,11 +385,17 @@ export function Step3() {
     },
   });
 
-  const submitCreateWorksheet = (nameValue: string) => {
-    //node 서버에서 pdf 생성
-    makingWorkbook(nameValue);
+  const submitCreateWorksheet = () => {
+    if (!nameValue || !contentAuthor || !gradeValue || !tag) {
+      openToastifyAlert({
+        type: 'error',
+        text: '필수 항목을 선택해 주세요.',
+      });
+    } else {
+      postNewWorkbookData();
+    }
   };
-  //console.log(isComplete);
+
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (!isComplete) {
@@ -1116,7 +1122,7 @@ export function Step3() {
       <CreateButtonWrapper>
         <Button
           buttonType="button"
-          onClick={() => submitCreateWorksheet(nameValue)}
+          onClick={submitCreateWorksheet}
           $padding="10px"
           height={'35px'}
           width={'120px'}
