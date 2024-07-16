@@ -37,40 +37,40 @@ export function WorkbookPDFModal({ idx, list }: PDFModalProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [scrollIndex, setScrollIndex] = useState(0);
 
-  const getQuiz = async () => {
-    if (list) {
-      const idxArray = list.map((list) => list.idx);
-      const idxList = idxArray.join(',');
-      const res = await quizService.get(`/v1/quiz/${idxList}`);
-      return res.data.data;
-    }
-    // console.log('list data----------', res);
-  };
-  const {
-    data: quizData,
-    isLoading,
-    error: quizDataError,
-    refetch: quizDataRefetch,
-  } = useQuery({
-    queryKey: ['get-idx-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-idx-quizList 에러 메세지',
-    },
-  });
-
-  useEffect(() => {
-    if (quizData) setSortedList(quizData.quizList);
-  }, [quizData]);
-
-  // const printPDF = async () => {
-  //   await pdf.viewWithPdf();
+  // const getQuiz = async () => {
+  //   if (list) {
+  //     const idxArray = list.map((list) => list.idx);
+  //     const idxList = idxArray.join(',');
+  //     const res = await quizService.get(`/v1/quiz/${idxList}`);
+  //     return res.data.data;
+  //   }
+  //   // console.log('list data----------', res);
   // };
+  // const {
+  //   data: quizData,
+  //   isLoading,
+  //   error: quizDataError,
+  //   refetch: quizDataRefetch,
+  // } = useQuery({
+  //   queryKey: ['get-idx-quizList'],
+  //   queryFn: getQuiz,
+  //   meta: {
+  //     errorMessage: 'get-idx-quizList 에러 메세지',
+  //   },
+  // });
 
-  useEffect(() => {
-    console.log('sortedList', sortedList);
-  }, [sortedList]);
+  // useEffect(() => {
+  //   if (quizData) setSortedList(quizData.quizList);
+  // }, [quizData]);
 
+  // // const printPDF = async () => {
+  // //   await pdf.viewWithPdf();
+  // // };
+
+  // useEffect(() => {
+  //   console.log('sortedList', sortedList);
+  // }, [sortedList]);
+  const [workbookIndex, setWorkbookIndex] = useState<number>();
   const [initialItems, setInitialItems] = useState<QuizList[]>([]);
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
@@ -87,23 +87,26 @@ export function WorkbookPDFModal({ idx, list }: PDFModalProps) {
   console.log(assign);
   console.log(multiLevel);
 
-  const getWorkbookData = async (idx: number) => {
-    const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
+  const getWorkbookData = async () => {
+    const res = await workbookInstance.get(
+      `/v1/workbook/detail/${workbookIndex}`,
+    );
     // console.log(`getWorkbook 결과값`, res);
     return res;
   };
 
   const { data: workbookData, isLoading: isWorkbookLoading } = useQuery({
-    queryKey: ['get-workbookData', idx],
-    queryFn: () => getWorkbookData(idx as number),
+    queryKey: ['get-workbookData'],
+    queryFn: getWorkbookData,
     meta: {
       errorMessage: 'get-workbookData 에러 메세지',
     },
+    enabled: !!workbookIndex,
   });
 
   useEffect(() => {
     if (idx) {
-      getWorkbookData(idx);
+      setWorkbookIndex(idx);
     }
   }, [idx]);
 
@@ -276,12 +279,8 @@ export function WorkbookPDFModal({ idx, list }: PDFModalProps) {
           <PerfectScrollbar>
             <ContentsWrapper ref={printDivRef}>
               {pages.map((page, i) => (
-                <>
-                  <MathViewerList
-                    key={`${i} pdf list`}
-                    className="A4_paper"
-                    ref={containerRef}
-                  >
+                <PrintStyles key={`${i} pdf list`}>
+                  <MathViewerList className="A4_paper" ref={containerRef}>
                     <PrintBox>
                       <ThemeProvider theme={selectedTheme}>
                         <WorksheetHeader>
@@ -438,7 +437,7 @@ export function WorkbookPDFModal({ idx, list }: PDFModalProps) {
                       </FooterBarWrapper>
                     </PrintBox>
                   </MathViewerList>
-                </>
+                </PrintStyles>
               ))}
             </ContentsWrapper>
           </PerfectScrollbar>
@@ -492,17 +491,32 @@ const ScrollWrapper = styled.div`
     }
   }
 `;
+const PrintStyles = styled.div`
+  @media print {
+    .A4_paper {
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 0;
+      box-shadow: none;
+      page-break-before: always;
+    }
 
+    .print-content {
+      transform: scale(0.98);
+      transform-origin: top left;
+    }
+  }
+`;
 const ContentsWrapper = styled.div`
   max-height: 100vh;
 `;
 const PrintBox = styled.div`
   width: ${`${A4_WIDTH / 3 - 15}px`};
-  /* border: 2px solid black; */
+  //border: 2px solid black;
   margin: 0 auto;
   padding-top: 20px;
   margin-right: -15px;
-  height: 1180.05px;
 `;
 const MathViewerList = styled.div`
   display: flex;
@@ -510,10 +524,8 @@ const MathViewerList = styled.div`
   background-color: white;
   text-align: center;
   width: ${`${A4_WIDTH / 3 - 30}px`};
-  height: 1180.05px;
-
-  //height: ${`${A4_HEIGHT / 3 - 12}px`};
-  /* border: 1px solid red; */
+  height: ${`${A4_HEIGHT / 3 - 12}px`};
+  //border: 1px solid red;
   margin: 20px;
   &.A4_paper > div {
     padding: 10px;
@@ -526,11 +538,10 @@ const MathViewerList = styled.div`
   }
 `;
 const WorksheetHeader = styled.div`
-  width: ${`${A4_WIDTH / 3 - 15}px`};
+  width: ${`${A4_WIDTH / 3 - 50}px`};
   position: relative;
   border: 1px solid
     ${({ theme }) => theme?.color?.backgroundColorTypeA || 'initial'};
-  width: 99%;
   border-bottom-right-radius: 50px;
   background-color: ${({ theme }) =>
     theme?.color?.backgroundColorTypeA || 'initial'};
@@ -602,14 +613,14 @@ const WorksheetBody = styled.div`
   top: -50px;
   margin: 0 auto;
   display: flex;
+  //height: ${`${A4_HEIGHT / 3 - 12}px`};
   height: 820px;
-  //width: 1000px;
 `;
 //왼쪽
 const WorksheetBodyLeft = styled.div`
   width: 372px;
   height: 820px;
-  padding: 10px 20px 0px 20px;
+  padding: 10px 20px 0px 30px;
   display: flex;
   flex-direction: column;
 `;
@@ -624,7 +635,7 @@ const Divider = styled.span`
 const WorksheetBodyRight = styled.div`
   width: 372px;
   height: 820px;
-  padding: 10px 20px 0px 20px;
+  padding: 10px 20px 0px 30px;
   display: flex;
   flex-direction: column;
 `;
@@ -640,9 +651,9 @@ const MathViewerWrapper = styled.div<{ height?: number }>`
 //비율
 const EachMathViewer = styled.div`
   max-width: 500px;
-  scale: 0.8;
+  scale: 0.7;
   margin-top: -5px;
-  margin-left: -60px;
+  margin-left: -80px;
 `;
 const MathJaxWrapper = styled.div`
   strong {
@@ -657,8 +668,8 @@ const FooterBarWrapper = styled.div`
 `;
 const FooterTriangle = styled.div`
   position: relative;
-  top: 30px;
-  right: -708px;
+  top: 25px;
+  right: -704px;
   width: 0;
   border-bottom: 40px solid transparent;
   border-top: 40px solid transparent;
@@ -668,9 +679,9 @@ const FooterTriangle = styled.div`
 const WorksheetAdditionalInformation = styled.div`
   width: ${`${A4_WIDTH / 3 - 15}px`};
   position: relative;
-  left: 20px;
-  top: -12px;
-  width: 765px;
+  left: 24px;
+  top: -15px;
+  width: 760px;
   height: 40px;
   display: flex;
   justify-content: flex-end;

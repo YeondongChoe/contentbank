@@ -1214,6 +1214,10 @@ export function Step1() {
   //시중교재 검색값
   const [searchTextbookValue, setSearchTextbookValue] = useState<string>('');
 
+  const searchTextbook = (value: string) => {
+    setSearchTextbookValue(value);
+  };
+
   const [isSelectTextbook, setIsSelectTextbook] = useState(true);
   const [selectedTextbookTitle, setSelectedTextbookTitle] = useState<
     string | null
@@ -3288,7 +3292,7 @@ export function Step1() {
                         width={'50%'}
                         height="40px"
                         onKeyDown={(e) => {}}
-                        onChange={(e) => setSearchTextbookValue(e.target.value)}
+                        onChange={(e) => searchTextbook(e.target.value)}
                         placeholder="교재명 검색"
                         maxLength={20}
                       />
