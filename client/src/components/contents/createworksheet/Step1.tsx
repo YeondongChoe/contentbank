@@ -1332,6 +1332,7 @@ export function Step1() {
     }
   };
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
+  console.log(includeQuizList);
   // 선택된 문항 코드 넣기
   const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
     if (Array.isArray(quizCode)) {
@@ -2056,9 +2057,32 @@ export function Step1() {
           }
         }
       } else if (tabVeiw === '수능/모의고사') {
-        saveLocalData(response.data.data);
-        navigate('/content-create/exam/step2');
+        if (response.data.data.quizList.length === 0) {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          return;
+        } else {
+          if (
+            response.data.data.quizList.length === Number(questionNum) ||
+            response.data.data.quizList.length === Number(inputValue)
+          ) {
+            navigate('/content-create/exam/step2');
+            const itemCount = Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          } else {
+            setIsAlertOpen(true);
+            const itemCount = Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          }
+        }
       }
+
+      // else if (tabVeiw === '수능/모의고사') {
+      //   saveLocalData(response.data.data);
+      //   navigate('/content-create/exam/step2');
+      // }
     },
   });
 
@@ -3296,7 +3320,10 @@ export function Step1() {
                           ))}
                         </>
                       ) : (
-                        <ValueNone textOnly info="등록된 데이터가 없습니다" />
+                        <ValueNone
+                          textOnly
+                          info="선택하신 조건의 교재가 없습니다"
+                        />
                       )}
                     </ListWrapper>
                     <PaginationBox
