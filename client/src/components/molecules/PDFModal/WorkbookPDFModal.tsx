@@ -510,7 +510,9 @@ const MathViewerList = styled.div`
   background-color: white;
   text-align: center;
   width: ${`${A4_WIDTH / 3 - 30}px`};
-  height: ${`${A4_HEIGHT / 3 - 12}px`};
+  height: 1180.05px;
+
+  //height: ${`${A4_HEIGHT / 3 - 12}px`};
   /* border: 1px solid red; */
   margin: 20px;
   &.A4_paper > div {
@@ -614,7 +616,7 @@ const WorksheetBodyLeft = styled.div`
 const Divider = styled.span`
   display: inline-block;
   width: 2px;
-  height: 800px;
+  height: 820px;
   background-color: #e8e8e8;
   margin: 0 10px;
 `;

@@ -1656,7 +1656,7 @@ export function Step2() {
   };
 
   // 리스트에 문항 추가하기(객체인 경우)
-  const clickAddQuizItem = (code: string) => {
+  const clickAddSimilarQuizItem = (code: string) => {
     // 우사문항 불러오기 리스트
     if (similarItems && getItemCountData) {
       const selectedQuizItem = similarItems.quizList.find(
@@ -1699,7 +1699,8 @@ export function Step2() {
         }
       }
     }
-
+  };
+  const clickAddNewQuizItem = (code: string) => {
     // 새문항 불러오기 리스트
     if (newQuizItems && getItemCountData) {
       const selectedQuizItem = newQuizItems.quizList.find(
@@ -1742,7 +1743,9 @@ export function Step2() {
         }
       }
     }
+  };
 
+  const clickAddFavoriteQuizItem = (code: string) => {
     // 즐겨찾기 리스트
     if (favoriteQuestionList && getItemCountData) {
       const selectedQuizItem = favoriteQuestionList.quizList.find(
@@ -2007,7 +2010,9 @@ export function Step2() {
                                     similarItemIndex as number,
                                   )
                                 }
-                                addQuizItem={() => clickAddQuizItem(item.code)}
+                                addQuizItem={() =>
+                                  clickAddSimilarQuizItem(item.code)
+                                }
                                 favoriteQuizItem={(e) =>
                                   item.isFavorite
                                     ? handleFavorite(e, item.idx, true)
@@ -2618,7 +2623,7 @@ export function Step2() {
                                       openReportProcess(item.idx)
                                     }
                                     addQuizItem={() =>
-                                      clickAddQuizItem(item.code)
+                                      clickAddNewQuizItem(item.code)
                                     }
                                     favoriteQuizItem={(e) =>
                                       item.isFavorite
@@ -2715,7 +2720,7 @@ export function Step2() {
                                           openReportProcess(item.idx)
                                         }
                                         addQuizItem={() =>
-                                          clickAddQuizItem(item.code)
+                                          clickAddFavoriteQuizItem(item.code)
                                         }
                                         favoriteQuizItem={(e) =>
                                           item.isFavorite
