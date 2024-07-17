@@ -371,7 +371,7 @@ export function Step3() {
     }) => {
       openToastifyAlert({
         type: 'error',
-        text: context.response.data.message,
+        text: '잠시후 다시 시도해주세요',
       });
       if (context.response.data.code == 'GE-002') {
         postRefreshToken();

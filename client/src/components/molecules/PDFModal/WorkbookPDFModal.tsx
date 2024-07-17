@@ -113,6 +113,8 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     multiLevel: string,
     assign: string,
   ): PageType => {
+    items.sort((a, b) => a.num - b.num);
+
     const pages: PageType = [];
     let currentPage: { leftArray: QuizList[]; rightArray: QuizList[] } = {
       leftArray: [],
@@ -236,7 +238,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         <Component>
           <ScrollWrapper>
             <PerfectScrollbar>
-              <ContentsWrapper ref={printDivRef}>
+              <ContentsWrapperA ref={printDivRef}>
                 {pages.map((page, i) => (
                   <PrintStyles key={`${i} pdf list`}>
                     <MathViewerListA className="A4_paper" ref={containerRef}>
@@ -401,7 +403,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                     </MathViewerListA>
                   </PrintStyles>
                 ))}
-              </ContentsWrapper>
+              </ContentsWrapperA>
             </PerfectScrollbar>
           </ScrollWrapper>
         </Component>
@@ -411,7 +413,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         <Component>
           <ScrollWrapper>
             <PerfectScrollbar>
-              <ContentsWrapper ref={printDivRef}>
+              <ContentsWrapperB ref={printDivRef}>
                 {pages.map((page, i) => (
                   <PrintStyles key={`${i} pdf list`}>
                     <MathViewerListB className="A4_paper" ref={containerRef}>
@@ -489,7 +491,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                     ? '정답문'
                                                     : itemType === 2
                                                       ? '문제+해설별도'
-                                                      : itemType === 0
+                                                      : itemType === 3
                                                         ? '문제+해설같이'
                                                         : '문제만'
                                               }
@@ -536,7 +538,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                     ? '정답문'
                                                     : itemType === 2
                                                       ? '문제+해설별도'
-                                                      : itemType === 0
+                                                      : itemType === 3
                                                         ? '문제+해설같이'
                                                         : '문제만'
                                               }
@@ -562,7 +564,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                     </MathViewerListB>
                   </PrintStyles>
                 ))}
-              </ContentsWrapper>
+              </ContentsWrapperB>
             </PerfectScrollbar>
           </ScrollWrapper>
         </Component>
@@ -594,7 +596,7 @@ const Component = styled.div<PDFModalStyleProps>`
 const IconButtonWrapper = styled.div`
   position: absolute;
   top: 40px;
-  right: calc(50% - 380px);
+  right: calc(50% - 440px);
   width: 30px;
   height: 30px;
 `;
@@ -632,23 +634,21 @@ const PrintStyles = styled.div`
     }
   }
 `;
-const ContentsWrapper = styled.div`
-  max-height: 100vh;
+const ContentsWrapperA = styled.div`
+  padding-left: 10px;
 `;
 const PrintBoxA = styled.div`
-  width: ${`${A4_WIDTH / 3 - 15}px`};
+  /* width: ${`${A4_WIDTH / 2 + 30}px`}; */
   //border: 2px solid black;
   margin: 0 auto;
   padding-top: 20px;
-  margin-right: -15px;
 `;
 const MathViewerListA = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-  text-align: center;
-  width: ${`${A4_WIDTH / 3 - 30}px`};
-  height: ${`${A4_HEIGHT / 3 - 12}px`};
+  width: ${`${A4_WIDTH / 2 - 300}px`};
+  height: ${`${A4_HEIGHT / 3 + 30}px`};
   //border: 1px solid red;
   margin: 20px;
   &.A4_paper > div {
@@ -662,7 +662,7 @@ const MathViewerListA = styled.div`
   }
 `;
 const WorksheetHeaderA = styled.div`
-  width: ${`${A4_WIDTH / 3 - 50}px`};
+  width: ${`${A4_WIDTH / 2 - 400}px`};
   position: relative;
   border: 1px solid
     ${({ theme }) => theme?.color?.backgroundColorTypeA || 'initial'};
@@ -728,7 +728,7 @@ const HeaderTriangleA = styled.div`
 `;
 const ContentTitleA = styled.div`
   color: #888888;
-  padding-bottom: 2px;
+  //padding-bottom: 2px;
   margin-left: -10px;
 `;
 //전체
@@ -742,8 +742,8 @@ const WorksheetBodyA = styled.div`
 `;
 //왼쪽
 const WorksheetBodyLeftA = styled.div`
-  width: 372px;
-  height: 820px;
+  width: 442px;
+  //height: 820px;
   padding: 10px 20px 0px 30px;
   display: flex;
   flex-direction: column;
@@ -751,24 +751,25 @@ const WorksheetBodyLeftA = styled.div`
 const DividerA = styled.span`
   display: inline-block;
   width: 2px;
-  height: 820px;
+  height: 920px;
   background-color: #e8e8e8;
   margin: 0 10px;
 `;
 //오른쪽
 const WorksheetBodyRightA = styled.div`
-  width: 372px;
-  height: 820px;
-  padding: 10px 20px 0px 30px;
+  width: 422px;
+  //height: 820px;
+  padding: 10px 20px 0px 10px;
   display: flex;
   flex-direction: column;
 `;
 //각 아이템
 const MathViewerWrapperA = styled.div<{ height?: number }>`
+  width: 400px;
   height: ${({ height }) => `${height}px`};
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  //display: flex;
+  //flex-direction: column;
+  //align-items: flex-start;
   margin-bottom: 40px;
   font-size: 12px;
 `;
@@ -786,14 +787,14 @@ const MathJaxWrapperA = styled.div`
   }
 `;
 const FooterBarWrapperA = styled.div`
-  width: ${`${A4_WIDTH / 3 - 15}px`};
+  width: ${`${A4_WIDTH / 2 - 360}px`};
   position: relative;
   overflow: visible;
 `;
 const FooterTriangleA = styled.div`
   position: relative;
-  top: 25px;
-  right: -704px;
+  top: 69px;
+  right: -803px;
   width: 0;
   border-bottom: 40px solid transparent;
   border-top: 40px solid transparent;
@@ -801,11 +802,10 @@ const FooterTriangleA = styled.div`
   border-left: 40px solid transparent;
 `;
 const WorksheetAdditionalInformationA = styled.div`
-  width: ${`${A4_WIDTH / 3 - 15}px`};
+  width: ${`${A4_WIDTH / 2 - 420}px`};
   position: relative;
-  left: 24px;
-  top: -15px;
-  width: 760px;
+  left: 63px;
+  top: 29px;
   height: 40px;
   display: flex;
   justify-content: flex-end;
@@ -814,7 +814,7 @@ const WorksheetAdditionalInformationA = styled.div`
   border: 1px solid #e5e5e5;
   border-top-left-radius: 30px;
   padding-right: 60px;
-  gap: 800px;
+  gap: 600px;
 
   .isDate {
     font-size: 12px;
@@ -826,20 +826,23 @@ const WorksheetAdditionalInformationA = styled.div`
     color: #666666;
   }
 `;
+const ContentsWrapperB = styled.div`
+  padding: 20px 0 0 50px;
+`;
 const PrintBoxB = styled.div`
-  width: ${`${A4_WIDTH / 3}px`};
+  // width: ${`${A4_WIDTH / 3 + 40}px`};
   //border: 2px solid black;
   margin: 0 auto;
   padding-top: 20px;
-  margin-right: -15px;
+  //margin-right: -5px;
 `;
 const MathViewerListB = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-  text-align: center;
-  width: ${`${A4_WIDTH / 3 - 10}px`};
-  height: ${`${A4_HEIGHT / 3 - 12}px`};
+  //text-align: center;
+  width: ${`${A4_WIDTH / 2 - 300}px`};
+  height: ${`${A4_HEIGHT / 3 + 180}px`};
   //border: 1px solid red;
   margin: 20px;
   &.A4_paper > div {
@@ -853,23 +856,24 @@ const MathViewerListB = styled.div`
   }
 `;
 const WorksheetHeaderB = styled.div`
-  width: ${`${A4_WIDTH / 3 - 50}px`};
+  width: ${`${A4_WIDTH / 3 + 80}px`};
   margin: 0 auto;
   margin-top: 10px;
   margin-bottom: 20px;
+  margin-right: 20px;
   height: 72px;
   border: 2px solid ${({ theme }) => theme?.color?.textColorTypeB || 'initial'};
   border-radius: 10px;
 `;
 const ContentTitleB = styled.div`
   color: #888888;
-  padding-bottom: 2px;
+  //padding-bottom: 2px;
   margin-left: -10px;
 `;
 const HeaderCircleB = styled.div`
   position: relative;
   top: 10px;
-  right: -32px;
+  right: -22px;
   width: 120px;
   height: 20px;
   border-top-right-radius: 15px;
@@ -925,21 +929,13 @@ const TextWrapperB = styled.div`
   }
 `;
 const WorksheetBodyB = styled.div`
-  //margin: 0 auto;
   display: flex;
-  justify-content: center;
-  height: 820px;
+  justify-content: flex-start;
+  height: 1040px;
 `;
 const WorksheetBodyLeftB = styled.div`
-  width: 372px;
-  height: 820px;
-  padding: 10px 20px 0px 30px;
-  display: flex;
-  flex-direction: column;
-`;
-const WorksheetBodyRightB = styled.div`
-  width: 372px;
-  height: 820px;
+  width: 442px;
+  //height: 1040px;
   padding: 10px 20px 0px 30px;
   display: flex;
   flex-direction: column;
@@ -947,22 +943,30 @@ const WorksheetBodyRightB = styled.div`
 const DividerB = styled.span`
   display: inline-block;
   width: 2px;
-  height: 820px;
+  height: 1140px;
   background-color: #e8e8e8;
   margin: 0 10px;
 `;
-const MathViewerWrapperB = styled.div<{ height: number }>`
-  height: ${({ height }) => `${height}px`};
+const WorksheetBodyRightB = styled.div`
+  width: 442px;
+  //height: 1040px;
+  padding: 10px 20px 0px 20px;
   display: flex;
   flex-direction: column;
+`;
+const MathViewerWrapperB = styled.div<{ height: number }>`
+  width: 400px;
+  height: ${({ height }) => `${height}px`};
+  //display: flex;
+  //flex-direction: column;
   margin-bottom: 40px;
   font-size: 12px;
 `;
 const EachMathViewerB = styled.div`
   max-width: 500px;
-  scale: 0.8;
+  scale: 0.7;
   margin-top: -5px;
-  margin-left: -70px;
+  margin-left: -80px;
 `;
 const MathJaxWrapperB = styled.div`
   strong {
@@ -971,16 +975,16 @@ const MathJaxWrapperB = styled.div`
   }
 `;
 const WorksheetAdditionalInformationB = styled.div`
-  width: ${`${A4_WIDTH / 3 - 50}px`};
+  width: ${`${A4_WIDTH / 3 + 40}px`};
   margin: 0 auto;
   display: flex;
   padding-top: 10px;
-  padding-right: 10px;
+  padding-right: 20px;
   align-items: center;
   justify-content: flex-end;
   border-top: 2px solid #e8e8e8;
-  gap: 630px;
-  margin-top: 140px;
+  gap: 755px;
+  margin-top: 120px;
   /* margin-bottom: 30px; */
 
   .isDate {

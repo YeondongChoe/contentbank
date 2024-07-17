@@ -389,11 +389,11 @@ const WorksheetAdditionalInformation = styled.div`
   margin: 0 auto;
   display: flex;
   padding-top: 10px;
-  padding-right: 10px;
+  padding-right: 20px;
   align-items: center;
   justify-content: flex-end;
   border-top: 2px solid #e8e8e8;
-  gap: 630px;
+  gap: 870px;
   margin-top: 80px;
   margin-bottom: 30px;
 
