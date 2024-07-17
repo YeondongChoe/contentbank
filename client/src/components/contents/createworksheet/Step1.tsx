@@ -1336,7 +1336,6 @@ export function Step1() {
     }
   };
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
-  console.log(includeQuizList);
   // 선택된 문항 코드 넣기
   const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
     if (Array.isArray(quizCode)) {

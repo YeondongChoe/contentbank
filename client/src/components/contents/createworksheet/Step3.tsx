@@ -40,15 +40,38 @@ import { TypeA, TypeB } from '../worksheetType';
 
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
-  const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
-  console.log(initialItems);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
+  //나머지 시작 컨텐츠
+  const [remainderContent, setRemainderContent] = useState<number>();
+  //나머지 시작 전 컨텐츠
+  const [nextRemainderContent, setNextRemainderContent] = useState<number>();
+  //문항당 배점
+  const [quotient, setQuotient] = useState<number>(0);
+  const [minQuotient, setMinQuotient] = useState<number>();
+  const [maxQuotient, setMaxQuotient] = useState<number>();
+  const [equalScore, setEqualScore] = useState<number | null>(null);
+  const [equalTotalValue, setEqualTotlaValue] = useState('0');
+  //총 문항 점수
+  const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
+
+  useEffect(() => {
+    if (getQuotientLocalData) {
+      setEqualScore(getQuotientLocalData.equalScore);
+      setEqualTotlaValue(getQuotientLocalData.equalTotalValue);
+      setRemainderContent(getQuotientLocalData.remainderContent);
+      setNextRemainderContent(getQuotientLocalData.nextRemainderContent);
+      setQuotient(getQuotientLocalData.quotient);
+      setMinQuotient(getQuotientLocalData.minQuotient);
+      setMaxQuotient(getQuotientLocalData.maxQuotient);
+    }
+  }, [getQuotientLocalData]);
+
+  const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
+  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
-  console.log(itemHeights);
   //학습지 생성 알림
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
@@ -82,11 +105,10 @@ export function Step3() {
         try {
           const parsedData = JSON.parse(data);
           const parsedquotientData = JSON.parse(quotientData as string);
-          //console.log('데이터 조회', parsedData);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedquotientData);
         } catch (error) {
-          //console.error('로컬 스토리지 데이터 파싱 에러:', error);
+          console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
       } else {
         console.log('로컬 스토리지에 데이터가 없습니다.');
@@ -109,59 +131,132 @@ export function Step3() {
           num: index + 1,
         }),
       );
-      setInitialItems(itemsWithNum);
-      setIsEditWorkbook(getLocalData.isEditWorkbook);
-      setWorkSheetIdx(getLocalData.workSheetIdx);
-      setGetQuotientLocalData(getLocalData.quotientLocalData);
-      setNameValue(getLocalData.title);
-      setGradeValue(getLocalData.grade);
-      setContentAuthor(getLocalData.examiner);
-      setTag(getLocalData.tag);
-      setColorChoice(
-        getLocalData.color === '#FA8978'
-          ? 'red'
-          : getLocalData.color === '#FFDD94'
-            ? 'orange'
-            : getLocalData.color === '#D0E6A5'
-              ? 'green'
-              : getLocalData.color === '#86aee3'
-                ? 'blue'
-                : getLocalData.color === '#CCABD8'
-                  ? 'purple'
-                  : 'blue',
-      );
-      setTemplateType(getLocalData.type || 'A');
-      setColumn(
-        getLocalData.multiLevel === '1'
-          ? '1단'
-          : getLocalData.multiLevel === '2'
-            ? '2단'
-            : '2단',
-      );
-      setContentQuantity(
-        getLocalData.assign === '0'
-          ? '최대'
-          : getLocalData.assign === '2'
-            ? '2문제'
-            : getLocalData.assign === '4'
-              ? '4문제'
-              : getLocalData.assign === '6'
-                ? '6문제'
-                : '최대',
-      );
-      setIsDate(getLocalData.isDate);
-      setIsContentTypeTitle(getLocalData.isQuizType);
-      setAnswerCommentary(
-        getLocalData.itemType === 0
-          ? '문제만'
-          : getLocalData.itemType === 1
-            ? '정답만'
-            : getLocalData.itemType === 2
-              ? '문제+해설별도'
-              : getLocalData.itemType === 3
-                ? '문제+해설같이'
-                : '문제만',
-      );
+
+      if (getQuotientLocalData) {
+        const { remainderContent, quotient, nextRemainderContent } =
+          getQuotientLocalData;
+
+        const updatedItemsWithNum = itemsWithNum.map((item: QuizList) => {
+          if (item.num >= 1 && item.num <= remainderContent) {
+            return {
+              ...item,
+              score: quotient,
+            };
+          } else if (item.num >= nextRemainderContent) {
+            return {
+              ...item,
+              score: quotient + 1,
+            };
+          }
+          return item;
+        });
+
+        setInitialItems(updatedItemsWithNum);
+        setIsEditWorkbook(getLocalData.isEditWorkbook);
+        setWorkSheetIdx(getLocalData.workSheetIdx);
+        setNameValue(getLocalData.title);
+        setGradeValue(getLocalData.grade);
+        setContentAuthor(getLocalData.examiner);
+        setTag(getLocalData.tag);
+        setColorChoice(
+          getLocalData.color === '#FA8978'
+            ? 'red'
+            : getLocalData.color === '#FFDD94'
+              ? 'orange'
+              : getLocalData.color === '#D0E6A5'
+                ? 'green'
+                : getLocalData.color === '#86aee3'
+                  ? 'blue'
+                  : getLocalData.color === '#CCABD8'
+                    ? 'purple'
+                    : 'blue',
+        );
+        setTemplateType(getLocalData.type || 'A');
+        setColumn(
+          getLocalData.multiLevel === '1'
+            ? '1단'
+            : getLocalData.multiLevel === '2'
+              ? '2단'
+              : '2단',
+        );
+        setContentQuantity(
+          getLocalData.assign === '0'
+            ? '최대'
+            : getLocalData.assign === '2'
+              ? '2문제'
+              : getLocalData.assign === '4'
+                ? '4문제'
+                : getLocalData.assign === '6'
+                  ? '6문제'
+                  : '최대',
+        );
+        setIsDate(getLocalData.isDate);
+        setIsContentTypeTitle(getLocalData.isQuizType);
+        setAnswerCommentary(
+          getLocalData.itemType === 0
+            ? '문제만'
+            : getLocalData.itemType === 1
+              ? '정답만'
+              : getLocalData.itemType === 2
+                ? '문제+해설별도'
+                : getLocalData.itemType === 3
+                  ? '문제+해설같이'
+                  : '문제만',
+        );
+      } else {
+        setInitialItems(itemsWithNum);
+        setIsEditWorkbook(getLocalData.isEditWorkbook);
+        setWorkSheetIdx(getLocalData.workSheetIdx);
+        setNameValue(getLocalData.title);
+        setGradeValue(getLocalData.grade);
+        setContentAuthor(getLocalData.examiner);
+        setTag(getLocalData.tag);
+        setColorChoice(
+          getLocalData.color === '#FA8978'
+            ? 'red'
+            : getLocalData.color === '#FFDD94'
+              ? 'orange'
+              : getLocalData.color === '#D0E6A5'
+                ? 'green'
+                : getLocalData.color === '#86aee3'
+                  ? 'blue'
+                  : getLocalData.color === '#CCABD8'
+                    ? 'purple'
+                    : 'blue',
+        );
+        setTemplateType(getLocalData.type || 'A');
+        setColumn(
+          getLocalData.multiLevel === '1'
+            ? '1단'
+            : getLocalData.multiLevel === '2'
+              ? '2단'
+              : '2단',
+        );
+        setContentQuantity(
+          getLocalData.assign === '0'
+            ? '최대'
+            : getLocalData.assign === '2'
+              ? '2문제'
+              : getLocalData.assign === '4'
+                ? '4문제'
+                : getLocalData.assign === '6'
+                  ? '6문제'
+                  : '최대',
+        );
+        setIsDate(getLocalData.isDate);
+        setIsContentTypeTitle(getLocalData.isQuizType);
+        setAnswerCommentary(
+          getLocalData.itemType === 0
+            ? '문제만'
+            : getLocalData.itemType === 1
+              ? '정답만'
+              : getLocalData.itemType === 2
+                ? '문제+해설별도'
+                : getLocalData.itemType === 3
+                  ? '문제+해설같이'
+                  : '문제만',
+        );
+      }
     }
   }, [getLocalData]);
 
@@ -188,7 +283,6 @@ export function Step3() {
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
   };
-  console.log(answerCommentary);
 
   const [colorChoice, setColorChoice] = useState('');
 
@@ -1091,13 +1185,13 @@ export function Step3() {
                 title={nameValue}
                 grade={gradeValue}
                 tag={tag}
-                contentQuantity={contentQuantity}
+                assign={contentQuantity}
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
                 initialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
-                column={column}
+                multiLevel={column}
               ></TypeA>
             </WorksheetTemplateTypeWrapper>
           )}
@@ -1107,13 +1201,13 @@ export function Step3() {
                 title={nameValue}
                 grade={gradeValue}
                 tag={tag}
-                contentQuantity={contentQuantity}
+                assign={contentQuantity}
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
                 initialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
-                column={column}
+                multiLevel={column}
               ></TypeB>
             </WorksheetTemplateTypeWrapper>
           )}
