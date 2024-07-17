@@ -125,6 +125,8 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightHeight = 0;
     let leftMaxItems = 0;
     let rightMaxItems = 0;
+    let leftFull = false; // 왼쪽 배열이 가득 찼는지 여부를 나타내는 플래그
+    let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
 
     // assign 값에 따라 최대 아이템 수 설정
     if (multiLevel === '2') {
@@ -179,17 +181,31 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightItemCount = 0;
 
     items.forEach((item) => {
-      if (leftItemCount < leftMaxItems && leftHeight + item.height <= 1400) {
+      if (
+        !leftFull &&
+        leftItemCount < leftMaxItems &&
+        leftHeight + item.height <= 1400
+      ) {
         currentPage.leftArray.push(item);
         leftHeight += item.height;
         leftItemCount++;
+        if (leftHeight + item.height > 1400 || leftItemCount >= leftMaxItems) {
+          leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
+        }
       } else if (
+        !rightFull &&
         rightItemCount < rightMaxItems &&
         rightHeight + item.height <= 1400
       ) {
         currentPage.rightArray.push(item);
         rightHeight += item.height;
         rightItemCount++;
+        if (
+          rightHeight + item.height > 1400 ||
+          rightItemCount >= rightMaxItems
+        ) {
+          rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
+        }
       } else {
         // 새로운 페이지를 시작
         pages.push(currentPage);
@@ -198,16 +214,38 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         rightHeight = 0;
         leftItemCount = 0;
         rightItemCount = 0;
+        leftFull = false; // 새 페이지에서는 왼쪽 배열이 가득 차지 않았다고 초기화
+        rightFull = false; // 새 페이지에서는 오른쪽 배열이 가득 차지 않았다고 초기화
 
-        // 다시 분배
-        if (leftItemCount < leftMaxItems && item.height <= 1400) {
+        // 다음 페이지에 현재 아이템 추가
+        if (
+          !leftFull &&
+          leftItemCount < leftMaxItems &&
+          leftHeight + item.height <= 1400
+        ) {
           currentPage.leftArray.push(item);
           leftHeight += item.height;
           leftItemCount++;
-        } else if (rightItemCount < rightMaxItems && item.height <= 2800) {
+          if (
+            leftHeight + item.height > 1400 ||
+            leftItemCount >= leftMaxItems
+          ) {
+            leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
+          }
+        } else if (
+          !rightFull &&
+          rightItemCount < rightMaxItems &&
+          rightHeight + item.height <= 1400
+        ) {
           currentPage.rightArray.push(item);
           rightHeight += item.height;
           rightItemCount++;
+          if (
+            rightHeight + item.height > 1400 ||
+            rightItemCount >= rightMaxItems
+          ) {
+            rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
+          }
         }
       }
     });
@@ -221,7 +259,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   };
 
   const pages = distributeItemsToPages(initialItems, multiLevel, assign);
-  console.log(pages);
 
   return (
     <>
@@ -329,6 +366,11 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                         : '문제만'
                                               }
                                             ></WorkbookMathViewer>
+                                            {quizItemList.score !== 0 && (
+                                              <ScoreWrapper>
+                                                [{quizItemList.score}점]
+                                              </ScoreWrapper>
+                                            )}
                                           </MathJaxWrapperA>
                                         </EachMathViewerA>
                                       </MathViewerWrapperA>
@@ -376,6 +418,11 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                         : '문제만'
                                               }
                                             ></WorkbookMathViewer>
+                                            {quizItemList.score !== 0 && (
+                                              <ScoreWrapper>
+                                                [{quizItemList.score}점]
+                                              </ScoreWrapper>
+                                            )}
                                           </MathJaxWrapperA>
                                         </EachMathViewerA>
                                       </MathViewerWrapperA>
@@ -496,6 +543,11 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                         : '문제만'
                                               }
                                             ></WorkbookMathViewer>
+                                            {quizItemList.score !== 0 && (
+                                              <ScoreWrapper>
+                                                [{quizItemList.score}점]
+                                              </ScoreWrapper>
+                                            )}
                                           </MathJaxWrapperB>
                                         </EachMathViewerB>
                                       </MathViewerWrapperB>
@@ -543,6 +595,11 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                         : '문제만'
                                               }
                                             ></WorkbookMathViewer>
+                                            {quizItemList.score !== 0 && (
+                                              <ScoreWrapper>
+                                                [{quizItemList.score}점]
+                                              </ScoreWrapper>
+                                            )}
                                           </MathJaxWrapperB>
                                         </EachMathViewerB>
                                       </MathViewerWrapperB>
@@ -785,6 +842,11 @@ const MathJaxWrapperA = styled.div`
     font-size: 25px;
     color: ${({ theme }) => theme?.color?.textColorTypeA || 'initial'};
   }
+`;
+const ScoreWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  font-size: 16px;
 `;
 const FooterBarWrapperA = styled.div`
   width: ${`${A4_WIDTH / 2 - 360}px`};
