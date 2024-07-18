@@ -1598,7 +1598,11 @@ export function Step1() {
     return res;
   };
 
-  const { data: castData, refetch: castDataRefetch } = useQuery({
+  const {
+    data: castData,
+    refetch: castDataRefetch,
+    isLoading: castDataLoading,
+  } = useQuery({
     queryKey: ['get-cast'],
     queryFn: getcsat,
     meta: {
@@ -1987,7 +1991,7 @@ export function Step1() {
     return await quizService.post(`/v1/search/quiz/step/1`, data);
   };
 
-  const { mutate: postStep1Data } = useMutation({
+  const { mutate: postStep1Data, isPending: postStep1Pending } = useMutation({
     mutationFn: postWorkbookStep1,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -2334,7 +2338,7 @@ export function Step1() {
                   />
                 </TabWrapper>
                 <CategoryWrapper>
-                  <PerfectScrollbar>
+                  <>
                     <UnitClassifications>
                       {unitClassificationList.length > 0 ? (
                         <>
@@ -2472,35 +2476,37 @@ export function Step1() {
 
                     <p className="line"></p>
 
-                    {/* 교과정보 아코디언 리스트  */}
-                    {radio1depthCheck?.code !== '' &&
-                    radio2depthCheck?.code !== '' &&
-                    radio3depthCheck?.code !== '' &&
-                    radio4depthCheck?.code !== '' &&
-                    selected1depth !== '' &&
-                    selected2depth !== '' &&
-                    selected3depth !== '' ? (
-                      <AccordionWrapper>
-                        <Accordion
-                          defaultChecked={isModifying}
-                          title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                          id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                        >
-                          <RowListWrapper>
-                            <Search
-                              height={'30px'}
-                              value={searchValue}
-                              onClick={(e) => filterSearchValue(e)}
-                              onKeyDown={(e) => filterSearchValueEnter(e)}
-                              onChange={(e) => {
-                                setSearchValue(e.target.value);
-                              }}
-                              placeholder="검색어를 입력해주세요.(두글자 이상)"
-                              maxLength={20}
-                            />
-                            {searchValue.length > 1 && (
-                              <p className="line bottom_text">
-                                {`총 
+                    {!postStep1Pending ? (
+                      <>
+                        {/* 교과정보 아코디언 리스트  */}
+                        {radio1depthCheck?.code !== '' &&
+                        radio2depthCheck?.code !== '' &&
+                        radio3depthCheck?.code !== '' &&
+                        radio4depthCheck?.code !== '' &&
+                        selected1depth !== '' &&
+                        selected2depth !== '' &&
+                        selected3depth !== '' ? (
+                          <AccordionWrapper>
+                            <Accordion
+                              defaultChecked={isModifying}
+                              title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                              id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                            >
+                              <RowListWrapper>
+                                <Search
+                                  height={'30px'}
+                                  value={searchValue}
+                                  onClick={(e) => filterSearchValue(e)}
+                                  onKeyDown={(e) => filterSearchValueEnter(e)}
+                                  onChange={(e) => {
+                                    setSearchValue(e.target.value);
+                                  }}
+                                  placeholder="검색어를 입력해주세요.(두글자 이상)"
+                                  maxLength={20}
+                                />
+                                {searchValue.length > 1 && (
+                                  <p className="line bottom_text">
+                                    {`총 
 															${
                                 categoryItemTreeData && itemTree.length
                                   ? itemTree.reduce(
@@ -2514,183 +2520,195 @@ export function Step1() {
                                   : 0
                               } 
 															건`}
-                                <ArrowButtonWrapper>
-                                  <button onClick={() => prevHighlight()}>
-                                    <IoMdArrowDropup />
-                                  </button>
-                                  <button onClick={() => nextHighlight()}>
-                                    <IoMdArrowDropdown />
-                                  </button>
-                                </ArrowButtonWrapper>
-                              </p>
-                            )}
-                            {isPending && (
-                              <LoaderWrapper>
-                                <Loader width="50px" />
-                              </LoaderWrapper>
-                            )}
-                            {categoryItemTreeData ? (
-                              <AccordionItemWrapper id="scrollTopWrapper">
-                                {itemTree.length ? (
-                                  <div ref={contentRef} className="content">
-                                    {searchValue.length > 0 ? (
-                                      <>
-                                        {itemTree.map((el) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                highlightText={highlightText}
-                                                defaultChecked
-                                                key={`depthList${item?.idx} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item?.idx}
-                                                name={item.name}
-                                                value={item?.idx}
-                                                level={item?.level}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                    item?.level,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                                searchValue={searchValue}
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
+                                    <ArrowButtonWrapper>
+                                      <button onClick={() => prevHighlight()}>
+                                        <IoMdArrowDropup />
+                                      </button>
+                                      <button onClick={() => nextHighlight()}>
+                                        <IoMdArrowDropdown />
+                                      </button>
+                                    </ArrowButtonWrapper>
+                                  </p>
+                                )}
+                                {isPending && (
+                                  <LoaderWrapper>
+                                    <Loader width="50px" />
+                                  </LoaderWrapper>
+                                )}
+                                {categoryItemTreeData ? (
+                                  <AccordionItemWrapper id="scrollTopWrapper">
+                                    {itemTree.length ? (
+                                      <div ref={contentRef} className="content">
+                                        {searchValue.length > 0 ? (
+                                          <>
+                                            {itemTree.map((el) => (
+                                              <div key={`${el.itemTreeKey}`}>
+                                                {el.itemTreeList.map((item) => (
+                                                  <DepthBlock
+                                                    highlightText={
+                                                      highlightText
+                                                    }
+                                                    defaultChecked
+                                                    key={`depthList${item?.idx} ${item.name}`}
+                                                    classNameList={`depth-${item.level}`}
+                                                    id={item?.idx}
+                                                    name={item.name}
+                                                    value={item?.idx}
+                                                    level={item?.level}
+                                                    onChange={(e) =>
+                                                      handleSingleCheck(
+                                                        e.target.checked,
+                                                        item?.idx,
+                                                        item?.level,
+                                                      )
+                                                    }
+                                                    checked={
+                                                      checkedDepthList.includes(
+                                                        item?.idx,
+                                                      )
+                                                        ? true
+                                                        : false
+                                                    }
+                                                    searchValue={searchValue}
+                                                  >
+                                                    <span>{item.name}</span>
+                                                  </DepthBlock>
+                                                ))}
+                                              </div>
                                             ))}
-                                          </div>
-                                        ))}
-                                      </>
+                                          </>
+                                        ) : (
+                                          <>
+                                            {itemTree.map((el) => (
+                                              <div key={`${el.itemTreeKey}`}>
+                                                {el.itemTreeList.map((item) => (
+                                                  <DepthBlock
+                                                    defaultChecked
+                                                    key={`depthList${item?.idx} ${item.name}`}
+                                                    classNameList={`depth-${item.level}`}
+                                                    id={item?.idx}
+                                                    name={item.name}
+                                                    value={item?.idx}
+                                                    level={item?.level}
+                                                    onChange={(e) =>
+                                                      handleSingleCheck(
+                                                        e.target.checked,
+                                                        item?.idx,
+                                                        item?.level,
+                                                      )
+                                                    }
+                                                    checked={
+                                                      checkedDepthList.includes(
+                                                        item?.idx,
+                                                      )
+                                                        ? true
+                                                        : false
+                                                    }
+                                                    searchValue={searchValue}
+                                                  >
+                                                    <span>{item.name}</span>
+                                                  </DepthBlock>
+                                                ))}
+                                              </div>
+                                            ))}
+                                          </>
+                                        )}
+                                      </div>
                                     ) : (
-                                      <>
-                                        {itemTree.map((el) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                defaultChecked
-                                                key={`depthList${item?.idx} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item?.idx}
-                                                name={item.name}
-                                                value={item?.idx}
-                                                level={item?.level}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                    item?.level,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                                searchValue={searchValue}
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </>
+                                      <ValueNone
+                                        textOnly
+                                        info="등록된 데이터가 없습니다"
+                                      />
                                     )}
-                                  </div>
+                                  </AccordionItemWrapper>
+                                ) : (
+                                  <Loader />
+                                )}
+                              </RowListWrapper>
+                            </Accordion>
+
+                            <Accordion
+                              title={'추가정보'}
+                              id={'추가정보'}
+                              $margin={'4px 0 0 0 '}
+                              defaultChecked={isModifying}
+                            >
+                              <RowListWrapper>
+                                {categoryAddInfoList ? (
+                                  <>
+                                    {[categoryItems[4]].map((item) => (
+                                      <div
+                                        id={`${item.name}`}
+                                        className={`etc1`}
+                                        key={`etc1 ${item.idx}`}
+                                      >
+                                        <ButtonFormatMultiRadio
+                                          branchValue={`${item.name}`}
+                                          titleText={`${item.name}`}
+                                          list={categoryAddInfoList[0]}
+                                          selected={selectedCategoryEtc1}
+                                          onChange={(e) =>
+                                            handleMultiRadioCheck(e)
+                                          }
+                                          checkedInputs={radioEtc1Check}
+                                        />
+                                      </div>
+                                    ))}
+                                    {[categoryItems[5]].map((item) => (
+                                      <div
+                                        id={`${item.name}`}
+                                        className={`etc2`}
+                                        key={`etc2 ${item.idx}`}
+                                      >
+                                        <ButtonFormatMultiRadio
+                                          branchValue={`${item.name}`}
+                                          titleText={`${item.name}`}
+                                          list={categoryAddInfoList[1]}
+                                          selected={selectedCategoryEtc2}
+                                          onChange={(e) =>
+                                            handleMultiRadioCheck(e)
+                                          }
+                                          checkedInputs={radioEtc2Check}
+                                        />
+                                      </div>
+                                    ))}
+                                  </>
                                 ) : (
                                   <ValueNone
                                     textOnly
                                     info="등록된 데이터가 없습니다"
                                   />
                                 )}
-                              </AccordionItemWrapper>
-                            ) : (
-                              <Loader />
-                            )}
-                          </RowListWrapper>
-                        </Accordion>
-
-                        <Accordion
-                          title={'추가정보'}
-                          id={'추가정보'}
-                          $margin={'4px 0 0 0 '}
-                          defaultChecked={isModifying}
-                        >
-                          <RowListWrapper>
-                            {categoryAddInfoList ? (
-                              <>
-                                {[categoryItems[4]].map((item) => (
-                                  <div
-                                    id={`${item.name}`}
-                                    className={`etc1`}
-                                    key={`etc1 ${item.idx}`}
-                                  >
-                                    <ButtonFormatMultiRadio
-                                      branchValue={`${item.name}`}
-                                      titleText={`${item.name}`}
-                                      list={categoryAddInfoList[0]}
-                                      selected={selectedCategoryEtc1}
-                                      onChange={(e) => handleMultiRadioCheck(e)}
-                                      checkedInputs={radioEtc1Check}
-                                    />
-                                  </div>
-                                ))}
-                                {[categoryItems[5]].map((item) => (
-                                  <div
-                                    id={`${item.name}`}
-                                    className={`etc2`}
-                                    key={`etc2 ${item.idx}`}
-                                  >
-                                    <ButtonFormatMultiRadio
-                                      branchValue={`${item.name}`}
-                                      titleText={`${item.name}`}
-                                      list={categoryAddInfoList[1]}
-                                      selected={selectedCategoryEtc2}
-                                      onChange={(e) => handleMultiRadioCheck(e)}
-                                      checkedInputs={radioEtc2Check}
-                                    />
-                                  </div>
-                                ))}
-                              </>
-                            ) : (
-                              <ValueNone
-                                textOnly
-                                info="등록된 데이터가 없습니다"
-                              />
-                            )}
-                          </RowListWrapper>
-                        </Accordion>
-                      </AccordionWrapper>
+                              </RowListWrapper>
+                            </Accordion>
+                          </AccordionWrapper>
+                        ) : (
+                          <ValueNoneWrapper>
+                            <ValueNone
+                              textOnly
+                              info="교육과정, 학교급, 학년, 학기를 선택해주세요"
+                            />
+                          </ValueNoneWrapper>
+                        )}
+                        <SubmitButtonWrapper>
+                          <Button
+                            $filled
+                            disabled={addButtonBool}
+                            cursor
+                            width={'150px'}
+                            $margin={'0 10px 0 0'}
+                            onClick={() => saveCheckItems()}
+                          >
+                            교과정보 추가
+                          </Button>
+                        </SubmitButtonWrapper>
+                      </>
                     ) : (
-                      <ValueNoneWrapper>
-                        <ValueNone
-                          textOnly
-                          info="교육과정, 학교급, 학년, 학기를 선택해주세요"
-                        />
-                      </ValueNoneWrapper>
+                      <>
+                        <Loader width="50px" />
+                      </>
                     )}
-                    <SubmitButtonWrapper>
-                      <Button
-                        $filled
-                        disabled={addButtonBool}
-                        cursor
-                        width={'150px'}
-                        $margin={'0 10px 0 0'}
-                        onClick={() => saveCheckItems()}
-                      >
-                        교과정보 추가
-                      </Button>
-                    </SubmitButtonWrapper>
-                  </PerfectScrollbar>
+                  </>
                 </CategoryWrapper>
               </CategorySection>
               <SchoolSelectorSection>
@@ -3745,118 +3763,126 @@ export function Step1() {
                         <span>다른 교재 선택</span>
                       </Button>
                     </TextbookTitleWrapper>
-                    <TextbookWrapper>
-                      {selectedTextbook &&
-                        selectedTextbook?.length > 0 &&
-                        selectedTextbook?.map((item, idx) => (
-                          <TextbookTypeWrapper key={idx}>
-                            <TextbookTypeTitleWrapper>
-                              <TextbookTypeTitleWrapperLeft>
-                                <Label
-                                  value={item.subChapter as string}
-                                  width="100%"
-                                />
-                              </TextbookTypeTitleWrapperLeft>
-                              <TextbookTypeTitleWrapperRight>
-                                <Label
-                                  value="유형UP"
-                                  width="100%"
-                                  padding="5px 20px"
-                                />
-                              </TextbookTypeTitleWrapperRight>
-                            </TextbookTypeTitleWrapper>
-                            <SelectWrapper>
-                              {processTextbookData &&
-                                processTextbookData?.length > 0 &&
-                                processTextbookData?.map((item, i) => (
-                                  <LeftWrapper key={i}>
-                                    {item.pageList.map((page, j) => (
-                                      <TextBookCheckBoxWrapper
-                                        key={j}
-                                        onClick={() => {
-                                          handlePageClick(page.bookPage);
-                                          choiceType(j);
-                                        }}
-                                        $isChoice={clickedIdx === j}
-                                      >
-                                        <CheckBox
-                                          key={`checkbox-${j}`}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            checkAllToggle(
-                                              item.subChapter,
-                                              page.isChecked,
-                                              page.quizList.map(
-                                                (quiz) => quiz.seq,
-                                              ),
-                                              page.quizList[0]?.code || '',
-                                            );
+                    {!postStep1Pending ? (
+                      <TextbookWrapper>
+                        {selectedTextbook &&
+                          selectedTextbook?.length > 0 &&
+                          selectedTextbook?.map((item, idx) => (
+                            <TextbookTypeWrapper key={idx}>
+                              <TextbookTypeTitleWrapper>
+                                <TextbookTypeTitleWrapperLeft>
+                                  <Label
+                                    value={item.subChapter as string}
+                                    width="100%"
+                                  />
+                                </TextbookTypeTitleWrapperLeft>
+                                <TextbookTypeTitleWrapperRight>
+                                  <Label
+                                    value="유형UP"
+                                    width="100%"
+                                    padding="5px 20px"
+                                  />
+                                </TextbookTypeTitleWrapperRight>
+                              </TextbookTypeTitleWrapper>
+                              <SelectWrapper>
+                                {processTextbookData &&
+                                  processTextbookData?.length > 0 &&
+                                  processTextbookData?.map((item, i) => (
+                                    <LeftWrapper key={i}>
+                                      {item.pageList.map((page, j) => (
+                                        <TextBookCheckBoxWrapper
+                                          key={j}
+                                          onClick={() => {
+                                            handlePageClick(page.bookPage);
+                                            choiceType(j);
                                           }}
-                                          isChecked={page.isChecked}
-                                          width="15"
-                                          height="15"
-                                          $margin="0 0 5px 0"
-                                        />
-                                        <Label
-                                          key={`label-${j}`}
-                                          value={`${page.bookPage}P`}
-                                          width="100px"
-                                        />
-                                      </TextBookCheckBoxWrapper>
-                                    ))}
-                                  </LeftWrapper>
-                                ))}
-
-                              {clickedPageIdx !== null && (
-                                <RightWrapper key={clickedPageIdx}>
-                                  {processTextbookData.map((item) => {
-                                    const page = item.pageList.find(
-                                      (page) =>
-                                        page.bookPage === clickedPageIdx,
-                                    );
-
-                                    if (page) {
-                                      return (
-                                        <BookListWrapper
-                                          key={`page-${clickedPageIdx}`}
+                                          $isChoice={clickedIdx === j}
                                         >
-                                          {page.quizList.map((quiz, m) => (
-                                            <CheckBoxWrapper key={`quiz-${m}`}>
-                                              <CheckBox
-                                                onClick={() =>
-                                                  checkPartialToggle(
-                                                    item.subChapter,
-                                                    quiz.seq,
-                                                    quiz.isChecked || false,
-                                                    quiz.code,
-                                                  )
-                                                }
-                                                isChecked={
-                                                  quiz.isChecked || false
-                                                }
-                                                width="15"
-                                                height="15"
-                                                $margin="0 0 5px 0"
-                                              />
-                                              <Label
-                                                key={`label-${m}`}
-                                                value={`${quiz.bookQuizNumber}번`}
-                                                width="40px"
-                                              />
-                                            </CheckBoxWrapper>
-                                          ))}
-                                        </BookListWrapper>
-                                      );
-                                    }
+                                          <CheckBox
+                                            key={`checkbox-${j}`}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              checkAllToggle(
+                                                item.subChapter,
+                                                page.isChecked,
+                                                page.quizList.map(
+                                                  (quiz) => quiz.seq,
+                                                ),
+                                                page.quizList[0]?.code || '',
+                                              );
+                                            }}
+                                            isChecked={page.isChecked}
+                                            width="15"
+                                            height="15"
+                                            $margin="0 0 5px 0"
+                                          />
+                                          <Label
+                                            key={`label-${j}`}
+                                            value={`${page.bookPage}P`}
+                                            width="100px"
+                                          />
+                                        </TextBookCheckBoxWrapper>
+                                      ))}
+                                    </LeftWrapper>
+                                  ))}
 
-                                    return null;
-                                  })}
-                                </RightWrapper>
-                              )}
-                            </SelectWrapper>
-                          </TextbookTypeWrapper>
-                        ))}
-                    </TextbookWrapper>
+                                {clickedPageIdx !== null && (
+                                  <RightWrapper key={clickedPageIdx}>
+                                    {processTextbookData.map((item) => {
+                                      const page = item.pageList.find(
+                                        (page) =>
+                                          page.bookPage === clickedPageIdx,
+                                      );
+
+                                      if (page) {
+                                        return (
+                                          <BookListWrapper
+                                            key={`page-${clickedPageIdx}`}
+                                          >
+                                            {page.quizList.map((quiz, m) => (
+                                              <CheckBoxWrapper
+                                                key={`quiz-${m}`}
+                                              >
+                                                <CheckBox
+                                                  onClick={() =>
+                                                    checkPartialToggle(
+                                                      item.subChapter,
+                                                      quiz.seq,
+                                                      quiz.isChecked || false,
+                                                      quiz.code,
+                                                    )
+                                                  }
+                                                  isChecked={
+                                                    quiz.isChecked || false
+                                                  }
+                                                  width="15"
+                                                  height="15"
+                                                  $margin="0 0 5px 0"
+                                                />
+                                                <Label
+                                                  key={`label-${m}`}
+                                                  value={`${quiz.bookQuizNumber}번`}
+                                                  width="40px"
+                                                />
+                                              </CheckBoxWrapper>
+                                            ))}
+                                          </BookListWrapper>
+                                        );
+                                      }
+
+                                      return null;
+                                    })}
+                                  </RightWrapper>
+                                )}
+                              </SelectWrapper>
+                            </TextbookTypeWrapper>
+                          ))}
+                      </TextbookWrapper>
+                    ) : (
+                      <>
+                        <Loader width="50px" />
+                      </>
+                    )}
                   </CategorySection>
                   <SchoolSelectorSection>
                     <SubTitleWrapper>
@@ -4582,105 +4608,125 @@ export function Step1() {
                       </MockExamOptionWrapper>
                     </MockExamDropdownWrapper>
                   )}
-                  {examOption === 0 && (
-                    <MockExamContentWrapper>
-                      {processCastQuizListData?.map((mock) => (
-                        <MockExamBox key={mock.id}>
-                          <MockExamLabelWrapper>
-                            <CheckBoxWrapper>
-                              <CheckBox
-                                isChecked={mock.isChecked}
-                                width="15"
-                                height="15"
-                                onClick={() =>
-                                  toggleCheckAllCastQuiz(
-                                    mock.id,
-                                    mock.quizNumberList.map(
-                                      (item) => item.code,
-                                    ),
-                                    mock.isChecked,
-                                  )
-                                }
-                              ></CheckBox>
-                              <Label
-                                value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
-                                width="150px"
-                              />
-                            </CheckBoxWrapper>
-                            <CloseIconWrapper>
-                              <IoMdClose
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => removeMockexam(mock.id, '문항')}
-                              />
-                            </CloseIconWrapper>
-                          </MockExamLabelWrapper>
-                          <MockExamContent>
-                            {mock.quizNumberList.map((el, i) => (
-                              <CheckBoxWrapper key={i}>
-                                <CheckBox
-                                  isChecked={el.isChecked}
-                                  width="15"
-                                  height="15"
-                                  onClick={() =>
-                                    toggleCheckPartialCastQuiz(
-                                      mock.id,
-                                      el.quizNumber,
-                                      el.code,
-                                      el.isChecked,
-                                    )
-                                  }
-                                ></CheckBox>
-                                <Label
-                                  value={`${el.quizNumber}번`}
-                                  width="30px"
-                                />
-                              </CheckBoxWrapper>
-                            ))}
-                          </MockExamContent>
-                        </MockExamBox>
-                      ))}
-                    </MockExamContentWrapper>
-                  )}
-                  {examOption === 1 && (
-                    <MockExamContentWrapper>
-                      {processCastListData?.map((mock) => (
-                        <MockExamBox key={mock.id}>
-                          <MockExamLabelWrapper>
-                            <CheckBoxWrapper>
-                              <CheckBox
-                                isChecked={mock.isChecked}
-                                width="15"
-                                height="15"
-                                onClick={() =>
-                                  toggleCheckAllCastList(
-                                    mock.id,
-                                    extractCodesFromHierarchicalData(
+                  {!castDataLoading ? (
+                    <>
+                      {!postStep1Pending ? (
+                        <>
+                          {examOption === 0 && (
+                            <MockExamContentWrapper>
+                              {processCastQuizListData?.map((mock) => (
+                                <MockExamBox key={mock.id}>
+                                  <MockExamLabelWrapper>
+                                    <CheckBoxWrapper>
+                                      <CheckBox
+                                        isChecked={mock.isChecked}
+                                        width="15"
+                                        height="15"
+                                        onClick={() =>
+                                          toggleCheckAllCastQuiz(
+                                            mock.id,
+                                            mock.quizNumberList.map(
+                                              (item) => item.code,
+                                            ),
+                                            mock.isChecked,
+                                          )
+                                        }
+                                      ></CheckBox>
+                                      <Label
+                                        value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                        width="150px"
+                                      />
+                                    </CheckBoxWrapper>
+                                    <CloseIconWrapper>
+                                      <IoMdClose
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() =>
+                                          removeMockexam(mock.id, '문항')
+                                        }
+                                      />
+                                    </CloseIconWrapper>
+                                  </MockExamLabelWrapper>
+                                  <MockExamContent>
+                                    {mock.quizNumberList.map((el, i) => (
+                                      <CheckBoxWrapper key={i}>
+                                        <CheckBox
+                                          isChecked={el.isChecked}
+                                          width="15"
+                                          height="15"
+                                          onClick={() =>
+                                            toggleCheckPartialCastQuiz(
+                                              mock.id,
+                                              el.quizNumber,
+                                              el.code,
+                                              el.isChecked,
+                                            )
+                                          }
+                                        ></CheckBox>
+                                        <Label
+                                          value={`${el.quizNumber}번`}
+                                          width="30px"
+                                        />
+                                      </CheckBoxWrapper>
+                                    ))}
+                                  </MockExamContent>
+                                </MockExamBox>
+                              ))}
+                            </MockExamContentWrapper>
+                          )}
+                          {examOption === 1 && (
+                            <MockExamContentWrapper>
+                              {processCastListData?.map((mock) => (
+                                <MockExamBox key={mock.id}>
+                                  <MockExamLabelWrapper>
+                                    <CheckBoxWrapper>
+                                      <CheckBox
+                                        isChecked={mock.isChecked}
+                                        width="15"
+                                        height="15"
+                                        onClick={() =>
+                                          toggleCheckAllCastList(
+                                            mock.id,
+                                            extractCodesFromHierarchicalData(
+                                              mock.nodeData.hierarchicalData,
+                                            ),
+                                            mock.isChecked,
+                                          )
+                                        }
+                                      ></CheckBox>
+                                      <Label
+                                        value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                        width="150px"
+                                      />
+                                    </CheckBoxWrapper>
+                                    <CloseIconWrapper>
+                                      <IoMdClose
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() =>
+                                          removeMockexam(mock.id, '단원')
+                                        }
+                                      />
+                                    </CloseIconWrapper>
+                                  </MockExamLabelWrapper>
+                                  <MockExamContent>
+                                    {renderHierarchicalData(
                                       mock.nodeData.hierarchicalData,
-                                    ),
-                                    mock.isChecked,
-                                  )
-                                }
-                              ></CheckBox>
-                              <Label
-                                value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
-                                width="150px"
-                              />
-                            </CheckBoxWrapper>
-                            <CloseIconWrapper>
-                              <IoMdClose
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => removeMockexam(mock.id, '단원')}
-                              />
-                            </CloseIconWrapper>
-                          </MockExamLabelWrapper>
-                          <MockExamContent>
-                            {renderHierarchicalData(
-                              mock.nodeData.hierarchicalData,
-                            )}
-                          </MockExamContent>
-                        </MockExamBox>
-                      ))}
-                    </MockExamContentWrapper>
+                                    )}
+                                  </MockExamContent>
+                                </MockExamBox>
+                              ))}
+                            </MockExamContentWrapper>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <Loader width="50px" />
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Loader width="50px" />
+                    </>
                   )}
                 </MockExamWrapper>
               </CategorySection>
