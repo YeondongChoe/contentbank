@@ -325,7 +325,7 @@ export function Step3() {
       grade: gradeValue,
       tag: tag,
     };
-    window.opener.localStorage.clear();
+    //window.opener.localStorage.clear();
     saveLocalData(data);
     localStorage.setItem(
       'sendQuotientData',
