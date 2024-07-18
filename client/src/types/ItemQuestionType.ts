@@ -55,8 +55,12 @@ export type QuizListType = {
   quizList: QuizType[];
 };
 
-type QuizCategoryList = {
+export type QuizCategoryList = {
   quizCategory: QuizCategory;
+};
+
+export type ItemTreeIdxListType = {
+  itemTreeIdxList: number[];
 };
 
 //TODO : 데이터 다 들어갈시 명확히

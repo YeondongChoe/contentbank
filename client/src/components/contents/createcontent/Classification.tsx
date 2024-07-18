@@ -30,6 +30,8 @@ import {
   ItemCategoryType,
   ItemTreeListType,
   ItemTreeType,
+  QuizCategory,
+  QuizCategoryList,
   QuizListType,
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -51,7 +53,9 @@ interface ItemTreeIdxListType {
 type UnitClassificationType =
   | RadioStateType
   | ItemTreeIdxListType
-  | RadioStateType[];
+  | RadioStateType[]
+  | QuizCategoryList
+  | ClassificationStateType;
 
 interface ClassificationStateType {
   quizCodeList: string[];
@@ -122,6 +126,9 @@ export function Classification({
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
+  const [getUnitClassificationList, setGetUnitClassificationList] = useState<
+    UnitClassificationType[][]
+  >([]);
   const [selectedClassification, setSelectedClassification] = useState<
     UnitClassificationType[]
   >([]);
@@ -134,7 +141,6 @@ export function Classification({
   >([]); // 각 카테고리의 상세 리스트를 저장할 상태
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [isCategoryLoaded, etIsCategoryLoaded] = useState(false);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -584,6 +590,7 @@ export function Classification({
     //저장 성공 후
     onResetList();
   };
+
   //삭제
   const deleteUnitClassification = (idx: number) => {
     setUnitClassificationList((prevList) => [
@@ -821,47 +828,126 @@ export function Classification({
   // 추가된 문항 데이터 TODO : 전역으로 저장한 추가된 문항 데이터들 불러오기
   // 화면 진입시 문항 데이터들 리스트ui에넣기
   useEffect(() => {
-    // console.log('quizList-----------', quizList);
+    console.log('quizList-----------', quizList);
     setQuestionList(quizList);
   }, []);
 
   const sortList = () => {
     const sorted = questionList.filter((el) => checkedList.includes(el.code));
-    // console.log('sortedList------------', sorted);
+    console.log('sortedList------------', sorted);
     setSortedList(sorted);
   };
-
-  // 문항 뷰어 데이터 api
-  const getQuiz = async () => {
-    const idxArray = sortedList.map((list) => list.idx);
-    const idxList = idxArray.join(',');
-    const res = await quizService.get(`/v1/quiz/${idxList}`);
-    // console.log('list data----------', res);
-    return res.data.data;
-  };
-  const {
-    data: quizData,
-    isLoading,
-    error: quizDataError,
-    refetch: quizDataRefetch,
-  } = useQuery({
-    queryKey: ['get-idx-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-idx-quizList 에러 메세지',
-    },
-  });
-
-  useEffect(() => {
-    if (quizData) setSortedQuizList(quizData.quizList);
-  }, [quizData]);
 
   useEffect(() => {
     // console.log('checkedList------------', checkedList);
     sortList();
   }, [checkedList]);
-  useEffect(() => {}, [sortedList, questionList]);
 
+  // 수정시 체크된 리스트의 카테고리값에서 메타값 속아내기
+  useEffect(() => {
+    if (sortedList.length > 0) {
+      const lastQuiz = sortedList[sortedList.length - 1];
+      const list: RadioStateType[] = [];
+      let actionElement1: RadioStateType[] = [];
+      let actionElement2: RadioStateType[] = [];
+      console.log('lastQuiz---', lastQuiz);
+
+      // category를 순회하며 필요한 형태로 변환
+      if (lastQuiz.quizCategoryList) {
+        lastQuiz.quizCategoryList.forEach((category) => {
+          (
+            Object.keys(category.quizCategory) as (keyof QuizCategory)[]
+          ).forEach((key) => {
+            const value = category.quizCategory[key];
+
+            // 행동요소1, 행동요소2인 경우 객체 배열로 추가
+            if (key === '행동요소1' && Array.isArray(value)) {
+              actionElement1 = value.map((element, index) => ({
+                title: element,
+                checkValue: 0, // 필요한 경우 적절히 수정
+                code: '행동요소',
+                key: key,
+              }));
+            } else if (key === '행동요소2' && Array.isArray(value)) {
+              actionElement2 = value.map((element, index) => ({
+                title: element,
+                checkValue: 0, // 필요한 경우 적절히 수정
+                code: '행동요소',
+                key: key,
+              }));
+            } else {
+              list.push({
+                title: value as string,
+                checkValue: 0, // 필요한 경우 적절히 수정
+                code: key as string,
+                key: key as string,
+              });
+            }
+          });
+        });
+      }
+
+      // order 변수를 선언 및 초기화
+      const order: Record<string, number> = {
+        교육과정: 0,
+        학교급: 1,
+        학년: 2,
+        학기: 3,
+      };
+
+      // order에 따른 정렬된 배열 만들기
+      const sortedArray: (RadioStateType | null)[] = new Array(
+        Object.keys(order).length,
+      ).fill(null);
+
+      list.forEach((item) => {
+        if ('code' in item && order[item.code] !== undefined) {
+          sortedArray[order[item.code]] = item as RadioStateType;
+        } else {
+          sortedArray.push(item as RadioStateType);
+        }
+      });
+
+      // null 항목 필터링
+      const finalList = sortedArray.filter(
+        (item): item is RadioStateType => item !== null,
+      );
+
+      // 추가 항목들 추가
+      // const itemTreeIdxList: ItemTreeIdxListType = {
+      //   itemTreeIdxList: lastQuiz.itemTreeIdxList || [],
+      // };
+      // finalList.push(itemTreeIdxList);
+
+      if (actionElement1.length > 0) {
+        finalList.push(actionElement1 as unknown as RadioStateType);
+      }
+
+      if (actionElement2.length > 0) {
+        finalList.push(actionElement2 as unknown as RadioStateType);
+      }
+
+      console.log('push on list ----', finalList);
+      setGetUnitClassificationList([finalList]);
+    }
+  }, [sortedList]);
+
+  // getUnitClassificationList에 담긴 값을 순서대로 체크값에 넣고 아이템트리 조회
+  useEffect(() => {
+    // const itemTreeIdxList: ItemTreeIdxListType = {
+    //   itemTreeIdxList:
+    //  // 데이터 구조확인후 추가 필수값이라 추가되야함
+    // };
+    // finalList.push(itemTreeIdxList);
+  }, [getUnitClassificationList]);
+
+  // 아이템 트리 체크값 유형 키값으로 타이틀명 맞춰서 체크
+
+  useEffect(() => {
+    console.log('unitClassificationList', unitClassificationList);
+  }, [unitClassificationList]);
+
+  useEffect(() => {}, [questionList]);
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
@@ -1018,7 +1104,7 @@ export function Classification({
           item3Width={600}
           item3={
             <ScrollWrapper>
-              <PerfectScrollbar>
+              <PerfectScrollbar id="scrollTopWrapper">
                 <Title>
                   <span className="title_top">문항단원분류</span>
                 </Title>
@@ -1214,7 +1300,7 @@ export function Classification({
                           </LoaderWrapper>
                         )}
                         <DepthBlockScrollWrapper>
-                          <PerfectScrollbar id="scrollTopWrapper">
+                          <PerfectScrollbar>
                             {categoryItemTreeData ? (
                               <>
                                 {itemTree.length ? (
@@ -1225,6 +1311,7 @@ export function Classification({
                                           <div key={`${el.itemTreeKey}`}>
                                             {el.itemTreeList.map((item) => (
                                               <DepthBlock
+                                                branchValue={`${item.name}`}
                                                 highlightText={highlightText}
                                                 defaultChecked
                                                 key={`depthList${item?.idx} ${item.name}`}
@@ -1261,6 +1348,7 @@ export function Classification({
                                           <div key={`${el.itemTreeKey}`}>
                                             {el.itemTreeList.map((item) => (
                                               <DepthBlock
+                                                branchValue={`${item.name}`}
                                                 defaultChecked
                                                 key={`depthList${item?.idx} ${item.name}`}
                                                 classNameList={`depth-${item.level}`}

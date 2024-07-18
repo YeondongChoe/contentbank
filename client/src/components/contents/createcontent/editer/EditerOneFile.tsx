@@ -75,14 +75,17 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
 export function EditerOneFile({
   type,
   tabView,
+  state,
 }: {
   type: string;
   tabView?: string;
+  state?: string;
 }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
 
   const jsonUrl = '';
   const { data, loading, error } = useFetchJsonData(jsonUrl);
+  // const { response, loading, error, postJsonData } = usePostJsonData('보낼 데이터');
 
   useEffect(() => {
     if (!isMathJaxLoaded) {

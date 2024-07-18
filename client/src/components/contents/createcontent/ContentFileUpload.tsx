@@ -42,25 +42,23 @@ export function ContentFileUpload({
   //TODO : 임시로 퀴즈데이터 이미 등록된 데이터로 불러옴
   //       나중에 등록버튼으로 등록 완료된 데이터로 전역저장후 다시setQuestionList값으로 넣기
   //TODO : 수정 팝업으로 열렸을시 - 전역에 체크박스데이터 저장후 열릴때 setQuestionList에 값넣기
-  // const getQuiz = async () => {
-  //   const res = await quizService.get(`/v1/quiz`);
-  //   console.log(`getQuiz 결과값`, res.data.data);
-  //   return res.data.data;
-  // };
-  // const { data: quizData } = useQuery({
-  //   queryKey: ['get-quizList'],
-  //   queryFn: getQuiz,
-  //   meta: {
-  //     errorMessage: 'get-quizList 에러 메세지',
-  //   },
-  // });
 
-  // useEffect(() => {
-  //   if (quizData) {
-  //     console.log('초기값 임시로 불러와서 넣기', quizData.quizList);
-  //     setQuestionList(quizData.quizList);
-  //   }
-  // }, [quizData]);
+  useEffect(() => {
+    const storedQuizList = window.localStorage.getItem('quizList');
+
+    console.log(
+      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값',
+      storedQuizList,
+    );
+
+    if (storedQuizList) {
+      setQuizList(JSON.parse(storedQuizList));
+    }
+  }, []);
+
+  useEffect(() => {
+    setQuestionList(quizList);
+  }, [quizList]);
 
   // 카테고리 api 불러오기
   const getCategory = async () => {
@@ -199,8 +197,7 @@ export function ContentFileUpload({
   const submitSave = () => {
     // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     // console.log('신규 등록된 문항 리스트 get 요청 API');
-    //TODO : 임시 문항리스트 데이터
-    setQuizList(questionList);
+
     setIsPostMessage(true);
 
     // 등록 api
@@ -225,46 +222,6 @@ export function ContentFileUpload({
       return true;
     }
   }, [selectedSubject, selectedCourse, selectedQuestionType, selectedSource]);
-  // iframe 에디터에 데이터 삽입시
-  useEffect(() => {
-    const iframe = document.getElementById('editorIframe') as HTMLIFrameElement;
-    // console.log('iframe--', iframe);
-    if (iframe) {
-      const contentWindow = iframe.contentWindow;
-      console.log('contentWindow', contentWindow);
-      if (contentWindow) {
-        const message = {
-          functionName: 'setExamData',
-          args: [
-            {
-              origin:
-                '<div class="level7"><p><span style="">(1) 경쟁률이 </span><span style=""><span data-mathinfo="86,1000,2822,688;;empty" class="itexmath" contenteditable="false" data-latex="\\displaystyle 2.5\\,:\\,1" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>2.5</mn><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;0.33em&quot; /><mo>:</mo><mspace width=&quot;0.33em&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mn>1</mn></mrow></mstyle></math>">\\(\\displaystyle 2.5\\,:\\,1\\)</span><span class="itex_eqn_dummy"></span></span><span style="">이므로 합격생 수는</span></p><p><span style="">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo="66,1000,7140,2250;;{ { 600 TIMES  { 1 } over { 2.5 } =240 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 600 \\times { \\dfrac { 1 } { 2.5 } } =240 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x00D7;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mfrac><mn>1</mn><mn>2.5</mn></mfrac></mstyle></mrow><mo>=</mo><mn>240</mn></mrow></mstyle></math>">\\(\\displaystyle  { 600 \\times { \\dfrac { 1 } { 2.5 } } =240 } \\)</span></span><span style="">(명)</span></p><p>(2) 입학 시험 성적이 <span data-mathinfo="86,1000,1050,975;;{ { 70 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 70 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>">\\(\\displaystyle  { 70 } \\)</span>점 이상 <span data-mathinfo="86,1000,1050,975;;{ { 80 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 80 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>80</mn></mrow></mstyle></math>">\\(\\displaystyle  { 80 } \\)</span>점 미만인 학생 수는</p><p>&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo="86,1000,18670,975;;{ { 600-(60+92+96+112+74+56)=110 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 600-(60+92+96+112+74+56)=110 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x2212;</mo><mo stretchy=&quot;false&quot;>(</mo><mn>60</mn><mo>+</mo><mn>92</mn><mo>+</mo><mn>96</mn><mo>+</mo><mn>112</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo stretchy=&quot;false&quot;>)</mo><mo>=</mo><mn>110</mn></mrow></mstyle></math>">\\(\\displaystyle  { 600-(60+92+96+112+74+56)=110 } \\)</span>(명)</p><p><span style="">(3) 입학 시험 성적이 </span><span style=""><span data-mathinfo="86,1000,1050,975;;{ { 70 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 70 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>">\\(\\displaystyle  { 70 } \\)</span></span><span style="">점 이상인 학생 수는</span></p><p><span style="">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo="86,1000,8705,975;;{ { 110+74+56=240 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 110+74+56=240 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>110</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo>=</mo><mn>240</mn></mrow></mstyle></math>">\\(\\displaystyle  { 110+74+56=240 } \\)</span></span><span style="">(명)</span></p><p><span style="">&nbsp;&nbsp;&nbsp;&nbsp;따라서 합격 점수는 </span><span style=""><span data-mathinfo="86,1000,1050,975;;{ { 70 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 70 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>">\\(\\displaystyle  { 70 } \\)</span></span><span style="">점 이상이다. </span></p><p></p><p></p></div>',
-            },
-          ],
-        };
-        contentWindow.postMessage(message, 'http://43.201.205.140:40031/');
-        setIsPostMessage(false);
-      }
-    }
-  }, [isPostMessage]);
-
-  // iframe 에디터에 데이터 가져올시
-  useEffect(() => {
-    const handleMessage = (event: { origin: string; data: any }) => {
-      if (event.origin !== 'http://43.201.205.140:40031') {
-        // console.warn('Received message from untrusted source:', event.origin);
-        return;
-      }
-      console.log('parent message');
-      console.log(event.data);
-    };
-
-    window.addEventListener('message', handleMessage);
-
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, [isPostMessage]);
 
   return (
     <Container>

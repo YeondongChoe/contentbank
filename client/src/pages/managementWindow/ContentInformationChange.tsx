@@ -972,6 +972,7 @@ export function ContentInformationChange() {
                                       <div key={`${el.itemTreeKey}`}>
                                         {el.itemTreeList.map((item) => (
                                           <DepthBlock
+                                            branchValue={`${item.name}`}
                                             defaultChecked
                                             key={`depthList${item?.idx} ${item.name}`}
                                             classNameList={`depth-${item.level}`}

@@ -134,14 +134,20 @@ export function CreateContentMain() {
       </ButtonWrapper>
       {tabView === 'DT & Editing' && (
         <ContentBox>
-          {isUploadFile && isUploadFile === 'createcontent' && (
-            <ContentCreating setTabView={setTabView} tabView={tabView} />
-          )}
-          {isUploadFile && isUploadFile === 'uploadfile' && (
+          {query.get('state') === 'edit' ? (
             <ContentFileUpload setTabView={setTabView} />
-          )}
-          {isUploadFile && isUploadFile === 'uploadhtml' && (
-            <ContentHTMLUpload setTabView={setTabView} />
+          ) : (
+            <>
+              {isUploadFile && isUploadFile === 'createcontent' && (
+                <ContentCreating setTabView={setTabView} tabView={tabView} />
+              )}
+              {isUploadFile && isUploadFile === 'uploadfile' && (
+                <ContentFileUpload setTabView={setTabView} />
+              )}
+              {isUploadFile && isUploadFile === 'uploadhtml' && (
+                <ContentHTMLUpload setTabView={setTabView} />
+              )}
+            </>
           )}
         </ContentBox>
       )}
