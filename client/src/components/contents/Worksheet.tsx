@@ -147,10 +147,6 @@ export function Worksheet() {
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      //console.log('itemsList', itemsList);
-      //itemsList에서마지막 인덱스(학기) 빼기
-      //const data = itemsList.slice(0, 3);
-      //console.log('data', data);
       setCategory(itemsList);
     } catch (error: any) {
       if (error.response.data.code == 'GE-002') postRefreshToken();
@@ -288,6 +284,7 @@ export function Worksheet() {
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'workbookListUpdated' && event.newValue === 'true') {
+        console.log('workbookListUpdated detected as true');
         workbookListRefetch();
         localStorage.removeItem('workbookListUpdated'); // 상태 초기화
       }
