@@ -1884,7 +1884,7 @@ export function Step2() {
       itemType: itemType,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
-      window.opener.localStorage.clear();
+      //window.opener.localStorage.clear();
       saveLocalData(data);
       localStorage.setItem(
         'sendQuotientData',
