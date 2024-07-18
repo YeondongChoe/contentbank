@@ -267,36 +267,62 @@ export function Worksheet() {
     startDate,
     endDate,
   ]);
+  const [popupWindow, setPopupWindow] = useState<Window | null>(null);
+
+  useEffect(() => {
+    // 메시지 이벤트 리스너 설정
+    const handleMessage = (event: any) => {
+      if (event.data === 'popupClosed') {
+        callServerAPI();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   // 학습지 만들기 페이지로 이동
   const openWindowCreateWorksheet = () => {
-    windowOpenHandler({
-      name: 'createworksheetwindow',
-      url: '/content-create/exam/step1',
-      options:
-        'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
-    });
-    localStorage.setItem('workbookListUpdated', 'false');
+    // windowOpenHandler({
+    //   name: 'createworksheetwindow',
+    //   url: '/content-create/exam/step1',
+    //   options:
+    //     'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
+    // });
+    const popup = window.open(
+      '/content-create/exam/step1',
+      'createworksheetwindow',
+      'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
+    );
+    setPopupWindow(popup);
   };
-  const [isWorkbookUpdated, setIsWorkbookUpdated] = useState<string>('');
+
+  const callServerAPI = () => {
+    // 서버 API 호출 로직
+    console.log('서버 API 호출');
+    // 실제 API 호출 코드를 여기에 작성
+    workbookListRefetch();
+  };
 
   // 자식 창이 닫혔을 때 refetch를 호출하는 이벤트 리스너 추가
-  useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      console.log('Storage event detected:', event); // 추가된 로그
-      if (event.key === 'workbookListUpdated' && event.newValue === 'true') {
-        console.log('workbookListUpdated detected as true');
-        workbookListRefetch();
-        localStorage.removeItem('workbookListUpdated'); // 상태 초기화
-      }
-    };
+  // useEffect(() => {
+  //   const handleStorageChange = (event: StorageEvent) => {
+  //     console.log('Storage event detected:', event); // 추가된 로그
+  //     if (event.key === 'workbookListUpdated' && event.newValue === 'true') {
+  //       console.log('workbookListUpdated detected as true');
+  //       workbookListRefetch();
+  //       localStorage.removeItem('workbookListUpdated'); // 상태 초기화
+  //     }
+  //   };
 
-    window.addEventListener('storage', handleStorageChange);
+  //   window.addEventListener('storage', handleStorageChange);
 
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [workbookListRefetch]);
+  //   return () => {
+  //     window.removeEventListener('storage', handleStorageChange);
+  //   };
+  // }, []);
 
   // if (localStorage.getItem('workbookListUpdated') === 'true') {
   //   workbookListRefetch();

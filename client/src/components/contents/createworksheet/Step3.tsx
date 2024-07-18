@@ -2,20 +2,14 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { backgroundClip } from 'html2canvas/dist/types/css/property-descriptors/background-clip';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
 import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import styled, { ThemeProvider } from 'styled-components';
+import styled from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
-import {
-  isWorkbookCreatedAtom,
-  isEditWorkbookAtom,
-} from '../../../store/utilAtom';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -48,15 +42,12 @@ export function Step3() {
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
-  //학습지 생성 알림
-  // const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
-  //   isWorkbookCreatedAtom,
-  // );
+
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
-    console.log('Setting localStorage in parent window');
     setIsSuccessAlertOpen(false);
-    window.opener.localStorage.setItem('workbookListUpdated', 'true');
+    window.opener.postMessage('popupClosed', '*');
+    window.opener.localStorage.clear();
     window.close();
   };
   //학습지 수정 상태관리
@@ -96,10 +87,6 @@ export function Step3() {
     };
 
     fetchDataFromStorage();
-
-    // const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
-
-    // return () => clearTimeout(retryTimeout);
   }, []);
 
   //로컬스토리지에서 데이타를 가져온 후 문항 번호를 넣어서 저장
@@ -456,6 +443,7 @@ export function Step3() {
       setIsEditWorkbook(0);
       //alert 열기
       setIsSuccessAlertOpen(true);
+      setIsComplete(true);
       // window.opener.localStorage.setItem('workbookListUpdated', 'true');
     },
   });
@@ -636,10 +624,11 @@ export function Step3() {
         </div>
       </div>
       <AlertBar
+        isCloseKor
         type="success"
         isAlertOpen={isSuccessAlertOpen}
         closeAlert={closeSuccessAlert}
-        message={'학습지가 생성 되었습니다.'}
+        message={'학습지만들기가 완료되었습니다'}
       ></AlertBar>
       <TitleWrapper>
         <IconWrapper>
