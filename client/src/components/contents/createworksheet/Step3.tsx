@@ -54,6 +54,7 @@ export function Step3() {
   // );
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
+    console.log('Setting localStorage in parent window');
     setIsSuccessAlertOpen(false);
     window.opener.localStorage.setItem('workbookListUpdated', 'true');
     window.close();
