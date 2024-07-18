@@ -162,6 +162,7 @@ export function Step2() {
     meta: {
       errorMessage: 'get-workbookData 에러 메세지',
     },
+    enabled: !!workbookIdx,
   });
 
   //로컬스토리지에서 Idx받아오면 서버 요청
@@ -2882,21 +2883,21 @@ export function Step2() {
               </ContentListSection>
             </MainWrapper>
             <NextStepButtonWrapper>
-              {totalEqualScore > Number(equalTotalValue) ? (
-                <p>
-                  총 배점: <ErrorSpan>{totalEqualScore}점</ErrorSpan>/
-                  <Span>{equalTotalValue}점</Span>
-                </p>
-              ) : (
-                <p>
-                  총 배점: <Span>{totalEqualScore}점</Span>/
-                  <Span>{equalTotalValue}점</Span>
-                </p>
+              {totalEqualScore !== 0 && equalTotalValue !== '0' && (
+                <>
+                  {totalEqualScore > Number(equalTotalValue) ? (
+                    <p>
+                      총 배점: <ErrorSpan>{totalEqualScore}점</ErrorSpan>/
+                      <Span>{equalTotalValue}점</Span>
+                    </p>
+                  ) : (
+                    <p>
+                      총 배점: <Span>{totalEqualScore}점</Span>/
+                      <Span>{equalTotalValue}점</Span>
+                    </p>
+                  )}
+                </>
               )}
-              {/* <p>
-                총 배점: <Span>{totalEqualScore}점</Span>/
-                <Span>{equalTotalValue}점</Span>
-              </p> */}
               {/* <Button
               buttonType="button"
               onClick={() => {}}

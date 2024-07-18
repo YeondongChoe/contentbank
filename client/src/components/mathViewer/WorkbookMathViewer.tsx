@@ -207,4 +207,7 @@ const ContentQuestion = styled.div`
   div {
     background-color: white;
   }
+  p {
+    background-color: white;
+  }
 `;
