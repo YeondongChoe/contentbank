@@ -111,9 +111,12 @@ export function WorkbookList({
   //문항 삭제
   const [isDeleteWorkbook, setIsDeleteWorkbook] = useState(false);
   const clickDeleteWorkbook = (idx: number) => {
+    console.log(idx);
     setIsDeleteWorkbook(true);
     setWorkbookIdx(idx);
   };
+  console.log(workbookIdx);
+  console.log(isDeleteWorkbook);
 
   const deleteWorkbook = async () => {
     const res = await workbookInstance.delete(`/v1/workbook/${workbookIdx}`);
@@ -159,7 +162,7 @@ export function WorkbookList({
   };
 
   useEffect(() => {
-    if (workbookIdx) {
+    if (isDeleteWorkbook === false && workbookIdx) {
       saveLocalData(workbookIdx);
       setWorkbookIdx(0);
     }

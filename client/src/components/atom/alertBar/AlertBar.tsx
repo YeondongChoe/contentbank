@@ -9,6 +9,7 @@ type AlertBarProps = {
   closeAlert: () => void;
   message?: string;
   type: string;
+  isCloseKor?: boolean;
 };
 
 const CustomCloseSvg = styled.svg`
@@ -29,7 +30,9 @@ export function AlertBar({
   closeAlert,
   message,
   type,
+  isCloseKor,
 }: AlertBarProps) {
+  console.log(isCloseKor);
   return (
     <>
       {isAlertOpen && (
@@ -51,17 +54,21 @@ export function AlertBar({
                 </svg>
 
                 <div>{message}</div>
-                <CustomCloseSvg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 25 25"
-                  onClick={closeAlert}
-                >
-                  <path
-                    d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
-                    fill="white"
-                  />
-                  <rect width="25" height="25" rx="5" />
-                </CustomCloseSvg>
+                {isCloseKor ? (
+                  <CloseMessage onClick={closeAlert}>닫기</CloseMessage>
+                ) : (
+                  <CustomCloseSvg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 25 25"
+                    onClick={closeAlert}
+                  >
+                    <path
+                      d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
+                      fill="white"
+                    />
+                    <rect width="25" height="25" rx="5" />
+                  </CustomCloseSvg>
+                )}
               </Wrapper>
             )}
             {type === 'success' && (
@@ -79,17 +86,21 @@ export function AlertBar({
                   />
                 </svg>
                 <div>{message}</div>
-                <CustomCloseSvg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 25 25"
-                  onClick={closeAlert}
-                >
-                  <path
-                    d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
-                    fill="white"
-                  />
-                  <rect width="25" height="25" rx="5" />
-                </CustomCloseSvg>
+                {isCloseKor ? (
+                  <CloseMessage onClick={closeAlert}>닫기</CloseMessage>
+                ) : (
+                  <CustomCloseSvg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 25 25"
+                    onClick={closeAlert}
+                  >
+                    <path
+                      d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
+                      fill="white"
+                    />
+                    <rect width="25" height="25" rx="5" />
+                  </CustomCloseSvg>
+                )}
               </Wrapper>
             )}
             {type === 'warning' && (
@@ -107,17 +118,21 @@ export function AlertBar({
                   />
                 </svg>
                 <div>{message}</div>
-                <CustomCloseSvg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 25 25"
-                  onClick={closeAlert}
-                >
-                  <path
-                    d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
-                    fill="white"
-                  />
-                  <rect width="25" height="25" rx="5" />
-                </CustomCloseSvg>
+                {isCloseKor ? (
+                  <CloseMessage onClick={closeAlert}>닫기</CloseMessage>
+                ) : (
+                  <CustomCloseSvg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 25 25"
+                    onClick={closeAlert}
+                  >
+                    <path
+                      d="M14.0643 12.5L20 18.4357V20H18.4357L12.5 14.0643L6.56429 20H5V18.4357L10.9357 12.5L5 6.56429V5H6.56429L12.5 10.9357L18.4357 5H20V6.56429L14.0643 12.5Z"
+                      fill="white"
+                    />
+                    <rect width="25" height="25" rx="5" />
+                  </CustomCloseSvg>
+                )}
               </Wrapper>
             )}
           </Container>
@@ -159,4 +174,8 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   color: white;
+`;
+const CloseMessage = styled.div`
+  font-size: 14px;
+  cursor: pointer;
 `;
