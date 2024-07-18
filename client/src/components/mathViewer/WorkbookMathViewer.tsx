@@ -204,4 +204,10 @@ const MathJaxWrapper = styled.div`
 
 const ContentQuestion = styled.div`
   padding-bottom: 10px;
+  div {
+    background-color: white;
+  }
+  p {
+    background-color: white;
+  }
 `;

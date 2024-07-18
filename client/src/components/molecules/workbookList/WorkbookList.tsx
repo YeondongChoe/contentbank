@@ -29,11 +29,13 @@ import {
   openToastifyAlert,
   PaginationBox,
 } from '../../../components';
+import { useModal } from '../../../hooks';
 import { isEditWorkbookAtom } from '../../../store/utilAtom';
 import { WorksheetListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
+import { WorkbookPDFModal } from '../PDFModal/WorkbookPDFModal';
 
 type ContentListProps = {
   list: WorksheetListType[] | any[]; // TODO
@@ -53,6 +55,7 @@ export function WorkbookList({
   totalCount,
 }: ContentListProps) {
   const queryClient = useQueryClient();
+  const { openModal } = useModal();
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -108,9 +111,12 @@ export function WorkbookList({
   //문항 삭제
   const [isDeleteWorkbook, setIsDeleteWorkbook] = useState(false);
   const clickDeleteWorkbook = (idx: number) => {
+    console.log(idx);
     setIsDeleteWorkbook(true);
     setWorkbookIdx(idx);
   };
+  console.log(workbookIdx);
+  console.log(isDeleteWorkbook);
 
   const deleteWorkbook = async () => {
     const res = await workbookInstance.delete(`/v1/workbook/${workbookIdx}`);
@@ -156,7 +162,7 @@ export function WorkbookList({
   };
 
   useEffect(() => {
-    if (workbookIdx) {
+    if (isDeleteWorkbook === false && workbookIdx) {
       saveLocalData(workbookIdx);
       setWorkbookIdx(0);
     }
@@ -245,6 +251,15 @@ export function WorkbookList({
     setCheckList([]);
   }, [tabVeiw]);
 
+  const openCreatePDFModal = (idx: number) => {
+    openModal({
+      title: '',
+      content: <WorkbookPDFModal idx={idx} />,
+    });
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
+  };
+
   return (
     <>
       {showPdf ? (
@@ -305,7 +320,7 @@ export function WorkbookList({
           </ListButtonWrapper>
           <ListWrapper ref={backgroundRef}>
             <List margin={`10px 0`}>
-              {list.map((item: WorksheetListType, i) => (
+              {list.map((item: WorksheetListType) => (
                 <ListItem
                   height="80px"
                   key={item.code as string}
@@ -362,9 +377,13 @@ export function WorkbookList({
                     <span className="width_5">
                       <LuFileSearch2
                         style={{ fontSize: '22px', cursor: 'pointer' }}
-                        onClick={() =>
-                          getPdf(item.lastArticle.originalName as string)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openCreatePDFModal(item.idx);
+                        }}
+                        // onClick={() =>
+                        //   getPdf(item.lastArticle.originalName as string)
+                        // }
                       />
                     </span>
                     <i className="line"></i>
@@ -436,6 +455,7 @@ export function WorkbookList({
           />
         </>
       )}
+      <Modal />
     </>
   );
 }

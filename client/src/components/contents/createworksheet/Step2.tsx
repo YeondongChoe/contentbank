@@ -162,6 +162,7 @@ export function Step2() {
     meta: {
       errorMessage: 'get-workbookData 에러 메세지',
     },
+    enabled: !!workbookIdx,
   });
 
   //로컬스토리지에서 Idx받아오면 서버 요청
@@ -189,7 +190,6 @@ export function Step2() {
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
-  console.log(workbookData);
 
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
@@ -254,7 +254,7 @@ export function Step2() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
+          // console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
           setGetLocalData(parsedData);
           setNameValue(parsedData.title);
           setGradeValue(parsedData.grade);
@@ -270,7 +270,7 @@ export function Step2() {
       if (quotientData) {
         try {
           const parsedQuotientData = JSON.parse(quotientData);
-          console.log('sendQuotientData:', parsedQuotientData); // 디버깅용 콘솔 로그
+          // console.log('sendQuotientData:', parsedQuotientData); // 디버깅용 콘솔 로그
           setGetQuotientLocalData(parsedQuotientData);
         } catch (error) {
           console.error('로컬 스토리지 sendQuotientData 파싱 에러:', error);
@@ -282,7 +282,7 @@ export function Step2() {
       if (categoryData) {
         try {
           const parsedCategoryData = JSON.parse(categoryData);
-          console.log('sendCategoryData:', parsedCategoryData); // 디버깅용 콘솔 로그
+          // console.log('sendCategoryData:', parsedCategoryData); // 디버깅용 콘솔 로그
           setGetCategoryLocalData(parsedCategoryData);
         } catch (error) {
           console.error('로컬 스토리지 sendCategoryData 파싱 에러:', error);
@@ -294,7 +294,7 @@ export function Step2() {
       if (editData) {
         try {
           const parsedEditData = JSON.parse(editData);
-          console.log('sendEditData:', parsedEditData); // 디버깅용 콘솔 로그
+          // console.log('sendEditData:', parsedEditData); // 디버깅용 콘솔 로그
           setGetEditData(parsedEditData);
         } catch (error) {
           console.error('로컬 스토리지 sendEditData 파싱 에러:', error);
@@ -677,8 +677,6 @@ export function Step2() {
       );
       setCategoryList(itemsList);
     } catch (error: any) {
-      // console.log('error--------------', error.response.data.code);
-
       if (error.response?.data?.code == 'GE-002')
         postRefreshToken().then(() => {
           groupsDataRefetch();
@@ -688,7 +686,6 @@ export function Step2() {
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
@@ -745,7 +742,6 @@ export function Step2() {
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
 
-    // console.log('e.currentTarget.value', e.currentTarget?.value);
     const title = e.currentTarget.name;
     const code = e.currentTarget.className;
     const value = e.currentTarget.value;
@@ -972,10 +968,8 @@ export function Step2() {
     );
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    //console.log('itemTreeKeyList :', itemTreeKeyList);
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    //console.log('classificationInstance 응답:', res);
     return res;
   };
 
@@ -1102,7 +1096,6 @@ export function Step2() {
 
   // 수정
   const changeUnitClassification = (idx: number) => {
-    //console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
     onResetList();
     setSelectedClassification(unitClassificationList[idx]);
     setIsModifying(true);
@@ -1189,9 +1182,7 @@ export function Step2() {
   const [classificationSearchValue, setClassificationSearchValue] =
     useState<string>('');
 
-  useEffect(() => {
-    // console.log('itemTree ------ ', itemTree);
-  }, [itemTree, classificationSearchValue]);
+  useEffect(() => {}, [itemTree, classificationSearchValue]);
 
   // 검색 기능
   const filterSearchValue = (
@@ -1306,7 +1297,6 @@ export function Step2() {
       if (currentElement) {
         currentElement.classList.add('current');
         const container = document.getElementById('scrollTopWrapper');
-        // console.log('container', container?.offsetTop);
         if (
           container instanceof HTMLElement &&
           currentElement instanceof HTMLElement
@@ -1314,7 +1304,6 @@ export function Step2() {
           const elementPosition =
             currentElement.parentElement?.parentElement?.parentElement
               ?.parentElement?.offsetTop;
-          // console.log('elementPosition', elementPosition);
           container.scrollTop = elementPosition as number;
         }
       }
@@ -1415,7 +1404,7 @@ export function Step2() {
         ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${filterValue}&searchCondition=유형`
         : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`,
     );
-    console.log('불러오기', res.data.data);
+    // console.log('불러오기', res.data.data);
     return res.data.data;
   };
 
@@ -1462,7 +1451,6 @@ export function Step2() {
       }
     },
     onSuccess: (response: { data: { message: string } }) => {
-      console.log(response);
       openToastifyAlert({
         type: 'success',
         text: response.data.message,
@@ -1478,8 +1466,6 @@ export function Step2() {
     isFavorite: boolean,
   ) => {
     e.stopPropagation();
-    console.log(idx);
-    console.log(isFavorite);
 
     const favoriteItem = {
       idx: idx,
@@ -1657,7 +1643,7 @@ export function Step2() {
   };
 
   // 리스트에 문항 추가하기(객체인 경우)
-  const clickAddQuizItem = (code: string) => {
+  const clickAddSimilarQuizItem = (code: string) => {
     // 우사문항 불러오기 리스트
     if (similarItems && getItemCountData) {
       const selectedQuizItem = similarItems.quizList.find(
@@ -1700,7 +1686,8 @@ export function Step2() {
         }
       }
     }
-
+  };
+  const clickAddNewQuizItem = (code: string) => {
     // 새문항 불러오기 리스트
     if (newQuizItems && getItemCountData) {
       const selectedQuizItem = newQuizItems.quizList.find(
@@ -1743,7 +1730,9 @@ export function Step2() {
         }
       }
     }
+  };
 
+  const clickAddFavoriteQuizItem = (code: string) => {
     // 즐겨찾기 리스트
     if (favoriteQuestionList && getItemCountData) {
       const selectedQuizItem = favoriteQuestionList.quizList.find(
@@ -1834,12 +1823,12 @@ export function Step2() {
   };
 
   const goBackStep1 = () => {
-    const data = {
-      문항수: initialItems.length.toString(),
-      난이도: '중',
-      문항타입: '객관식',
-    };
-    saveLocalData(data);
+    // const data = {
+    //   문항수: initialItems.length.toString(),
+    //   난이도: '중',
+    //   문항타입: '객관식',
+    // };
+    // saveLocalData(data);
     setContentNumQuotient([]);
     navigate('/content-create/exam/step1');
     //window.localStorage.clear();
@@ -1895,7 +1884,7 @@ export function Step2() {
       itemType: itemType,
     };
     if (totalEqualScore.toString() === equalTotalValue) {
-      window.opener.localStorage.clear();
+      //window.opener.localStorage.clear();
       saveLocalData(data);
       localStorage.setItem(
         'sendQuotientData',
@@ -2008,7 +1997,9 @@ export function Step2() {
                                     similarItemIndex as number,
                                   )
                                 }
-                                addQuizItem={() => clickAddQuizItem(item.code)}
+                                addQuizItem={() =>
+                                  clickAddSimilarQuizItem(item.code)
+                                }
                                 favoriteQuizItem={(e) =>
                                   item.isFavorite
                                     ? handleFavorite(e, item.idx, true)
@@ -2619,7 +2610,7 @@ export function Step2() {
                                       openReportProcess(item.idx)
                                     }
                                     addQuizItem={() =>
-                                      clickAddQuizItem(item.code)
+                                      clickAddNewQuizItem(item.code)
                                     }
                                     favoriteQuizItem={(e) =>
                                       item.isFavorite
@@ -2716,7 +2707,7 @@ export function Step2() {
                                           openReportProcess(item.idx)
                                         }
                                         addQuizItem={() =>
-                                          clickAddQuizItem(item.code)
+                                          clickAddFavoriteQuizItem(item.code)
                                         }
                                         favoriteQuizItem={(e) =>
                                           item.isFavorite
@@ -2892,10 +2883,21 @@ export function Step2() {
               </ContentListSection>
             </MainWrapper>
             <NextStepButtonWrapper>
-              <p>
-                총 배점: <Span>{totalEqualScore}점</Span>/
-                <Span>{equalTotalValue}점</Span>
-              </p>
+              {totalEqualScore !== 0 && equalTotalValue !== '0' && (
+                <>
+                  {totalEqualScore > Number(equalTotalValue) ? (
+                    <p>
+                      총 배점: <ErrorSpan>{totalEqualScore}점</ErrorSpan>/
+                      <Span>{equalTotalValue}점</Span>
+                    </p>
+                  ) : (
+                    <p>
+                      총 배점: <Span>{totalEqualScore}점</Span>/
+                      <Span>{equalTotalValue}점</Span>
+                    </p>
+                  )}
+                </>
+              )}
               {/* <Button
               buttonType="button"
               onClick={() => {}}
@@ -2956,6 +2958,10 @@ const FrontSpan = styled.span`
 const Span = styled.span`
   color: ${COLOR.SPAN_BlUE};
 `;
+const ErrorSpan = styled.span`
+  color: ${COLOR.ERROR};
+`;
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;

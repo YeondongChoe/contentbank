@@ -2,20 +2,14 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { backgroundClip } from 'html2canvas/dist/types/css/property-descriptors/background-clip';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
 import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import styled, { ThemeProvider } from 'styled-components';
+import styled from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
-import {
-  isWorkbookCreatedAtom,
-  isEditWorkbookAtom,
-} from '../../../store/utilAtom';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -40,20 +34,20 @@ import { TypeA, TypeB } from '../worksheetType';
 
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
-  const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
-
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
+
+  const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
+  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
-  console.log(itemHeights);
-  //학습지 생성 알림
+
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
-    //window.opener.localStorage.clear();
+    window.opener.postMessage('popupClosed', '*');
+    window.opener.localStorage.clear();
     window.close();
   };
   //학습지 수정 상태관리
@@ -82,11 +76,10 @@ export function Step3() {
         try {
           const parsedData = JSON.parse(data);
           const parsedquotientData = JSON.parse(quotientData as string);
-          //console.log('데이터 조회', parsedData);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedquotientData);
         } catch (error) {
-          //console.error('로컬 스토리지 데이터 파싱 에러:', error);
+          console.error('로컬 스토리지 데이터 파싱 에러:', error);
         }
       } else {
         console.log('로컬 스토리지에 데이터가 없습니다.');
@@ -94,10 +87,6 @@ export function Step3() {
     };
 
     fetchDataFromStorage();
-
-    // const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
-
-    // return () => clearTimeout(retryTimeout);
   }, []);
 
   //로컬스토리지에서 데이타를 가져온 후 문항 번호를 넣어서 저장
@@ -109,59 +98,132 @@ export function Step3() {
           num: index + 1,
         }),
       );
-      setInitialItems(itemsWithNum);
-      setIsEditWorkbook(getLocalData.isEditWorkbook);
-      setWorkSheetIdx(getLocalData.workSheetIdx);
-      setGetQuotientLocalData(getLocalData.quotientLocalData);
-      setNameValue(getLocalData.title);
-      setGradeValue(getLocalData.grade);
-      setContentAuthor(getLocalData.examiner);
-      setTag(getLocalData.tag);
-      setColorChoice(
-        getLocalData.color === '#FA8978'
-          ? 'red'
-          : getLocalData.color === '#FFDD94'
-            ? 'orange'
-            : getLocalData.color === '#D0E6A5'
-              ? 'green'
-              : getLocalData.color === '#86aee3'
-                ? 'blue'
-                : getLocalData.color === '#CCABD8'
-                  ? 'purple'
-                  : 'blue',
-      );
-      setTemplateType(getLocalData.type);
-      setColumn(
-        getLocalData.multiLevel === '1'
-          ? '1단'
-          : getLocalData.multiLevel === '2'
-            ? '2단'
-            : '2단',
-      );
-      setContentQuantity(
-        getLocalData.assign === '0'
-          ? '최대'
-          : getLocalData.assign === '2'
-            ? '2문제'
-            : getLocalData.assign === '4'
-              ? '4문제'
-              : getLocalData.assign === '6'
-                ? '6문제'
-                : '최대',
-      );
-      setIsDate(getLocalData.isDate);
-      setIsContentTypeTitle(getLocalData.isQuizType);
-      setAnswerCommentary(
-        getLocalData.itemType === 0
-          ? '문제만'
-          : getLocalData.itemType === 1
-            ? '정답만'
-            : getLocalData.itemType === 2
-              ? '문제+해설별도'
-              : getLocalData.itemType === 3
-                ? '문제+해설같이'
-                : 0,
-      );
+
+      if (getQuotientLocalData) {
+        const { remainderContent, quotient, nextRemainderContent } =
+          getQuotientLocalData;
+
+        const updatedItemsWithNum = itemsWithNum.map((item: QuizList) => {
+          if (item.num >= 1 && item.num <= remainderContent) {
+            return {
+              ...item,
+              score: quotient,
+            };
+          } else if (item.num >= nextRemainderContent) {
+            return {
+              ...item,
+              score: quotient + 1,
+            };
+          }
+          return item;
+        });
+
+        setInitialItems(updatedItemsWithNum);
+        setIsEditWorkbook(getLocalData.isEditWorkbook);
+        setWorkSheetIdx(getLocalData.workSheetIdx);
+        setNameValue(getLocalData.title);
+        setGradeValue(getLocalData.grade);
+        setContentAuthor(getLocalData.examiner);
+        setTag(getLocalData.tag);
+        setColorChoice(
+          getLocalData.color === '#FA8978'
+            ? 'red'
+            : getLocalData.color === '#FFDD94'
+              ? 'orange'
+              : getLocalData.color === '#D0E6A5'
+                ? 'green'
+                : getLocalData.color === '#86aee3'
+                  ? 'blue'
+                  : getLocalData.color === '#CCABD8'
+                    ? 'purple'
+                    : 'blue',
+        );
+        setTemplateType(getLocalData.type || 'A');
+        setColumn(
+          getLocalData.multiLevel === '1'
+            ? '1단'
+            : getLocalData.multiLevel === '2'
+              ? '2단'
+              : '2단',
+        );
+        setContentQuantity(
+          getLocalData.assign === '0'
+            ? '최대'
+            : getLocalData.assign === '2'
+              ? '2문제'
+              : getLocalData.assign === '4'
+                ? '4문제'
+                : getLocalData.assign === '6'
+                  ? '6문제'
+                  : '최대',
+        );
+        setIsDate(getLocalData.isDate);
+        setIsContentTypeTitle(getLocalData.isQuizType);
+        setAnswerCommentary(
+          getLocalData.itemType === 0
+            ? '문제만'
+            : getLocalData.itemType === 1
+              ? '정답만'
+              : getLocalData.itemType === 2
+                ? '문제+해설별도'
+                : getLocalData.itemType === 3
+                  ? '문제+해설같이'
+                  : '문제만',
+        );
+      } else {
+        setInitialItems(itemsWithNum);
+        setIsEditWorkbook(getLocalData.isEditWorkbook);
+        setWorkSheetIdx(getLocalData.workSheetIdx);
+        setNameValue(getLocalData.title);
+        setGradeValue(getLocalData.grade);
+        setContentAuthor(getLocalData.examiner);
+        setTag(getLocalData.tag);
+        setColorChoice(
+          getLocalData.color === '#FA8978'
+            ? 'red'
+            : getLocalData.color === '#FFDD94'
+              ? 'orange'
+              : getLocalData.color === '#D0E6A5'
+                ? 'green'
+                : getLocalData.color === '#86aee3'
+                  ? 'blue'
+                  : getLocalData.color === '#CCABD8'
+                    ? 'purple'
+                    : 'blue',
+        );
+        setTemplateType(getLocalData.type || 'A');
+        setColumn(
+          getLocalData.multiLevel === '1'
+            ? '1단'
+            : getLocalData.multiLevel === '2'
+              ? '2단'
+              : '2단',
+        );
+        setContentQuantity(
+          getLocalData.assign === '0'
+            ? '최대'
+            : getLocalData.assign === '2'
+              ? '2문제'
+              : getLocalData.assign === '4'
+                ? '4문제'
+                : getLocalData.assign === '6'
+                  ? '6문제'
+                  : '최대',
+        );
+        setIsDate(getLocalData.isDate);
+        setIsContentTypeTitle(getLocalData.isQuizType);
+        setAnswerCommentary(
+          getLocalData.itemType === 0
+            ? '문제만'
+            : getLocalData.itemType === 1
+              ? '정답만'
+              : getLocalData.itemType === 2
+                ? '문제+해설별도'
+                : getLocalData.itemType === 3
+                  ? '문제+해설같이'
+                  : '문제만',
+        );
+      }
     }
   }, [getLocalData]);
 
@@ -182,7 +244,6 @@ export function Step3() {
   const selectTag = (newValue: string) => {
     setTag(newValue);
   };
-
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
     '문제만',
   );
@@ -251,7 +312,7 @@ export function Step3() {
       grade: gradeValue,
       tag: tag,
     };
-    window.opener.localStorage.clear();
+    //window.opener.localStorage.clear();
     saveLocalData(data);
     localStorage.setItem(
       'sendQuotientData',
@@ -262,51 +323,51 @@ export function Step3() {
   const [fileName, setFileName] = useState('');
 
   // node 서버 학습지 만들기 api
-  const postWorkbook = async (data: any) => {
-    const res = await makingworkbookInstance.post(`/get-pdf`, data);
-    // console.log(`학습지 만들기결과값`, res);
-    return res;
-  };
+  // const postWorkbook = async (data: any) => {
+  //   const res = await makingworkbookInstance.post(`/get-pdf`, data);
+  //   // console.log(`학습지 만들기결과값`, res);
+  //   return res;
+  // };
 
-  const makingWorkbook = (nameValue: string) => {
-    const currentTime = new Date().getTime();
-    const data = {
-      title: nameValue,
-      content: newInitialItems,
-      column: 2,
-      uploadDir: '/usr/share/nginx/html/CB',
-      fileName: `${nameValue}_${currentTime}.pdf`,
-      //fileName: `testYD.pdf`,
-    };
-    if (
-      nameValue === '' ||
-      contentAuthor === '' ||
-      gradeValue === '' ||
-      tag === ''
-    ) {
-      openToastifyAlert({
-        type: 'error',
-        text: '필수 항목을 선택해 주세요.',
-      });
-    } else {
-      workbookData(data);
-      setFileName(data.fileName);
-    }
-  };
+  // const makingWorkbook = (nameValue: string) => {
+  //   const currentTime = new Date().getTime();
+  //   const data = {
+  //     title: nameValue,
+  //     content: newInitialItems,
+  //     column: 2,
+  //     uploadDir: '/usr/share/nginx/html/CB',
+  //     fileName: `${nameValue}_${currentTime}.pdf`,
+  //     //fileName: `testYD.pdf`,
+  //   };
+  //   if (
+  //     nameValue === '' ||
+  //     contentAuthor === '' ||
+  //     gradeValue === '' ||
+  //     tag === ''
+  //   ) {
+  //     openToastifyAlert({
+  //       type: 'error',
+  //       text: '필수 항목을 선택해 주세요.',
+  //     });
+  //   } else {
+  //     workbookData(data);
+  //     setFileName(data.fileName);
+  //   }
+  // };
 
-  const { mutate: workbookData } = useMutation({
-    mutationFn: postWorkbook,
-    onError: (error) => {
-      //console.error('post-workbook 에러:', error);
-      // 에러 처리 로직 추가
-    },
-    onSuccess: (data) => {
-      //console.log('post-workbook 성공:', data);
-      postNewWorkbookData();
-      // 성공 처리 로직 추가
-      setIsComplete(true);
-    },
-  });
+  // const { mutate: workbookData } = useMutation({
+  //   mutationFn: postWorkbook,
+  //   onError: (error) => {
+  //     //console.error('post-workbook 에러:', error);
+  //     // 에러 처리 로직 추가
+  //   },
+  //   onSuccess: (data) => {
+  //     //console.log('post-workbook 성공:', data);
+  //     postNewWorkbookData();
+  //     // 성공 처리 로직 추가
+  //     setIsComplete(true);
+  //   },
+  // });
 
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
@@ -326,18 +387,7 @@ export function Step3() {
         extension: '.pdf',
       },
       template: {
-        color:
-          colorChoice === 'red'
-            ? '#FA8978'
-            : colorChoice === 'orange'
-              ? '#FFDD94'
-              : colorChoice === 'green'
-                ? '#D0E6A5'
-                : colorChoice === 'blue'
-                  ? '#86aee3'
-                  : colorChoice === 'purple'
-                    ? '#CCABD8'
-                    : '',
+        color: colorChoice,
         type: templateType,
         multiLevel: column === '1단' ? '1' : column === '2단' ? '2' : '',
         assign:
@@ -382,7 +432,7 @@ export function Step3() {
     }) => {
       openToastifyAlert({
         type: 'error',
-        text: context.response.data.message,
+        text: '잠시후 다시 시도해주세요',
       });
       if (context.response.data.code == 'GE-002') {
         postRefreshToken();
@@ -393,14 +443,22 @@ export function Step3() {
       setIsEditWorkbook(0);
       //alert 열기
       setIsSuccessAlertOpen(true);
+      setIsComplete(true);
+      // window.opener.localStorage.setItem('workbookListUpdated', 'true');
     },
   });
 
-  const submitCreateWorksheet = (nameValue: string) => {
-    //node 서버에서 pdf 생성
-    makingWorkbook(nameValue);
+  const submitCreateWorksheet = () => {
+    if (!nameValue || !contentAuthor || !gradeValue || !tag) {
+      openToastifyAlert({
+        type: 'error',
+        text: '필수 항목을 선택해 주세요.',
+      });
+    } else {
+      postNewWorkbookData();
+    }
   };
-  //console.log(isComplete);
+
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (!isComplete) {
@@ -566,10 +624,11 @@ export function Step3() {
         </div>
       </div>
       <AlertBar
+        isCloseKor
         type="success"
         isAlertOpen={isSuccessAlertOpen}
         closeAlert={closeSuccessAlert}
-        message={'학습지가 생성 되었습니다.'}
+        message={'학습지만들기가 완료되었습니다'}
       ></AlertBar>
       <TitleWrapper>
         <IconWrapper>
@@ -633,7 +692,10 @@ export function Step3() {
                 onChange={(e) => {
                   const value = e.target.value;
                   // 특수문자 제외한 문자만 남기도록 정규표현식을 사용하여 처리
-                  const filteredValue = value.replace(/[^\w\s]/gi, '');
+                  const filteredValue = value.replace(
+                    /[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]/gi,
+                    '',
+                  );
                   setContentAuthor(filteredValue); // 필터링된 값을 상태로 설정
                 }}
                 maxLength={10}
@@ -1093,13 +1155,13 @@ export function Step3() {
                 title={nameValue}
                 grade={gradeValue}
                 tag={tag}
-                contentQuantity={contentQuantity}
+                assign={contentQuantity}
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
                 initialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
-                column={column}
+                multiLevel={column}
               ></TypeA>
             </WorksheetTemplateTypeWrapper>
           )}
@@ -1109,13 +1171,13 @@ export function Step3() {
                 title={nameValue}
                 grade={gradeValue}
                 tag={tag}
-                contentQuantity={contentQuantity}
+                assign={contentQuantity}
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
                 initialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
-                column={column}
+                multiLevel={column}
               ></TypeB>
             </WorksheetTemplateTypeWrapper>
           )}
@@ -1124,7 +1186,7 @@ export function Step3() {
       <CreateButtonWrapper>
         <Button
           buttonType="button"
-          onClick={() => submitCreateWorksheet(nameValue)}
+          onClick={submitCreateWorksheet}
           $padding="10px"
           height={'35px'}
           width={'120px'}

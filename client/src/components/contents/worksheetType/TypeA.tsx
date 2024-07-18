@@ -11,105 +11,196 @@ type TypeAProps = {
   title?: string;
   grade?: string;
   tag?: string;
-  contentQuantity?: string;
+  assign: string;
   isDate?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
   initialItems?: QuizList[];
   answerCommentary?: string;
-  column?: string;
+  multiLevel: string;
 };
 
-const A4_HEIGHT = 1122;
+type PageType = { leftArray: QuizList[]; rightArray: QuizList[] }[];
 
 export const TypeA = ({
   title,
   grade,
   tag,
-  contentQuantity,
+  assign,
   isDate,
   isContentTypeTitle,
   theme,
   initialItems,
   answerCommentary,
-  column,
+  multiLevel,
 }: TypeAProps) => {
-  const [leftList, setLeftList] = useState<QuizList[]>([]);
-  const [rightList, setRightList] = useState<QuizList[]>([]);
-  console.log(initialItems);
+  const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
+  const [pages, setPages] = useState<PageType>([]);
 
   useEffect(() => {
     if (initialItems) {
-      let accumulatedHeight = 0;
-      const updatedLeftList: any[] = [];
-      const updatedRightList: any[] = [];
+      setQuizItemList(initialItems);
+    }
+  }, [initialItems]);
 
-      initialItems.forEach((item) => {
-        const height = item.height !== undefined ? item.height : 0;
-        accumulatedHeight += height;
+  const distributeItemsToPages = (
+    items: QuizList[],
+    multiLevel: string,
+    assign: string,
+  ): PageType => {
+    const pages: PageType = [];
+    let currentPage: { leftArray: QuizList[]; rightArray: QuizList[] } = {
+      leftArray: [],
+      rightArray: [],
+    };
 
-        if (accumulatedHeight <= 1400) {
-          updatedLeftList.push(item);
-        } else if (accumulatedHeight > 1400 && accumulatedHeight < 2800) {
-          updatedRightList.push(item);
-        }
-      });
+    let leftHeight = 0;
+    let rightHeight = 0;
+    let leftMaxItems = 0;
+    let rightMaxItems = 0;
+    let leftFull = false; // 왼쪽 배열이 가득 찼는지 여부를 나타내는 플래그
+    let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
 
-      // 왼쪽 리스트 업데이트
-      setLeftList(updatedLeftList);
-
-      // 오른쪽 리스트 업데이트
-      setRightList(updatedRightList);
+    // assign 값에 따라 최대 아이템 수 설정
+    if (multiLevel === '2단') {
+      switch (assign) {
+        case '최대':
+          leftMaxItems = Infinity;
+          rightMaxItems = Infinity;
+          break;
+        case '2문제':
+          leftMaxItems = 1;
+          rightMaxItems = 1;
+          break;
+        case '4문제':
+          leftMaxItems = 2;
+          rightMaxItems = 2;
+          break;
+        case '8문제':
+          leftMaxItems = 4;
+          rightMaxItems = 4;
+          break;
+        default:
+          leftMaxItems = Infinity; // Default behavior, unlimited items
+          rightMaxItems = Infinity;
+          break;
+      }
+    } else if (multiLevel === '1단') {
+      switch (assign) {
+        case '최대':
+          leftMaxItems = Infinity;
+          rightMaxItems = 0;
+          break;
+        case '2문제':
+          leftMaxItems = 2;
+          rightMaxItems = 0;
+          break;
+        case '4문제':
+          leftMaxItems = 4;
+          rightMaxItems = 0;
+          break;
+        case '8문제':
+          leftMaxItems = 8;
+          rightMaxItems = 0;
+          break;
+        default:
+          leftMaxItems = Infinity; // Default behavior, unlimited items
+          rightMaxItems = 0;
+          break;
+      }
     }
 
-    if (initialItems && column === '1단') {
-      let accumulatedHeight = 0;
-      const updatedLeftList: any[] = [];
+    let leftItemCount = 0;
+    let rightItemCount = 0;
 
-      // 항목 수 제한 설정
-      const contentLimits: { [key: string]: number } = {
-        최대: Infinity,
-        '6문제': 6,
-        '4문제': 4,
-        '2문제': 2,
-      };
-
-      // Default contentQuantity to '최대' if undefined
-      const validContentQuantity = contentQuantity ?? '최대';
-      const contentLimit = contentLimits[validContentQuantity];
-
-      initialItems.forEach((item, index) => {
-        // item에서 height를 가져와서 accumulatedHeight에 누적
-        const height = item.height !== undefined ? item.height : 0; // height가 undefined일 경우 0으로 처리
-        accumulatedHeight += height;
-
-        // accumulatedHeight 기준으로 leftList에 추가
-        if (accumulatedHeight <= 1400 && index < contentLimit) {
-          updatedLeftList.push(item);
+    items.forEach((item) => {
+      if (
+        !leftFull &&
+        leftItemCount < leftMaxItems &&
+        leftHeight + item.height <= 1400
+      ) {
+        currentPage.leftArray.push(item);
+        leftHeight += item.height;
+        leftItemCount++;
+        if (leftHeight + item.height > 1400 || leftItemCount >= leftMaxItems) {
+          leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
         }
-      });
+      } else if (
+        !rightFull &&
+        rightItemCount < rightMaxItems &&
+        rightHeight + item.height <= 1400
+      ) {
+        currentPage.rightArray.push(item);
+        rightHeight += item.height;
+        rightItemCount++;
+        if (
+          rightHeight + item.height > 1400 ||
+          rightItemCount >= rightMaxItems
+        ) {
+          rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
+        }
+      } else {
+        // 새로운 페이지를 시작
+        pages.push(currentPage);
+        currentPage = { leftArray: [], rightArray: [] };
+        leftHeight = 0;
+        rightHeight = 0;
+        leftItemCount = 0;
+        rightItemCount = 0;
+        leftFull = false; // 새 페이지에서는 왼쪽 배열이 가득 차지 않았다고 초기화
+        rightFull = false; // 새 페이지에서는 오른쪽 배열이 가득 차지 않았다고 초기화
 
-      setLeftList(updatedLeftList);
-      setRightList([]);
+        // 다음 페이지에 현재 아이템 추가
+        if (
+          !leftFull &&
+          leftItemCount < leftMaxItems &&
+          leftHeight + item.height <= 1400
+        ) {
+          currentPage.leftArray.push(item);
+          leftHeight += item.height;
+          leftItemCount++;
+          if (
+            leftHeight + item.height > 1400 ||
+            leftItemCount >= leftMaxItems
+          ) {
+            leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
+          }
+        } else if (
+          !rightFull &&
+          rightItemCount < rightMaxItems &&
+          rightHeight + item.height <= 1400
+        ) {
+          currentPage.rightArray.push(item);
+          rightHeight += item.height;
+          rightItemCount++;
+          if (
+            rightHeight + item.height > 1400 ||
+            rightItemCount >= rightMaxItems
+          ) {
+            rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
+          }
+        }
+      }
+    });
+
+    // 마지막 페이지 추가
+    if (currentPage.leftArray.length > 0 || currentPage.rightArray.length > 0) {
+      pages.push(currentPage);
     }
-  }, [initialItems, contentQuantity === '최대', column === '1단']);
+
+    return pages;
+  };
 
   useEffect(() => {
-    if (column === '2단') {
-      if (contentQuantity === '6문제' && initialItems) {
-        setLeftList(initialItems.slice(0, 3));
-        setRightList(initialItems.slice(3, 6));
-      }
-      if (contentQuantity === '4문제' && initialItems) {
-        setLeftList(initialItems.slice(0, 2));
-        setRightList(initialItems.slice(2, 4));
-      }
-      if (contentQuantity === '2문제' && initialItems) {
-        setLeftList(initialItems.slice(0, 1));
-        setRightList(initialItems.slice(1, 2));
-      }
+    if (quizItemList.length > 0) {
+      const generatedPages = distributeItemsToPages(
+        quizItemList,
+        multiLevel,
+        assign,
+      );
+      setPages(generatedPages);
     }
-  }, [contentQuantity, initialItems, column]);
+  }, [quizItemList, multiLevel, assign]);
 
   return (
     <Container>
@@ -165,7 +256,7 @@ export const TypeA = ({
 
           <WorksheetBody>
             <WorksheetBodyLeft>
-              {leftList?.map((quizItemList) =>
+              {pages[0]?.leftArray?.map((quizItemList) =>
                 quizItemList.quizItemList
                   .filter((quizItem) => quizItem.type === 'QUESTION')
                   .map((quizItem, i) => {
@@ -189,6 +280,11 @@ export const TypeA = ({
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
+                            {quizItemList.score && quizItemList.score !== 0 && (
+                              <ScoreWrapper>
+                                [{quizItemList.score}점]
+                              </ScoreWrapper>
+                            )}
                           </MathJaxWrapper>
                         </EachMathViewer>
                       </MathViewerWrapper>
@@ -198,7 +294,7 @@ export const TypeA = ({
             </WorksheetBodyLeft>
             <Divider />
             <WorksheetBodyRight>
-              {rightList?.map((quizItemList) =>
+              {pages[0]?.rightArray?.map((quizItemList) =>
                 quizItemList.quizItemList
                   .filter((quizItem) => quizItem.type === 'QUESTION')
                   .map((quizItem, i) => {
@@ -221,6 +317,11 @@ export const TypeA = ({
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
+                            {quizItemList.score && quizItemList.score !== 0 && (
+                              <ScoreWrapper>
+                                [{quizItemList.score}점]
+                              </ScoreWrapper>
+                            )}
                           </MathJaxWrapper>
                         </EachMathViewer>
                       </MathViewerWrapper>
@@ -391,6 +492,11 @@ const MathJaxWrapper = styled.div`
     font-size: 25px;
     color: ${({ theme }) => theme?.color?.textColorTypeA || 'initial'};
   }
+`;
+const ScoreWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  font-size: 16px;
 `;
 const FooterBarWrapper = styled.div`
   position: relative;
