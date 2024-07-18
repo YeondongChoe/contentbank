@@ -201,11 +201,11 @@ export function Worksheet() {
   });
 
   // 학습지 만들어질때 push event 로 새창이 닫혔을 때 리스트 다시 갱신할 수 있게 하기
-  // useEffect(() => {
-  //   if (isWorkbookCreated === true) {
-  //     workbookListRefetch();
-  //   }
-  // }, [isWorkbookCreated]);
+  useEffect(() => {
+    if (isWorkbookCreated === true) {
+      workbookListRefetch();
+    }
+  }, [isWorkbookCreated]);
 
   const workbookList = workbookListData?.data.data;
 
@@ -280,8 +280,30 @@ export function Worksheet() {
       options:
         'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
     });
-    //setIsWorkbookCreated(false);
+    localStorage.setItem('workbookListUpdated', 'false');
   };
+  const [isWorkbookUpdated, setIsWorkbookUpdated] = useState<string>('');
+
+  // 자식 창이 닫혔을 때 refetch를 호출하는 이벤트 리스너 추가
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'workbookListUpdated' && event.newValue === 'true') {
+        workbookListRefetch();
+        localStorage.removeItem('workbookListUpdated'); // 상태 초기화
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [workbookListRefetch]);
+
+  // if (localStorage.getItem('workbookListUpdated') === 'true') {
+  //   workbookListRefetch();
+  //   localStorage.removeItem('workbookListUpdated');
+  // }
 
   const menuList = [
     {

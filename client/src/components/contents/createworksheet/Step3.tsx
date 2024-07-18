@@ -42,30 +42,6 @@ export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
-  //나머지 시작 컨텐츠
-  const [remainderContent, setRemainderContent] = useState<number>();
-  //나머지 시작 전 컨텐츠
-  const [nextRemainderContent, setNextRemainderContent] = useState<number>();
-  //문항당 배점
-  const [quotient, setQuotient] = useState<number>(0);
-  const [minQuotient, setMinQuotient] = useState<number>();
-  const [maxQuotient, setMaxQuotient] = useState<number>();
-  const [equalScore, setEqualScore] = useState<number | null>(null);
-  const [equalTotalValue, setEqualTotlaValue] = useState('0');
-  //총 문항 점수
-  const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
-
-  useEffect(() => {
-    if (getQuotientLocalData) {
-      setEqualScore(getQuotientLocalData.equalScore);
-      setEqualTotlaValue(getQuotientLocalData.equalTotalValue);
-      setRemainderContent(getQuotientLocalData.remainderContent);
-      setNextRemainderContent(getQuotientLocalData.nextRemainderContent);
-      setQuotient(getQuotientLocalData.quotient);
-      setMinQuotient(getQuotientLocalData.minQuotient);
-      setMaxQuotient(getQuotientLocalData.maxQuotient);
-    }
-  }, [getQuotientLocalData]);
 
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
   const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
@@ -73,10 +49,13 @@ export function Step3() {
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
   //학습지 생성 알림
+  // const [isWorkbookCreated, setIsWorkbookCreated] = useRecoilState(
+  //   isWorkbookCreatedAtom,
+  // );
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
-    //window.opener.localStorage.clear();
+    window.opener.localStorage.setItem('workbookListUpdated', 'true');
     window.close();
   };
   //학습지 수정 상태관리
@@ -476,6 +455,7 @@ export function Step3() {
       setIsEditWorkbook(0);
       //alert 열기
       setIsSuccessAlertOpen(true);
+      // window.opener.localStorage.setItem('workbookListUpdated', 'true');
     },
   });
 

@@ -249,7 +249,6 @@ export function WorkbookList({
   }, [tabVeiw]);
 
   const openCreatePDFModal = (idx: number) => {
-    console.log(idx);
     openModal({
       title: '',
       content: <WorkbookPDFModal idx={idx} />,
