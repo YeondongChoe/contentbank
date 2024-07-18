@@ -283,6 +283,7 @@ export function Worksheet() {
   // 자식 창이 닫혔을 때 refetch를 호출하는 이벤트 리스너 추가
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
+      console.log('Storage event detected:', event); // 추가된 로그
       if (event.key === 'workbookListUpdated' && event.newValue === 'true') {
         console.log('workbookListUpdated detected as true');
         workbookListRefetch();
