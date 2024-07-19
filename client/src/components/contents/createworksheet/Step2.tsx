@@ -616,7 +616,6 @@ export function Step2() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
-  console.log(unitClassificationList);
   const [selectedClassification, setSelectedClassification] = useState<
     UnitClassificationType[]
   >([]);
