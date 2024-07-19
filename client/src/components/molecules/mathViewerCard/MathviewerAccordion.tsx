@@ -209,12 +209,12 @@ export function MathviewerAccordion({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-  //문항 삭제될때마다 총점 변경
+  //문항 삭제 추가 될때마다 총점 변경
   const totalEqualScore = useMemo(
     () => contentNumQuotient.reduce((acc, el) => acc + el.score, 0),
-    [contentNumQuotient, deleteQuizItem],
+    [contentNumQuotient, deleteQuizItem, addQuizItem],
   );
-
+  //console.log(contentNumQuotient);
   useEffect(() => {
     if (setTotalEqualScore) {
       setTotalEqualScore(totalEqualScore);
@@ -302,6 +302,22 @@ export function MathviewerAccordion({
     }
   }, [quizNum, remainderContent, nextRemainderContent]);
 
+  const getDefaultValue = () => {
+    const matchedItem = contentNumQuotient.find(
+      (item) => item.quizNum === quizNum,
+    );
+    //console.log(matchedItem);
+    if (matchedItem) {
+      return `${matchedItem.score}점`;
+    } else if (isRemainderContent) {
+      return `${quotient?.toString()}점`;
+    } else if (isNextRemainderContent) {
+      return `${quotientAddOne?.toString()}점`;
+    } else {
+      return undefined;
+    }
+  };
+
   return (
     <Accordion
       onClick={onClick}
@@ -341,13 +357,7 @@ export function MathviewerAccordion({
               width={'90px'}
               options={quotientOption}
               isnormalizedOptions
-              defaultValue={
-                isRemainderContent
-                  ? `${quotient?.toString()}점`
-                  : isNextRemainderContent
-                    ? `${quotientAddOne?.toString()}점`
-                    : undefined
-              }
+              defaultValue={getDefaultValue()}
               setSelectedQuotientValue={setSelectedValue}
               onClick={() => setSelectedQuizNum(quizNum as number)}
             ></Select>

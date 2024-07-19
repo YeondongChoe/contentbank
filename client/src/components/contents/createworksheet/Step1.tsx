@@ -539,7 +539,6 @@ export function Step1() {
     // 체크된 값이 있을때 조회
     enabled: radio3depthCheck?.code !== '',
   });
-  console.log(nextListData3);
 
   const setNextList = (idx: number) => {
     //교과 과목 오픈여부 라디오 버튼 셋팅
@@ -550,7 +549,6 @@ export function Step1() {
       setNextList5depth(categoryList[5]);
     }
   };
-  console.log(categoryList);
 
   useEffect(() => {
     if (radio1depthCheck.code !== '') nextListData1Refetch();
