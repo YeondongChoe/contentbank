@@ -15,8 +15,8 @@ type ButtonFormatRadioProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   selected: string | number;
-
   branchValue?: string;
+  overFlow?: boolean;
 };
 
 export function ButtonFormatRadio({
@@ -27,6 +27,7 @@ export function ButtonFormatRadio({
   onChange,
   selected,
   branchValue,
+  overFlow,
 }: ButtonFormatRadioProps) {
   // console.log(list && list);
   return (
@@ -35,7 +36,7 @@ export function ButtonFormatRadio({
         <>
           {titleText && <strong>{titleText}</strong>}
 
-          <ButtonFormatRadioList>
+          <ButtonFormatRadioList $overFlow={overFlow}>
             {list.map((item: ItemCategoryType) => (
               <li key={`${item.idx} ${item.name} ${item.code}`}>
                 <label
@@ -81,6 +82,7 @@ export function ButtonFormatRadio({
 type ButtonFormatRadioListStyleProps = {
   width?: string;
   height?: string;
+  $overFlow?: boolean;
 };
 
 const Component = styled.div<{ $margin?: string }>`
@@ -102,6 +104,13 @@ const ButtonFormatRadioList = styled.ul<ButtonFormatRadioListStyleProps>`
   display: flex;
   flex-wrap: wrap;
   flex: 1 0 0;
+  ${({ $overFlow }) =>
+    $overFlow &&
+    `
+    overflow-y: auto;
+    height: 100px;
+  `}
+
   li {
     padding: 2px;
   }
