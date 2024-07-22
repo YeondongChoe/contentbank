@@ -34,7 +34,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [initialItems, setInitialItems] = useState<QuizList[]>([]);
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
-  const [contentAuthor, setContentAuthor] = useState('');
   const [tag, setTag] = useState<string>('');
   const [templateList, setTemplateList] = useState<TemplateList[]>([]);
   const [color, setColor] = useState<string>('');
@@ -53,7 +52,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     return res;
   };
 
-  const { data: workbookData, isLoading: isWorkbookLoading } = useQuery({
+  const { data: workbookData } = useQuery({
     queryKey: ['get-workbookData'],
     queryFn: getWorkbookData,
     meta: {
@@ -73,7 +72,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       setInitialItems(workbookData?.data.data.quizList);
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
-      setContentAuthor(workbookData?.data.data.examiner);
       setTag(workbookData?.data.data.tag);
       setTemplateList(workbookData?.data.data.templateList);
     }
@@ -184,24 +182,24 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       if (
         !leftFull &&
         leftItemCount < leftMaxItems &&
-        leftHeight + item.height <= 1400
+        leftHeight + item.height <= 800
       ) {
         currentPage.leftArray.push(item);
         leftHeight += item.height;
         leftItemCount++;
-        if (leftHeight + item.height > 1400 || leftItemCount >= leftMaxItems) {
+        if (leftHeight + item.height > 800 || leftItemCount >= leftMaxItems) {
           leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
         }
       } else if (
         !rightFull &&
         rightItemCount < rightMaxItems &&
-        rightHeight + item.height <= 1400
+        rightHeight + item.height <= 800
       ) {
         currentPage.rightArray.push(item);
         rightHeight += item.height;
         rightItemCount++;
         if (
-          rightHeight + item.height > 1400 ||
+          rightHeight + item.height > 800 ||
           rightItemCount >= rightMaxItems
         ) {
           rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
@@ -221,27 +219,24 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         if (
           !leftFull &&
           leftItemCount < leftMaxItems &&
-          leftHeight + item.height <= 1400
+          leftHeight + item.height <= 800
         ) {
           currentPage.leftArray.push(item);
           leftHeight += item.height;
           leftItemCount++;
-          if (
-            leftHeight + item.height > 1400 ||
-            leftItemCount >= leftMaxItems
-          ) {
+          if (leftHeight + item.height > 800 || leftItemCount >= leftMaxItems) {
             leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
           }
         } else if (
           !rightFull &&
           rightItemCount < rightMaxItems &&
-          rightHeight + item.height <= 1400
+          rightHeight + item.height <= 800
         ) {
           currentPage.rightArray.push(item);
           rightHeight += item.height;
           rightItemCount++;
           if (
-            rightHeight + item.height > 1400 ||
+            rightHeight + item.height > 800 ||
             rightItemCount >= rightMaxItems
           ) {
             rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
@@ -695,7 +690,6 @@ const ContentsWrapperA = styled.div`
   padding-left: 10px;
 `;
 const PrintBoxA = styled.div`
-  /* width: ${`${A4_WIDTH / 2 + 30}px`}; */
   //border: 2px solid black;
   margin: 0 auto;
   padding-top: 20px;
@@ -785,7 +779,6 @@ const HeaderTriangleA = styled.div`
 `;
 const ContentTitleA = styled.div`
   color: #888888;
-  //padding-bottom: 2px;
   margin-left: -10px;
 `;
 //전체
@@ -794,13 +787,11 @@ const WorksheetBodyA = styled.div`
   top: -50px;
   margin: 0 auto;
   display: flex;
-  //height: ${`${A4_HEIGHT / 3 - 12}px`};
   height: 820px;
 `;
 //왼쪽
 const WorksheetBodyLeftA = styled.div`
   width: 442px;
-  //height: 820px;
   padding: 10px 20px 0px 30px;
   display: flex;
   flex-direction: column;
@@ -815,7 +806,6 @@ const DividerA = styled.span`
 //오른쪽
 const WorksheetBodyRightA = styled.div`
   width: 422px;
-  //height: 820px;
   padding: 10px 20px 0px 10px;
   display: flex;
   flex-direction: column;
@@ -824,9 +814,6 @@ const WorksheetBodyRightA = styled.div`
 const MathViewerWrapperA = styled.div<{ height?: number }>`
   width: 400px;
   height: ${({ height }) => `${height}px`};
-  //display: flex;
-  //flex-direction: column;
-  //align-items: flex-start;
   margin-bottom: 40px;
   font-size: 12px;
 `;
@@ -892,17 +879,14 @@ const ContentsWrapperB = styled.div`
   padding: 20px 0 0 50px;
 `;
 const PrintBoxB = styled.div`
-  // width: ${`${A4_WIDTH / 3 + 40}px`};
   //border: 2px solid black;
   margin: 0 auto;
   padding-top: 20px;
-  //margin-right: -5px;
 `;
 const MathViewerListB = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-  //text-align: center;
   width: ${`${A4_WIDTH / 2 - 300}px`};
   height: ${`${A4_HEIGHT / 3 + 180}px`};
   //border: 1px solid red;
@@ -929,7 +913,6 @@ const WorksheetHeaderB = styled.div`
 `;
 const ContentTitleB = styled.div`
   color: #888888;
-  //padding-bottom: 2px;
   margin-left: -10px;
 `;
 const HeaderCircleB = styled.div`
@@ -997,7 +980,6 @@ const WorksheetBodyB = styled.div`
 `;
 const WorksheetBodyLeftB = styled.div`
   width: 442px;
-  //height: 1040px;
   padding: 10px 20px 0px 30px;
   display: flex;
   flex-direction: column;
@@ -1011,7 +993,6 @@ const DividerB = styled.span`
 `;
 const WorksheetBodyRightB = styled.div`
   width: 442px;
-  //height: 1040px;
   padding: 10px 20px 0px 20px;
   display: flex;
   flex-direction: column;
@@ -1019,8 +1000,6 @@ const WorksheetBodyRightB = styled.div`
 const MathViewerWrapperB = styled.div<{ height: number }>`
   width: 400px;
   height: ${({ height }) => `${height}px`};
-  //display: flex;
-  //flex-direction: column;
   margin-bottom: 40px;
   font-size: 12px;
 `;
@@ -1047,7 +1026,6 @@ const WorksheetAdditionalInformationB = styled.div`
   border-top: 2px solid #e8e8e8;
   gap: 755px;
   margin-top: 120px;
-  /* margin-bottom: 30px; */
 
   .isDate {
     font-size: 12px;
