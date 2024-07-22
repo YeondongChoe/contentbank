@@ -141,9 +141,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
           leftMaxItems = 2;
           rightMaxItems = 2;
           break;
-        case '8':
-          leftMaxItems = 4;
-          rightMaxItems = 4;
+        case '6':
+          leftMaxItems = 3;
+          rightMaxItems = 3;
           break;
         default:
           leftMaxItems = Infinity; // Default behavior, unlimited items
@@ -164,8 +164,8 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
           leftMaxItems = 4;
           rightMaxItems = 0;
           break;
-        case '8':
-          leftMaxItems = 8;
+        case '6':
+          leftMaxItems = 6;
           rightMaxItems = 0;
           break;
         default:
