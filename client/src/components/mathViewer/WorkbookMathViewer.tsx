@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import styled from 'styled-components';
 
-import Contents2 from '../../components/mathViewer/test3.json';
 import { ItemQuestionType } from '../../types';
 import { QuizList } from '../../types/WorkbookType';
 import { Loader } from '../atom/Loader';
@@ -46,6 +45,7 @@ export function WorkbookMathViewer({
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
+  const mathContainerRef = useRef(null);
 
   const offLoader = () => {
     setDisplay('block');
@@ -55,35 +55,37 @@ export function WorkbookMathViewer({
     return { __html: data || '' };
   };
 
-  useEffect(() => {
-    if (mathJax) {
-      // Typesetting 완료 이벤트 등록
-      mathJax.startup.promise.then(() => {
-        // Typesetting 완료 후 호출될 콜백
-        mathJax.typeset();
-      });
+  // useEffect(() => {
+  //   if (mathJax) {
+  //     // Typesetting 완료 이벤트 등록
+  //     mathJax.startup.promise.then(() => {
+  //       // Typesetting 완료 후 호출될 콜백
+  //       mathJax.typeset();
+  //     });
 
-      // 컴포넌트가 언마운트 될 때 MathJax 정리
-      return () => {
-        mathJax.texReset();
-      };
-    }
-  }, [mathJax]);
+  //     // 컴포넌트가 언마운트 될 때 MathJax 정리
+  //     return () => {
+  //       mathJax.texReset();
+  //     };
+  //   }
+  // }, [mathJax]);
 
   return (
     <>
       {display === 'none' && <Loader height={'50px'} size="35px" />}
-
-      <Component
-        display={display}
-        width={width}
-        height={height}
-        $padding={padding}
+      <MathJaxContext
+        version={3}
+        config={config}
+        onStartup={(mathJax) => {
+          console.log('MathJax startup:', mathJax);
+          setMathJax(mathJax);
+        }}
       >
-        <MathJaxContext
-          version={3}
-          config={config}
-          onStartup={(mathJax) => setMathJax(mathJax)}
+        <Component
+          display={display}
+          width={width}
+          height={height}
+          $padding={padding}
         >
           <MathJaxWrapper>
             {isSetp3 && (
@@ -177,8 +179,8 @@ export function WorkbookMathViewer({
               )}
             </MathJax>
           </MathJaxWrapper>
-        </MathJaxContext>
-      </Component>
+        </Component>
+      </MathJaxContext>
     </>
   );
 }

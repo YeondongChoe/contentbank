@@ -32,7 +32,6 @@ export function AlertBar({
   type,
   isCloseKor,
 }: AlertBarProps) {
-  console.log(isCloseKor);
   return (
     <>
       {isAlertOpen && (

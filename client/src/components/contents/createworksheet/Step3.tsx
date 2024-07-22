@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
+import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -42,7 +43,7 @@ export function Step3() {
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
-
+  console.log(itemHeights);
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
@@ -523,6 +524,7 @@ export function Step3() {
         const heights = Array.from(measureRef.current.children).map(
           (child) => (child as HTMLElement).offsetHeight,
         );
+        console.log(heights);
         setItemHeights(heights);
         originalHeightsRef.current = heights;
       }
@@ -552,7 +554,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                       </div>
                     )),
                 )}
@@ -566,7 +570,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'ANSWER')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                       </div>
                     )),
                 )}
@@ -580,7 +586,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                       </div>
                     )),
                 )}
@@ -594,7 +602,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
 
                         {quizItemList.quizItemList
                           .filter(
@@ -603,7 +613,9 @@ export function Step3() {
                           )
                           .map((exampleItem: any, exampleIndex: number) => (
                             <div key={`example-${index}-${exampleIndex}`}>
-                              <p>{exampleItem.content}</p>
+                              <WorkbookMathViewer
+                                data={exampleItem.content}
+                              ></WorkbookMathViewer>
                             </div>
                           ))}
 
@@ -613,7 +625,9 @@ export function Step3() {
                           )
                           .map((answerItem: any, answerIndex: number) => (
                             <div key={`answer-${index}-${answerIndex}`}>
-                              <p>{answerItem.content}</p>
+                              <WorkbookMathViewer
+                                data={answerItem.content}
+                              ></WorkbookMathViewer>
                             </div>
                           ))}
                       </div>
@@ -1243,7 +1257,6 @@ const WorksheetSettingSection = styled.div`
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-radius: 25px;
   padding: 20px;
-  //gap: 30px;
 `;
 const InputGroup = styled.div`
   width: 100%;
@@ -1317,15 +1330,12 @@ const PositionOption = styled.div`
 const ColumnOption = styled.div`
   display: flex;
   padding-right: 10px;
-  //gap: 5px;
 `;
 const ContentQuantity = styled.div`
   display: flex;
-  //gap: 5px;
 `;
 const ContentSpace = styled.div`
   display: flex;
-  //gap: 5px;
 `;
 const AddInformationWrapper = styled.div`
   display: flex;
@@ -1337,7 +1347,6 @@ const CheckBoxWrapper = styled.div`
   padding-right: 10px;
 `;
 const WorksheetTemplateViewSection = styled.div`
-  /* width: 900px; */
   max-height: 751px;
   display: flex;
   flex-direction: column;
@@ -1351,103 +1360,10 @@ const WorksheetTemplateTypeWrapper = styled.div`
   max-height: 751px;
   overflow-y: auto;
 `;
-
-const WorksheetTemplateWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  border-radius: 25px;
-  //background-color: black;
-  //background-color: ${({ theme }) => theme?.color?.background || 'initial'};
-`;
-const WorksheetTemplate = styled.div`
-  //background-color: black;
-  //background-color: white;
-  //display: flex;
-  //flex-direction: column;
-  //align-items: center;
-  //justify-content: center;
-  //height: 100%;
-`;
-const MathViewerHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  height: 150px;
-  padding: 20px;
-  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
-`;
-const HeaderLeft = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  //padding: 20px 10px 10px 20px;
-`;
-const TemplateTitleWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  .subTitle {
-    color: ${COLOR.TEXT_GRAY};
-    font-weight: 600;
-  }
-`;
-const TemplateTitle = styled.div`
-  display: flex;
-  gap: 5px;
-  font-size: 25px;
-  font-weight: 800;
-  .tag {
-    color: ${COLOR.SECONDARY};
-  }
-`;
-const HeaderRight = styled.div`
-  display: flex;
-  flex-direction: column;
-  //flex: 1 0 0;
-  justify-content: space-between;
-  align-items: flex-start;
-  //padding: 20px 10px 10px 20px;
-`;
-const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
+const MathJaxWrapper = styled.div`
+  min-height: 250px;
 `;
 
-const TemplateInputWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-`;
-const Description = styled.div`
-  font-weight: 800;
-`;
-const MathViewerListWrapper = styled.div`
-  height: 600px;
-  display: flex;
-  justify-content: space-evenly;
-  overflow: auto;
-`;
-const MathViewerList = styled.div`
-  padding: 15px;
-  width: ${900 / 2 - 30}px;
-  display: flex;
-  flex-direction: column;
-
-  /* .row {
-    display: flex;
-    flex-wrap: wrap;
-    //justify-content: space-between;
-    flex-direction: column;
-  } */
-`;
-const MathViewerWrapper = styled.div<{ width: string }>`
-  min-height: 71px;
-  width: ${({ width }) => (width ? ` ${width};` : '100%')};
-`;
-
-const InsideWorksheetTemplate = styled.div`
-  padding: 10px;
-  background-color: white;
-`;
 const CreateButtonWrapper = styled.div`
   padding-top: 20px;
   display: flex;
