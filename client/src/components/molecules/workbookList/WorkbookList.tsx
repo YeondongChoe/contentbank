@@ -115,8 +115,6 @@ export function WorkbookList({
     setIsDeleteWorkbook(true);
     setWorkbookIdx(idx);
   };
-  console.log(workbookIdx);
-  console.log(isDeleteWorkbook);
 
   const deleteWorkbook = async () => {
     const res = await workbookInstance.delete(`/v1/workbook/${workbookIdx}`);
