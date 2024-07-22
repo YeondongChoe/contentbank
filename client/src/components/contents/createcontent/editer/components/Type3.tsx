@@ -41,7 +41,11 @@ const dynamicallyLoadScripts = (
   loadScript(0);
 };
 
-const Type3 = ({ tabView }: { tabView?: string }) => {
+const Type3 = ({
+  setJsonData,
+}: {
+  setJsonData: React.Dispatch<React.SetStateAction<string | null>>;
+}) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
   const initialScripts = [
@@ -280,7 +284,18 @@ const Type3 = ({ tabView }: { tabView?: string }) => {
         <div className="col-lg-4 p-0 tiny_wrap">
           <textarea id="tinyeditor"></textarea>
           <div className="save_exam_btn_wrap">
-            <button id="exam_save">문항 저장</button>
+            <button
+              id="exam_save"
+              onClick={async () => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                const data = await window.saveExamData();
+                // console.log(data);
+                setJsonData(data);
+              }}
+            >
+              문항 저장
+            </button>
           </div>
           <div className="poc_checker_block"></div>
         </div>

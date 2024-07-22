@@ -42,7 +42,11 @@ const dynamicallyLoadScripts = (
   loadScript(0);
 };
 
-const Type1 = () => {
+const Type1 = ({
+  setJsonData,
+}: {
+  setJsonData: React.Dispatch<React.SetStateAction<string | null>>;
+}) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -291,9 +295,12 @@ const Type1 = () => {
           <div className="save_exam_btn_wrap">
             <button
               id="exam_save"
-              onClick={(e) => {
-                console.log(e);
-                // window.saveExamData();
+              onClick={async () => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                const data = await window.saveExamData();
+                // console.log(data);
+                setJsonData(data);
               }}
             >
               문항 저장

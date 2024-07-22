@@ -82,9 +82,11 @@ export function EditerOneFile({
   state?: string;
 }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
+  const [jsonData, setJsonData] = useState<string | null>(null);
+  const [jsonStringData, setJsonStringData] = useState<string | null>(null);
+  const [jsonDataObject, setJsonDataObject] = useState<any>(null);
 
-  const jsonUrl = '';
-  const { data, loading, error } = useFetchJsonData(jsonUrl);
+  // const { data, loading, error } = useFetchJsonData(jsonUrl);
   // const { response, loading, error, postJsonData } = usePostJsonData('보낼 데이터');
 
   useEffect(() => {
@@ -93,19 +95,28 @@ export function EditerOneFile({
     }
   }, [isMathJaxLoaded]);
 
-  useEffect(() => {}, [type]);
+  useEffect(() => {
+    if (!jsonData) return;
+    const jsonString = JSON.stringify(jsonData);
+    setJsonStringData(jsonString);
+    setJsonDataObject(jsonData);
+  }, [jsonData]);
 
   useEffect(() => {
-    console.log('data', data);
-  }, [data]);
+    console.log('jsonDataObject', jsonDataObject);
+    console.log('jsonStringData', jsonStringData);
+    // 값이 저장될때 서버에도 동일한 데이터 저장 문항 생성
+  }, [jsonDataObject]);
+
+  useEffect(() => {}, [type]);
 
   return (
     <Container>
       {isMathJaxLoaded ? (
         <>
-          {type === 'type1' && <Type1 />}
+          {type === 'type1' && <Type1 setJsonData={setJsonData} />}
           {type === 'type2' && <Type2 />}
-          {type === 'type3' && <Type3 tabView={tabView} />}
+          {type === 'type3' && <Type3 setJsonData={setJsonData} />}
         </>
       ) : (
         <LoaderWrapper>
