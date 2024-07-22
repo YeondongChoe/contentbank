@@ -271,7 +271,7 @@ export const TypeA = ({
                         height={quizItemList.height as number}
                         padding={
                           assign === '4문제'
-                            ? '0 0 500px 0'
+                            ? '0 0 600px 0'
                             : assign === '6문제'
                               ? '0 0 400px 0'
                               : ''
@@ -315,7 +315,7 @@ export const TypeA = ({
                         height={quizItemList.height as number}
                         padding={
                           assign === '4문제'
-                            ? '0 0 500px 0'
+                            ? '0 0 600px 0'
                             : assign === '6문제'
                               ? '0 0 400px 0'
                               : ''
