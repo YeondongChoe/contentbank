@@ -41,9 +41,9 @@ export function Step3() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
   const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
   const [itemHeights, setItemHeights] = useState<number[]>([]);
+  console.log(itemHeights);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
-  console.log(itemHeights);
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
@@ -512,7 +512,7 @@ export function Step3() {
     if (linesMatch) {
       const lines = parseInt(linesMatch[1], 10); // '1줄'에서 1을 추출하여 숫자로 변환
       setItemHeights(
-        originalHeightsRef.current.map((height) => height + 30 * lines),
+        originalHeightsRef.current.map((height) => height + 50 * lines),
       );
     }
   };
@@ -521,10 +521,18 @@ export function Step3() {
   useEffect(() => {
     const measureHeights = () => {
       if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map(
-          (child) => (child as HTMLElement).offsetHeight,
-        );
-        console.log(heights);
+        const heights = Array.from(measureRef.current.children).map((child) => {
+          const childElement = child as HTMLElement;
+          const height = childElement.offsetHeight;
+
+          if (height > 300) {
+            childElement.style.height = '300px';
+            return 300;
+          }
+
+          return height;
+        });
+
         setItemHeights(heights);
         originalHeightsRef.current = heights;
       }
@@ -554,9 +562,10 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <WorkbookMathViewer
+                        {/* <WorkbookMathViewer
                           data={quizItem.content}
-                        ></WorkbookMathViewer>
+                        ></WorkbookMathViewer> */}
+                        <div>{quizItem.content}</div>
                       </div>
                     )),
                 )}
@@ -570,9 +579,7 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'ANSWER')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <WorkbookMathViewer
-                          data={quizItem.content}
-                        ></WorkbookMathViewer>
+                        <div>{quizItem.content}</div>
                       </div>
                     )),
                 )}
@@ -586,9 +593,7 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <WorkbookMathViewer
-                          data={quizItem.content}
-                        ></WorkbookMathViewer>
+                        <div>{quizItem.content}</div>
                       </div>
                     )),
                 )}
@@ -602,9 +607,7 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <WorkbookMathViewer
-                          data={quizItem.content}
-                        ></WorkbookMathViewer>
+                        <div>{quizItem.content}</div>
 
                         {quizItemList.quizItemList
                           .filter(
@@ -613,9 +616,7 @@ export function Step3() {
                           )
                           .map((exampleItem: any, exampleIndex: number) => (
                             <div key={`example-${index}-${exampleIndex}`}>
-                              <WorkbookMathViewer
-                                data={exampleItem.content}
-                              ></WorkbookMathViewer>
+                              <div>{exampleItem.content}</div>
                             </div>
                           ))}
 
@@ -625,9 +626,7 @@ export function Step3() {
                           )
                           .map((answerItem: any, answerIndex: number) => (
                             <div key={`answer-${index}-${answerIndex}`}>
-                              <WorkbookMathViewer
-                                data={answerItem.content}
-                              ></WorkbookMathViewer>
+                              <div>{answerItem.content}</div>
                             </div>
                           ))}
                       </div>
