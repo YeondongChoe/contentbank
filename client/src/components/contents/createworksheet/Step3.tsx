@@ -553,7 +553,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <MathJaxWrapper key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     )),
                 )}
@@ -567,7 +569,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'ANSWER')
                     .map((quizItem: any, index: number) => (
                       <MathJaxWrapper key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     )),
                 )}
@@ -581,7 +585,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <MathJaxWrapper key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                       </MathJaxWrapper>
                     )),
                 )}
@@ -595,7 +601,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <MathJaxWrapper key={index}>
-                        <p>{quizItem.content}</p>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
 
                         {quizItemList.quizItemList
                           .filter(
@@ -606,7 +614,9 @@ export function Step3() {
                             <MathJaxWrapper
                               key={`example-${index}-${exampleIndex}`}
                             >
-                              <p>{exampleItem.content}</p>
+                              <WorkbookMathViewer
+                                data={exampleItem.content}
+                              ></WorkbookMathViewer>
                             </MathJaxWrapper>
                           ))}
 
@@ -618,7 +628,9 @@ export function Step3() {
                             <MathJaxWrapper
                               key={`answer-${index}-${answerIndex}`}
                             >
-                              <p>{answerItem.content}</p>
+                              <WorkbookMathViewer
+                                data={answerItem.content}
+                              ></WorkbookMathViewer>
                             </MathJaxWrapper>
                           ))}
                       </MathJaxWrapper>
