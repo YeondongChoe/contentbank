@@ -182,24 +182,24 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       if (
         !leftFull &&
         leftItemCount < leftMaxItems &&
-        leftHeight + item.height <= 800
+        leftHeight + item.height <= 1200
       ) {
         currentPage.leftArray.push(item);
         leftHeight += item.height;
         leftItemCount++;
-        if (leftHeight + item.height > 800 || leftItemCount >= leftMaxItems) {
+        if (leftHeight + item.height > 1200 || leftItemCount >= leftMaxItems) {
           leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
         }
       } else if (
         !rightFull &&
         rightItemCount < rightMaxItems &&
-        rightHeight + item.height <= 800
+        rightHeight + item.height <= 1200
       ) {
         currentPage.rightArray.push(item);
         rightHeight += item.height;
         rightItemCount++;
         if (
-          rightHeight + item.height > 800 ||
+          rightHeight + item.height > 1200 ||
           rightItemCount >= rightMaxItems
         ) {
           rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
@@ -219,24 +219,27 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         if (
           !leftFull &&
           leftItemCount < leftMaxItems &&
-          leftHeight + item.height <= 800
+          leftHeight + item.height <= 1200
         ) {
           currentPage.leftArray.push(item);
           leftHeight += item.height;
           leftItemCount++;
-          if (leftHeight + item.height > 800 || leftItemCount >= leftMaxItems) {
+          if (
+            leftHeight + item.height > 1200 ||
+            leftItemCount >= leftMaxItems
+          ) {
             leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
           }
         } else if (
           !rightFull &&
           rightItemCount < rightMaxItems &&
-          rightHeight + item.height <= 800
+          rightHeight + item.height <= 1200
         ) {
           currentPage.rightArray.push(item);
           rightHeight += item.height;
           rightItemCount++;
           if (
-            rightHeight + item.height > 800 ||
+            rightHeight + item.height > 1200 ||
             rightItemCount >= rightMaxItems
           ) {
             rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
