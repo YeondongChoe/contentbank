@@ -512,7 +512,7 @@ export function Step3() {
     if (linesMatch) {
       const lines = parseInt(linesMatch[1], 10); // '1줄'에서 1을 추출하여 숫자로 변환
       setItemHeights(
-        originalHeightsRef.current.map((height) => height + 30 * lines),
+        originalHeightsRef.current.map((height) => height + 50 * lines),
       );
     }
   };
