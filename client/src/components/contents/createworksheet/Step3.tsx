@@ -525,9 +525,9 @@ export function Step3() {
           const childElement = child as HTMLElement;
           const height = childElement.offsetHeight;
 
-          if (height > 300) {
-            childElement.style.height = '300px';
-            return 300;
+          if (height > 400) {
+            childElement.style.height = '400px';
+            return 400;
           }
 
           return height;

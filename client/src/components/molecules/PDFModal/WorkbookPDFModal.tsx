@@ -341,6 +341,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       <MathViewerWrapperA
                                         key={i}
                                         height={quizItemList.height as number}
+                                        padding={
+                                          assign === '4'
+                                            ? '0 0 600px 0'
+                                            : assign === '6'
+                                              ? '0 0 400px 0'
+                                              : ''
+                                        }
                                       >
                                         {isQuizType && (
                                           <ContentTitleA>
@@ -393,6 +400,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       <MathViewerWrapperA
                                         key={i}
                                         height={quizItemList.height as number}
+                                        padding={
+                                          assign === '4'
+                                            ? '0 0 600px 0'
+                                            : assign === '6'
+                                              ? '0 0 400px 0'
+                                              : ''
+                                        }
                                       >
                                         {isQuizType && (
                                           <ContentTitleA>
@@ -814,9 +828,10 @@ const WorksheetBodyRightA = styled.div`
   flex-direction: column;
 `;
 //각 아이템
-const MathViewerWrapperA = styled.div<{ height?: number }>`
+const MathViewerWrapperA = styled.div<{ height?: number; padding: string }>`
   width: 400px;
   height: ${({ height }) => `${height}px`};
+  padding: ${({ padding }) => `${padding}`};
   margin-bottom: 40px;
   font-size: 12px;
 `;
