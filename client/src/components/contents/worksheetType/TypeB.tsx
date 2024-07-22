@@ -36,7 +36,7 @@ export const TypeB = ({
 }: TypeBProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-
+  // console.log(pages);
   useEffect(() => {
     if (initialItems) {
       setQuizItemList(initialItems);
@@ -264,7 +264,7 @@ export const TypeB = ({
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
-                              ? '0 0 400px 0'
+                              ? '0 0 200px 0'
                               : ''
                         }
                       >
@@ -309,7 +309,7 @@ export const TypeB = ({
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
-                              ? '0 0 400px 0'
+                              ? '0 0 200px 0'
                               : ''
                         }
                       >
