@@ -43,7 +43,7 @@ export function Step3() {
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
-
+  console.log(itemHeights);
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
@@ -524,6 +524,7 @@ export function Step3() {
         const heights = Array.from(measureRef.current.children).map(
           (child) => (child as HTMLElement).offsetHeight,
         );
+        console.log(heights);
         setItemHeights(heights);
         originalHeightsRef.current = heights;
       }
@@ -552,11 +553,11 @@ export function Step3() {
                   quizItemList.quizItemList
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
-                      <MathJaxWrapper key={index}>
+                      <div key={index}>
                         <WorkbookMathViewer
                           data={quizItem.content}
                         ></WorkbookMathViewer>
-                      </MathJaxWrapper>
+                      </div>
                     )),
                 )}
             </>
@@ -568,11 +569,11 @@ export function Step3() {
                   quizItemList.quizItemList
                     .filter((quizItem: any) => quizItem.type === 'ANSWER')
                     .map((quizItem: any, index: number) => (
-                      <MathJaxWrapper key={index}>
+                      <div key={index}>
                         <WorkbookMathViewer
                           data={quizItem.content}
                         ></WorkbookMathViewer>
-                      </MathJaxWrapper>
+                      </div>
                     )),
                 )}
             </>
@@ -584,11 +585,11 @@ export function Step3() {
                   quizItemList.quizItemList
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
-                      <MathJaxWrapper key={index}>
+                      <div key={index}>
                         <WorkbookMathViewer
                           data={quizItem.content}
                         ></WorkbookMathViewer>
-                      </MathJaxWrapper>
+                      </div>
                     )),
                 )}
             </>
@@ -600,7 +601,7 @@ export function Step3() {
                   quizItemList.quizItemList
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
-                      <MathJaxWrapper key={index}>
+                      <div key={index}>
                         <WorkbookMathViewer
                           data={quizItem.content}
                         ></WorkbookMathViewer>
@@ -611,13 +612,11 @@ export function Step3() {
                               exampleItem.type === 'EXAMPLE',
                           )
                           .map((exampleItem: any, exampleIndex: number) => (
-                            <MathJaxWrapper
-                              key={`example-${index}-${exampleIndex}`}
-                            >
+                            <div key={`example-${index}-${exampleIndex}`}>
                               <WorkbookMathViewer
                                 data={exampleItem.content}
                               ></WorkbookMathViewer>
-                            </MathJaxWrapper>
+                            </div>
                           ))}
 
                         {quizItemList.quizItemList
@@ -625,15 +624,13 @@ export function Step3() {
                             (answerItem: any) => answerItem.type === 'ANSWER',
                           )
                           .map((answerItem: any, answerIndex: number) => (
-                            <MathJaxWrapper
-                              key={`answer-${index}-${answerIndex}`}
-                            >
+                            <div key={`answer-${index}-${answerIndex}`}>
                               <WorkbookMathViewer
                                 data={answerItem.content}
                               ></WorkbookMathViewer>
-                            </MathJaxWrapper>
+                            </div>
                           ))}
-                      </MathJaxWrapper>
+                      </div>
                     )),
                 )}
             </>
