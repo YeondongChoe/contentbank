@@ -124,9 +124,9 @@ aside {
   align-items: center;
 }
 .bookmarkAddBtn {
-  width: 30px;
-  height: 30px;
-  border-radius: 99px;
+  width: 40px;
+  height: 38px;
+  /* border-radius: 99px; */
   border: none;
 }
 /* .bookmark_list {
@@ -183,6 +183,10 @@ aside {
 .sketch_menu_wrap {
   position: relative;
   display: flex;
+}
+.pc_sketch_menu_wrap {
+  display: flex;
+  position: relative;
 }
 
 /* ---------------------------- */
@@ -242,6 +246,7 @@ aside {
 #menu_btn_wrap {
   display: flex;
   margin-left: 10px;
+  align-items: center;
 }
 #menu_btn_wrap img {
   width: 23px;
@@ -305,7 +310,9 @@ aside {
 }
 
 #key_container {
-  width: 800px;
+  /* width: 800px; */
+  /* height: 220px;
+  overflow-y: auto; */
 }
 .key_layer {
   display: flex;
@@ -323,6 +330,7 @@ aside {
   position: relative;
   font-size: 18px;
 }
+
 .used_key,
 .bookmark_key {
   border: none;
@@ -378,8 +386,8 @@ aside {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 1.6px 1.6px 2px rgba(39, 40, 71, 0.2),
-    -1.6px -1.6px 2px rgba(255, 255, 255, 0.9);
+  box-shadow: 1.2 1.2 1.6px rgba(39, 40, 71, 0.2),
+    -1.2 -1.2 1.6px rgba(255, 255, 255, 0.9);
   background-color: #f5f5f5;
   border: none;
 }
@@ -492,11 +500,6 @@ aside {
 .bookmark_regist_open:hover {
   box-shadow: 0 0 5px rgb(16, 222, 2);
 }
-.bookmark_add_active {
-  background-color: red;
-  color: white;
-  border: none;
-}
 
 /* @keyframes를 사용하여 그림자 애니메이션 정의 */
 @keyframes shadowPulse {
@@ -510,20 +513,39 @@ aside {
 
 /* editor_pc v =================================================== */
 .pc_editor_container {
-  width: 500px;
-  height: 600px;
-  padding: 12px;
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  cursor: move;
+  width: 470px;
+  height: 530px;
+  border: 12px solid white;
   background-color: white;
   border-radius: 10px;
 }
 .pc_display_container {
-  position: relative;
+  /* position: relative; */
+}
+#pc_used_btn_wrap {
+  height: 50px;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pc_key_container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  height: 320px;
+  overflow-y: auto;
 }
 .pc_editor_input_btn {
   position: absolute;
-  right: 40px;
+  right: 14px;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(0, -50%);
   border: none;
   border-radius: 5px;
   z-index: 9;
@@ -531,4 +553,81 @@ aside {
 .pc_editor_input_btn:hover {
   font-size: larger;
   font-weight: 500;
+}
+.pc_key {
+  border: none;
+  border-radius: 6px;
+  width: 50px;
+  height: 50px;
+  margin: 6px;
+  /* border: 3px solid white; */
+  box-shadow: 2px 2px 3px rgba(39, 40, 71, 0.2),
+    -2px -2px 4px rgba(255, 255, 255, 0.9);
+  position: relative;
+  font-size: 18px;
+}
+.pc_key > p,
+.pc_key > img {
+  pointer-events: none;
+}
+.pc_keyboard_box {
+  /* display: flex; */
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.pc_itex_editor_close {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%, 0);
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  opacity: 40%;
+}
+.pc_itex_editor_close:hover {
+  opacity: 100%;
+}
+#pc_input_menu {
+  /* position: relative; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 6px 0;
+}
+.pc_clear_btn {
+  /* position: absolute;
+  top: 0;
+  right: 10px; */
+}
+.already {
+  opacity: 50%;
+  pointer-events: none;
+  box-shadow: 1px 1px 3px red, -1px -1px 3px red;
+}
+.delete_active:hover {
+  box-shadow: 1px 1px 3px red, -1px -1px 3px red;
+}
+.bookmark_add_active {
+  background-color: red;
+  color: white;
+  border: none;
+}
+.bookmark_delete_active {
+  background-color: red;
+}
+.pc_ocr_mode_active {
+  width: 665px;
+  height: 355px;
+}
+.pc_ocr_eqn_insert {
+  position: absolute;
+  right: 0;
+  top: 0;
+  /* transform: translate(0, -50%); */
+  border: none;
+  border-radius: 5px;
+  z-index: 9;
 }

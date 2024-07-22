@@ -444,7 +444,7 @@
       { "e": true, "d": "itex_equiv" },
       { "d": "itex_addarray" },
       {
-        "d": "itex_overline",
+        "d": "itex_overdot",
         "a": [
           { "d": "itex_overrightarrow" },
           { "d": "itex_overleftarrow" },
@@ -476,7 +476,7 @@
     ],
     "key_layer_4": [
       { "s": true, "e": true, "c": "2", "d": "itex_shift" },
-      { "d": "itex_abs", "a": [{ "d": "25CE" }] },
+      { "d": "itex_abs" },
       { "d": "itex_syseq" },
       { "d": "itex_arch" },
       {

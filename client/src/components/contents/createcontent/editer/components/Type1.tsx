@@ -76,6 +76,10 @@ const Type1 = () => {
     const initComponent = () => {
       dynamicallyLoadScripts(initialScripts, () => {
         console.log('Initial scripts loaded');
+
+        // const html = await fetchHtmlContent();
+        // setHtmlContent(html);
+
         dynamicallyLoadScripts(subsequentScripts, () => {
           console.log('Subsequent scripts loaded');
           if (ocrIframeContainer.current) {
@@ -285,7 +289,15 @@ const Type1 = () => {
         <div className="col-lg-4 p-0 tiny_wrap">
           <textarea id="tinyeditor"></textarea>
           <div className="save_exam_btn_wrap">
-            <button id="exam_save">문항 저장</button>
+            <button
+              id="exam_save"
+              onClick={(e) => {
+                console.log(e);
+                // window.saveExamData();
+              }}
+            >
+              문항 저장
+            </button>
           </div>
           <div className="poc_checker_block"></div>
         </div>

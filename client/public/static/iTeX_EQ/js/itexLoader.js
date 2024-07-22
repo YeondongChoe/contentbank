@@ -23,6 +23,7 @@
       "/static/iTeX_EQ/js/ds.min.js",
       "/static/iTeX_EQ/js/hangul.min.js",
       "/static/iTeX_EQ/js/itex_eq_common.js?v=0.1",
+      // "/static/iTeX_EQ/js/itex_eq_common (1).js?v=0.1",
       editorType
         ? "/static/iTeX_EQ/js/itex_keyboard_v3_pc.js"
         : "/static/iTeX_EQ/js/itex_keyboard_v3.js",
@@ -82,7 +83,10 @@
 
     // 키보드 데이터 불러오기
     try {
-      await iTeXEQ.fetchJsonFile(iTeXEQ.keyDataFile);
+      const key_data_file = editorType
+        ? "/static/iTeX_EQ/key_data_pc.json"
+        : "/static/iTeX_EQ/key_data.json";
+      await iTeXEQ.fetchJsonFile(key_data_file);
     } catch (error) {
       console.log(error);
       console.log("json 데이터 불러오기 실패");
