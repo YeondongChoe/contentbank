@@ -117,24 +117,24 @@ export const TypeA = ({
       if (
         !leftFull &&
         leftItemCount < leftMaxItems &&
-        leftHeight + item.height <= 1000
+        leftHeight + item.height <= 800
       ) {
         currentPage.leftArray.push(item);
         leftHeight += item.height;
         leftItemCount++;
-        if (leftHeight + item.height > 1000 || leftItemCount >= leftMaxItems) {
+        if (leftHeight + item.height > 800 || leftItemCount >= leftMaxItems) {
           leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
         }
       } else if (
         !rightFull &&
         rightItemCount < rightMaxItems &&
-        rightHeight + item.height <= 1000
+        rightHeight + item.height <= 800
       ) {
         currentPage.rightArray.push(item);
         rightHeight += item.height;
         rightItemCount++;
         if (
-          rightHeight + item.height > 1000 ||
+          rightHeight + item.height > 800 ||
           rightItemCount >= rightMaxItems
         ) {
           rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
@@ -154,27 +154,24 @@ export const TypeA = ({
         if (
           !leftFull &&
           leftItemCount < leftMaxItems &&
-          leftHeight + item.height <= 1000
+          leftHeight + item.height <= 800
         ) {
           currentPage.leftArray.push(item);
           leftHeight += item.height;
           leftItemCount++;
-          if (
-            leftHeight + item.height > 1000 ||
-            leftItemCount >= leftMaxItems
-          ) {
+          if (leftHeight + item.height > 800 || leftItemCount >= leftMaxItems) {
             leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
           }
         } else if (
           !rightFull &&
           rightItemCount < rightMaxItems &&
-          rightHeight + item.height <= 1000
+          rightHeight + item.height <= 800
         ) {
           currentPage.rightArray.push(item);
           rightHeight += item.height;
           rightItemCount++;
           if (
-            rightHeight + item.height > 1000 ||
+            rightHeight + item.height > 800 ||
             rightItemCount >= rightMaxItems
           ) {
             rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
