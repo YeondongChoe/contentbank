@@ -100,7 +100,7 @@ export const TypeA = ({
           rightMaxItems = 0;
           break;
         case '6문제':
-          leftMaxItems = 8;
+          leftMaxItems = 6;
           rightMaxItems = 0;
           break;
         default:
@@ -273,7 +273,7 @@ export const TypeA = ({
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
-                              ? '0 0 400px 0'
+                              ? '0 0 200px 0'
                               : ''
                         }
                       >
@@ -317,7 +317,7 @@ export const TypeA = ({
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
-                              ? '0 0 400px 0'
+                              ? '0 0 200px 0'
                               : ''
                         }
                       >
