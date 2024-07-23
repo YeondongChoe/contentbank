@@ -33,28 +33,13 @@ export function ContentHTMLUpload({
   const [content, setContent] = useState<string[]>([]);
   const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
 
+  const [editorData, setEditorData] = useState(null);
   //셀렉트 값
   const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
-
-  //TODO : 임시로 퀴즈데이터 이미 등록된 데이터로 불러옴
-  //       나중에 등록버튼으로 등록 완료된 데이터로 전역저장후 다시setQuestionList값으로 넣기
-  //TODO : 수정 팝업으로 열렸을시 - 전역에 체크박스데이터 저장후 열릴때 setQuestionList에 값넣기
-  // const getQuiz = async () => {
-  //   const res = await quizService.get(`/v1/quiz`);
-  //   console.log(`getQuiz 결과값`, res.data.data);
-  //   return res.data.data;
-  // };
-  // const { data: quizData } = useQuery({
-  //   queryKey: ['get-quizList'],
-  //   queryFn: getQuiz,
-  //   meta: {
-  //     errorMessage: 'get-quizList 에러 메세지',
-  //   },
-  // });
 
   useEffect(() => {
     if (checkedList) {
@@ -273,7 +258,7 @@ export function ContentHTMLUpload({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile type={type} />
+              <EditerOneFile type={type} setEditorData={setEditorData} />
             </EditWrapper>
 
             <BackgroundWrapper>

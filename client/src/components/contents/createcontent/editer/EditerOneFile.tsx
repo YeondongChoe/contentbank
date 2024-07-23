@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Loader } from '../../../../components/atom';
@@ -76,16 +75,16 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
 export function EditerOneFile({
   type,
   tabView,
-  state,
+  setEditorData,
 }: {
   type?: string;
   tabView?: string;
-  state?: string;
+  setEditorData: React.Dispatch<React.SetStateAction<any>>;
 }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
   const [jsonData, setJsonData] = useState<string | null>(null);
   // const [jsonStringData, setJsonStringData] = useState<string | null>(null);
-  const [jsonDataObject, setJsonDataObject] = useState<any>(null);
+  // const [jsonDataObject, setJsonDataObject] = useState<any>(null);
 
   // const { data, loading, error } = useFetchJsonData(jsonUrl);
   // const { response, loading, error, postJsonData } = usePostJsonData('보낼 데이터');
@@ -100,14 +99,10 @@ export function EditerOneFile({
     if (!jsonData) return;
     // const jsonString = JSON.stringify(jsonData);
     // setJsonStringData(jsonString);
-    setJsonDataObject(jsonData);
-  }, [jsonData]);
-
-  useEffect(() => {
-    console.log('jsonDataObject', jsonDataObject);
-    // console.log('jsonStringData', jsonStringData);
     // 값이 저장될때 서버에도 동일한 데이터 저장 문항 생성
-  }, [jsonDataObject]);
+
+    setEditorData(jsonData);
+  }, [jsonData]);
 
   useEffect(() => {
     console.log('type', type);

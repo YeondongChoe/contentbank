@@ -35,6 +35,7 @@ export function ContentCreating({
   const [content, setContent] = useState<string[]>([]);
   const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
 
+  const [editorData, setEditorData] = useState(null);
   //셀렉트 값
   const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
@@ -275,7 +276,11 @@ export function ContentCreating({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile tabView={tabView} type={type} />
+              <EditerOneFile
+                tabView={tabView}
+                type={type}
+                setEditorData={setEditorData}
+              />
             </EditWrapper>
 
             <BackgroundWrapper>
