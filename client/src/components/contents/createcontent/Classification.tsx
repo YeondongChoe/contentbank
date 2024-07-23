@@ -1037,6 +1037,9 @@ export function Classification({
     setHighlightIndex(-1);
   }, [itemTree, searchValue]);
 
+  // 탭바뀔 때 에디터
+  useEffect(() => {}, [setTabView]);
+
   return (
     <Container>
       <ResizeLayoutWrapper>

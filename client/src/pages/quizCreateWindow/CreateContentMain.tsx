@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
-// import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu } from '../../components';
@@ -13,14 +13,14 @@ import {
   ContentCreating,
   ContentFileUpload,
   ContentHTMLUpload,
-  Labeling,
 } from '../../components/contents/createcontent';
+import { editorTypeAtom } from '../../store/utilAtom';
 
 export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
-
   const query = new URLSearchParams(location.search);
+  const [editorType, setEditorType] = useRecoilState(editorTypeAtom);
   const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
   const menuList = [
@@ -72,6 +72,9 @@ export function CreateContentMain() {
       console.log('query', query.get('state')); // 수정일시 edit 생성일시 create
       // 전역에 문항리스트 데이터 저장
     }
+    return () => {
+      setEditorType(''); // 페이지 나갈 시 editorType 초기화
+    };
   }, []);
 
   useEffect(() => {
@@ -96,6 +99,8 @@ export function CreateContentMain() {
         window.removeEventListener('beforeunload', handleBeforeUnload);
       };
     }
+
+    console.log('editorType-----------', editorType);
   }, [tabView]);
 
   return (
@@ -135,17 +140,41 @@ export function CreateContentMain() {
       {tabView === 'DT & Editing' && (
         <ContentBox>
           {query.get('state') === 'edit' ? (
-            <ContentFileUpload setTabView={setTabView} />
+            <ContentFileUpload setTabView={setTabView} type={'type1'} />
           ) : (
             <>
-              {isUploadFile && isUploadFile === 'createcontent' && (
-                <ContentCreating setTabView={setTabView} tabView={tabView} />
-              )}
-              {isUploadFile && isUploadFile === 'uploadfile' && (
-                <ContentFileUpload setTabView={setTabView} />
-              )}
-              {isUploadFile && isUploadFile === 'uploadhtml' && (
-                <ContentHTMLUpload setTabView={setTabView} />
+              {editorType == '' ? (
+                <>
+                  {isUploadFile && isUploadFile === 'uploadfile' && (
+                    <ContentFileUpload setTabView={setTabView} type={'type1'} />
+                  )}
+                  {isUploadFile && isUploadFile === 'uploadhtml' && (
+                    <ContentHTMLUpload setTabView={setTabView} type={'type2'} />
+                  )}
+                  {isUploadFile && isUploadFile === 'createcontent' && (
+                    <ContentCreating
+                      setTabView={setTabView}
+                      tabView={tabView}
+                      type={'type3'}
+                    />
+                  )}
+                </>
+              ) : (
+                <>
+                  {editorType == 'type1' && (
+                    <ContentFileUpload setTabView={setTabView} type={'type1'} />
+                  )}
+                  {editorType == 'type2' && (
+                    <ContentHTMLUpload setTabView={setTabView} type={'type2'} />
+                  )}
+                  {editorType == 'type3' && (
+                    <ContentCreating
+                      setTabView={setTabView}
+                      tabView={tabView}
+                      type={'type3'}
+                    />
+                  )}
+                </>
               )}
             </>
           )}
