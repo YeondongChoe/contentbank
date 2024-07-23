@@ -278,10 +278,12 @@ export const TypeB = ({
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
-                            {quizItemList.score && quizItemList.score !== 0 && (
+                            {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]
                               </ScoreWrapper>
+                            ) : (
+                              <></>
                             )}
                           </MathJaxWrapper>
                         </EachMathViewer>
@@ -323,10 +325,12 @@ export const TypeB = ({
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
-                            {quizItemList.score && quizItemList.score !== 0 && (
+                            {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]
                               </ScoreWrapper>
+                            ) : (
+                              <></>
                             )}
                           </MathJaxWrapper>
                         </EachMathViewer>

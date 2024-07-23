@@ -36,7 +36,7 @@ export const TypeA = ({
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-
+  //console.log(pages);
   useEffect(() => {
     if (initialItems) {
       setQuizItemList(initialItems);
@@ -287,10 +287,12 @@ export const TypeA = ({
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
-                            {quizItemList.score && quizItemList.score !== 0 && (
+                            {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]
                               </ScoreWrapper>
+                            ) : (
+                              <></>
                             )}
                           </MathJaxWrapper>
                         </EachMathViewer>
@@ -331,10 +333,12 @@ export const TypeA = ({
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
-                            {quizItemList.score && quizItemList.score !== 0 && (
+                            {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]
                               </ScoreWrapper>
+                            ) : (
+                              <></>
                             )}
                           </MathJaxWrapper>
                         </EachMathViewer>

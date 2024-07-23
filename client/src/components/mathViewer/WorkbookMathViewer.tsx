@@ -43,6 +43,7 @@ export function WorkbookMathViewer({
   isSetp3,
   answerCommentary,
 }: WorkbookMathViewerProps) {
+  //console.log(data.score);
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
 

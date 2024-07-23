@@ -371,10 +371,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                         : '문제만'
                                               }
                                             ></WorkbookMathViewer>
-                                            {quizItemList.score !== 0 && (
+                                            {quizItemList.score &&
+                                            quizItemList.score !== 0 ? (
                                               <ScoreWrapper>
                                                 [{quizItemList.score}점]
                                               </ScoreWrapper>
+                                            ) : (
+                                              <></>
                                             )}
                                           </MathJaxWrapperA>
                                         </EachMathViewerA>
@@ -430,10 +433,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                         : '문제만'
                                               }
                                             ></WorkbookMathViewer>
-                                            {quizItemList.score !== 0 && (
+                                            {quizItemList.score &&
+                                            quizItemList.score !== 0 ? (
                                               <ScoreWrapper>
                                                 [{quizItemList.score}점]
                                               </ScoreWrapper>
+                                            ) : (
+                                              <></>
                                             )}
                                           </MathJaxWrapperA>
                                         </EachMathViewerA>
