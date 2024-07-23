@@ -211,7 +211,6 @@ export function Step1() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
-  console.log(unitClassificationList);
 
   const [selectedClassification, setSelectedClassification] = useState<
     UnitClassificationType[]
@@ -1342,10 +1341,14 @@ export function Step1() {
     setQuestionNum('');
     setIsSelectTextbook(true);
     setIsSelectTextbookContent(false);
-    setClickedIdx(0);
     setIsChoice(false);
     setProcessTextbookData([]);
+    setTextbookList([]);
     setSelectedTextbookIdx(null);
+    setSelectedTextbook([]);
+    setClickedIdx(null);
+    setClickedPageIdx(null);
+    textbookDataRefetch();
   };
   // 시중교재 불러오기 api
   const getTextbook = async () => {
@@ -1362,8 +1365,12 @@ export function Step1() {
     },
     enabled: false,
   });
-  const textbookList: TextbookInfoType[] =
-    textbookData?.data.data.textbookList || [];
+  const [textbookList, setTextbookList] = useState<TextbookInfoType[]>([]);
+  useEffect(() => {
+    if (textbookData) {
+      setTextbookList(textbookData?.data.data.textbookList);
+    }
+  }, [textbookData]);
 
   //조건값이 바뀔때 재검색
   useEffect(() => {
@@ -1407,8 +1414,15 @@ export function Step1() {
     }
   }, [selectedTextbook]);
 
+  //초기 셀렉트 없게 하기
+  useEffect(() => {
+    setClickedIdx(null);
+    setClickedPageIdx(null);
+  }, [tabVeiw]);
+
   // 선택시 배경색이 나타남
   const choiceType = (idx: number) => {
+    console.log(idx);
     if (clickedIdx !== idx) {
       setClickedIdx(idx);
       setIsChoice(!isChoice);
@@ -1417,6 +1431,7 @@ export function Step1() {
       setIsChoice(!isChoice);
     }
   };
+
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
   // 선택된 문항 코드 넣기
   const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
@@ -1662,12 +1677,18 @@ export function Step1() {
     setExamOption(null);
     setProcessCastQuizListData([]);
     setProcessCastListData([]);
+    setCastQuizListData([]);
+    setCastListData([]);
   };
 
   // 수능 모의고사 문항 get api 선택 완료
   const selectExam = () => {
     setIsDropdown(false);
     setIncludeQuizList([]);
+    setProcessCastQuizListData([]);
+    setProcessCastListData([]);
+    setCastQuizListData([]);
+    setCastListData([]);
     castDataRefetch();
   };
   const getcsat = async () => {
@@ -1694,7 +1715,16 @@ export function Step1() {
   });
 
   //문항 번호로 추가
-  const castQuizListData: CastQuizListType[] = castData?.data.data.quizList;
+  const [castQuizListData, setCastQuizListData] = useState<CastQuizListType[]>(
+    [],
+  );
+  useEffect(() => {
+    if (castData) {
+      setCastQuizListData(castData?.data.data.quizList);
+    }
+  }, [castData]);
+  console.log(castData);
+  console.log(castQuizListData);
   //문항 번호로 추가 데이터 가공
   const [processCastQuizListData, setProcessCastQuizListData] = useState<
     ProcessCsatQuizListDataType[]
@@ -1765,17 +1795,25 @@ export function Step1() {
         id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
         ...mock,
         isChecked: false,
-        quizNumberList: mock.quizNumberList.map((quiz) => ({
-          ...quiz,
-          isChecked: false,
-        })),
+        quizNumberList: mock.quizNumberList
+          .map((quiz) => ({
+            ...quiz,
+            isChecked: false,
+          }))
+          .sort((a, b) => Number(a.quizNumber) - Number(b.quizNumber)), // quizNumber로 정렬
       }));
       setProcessCastQuizListData(initialData);
     }
   }, [castQuizListData, castDataRefetch]);
+  console.log(processCastQuizListData);
 
   //단원으로 추가
-  const castListData: csatListType[] = castData?.data.data.csatList;
+  const [castListData, setCastListData] = useState<csatListType[]>([]);
+  useEffect(() => {
+    if (castData) {
+      setCastListData(castData?.data.data.csatList);
+    }
+  }, [castData]);
   //단원으로 추가 데이터 가공
   const [processCastListData, setProcessCastListData] = useState<
     ProcessCsatListDataType[]
@@ -2385,6 +2423,9 @@ export function Step1() {
     setIncludeQuizList([]);
     //모의시험 버튼 초기화
     setProcessCastQuizListData([]);
+    setProcessCastListData([]);
+    setCastQuizListData([]);
+    setCastListData([]);
     setIsDropdown(false);
     setExamGrade([]);
     setExamYear([]);
@@ -4733,110 +4774,112 @@ export function Step1() {
                     <>
                       {!postStep1Pending ? (
                         <>
-                          {examOption === 0 && (
-                            <MockExamContentWrapper>
-                              {processCastQuizListData?.map((mock) => (
-                                <MockExamBox key={mock.id}>
-                                  <MockExamLabelWrapper>
-                                    <CheckBoxWrapper>
-                                      <CheckBox
-                                        isChecked={mock.isChecked}
-                                        width="15"
-                                        height="15"
-                                        onClick={() =>
-                                          toggleCheckAllCastQuiz(
-                                            mock.id,
-                                            mock.quizNumberList.map(
-                                              (item) => item.code,
-                                            ),
-                                            mock.isChecked,
-                                          )
-                                        }
-                                      ></CheckBox>
-                                      <Label
-                                        value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
-                                        width="150px"
-                                      />
-                                    </CheckBoxWrapper>
-                                    <CloseIconWrapper>
-                                      <IoMdClose
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() =>
-                                          removeMockexam(mock.id, '문항')
-                                        }
-                                      />
-                                    </CloseIconWrapper>
-                                  </MockExamLabelWrapper>
-                                  <MockExamContent>
-                                    {mock.quizNumberList.map((el, i) => (
-                                      <CheckBoxWrapper key={i}>
+                          {examOption === 0 &&
+                            processCastQuizListData.length > 0 && (
+                              <MockExamContentWrapper>
+                                {processCastQuizListData?.map((mock) => (
+                                  <MockExamBox key={mock.id}>
+                                    <MockExamLabelWrapper>
+                                      <CheckBoxWrapper>
                                         <CheckBox
-                                          isChecked={el.isChecked}
+                                          isChecked={mock.isChecked}
                                           width="15"
                                           height="15"
                                           onClick={() =>
-                                            toggleCheckPartialCastQuiz(
+                                            toggleCheckAllCastQuiz(
                                               mock.id,
-                                              el.quizNumber,
-                                              el.code,
-                                              el.isChecked,
+                                              mock.quizNumberList.map(
+                                                (item) => item.code,
+                                              ),
+                                              mock.isChecked,
                                             )
                                           }
                                         ></CheckBox>
                                         <Label
-                                          value={`${el.quizNumber}번`}
-                                          width="30px"
+                                          value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                          width="150px"
                                         />
                                       </CheckBoxWrapper>
-                                    ))}
-                                  </MockExamContent>
-                                </MockExamBox>
-                              ))}
-                            </MockExamContentWrapper>
-                          )}
-                          {examOption === 1 && (
-                            <MockExamContentWrapper>
-                              {processCastListData?.map((mock) => (
-                                <MockExamBox key={mock.id}>
-                                  <MockExamLabelWrapper>
-                                    <CheckBoxWrapper>
-                                      <CheckBox
-                                        isChecked={mock.isChecked}
-                                        width="15"
-                                        height="15"
-                                        onClick={() =>
-                                          toggleCheckAllCastList(
-                                            mock.id,
-                                            extractCodesFromHierarchicalData(
-                                              mock.nodeData.hierarchicalData,
-                                            ),
-                                            mock.isChecked,
-                                          )
-                                        }
-                                      ></CheckBox>
-                                      <Label
-                                        value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
-                                        width="150px"
-                                      />
-                                    </CheckBoxWrapper>
-                                    <CloseIconWrapper>
-                                      <IoMdClose
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() =>
-                                          removeMockexam(mock.id, '단원')
-                                        }
-                                      />
-                                    </CloseIconWrapper>
-                                  </MockExamLabelWrapper>
-                                  <MockExamContent>
-                                    {renderHierarchicalData(
-                                      mock.nodeData.hierarchicalData,
-                                    )}
-                                  </MockExamContent>
-                                </MockExamBox>
-                              ))}
-                            </MockExamContentWrapper>
-                          )}
+                                      <CloseIconWrapper>
+                                        <IoMdClose
+                                          style={{ cursor: 'pointer' }}
+                                          onClick={() =>
+                                            removeMockexam(mock.id, '문항')
+                                          }
+                                        />
+                                      </CloseIconWrapper>
+                                    </MockExamLabelWrapper>
+                                    <MockExamContent>
+                                      {mock.quizNumberList.map((el, i) => (
+                                        <CheckBoxWrapper key={i}>
+                                          <CheckBox
+                                            isChecked={el.isChecked}
+                                            width="15"
+                                            height="15"
+                                            onClick={() =>
+                                              toggleCheckPartialCastQuiz(
+                                                mock.id,
+                                                el.quizNumber,
+                                                el.code,
+                                                el.isChecked,
+                                              )
+                                            }
+                                          ></CheckBox>
+                                          <Label
+                                            value={`${el.quizNumber}번`}
+                                            width="30px"
+                                          />
+                                        </CheckBoxWrapper>
+                                      ))}
+                                    </MockExamContent>
+                                  </MockExamBox>
+                                ))}
+                              </MockExamContentWrapper>
+                            )}
+                          {examOption === 1 &&
+                            processCastListData.length > 0 && (
+                              <MockExamContentWrapper>
+                                {processCastListData?.map((mock) => (
+                                  <MockExamBox key={mock.id}>
+                                    <MockExamLabelWrapper>
+                                      <CheckBoxWrapper>
+                                        <CheckBox
+                                          isChecked={mock.isChecked}
+                                          width="15"
+                                          height="15"
+                                          onClick={() =>
+                                            toggleCheckAllCastList(
+                                              mock.id,
+                                              extractCodesFromHierarchicalData(
+                                                mock.nodeData.hierarchicalData,
+                                              ),
+                                              mock.isChecked,
+                                            )
+                                          }
+                                        ></CheckBox>
+                                        <Label
+                                          value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                          width="150px"
+                                        />
+                                      </CheckBoxWrapper>
+                                      <CloseIconWrapper>
+                                        <IoMdClose
+                                          style={{ cursor: 'pointer' }}
+                                          onClick={() =>
+                                            removeMockexam(mock.id, '단원')
+                                          }
+                                        />
+                                      </CloseIconWrapper>
+                                    </MockExamLabelWrapper>
+                                    <MockExamContent>
+                                      {renderHierarchicalData(
+                                        mock.nodeData.hierarchicalData,
+                                      )}
+                                    </MockExamContent>
+                                  </MockExamBox>
+                                ))}
+                              </MockExamContentWrapper>
+                            )}
                         </>
                       ) : (
                         <>
