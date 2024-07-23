@@ -25,14 +25,14 @@ export function CreateContentModal() {
   const goToPage = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const target = e.currentTarget.value;
     // 로컬스토리지에 보낼데이터 저장
-    const sendData = { data: target };
-    localStorage.setItem('sendData', JSON.stringify(sendData));
+    // const sendData = { data: target };
+    // localStorage.setItem('sendData', JSON.stringify(sendData));
 
     windowOpenHandler({
       name: 'createcontentmain',
       url: '/createcontentmain',
       $height: 850,
-      queryParams: { state: 'create' },
+      queryParams: { state: `${target}` },
     });
   };
 
