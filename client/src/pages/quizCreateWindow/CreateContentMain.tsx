@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { IoIosArrowBack, IoMdClose } from 'react-icons/io';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu } from '../../components';

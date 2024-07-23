@@ -21,6 +21,7 @@ import {
 } from '..';
 import { classificationInstance, quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
+import { quizListAtom } from '../../store/quizListAtom';
 import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
@@ -30,7 +31,7 @@ import { CreateContentModal } from './CreateContentModal';
 export function QuizCreateList() {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
-
+  const [quizList, setQuizList] = useRecoilState(quizListAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
@@ -329,6 +330,8 @@ export function QuizCreateList() {
   // 모달 연뒤 문항 생성 윈도우 이동
   const openCreateModal = () => {
     openModal(modalData);
+    // 수정시 체크리스트 전역데이터 초기화
+    setQuizList([]);
   };
   // 탭메뉴 클릭시 페이지네이션 초기화
   const changeTab = () => {

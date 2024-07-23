@@ -54,6 +54,10 @@ export function ContentFileUpload({
 
     if (storedQuizList) {
       setQuizList(JSON.parse(storedQuizList));
+
+      // 로컬스토리지 값 다받은 뒤 초기화
+      window.opener.localStorage.clear();
+      return;
     }
   }, []);
 
