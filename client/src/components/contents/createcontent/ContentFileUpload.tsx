@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { Button, Modal, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
+import { editorTypeAtom } from '../../../store/utilAtom';
 import { ItemCategoryType, QuizListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
@@ -19,11 +20,13 @@ import { OptionList } from './options/OptionList';
 
 export function ContentFileUpload({
   setTabView,
+  type,
 }: {
   setTabView: React.Dispatch<React.SetStateAction<string>>;
+  type: string;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-
+  const [editorType, setEditorType] = useRecoilState(editorTypeAtom);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
@@ -223,13 +226,17 @@ export function ContentFileUpload({
     }
   }, [selectedSubject, selectedCourse, selectedQuestionType, selectedSource]);
 
+  useEffect(() => {
+    setEditorType(type);
+  }, [setEditorType, type]);
+
   return (
     <Container>
       <ContentsWrapper>
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile type={'type1'} />
+              <EditerOneFile />
             </EditWrapper>
 
             <BackgroundWrapper>

@@ -312,7 +312,7 @@ const Type1 = ({
 
       <div className="tools_wrap eq_config_hidden">
         <div id="editor_container"></div>
-        <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>{' '}
+        <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>
         <div id="itexhml_board"></div>
         <div id="modal_block">
           <div className="sk-cube-grid">

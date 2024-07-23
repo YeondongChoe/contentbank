@@ -42,3 +42,9 @@ export const isEditWorkbookAtom = atom({
   key: 'isEditWorkbookAtom',
   default: 0,
 });
+
+// 등록 에디터 타입
+export const editorTypeAtom = atom({
+  key: 'editorTypeAtom',
+  default: '',
+});

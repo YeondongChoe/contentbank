@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Loader } from '../../../../components/atom';
 import { useFetchJsonData } from '../../../../hooks';
+import { editorTypeAtom } from '../../../../store/utilAtom';
 
 import Type1 from './components/Type1';
 import Type2 from './components/Type2';
@@ -73,18 +75,17 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
 // }
 
 export function EditerOneFile({
-  type,
   tabView,
   state,
 }: {
-  type: string;
   tabView?: string;
   state?: string;
 }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
   const [jsonData, setJsonData] = useState<string | null>(null);
-  const [jsonStringData, setJsonStringData] = useState<string | null>(null);
+  // const [jsonStringData, setJsonStringData] = useState<string | null>(null);
   const [jsonDataObject, setJsonDataObject] = useState<any>(null);
+  const [editorType, setEditorType] = useRecoilState(editorTypeAtom);
 
   // const { data, loading, error } = useFetchJsonData(jsonUrl);
   // const { response, loading, error, postJsonData } = usePostJsonData('보낼 데이터');
@@ -97,26 +98,28 @@ export function EditerOneFile({
 
   useEffect(() => {
     if (!jsonData) return;
-    const jsonString = JSON.stringify(jsonData);
-    setJsonStringData(jsonString);
+    // const jsonString = JSON.stringify(jsonData);
+    // setJsonStringData(jsonString);
     setJsonDataObject(jsonData);
   }, [jsonData]);
 
   useEffect(() => {
     console.log('jsonDataObject', jsonDataObject);
-    console.log('jsonStringData', jsonStringData);
+    // console.log('jsonStringData', jsonStringData);
     // 값이 저장될때 서버에도 동일한 데이터 저장 문항 생성
   }, [jsonDataObject]);
 
-  useEffect(() => {}, [type]);
-
+  useEffect(() => {
+    console.log('editorType', editorType);
+  }, [editorType]);
+  useEffect(() => {}, [tabView]);
   return (
     <Container>
       {isMathJaxLoaded ? (
         <>
-          {type === 'type1' && <Type1 setJsonData={setJsonData} />}
-          {type === 'type2' && <Type2 />}
-          {type === 'type3' && <Type3 setJsonData={setJsonData} />}
+          {editorType === 'type1' && <Type1 setJsonData={setJsonData} />}
+          {editorType === 'type2' && <Type2 />}
+          {editorType === 'type3' && <Type3 setJsonData={setJsonData} />}
         </>
       ) : (
         <LoaderWrapper>
