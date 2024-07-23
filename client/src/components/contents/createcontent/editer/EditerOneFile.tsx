@@ -6,7 +6,6 @@ import styled from 'styled-components';
 
 import { Loader } from '../../../../components/atom';
 import { useFetchJsonData } from '../../../../hooks';
-import { editorTypeAtom } from '../../../../store/utilAtom';
 
 import Type1 from './components/Type1';
 import Type2 from './components/Type2';
@@ -75,9 +74,11 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
 // }
 
 export function EditerOneFile({
+  type,
   tabView,
   state,
 }: {
+  type?: string;
   tabView?: string;
   state?: string;
 }) {
@@ -85,7 +86,6 @@ export function EditerOneFile({
   const [jsonData, setJsonData] = useState<string | null>(null);
   // const [jsonStringData, setJsonStringData] = useState<string | null>(null);
   const [jsonDataObject, setJsonDataObject] = useState<any>(null);
-  const [editorType, setEditorType] = useRecoilState(editorTypeAtom);
 
   // const { data, loading, error } = useFetchJsonData(jsonUrl);
   // const { response, loading, error, postJsonData } = usePostJsonData('보낼 데이터');
@@ -110,16 +110,16 @@ export function EditerOneFile({
   }, [jsonDataObject]);
 
   useEffect(() => {
-    console.log('editorType', editorType);
-  }, [editorType]);
+    console.log('type', type);
+  }, [type]);
   useEffect(() => {}, [tabView]);
   return (
     <Container>
       {isMathJaxLoaded ? (
         <>
-          {editorType === 'type1' && <Type1 setJsonData={setJsonData} />}
-          {editorType === 'type2' && <Type2 />}
-          {editorType === 'type3' && <Type3 setJsonData={setJsonData} />}
+          {type === 'type1' && <Type1 setJsonData={setJsonData} />}
+          {type === 'type2' && <Type2 />}
+          {type === 'type3' && <Type3 setJsonData={setJsonData} />}
         </>
       ) : (
         <LoaderWrapper>
