@@ -366,7 +366,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                     ? '정답문'
                                                     : itemType === 2
                                                       ? '문제+해설별도'
-                                                      : itemType === 0
+                                                      : itemType === 3
                                                         ? '문제+해설같이'
                                                         : '문제만'
                                               }
