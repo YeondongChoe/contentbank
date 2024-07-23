@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import styled from 'styled-components';
@@ -45,7 +45,6 @@ export function WorkbookMathViewer({
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
-  const mathContainerRef = useRef(null);
 
   const offLoader = () => {
     setDisplay('block');
@@ -72,20 +71,17 @@ export function WorkbookMathViewer({
 
   return (
     <>
-      {display === 'none' && <Loader height={'50px'} size="35px" />}
-      <MathJaxContext
-        version={3}
-        config={config}
-        onStartup={(mathJax) => {
-          console.log('MathJax startup:', mathJax);
-          setMathJax(mathJax);
-        }}
+      {display === 'none' && <Loader height="50px" size="35px" />}
+      <Component
+        display={display}
+        width={width}
+        height={height}
+        $padding={padding}
       >
-        <Component
-          display={display}
-          width={width}
-          height={height}
-          $padding={padding}
+        <MathJaxContext
+          version={3}
+          config={config}
+          //onStartup={(mathJax) => setMathJax(mathJax)}
         >
           <MathJaxWrapper>
             {isSetp3 && (
@@ -179,8 +175,8 @@ export function WorkbookMathViewer({
               )}
             </MathJax>
           </MathJaxWrapper>
-        </Component>
-      </MathJaxContext>
+        </MathJaxContext>
+      </Component>
     </>
   );
 }

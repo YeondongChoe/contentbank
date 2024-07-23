@@ -76,9 +76,9 @@ export const TypeA = ({
           leftMaxItems = 2;
           rightMaxItems = 2;
           break;
-        case '8문제':
-          leftMaxItems = 4;
-          rightMaxItems = 4;
+        case '6문제':
+          leftMaxItems = 3;
+          rightMaxItems = 3;
           break;
         default:
           leftMaxItems = Infinity; // Default behavior, unlimited items
@@ -99,7 +99,7 @@ export const TypeA = ({
           leftMaxItems = 4;
           rightMaxItems = 0;
           break;
-        case '8문제':
+        case '6문제':
           leftMaxItems = 8;
           rightMaxItems = 0;
           break;
@@ -269,6 +269,13 @@ export const TypeA = ({
                       <MathViewerWrapper
                         key={i}
                         height={quizItemList.height as number}
+                        padding={
+                          assign === '4문제'
+                            ? '0 0 600px 0'
+                            : assign === '6문제'
+                              ? '0 0 400px 0'
+                              : ''
+                        }
                       >
                         {isContentTypeTitle && (
                           <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
@@ -306,6 +313,13 @@ export const TypeA = ({
                       <MathViewerWrapper
                         key={i}
                         height={quizItemList.height as number}
+                        padding={
+                          assign === '4문제'
+                            ? '0 0 600px 0'
+                            : assign === '6문제'
+                              ? '0 0 400px 0'
+                              : ''
+                        }
                       >
                         {isContentTypeTitle && (
                           <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
@@ -473,8 +487,9 @@ const WorksheetBodyRight = styled.div`
   flex-direction: column;
 `;
 //각 아이템
-const MathViewerWrapper = styled.div<{ height: number }>`
+const MathViewerWrapper = styled.div<{ height: number; padding: string }>`
   height: ${({ height }) => `${height}px`};
+  padding: ${({ padding }) => `${padding}`};
   display: flex;
   flex-direction: column;
   margin-bottom: 40px;
