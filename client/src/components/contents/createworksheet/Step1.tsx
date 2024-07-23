@@ -1414,15 +1414,8 @@ export function Step1() {
     }
   }, [selectedTextbook]);
 
-  //초기 셀렉트 없게 하기
-  useEffect(() => {
-    setClickedIdx(null);
-    setClickedPageIdx(null);
-  }, [tabVeiw]);
-
   // 선택시 배경색이 나타남
   const choiceType = (idx: number) => {
-    console.log(idx);
     if (clickedIdx !== idx) {
       setClickedIdx(idx);
       setIsChoice(!isChoice);
@@ -1723,8 +1716,7 @@ export function Step1() {
       setCastQuizListData(castData?.data.data.quizList);
     }
   }, [castData]);
-  console.log(castData);
-  console.log(castQuizListData);
+
   //문항 번호로 추가 데이터 가공
   const [processCastQuizListData, setProcessCastQuizListData] = useState<
     ProcessCsatQuizListDataType[]
@@ -1805,7 +1797,6 @@ export function Step1() {
       setProcessCastQuizListData(initialData);
     }
   }, [castQuizListData, castDataRefetch]);
-  console.log(processCastQuizListData);
 
   //단원으로 추가
   const [castListData, setCastListData] = useState<csatListType[]>([]);
@@ -2421,6 +2412,8 @@ export function Step1() {
     setSchoolLevel('초등');
     setgradeLevel(null);
     setIncludeQuizList([]);
+    setClickedIdx(null);
+    setClickedPageIdx(null);
     //모의시험 버튼 초기화
     setProcessCastQuizListData([]);
     setProcessCastListData([]);
