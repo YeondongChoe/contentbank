@@ -37,7 +37,7 @@ export interface QuizList {
   code: string;
   num: number;
   type: string;
-  score: number;
+  score: null | number;
   height: number;
   userKey: string;
   createdBy: string;

@@ -1267,17 +1267,25 @@ export function Step2() {
 
   useEffect(() => {
     if (isModifying && selected5depth !== '') {
-      const classification = selectedClassification[5] as ItemTreeIdxListType;
+      const classification = selectedClassification[5] as RadioStateType;
+      setSelected6depth(classification?.checkValue?.toString() || '');
+      setRadio6depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected5depth]);
+
+  useEffect(() => {
+    if (isModifying && selected6depth !== '') {
+      const classification = selectedClassification[6] as ItemTreeIdxListType;
       setCheckedDepthList(classification.itemTreeIdxList);
 
-      const classificationEtc1 = selectedClassification[6] as RadioStateType[];
+      const classificationEtc1 = selectedClassification[7] as RadioStateType[];
       // 저장되었던 행동 요소1
       setSelectedCategoryEtc1(
         classificationEtc1.map((el) => el.checkValue?.toString()),
       );
       setRadioEtc1Check(classificationEtc1);
 
-      const classificationEtc2 = selectedClassification[7] as RadioStateType[];
+      const classificationEtc2 = selectedClassification[8] as RadioStateType[];
       // 저장되었던 행동 요소2
       setSelectedCategoryEtc2(
         classificationEtc2.map((el) => el.checkValue?.toString()),
@@ -1287,7 +1295,7 @@ export function Step2() {
       //초기화
       setIsModifying(false);
     }
-  }, [isModifying, selected5depth]);
+  }, [isModifying, selected6depth]);
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {

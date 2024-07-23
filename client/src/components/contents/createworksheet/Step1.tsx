@@ -834,17 +834,25 @@ export function Step1() {
 
   useEffect(() => {
     if (isModifying && selected5depth !== '') {
-      const classification = selectedClassification[5] as ItemTreeIdxListType;
+      const classification = selectedClassification[5] as RadioStateType;
+      setSelected6depth(classification?.checkValue?.toString() || '');
+      setRadio6depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected5depth]);
+
+  useEffect(() => {
+    if (isModifying && selected6depth !== '') {
+      const classification = selectedClassification[6] as ItemTreeIdxListType;
       setCheckedDepthList(classification.itemTreeIdxList);
 
-      const classificationEtc1 = selectedClassification[6] as RadioStateType[];
+      const classificationEtc1 = selectedClassification[7] as RadioStateType[];
       // 저장되었던 행동 요소1
       setSelectedCategoryEtc1(
         classificationEtc1.map((el) => el.checkValue?.toString()),
       );
       setRadioEtc1Check(classificationEtc1);
 
-      const classificationEtc2 = selectedClassification[7] as RadioStateType[];
+      const classificationEtc2 = selectedClassification[8] as RadioStateType[];
       // 저장되었던 행동 요소2
       setSelectedCategoryEtc2(
         classificationEtc2.map((el) => el.checkValue?.toString()),
@@ -854,7 +862,9 @@ export function Step1() {
       //초기화
       setIsModifying(false);
     }
-  }, [isModifying, selected5depth]);
+  }, [isModifying, selected6depth]);
+  console.log(unitClassificationList);
+  console.log(selectedClassification);
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -2507,16 +2517,6 @@ export function Step1() {
                                 textAlign="left"
                                 $padding="0 50px 0 10px"
                                 onClick={() => changeUnitClassification(idx)}
-                                // rightIconSrc={
-                                //   <IconWrapper>
-                                //     <button
-                                //       type="button"
-                                //       className="icon_button primery"
-                                //     >
-                                //       수정
-                                //     </button>
-                                //   </IconWrapper>
-                                // }
                               >
                                 <span>
                                   {el
@@ -2567,96 +2567,106 @@ export function Step1() {
                           </div>
                         ))}
                         {/* 학교급 */}
-                        {[categoryItems[1]].map((item) => (
-                          <div
-                            className={`2depth`}
-                            id={`${item.name}`}
-                            key={`selected2depth ${item.idx}`}
-                          >
-                            <ButtonFormatRadio
-                              branchValue={`${item.name}`}
-                              titleText={`${item.name}`}
-                              list={nextList1depth}
-                              selected={selected2depth}
-                              onChange={(e) => handleRadioCheck(e)}
-                              // defaultChecked={}
-                              checkedInput={radio2depthCheck}
-                            />
-                          </div>
-                        ))}
+                        {radio1depthCheck.code !== '' &&
+                          selected1depth !== '' &&
+                          [categoryItems[1]].map((item) => (
+                            <div
+                              className={`2depth`}
+                              id={`${item.name}`}
+                              key={`selected2depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                branchValue={`${item.name}`}
+                                titleText={`${item.name}`}
+                                list={nextList1depth}
+                                selected={selected2depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio2depthCheck}
+                              />
+                            </div>
+                          ))}
                         {/* 학년 */}
-                        {[categoryItems[2]].map((item) => (
-                          <div
-                            className={`3depth`}
-                            id={`${item.name}`}
-                            key={`selected3depth ${item.idx}`}
-                          >
-                            <ButtonFormatRadio
-                              branchValue={`${item.name}`}
-                              titleText={`${item.name}`}
-                              list={nextList2depth}
-                              selected={selected3depth}
-                              onChange={(e) => handleRadioCheck(e)}
-                              // defaultChecked={}
-                              checkedInput={radio3depthCheck}
-                            />
-                          </div>
-                        ))}
+                        {radio2depthCheck.code !== '' &&
+                          selected2depth !== '' &&
+                          [categoryItems[2]].map((item) => (
+                            <div
+                              className={`3depth`}
+                              id={`${item.name}`}
+                              key={`selected3depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                branchValue={`${item.name}`}
+                                titleText={`${item.name}`}
+                                list={nextList2depth}
+                                selected={selected3depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio3depthCheck}
+                              />
+                            </div>
+                          ))}
                         {/* 학기 */}
-                        {[categoryItems[3]].map((item) => (
-                          <div
-                            className={`4depth`}
-                            id={`${item.name}`}
-                            key={`selected4depth ${item.idx}`}
-                          >
-                            <ButtonFormatRadio
-                              branchValue={`${item.name}`}
-                              titleText={`${item.name}`}
-                              list={nextList3depth}
-                              selected={selected4depth}
-                              onChange={(e) => handleRadioCheck(e)}
-                              // defaultChecked={}
-                              checkedInput={radio4depthCheck}
-                            />
-                          </div>
-                        ))}
+                        {radio3depthCheck.code !== '' &&
+                          selected3depth !== '' &&
+                          [categoryItems[3]].map((item) => (
+                            <div
+                              className={`4depth`}
+                              id={`${item.name}`}
+                              key={`selected4depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                branchValue={`${item.name}`}
+                                titleText={`${item.name}`}
+                                list={nextList3depth}
+                                selected={selected4depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio4depthCheck}
+                              />
+                            </div>
+                          ))}
                         {/* 교과 */}
-                        {[categoryItems[6]].map((item) => (
-                          <div
-                            className={`5depth`}
-                            id={`${item.name}`}
-                            key={`selected5depth ${item.idx}`}
-                          >
-                            <ButtonFormatRadio
-                              branchValue={`${item.name}`}
-                              titleText={`${item.name}`}
-                              list={nextList4depth}
-                              selected={selected5depth}
-                              onChange={(e) => handleRadioCheck(e)}
-                              // defaultChecked={}
-                              checkedInput={radio5depthCheck}
-                            />
-                          </div>
-                        ))}
+                        {radio4depthCheck.code !== '' &&
+                          selected4depth !== '' &&
+                          [categoryItems[6]].map((item) => (
+                            <div
+                              className={`5depth`}
+                              id={`${item.name}`}
+                              key={`selected5depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                branchValue={`${item.name}`}
+                                titleText={`${item.name}`}
+                                list={nextList4depth}
+                                selected={selected5depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio5depthCheck}
+                              />
+                            </div>
+                          ))}
                         {/* 과목 */}
-                        {[categoryItems[7]].map((item) => (
-                          <div
-                            className={`6depth`}
-                            id={`${item.name}`}
-                            key={`selected6depth ${item.idx}`}
-                          >
-                            <ButtonFormatRadio
-                              overFlow
-                              branchValue={`${item.name}`}
-                              titleText={`${item.name}`}
-                              list={nextList5depth}
-                              selected={selected6depth}
-                              onChange={(e) => handleRadioCheck(e)}
-                              // defaultChecked={}
-                              checkedInput={radio6depthCheck}
-                            />
-                          </div>
-                        ))}
+                        {radio5depthCheck.code !== '' &&
+                          selected5depth !== '' &&
+                          [categoryItems[7]].map((item) => (
+                            <div
+                              className={`6depth`}
+                              id={`${item.name}`}
+                              key={`selected6depth ${item.idx}`}
+                            >
+                              <ButtonFormatRadio
+                                overFlow
+                                branchValue={`${item.name}`}
+                                titleText={`${item.name}`}
+                                list={nextList5depth}
+                                selected={selected6depth}
+                                onChange={(e) => handleRadioCheck(e)}
+                                // defaultChecked={}
+                                checkedInput={radio6depthCheck}
+                              />
+                            </div>
+                          ))}
                       </>
                     )}
 
