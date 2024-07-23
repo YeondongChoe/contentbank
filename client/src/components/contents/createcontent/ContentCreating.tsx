@@ -272,7 +272,7 @@ export function ContentCreating({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile tabView={tabView} />
+              <EditerOneFile tabView={tabView} type={type} />
             </EditWrapper>
 
             <BackgroundWrapper>

@@ -230,7 +230,7 @@ export function ContentFileUpload({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile />
+              <EditerOneFile type={type} />
             </EditWrapper>
 
             <BackgroundWrapper>

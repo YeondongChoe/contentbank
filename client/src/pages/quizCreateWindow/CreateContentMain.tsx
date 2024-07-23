@@ -14,14 +14,11 @@ import {
   ContentFileUpload,
   ContentHTMLUpload,
 } from '../../components/contents/createcontent';
-import { editorTypeAtom } from '../../store/utilAtom';
 
 export function CreateContentMain() {
   const location = useLocation();
   const navigate = useNavigate();
   const query = new URLSearchParams(location.search);
-  const [editorType, setEditorType] = useRecoilState(editorTypeAtom);
-  // const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
   const menuList = [
     {
@@ -38,16 +35,6 @@ export function CreateContentMain() {
     // },
   ];
   const [tabView, setTabView] = useState<string>('DT & Editing');
-
-  //iframe 데이터 통신시
-  // const receiveMessage = (event: any) => {
-  //   // 불필요한 react-devtools 메세지 이벤트 차단
-  //   if (/^react-devtools/gi.test(event.data.source)) {
-  //     return;
-  //   }
-  //   const { type } = event.data;
-  //   // if (type === 'BOOL')
-  // };
 
   // 부모 로컬스토리지에서 데이터 가져오기
   // const getLocalData = () => {
@@ -72,14 +59,7 @@ export function CreateContentMain() {
       console.log('query', query.get('state')); // 수정일시 edit 생성일시 create
       // 전역에 문항리스트 데이터 저장
     }
-    return () => {
-      setEditorType(''); // 페이지 나갈 시 editorType 초기화
-    };
   }, []);
-
-  // useEffect(() => {
-  //   console.log(isUploadFile);
-  // }, [isUploadFile]);
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
@@ -99,8 +79,6 @@ export function CreateContentMain() {
         window.removeEventListener('beforeunload', handleBeforeUnload);
       };
     }
-
-    console.log('editorType-----------', editorType);
   }, [tabView]);
 
   return (
