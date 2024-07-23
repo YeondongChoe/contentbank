@@ -1,6 +1,0 @@
-product;iTeX
-s3id;AKIAQZ3JY5C4F6UURF4N
-s3secret;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
-bucket;itex-dev-image
-url;https://itex-dev-image.s3.ap-northeast-2.amazonaws.com
-maindir;hml_image

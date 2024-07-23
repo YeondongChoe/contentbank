@@ -40,6 +40,7 @@ export function ContentFileUpload({
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
 
+  // 수정시 체크리스트 값 가져오기
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
 
@@ -56,6 +57,11 @@ export function ContentFileUpload({
       return;
     }
   }, []);
+
+  // 에디터에서 데이터 가져올시
+  useEffect(() => {
+    if (editorData) console.log(editorData);
+  }, [editorData]);
 
   useEffect(() => {
     setQuestionList(quizList);
