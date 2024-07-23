@@ -623,7 +623,12 @@ export function Step2() {
   const [isModifying, setIsModifying] = useState(false);
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
-  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([
+    [{ code: '', idx: 0, name: '' }],
+  ]);
+  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
+  const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
+
   const [categoryAddInfoList, setCategoryAddInfoList] = useState<
     ItemCategoryType[][]
   >([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -652,10 +657,11 @@ export function Step2() {
 
   // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
   useEffect(() => {
+    if (categoryDataError) {
+      categoryDataRefetch();
+    }
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
-    } else if (categoryDataError) {
-      categoryDataRefetch();
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
 
@@ -680,27 +686,61 @@ export function Step2() {
   });
   useEffect(() => {
     if (isRangeSetting && groupsData) {
-      fetchCategoryItems(groupsData);
+      fetchCategoryItems(groupsData, setCategoryList);
     }
   }, [groupsData, isRangeSetting]);
 
+  // 카테고리의 그룹 유형 조회 (출처)
+  const getCategoryGroupsE = async () => {
+    const response = await classificationInstance.get('/v1/category/group/E');
+    return response.data.data.typeList;
+  };
+  const {
+    data: groupsEData,
+    refetch: groupsDataERefetch,
+    isFetching: groupsDataEIsFetching,
+  } = useQuery({
+    queryKey: ['get-category-groups-E'],
+    queryFn: getCategoryGroupsE,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-E 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsEData) {
+      fetchCategoryItems(groupsEData, setCategoriesE);
+    }
+  }, [groupsEData]);
+
   // 카테고리의 그룹 유형 조회
-  const fetchCategoryItems = async (typeList: string) => {
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
     const typeIds = typeList.split(',');
     try {
+      setIsCategoryLoaded(true);
+
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/${id}`),
+        classificationInstance.get(`/v1/category/${id}`).catch((error) => {
+          // console.log(error);
+          if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
+            setRefreshTokenCalled(true);
+            postRefreshToken().then(() => {
+              setRefreshTokenCalled(false);
+            });
+          }
+        }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      setCategoryList(itemsList);
-    } catch (error: any) {
-      if (error.response?.data?.code == 'GE-002')
-        postRefreshToken().then(() => {
-          groupsDataRefetch();
-        });
+
+      setCategory(itemsList);
+    } finally {
+      setIsCategoryLoaded(false);
     }
   };
 
@@ -767,6 +807,8 @@ export function Step2() {
           code: e.currentTarget.className,
           key: itemId as string,
         });
+        break;
+      default:
         break;
     }
   };
@@ -959,11 +1001,11 @@ export function Step2() {
 
   const setNextList = (idx: number) => {
     //교과 과목 오픈여부 라디오 버튼 셋팅
-    if (categoryList && idx == 4) {
-      setNextList4depth(categoryList[4]);
+    if (categoriesE && idx == 4) {
+      setNextList4depth(categoriesE[0]);
     }
-    if (categoryList && idx == 5) {
-      setNextList5depth(categoryList[5]);
+    if (categoriesE && idx == 5) {
+      setNextList5depth(categoriesE[1]);
     }
   };
 
@@ -998,13 +1040,23 @@ export function Step2() {
     setCheckedDepthList([]);
   }, [selected3depth]);
   useEffect(() => {
+    setSelected5depth('');
+    setCheckedDepthList([]);
+    setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected4depth]);
+  useEffect(() => {
+    setSelected6depth('');
+    setCheckedDepthList([]);
+    setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected5depth]);
+  useEffect(() => {
+    setClassificationSearchValue('');
+    setCheckedDepthList([]);
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
     setRadioEtc1Check([]);
     setRadioEtc2Check([]);
-    setCheckedDepthList([]);
-    setClassificationSearchValue('');
-  }, [selected4depth]);
+  }, [selected6depth]);
 
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
@@ -1057,9 +1109,9 @@ export function Step2() {
   });
 
   useEffect(() => {
-    if (selected4depth == '') return;
+    if (selected6depth == '') return;
     categoryItemTreeDataMutate();
-  }, [selected4depth]);
+  }, [selected6depth]);
 
   // 카테고리의 그룹 유형 조회 (추가정보)
   const getAddInfoGroups = async () => {
@@ -1106,12 +1158,14 @@ export function Step2() {
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
       radioEtc1Check,
       radioEtc2Check,
     ];
 
     if (checkedDepthList.length > 0) {
-      newClassification.splice(4, 0, { itemTreeIdxList: checkedDepthList });
+      newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
     }
 
     if (unitClassificationList.length < 6) {
@@ -1138,6 +1192,7 @@ export function Step2() {
   //분류 리스트 리셋
   const onResetList = () => {
     const reset = { title: '', checkValue: 0, code: '', key: '' };
+    const listReset = [{ code: '', idx: 0, name: '' }];
     setRadio1depthCheck(reset);
     setRadio2depthCheck(reset);
     setRadio3depthCheck(reset);
@@ -1146,13 +1201,17 @@ export function Step2() {
     setRadio6depthCheck(reset);
     setRadioEtc1Check([]);
     setRadioEtc2Check([]);
-
     setSelected1depth('');
     setSelected2depth('');
     setSelected3depth('');
     setSelected4depth('');
     setSelected5depth('');
     setSelected6depth('');
+    setNextList1depth(listReset);
+    setNextList2depth(listReset);
+    setNextList3depth(listReset);
+    setNextList4depth(listReset);
+    setNextList5depth(listReset);
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
     setCheckedDepthList([]);
@@ -1200,17 +1259,25 @@ export function Step2() {
 
   useEffect(() => {
     if (isModifying && selected4depth !== '') {
-      const classification = selectedClassification[4] as ItemTreeIdxListType;
+      const classification = selectedClassification[4] as RadioStateType;
+      setSelected5depth(classification?.checkValue?.toString() || '');
+      setRadio5depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected4depth]);
+
+  useEffect(() => {
+    if (isModifying && selected5depth !== '') {
+      const classification = selectedClassification[5] as ItemTreeIdxListType;
       setCheckedDepthList(classification.itemTreeIdxList);
 
-      const classificationEtc1 = selectedClassification[5] as RadioStateType[];
+      const classificationEtc1 = selectedClassification[6] as RadioStateType[];
       // 저장되었던 행동 요소1
       setSelectedCategoryEtc1(
         classificationEtc1.map((el) => el.checkValue?.toString()),
       );
       setRadioEtc1Check(classificationEtc1);
 
-      const classificationEtc2 = selectedClassification[6] as RadioStateType[];
+      const classificationEtc2 = selectedClassification[7] as RadioStateType[];
       // 저장되었던 행동 요소2
       setSelectedCategoryEtc2(
         classificationEtc2.map((el) => el.checkValue?.toString()),
@@ -1220,7 +1287,7 @@ export function Step2() {
       //초기화
       setIsModifying(false);
     }
-  }, [isModifying, selected4depth]);
+  }, [isModifying, selected5depth]);
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -1229,7 +1296,10 @@ export function Step2() {
       radio1depthCheck.code !== '' &&
       radio2depthCheck.code !== '' &&
       radio3depthCheck.code !== '' &&
-      radio4depthCheck.code !== ''
+      radio4depthCheck.code !== '' &&
+      radio5depthCheck.code !== '' &&
+      radio6depthCheck.code !== '' &&
+      checkedDepthList.length > 0
     ) {
       return false;
     } else {
@@ -1241,6 +1311,9 @@ export function Step2() {
     radio2depthCheck,
     radio3depthCheck,
     radio4depthCheck,
+    radio5depthCheck,
+    radio6depthCheck,
+    checkedDepthList,
   ]);
 
   const [classificationSearchValue, setClassificationSearchValue] =
@@ -1323,25 +1396,26 @@ export function Step2() {
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const highlightText = (text: string, searchValue: string) => {
-    if (searchValue.length < 2) return text;
-    const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
-    const highlightedText = (
+  const highlightText = (text: string, classificationSearchValue: string) => {
+    if (classificationSearchValue.length < 2) return text;
+    const parts = text.split(
+      new RegExp(`(${classificationSearchValue})`, 'gi'),
+    );
+    return (
       <span className="text">
         {parts.map((part, index) => {
           const className =
-            part.toLowerCase() === searchValue.toLowerCase() ? 'highlight' : '';
-          return part.toLowerCase() === searchValue.toLowerCase() ? (
+            part.toLowerCase() === classificationSearchValue.toLowerCase()
+              ? 'highlight'
+              : '';
+          return (
             <span key={index} className={className}>
               {part}
             </span>
-          ) : (
-            <span>{part}</span>
           );
         })}
       </span>
     );
-    return highlightedText;
   };
 
   const prevHighlight = () => {
@@ -1360,19 +1434,14 @@ export function Step2() {
         highlightedElements[highlightIndex % highlightedElements.length];
       if (currentElement) {
         currentElement.classList.add('current');
-        const container = document.getElementById('scrollTopWrapper');
-        if (
-          container instanceof HTMLElement &&
-          currentElement instanceof HTMLElement
-        ) {
-          const elementPosition =
-            currentElement.parentElement?.parentElement?.parentElement
-              ?.parentElement?.offsetTop;
-          container.scrollTop = elementPosition as number;
-        }
+        currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   }, [highlightIndex]);
+
+  useEffect(() => {
+    setHighlightIndex(-1);
+  }, [itemTree, classificationSearchValue]);
 
   const navigate = useNavigate();
 
@@ -2305,146 +2374,142 @@ export function Step2() {
                                     </UnitClassifications>
 
                                     {/* 교육과정 라디오 버튼 부분 */}
-                                    {isCategoryLoaded &&
-                                      categoryItems[0] &&
-                                      categoryList && (
-                                        <>
-                                          {[categoryItems[0]].map((item) => (
+                                    {categoryItems[0] && categoryList && (
+                                      <>
+                                        {/* 교육과정 */}
+                                        {[categoryItems[0]].map((item) => (
+                                          <div
+                                            className={`1depth`}
+                                            id={`${item.name}`}
+                                            key={`selected1depth ${item.idx}`}
+                                          >
+                                            <ButtonFormatRadio
+                                              titleText={`${item.name}`}
+                                              list={categoryList[0]}
+                                              selected={selected1depth}
+                                              onChange={(e) =>
+                                                handleRadioCheck(e)
+                                              }
+                                              // defaultChecked={}
+                                              checkedInput={radio1depthCheck}
+                                              $margin={`10px 0 0 0`}
+                                            />
+                                          </div>
+                                        ))}
+
+                                        {/* 학교급 */}
+                                        {radio1depthCheck.code !== '' &&
+                                          selected1depth !== '' &&
+                                          [categoryItems[1]].map((item) => (
                                             <div
-                                              className={`1depth`}
+                                              className={`2depth`}
                                               id={`${item.name}`}
-                                              key={`selected1depth ${item.idx}`}
+                                              key={`selected2depth ${item.idx}`}
                                             >
                                               <ButtonFormatRadio
+                                                branchValue={`${item.name}`}
                                                 titleText={`${item.name}`}
-                                                list={categoryList[0]}
-                                                selected={selected1depth}
+                                                list={nextList1depth}
+                                                selected={selected2depth}
                                                 onChange={(e) =>
                                                   handleRadioCheck(e)
                                                 }
                                                 // defaultChecked={}
-                                                checkedInput={radio1depthCheck}
-                                                $margin={`10px 0 0 0`}
+                                                checkedInput={radio2depthCheck}
                                               />
                                             </div>
                                           ))}
-
-                                          {radio1depthCheck.code !== '' &&
-                                            selected1depth !== '' &&
-                                            [categoryItems[1]].map((item) => (
-                                              <div
-                                                className={`2depth`}
-                                                id={`${item.name}`}
-                                                key={`selected2depth ${item.idx}`}
-                                              >
-                                                <ButtonFormatRadio
-                                                  titleText={`${item.name}`}
-                                                  list={nextList1depth}
-                                                  selected={selected2depth}
-                                                  onChange={(e) =>
-                                                    handleRadioCheck(e)
-                                                  }
-                                                  // defaultChecked={}
-                                                  checkedInput={
-                                                    radio2depthCheck
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-
-                                          {radio2depthCheck.code !== '' &&
-                                            selected2depth !== '' &&
-                                            [categoryItems[2]].map((item) => (
-                                              <div
-                                                className={`3depth`}
-                                                id={`${item.name}`}
-                                                key={`selected3depth ${item.idx}`}
-                                              >
-                                                <ButtonFormatRadio
-                                                  titleText={`${item.name}`}
-                                                  list={nextList2depth}
-                                                  selected={selected3depth}
-                                                  onChange={(e) =>
-                                                    handleRadioCheck(e)
-                                                  }
-                                                  // defaultChecked={}
-                                                  checkedInput={
-                                                    radio3depthCheck
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                          {radio3depthCheck.code !== '' &&
-                                            selected3depth !== '' &&
-                                            [categoryItems[3]].map((item) => (
-                                              <div
-                                                className={`4depth`}
-                                                id={`${item.name}`}
-                                                key={`selected4depth ${item.idx}`}
-                                              >
-                                                <ButtonFormatRadio
-                                                  titleText={`${item.name}`}
-                                                  list={nextList3depth}
-                                                  selected={selected4depth}
-                                                  onChange={(e) =>
-                                                    handleRadioCheck(e)
-                                                  }
-                                                  // defaultChecked={}
-                                                  checkedInput={
-                                                    radio4depthCheck
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                          {radio4depthCheck?.code !== '' &&
-                                            selected4depth !== '' &&
-                                            [categoryItems[6]].map((item) => (
-                                              <div
-                                                className={`5depth`}
-                                                id={`${item.name}`}
-                                                key={`selected5depth ${item.idx}`}
-                                              >
-                                                <ButtonFormatRadio
-                                                  branchValue={`${item.name}`}
-                                                  titleText={`${item.name}`}
-                                                  list={nextList4depth}
-                                                  selected={selected5depth}
-                                                  onChange={(e) =>
-                                                    handleRadioCheck(e)
-                                                  }
-                                                  // defaultChecked={}
-                                                  checkedInput={
-                                                    radio5depthCheck
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                          {radio5depthCheck?.code !== '' &&
-                                            selected5depth !== '' &&
-                                            [categoryItems[7]].map((item) => (
-                                              <div
-                                                className={`6depth`}
-                                                id={`${item.name}`}
-                                                key={`selected6depth ${item.idx}`}
-                                              >
-                                                <ButtonFormatRadio
-                                                  overFlow
-                                                  branchValue={`${item.name}`}
-                                                  titleText={`${item.name}`}
-                                                  list={nextList5depth}
-                                                  selected={selected6depth}
-                                                  onChange={(e) =>
-                                                    handleRadioCheck(e)
-                                                  }
-                                                  // defaultChecked={}
-                                                  checkedInput={
-                                                    radio6depthCheck
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                        </>
-                                      )}
+                                        {/* 학년 */}
+                                        {radio2depthCheck.code !== '' &&
+                                          selected2depth !== '' &&
+                                          [categoryItems[2]].map((item) => (
+                                            <div
+                                              className={`3depth`}
+                                              id={`${item.name}`}
+                                              key={`selected3depth ${item.idx}`}
+                                            >
+                                              <ButtonFormatRadio
+                                                branchValue={`${item.name}`}
+                                                titleText={`${item.name}`}
+                                                list={nextList2depth}
+                                                selected={selected3depth}
+                                                onChange={(e) =>
+                                                  handleRadioCheck(e)
+                                                }
+                                                // defaultChecked={}
+                                                checkedInput={radio3depthCheck}
+                                              />
+                                            </div>
+                                          ))}
+                                        {/* 학기 */}
+                                        {radio3depthCheck.code !== '' &&
+                                          selected3depth !== '' &&
+                                          [categoryItems[3]].map((item) => (
+                                            <div
+                                              className={`4depth`}
+                                              id={`${item.name}`}
+                                              key={`selected4depth ${item.idx}`}
+                                            >
+                                              <ButtonFormatRadio
+                                                branchValue={`${item.name}`}
+                                                titleText={`${item.name}`}
+                                                list={nextList3depth}
+                                                selected={selected4depth}
+                                                onChange={(e) =>
+                                                  handleRadioCheck(e)
+                                                }
+                                                // defaultChecked={}
+                                                checkedInput={radio4depthCheck}
+                                              />
+                                            </div>
+                                          ))}
+                                        {/* 교과 */}
+                                        {radio4depthCheck.code !== '' &&
+                                          selected4depth !== '' &&
+                                          [categoryItems[6]].map((item) => (
+                                            <div
+                                              className={`5depth`}
+                                              id={`${item.name}`}
+                                              key={`selected5depth ${item.idx}`}
+                                            >
+                                              <ButtonFormatRadio
+                                                branchValue={`${item.name}`}
+                                                titleText={`${item.name}`}
+                                                list={nextList4depth}
+                                                selected={selected5depth}
+                                                onChange={(e) =>
+                                                  handleRadioCheck(e)
+                                                }
+                                                // defaultChecked={}
+                                                checkedInput={radio5depthCheck}
+                                              />
+                                            </div>
+                                          ))}
+                                        {/* 과목 */}
+                                        {radio5depthCheck.code !== '' &&
+                                          selected5depth !== '' &&
+                                          [categoryItems[7]].map((item) => (
+                                            <div
+                                              className={`6depth`}
+                                              id={`${item.name}`}
+                                              key={`selected6depth ${item.idx}`}
+                                            >
+                                              <ButtonFormatRadio
+                                                overFlow
+                                                branchValue={`${item.name}`}
+                                                titleText={`${item.name}`}
+                                                list={nextList5depth}
+                                                selected={selected6depth}
+                                                onChange={(e) =>
+                                                  handleRadioCheck(e)
+                                                }
+                                                // defaultChecked={}
+                                                checkedInput={radio6depthCheck}
+                                              />
+                                            </div>
+                                          ))}
+                                      </>
+                                    )}
 
                                     <p className="line"></p>
 
@@ -2453,9 +2518,13 @@ export function Step2() {
                                     radio2depthCheck.code !== '' &&
                                     radio3depthCheck.code !== '' &&
                                     radio4depthCheck.code !== '' &&
+                                    radio5depthCheck.code !== '' &&
+                                    radio6depthCheck?.code !== '' &&
                                     selected1depth !== '' &&
                                     selected2depth !== '' &&
-                                    selected3depth !== '' ? (
+                                    selected3depth !== '' &&
+                                    selected4depth !== '' &&
+                                    selected5depth !== '' ? (
                                       <AccordionWrapper>
                                         <Accordion
                                           defaultChecked={isModifying}
@@ -2484,19 +2553,21 @@ export function Step2() {
                                               1 && (
                                               <p className="line bottom_text">
                                                 {`총 
-                          ${
-                            categoryItemTreeData && itemTree.length
-                              ? itemTree.map(
-                                  (el) =>
-                                    el.itemTreeList.filter((el) =>
-                                      el.name.includes(
-                                        classificationSearchValue,
-                                      ),
-                                    ).length,
-                                )
-                              : 0
-                          } 
-                          건`}
+                       			${
+                              categoryItemTreeData && itemTree.length
+                                ? itemTree.reduce(
+                                    (total, el) =>
+                                      total +
+                                      el.itemTreeList.filter((item) =>
+                                        item.name.includes(
+                                          classificationSearchValue,
+                                        ),
+                                      ).length,
+                                    0,
+                                  )
+                                : 0
+                            } 
+															건`}
                                                 <ArrowButtonWrapper>
                                                   <button
                                                     onClick={() =>
@@ -2538,9 +2609,11 @@ export function Step2() {
                                                             {el.itemTreeList.map(
                                                               (item) => (
                                                                 <DepthBlock
+                                                                  branchValue={`${item.name}`}
                                                                   highlightText={
                                                                     highlightText
                                                                   }
+                                                                  defaultChecked
                                                                   key={`depthList${item?.idx} ${item.name}`}
                                                                   classNameList={`depth-${item.level}`}
                                                                   id={item?.idx}
@@ -2575,7 +2648,10 @@ export function Step2() {
                                                                   }
                                                                 >
                                                                   <span>
-                                                                    {item.name}
+                                                                    {highlightText(
+                                                                      item.name,
+                                                                      classificationSearchValue,
+                                                                    )}
                                                                   </span>
                                                                 </DepthBlock>
                                                               ),
@@ -2592,6 +2668,7 @@ export function Step2() {
                                                             {el.itemTreeList.map(
                                                               (item) => (
                                                                 <DepthBlock
+                                                                  branchValue={`${item.name}`}
                                                                   defaultChecked
                                                                   key={`depthList${item?.idx} ${item.name}`}
                                                                   classNameList={`depth-${item.level}`}
@@ -2667,6 +2744,7 @@ export function Step2() {
                                                       key={`etc1 ${item.idx}`}
                                                     >
                                                       <ButtonFormatMultiRadio
+                                                        branchValue={`${item.name}`}
                                                         titleText={`${item.name}`}
                                                         list={
                                                           categoryAddInfoList[0]
@@ -2682,7 +2760,6 @@ export function Step2() {
                                                         checkedInputs={
                                                           radioEtc1Check
                                                         }
-                                                        branchValue={`etc1`}
                                                       />
                                                     </div>
                                                   ),
@@ -2695,6 +2772,7 @@ export function Step2() {
                                                       key={`etc2 ${item.idx}`}
                                                     >
                                                       <ButtonFormatMultiRadio
+                                                        branchValue={`${item.name}`}
                                                         titleText={`${item.name}`}
                                                         list={
                                                           categoryAddInfoList[1]
@@ -2710,7 +2788,6 @@ export function Step2() {
                                                         checkedInputs={
                                                           radioEtc2Check
                                                         }
-                                                        branchValue={`etc2`}
                                                       />
                                                     </div>
                                                   ),
