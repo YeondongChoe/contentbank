@@ -21,7 +21,7 @@ export function CreateContentMain() {
   const navigate = useNavigate();
   const query = new URLSearchParams(location.search);
   const [editorType, setEditorType] = useRecoilState(editorTypeAtom);
-  const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
+  // const [isUploadFile, setIsUploadFile] = useState<string>('createcontent');
 
   const menuList = [
     {
@@ -40,33 +40,33 @@ export function CreateContentMain() {
   const [tabView, setTabView] = useState<string>('DT & Editing');
 
   //iframe 데이터 통신시
-  const receiveMessage = (event: any) => {
-    // 불필요한 react-devtools 메세지 이벤트 차단
-    if (/^react-devtools/gi.test(event.data.source)) {
-      return;
-    }
-    const { type } = event.data;
-    // if (type === 'BOOL')
-  };
+  // const receiveMessage = (event: any) => {
+  //   // 불필요한 react-devtools 메세지 이벤트 차단
+  //   if (/^react-devtools/gi.test(event.data.source)) {
+  //     return;
+  //   }
+  //   const { type } = event.data;
+  //   // if (type === 'BOOL')
+  // };
 
   // 부모 로컬스토리지에서 데이터 가져오기
-  const getLocalData = () => {
-    const data = localStorage.getItem('sendData');
-    let sendData;
-    if (data) sendData = JSON.parse(data);
+  // const getLocalData = () => {
+  //   const data = localStorage.getItem('sendData');
+  //   let sendData;
+  //   if (data) sendData = JSON.parse(data);
 
-    console.log('데이터 조회', sendData && sendData.data);
+  //   console.log('데이터 조회', sendData && sendData.data);
 
-    if (sendData && sendData.data) {
-      setIsUploadFile(sendData.data);
-      // 로컬스토리지 값 다받은 뒤 초기화
-      window.opener.localStorage.clear();
-      return;
-    }
-  };
+  //   if (sendData && sendData.data) {
+  //     setIsUploadFile(sendData.data);
+  //     // 로컬스토리지 값 다받은 뒤 초기화
+  //     window.opener.localStorage.clear();
+  //     return;
+  //   }
+  // };
 
   useEffect(() => {
-    getLocalData();
+    // getLocalData();
 
     if (query.get('state')?.toString() == 'edit') {
       console.log('query', query.get('state')); // 수정일시 edit 생성일시 create
@@ -77,9 +77,9 @@ export function CreateContentMain() {
     };
   }, []);
 
-  useEffect(() => {
-    console.log(isUploadFile);
-  }, [isUploadFile]);
+  // useEffect(() => {
+  //   console.log(isUploadFile);
+  // }, [isUploadFile]);
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
@@ -139,44 +139,21 @@ export function CreateContentMain() {
       </ButtonWrapper>
       {tabView === 'DT & Editing' && (
         <ContentBox>
-          {query.get('state') === 'edit' ? (
+          {query.get('state') === 'edit' && (
             <ContentFileUpload setTabView={setTabView} type={'type1'} />
-          ) : (
-            <>
-              {editorType == '' ? (
-                <>
-                  {isUploadFile && isUploadFile === 'uploadfile' && (
-                    <ContentFileUpload setTabView={setTabView} type={'type1'} />
-                  )}
-                  {isUploadFile && isUploadFile === 'uploadhtml' && (
-                    <ContentHTMLUpload setTabView={setTabView} type={'type2'} />
-                  )}
-                  {isUploadFile && isUploadFile === 'createcontent' && (
-                    <ContentCreating
-                      setTabView={setTabView}
-                      tabView={tabView}
-                      type={'type3'}
-                    />
-                  )}
-                </>
-              ) : (
-                <>
-                  {editorType == 'type1' && (
-                    <ContentFileUpload setTabView={setTabView} type={'type1'} />
-                  )}
-                  {editorType == 'type2' && (
-                    <ContentHTMLUpload setTabView={setTabView} type={'type2'} />
-                  )}
-                  {editorType == 'type3' && (
-                    <ContentCreating
-                      setTabView={setTabView}
-                      tabView={tabView}
-                      type={'type3'}
-                    />
-                  )}
-                </>
-              )}
-            </>
+          )}
+          {query.get('state') === 'uploadfile' && (
+            <ContentFileUpload setTabView={setTabView} type={'type1'} />
+          )}
+          {query.get('state') === 'uploadhtml' && (
+            <ContentHTMLUpload setTabView={setTabView} type={'type2'} />
+          )}
+          {query.get('state') === 'createcontent' && (
+            <ContentCreating
+              setTabView={setTabView}
+              tabView={tabView}
+              type={'type3'}
+            />
           )}
         </ContentBox>
       )}

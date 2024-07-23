@@ -9,7 +9,6 @@ import styled from 'styled-components';
 import { Button, Modal, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
-import { editorTypeAtom } from '../../../store/utilAtom';
 import { ItemCategoryType, QuizListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
@@ -28,7 +27,6 @@ export function ContentCreating({
   type: string;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [editorType, setEditorType] = useRecoilState(editorTypeAtom);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
@@ -267,9 +265,6 @@ export function ContentCreating({
   //     window.removeEventListener('message', handleMessage);
   //   };
   // }, [isPostMessage]);
-  useEffect(() => {
-    setEditorType(type);
-  }, [setEditorType, type]);
 
   return (
     <Container>
