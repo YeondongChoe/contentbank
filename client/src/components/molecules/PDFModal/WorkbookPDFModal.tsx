@@ -345,7 +345,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           assign === '4'
                                             ? '0 0 600px 0'
                                             : assign === '6'
-                                              ? '0 0 400px 0'
+                                              ? '0 0 100px 0'
                                               : ''
                                         }
                                       >
@@ -404,7 +404,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           assign === '4'
                                             ? '0 0 600px 0'
                                             : assign === '6'
-                                              ? '0 0 400px 0'
+                                              ? '0 0 100px 0'
                                               : ''
                                         }
                                       >

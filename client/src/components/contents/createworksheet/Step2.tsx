@@ -180,13 +180,13 @@ export function Step2() {
       setContentAuthor(workbookData?.data.data.examiner);
       setTag(workbookData?.data.data.tag);
       setGetItemCountData(workbookData?.data.data.quizCnt);
-      setColor(workbookData?.data.data.templateList.color);
-      setType(workbookData?.data.data.templateList.type);
-      setMultiLevel(workbookData?.data.data.templateList.multiLevel);
-      setAssign(workbookData?.data.data.templateList.assign);
-      setIsDate(workbookData?.data.data.templateList.isDate);
-      setIsQuizType(workbookData?.data.data.templateList.isQuizType);
-      setItemType(workbookData?.data.data.templateList.itemType);
+      setColor(workbookData?.data.data.templateList[0].color);
+      setType(workbookData?.data.data.templateList[0].type);
+      setMultiLevel(workbookData?.data.data.templateList[0].multiLevel);
+      setAssign(workbookData?.data.data.templateList[0].assign);
+      setIsDate(workbookData?.data.data.templateList[0].isDate);
+      setIsQuizType(workbookData?.data.data.templateList[0].isQuizType);
+      setItemType(workbookData?.data.data.templateList[0].itemType);
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
@@ -1893,15 +1893,9 @@ export function Step2() {
   };
 
   const goBackStep1 = () => {
-    // const data = {
-    //   문항수: initialItems.length.toString(),
-    //   난이도: '중',
-    //   문항타입: '객관식',
-    // };
-    // saveLocalData(data);
     setContentNumQuotient([]);
     navigate('/content-create/exam/step1');
-    //window.localStorage.clear();
+    window.localStorage.clear();
   };
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿

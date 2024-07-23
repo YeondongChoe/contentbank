@@ -37,11 +37,10 @@ export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
-
+  console.log(getLocalData);
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
   const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
   const [itemHeights, setItemHeights] = useState<number[]>([]);
-  console.log(itemHeights);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
