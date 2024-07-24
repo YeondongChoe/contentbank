@@ -36,7 +36,7 @@ export const TypeA = ({
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-  //console.log(pages);
+
   useEffect(() => {
     if (initialItems) {
       setQuizItemList(initialItems);
