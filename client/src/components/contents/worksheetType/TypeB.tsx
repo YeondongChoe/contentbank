@@ -268,7 +268,7 @@ export const TypeB = ({
                               : ''
                         }
                       >
-                        {isContentTypeTitle && (
+                        {isContentTypeTitle && quizCategory?.유형 && (
                           <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
                         )}
                         <EachMathViewer>
@@ -315,7 +315,7 @@ export const TypeB = ({
                               : ''
                         }
                       >
-                        {isContentTypeTitle && (
+                        {isContentTypeTitle && quizCategory?.유형 && (
                           <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
                         )}
                         <EachMathViewer>
