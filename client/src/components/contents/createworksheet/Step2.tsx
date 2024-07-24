@@ -2122,7 +2122,7 @@ export function Step2() {
                                   isFavorite={item.isFavorite}
                                   data={item}
                                   index={item.idx}
-                                  title={quizCategory?.유형}
+                                  title={quizCategory?.유형 || 'N/A'}
                                   category={quizCategoryType}
                                   quizNum={item.idx}
                                   selectedCardIndex={selectedCardIndex}
@@ -2857,7 +2857,7 @@ export function Step2() {
                                         isFavorite={item.isFavorite}
                                         data={item}
                                         index={item.idx}
-                                        title={quizCategory?.유형}
+                                        title={quizCategory?.유형 || 'N/A'}
                                         category={quizCategoryType}
                                         quizNum={i + 1}
                                         selectedCardIndex={selectedCardIndex}
@@ -2959,7 +2959,7 @@ export function Step2() {
                                         isNewQuiz={true}
                                         data={item}
                                         index={item.idx}
-                                        title={quizCategory?.유형}
+                                        title={quizCategory?.유형 || 'N/A'}
                                         category={quizCategoryType}
                                         quizNum={item.idx}
                                         isFavorite={item.isFavorite}
@@ -3105,7 +3105,7 @@ export function Step2() {
                                     isFavorite={dragItem.isFavorite}
                                     data={dragItem}
                                     quizNum={itemIndex + 1}
-                                    title={quizCategory.유형}
+                                    title={quizCategory?.유형 || 'N/A'}
                                     index={itemIndex}
                                     selectedCardIndex={selectedCardIndex}
                                     onSelectCard={setSelectedCardIndex}
