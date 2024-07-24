@@ -17,6 +17,19 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
+interface QuizItem {
+  code: string | null;
+  type: string;
+  content: string;
+  sort: number;
+}
+
+type QuizItemListType = QuizItem[];
+
+type EditorDataType = {
+  [key: string]: string[];
+};
+
 export function ContentFileUpload({
   setTabView,
   type,
@@ -32,7 +45,11 @@ export function ContentFileUpload({
   const [content, setContent] = useState<string[]>([]);
   const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
 
-  const [editorData, setEditorData] = useState(null);
+  const [editorData, setEditorData] = useState<EditorDataType | null>(null);
+  const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
+  const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType[]>(
+    [],
+  );
   //셀렉트 값
   const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
@@ -60,8 +77,56 @@ export function ContentFileUpload({
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
-    if (editorData) console.log(editorData);
+    if (editorData) {
+      console.log(editorData);
+      const itemDataList: QuizItemListType = [];
+      let sort = 1;
+
+      Object.keys(editorData).forEach((key) => {
+        const value = editorData[key];
+        console.log('value----', value);
+        if (Array.isArray(value) && value.length > 0) {
+          let type = key.replace('tag_', '').replace('tl_', '').toUpperCase();
+
+          switch (type) {
+            case 'EXAM':
+              type = 'QUESTION';
+              break;
+            case 'BIGCONTENT':
+              type = 'BIG';
+              break;
+            case 'CONTENT':
+              type = 'TEXT';
+              break;
+            case 'EXAM_SM':
+              type = 'SMALL';
+              break;
+            default:
+              break;
+          }
+
+          value.forEach((content) => {
+            itemDataList.push({
+              code: null,
+              type: type,
+              content: content,
+              sort: sort++,
+            });
+          });
+        }
+      });
+
+      setQuizItemList(itemDataList);
+    }
   }, [editorData]);
+
+  useEffect(() => {
+    console.log('quizItemList', quizItemList);
+    const itemDataList: QuizItemListType[] = [];
+
+    //문항 리스트에 추가
+    setQuizItemArrList([...itemDataList]);
+  }, [quizItemList]);
 
   useEffect(() => {
     setQuestionList(quizList);
@@ -253,7 +318,8 @@ export function ContentFileUpload({
                           onDefaultSelect={() =>
                             handleDefaultSelect(categoryTitles[6]?.code)
                           }
-                          $positionTop
+                          // $positionTop
+                          heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
                           defaultValue={categoryTitles[6]?.code}
@@ -269,7 +335,8 @@ export function ContentFileUpload({
                           onDefaultSelect={() =>
                             handleDefaultSelect(categoryTitles[7]?.code)
                           }
-                          $positionTop
+                          // $positionTop
+                          heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
                           defaultValue={categoryTitles[7]?.code}

@@ -35,25 +35,7 @@ export function CreateContentMain() {
   ];
   const [tabView, setTabView] = useState<string>('DT & Editing');
 
-  // 부모 로컬스토리지에서 데이터 가져오기
-  // const getLocalData = () => {
-  //   const data = localStorage.getItem('sendData');
-  //   let sendData;
-  //   if (data) sendData = JSON.parse(data);
-
-  //   console.log('데이터 조회', sendData && sendData.data);
-
-  //   if (sendData && sendData.data) {
-  //     setIsUploadFile(sendData.data);
-  //     // 로컬스토리지 값 다받은 뒤 초기화
-  //     window.opener.localStorage.clear();
-  //     return;
-  //   }
-  // };
-
   useEffect(() => {
-    // getLocalData();
-
     if (query.get('state')?.toString() == 'edit') {
       console.log('query', query.get('state')); // 수정일시 edit 생성일시 create
       // 전역에 문항리스트 데이터 저장

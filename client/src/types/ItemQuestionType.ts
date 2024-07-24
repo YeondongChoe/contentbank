@@ -49,7 +49,6 @@ export type QuizListType = {
   lastModifiedBy: string;
   type: string;
   userKey: string;
-  // quizCategoryList: any[]; //TODO : 데이터 다 들어갈시 명확히
   quizCategoryList: QuizCategoryList[];
   quizItemList?: QuizType[];
   quizList: QuizType[];
