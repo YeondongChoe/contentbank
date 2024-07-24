@@ -863,8 +863,6 @@ export function Step1() {
       setIsModifying(false);
     }
   }, [isModifying, selected6depth]);
-  console.log(unitClassificationList);
-  console.log(selectedClassification);
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -1455,19 +1453,26 @@ export function Step1() {
     if (selectedTextbook && selectedTextbook.length > 0) {
       const initialData = selectedTextbook.map((textbook) => ({
         subChapter: textbook?.subChapter || '',
-        pageList: (textbook?.pageList || []).map((page) => ({
-          bookPage: page?.bookPage || '',
-          isChecked: false,
-          quizList: (page?.quizList || []).map((quiz) => ({
-            ...quiz,
+        pageList: (textbook?.pageList || [])
+          .map((page) => ({
+            bookPage: page?.bookPage || '',
             isChecked: false,
-            seq: `${quiz.code}${quiz.bookQuizNumber}`,
-          })),
-        })),
+            quizList: (page?.quizList || [])
+              .map((quiz) => ({
+                ...quiz,
+                isChecked: false,
+                seq: `${quiz.code}${quiz.bookQuizNumber}`,
+              }))
+              .sort(
+                (a, b) => Number(a.bookQuizNumber) - Number(b.bookQuizNumber),
+              ),
+          }))
+          .sort((a, b) => Number(a.bookPage) - Number(b.bookPage)), // quizNumber로 정렬
       }));
       setProcessTextbookData(initialData);
     }
   }, [selectedTextbook]);
+  console.log(selectedTextbook);
 
   // 선택시 배경색이 나타남
   const choiceType = (idx: number) => {
@@ -2448,6 +2453,7 @@ export function Step1() {
   }, [tabVeiw]);
 
   useEffect(() => {
+    setReceivedQuizCount(null);
     //단원 유형별버튼 초기화
     setQuestionNum('');
     setQuestionLevel('');
@@ -3890,7 +3896,7 @@ export function Step1() {
                         buttonType="button"
                         onClick={() => {
                           selectEqualScore(2);
-                          openEqualScoreSettingModal();
+                          //openEqualScoreSettingModal();
                         }}
                         $padding="10px"
                         height={'34px'}
@@ -4414,7 +4420,7 @@ export function Step1() {
                         buttonType="button"
                         onClick={() => {
                           selectEqualScore(2);
-                          openEqualScoreSettingModal();
+                          //openEqualScoreSettingModal();
                         }}
                         $padding="10px"
                         height={'34px'}
