@@ -1472,7 +1472,6 @@ export function Step1() {
       setProcessTextbookData(initialData);
     }
   }, [selectedTextbook]);
-  console.log(selectedTextbook);
 
   // 선택시 배경색이 나타남
   const choiceType = (idx: number) => {

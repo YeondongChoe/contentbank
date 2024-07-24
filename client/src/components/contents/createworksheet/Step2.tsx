@@ -3017,7 +3017,7 @@ export function Step2() {
                               <Select
                                 width={'150px'}
                                 isnormalizedOptions
-                                key={el.idx}
+                                key={`${el.idx} - ${el.name}`}
                                 defaultValue={el.name}
                                 options={el.options}
                                 onSelect={(event) =>
@@ -3033,7 +3033,7 @@ export function Step2() {
                               <Select
                                 width={'150px'}
                                 isnormalizedOptions
-                                key={el.idx}
+                                key={`${el.idx} - ${el.name}`}
                                 defaultValue={el.name}
                                 options={el.options}
                                 onSelect={(event) =>
