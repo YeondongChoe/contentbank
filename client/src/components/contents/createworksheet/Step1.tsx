@@ -2453,6 +2453,7 @@ export function Step1() {
   }, [tabVeiw]);
 
   useEffect(() => {
+    setReceivedQuizCount(null);
     //단원 유형별버튼 초기화
     setQuestionNum('');
     setQuestionLevel('');
@@ -3895,7 +3896,7 @@ export function Step1() {
                         buttonType="button"
                         onClick={() => {
                           selectEqualScore(2);
-                          openEqualScoreSettingModal();
+                          //openEqualScoreSettingModal();
                         }}
                         $padding="10px"
                         height={'34px'}
@@ -4419,7 +4420,7 @@ export function Step1() {
                         buttonType="button"
                         onClick={() => {
                           selectEqualScore(2);
-                          openEqualScoreSettingModal();
+                          //openEqualScoreSettingModal();
                         }}
                         $padding="10px"
                         height={'34px'}
