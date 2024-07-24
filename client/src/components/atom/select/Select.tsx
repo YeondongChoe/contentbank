@@ -94,7 +94,6 @@ export function Select({
     : normalizedOptions;
 
   const clickQuotientValue = (value: number) => {
-    console.log(value);
     if (value !== undefined && setSelectedQuotientValue) {
       setSelectedQuotientValue(value);
     }

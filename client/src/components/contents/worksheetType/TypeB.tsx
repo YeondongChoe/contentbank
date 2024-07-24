@@ -260,7 +260,7 @@ export const TypeB = ({
                       <MathViewerWrapper
                         key={i}
                         height={quizItemList.height as number}
-                        padding={
+                        $padding={
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
@@ -307,7 +307,7 @@ export const TypeB = ({
                       <MathViewerWrapper
                         key={i}
                         height={quizItemList.height as number}
-                        padding={
+                        $padding={
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
@@ -477,9 +477,9 @@ const WorksheetBodyRight = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const MathViewerWrapper = styled.div<{ height: number; padding: string }>`
+const MathViewerWrapper = styled.div<{ height: number; $padding: string }>`
   height: ${({ height }) => `${height}px`};
-  padding: ${({ padding }) => `${padding}`};
+  padding: ${({ $padding }) => `${$padding}`};
   display: flex;
   flex-direction: column;
   margin-bottom: 40px;

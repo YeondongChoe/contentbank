@@ -1299,10 +1299,6 @@ const WorksheetTemplateTypeWrapper = styled.div`
   max-height: 751px;
   overflow-y: auto;
 `;
-const MathJaxWrapper = styled.div`
-  min-height: 250px;
-`;
-
 const CreateButtonWrapper = styled.div`
   padding-top: 20px;
   display: flex;
