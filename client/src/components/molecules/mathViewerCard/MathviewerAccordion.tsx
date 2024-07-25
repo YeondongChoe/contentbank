@@ -214,7 +214,6 @@ export function MathviewerAccordion({
     () => contentNumQuotient.reduce((acc, el) => acc + el.score, 0),
     [contentNumQuotient, deleteQuizItem, addQuizItem],
   );
-  //console.log(contentNumQuotient);
   useEffect(() => {
     if (setTotalEqualScore) {
       setTotalEqualScore(totalEqualScore);
@@ -306,7 +305,6 @@ export function MathviewerAccordion({
     const matchedItem = contentNumQuotient.find(
       (item) => item.quizNum === quizNum,
     );
-    //console.log(matchedItem);
     if (matchedItem) {
       return `${matchedItem.score}점`;
     } else if (isRemainderContent) {
