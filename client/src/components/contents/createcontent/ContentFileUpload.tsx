@@ -1,34 +1,27 @@
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Modal, Select } from '../..';
+import { Button, Modal, openToastifyAlert, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
-import { ItemCategoryType, QuizListType } from '../../../types';
+import {
+  AddQuestionListType,
+  EditorDataType,
+  ItemCategoryType,
+  QuizItemListType,
+  QuizListType,
+} from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
-
-interface QuizItem {
-  code: string | null;
-  type: string;
-  content: string;
-  sort: number;
-}
-
-type QuizItemListType = QuizItem[];
-
-type EditorDataType = {
-  [key: string]: string[];
-};
 
 export function ContentFileUpload({
   setTabView,
@@ -48,6 +41,9 @@ export function ContentFileUpload({
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
   const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType[]>(
+    [],
+  );
+  const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
     [],
   );
   //셀렉트 값
@@ -122,11 +118,58 @@ export function ContentFileUpload({
 
   useEffect(() => {
     console.log('quizItemList', quizItemList);
-    const itemDataList: QuizItemListType[] = [];
-
     //문항 리스트에 추가
-    setQuizItemArrList([...itemDataList]);
+    if (quizItemList.length > 0) {
+      setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
+    }
   }, [quizItemList]);
+
+  useEffect(() => {
+    console.log('quizItemArrList', quizItemArrList);
+    // 등록될 값
+    const newQuestionList = quizItemArrList.map((quizItems) => ({
+      commandCode: 0,
+      quizIdx: null,
+      articleList: [],
+      quizItemList: quizItems,
+      quizClassList: [],
+    }));
+    setAddQuestionList(newQuestionList);
+  }, [quizItemArrList]);
+
+  useEffect(() => {
+    if (addQuestionList.length) postQuizDataMutate();
+  }, [addQuestionList]);
+
+  // 문항 등록 후 메타데이터 수정 되게
+  const postQuiz = async () => {
+    const data = addQuestionList[addQuestionList.length - 1];
+
+    return await quizService.post(`/v1/quiz`, data);
+  };
+
+  const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
+    mutationFn: postQuiz,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: `문항이 추가 되었습니다 ${response.data.data.idx}`,
+      });
+      // 추가된 문항의 idx값을 배열에 넣기 전체리스트에서 idx값으로 찾아온뒤 필수 메타값넣고 등록
+    },
+  });
+
+  useEffect(() => {
+    console.log('postQuizData', postQuizData);
+  }, [postQuizData]);
 
   useEffect(() => {
     setQuestionList(quizList);
@@ -279,6 +322,14 @@ export function ContentFileUpload({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 난이도', selectedSource);
+    saveHandler();
+  };
+  const saveHandler = async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const data = await window.saveExamData();
+    console.log(data);
+    setEditorData(JSON.parse(data));
   };
 
   // 문항 추가버튼 disable 처리
@@ -301,7 +352,11 @@ export function ContentFileUpload({
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile type={type} setEditorData={setEditorData} />
+              <EditerOneFile
+                type={type}
+                setEditorData={setEditorData}
+                saveHandler={saveHandler}
+              />
             </EditWrapper>
 
             <BackgroundWrapper>

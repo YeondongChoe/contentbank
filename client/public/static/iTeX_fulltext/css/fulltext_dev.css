@@ -29,6 +29,10 @@ p {
   font-size: 12pt;
 }
 
+.tox.tox-tinymce {
+	height: 100% !important;
+}
+
 /* 중간 기기들 (데스크탑, 992px 이상) */
 @media (max-width: 992px) {
   .tox.tox-tinymce {

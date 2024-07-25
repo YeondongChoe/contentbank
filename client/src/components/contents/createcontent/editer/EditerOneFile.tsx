@@ -62,10 +62,12 @@ export function EditerOneFile({
   type,
   tabView,
   setEditorData,
+  saveHandler,
 }: {
   type?: string;
   tabView?: string;
   setEditorData: React.Dispatch<React.SetStateAction<any>>;
+  saveHandler: () => any;
 }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
   const [jsonData, setJsonData] = useState<string | null>(null);
@@ -94,9 +96,9 @@ export function EditerOneFile({
     <Container>
       {isMathJaxLoaded ? (
         <>
-          {type === 'type1' && <Type1 setJsonData={setJsonData} />}
+          {type === 'type1' && <Type1 saveHandler={saveHandler} />}
           {type === 'type2' && <Type2 />}
-          {type === 'type3' && <Type3 setJsonData={setJsonData} />}
+          {type === 'type3' && <Type3 saveHandler={saveHandler} />}
         </>
       ) : (
         <LoaderWrapper>

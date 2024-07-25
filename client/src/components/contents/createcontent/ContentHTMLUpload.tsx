@@ -252,13 +252,21 @@ export function ContentHTMLUpload({
     };
   }, [isPostMessage]);
 
+  function saveHandler() {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <Container>
       <ContentsWrapper>
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile type={type} setEditorData={setEditorData} />
+              <EditerOneFile
+                type={type}
+                setEditorData={setEditorData}
+                saveHandler={saveHandler}
+              />
             </EditWrapper>
 
             <BackgroundWrapper>

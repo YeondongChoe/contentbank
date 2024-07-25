@@ -105,3 +105,25 @@ export type QuizCategory = {
   행동요소2?: string;
   sources?: Source[] | any[];
 };
+
+// 등록시
+interface QuizItem {
+  code: string | null;
+  type: string;
+  content: string;
+  sort: number;
+}
+
+export type QuizItemListType = QuizItem[];
+
+export type EditorDataType = {
+  [key: string]: string[];
+};
+
+export type AddQuestionListType = {
+  commandCode: number;
+  quizIdx: null;
+  articleList: never[];
+  quizItemList: QuizItemListType;
+  quizClassList: never[];
+}[];

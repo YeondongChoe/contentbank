@@ -41,11 +41,7 @@ const dynamicallyLoadScripts = (
   loadScript(0);
 };
 
-const Type3 = ({
-  setJsonData,
-}: {
-  setJsonData: React.Dispatch<React.SetStateAction<string | null>>;
-}) => {
+const Type3 = ({ saveHandler }: { saveHandler: () => any }) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
   const initialScripts = [
@@ -283,17 +279,15 @@ const Type3 = ({
       <div id="second3" className="resizeable">
         <div className="col-lg-4 p-0 tiny_wrap">
           <textarea id="tinyeditor"></textarea>
-          <div className="save_exam_btn_wrap">
-            <button
-              id="exam_save"
-              onClick={async () => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                const data = await window.saveExamData();
-                // console.log(data);
-                setJsonData(data);
-              }}
-            >
+          <div
+            className="save_exam_btn_wrap"
+            style={{
+              height: '0%',
+              visibility: 'hidden',
+              position: 'absolute',
+            }}
+          >
+            <button id="exam_save" onClick={saveHandler}>
               문항 저장
             </button>
           </div>
