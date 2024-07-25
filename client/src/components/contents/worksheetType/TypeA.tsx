@@ -36,7 +36,7 @@ export const TypeA = ({
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-  //console.log(pages);
+
   useEffect(() => {
     if (initialItems) {
       setQuizItemList(initialItems);
@@ -269,7 +269,7 @@ export const TypeA = ({
                       <MathViewerWrapper
                         key={i}
                         height={quizItemList.height as number}
-                        padding={
+                        $padding={
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
@@ -315,7 +315,7 @@ export const TypeA = ({
                       <MathViewerWrapper
                         key={i}
                         height={quizItemList.height as number}
-                        padding={
+                        $padding={
                           assign === '4문제'
                             ? '0 0 600px 0'
                             : assign === '6문제'
@@ -491,9 +491,9 @@ const WorksheetBodyRight = styled.div`
   flex-direction: column;
 `;
 //각 아이템
-const MathViewerWrapper = styled.div<{ height: number; padding: string }>`
+const MathViewerWrapper = styled.div<{ height: number; $padding: string }>`
   height: ${({ height }) => `${height}px`};
-  padding: ${({ padding }) => `${padding}`};
+  padding: ${({ $padding }) => `${$padding}`};
   display: flex;
   flex-direction: column;
   margin-bottom: 40px;

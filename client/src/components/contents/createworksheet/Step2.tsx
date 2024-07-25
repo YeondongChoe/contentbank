@@ -174,6 +174,23 @@ export function Step2() {
   //서버로부터 값을 받아오면 넣어주기
   useEffect(() => {
     if (workbookData) {
+      const arrayScore = workbookData?.data.data.quizList.map(
+        (item: QuizList) => item.score,
+      );
+      const totalScore = arrayScore.reduce(
+        (accumulator: number, currentValue: number) =>
+          accumulator + currentValue,
+        0,
+      );
+      const avgScore = totalScore / workbookData?.data.data.quizList.length;
+      setQuotient(avgScore);
+      setMinQuotient(avgScore > 1 ? avgScore - 1 : avgScore);
+      setMaxQuotient(avgScore + 1);
+      setEqualTotlaValue(totalScore.toString());
+      setTotalEqualScore(totalScore);
+      setRemainderContent(workbookData?.data.data.quizList.length);
+      setNextRemainderContent(workbookData?.data.data.quizList.length + 1);
+      setEqualScore(2);
       setInitialItems(workbookData?.data.data.quizList);
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
@@ -217,12 +234,12 @@ export function Step2() {
     setInitialItems(updatedItems);
   }, [contentNumQuotient]);
 
-  //나머지 시작 컨텐츠
+  //평균 배점 문항
   const [remainderContent, setRemainderContent] = useState<number>();
-  //나머지 시작 전 컨텐츠
+  //평균 배점 이상 문항
   const [nextRemainderContent, setNextRemainderContent] = useState<number>();
   //문항당 배점
-  const [quotient, setQuotient] = useState<number>(0);
+  const [quotient, setQuotient] = useState<number>();
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
   const [equalScore, setEqualScore] = useState<number | null>(null);
@@ -1050,7 +1067,7 @@ export function Step2() {
     setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [selected5depth]);
   useEffect(() => {
-    setClassificationSearchValue('');
+    setSearchValue('');
     setCheckedDepthList([]);
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
@@ -1324,21 +1341,18 @@ export function Step2() {
     checkedDepthList,
   ]);
 
-  const [classificationSearchValue, setClassificationSearchValue] =
-    useState<string>('');
-
-  useEffect(() => {}, [itemTree, classificationSearchValue]);
+  const [searchValue, setSearchValue] = useState<string>('');
 
   // 검색 기능
   const filterSearchValue = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     // 쿼리 스트링 변경 로직
-    setClassificationSearchValue(e.currentTarget.value);
+    setSearchValue(e.currentTarget.value);
   };
   const filterSearchValueEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      setClassificationSearchValue(e.currentTarget.value);
+      setSearchValue(e.currentTarget.value);
     }
   };
 
@@ -1404,18 +1418,14 @@ export function Step2() {
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const highlightText = (text: string, classificationSearchValue: string) => {
-    if (classificationSearchValue.length < 2) return text;
-    const parts = text.split(
-      new RegExp(`(${classificationSearchValue})`, 'gi'),
-    );
+  const highlightText = (text: string, searchValue: string) => {
+    if (searchValue.length < 2) return text;
+    const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
     return (
       <span className="text">
         {parts.map((part, index) => {
           const className =
-            part.toLowerCase() === classificationSearchValue.toLowerCase()
-              ? 'highlight'
-              : '';
+            part.toLowerCase() === searchValue.toLowerCase() ? 'highlight' : '';
           return (
             <span key={index} className={className}>
               {part}
@@ -1449,7 +1459,7 @@ export function Step2() {
 
   useEffect(() => {
     setHighlightIndex(-1);
-  }, [itemTree, classificationSearchValue]);
+  }, [itemTree, searchValue]);
 
   const navigate = useNavigate();
 
@@ -2542,7 +2552,7 @@ export function Step2() {
                                           <RowListWrapper>
                                             <Search
                                               height={'30px'}
-                                              value={classificationSearchValue}
+                                              value={searchValue}
                                               onClick={(e) =>
                                                 filterSearchValue(e)
                                               }
@@ -2550,15 +2560,12 @@ export function Step2() {
                                                 filterSearchValueEnter(e)
                                               }
                                               onChange={(e) => {
-                                                setClassificationSearchValue(
-                                                  e.target.value,
-                                                );
+                                                setSearchValue(e.target.value);
                                               }}
                                               placeholder="검색어를 입력해주세요.(두글자 이상)"
                                               maxLength={20}
                                             />
-                                            {classificationSearchValue.length >
-                                              1 && (
+                                            {searchValue.length > 1 && (
                                               <p className="line bottom_text">
                                                 {`총 
                        			${
@@ -2567,9 +2574,7 @@ export function Step2() {
                                     (total, el) =>
                                       total +
                                       el.itemTreeList.filter((item) =>
-                                        item.name.includes(
-                                          classificationSearchValue,
-                                        ),
+                                        item.name.includes(searchValue),
                                       ).length,
                                     0,
                                   )
@@ -2607,8 +2612,7 @@ export function Step2() {
                                                     ref={contentRef}
                                                     className="content"
                                                   >
-                                                    {classificationSearchValue.length >
-                                                    0 ? (
+                                                    {searchValue.length > 0 ? (
                                                       <>
                                                         {itemTree.map((el) => (
                                                           <div
@@ -2652,13 +2656,13 @@ export function Step2() {
                                                                       : false
                                                                   }
                                                                   searchValue={
-                                                                    classificationSearchValue
+                                                                    searchValue
                                                                   }
                                                                 >
                                                                   <span>
                                                                     {highlightText(
                                                                       item.name,
-                                                                      classificationSearchValue,
+                                                                      searchValue,
                                                                     )}
                                                                   </span>
                                                                 </DepthBlock>
@@ -2701,14 +2705,14 @@ export function Step2() {
                                                                     )
                                                                   }
                                                                   checked={
-                                                                    checkedDepthList?.includes(
+                                                                    checkedDepthList.includes(
                                                                       item?.idx,
                                                                     )
                                                                       ? true
                                                                       : false
                                                                   }
                                                                   searchValue={
-                                                                    classificationSearchValue
+                                                                    searchValue
                                                                   }
                                                                 >
                                                                   <span>
@@ -3030,7 +3034,7 @@ export function Step2() {
                               <Select
                                 width={'150px'}
                                 isnormalizedOptions
-                                key={el.idx}
+                                key={`${el.idx} - ${el.name}`}
                                 defaultValue={el.name}
                                 options={el.options}
                                 onSelect={(event) =>
@@ -3046,7 +3050,7 @@ export function Step2() {
                               <Select
                                 width={'150px'}
                                 isnormalizedOptions
-                                key={el.idx}
+                                key={`${el.idx} - ${el.name}`}
                                 defaultValue={el.name}
                                 options={el.options}
                                 onSelect={(event) =>

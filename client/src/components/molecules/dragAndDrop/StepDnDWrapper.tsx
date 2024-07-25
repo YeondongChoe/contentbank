@@ -53,6 +53,13 @@ export const StepDnDWrapper = ({
   quotient,
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
+  const [currentItemScore, setCurrentItemScore] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (currentItems) {
+      setCurrentItemScore(currentItems.map((item) => item.score));
+    }
+  }, [currentItems]);
 
   // 항목이 이동했을 때 호출되는 함수.
   const handleItemMove = (
@@ -103,7 +110,7 @@ export const StepDnDWrapper = ({
                 onMove={handleItemMove}
                 itemRenderer={children}
                 dragSectionName={dragSectionName}
-                quotient={quotient}
+                quotient={quotient || currentItemScore[idx]}
               />
             ))
           ) : (
@@ -121,7 +128,7 @@ export const StepDnDWrapper = ({
                 onMove={handleItemMove}
                 itemRenderer={children}
                 dragSectionName={dragSectionName}
-                quotient={quotient}
+                quotient={quotient || currentItemScore[idx]}
               />
             ))
           ) : (
