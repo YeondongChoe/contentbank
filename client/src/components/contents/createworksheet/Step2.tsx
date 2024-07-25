@@ -174,6 +174,23 @@ export function Step2() {
   //서버로부터 값을 받아오면 넣어주기
   useEffect(() => {
     if (workbookData) {
+      const arrayScore = workbookData?.data.data.quizList.map(
+        (item: QuizList) => item.score,
+      );
+      const totalScore = arrayScore.reduce(
+        (accumulator: number, currentValue: number) =>
+          accumulator + currentValue,
+        0,
+      );
+      const avgScore = totalScore / workbookData?.data.data.quizList.length;
+      setQuotient(avgScore);
+      setMinQuotient(avgScore > 1 ? avgScore - 1 : avgScore);
+      setMaxQuotient(avgScore + 1);
+      setEqualTotlaValue(totalScore.toString());
+      setTotalEqualScore(totalScore);
+      setRemainderContent(workbookData?.data.data.quizList.length);
+      setNextRemainderContent(workbookData?.data.data.quizList.length + 1);
+      setEqualScore(2);
       setInitialItems(workbookData?.data.data.quizList);
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
@@ -217,12 +234,12 @@ export function Step2() {
     setInitialItems(updatedItems);
   }, [contentNumQuotient]);
 
-  //나머지 시작 컨텐츠
+  //평균 배점 문항
   const [remainderContent, setRemainderContent] = useState<number>();
-  //나머지 시작 전 컨텐츠
+  //평균 배점 이상 문항
   const [nextRemainderContent, setNextRemainderContent] = useState<number>();
   //문항당 배점
-  const [quotient, setQuotient] = useState<number>(0);
+  const [quotient, setQuotient] = useState<number>();
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
   const [equalScore, setEqualScore] = useState<number | null>(null);
