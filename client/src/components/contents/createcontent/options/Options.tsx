@@ -15,13 +15,27 @@ import { SchoolInputModal } from '../SchoolInputModal';
 
 import { OtionsSelect } from './OtionsSelect';
 
-export function Options({ listItem }: { listItem: ItemCategoryType }) {
+export function Options({
+  titleIdx,
+  listItem,
+  onOptionChange,
+}: {
+  titleIdx: string;
+  listItem: ItemCategoryType;
+  onOptionChange: React.Dispatch<
+    React.SetStateAction<{ titleIdx: string; name: string; value: string }>
+  >;
+}) {
   const { openModal } = useModal();
   const [startDate, setStartDate] = useState<string>('');
+  const [selected, setSelected] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>('');
   const [schoolNameValue, setSchoolNameValue] = useState<{
     cityIdx: number;
     schoolName: string;
   }>({ cityIdx: 0, schoolName: '' });
+
   const modalData = {
     title: '',
     content: <SchoolInputModal setSchoolNameValue={setSchoolNameValue} />,
@@ -38,17 +52,44 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
-
-    // setContent((prevContent) => [...prevContent, value]);
+    setContent(value);
+    onOptionChange({ titleIdx: titleIdx, name: listItem.name, value });
   };
 
+  useEffect(() => {
+    console.log('titleIdx', titleIdx);
+  }, [titleIdx]);
+  useEffect(() => {}, [onOptionChange]);
+
   const schoolName = useMemo(() => {
-    if (schoolNameValue.schoolName !== '') {
-      return schoolNameValue.schoolName;
-    } else {
-      return '학교명';
-    }
+    return schoolNameValue.schoolName !== ''
+      ? schoolNameValue.schoolName
+      : '학교명';
   }, [schoolNameValue]);
+
+  useEffect(() => {
+    onOptionChange({
+      titleIdx: titleIdx,
+      name: listItem.name,
+      value: schoolNameValue.schoolName,
+    });
+  }, [schoolNameValue]);
+
+  useEffect(() => {
+    onOptionChange({
+      titleIdx: titleIdx,
+      name: listItem.name,
+      value: startDate,
+    });
+  }, [startDate]);
+
+  useEffect(() => {
+    onOptionChange({
+      titleIdx: titleIdx,
+      name: listItem.name,
+      value: inputValue,
+    });
+  }, [inputValue]);
 
   // 셀렉트 api 호출
   const getCategoryItems = async () => {
@@ -66,16 +107,20 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
   });
 
   useEffect(() => {
-    console.log('listItem-----------', listItem.idx);
     if (categoryItems) categoryItemsRefetch();
   }, [listItem]);
-  console.log('categoryItems-----------', categoryItems);
 
   return (
     <OptionWrapper>
       <li>
         {listItem?.type === 'INPUT' && (
-          <input placeholder={`${listItem.name}`} />
+          <input
+            placeholder={`${listItem.name}`}
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+            }}
+          />
         )}
       </li>
       <li>
@@ -121,8 +166,8 @@ export function Options({ listItem }: { listItem: ItemCategoryType }) {
               event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
             ) => selectCategoryOption(event)}
             $positionTop
-            selected={''}
-            setSelected={() => {}}
+            selected={selected}
+            setSelected={setSelected}
           />
         )}
       </li>

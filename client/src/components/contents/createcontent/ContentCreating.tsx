@@ -13,6 +13,7 @@ import {
   AddQuestionListType,
   EditorDataType,
   ItemCategoryType,
+  QuestionClassListType,
   QuizItemListType,
   QuizListType,
 } from '../../../types';
@@ -22,6 +23,10 @@ import { COLOR } from '../../constants/COLOR';
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
+
+type SelectedValueType = string | { [key: string]: any };
+
+type SelectedValuesType = { [key: number]: SelectedValueType };
 
 export function ContentCreating({
   setTabView,
@@ -49,12 +54,15 @@ export function ContentCreating({
   const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
     [],
   );
+  const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
   //셀렉트 값
   const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
-  const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
+  const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
+    [],
+  ); //출처
 
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
@@ -74,8 +82,9 @@ export function ContentCreating({
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
+    console.log('editorData', editorData);
+
     if (editorData) {
-      console.log(editorData);
       const itemDataList: QuizItemListType = [];
       let sort = 1;
 
@@ -133,12 +142,44 @@ export function ContentCreating({
       quizIdx: null,
       articleList: [],
       quizItemList: quizItems,
-      quizClassList: [],
+      quizClassList: quizClassList,
     }));
     setAddQuestionList(newQuestionList);
   }, [quizItemArrList]);
 
   useEffect(() => {
+    console.log('selectedSubject 교과', selectedSubject);
+    console.log('selectedCourse 과목', selectedCourse);
+    console.log('selectedQuestionType 문항타입', selectedQuestionType);
+    console.log('selectedDifficulty 난이도', selectedDifficulty);
+    //출처
+    console.log('selectedSource 출처', selectedSource);
+
+    const quizClassList: QuestionClassListType = [
+      {
+        type: 'CLASS',
+        quizCategory: {
+          sources: selectedSource,
+          과목: selectedCourse,
+          교과: selectedSubject,
+          난이도: selectedDifficulty,
+          문항타입: selectedQuestionType,
+        },
+      },
+    ];
+
+    // 필수 메타값 추가 및 변경
+    setQuizClassList(quizClassList);
+  }, [
+    selectedSubject,
+    selectedCourse,
+    selectedQuestionType,
+    selectedSource,
+    selectedDifficulty,
+  ]);
+
+  useEffect(() => {
+    // 등록 api
     if (addQuestionList.length) postQuizDataMutate();
   }, [addQuestionList]);
 
@@ -162,7 +203,7 @@ export function ContentCreating({
     onSuccess: (response) => {
       openToastifyAlert({
         type: 'success',
-        text: `문항이 추가 되었습니다 ${response.data.data.idx}`,
+        text: `문항이 추가 되었습니다 ${response.data.data.quiz.idx}`,
       });
     },
   });
@@ -310,18 +351,7 @@ export function ContentCreating({
     }
   };
   const submitSave = () => {
-    // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
-    // console.log('신규 등록된 문항 리스트 get 요청 API');
-
     setIsPostMessage(true);
-
-    // 등록 api
-    // console.log('selectedSubject 교과', selectedSubject);
-    // console.log('selectedCourse 과목', selectedCourse);
-    // console.log('selectedQuestionType 문항타입', selectedQuestionType);
-    // console.log('selectedDifficulty 난이도', selectedDifficulty);
-    // //출처
-    // console.log('selectedSource 난이도', selectedSource);
     saveHandler();
   };
   const saveHandler = async () => {

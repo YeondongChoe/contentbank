@@ -68,6 +68,13 @@ export function OptionList({
     categories: [],
   });
 
+  const [sourceArr, setSourceArr] = useState<any[]>([]);
+  const [sourceValue, setSourceValue] = useState<{
+    titleIdx: string;
+    name: string;
+    value: string;
+  }>({ titleIdx: '', name: '', value: '' });
+
   const getCategoryListFromString = (data: string) => {
     const groupsArray = data.split(',').map(Number);
     return categoryTitles.filter((el) => groupsArray.includes(el.idx));
@@ -201,26 +208,6 @@ export function OptionList({
     setCurrentTarget(null);
   };
 
-  // const removeSourceOptions = (
-  //   event: React.MouseEvent<HTMLButtonElement>,
-  //   index: number,
-  // ) => {
-  //   // 확인 얼럿
-  //   if (isRemove) {
-  //     const target = event.currentTarget;
-  //     const id = target.parentElement?.parentElement?.id;
-  //     const arr = sourceOptions.filter((el) => el !== Number(id));
-  //     setSourceOptions(arr);
-
-  //     const newSelectedValues = { ...selectedValues };
-  //     delete newSelectedValues[index];
-  //     setSelectedValues(newSelectedValues);
-
-  //     setIsAlertOpen(false);
-  //     setIsRemove(false);
-  //   }
-  // };
-
   const getCategoryList = (value: string): ItemCategoryType[] => {
     const list = lists.find((list) => list.name === value);
     return list ? list.categories : [];
@@ -231,10 +218,58 @@ export function OptionList({
   }, [selected]);
 
   useEffect(() => {
-    // 최종적으로 전체 셀렉트값 부모 요소로 넘김
-    // TODO : 데이터 형식 맞추기
-    setSelectedSource([{ code: selected, idx: selected, name: selected }]);
-  }, []);
+    console.log('sourceValue', sourceValue);
+
+    // sourceValue의 객체 요소 중 하나라도 키값이 빈 문자열이 아닐 때
+    if (
+      sourceValue.titleIdx !== '' &&
+      sourceValue.name !== '' &&
+      sourceValue.value !== ''
+    ) {
+      setSourceArr((prevArr) => {
+        const newArr = [...prevArr, sourceValue];
+
+        // 중복 제거
+        const uniqueArr = newArr.reduce((acc, curr) => {
+          const foundIndex = acc.findIndex(
+            (item: { titleIdx: string; name: string }) =>
+              item.titleIdx === curr.titleIdx && item.name === curr.name,
+          );
+          if (foundIndex !== -1) {
+            acc[foundIndex] = curr; // 동일한 titleIdx와 name의 객체를 덮어씀
+          } else {
+            acc.push(curr);
+          }
+          return acc;
+        }, []);
+
+        console.log('uniqueArr', uniqueArr);
+        return uniqueArr;
+      });
+    }
+  }, [sourceValue]);
+
+  useEffect(() => {
+    // 서버로 전송할 데이터 구조로 재구성
+    const restructuredData = sourceArr.reduce((acc, curr) => {
+      const { titleIdx, name, value } = curr;
+      let sourceObject = acc.find(
+        (item: { [x: string]: any }) => item['출처'] === titleIdx,
+      );
+
+      if (!sourceObject) {
+        sourceObject = { 출처: titleIdx };
+        acc.push(sourceObject);
+      }
+
+      sourceObject[name] = value;
+
+      return acc;
+    }, []);
+
+    // console.log('restructuredData', restructuredData);
+    setSelectedSource(restructuredData);
+  }, [sourceArr]);
 
   return (
     <Container>
@@ -294,8 +329,10 @@ export function OptionList({
                   getCategoryList(selectedValues[index]).map(
                     (category, idx) => (
                       <Options
+                        titleIdx={selectedValues[index]}
                         listItem={category}
                         key={`${category?.name} optionsdepth${idx}`}
+                        onOptionChange={setSourceValue}
                       />
                     ),
                   )}

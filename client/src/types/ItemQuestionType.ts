@@ -125,5 +125,10 @@ export type AddQuestionListType = {
   quizIdx: null;
   articleList: never[];
   quizItemList: QuizItemListType;
-  quizClassList: never[];
+  quizClassList: QuestionClassListType;
+}[];
+
+export type QuestionClassListType = {
+  type: string;
+  quizCategory: QuizCategory;
 }[];
