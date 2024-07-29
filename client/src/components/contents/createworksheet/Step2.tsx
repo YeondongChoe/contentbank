@@ -1053,7 +1053,7 @@ export function Step2() {
 
         // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
         const itemTreeIdxList =
-          (item[4] as ItemTreeIdxListType).itemTreeIdxList || [];
+          (item[6] as ItemTreeIdxListType).itemTreeIdxList || [];
 
         return {
           itemTreeKey,
