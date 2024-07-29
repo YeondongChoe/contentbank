@@ -65,7 +65,8 @@ export function Step3() {
       setNewInitialItems(itemsWithHeight);
     }
   }, [itemHeights]);
-
+  console.log(getLocalData);
+  console.log(initialItems);
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
@@ -87,7 +88,7 @@ export function Step3() {
 
     fetchDataFromStorage();
   }, []);
-
+  console.log(getQuotientLocalData);
   //로컬스토리지에서 데이타를 가져온 후 문항 번호를 넣어서 저장
   useEffect(() => {
     if (getLocalData) {
@@ -253,7 +254,7 @@ export function Step3() {
       grade: gradeValue,
       tag: tag,
     };
-    //window.opener.localStorage.clear();
+    //window.opener.localStorage.removeItem('sendEditData');
     saveLocalData(data);
     localStorage.setItem(
       'sendQuotientData',

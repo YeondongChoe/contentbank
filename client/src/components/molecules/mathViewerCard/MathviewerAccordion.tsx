@@ -36,6 +36,7 @@ type AccordionProps = {
   isBorder?: boolean;
   isSimilarQuiz?: boolean;
   isNewQuiz?: boolean;
+  index: number;
 };
 
 function Accordion({
@@ -50,6 +51,7 @@ function Accordion({
   isSimilar,
   isSelected,
   isBorder,
+  index,
   changeQuizitem,
   addQuizItem,
 }: AccordionProps) {
@@ -68,7 +70,7 @@ function Accordion({
     >
       <AccordionHeader>
         <AccordionHeaderTitle>
-          <span className="number">{quizNum}</span>
+          <span className="number">{index + 1}</span>
           <span className="title">{title}</span>
         </AccordionHeaderTitle>
         <ActionButtonWrapper>
@@ -209,6 +211,11 @@ export function MathviewerAccordion({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
+  //console.log(quizNum);
+  //console.log(contentNumQuotient);
+  //console.log(data);
+  //console.log(quotient);
+
   //문항 삭제 추가 될때마다 총점 변경
   const totalEqualScore = useMemo(
     () => contentNumQuotient.reduce((acc, el) => acc + el.score, 0),
@@ -274,6 +281,7 @@ export function MathviewerAccordion({
       );
 
       const newData: ContentWithScore = {
+        index: index,
         quizNum: quizNum as number,
         score: isRemainderContent
           ? (quotient as number)
@@ -323,6 +331,7 @@ export function MathviewerAccordion({
       addQuizItem={addQuizItem}
       title={title}
       quizNum={quizNum}
+      index={index}
       componentWidth={componentWidth}
       componentHeight={componentHeight}
       isSimilar={isSimilar}
