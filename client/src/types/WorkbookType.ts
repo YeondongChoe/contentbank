@@ -37,7 +37,7 @@ export interface QuizList {
   code: string;
   num: number;
   type: string;
-  score: null | number;
+  score: number;
   height: number;
   userKey: string;
   createdBy: string;
@@ -121,6 +121,7 @@ export interface WorkbookCategoryData {
 }
 
 export interface ContentWithScore {
+  index: number;
   quizNum: number;
   score: number;
   code: string;

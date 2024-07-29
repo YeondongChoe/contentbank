@@ -2274,8 +2274,8 @@ export function Step1() {
           학교급: isRadioStateType(item[1]) ? item[1].title : '',
           학년: isRadioStateType(item[2]) ? item[2].title : '',
           학기: isRadioStateType(item[3]) ? item[3].title : '',
-          // 교과: isRadioStateType(item[4]) ? item[4].title : '',
-          // 과목: isRadioStateType(item[5]) ? item[5].title : '',
+          교과: isRadioStateType(item[4]) ? item[4].title : '',
+          과목: isRadioStateType(item[5]) ? item[5].title : '',
         };
         // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
         const itemTreeIdxList =

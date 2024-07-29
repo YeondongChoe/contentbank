@@ -102,7 +102,6 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
   const categoryType = initialItems.map((item) => {
@@ -211,7 +210,7 @@ export function Step2() {
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-
+  //console.log(contentNumQuotient);
   //기존 문항 데이타에 배점 넣기
   useEffect(() => {
     const updatedItems = initialItems.map((item) => {
@@ -246,6 +245,9 @@ export function Step2() {
   const [equalTotalValue, setEqualTotlaValue] = useState('0');
   //총 문항 점수
   const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
+  //console.log(contentNumQuotient);
+  //console.log(initialItems);
+  //console.log(quotient);
 
   useEffect(() => {
     if (getQuotientLocalData) {
@@ -338,6 +340,51 @@ export function Step2() {
 
     return () => clearTimeout(retryTimeout);
   }, []);
+
+  //로컬데이터에서 데이타 가져 온 후 상태관리 변수에 저장
+  useEffect(() => {
+    //문항 번호 부여
+    if (getLocalData?.data.quizList) {
+      const updatedQuizList = getLocalData.data.quizList.map((quiz, i) => ({
+        ...quiz,
+        num: i + 1,
+      }));
+      //문항 점수 부여
+      if (
+        remainderContent !== undefined &&
+        nextRemainderContent !== undefined &&
+        quotient !== undefined
+      ) {
+        const updatedQuizListScore = updatedQuizList.map((quiz) => ({
+          ...quiz,
+          score:
+            quiz.num <= remainderContent
+              ? quotient
+              : quiz.num >= nextRemainderContent
+                ? quotient + 1
+                : 0,
+        }));
+        setInitialItems(updatedQuizListScore);
+      } else {
+        setInitialItems(updatedQuizList);
+      }
+    }
+  }, [getLocalData]);
+
+  // useEffect(() => {
+  //   if (
+  //     quizNum !== undefined &&
+  //     remainderContent !== undefined &&
+  //     nextRemainderContent !== undefined
+  //   ) {
+  //     setIsRemainderContent(quizNum <= remainderContent);
+  //     setIsNextRemainderContent(quizNum >= nextRemainderContent);
+  //   }
+  // }, [quizNum, remainderContent, nextRemainderContent]);
+
+  useEffect(() => {
+    if (getEditData) setIsEditWorkbook(getEditData?.isEditWorkbook);
+  }, [getEditData]);
 
   const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
@@ -1000,8 +1047,8 @@ export function Step2() {
           학교급: isRadioStateType(item[1]) ? item[1].title : '',
           학기: isRadioStateType(item[2]) ? item[2].title : '',
           학년: isRadioStateType(item[3]) ? item[3].title : '',
-          // 교과: isRadioStateType(item[4]) ? item[4].title : '',
-          // 과목: isRadioStateType(item[5]) ? item[5].title : '',
+          교과: isRadioStateType(item[4]) ? item[4].title : '',
+          과목: isRadioStateType(item[5]) ? item[5].title : '',
         };
 
         // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
@@ -1474,8 +1521,10 @@ export function Step2() {
   };
 
   //리스트에서 문항 삭제하기(배열의 경우)
-  const deleteQuizItem = (code: string) => {
+  const deleteQuizItem = (code: string, idx: number) => {
     if (initialItems) {
+      console.log(initialItems);
+
       const selectedQuizItem = initialItems.find((item) => item.code === code);
       const isQuizNumExists = contentNumQuotient.find(
         (item) => item.code === code,
@@ -1487,9 +1536,13 @@ export function Step2() {
       }
       //총 배점 관리를 위해서 전역 데이터 업데이트
       if (isQuizNumExists) {
-        setContentNumQuotient((prevItems) =>
-          prevItems.filter((item) => item !== isQuizNumExists),
-        );
+        setContentNumQuotient((prevItems) => {
+          // 항목을 필터링하고 quizNum 순서로 정렬
+          const updatedItems = prevItems
+            .filter((item) => item !== isQuizNumExists)
+            .sort((a, b) => a.quizNum - b.quizNum);
+          return updatedItems;
+        });
       }
     }
   };
@@ -1952,16 +2005,6 @@ export function Step2() {
   // 문항 DnD
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>();
 
-  useEffect(() => {
-    if (getLocalData?.data.quizList) {
-      setInitialItems(getLocalData.data.quizList);
-    }
-  }, [getLocalData]);
-
-  useEffect(() => {
-    if (getEditData) setIsEditWorkbook(getEditData?.isEditWorkbook);
-  }, [getEditData]);
-
   const whenDragEnd = (newList: QuizList[]) => {
     setInitialItems(newList);
   };
@@ -2034,13 +2077,19 @@ export function Step2() {
       isQuizType: isQuizType,
       itemType: itemType,
     };
+    const quotientData = {
+      equalScore: equalScore,
+      equalTotalValue: equalTotalValue,
+      maxQuotient: maxQuotient,
+      minQuotient: minQuotient,
+      nextRemainderContent: nextRemainderContent,
+      quotient: quotient,
+      remainderContent: remainderContent,
+    };
     if (totalEqualScore.toString() === equalTotalValue) {
       //window.opener.localStorage.clear();
       saveLocalData(data);
-      localStorage.setItem(
-        'sendQuotientData',
-        JSON.stringify(getQuotientLocalData),
-      );
+      localStorage.setItem('sendQuotientData', JSON.stringify(quotientData));
       navigate('/content-create/exam/step3');
     } else {
       openToastifyAlert({
@@ -2134,7 +2183,7 @@ export function Step2() {
                                   index={item.idx}
                                   title={quizCategory?.유형 || 'N/A'}
                                   category={quizCategoryType}
-                                  quizNum={item.idx}
+                                  quizNum={item.num}
                                   selectedCardIndex={selectedCardIndex}
                                   onSelectCard={setSelectedCardIndex}
                                   reportQuizitem={() =>
@@ -2863,7 +2912,7 @@ export function Step2() {
                                         index={item.idx}
                                         title={quizCategory?.유형 || 'N/A'}
                                         category={quizCategoryType}
-                                        quizNum={i + 1}
+                                        quizNum={item.num}
                                         selectedCardIndex={selectedCardIndex}
                                         onSelectCard={setSelectedCardIndex}
                                         reportQuizitem={() =>
@@ -2965,7 +3014,7 @@ export function Step2() {
                                         index={item.idx}
                                         title={quizCategory?.유형 || 'N/A'}
                                         category={quizCategoryType}
-                                        quizNum={item.idx}
+                                        quizNum={item.num}
                                         isFavorite={item.isFavorite}
                                         selectedCardIndex={selectedCardIndex}
                                         onSelectCard={setSelectedCardIndex}
@@ -3108,7 +3157,7 @@ export function Step2() {
                                     isSimilar={isSimilar}
                                     isFavorite={dragItem.isFavorite}
                                     data={dragItem}
-                                    quizNum={itemIndex + 1}
+                                    quizNum={dragItem.num}
                                     title={quizCategory?.유형 || 'N/A'}
                                     index={itemIndex}
                                     selectedCardIndex={selectedCardIndex}
@@ -3117,7 +3166,10 @@ export function Step2() {
                                       openReportProcess(dragItem.idx)
                                     }
                                     deleteQuizItem={() =>
-                                      deleteQuizItem(dragItem.code)
+                                      deleteQuizItem(
+                                        dragItem.code,
+                                        dragItem.idx,
+                                      )
                                     }
                                     quotient={quotient}
                                     minQuotient={minQuotient}
