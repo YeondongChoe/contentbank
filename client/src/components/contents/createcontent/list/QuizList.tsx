@@ -30,7 +30,6 @@ export function QuizList({
   isDataColor?: boolean;
   isHasMeta?: boolean;
 }) {
-  // const ContentList = dummy.ContentInfo;
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -166,6 +165,8 @@ export function QuizList({
   useEffect(() => {
     setQuestionList(initialQuestionList);
   }, [initialQuestionList]);
+
+  useEffect(() => {}, [questionList, setQuestionList]);
 
   return (
     <Container>

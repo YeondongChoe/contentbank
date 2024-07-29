@@ -208,14 +208,6 @@ export function ContentCreating({
     },
   });
 
-  useEffect(() => {
-    console.log('postQuizData', postQuizData);
-  }, [postQuizData]);
-
-  useEffect(() => {
-    setQuestionList(quizList);
-  }, [quizList]);
-
   // 카테고리 api 불러오기
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
@@ -362,6 +354,14 @@ export function ContentCreating({
     setEditorData(JSON.parse(data));
   };
 
+  useEffect(() => {
+    if (postQuizData) {
+      setQuizList([...quizList, postQuizData.data.data.quiz]);
+      setQuestionList([...quizList, postQuizData.data.data.quiz]);
+    }
+  }, [postQuizData]);
+  useEffect(() => {}, [quizList]);
+  useEffect(() => {}, [questionList]);
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
