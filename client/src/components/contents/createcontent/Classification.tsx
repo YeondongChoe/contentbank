@@ -1028,10 +1028,11 @@ export function Classification({
     }
   }, [highlightIndex]);
 
+  // 마지막으로 클릭된 문항 뷰어에 보이게
   const clickIdx = useMemo(() => {
     const num = sortedList.length - 1;
     return num;
-  }, []);
+  }, [sortedQuizList]);
 
   useEffect(() => {
     setSortedQuizList(sortedList);
