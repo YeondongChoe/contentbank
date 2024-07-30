@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import styled from 'styled-components';
 
-import { ItemQuestionType } from '../../types';
 import { QuizList } from '../../types/WorkbookType';
 import { Loader } from '../atom/Loader';
 
@@ -153,6 +152,26 @@ export function WorkbookMathViewer({
                           ></ContentQuestion>
                         )),
                     )}
+                </>
+              )}
+              {answerCommentary === '해설별도' && (
+                <>
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'COMMENTARY')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'ANSWER')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
                 </>
               )}
               {(answerCommentary === '문제+해설같이' ||
