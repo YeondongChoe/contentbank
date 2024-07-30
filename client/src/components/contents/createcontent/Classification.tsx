@@ -1613,6 +1613,11 @@ const LoaderWrapper = styled.div`
 `;
 const MathViewerWrapper = styled.div`
   padding: 20px;
+
+  p > img {
+    width: 100% !important;
+    height: auto !important;
+  }
 `;
 
 const ArrowButtonWrapper = styled.span`

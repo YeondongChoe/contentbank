@@ -386,6 +386,17 @@ const MathViewerWrapper = styled.div`
   > div {
     width: calc(50% - 10px);
   }
+  div {
+    background-color: transparent !important;
+  }
+  div > img {
+    width: 100% !important;
+    height: auto !important;
+  }
+  table {
+    width: inherit !important;
+    height: auto !important;
+  }
 `;
 
 const MathViewerList = styled.div`

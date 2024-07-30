@@ -143,4 +143,8 @@ const Container = styled.div`
 
 const MathViewerWrapper = styled.div`
   padding: 20px;
+  p > img {
+    width: 100% !important;
+    height: auto !important;
+  }
 `;
