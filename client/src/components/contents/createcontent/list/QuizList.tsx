@@ -35,7 +35,6 @@ export function QuizList({
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [isPostMessage, setIsPostMessage] = useState(false);
-  const quizpreviewRef = useRef(null);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -166,7 +165,9 @@ export function QuizList({
     setQuestionList(initialQuestionList);
   }, [initialQuestionList]);
 
-  useEffect(() => {}, [questionList, setQuestionList]);
+  useEffect(() => {
+    // setQuestionList()
+  }, [questionList]);
 
   return (
     <Container>
@@ -327,17 +328,57 @@ export function QuizList({
                           )}
                       </span>
 
-                      <Tooltip className="tooltip" ref={tooltipRef}>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.교과},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.과목},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.학년},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.난이도},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.학교급},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
-                          ,{dragItem.quizCategoryList[0]?.quizCategory?.대단원},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.소단원},
-                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원},
+                      <Tooltip
+                        arrowPosition={`left: calc(50% - 25px)`}
+                        width={'100%'}
+                        ref={tooltipRef}
+                      >
+                        <>
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory?.교과 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.교과} ,`}
+                          </span>
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory?.과목 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.과목} ,`}
+                          </span>
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory?.학년 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.학년} ,`}
+                          </span>
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory
+                              ?.난이도 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.난이도} ,`}
+                          </span>
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory
+                              ?.학교급 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.학교급} ,`}
+                          </span>
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory
+                              ?.문항타입 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.문항타입} ,`}
+                          </span>
+
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory
+                              ?.대단원 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
+                          </span>
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory
+                              ?.소단원 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
+                          </span>
+
+                          <span>
+                            {dragItem.quizCategoryList[0]?.quizCategory
+                              ?.중단원 &&
+                              `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
+                          </span>
+
                           {dragItem.quizCategoryList[0]?.quizCategory
                             ?.sources &&
                             dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
@@ -370,7 +411,7 @@ export function QuizList({
                                 </span>
                               ),
                             )}
-                        </span>
+                        </>
                       </Tooltip>
                     </MetaGroup>
                     {showViewAllButton && (
