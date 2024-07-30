@@ -99,6 +99,21 @@ export function WorkbookMathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
+                  {data?.quizCategoryList
+                    .filter(
+                      (quizCategory) =>
+                        quizCategory.quizCategory.문항타입 === '객관식',
+                    )
+                    .map((filteredCategory) =>
+                      data?.quizItemList
+                        .filter((quizItem) => quizItem.type === 'CHOICES')
+                        .map((quiz) => (
+                          <ContentQuestion
+                            key={quiz.idx}
+                            dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                          ></ContentQuestion>
+                        )),
+                    )}
                 </>
               )}
               {answerCommentary === '정답만' && (
@@ -123,6 +138,21 @@ export function WorkbookMathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
+                  {data?.quizCategoryList
+                    .filter(
+                      (quizCategory) =>
+                        quizCategory.quizCategory.문항타입 === '객관식',
+                    )
+                    .map((filteredCategory) =>
+                      data?.quizItemList
+                        .filter((quizItem) => quizItem.type === 'CHOICES')
+                        .map((quiz) => (
+                          <ContentQuestion
+                            key={quiz.idx}
+                            dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                          ></ContentQuestion>
+                        )),
+                    )}
                 </>
               )}
               {(answerCommentary === '문제+해설같이' ||
@@ -136,6 +166,21 @@ export function WorkbookMathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
+                  {data?.quizCategoryList
+                    .filter(
+                      (quizCategory) =>
+                        quizCategory.quizCategory.문항타입 === '객관식',
+                    )
+                    .map((filteredCategory) =>
+                      data?.quizItemList
+                        .filter((quizItem) => quizItem.type === 'CHOICES')
+                        .map((quiz) => (
+                          <ContentQuestion
+                            key={quiz.idx}
+                            dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                          ></ContentQuestion>
+                        )),
+                    )}
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'COMMENTARY')
                     .map((quiz) => (
@@ -164,6 +209,21 @@ export function WorkbookMathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
+                  {data?.quizCategoryList
+                    .filter(
+                      (quizCategory) =>
+                        quizCategory.quizCategory.문항타입 === '객관식',
+                    )
+                    .map((filteredCategory) =>
+                      data?.quizItemList
+                        .filter((quizItem) => quizItem.type === 'CHOICES')
+                        .map((quiz) => (
+                          <ContentQuestion
+                            key={quiz.idx}
+                            dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                          ></ContentQuestion>
+                        )),
+                    )}
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'ANSWER')
                     .map((quiz) => (

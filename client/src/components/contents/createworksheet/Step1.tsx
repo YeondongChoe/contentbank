@@ -1173,6 +1173,7 @@ export function Step1() {
         saveLocalQutientData();
       } else {
         closeEqualScoreSettingModal();
+        saveLocalQutientData();
       }
     } else {
       if (equalTotalValue) {

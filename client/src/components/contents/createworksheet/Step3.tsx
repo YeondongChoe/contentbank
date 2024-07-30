@@ -446,9 +446,14 @@ export function Step3() {
           const childElement = child as HTMLElement;
           const height = childElement.offsetHeight;
 
-          if (height > 400) {
-            childElement.style.height = '400px';
-            return 400;
+          if (answerCommentary === '문제+해설같이') {
+            childElement.style.height = '500px';
+            return 500;
+          }
+
+          if (height > 300) {
+            childElement.style.height = '300px';
+            return 300;
           }
 
           return height;
@@ -483,10 +488,28 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        {/* <WorkbookMathViewer
-                          data={quizItem.content}
-                        ></WorkbookMathViewer> */}
                         <div>{quizItem.content}</div>
+                        {initialItems &&
+                          initialItems
+                            .map(
+                              (quizCategoryList: any) =>
+                                quizCategoryList.quizCategoryList.문항타입 ===
+                                '객관식',
+                            )
+                            .map((filteredCategory) =>
+                              initialItems.map((quizItemList: any) =>
+                                quizItemList.quizItemList
+                                  .filter(
+                                    (quizItem: any) =>
+                                      quizItem.type === 'CHOICES',
+                                  )
+                                  .map((quizItem: any, index: number) => (
+                                    <div key={index}>
+                                      <div>{quizItem.content}</div>
+                                    </div>
+                                  )),
+                              ),
+                            )}
                       </div>
                     )),
                 )}
@@ -515,6 +538,27 @@ export function Step3() {
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
                         <div>{quizItem.content}</div>
+                        {initialItems &&
+                          initialItems
+                            .map(
+                              (quizCategoryList: any) =>
+                                quizCategoryList.quizCategoryList.문항타입 ===
+                                '객관식',
+                            )
+                            .map((filteredCategory) =>
+                              initialItems.map((quizItemList: any) =>
+                                quizItemList.quizItemList
+                                  .filter(
+                                    (quizItem: any) =>
+                                      quizItem.type === 'CHOICES',
+                                  )
+                                  .map((quizItem: any, index: number) => (
+                                    <div key={index}>
+                                      <div>{quizItem.content}</div>
+                                    </div>
+                                  )),
+                              ),
+                            )}
                       </div>
                     )),
                 )}
@@ -529,6 +573,28 @@ export function Step3() {
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
                         <div>{quizItem.content}</div>
+
+                        {initialItems &&
+                          initialItems
+                            .map(
+                              (quizCategoryList: any) =>
+                                quizCategoryList.quizCategoryList.문항타입 ===
+                                '객관식',
+                            )
+                            .map((filteredCategory) =>
+                              initialItems.map((quizItemList: any) =>
+                                quizItemList.quizItemList
+                                  .filter(
+                                    (quizItem: any) =>
+                                      quizItem.type === 'CHOICES',
+                                  )
+                                  .map((quizItem: any, index: number) => (
+                                    <div key={index}>
+                                      <div>{quizItem.content}</div>
+                                    </div>
+                                  )),
+                              ),
+                            )}
 
                         {quizItemList.quizItemList
                           .filter(

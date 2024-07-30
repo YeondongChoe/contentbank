@@ -103,7 +103,6 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
-  //console.log(initialItems);
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
   const categoryType = initialItems.map((item) => {
@@ -184,7 +183,7 @@ export function Step2() {
         0,
       );
       const avgScore = totalScore / workbookData?.data.data.quizList.length;
-      setQuotient(avgScore);
+      setQuotient(avgScore === 0 ? null : avgScore);
       setMinQuotient(avgScore > 1 ? avgScore - 1 : avgScore);
       setMaxQuotient(avgScore + 1);
       setEqualTotlaValue(totalScore.toString());
@@ -240,17 +239,13 @@ export function Step2() {
   //평균 배점 이상 문항
   const [nextRemainderContent, setNextRemainderContent] = useState<number>();
   //문항당 배점
-  const [quotient, setQuotient] = useState<number>();
+  const [quotient, setQuotient] = useState<number | null>(null);
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
   const [equalScore, setEqualScore] = useState<number | null>(null);
-  const [equalTotalValue, setEqualTotlaValue] = useState('0');
+  const [equalTotalValue, setEqualTotlaValue] = useState<string>('0');
   //총 문항 점수
   const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
-  //console.log(contentNumQuotient);
-  //console.log(initialItems);
-  //console.log(quotient);
-
   useEffect(() => {
     if (getQuotientLocalData) {
       setEqualScore(getQuotientLocalData.equalScore);
@@ -267,7 +262,7 @@ export function Step2() {
   useEffect(() => {
     if (
       contentNumQuotient &&
-      quotient !== undefined &&
+      quotient !== null &&
       isEditWorkbook === undefined
     ) {
       setContentNumQuotient((prevData) => {
@@ -293,7 +288,7 @@ export function Step2() {
   }, [contentNumQuotient]);
   //수정, 복제 후 수정일 때 문항 추가 했을 때 score 넣어줌
   useEffect(() => {
-    if (contentNumQuotient && quotient !== undefined && isEditWorkbook === 1) {
+    if (contentNumQuotient && quotient !== null && isEditWorkbook === 1) {
       setContentNumQuotient((prevData) => {
         let updated = false;
         const newData = prevData.map((item) => {
@@ -486,8 +481,6 @@ export function Step2() {
       setIsEditWorkbook(getLocalData.data.isEditWorkbook);
     }
   }, [getLocalData]);
-  //console.log(getLocalData);
-  //console.log(initialItems);
 
   useEffect(() => {
     if (getEditData) setIsEditWorkbook(getEditData?.isEditWorkbook);
@@ -2203,7 +2196,7 @@ export function Step2() {
       quotient: quotient,
       remainderContent: remainderContent,
     };
-    if (totalEqualScore.toString() === equalTotalValue) {
+    if (totalEqualScore === Number(equalTotalValue)) {
       //window.opener.localStorage.clear();
       saveLocalData(data);
       localStorage.setItem('sendQuotientData', JSON.stringify(quotientData));
@@ -3236,7 +3229,7 @@ export function Step2() {
                             doubleDnD
                             isStartDnD={isStartDnD}
                             setIsStartDnd={setIsStartDnd}
-                            quotient={quotient}
+                            quotient={quotient as number}
                           >
                             {(
                               dragItem,
@@ -3291,8 +3284,6 @@ export function Step2() {
                                     }
                                     code={dragItem.code}
                                     quotient={quotient}
-                                    minQuotient={minQuotient}
-                                    maxQuotient={maxQuotient}
                                     equalScore={equalScore as number}
                                     remainderContent={remainderContent}
                                     nextRemainderContent={nextRemainderContent}
