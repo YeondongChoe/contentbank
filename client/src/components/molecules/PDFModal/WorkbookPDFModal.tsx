@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
-import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
+import { SlPrinter } from 'react-icons/sl';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReactToPrint from 'react-to-print';
 import { styled, ThemeProvider } from 'styled-components';
 
-import { quizService, workbookInstance } from '../../../api/axios';
-import { Label, Icon, IconButton, ValueNone } from '../../../components/atom';
+import { workbookInstance } from '../../../api/axios';
+import { Label } from '../../../components/atom';
 import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { QuizList, TemplateList } from '../../../types/WorkbookType';
 import { A4_HEIGHT, A4_WIDTH, COLOR } from '../../constants';
@@ -76,6 +76,14 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       setTemplateList(workbookData?.data.data.templateList);
     }
   }, [workbookData]);
+
+  //해설별도일 경우 추가해주기
+  const [commentarySeparate, setCommentarySeparate] = useState<QuizList[]>([]);
+  useEffect(() => {
+    if (initialItems && itemType === 2) {
+      setCommentarySeparate(initialItems);
+    }
+  }, [initialItems, itemType]);
 
   useEffect(() => {
     if (templateList) {
@@ -179,27 +187,31 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightItemCount = 0;
 
     items.forEach((item) => {
+      const maxHeight = type === 'A' ? 950 : 1200;
       if (
         !leftFull &&
         leftItemCount < leftMaxItems &&
-        leftHeight + item.height <= 1200
+        leftHeight + item.height <= maxHeight
       ) {
         currentPage.leftArray.push(item);
         leftHeight += item.height;
         leftItemCount++;
-        if (leftHeight + item.height > 1200 || leftItemCount >= leftMaxItems) {
+        if (
+          leftHeight + item.height > maxHeight ||
+          leftItemCount >= leftMaxItems
+        ) {
           leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
         }
       } else if (
         !rightFull &&
         rightItemCount < rightMaxItems &&
-        rightHeight + item.height <= 1200
+        rightHeight + item.height <= maxHeight
       ) {
         currentPage.rightArray.push(item);
         rightHeight += item.height;
         rightItemCount++;
         if (
-          rightHeight + item.height > 1200 ||
+          rightHeight + item.height > maxHeight ||
           rightItemCount >= rightMaxItems
         ) {
           rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
@@ -219,13 +231,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         if (
           !leftFull &&
           leftItemCount < leftMaxItems &&
-          leftHeight + item.height <= 1200
+          leftHeight + item.height <= maxHeight
         ) {
           currentPage.leftArray.push(item);
           leftHeight += item.height;
           leftItemCount++;
           if (
-            leftHeight + item.height > 1200 ||
+            leftHeight + item.height > maxHeight ||
             leftItemCount >= leftMaxItems
           ) {
             leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
@@ -233,13 +245,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         } else if (
           !rightFull &&
           rightItemCount < rightMaxItems &&
-          rightHeight + item.height <= 1200
+          rightHeight + item.height <= maxHeight
         ) {
           currentPage.rightArray.push(item);
           rightHeight += item.height;
           rightItemCount++;
           if (
-            rightHeight + item.height > 1200 ||
+            rightHeight + item.height > maxHeight ||
             rightItemCount >= rightMaxItems
           ) {
             rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
@@ -257,6 +269,11 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   };
 
   const pages = distributeItemsToPages(initialItems, multiLevel, assign);
+  const commentaryPage = distributeItemsToPages(
+    commentarySeparate,
+    multiLevel,
+    assign,
+  );
 
   return (
     <>
@@ -274,202 +291,404 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
           <ScrollWrapper>
             <PerfectScrollbar>
               <ContentsWrapperA ref={printDivRef}>
-                {pages.map((page, i) => (
-                  <PrintStyles key={`${i} pdf list`}>
-                    <MathViewerListA className="A4_paper" ref={containerRef}>
-                      <PrintBoxA>
-                        <ThemeProvider theme={selectedTheme}>
-                          <WorksheetHeaderA>
-                            <NoneColorTextWrapperA>
-                              <div className="grade">
-                                <Label
-                                  value={(gradeValue as string) || '대상 학년'}
-                                  padding="0px"
-                                  fontSize="12px"
-                                />
-                              </div>
-                            </NoneColorTextWrapperA>
-                            <ColorTextWrapperA>
-                              <div className="Title">
-                                <Label
-                                  value={(nameValue as string) || '학습지명'}
-                                  fontSize="24px"
-                                  bold
-                                />
-                              </div>
-                              <div className="Tag">
-                                <Label
-                                  value={
-                                    (tag === 'EXERCISES'
-                                      ? '연습문제'
-                                      : tag === 'DAILY_TEST'
-                                        ? '일일TEST'
-                                        : tag === 'PRACTICE_TEST'
-                                          ? '모의고사'
-                                          : tag === 'TEST_PREP'
-                                            ? '내신대비'
-                                            : tag === 'MONTHLY_TEST'
-                                              ? '월말TEST'
-                                              : ('' as string)) || '학습지 태그'
-                                  }
-                                  fontSize="12px"
-                                />
-                                <div className="CircleBox">
-                                  <div className="Circle"></div>
-                                  <div className="Circle"></div>
-                                  <div className="Circle"></div>
+                <>
+                  {pages.map((page, i) => (
+                    <PrintStyles key={`${i} pdf list`}>
+                      <MathViewerListA className="A4_paper" ref={containerRef}>
+                        <PrintBoxA>
+                          <ThemeProvider theme={selectedTheme}>
+                            <WorksheetHeaderA>
+                              <NoneColorTextWrapperA>
+                                <div className="grade">
+                                  <Label
+                                    value={
+                                      (gradeValue as string) || '대상 학년'
+                                    }
+                                    padding="0px"
+                                    fontSize="12px"
+                                  />
                                 </div>
-                              </div>
-                            </ColorTextWrapperA>
-                          </WorksheetHeaderA>
-                          <HeaderTriangleA></HeaderTriangleA>
-                          <WorksheetBodyA>
-                            <WorksheetBodyLeftA>
-                              {page.leftArray.map((quizItemList) =>
-                                quizItemList.quizItemList
-                                  .filter(
-                                    (quizItem) => quizItem.type === 'QUESTION',
-                                  )
-                                  .map((quizItem, i) => {
-                                    const quizCategory =
-                                      quizItemList.quizCategoryList.find(
-                                        (quizCategoryItem: any) =>
-                                          quizCategoryItem.quizCategory.유형,
-                                      )?.quizCategory;
+                              </NoneColorTextWrapperA>
+                              <ColorTextWrapperA>
+                                <div className="Title">
+                                  <Label
+                                    value={(nameValue as string) || '학습지명'}
+                                    fontSize="24px"
+                                    bold
+                                  />
+                                </div>
+                                <div className="Tag">
+                                  <Label
+                                    value={
+                                      (tag === 'EXERCISES'
+                                        ? '연습문제'
+                                        : tag === 'DAILY_TEST'
+                                          ? '일일TEST'
+                                          : tag === 'PRACTICE_TEST'
+                                            ? '모의고사'
+                                            : tag === 'TEST_PREP'
+                                              ? '내신대비'
+                                              : tag === 'MONTHLY_TEST'
+                                                ? '월말TEST'
+                                                : ('' as string)) ||
+                                      '학습지 태그'
+                                    }
+                                    fontSize="12px"
+                                  />
+                                  <div className="CircleBox">
+                                    <div className="Circle"></div>
+                                    <div className="Circle"></div>
+                                    <div className="Circle"></div>
+                                  </div>
+                                </div>
+                              </ColorTextWrapperA>
+                            </WorksheetHeaderA>
+                            <HeaderTriangleA></HeaderTriangleA>
+                            <WorksheetBodyA>
+                              <WorksheetBodyLeftA>
+                                {page.leftArray.map((quizItemList) =>
+                                  quizItemList.quizItemList
+                                    .filter(
+                                      (quizItem) =>
+                                        quizItem.type === 'QUESTION',
+                                    )
+                                    .map((quizItem, i) => {
+                                      const quizCategory =
+                                        quizItemList.quizCategoryList.find(
+                                          (quizCategoryItem: any) =>
+                                            quizCategoryItem.quizCategory.유형,
+                                        )?.quizCategory;
 
-                                    return (
-                                      <MathViewerWrapperA
-                                        key={i}
-                                        height={quizItemList.height as number}
-                                        padding={
-                                          multiLevel === '2' && assign === '4'
-                                            ? '0 0 600px 0'
-                                            : multiLevel === '2' &&
-                                                assign === '6'
-                                              ? '0 0 100px 0'
-                                              : ''
-                                        }
-                                      >
-                                        {isQuizType && (
-                                          <ContentTitleA>
-                                            |{quizCategory?.유형}|
-                                          </ContentTitleA>
-                                        )}
-                                        <EachMathViewerA>
-                                          <MathJaxWrapperA>
-                                            <WorkbookMathViewer
-                                              data={quizItemList}
-                                              isSetp3
-                                              answerCommentary={
-                                                itemType === 0
-                                                  ? '문제만'
-                                                  : itemType === 1
-                                                    ? '정답문'
-                                                    : itemType === 2
-                                                      ? '문제+해설별도'
-                                                      : itemType === 3
-                                                        ? '문제+해설같이'
-                                                        : '문제만'
-                                              }
-                                            ></WorkbookMathViewer>
-                                            {quizItemList.score &&
-                                            quizItemList.score !== 0 ? (
-                                              <ScoreWrapper>
-                                                [{quizItemList.score}점]
-                                              </ScoreWrapper>
-                                            ) : (
-                                              <></>
-                                            )}
-                                          </MathJaxWrapperA>
-                                        </EachMathViewerA>
-                                      </MathViewerWrapperA>
-                                    );
-                                  }),
+                                      return (
+                                        <MathViewerWrapperA
+                                          key={i}
+                                          height={quizItemList.height as number}
+                                          padding={
+                                            multiLevel === '2' && assign === '4'
+                                              ? '0 0 600px 0'
+                                              : multiLevel === '2' &&
+                                                  assign === '6'
+                                                ? '0 0 100px 0'
+                                                : ''
+                                          }
+                                        >
+                                          {isQuizType && (
+                                            <ContentTitleA>
+                                              |{quizCategory?.유형}|
+                                            </ContentTitleA>
+                                          )}
+                                          <EachMathViewerA>
+                                            <MathJaxWrapperA>
+                                              <WorkbookMathViewer
+                                                data={quizItemList}
+                                                isSetp3
+                                                answerCommentary={
+                                                  itemType === 0
+                                                    ? '문제만'
+                                                    : itemType === 1
+                                                      ? '정답문'
+                                                      : itemType === 2
+                                                        ? '문제+해설별도'
+                                                        : itemType === 3
+                                                          ? '문제+해설같이'
+                                                          : '문제만'
+                                                }
+                                              ></WorkbookMathViewer>
+                                              {quizItemList.score &&
+                                              quizItemList.score !== 0 ? (
+                                                <ScoreWrapper>
+                                                  [{quizItemList.score}점]
+                                                </ScoreWrapper>
+                                              ) : (
+                                                <></>
+                                              )}
+                                            </MathJaxWrapperA>
+                                          </EachMathViewerA>
+                                        </MathViewerWrapperA>
+                                      );
+                                    }),
+                                )}
+                              </WorksheetBodyLeftA>
+                              <DividerA />
+                              <WorksheetBodyRightA>
+                                {page.rightArray.map((quizItemList) =>
+                                  quizItemList.quizItemList
+                                    .filter(
+                                      (quizItem) =>
+                                        quizItem.type === 'QUESTION',
+                                    )
+                                    .map((quizItem, i) => {
+                                      const quizCategory =
+                                        quizItemList.quizCategoryList.find(
+                                          (quizCategoryItem: any) =>
+                                            quizCategoryItem.quizCategory.유형,
+                                        )?.quizCategory;
+                                      return (
+                                        <MathViewerWrapperA
+                                          key={i}
+                                          height={quizItemList.height as number}
+                                          padding={
+                                            multiLevel === '2' && assign === '4'
+                                              ? '0 0 600px 0'
+                                              : multiLevel === '2' &&
+                                                  assign === '6'
+                                                ? '0 0 100px 0'
+                                                : ''
+                                          }
+                                        >
+                                          {isQuizType && (
+                                            <ContentTitleA>
+                                              |{quizCategory?.유형}|
+                                            </ContentTitleA>
+                                          )}
+                                          <EachMathViewerA>
+                                            <MathJaxWrapperA>
+                                              <WorkbookMathViewer
+                                                data={quizItemList}
+                                                isSetp3
+                                                answerCommentary={
+                                                  itemType === 0
+                                                    ? '문제만'
+                                                    : itemType === 1
+                                                      ? '정답문'
+                                                      : itemType === 2
+                                                        ? '문제+해설별도'
+                                                        : itemType === 3
+                                                          ? '문제+해설같이'
+                                                          : '문제만'
+                                                }
+                                              ></WorkbookMathViewer>
+                                              {quizItemList.score &&
+                                              quizItemList.score !== 0 ? (
+                                                <ScoreWrapper>
+                                                  [{quizItemList.score}점]
+                                                </ScoreWrapper>
+                                              ) : (
+                                                <></>
+                                              )}
+                                            </MathJaxWrapperA>
+                                          </EachMathViewerA>
+                                        </MathViewerWrapperA>
+                                      );
+                                    }),
+                                )}
+                              </WorksheetBodyRightA>
+                            </WorksheetBodyA>
+                          </ThemeProvider>
+                          <FooterBarWrapperA>
+                            <FooterTriangleA></FooterTriangleA>
+                            <WorksheetAdditionalInformationA>
+                              {isDate && (
+                                <span className="isDate">
+                                  <Label
+                                    value="2024/03/19"
+                                    fontSize="12px"
+                                  ></Label>
+                                </span>
                               )}
-                            </WorksheetBodyLeftA>
-                            <DividerA />
-                            <WorksheetBodyRightA>
-                              {page.rightArray.map((quizItemList) =>
-                                quizItemList.quizItemList
-                                  .filter(
-                                    (quizItem) => quizItem.type === 'QUESTION',
-                                  )
-                                  .map((quizItem, i) => {
-                                    const quizCategory =
-                                      quizItemList.quizCategoryList.find(
-                                        (quizCategoryItem: any) =>
-                                          quizCategoryItem.quizCategory.유형,
-                                      )?.quizCategory;
-                                    return (
-                                      <MathViewerWrapperA
-                                        key={i}
-                                        height={quizItemList.height as number}
-                                        padding={
-                                          multiLevel === '2' && assign === '4'
-                                            ? '0 0 600px 0'
-                                            : multiLevel === '2' &&
-                                                assign === '6'
-                                              ? '0 0 100px 0'
-                                              : ''
-                                        }
-                                      >
-                                        {isQuizType && (
-                                          <ContentTitleA>
-                                            |{quizCategory?.유형}|
-                                          </ContentTitleA>
-                                        )}
-                                        <EachMathViewerA>
-                                          <MathJaxWrapperA>
-                                            <WorkbookMathViewer
-                                              data={quizItemList}
-                                              isSetp3
-                                              answerCommentary={
-                                                itemType === 0
-                                                  ? '문제만'
-                                                  : itemType === 1
-                                                    ? '정답문'
-                                                    : itemType === 2
-                                                      ? '문제+해설별도'
-                                                      : itemType === 3
-                                                        ? '문제+해설같이'
-                                                        : '문제만'
-                                              }
-                                            ></WorkbookMathViewer>
-                                            {quizItemList.score &&
-                                            quizItemList.score !== 0 ? (
-                                              <ScoreWrapper>
-                                                [{quizItemList.score}점]
-                                              </ScoreWrapper>
-                                            ) : (
-                                              <></>
+                              <span className="pagenumber">{i + 1}</span>
+                            </WorksheetAdditionalInformationA>
+                          </FooterBarWrapperA>
+                        </PrintBoxA>
+                      </MathViewerListA>
+                    </PrintStyles>
+                  ))}
+                  {commentarySeparate &&
+                    commentaryPage.map((page, i) => (
+                      <PrintStyles key={`${i} pdf list`}>
+                        <MathViewerListA
+                          className="A4_paper"
+                          ref={containerRef}
+                        >
+                          <PrintBoxA>
+                            <ThemeProvider theme={selectedTheme}>
+                              <WorksheetHeaderA>
+                                <NoneColorTextWrapperA>
+                                  <div className="grade">
+                                    <Label
+                                      value={
+                                        (gradeValue as string) || '대상 학년'
+                                      }
+                                      padding="0px"
+                                      fontSize="12px"
+                                    />
+                                  </div>
+                                </NoneColorTextWrapperA>
+                                <ColorTextWrapperA>
+                                  <div className="Title">
+                                    <Label
+                                      value={
+                                        (nameValue as string) || '학습지명'
+                                      }
+                                      fontSize="24px"
+                                      bold
+                                    />
+                                  </div>
+                                  <div className="Tag">
+                                    <Label
+                                      value={
+                                        (tag === 'EXERCISES'
+                                          ? '연습문제'
+                                          : tag === 'DAILY_TEST'
+                                            ? '일일TEST'
+                                            : tag === 'PRACTICE_TEST'
+                                              ? '모의고사'
+                                              : tag === 'TEST_PREP'
+                                                ? '내신대비'
+                                                : tag === 'MONTHLY_TEST'
+                                                  ? '월말TEST'
+                                                  : ('' as string)) ||
+                                        '학습지 태그'
+                                      }
+                                      fontSize="12px"
+                                    />
+                                    <div className="CircleBox">
+                                      <div className="Circle"></div>
+                                      <div className="Circle"></div>
+                                      <div className="Circle"></div>
+                                    </div>
+                                  </div>
+                                </ColorTextWrapperA>
+                              </WorksheetHeaderA>
+                              <HeaderTriangleA></HeaderTriangleA>
+                              <WorksheetBodyA>
+                                <WorksheetBodyLeftA>
+                                  {page.leftArray.map((quizItemList) =>
+                                    quizItemList.quizItemList
+                                      .filter(
+                                        (quizItem) =>
+                                          quizItem.type === 'QUESTION',
+                                      )
+                                      .map((quizItem, i) => {
+                                        const quizCategory =
+                                          quizItemList.quizCategoryList.find(
+                                            (quizCategoryItem: any) =>
+                                              quizCategoryItem.quizCategory
+                                                .유형,
+                                          )?.quizCategory;
+
+                                        return (
+                                          <MathViewerWrapperA
+                                            key={i}
+                                            height={
+                                              quizItemList.height as number
+                                            }
+                                            padding={
+                                              multiLevel === '2' &&
+                                              assign === '4'
+                                                ? '0 0 600px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6'
+                                                  ? '0 0 100px 0'
+                                                  : ''
+                                            }
+                                          >
+                                            {isQuizType && (
+                                              <ContentTitleA>
+                                                |{quizCategory?.유형}|
+                                              </ContentTitleA>
                                             )}
-                                          </MathJaxWrapperA>
-                                        </EachMathViewerA>
-                                      </MathViewerWrapperA>
-                                    );
-                                  }),
-                              )}
-                            </WorksheetBodyRightA>
-                          </WorksheetBodyA>
-                        </ThemeProvider>
-                        <FooterBarWrapperA>
-                          <FooterTriangleA></FooterTriangleA>
-                          <WorksheetAdditionalInformationA>
-                            {isDate && (
-                              <span className="isDate">
-                                <Label
-                                  value="2024/03/19"
-                                  fontSize="12px"
-                                ></Label>
-                              </span>
-                            )}
-                            <span className="pagenumber">{i + 1}</span>
-                          </WorksheetAdditionalInformationA>
-                        </FooterBarWrapperA>
-                      </PrintBoxA>
-                    </MathViewerListA>
-                  </PrintStyles>
-                ))}
+                                            <EachMathViewerA>
+                                              <MathJaxWrapperA>
+                                                <WorkbookMathViewer
+                                                  data={quizItemList}
+                                                  isSetp3
+                                                  answerCommentary={'해설별도'}
+                                                ></WorkbookMathViewer>
+                                                {/* {quizItemList.score &&
+                                                quizItemList.score !== 0 ? (
+                                                  <ScoreWrapper>
+                                                    [{quizItemList.score}점]
+                                                  </ScoreWrapper>
+                                                ) : (
+                                                  <></>
+                                                )} */}
+                                              </MathJaxWrapperA>
+                                            </EachMathViewerA>
+                                          </MathViewerWrapperA>
+                                        );
+                                      }),
+                                  )}
+                                </WorksheetBodyLeftA>
+                                <DividerA />
+                                <WorksheetBodyRightA>
+                                  {page.rightArray.map((quizItemList) =>
+                                    quizItemList.quizItemList
+                                      .filter(
+                                        (quizItem) =>
+                                          quizItem.type === 'QUESTION',
+                                      )
+                                      .map((quizItem, i) => {
+                                        const quizCategory =
+                                          quizItemList.quizCategoryList.find(
+                                            (quizCategoryItem: any) =>
+                                              quizCategoryItem.quizCategory
+                                                .유형,
+                                          )?.quizCategory;
+                                        return (
+                                          <MathViewerWrapperA
+                                            key={i}
+                                            height={
+                                              quizItemList.height as number
+                                            }
+                                            padding={
+                                              multiLevel === '2' &&
+                                              assign === '4'
+                                                ? '0 0 600px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6'
+                                                  ? '0 0 100px 0'
+                                                  : ''
+                                            }
+                                          >
+                                            {isQuizType && (
+                                              <ContentTitleA>
+                                                |{quizCategory?.유형}|
+                                              </ContentTitleA>
+                                            )}
+                                            <EachMathViewerA>
+                                              <MathJaxWrapperA>
+                                                <WorkbookMathViewer
+                                                  data={quizItemList}
+                                                  isSetp3
+                                                  answerCommentary={'해설별도'}
+                                                ></WorkbookMathViewer>
+                                                {/* {quizItemList.score &&
+                                                quizItemList.score !== 0 ? (
+                                                  <ScoreWrapper>
+                                                    [{quizItemList.score}점]
+                                                  </ScoreWrapper>
+                                                ) : (
+                                                  <></>
+                                                )} */}
+                                              </MathJaxWrapperA>
+                                            </EachMathViewerA>
+                                          </MathViewerWrapperA>
+                                        );
+                                      }),
+                                  )}
+                                </WorksheetBodyRightA>
+                              </WorksheetBodyA>
+                            </ThemeProvider>
+                            <FooterBarWrapperA>
+                              <FooterTriangleA></FooterTriangleA>
+                              <WorksheetAdditionalInformationA>
+                                {isDate && (
+                                  <span className="isDate">
+                                    <Label
+                                      value="2024/03/19"
+                                      fontSize="12px"
+                                    ></Label>
+                                  </span>
+                                )}
+                                <span className="pagenumber">{i + 1}</span>
+                              </WorksheetAdditionalInformationA>
+                            </FooterBarWrapperA>
+                          </PrintBoxA>
+                        </MathViewerListA>
+                      </PrintStyles>
+                    ))}
+                </>
               </ContentsWrapperA>
             </PerfectScrollbar>
           </ScrollWrapper>
@@ -481,182 +700,370 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
           <ScrollWrapper>
             <PerfectScrollbar>
               <ContentsWrapperB ref={printDivRef}>
-                {pages.map((page, i) => (
-                  <PrintStyles key={`${i} pdf list`}>
-                    <MathViewerListB className="A4_paper" ref={containerRef}>
-                      <PrintBoxB>
-                        <ThemeProvider theme={selectedTheme}>
-                          <HeaderCircleB></HeaderCircleB>
-                          <WorksheetHeaderB>
-                            <TextWrapperB>
-                              <div className="grade">
-                                <Label
-                                  value={(gradeValue as string) || '대상 학년'}
-                                  fontSize="12px"
-                                />
-                              </div>
-                              <div className="Title">
-                                <Label
-                                  value={(nameValue as string) || '학습지명'}
-                                  fontSize="24px"
-                                  bold
-                                />
-                              </div>
-                              <div className="Tag">
-                                <Label
-                                  value={
-                                    (tag === 'EXERCISES'
-                                      ? '연습문제'
-                                      : tag === 'DAILY_TEST'
-                                        ? '일일TEST'
-                                        : tag === 'PRACTICE_TEST'
-                                          ? '모의고사'
-                                          : tag === 'TEST_PREP'
-                                            ? '내신대비'
-                                            : tag === 'MONTHLY_TEST'
-                                              ? '월말TEST'
-                                              : ('' as string)) || '학습지 태그'
-                                  }
-                                  fontSize="11px"
-                                />
-                              </div>
-                            </TextWrapperB>
-                          </WorksheetHeaderB>
-                          <WorksheetBodyB>
-                            <WorksheetBodyLeftB>
-                              {page.leftArray.map((quizItemList) =>
-                                quizItemList.quizItemList
-                                  .filter(
-                                    (quizItem) => quizItem.type === 'QUESTION',
-                                  )
-                                  .map((quizItem, i) => {
-                                    const quizCategory =
-                                      quizItemList.quizCategoryList.find(
-                                        (quizCategoryItem: any) =>
-                                          quizCategoryItem.quizCategory.유형,
-                                      )?.quizCategory;
+                <>
+                  {pages.map((page, i) => (
+                    <PrintStyles key={`${i} pdf list`}>
+                      <MathViewerListB className="A4_paper" ref={containerRef}>
+                        <PrintBoxB>
+                          <ThemeProvider theme={selectedTheme}>
+                            <HeaderCircleB></HeaderCircleB>
+                            <WorksheetHeaderB>
+                              <TextWrapperB>
+                                <div className="grade">
+                                  <Label
+                                    value={
+                                      (gradeValue as string) || '대상 학년'
+                                    }
+                                    fontSize="12px"
+                                  />
+                                </div>
+                                <div className="Title">
+                                  <Label
+                                    value={(nameValue as string) || '학습지명'}
+                                    fontSize="24px"
+                                    bold
+                                  />
+                                </div>
+                                <div className="Tag">
+                                  <Label
+                                    value={
+                                      (tag === 'EXERCISES'
+                                        ? '연습문제'
+                                        : tag === 'DAILY_TEST'
+                                          ? '일일TEST'
+                                          : tag === 'PRACTICE_TEST'
+                                            ? '모의고사'
+                                            : tag === 'TEST_PREP'
+                                              ? '내신대비'
+                                              : tag === 'MONTHLY_TEST'
+                                                ? '월말TEST'
+                                                : ('' as string)) ||
+                                      '학습지 태그'
+                                    }
+                                    fontSize="11px"
+                                  />
+                                </div>
+                              </TextWrapperB>
+                            </WorksheetHeaderB>
+                            <WorksheetBodyB>
+                              <WorksheetBodyLeftB>
+                                {page.leftArray.map((quizItemList) =>
+                                  quizItemList.quizItemList
+                                    .filter(
+                                      (quizItem) =>
+                                        quizItem.type === 'QUESTION',
+                                    )
+                                    .map((quizItem, i) => {
+                                      const quizCategory =
+                                        quizItemList.quizCategoryList.find(
+                                          (quizCategoryItem: any) =>
+                                            quizCategoryItem.quizCategory.유형,
+                                        )?.quizCategory;
 
-                                    return (
-                                      <MathViewerWrapperB
-                                        key={i}
-                                        height={quizItemList.height as number}
-                                        padding={
-                                          multiLevel === '2' && assign === '4'
-                                            ? '0 0 600px 0'
-                                            : multiLevel === '2' &&
-                                                assign === '6'
-                                              ? '0 0 100px 0'
-                                              : ''
-                                        }
-                                      >
-                                        {isQuizType && (
-                                          <ContentTitleB>
-                                            |{quizCategory?.유형}|
-                                          </ContentTitleB>
-                                        )}
-                                        <EachMathViewerB>
-                                          <MathJaxWrapperB>
-                                            <WorkbookMathViewer
-                                              data={quizItemList}
-                                              isSetp3
-                                              answerCommentary={
-                                                itemType === 0
-                                                  ? '문제만'
-                                                  : itemType === 1
-                                                    ? '정답문'
-                                                    : itemType === 2
-                                                      ? '문제+해설별도'
-                                                      : itemType === 3
-                                                        ? '문제+해설같이'
-                                                        : '문제만'
-                                              }
-                                            ></WorkbookMathViewer>
-                                            {quizItemList.score !== 0 && (
-                                              <ScoreWrapper>
-                                                [{quizItemList.score}점]
-                                              </ScoreWrapper>
+                                      return (
+                                        <MathViewerWrapperB
+                                          key={i}
+                                          height={quizItemList.height as number}
+                                          padding={
+                                            multiLevel === '2' && assign === '4'
+                                              ? '0 0 600px 0'
+                                              : multiLevel === '2' &&
+                                                  assign === '6'
+                                                ? '0 0 100px 0'
+                                                : ''
+                                          }
+                                        >
+                                          {isQuizType && (
+                                            <ContentTitleB>
+                                              |{quizCategory?.유형}|
+                                            </ContentTitleB>
+                                          )}
+                                          <EachMathViewerB>
+                                            <MathJaxWrapperB>
+                                              <WorkbookMathViewer
+                                                data={quizItemList}
+                                                isSetp3
+                                                answerCommentary={
+                                                  itemType === 0
+                                                    ? '문제만'
+                                                    : itemType === 1
+                                                      ? '정답문'
+                                                      : itemType === 2
+                                                        ? '문제+해설별도'
+                                                        : itemType === 3
+                                                          ? '문제+해설같이'
+                                                          : '문제만'
+                                                }
+                                              ></WorkbookMathViewer>
+                                              {quizItemList.score !== 0 && (
+                                                <ScoreWrapper>
+                                                  [{quizItemList.score}점]
+                                                </ScoreWrapper>
+                                              )}
+                                            </MathJaxWrapperB>
+                                          </EachMathViewerB>
+                                        </MathViewerWrapperB>
+                                      );
+                                    }),
+                                )}
+                              </WorksheetBodyLeftB>
+                              <DividerB />
+                              <WorksheetBodyRightB>
+                                {page.rightArray.map((quizItemList) =>
+                                  quizItemList.quizItemList
+                                    .filter(
+                                      (quizItem) =>
+                                        quizItem.type === 'QUESTION',
+                                    )
+                                    .map((quizItem, i) => {
+                                      const quizCategory =
+                                        quizItemList.quizCategoryList.find(
+                                          (quizCategoryItem: any) =>
+                                            quizCategoryItem.quizCategory.유형,
+                                        )?.quizCategory;
+                                      return (
+                                        <MathViewerWrapperB
+                                          key={i}
+                                          height={quizItemList.height as number}
+                                          padding={
+                                            multiLevel === '2' && assign === '4'
+                                              ? '0 0 600px 0'
+                                              : multiLevel === '2' &&
+                                                  assign === '6'
+                                                ? '0 0 100px 0'
+                                                : ''
+                                          }
+                                        >
+                                          {isQuizType && (
+                                            <ContentTitleB>
+                                              |{quizCategory?.유형}|
+                                            </ContentTitleB>
+                                          )}
+                                          <EachMathViewerB>
+                                            <MathJaxWrapperB>
+                                              <WorkbookMathViewer
+                                                data={quizItemList}
+                                                isSetp3
+                                                answerCommentary={
+                                                  itemType === 0
+                                                    ? '문제만'
+                                                    : itemType === 1
+                                                      ? '정답문'
+                                                      : itemType === 2
+                                                        ? '문제+해설별도'
+                                                        : itemType === 3
+                                                          ? '문제+해설같이'
+                                                          : '문제만'
+                                                }
+                                              ></WorkbookMathViewer>
+                                              {quizItemList.score !== 0 && (
+                                                <ScoreWrapper>
+                                                  [{quizItemList.score}점]
+                                                </ScoreWrapper>
+                                              )}
+                                            </MathJaxWrapperB>
+                                          </EachMathViewerB>
+                                        </MathViewerWrapperB>
+                                      );
+                                    }),
+                                )}
+                              </WorksheetBodyRightB>
+                            </WorksheetBodyB>
+                          </ThemeProvider>
+                          <WorksheetAdditionalInformationB>
+                            {isDate && (
+                              <span className="isDate">
+                                <Label
+                                  value="2024/03/19"
+                                  fontSize="12px"
+                                ></Label>
+                              </span>
+                            )}
+                            <span className="pagenumber">{i + 1}</span>
+                          </WorksheetAdditionalInformationB>
+                        </PrintBoxB>
+                      </MathViewerListB>
+                    </PrintStyles>
+                  ))}
+                  {commentarySeparate &&
+                    commentaryPage.map((page, i) => (
+                      <PrintStyles key={`${i} pdf list`}>
+                        <MathViewerListB
+                          className="A4_paper"
+                          ref={containerRef}
+                        >
+                          <PrintBoxB>
+                            <ThemeProvider theme={selectedTheme}>
+                              <HeaderCircleB></HeaderCircleB>
+                              <WorksheetHeaderB>
+                                <TextWrapperB>
+                                  <div className="grade">
+                                    <Label
+                                      value={
+                                        (gradeValue as string) || '대상 학년'
+                                      }
+                                      fontSize="12px"
+                                    />
+                                  </div>
+                                  <div className="Title">
+                                    <Label
+                                      value={
+                                        (nameValue as string) || '학습지명'
+                                      }
+                                      fontSize="24px"
+                                      bold
+                                    />
+                                  </div>
+                                  <div className="Tag">
+                                    <Label
+                                      value={
+                                        (tag === 'EXERCISES'
+                                          ? '연습문제'
+                                          : tag === 'DAILY_TEST'
+                                            ? '일일TEST'
+                                            : tag === 'PRACTICE_TEST'
+                                              ? '모의고사'
+                                              : tag === 'TEST_PREP'
+                                                ? '내신대비'
+                                                : tag === 'MONTHLY_TEST'
+                                                  ? '월말TEST'
+                                                  : ('' as string)) ||
+                                        '학습지 태그'
+                                      }
+                                      fontSize="11px"
+                                    />
+                                  </div>
+                                </TextWrapperB>
+                              </WorksheetHeaderB>
+                              <WorksheetBodyB>
+                                <WorksheetBodyLeftB>
+                                  {page.leftArray.map((quizItemList) =>
+                                    quizItemList.quizItemList
+                                      .filter(
+                                        (quizItem) =>
+                                          quizItem.type === 'QUESTION',
+                                      )
+                                      .map((quizItem, i) => {
+                                        const quizCategory =
+                                          quizItemList.quizCategoryList.find(
+                                            (quizCategoryItem: any) =>
+                                              quizCategoryItem.quizCategory
+                                                .유형,
+                                          )?.quizCategory;
+
+                                        return (
+                                          <MathViewerWrapperB
+                                            key={i}
+                                            height={
+                                              quizItemList.height as number
+                                            }
+                                            padding={
+                                              multiLevel === '2' &&
+                                              assign === '4'
+                                                ? '0 0 600px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6'
+                                                  ? '0 0 100px 0'
+                                                  : ''
+                                            }
+                                          >
+                                            {isQuizType && (
+                                              <ContentTitleB>
+                                                |{quizCategory?.유형}|
+                                              </ContentTitleB>
                                             )}
-                                          </MathJaxWrapperB>
-                                        </EachMathViewerB>
-                                      </MathViewerWrapperB>
-                                    );
-                                  }),
-                              )}
-                            </WorksheetBodyLeftB>
-                            <DividerB />
-                            <WorksheetBodyRightB>
-                              {page.rightArray.map((quizItemList) =>
-                                quizItemList.quizItemList
-                                  .filter(
-                                    (quizItem) => quizItem.type === 'QUESTION',
-                                  )
-                                  .map((quizItem, i) => {
-                                    const quizCategory =
-                                      quizItemList.quizCategoryList.find(
-                                        (quizCategoryItem: any) =>
-                                          quizCategoryItem.quizCategory.유형,
-                                      )?.quizCategory;
-                                    return (
-                                      <MathViewerWrapperB
-                                        key={i}
-                                        height={quizItemList.height as number}
-                                        padding={
-                                          multiLevel === '2' && assign === '4'
-                                            ? '0 0 600px 0'
-                                            : multiLevel === '2' &&
-                                                assign === '6'
-                                              ? '0 0 100px 0'
-                                              : ''
-                                        }
-                                      >
-                                        {isQuizType && (
-                                          <ContentTitleB>
-                                            |{quizCategory?.유형}|
-                                          </ContentTitleB>
-                                        )}
-                                        <EachMathViewerB>
-                                          <MathJaxWrapperB>
-                                            <WorkbookMathViewer
-                                              data={quizItemList}
-                                              isSetp3
-                                              answerCommentary={
-                                                itemType === 0
-                                                  ? '문제만'
-                                                  : itemType === 1
-                                                    ? '정답문'
-                                                    : itemType === 2
-                                                      ? '문제+해설별도'
-                                                      : itemType === 3
-                                                        ? '문제+해설같이'
-                                                        : '문제만'
-                                              }
-                                            ></WorkbookMathViewer>
-                                            {quizItemList.score !== 0 && (
-                                              <ScoreWrapper>
-                                                [{quizItemList.score}점]
-                                              </ScoreWrapper>
+                                            <EachMathViewerB>
+                                              <MathJaxWrapperB>
+                                                <WorkbookMathViewer
+                                                  data={quizItemList}
+                                                  isSetp3
+                                                  answerCommentary={'해설별도'}
+                                                ></WorkbookMathViewer>
+                                                {/* {quizItemList.score !== 0 && (
+                                                  <ScoreWrapper>
+                                                    [{quizItemList.score}점]
+                                                  </ScoreWrapper>
+                                                )} */}
+                                              </MathJaxWrapperB>
+                                            </EachMathViewerB>
+                                          </MathViewerWrapperB>
+                                        );
+                                      }),
+                                  )}
+                                </WorksheetBodyLeftB>
+                                <DividerB />
+                                <WorksheetBodyRightB>
+                                  {page.rightArray.map((quizItemList) =>
+                                    quizItemList.quizItemList
+                                      .filter(
+                                        (quizItem) =>
+                                          quizItem.type === 'QUESTION',
+                                      )
+                                      .map((quizItem, i) => {
+                                        const quizCategory =
+                                          quizItemList.quizCategoryList.find(
+                                            (quizCategoryItem: any) =>
+                                              quizCategoryItem.quizCategory
+                                                .유형,
+                                          )?.quizCategory;
+                                        return (
+                                          <MathViewerWrapperB
+                                            key={i}
+                                            height={
+                                              quizItemList.height as number
+                                            }
+                                            padding={
+                                              multiLevel === '2' &&
+                                              assign === '4'
+                                                ? '0 0 600px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6'
+                                                  ? '0 0 100px 0'
+                                                  : ''
+                                            }
+                                          >
+                                            {isQuizType && (
+                                              <ContentTitleB>
+                                                |{quizCategory?.유형}|
+                                              </ContentTitleB>
                                             )}
-                                          </MathJaxWrapperB>
-                                        </EachMathViewerB>
-                                      </MathViewerWrapperB>
-                                    );
-                                  }),
+                                            <EachMathViewerB>
+                                              <MathJaxWrapperB>
+                                                <WorkbookMathViewer
+                                                  data={quizItemList}
+                                                  isSetp3
+                                                  answerCommentary={'해설별도'}
+                                                ></WorkbookMathViewer>
+                                                {/* {quizItemList.score !== 0 && (
+                                                  <ScoreWrapper>
+                                                    [{quizItemList.score}점]
+                                                  </ScoreWrapper>
+                                                )} */}
+                                              </MathJaxWrapperB>
+                                            </EachMathViewerB>
+                                          </MathViewerWrapperB>
+                                        );
+                                      }),
+                                  )}
+                                </WorksheetBodyRightB>
+                              </WorksheetBodyB>
+                            </ThemeProvider>
+                            <WorksheetAdditionalInformationB>
+                              {isDate && (
+                                <span className="isDate">
+                                  <Label
+                                    value="2024/03/19"
+                                    fontSize="12px"
+                                  ></Label>
+                                </span>
                               )}
-                            </WorksheetBodyRightB>
-                          </WorksheetBodyB>
-                        </ThemeProvider>
-                        <WorksheetAdditionalInformationB>
-                          {isDate && (
-                            <span className="isDate">
-                              <Label value="2024/03/19" fontSize="12px"></Label>
-                            </span>
-                          )}
-                          <span className="pagenumber">{i + 1}</span>
-                        </WorksheetAdditionalInformationB>
-                      </PrintBoxB>
-                    </MathViewerListB>
-                  </PrintStyles>
-                ))}
+                              <span className="pagenumber">{i + 1}</span>
+                            </WorksheetAdditionalInformationB>
+                          </PrintBoxB>
+                        </MathViewerListB>
+                      </PrintStyles>
+                    ))}
+                </>
               </ContentsWrapperB>
             </PerfectScrollbar>
           </ScrollWrapper>

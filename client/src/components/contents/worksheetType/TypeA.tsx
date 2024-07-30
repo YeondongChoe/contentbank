@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import styled, { ThemeProvider } from 'styled-components';
 
