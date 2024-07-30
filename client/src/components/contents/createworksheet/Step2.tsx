@@ -27,6 +27,7 @@ import {
   Label,
   BarChart,
   MathviewerAccordion,
+  MathviewerAccordionStep2,
   Select,
   CheckBox,
   StepDnDWrapper,
@@ -102,6 +103,7 @@ export function Step2() {
   const [initialItems, setInitialItems] = useState<QuizList[]>(
     getLocalData?.data.quizList || [],
   );
+  //console.log(initialItems);
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
   const categoryType = initialItems.map((item) => {
@@ -210,7 +212,7 @@ export function Step2() {
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-  //console.log(contentNumQuotient);
+
   //기존 문항 데이타에 배점 넣기
   useEffect(() => {
     const updatedItems = initialItems.map((item) => {
@@ -260,6 +262,132 @@ export function Step2() {
       setMaxQuotient(getQuotientLocalData.maxQuotient);
     }
   }, [getQuotientLocalData]);
+  //step1에서 step2로 넘어왔을때 전역변수에 score 넣어줌
+  //step1에서 step2로 넘어왔을때 문항 추가했을 때 score 넣어줌
+  useEffect(() => {
+    if (
+      contentNumQuotient &&
+      quotient !== undefined &&
+      isEditWorkbook === undefined
+    ) {
+      setContentNumQuotient((prevData) => {
+        let updated = false;
+        const newData = prevData.map((item) => {
+          if (item.score === undefined) {
+            updated = true;
+            return {
+              ...item,
+              score:
+                remainderContent && item.num <= remainderContent
+                  ? (quotient as number)
+                  : nextRemainderContent && item.num >= nextRemainderContent
+                    ? quotient + 1
+                    : 0,
+            };
+          }
+          return item;
+        });
+        return updated ? newData : prevData;
+      });
+    }
+  }, [contentNumQuotient]);
+  //수정, 복제 후 수정일 때 문항 추가 했을 때 score 넣어줌
+  useEffect(() => {
+    if (contentNumQuotient && quotient !== undefined && isEditWorkbook === 1) {
+      setContentNumQuotient((prevData) => {
+        let updated = false;
+        const newData = prevData.map((item) => {
+          if (item.score === undefined) {
+            updated = true;
+            return {
+              ...item,
+              score:
+                remainderContent && item.num <= remainderContent
+                  ? (quotient as number)
+                  : nextRemainderContent && item.num >= nextRemainderContent
+                    ? quotient + 1
+                    : 0,
+            };
+          }
+          return item;
+        });
+        return updated ? newData : prevData;
+      });
+    }
+  }, [contentNumQuotient]);
+
+  //문항 번호가 없을 때 문항 번호 부여해주기
+  useEffect(() => {
+    if (initialItems && initialItems.length > 0) {
+      // initialItems 배열에서 num 속성이 있는 항목들만 모아서 정렬
+      const itemsWithNum = initialItems
+        .filter((item) => item.num)
+        .sort((a, b) => a.num - b.num);
+
+      // 가장 큰 num 값을 찾음
+      const maxNum =
+        itemsWithNum.length > 0 ? itemsWithNum[itemsWithNum.length - 1].num : 0;
+
+      // num 속성이 없는 항목들에 새로운 num 값을 부여
+      let newNum = maxNum + 1;
+      let updated = false;
+      const updatedItems = initialItems.map((item) => {
+        if (!item.num) {
+          updated = true;
+          return { ...item, num: newNum++ };
+        }
+        return item;
+      });
+
+      if (updated) {
+        setInitialItems(updatedItems);
+      }
+    }
+  }, [initialItems]);
+
+  //배점 옵션 => MathviewerAccordionStep2로 넘겨줌
+  const [quotientOption, setQuotientOption] = useState<
+    { code: string; idx: number; name: string; value: number }[]
+  >([]);
+  useEffect(() => {
+    if (minQuotient === quotient) {
+      setQuotientOption([
+        {
+          code: '0',
+          idx: 0,
+          name: `${minQuotient}점`,
+          value: minQuotient as number,
+        },
+        {
+          code: '1',
+          idx: 1,
+          name: `${maxQuotient}점`,
+          value: maxQuotient as number,
+        },
+      ]);
+    } else {
+      setQuotientOption([
+        {
+          code: '0',
+          idx: 0,
+          name: `${minQuotient}점`,
+          value: minQuotient as number,
+        },
+        {
+          code: '1',
+          idx: 1,
+          name: `${quotient ? quotient : 0}점`,
+          value: quotient ? quotient : 0,
+        },
+        {
+          code: '2',
+          idx: 2,
+          name: `${maxQuotient}점`,
+          value: maxQuotient as number,
+        },
+      ]);
+    }
+  }, [quotient, minQuotient, maxQuotient]);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -347,40 +475,19 @@ export function Step2() {
     if (getLocalData?.data.quizList) {
       const updatedQuizList = getLocalData.data.quizList.map((quiz, i) => ({
         ...quiz,
-        num: i + 1,
+        num: quiz.num ? quiz.num : i + 1,
       }));
-      //문항 점수 부여
-      if (
-        remainderContent !== undefined &&
-        nextRemainderContent !== undefined &&
-        quotient !== undefined
-      ) {
-        const updatedQuizListScore = updatedQuizList.map((quiz) => ({
-          ...quiz,
-          score:
-            quiz.num <= remainderContent
-              ? quotient
-              : quiz.num >= nextRemainderContent
-                ? quotient + 1
-                : 0,
-        }));
-        setInitialItems(updatedQuizListScore);
-      } else {
-        setInitialItems(updatedQuizList);
-      }
+      setInitialItems(updatedQuizList);
     }
   }, [getLocalData]);
-
-  // useEffect(() => {
-  //   if (
-  //     quizNum !== undefined &&
-  //     remainderContent !== undefined &&
-  //     nextRemainderContent !== undefined
-  //   ) {
-  //     setIsRemainderContent(quizNum <= remainderContent);
-  //     setIsNextRemainderContent(quizNum >= nextRemainderContent);
-  //   }
-  // }, [quizNum, remainderContent, nextRemainderContent]);
+  //수정, 복제후 수정일 때 step3 갔다가 돌아왔을 때 상태관리
+  useEffect(() => {
+    if (getLocalData) {
+      setIsEditWorkbook(getLocalData.data.isEditWorkbook);
+    }
+  }, [getLocalData]);
+  //console.log(getLocalData);
+  //console.log(initialItems);
 
   useEffect(() => {
     if (getEditData) setIsEditWorkbook(getEditData?.isEditWorkbook);
@@ -1523,8 +1630,6 @@ export function Step2() {
   //리스트에서 문항 삭제하기(배열의 경우)
   const deleteQuizItem = (code: string, idx: number) => {
     if (initialItems) {
-      console.log(initialItems);
-
       const selectedQuizItem = initialItems.find((item) => item.code === code);
       const isQuizNumExists = contentNumQuotient.find(
         (item) => item.code === code,
@@ -1534,13 +1639,14 @@ export function Step2() {
           prevItems.filter((item) => item !== selectedQuizItem),
         );
       }
+
       //총 배점 관리를 위해서 전역 데이터 업데이트
       if (isQuizNumExists) {
         setContentNumQuotient((prevItems) => {
           // 항목을 필터링하고 quizNum 순서로 정렬
           const updatedItems = prevItems
             .filter((item) => item !== isQuizNumExists)
-            .sort((a, b) => a.quizNum - b.quizNum);
+            .sort((a, b) => a.num - b.num);
           return updatedItems;
         });
       }
@@ -1961,9 +2067,20 @@ export function Step2() {
           } else {
             setInitialItems((prevItems) => {
               if (prevItems) {
-                return [...prevItems, selectedQuizItem];
+                // 현재 문항들 중에서 num이 있는 문항들만 필터링하여 num의 최대값 찾기
+                const maxNum = prevItems.reduce((max, item) => {
+                  return item.num && item.num > max ? item.num : max;
+                }, 0);
+
+                // selectedQuizItem에 num이 없으면 부여 + score 부여
+                const updatedQuizItem = {
+                  ...selectedQuizItem,
+                  num: selectedQuizItem.num ?? maxNum + 1,
+                };
+
+                return [...prevItems, updatedQuizItem];
               }
-              return [selectedQuizItem]; // 초기 상태 설정
+              return [{ ...selectedQuizItem, num: selectedQuizItem.num ?? 1 }]; // 초기 상태 설정, num이 없으면 1 부여
             });
           }
         } else {
@@ -3144,7 +3261,7 @@ export function Step2() {
                                   ref={ref}
                                   className={`${isDragging ? 'opacity' : ''}`}
                                 >
-                                  <MathviewerAccordion
+                                  <MathviewerAccordionStep2
                                     componentWidth="750px"
                                     width="550px"
                                     onClick={() => {
@@ -3158,8 +3275,9 @@ export function Step2() {
                                     isFavorite={dragItem.isFavorite}
                                     data={dragItem}
                                     quizNum={dragItem.num}
+                                    itemIndex={itemIndex}
                                     title={quizCategory?.유형 || 'N/A'}
-                                    index={itemIndex}
+                                    index={dragItem.idx}
                                     selectedCardIndex={selectedCardIndex}
                                     onSelectCard={setSelectedCardIndex}
                                     reportQuizitem={() =>
@@ -3171,6 +3289,7 @@ export function Step2() {
                                         dragItem.idx,
                                       )
                                     }
+                                    code={dragItem.code}
                                     quotient={quotient}
                                     minQuotient={minQuotient}
                                     maxQuotient={maxQuotient}
@@ -3184,7 +3303,8 @@ export function Step2() {
                                         ? handleFavorite(e, dragItem.idx, true)
                                         : handleFavorite(e, dragItem.idx, false)
                                     }
-                                  ></MathviewerAccordion>
+                                    quotientOption={quotientOption}
+                                  ></MathviewerAccordionStep2>
                                 </li>
                               );
                             }}
