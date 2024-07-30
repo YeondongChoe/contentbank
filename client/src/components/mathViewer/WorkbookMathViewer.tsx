@@ -137,7 +137,7 @@ export function WorkbookMathViewer({
                       ></ContentQuestion>
                     ))}
                   {data?.quizItemList
-                    .filter((quiz) => quiz.type === 'EXAMPLE')
+                    .filter((quiz) => quiz.type === 'COMMENTARY')
                     .map((quiz) => (
                       <ContentQuestion
                         key={quiz.idx}

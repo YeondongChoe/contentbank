@@ -8,7 +8,6 @@ import { LuSiren, LuBookmarkPlus } from 'react-icons/lu';
 import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { contentQuotient } from '../../../store/utilAtom';
 import { ItemQuestionType } from '../../../types/ItemQuestionType';
 import {
@@ -20,6 +19,7 @@ import {
 } from '../../../types/WorkbookType';
 import { Button, Select, CheckBoxI, Icon } from '../../atom';
 import { COLOR } from '../../constants';
+import { WorkbookMathViewer } from '../../mathViewer';
 import { MathViewer } from '../../mathViewer/MathViewer';
 
 type AccordionProps = {
@@ -37,6 +37,7 @@ type AccordionProps = {
   isSimilarQuiz?: boolean;
   isNewQuiz?: boolean;
   index: number;
+  itemIndex: number;
 };
 
 function Accordion({
@@ -52,6 +53,7 @@ function Accordion({
   isSelected,
   isBorder,
   index,
+  itemIndex,
   changeQuizitem,
   addQuizItem,
 }: AccordionProps) {
@@ -70,7 +72,7 @@ function Accordion({
     >
       <AccordionHeader>
         <AccordionHeaderTitle>
-          <span className="number">{index + 1}</span>
+          <span className="number">{itemIndex + 1}</span>
           <span className="title">{title}</span>
         </AccordionHeaderTitle>
         <ActionButtonWrapper>
@@ -161,11 +163,21 @@ type MathviewerCardProps = {
   componentHeight?: string;
   className?: string;
   title?: string;
+  quotient?: number;
+  minQuotient?: number;
+  maxQuotient?: number;
+  equalScore?: number;
+  remainderContent?: number;
+  nextRemainderContent?: number;
+  setTotalEqualScore?: React.Dispatch<React.SetStateAction<number>>;
   category?: any;
   viewerOption?: string;
+  code: string;
+  itemIndex: number;
+  quotientOption: { code: string; idx: number; name: string; value: number }[];
 };
 
-export function MathviewerAccordion({
+export function MathviewerAccordionStep2({
   onClick,
   reportQuizitem,
   changeQuizitem,
@@ -187,15 +199,124 @@ export function MathviewerAccordion({
   componentHeight,
   className,
   title,
+  quotient,
+  minQuotient,
+  maxQuotient,
+  equalScore,
+  remainderContent,
+  nextRemainderContent,
   category,
+  setTotalEqualScore,
   viewerOption,
+  code,
+  itemIndex,
+  quotientOption,
 }: MathviewerCardProps) {
+  const [didMount, setDidMount] = useState(false);
+  const [isRemainderContent, setIsRemainderContent] = useState(false);
+  const [isNextRemainderContent, setIsNextRemainderContent] = useState(false);
+  const [quotientAddOne, setQuotientAddOne] = useState<number>();
+  const [contentNumQuotient, setContentNumQuotient] =
+    useRecoilState<ContentWithScore[]>(contentQuotient);
+  //console.log('quizNum', quizNum);
+  //console.log('index', index);
+  //console.log('data', data);
+  //console.log('contentNumQuotient', contentNumQuotient);
+  //console.log('quotient', quotient);
+
+  //문항 삭제 추가 될때마다 총점 변경
+  const totalEqualScore = useMemo(
+    () => contentNumQuotient.reduce((acc, el) => acc + el.score, 0),
+    [contentNumQuotient, deleteQuizItem, addQuizItem],
+  );
+  //console.log('totalEqualScore', totalEqualScore);
+  useEffect(() => {
+    if (setTotalEqualScore) {
+      setTotalEqualScore(totalEqualScore);
+    }
+  }, [contentNumQuotient, totalEqualScore]);
+
+  useEffect(() => {
+    if (quotient !== undefined) {
+      setQuotientAddOne(quotient + 1);
+    }
+  }, []);
+
+  const [selectedValue, setSelectedValue] = useState<number>();
+  const [selectedQuizNum, setSelectedQuizNum] = useState<number>();
+  useEffect(() => {
+    if (selectedValue === undefined) {
+      return; // selectedValue가 undefined일 경우 아무 작업도 수행하지 않음
+    }
+
+    const updatedData = contentNumQuotient.map((item) => {
+      if (item.num === selectedQuizNum) {
+        return { ...item, score: selectedValue as number };
+      }
+      return item;
+    });
+    setContentNumQuotient(updatedData);
+  }, [selectedValue]);
+
+  useEffect(() => {
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
+    if (didMount) {
+      const isQuizNumExists = contentNumQuotient.some(
+        (item) => item.code === code,
+      );
+
+      const newData: ContentWithScore = {
+        index: index,
+        num: quizNum as number,
+        score: isRemainderContent
+          ? (quotient as number)
+          : isNextRemainderContent
+            ? (quotientAddOne as number)
+            : (quotient as number),
+        code: data.code,
+      };
+
+      if (!isQuizNumExists) {
+        // 기존에 없는 경우, 새로운 데이터 추가
+        setContentNumQuotient((prevData) => [...prevData, newData]);
+      }
+    }
+  }, [didMount]);
+
+  useEffect(() => {
+    if (
+      quizNum !== undefined &&
+      remainderContent !== undefined &&
+      nextRemainderContent !== undefined
+    ) {
+      setIsRemainderContent(quizNum <= remainderContent);
+      setIsNextRemainderContent(quizNum >= nextRemainderContent);
+    }
+  }, [quizNum, remainderContent, nextRemainderContent]);
+
+  const getDefaultValue = () => {
+    const matchedItem = contentNumQuotient.find((item) => item.num === quizNum);
+    if (matchedItem) {
+      return `${matchedItem.score}점`;
+    } else if (isRemainderContent) {
+      return `${quotient?.toString()}점`;
+    } else if (isNextRemainderContent) {
+      return `${quotientAddOne?.toString()}점`;
+    } else {
+      return undefined;
+    }
+  };
+
   return (
     <Accordion
       onClick={onClick}
       changeQuizitem={changeQuizitem}
       addQuizItem={addQuizItem}
       title={title}
+      itemIndex={itemIndex}
       quizNum={quizNum}
       index={index}
       componentWidth={componentWidth}
@@ -225,6 +346,16 @@ export function MathviewerAccordion({
           )}
           <div>{category?.난이도 || 'N/A'}</div>
           <div>{category?.문항타입 || 'N/A'}</div>
+          {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (
+            <Select
+              width={'90px'}
+              options={quotientOption}
+              isnormalizedOptions
+              defaultValue={getDefaultValue()}
+              setSelectedQuotientValue={setSelectedValue}
+              onClick={() => setSelectedQuizNum(quizNum as number)}
+            ></Select>
+          )}
         </div>
         <WorkbookMathViewer
           data={data}

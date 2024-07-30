@@ -93,6 +93,7 @@ export interface Data {
   isUse: boolean;
   isDelete: boolean;
   isAutoGrade: boolean;
+  isEditWorkbook?: number;
 }
 
 export interface WorkbookData {
@@ -122,7 +123,7 @@ export interface WorkbookCategoryData {
 
 export interface ContentWithScore {
   index: number;
-  quizNum: number;
+  num: number;
   score: number;
   code: string;
 }

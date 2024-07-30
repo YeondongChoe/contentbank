@@ -65,8 +65,7 @@ export function Step3() {
       setNewInitialItems(itemsWithHeight);
     }
   }, [itemHeights]);
-  console.log(getLocalData);
-  console.log(initialItems);
+
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
@@ -88,7 +87,7 @@ export function Step3() {
 
     fetchDataFromStorage();
   }, []);
-  console.log(getQuotientLocalData);
+
   //로컬스토리지에서 데이타를 가져온 후 문항 번호를 넣어서 저장
   useEffect(() => {
     if (getLocalData) {
@@ -98,30 +97,7 @@ export function Step3() {
           num: index + 1,
         }),
       );
-
-      if (getQuotientLocalData) {
-        const { remainderContent, quotient, nextRemainderContent } =
-          getQuotientLocalData;
-
-        const updatedItemsWithNum = itemsWithNum.map((item: QuizList) => {
-          if (item.num >= 1 && item.num <= remainderContent) {
-            return {
-              ...item,
-              score: quotient,
-            };
-          } else if (item.num >= nextRemainderContent) {
-            return {
-              ...item,
-              score: quotient + 1,
-            };
-          }
-          return item;
-        });
-        setInitialItems(updatedItemsWithNum);
-      } else {
-        setInitialItems(itemsWithNum);
-      }
-
+      setInitialItems(itemsWithNum);
       setIsEditWorkbook(getLocalData.isEditWorkbook);
       setWorkSheetIdx(getLocalData.workSheetIdx);
       setNameValue(getLocalData.title);
@@ -247,14 +223,18 @@ export function Step3() {
   //workSheetIdx 관리해서 넘겨주기
   const goBackMainPopup = () => {
     const data = {
-      data: { quizList: getLocalData.data },
-      isEditWorkbook: isEditWorkbook,
-      title: nameValue,
-      examiner: contentAuthor,
-      grade: gradeValue,
-      tag: tag,
+      data: {
+        quizList: getLocalData.data,
+        isEditWorkbook: isEditWorkbook,
+        title: nameValue,
+        examiner: contentAuthor,
+        grade: gradeValue,
+        tag: tag,
+      },
     };
-    //window.opener.localStorage.removeItem('sendEditData');
+    window.opener.localStorage.removeItem('sendEditData');
+    window.opener.localStorage.removeItem('sendQuotientData');
+
     saveLocalData(data);
     localStorage.setItem(
       'sendQuotientData',
