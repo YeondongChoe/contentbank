@@ -104,19 +104,7 @@ export function Step3() {
       setGradeValue(getLocalData.grade);
       setContentAuthor(getLocalData.examiner);
       setTag(getLocalData.tag);
-      setColorChoice(
-        getLocalData.color === '#FA8978'
-          ? 'red'
-          : getLocalData.color === '#FFDD94'
-            ? 'orange'
-            : getLocalData.color === '#D0E6A5'
-              ? 'green'
-              : getLocalData.color === '#86aee3'
-                ? 'blue'
-                : getLocalData.color === '#CCABD8'
-                  ? 'purple'
-                  : 'blue',
-      );
+      setColorChoice(getLocalData.color);
       setTemplateType(getLocalData.type || 'A');
       setColumn(
         getLocalData.multiLevel === '1'
