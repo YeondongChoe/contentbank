@@ -108,13 +108,18 @@ export function QuizPreview() {
           sortedList[sortedList.length - 1]?.quizItemList?.map((el) => (
             <div key={`${el?.code} quizItemList sortedList`}>
               {[
-                'TITLE',
+                'BIG',
+                'TEXT',
                 'QUESTION',
+                'SMALL',
                 'EXAMPLE',
+                'CHOICES',
                 'ANSWER',
-                'TIP',
                 'COMMENTARY',
                 'HINT',
+                'CONCEPT',
+                'TITLE',
+                'TIP',
               ].includes(el?.type) &&
                 el?.content && <MathViewer data={el.content}></MathViewer>}
             </div>

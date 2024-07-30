@@ -1029,8 +1029,14 @@ export function Classification({
   }, [highlightIndex]);
 
   const clickIdx = useMemo(() => {
-    return sortedList.length - 1;
+    const num = sortedList.length - 1;
+    return num;
   }, []);
+
+  useEffect(() => {
+    setSortedQuizList(sortedList);
+  }, [sortedList]);
+  useEffect(() => {}, [sortedQuizList]);
 
   useEffect(() => {
     // console.log('itemTree ------ ', itemTree);
@@ -1072,13 +1078,18 @@ export function Classification({
                           sortedList[clickIdx]?.quizItemList?.map((el) => (
                             <div key={`${el?.code} quizItemList sortedList`}>
                               {[
-                                'TITLE',
+                                'BIG',
+                                'TEXT',
                                 'QUESTION',
+                                'SMALL',
                                 'EXAMPLE',
+                                'CHOICES',
                                 'ANSWER',
-                                'TIP',
                                 'COMMENTARY',
                                 'HINT',
+                                'CONCEPT',
+                                'TITLE',
+                                'TIP',
                               ].includes(el?.type) &&
                                 el?.content && (
                                   <MathViewer data={el.content}></MathViewer>
