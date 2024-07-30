@@ -342,9 +342,10 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         key={i}
                                         height={quizItemList.height as number}
                                         padding={
-                                          assign === '4'
+                                          multiLevel === '2' && assign === '4'
                                             ? '0 0 600px 0'
-                                            : assign === '6'
+                                            : multiLevel === '2' &&
+                                                assign === '6'
                                               ? '0 0 100px 0'
                                               : ''
                                         }
@@ -404,9 +405,10 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         key={i}
                                         height={quizItemList.height as number}
                                         padding={
-                                          assign === '4'
+                                          multiLevel === '2' && assign === '4'
                                             ? '0 0 600px 0'
-                                            : assign === '6'
+                                            : multiLevel === '2' &&
+                                                assign === '6'
                                               ? '0 0 100px 0'
                                               : ''
                                         }
@@ -538,6 +540,14 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       <MathViewerWrapperB
                                         key={i}
                                         height={quizItemList.height as number}
+                                        padding={
+                                          multiLevel === '2' && assign === '4'
+                                            ? '0 0 600px 0'
+                                            : multiLevel === '2' &&
+                                                assign === '6'
+                                              ? '0 0 100px 0'
+                                              : ''
+                                        }
                                       >
                                         {isQuizType && (
                                           <ContentTitleB>
@@ -590,6 +600,14 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       <MathViewerWrapperB
                                         key={i}
                                         height={quizItemList.height as number}
+                                        padding={
+                                          multiLevel === '2' && assign === '4'
+                                            ? '0 0 600px 0'
+                                            : multiLevel === '2' &&
+                                                assign === '6'
+                                              ? '0 0 100px 0'
+                                              : ''
+                                        }
                                       >
                                         {isQuizType && (
                                           <ContentTitleB>
@@ -1021,9 +1039,10 @@ const WorksheetBodyRightB = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const MathViewerWrapperB = styled.div<{ height: number }>`
+const MathViewerWrapperB = styled.div<{ height: number; padding: string }>`
   width: 400px;
   height: ${({ height }) => `${height}px`};
+  padding: ${({ padding }) => `${padding}`};
   margin-bottom: 40px;
   font-size: 12px;
 `;

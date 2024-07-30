@@ -261,10 +261,10 @@ export const TypeB = ({
                         key={i}
                         height={quizItemList.height as number}
                         $padding={
-                          assign === '4문제'
+                          multiLevel === '2' && assign === '4'
                             ? '0 0 600px 0'
-                            : assign === '6문제'
-                              ? '0 0 200px 0'
+                            : multiLevel === '2' && assign === '6'
+                              ? '0 0 100px 0'
                               : ''
                         }
                       >
@@ -308,10 +308,10 @@ export const TypeB = ({
                         key={i}
                         height={quizItemList.height as number}
                         $padding={
-                          assign === '4문제'
+                          multiLevel === '2' && assign === '4'
                             ? '0 0 600px 0'
-                            : assign === '6문제'
-                              ? '0 0 200px 0'
+                            : multiLevel === '2' && assign === '6'
+                              ? '0 0 100px 0'
                               : ''
                         }
                       >
