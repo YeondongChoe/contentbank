@@ -2,9 +2,11 @@ import * as React from 'react';
 import { useEffect, useState, useRef } from 'react';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { CheckBoxI, DnDWrapper, Icon, Tooltip, ValueNone } from '../../..';
+import { quizListAtom } from '../../../../store/quizListAtom';
 import { QuizListType, Source } from '../../../../types';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
@@ -30,6 +32,7 @@ export function QuizList({
   isDataColor?: boolean;
   isHasMeta?: boolean;
 }) {
+  const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);

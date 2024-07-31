@@ -408,7 +408,6 @@ export function ContentList({
                 showDropDown={showDropDown}
                 setShowDropDown={setShowDropDown}
                 disabled={isEnabled}
-                // disabled // TODO : 에디터로 데이터 이동 연결전까지 사용불가처리
               />
               <Button
                 width="100px"

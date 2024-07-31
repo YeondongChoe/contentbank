@@ -37,7 +37,6 @@ export function ContentCreating({
   tabView: string;
   type: string;
 }) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);

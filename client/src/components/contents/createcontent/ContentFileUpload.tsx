@@ -13,6 +13,7 @@ import {
   AddQuestionListType,
   EditorDataType,
   ItemCategoryType,
+  QuestionClassListType,
   QuizItemListType,
   QuizListType,
 } from '../../../types';
@@ -32,6 +33,9 @@ export function ContentFileUpload({
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
+    QuizListType[]
+  >([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
@@ -46,6 +50,7 @@ export function ContentFileUpload({
   const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
     [],
   );
+  const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
   //셀렉트 값
   const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
@@ -58,12 +63,12 @@ export function ContentFileUpload({
     const storedQuizList = window.localStorage.getItem('quizList');
 
     console.log(
-      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값',
+      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
       storedQuizList,
     );
 
     if (storedQuizList) {
-      setQuizList(JSON.parse(storedQuizList));
+      setParsedStoredQuizList(JSON.parse(storedQuizList));
 
       // 로컬스토리지 값 다받은 뒤 초기화
       window.opener.localStorage.clear();
@@ -132,10 +137,41 @@ export function ContentFileUpload({
       quizIdx: null,
       articleList: [],
       quizItemList: quizItems,
-      quizClassList: [],
+      quizClassList: quizClassList,
     }));
     setAddQuestionList(newQuestionList);
   }, [quizItemArrList]);
+
+  useEffect(() => {
+    console.log('selectedSubject 교과', selectedSubject);
+    console.log('selectedCourse 과목', selectedCourse);
+    console.log('selectedQuestionType 문항타입', selectedQuestionType);
+    console.log('selectedDifficulty 난이도', selectedDifficulty);
+    //출처
+    console.log('selectedSource 출처', selectedSource);
+
+    const quizClassList: QuestionClassListType = [
+      {
+        type: 'CLASS',
+        quizCategory: {
+          sources: selectedSource,
+          과목: selectedCourse,
+          교과: selectedSubject,
+          난이도: selectedDifficulty,
+          문항타입: selectedQuestionType,
+        },
+      },
+    ];
+
+    // 필수 메타값 추가 및 변경
+    setQuizClassList(quizClassList);
+  }, [
+    selectedSubject,
+    selectedCourse,
+    selectedQuestionType,
+    selectedSource,
+    selectedDifficulty,
+  ]);
 
   useEffect(() => {
     if (addQuestionList.length) postQuizDataMutate();
@@ -161,19 +197,11 @@ export function ContentFileUpload({
     onSuccess: (response) => {
       openToastifyAlert({
         type: 'success',
-        text: `문항이 추가 되었습니다 ${response.data.data.idx}`,
+        text: `문항이 추가 되었습니다 ${response.data.data.quiz.idx}`,
       });
       // 추가된 문항의 idx값을 배열에 넣기 전체리스트에서 idx값으로 찾아온뒤 필수 메타값넣고 등록
     },
   });
-
-  useEffect(() => {
-    console.log('postQuizData', postQuizData);
-  }, [postQuizData]);
-
-  useEffect(() => {
-    setQuestionList(quizList);
-  }, [quizList]);
 
   // 카테고리 api 불러오기
   const getCategory = async () => {
@@ -332,6 +360,21 @@ export function ContentFileUpload({
     setEditorData(JSON.parse(data));
   };
 
+  useEffect(() => {
+    if (postQuizData) {
+      setQuestionList([...questionList, postQuizData.data.data.quiz]);
+    }
+  }, [postQuizData]);
+  useEffect(() => {
+    setQuizList([...questionList]);
+  }, [questionList]);
+  useEffect(() => {
+    console.log('quizList', quizList);
+  }, [quizList]);
+  useEffect(() => {
+    if (parsedStoredQuizList.length) setQuizList(parsedStoredQuizList);
+  }, [parsedStoredQuizList]);
+
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
@@ -483,7 +526,11 @@ export function ContentFileUpload({
         <ContentListWrapper>
           <ContentList>
             <QuizList
-              questionList={questionList}
+              questionList={
+                parsedStoredQuizList.length
+                  ? parsedStoredQuizList
+                  : questionList
+              }
               $height={`calc(100vh - 100px)`}
               showViewAllButton
               setCheckedList={setCheckedList}

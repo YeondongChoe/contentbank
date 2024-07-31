@@ -1618,6 +1618,15 @@ const MathViewerWrapper = styled.div`
     width: 100% !important;
     height: auto !important;
   }
+
+  div > img {
+    width: 100% !important;
+    height: auto !important;
+  }
+  table {
+    width: inherit !important;
+    height: auto !important;
+  }
 `;
 
 const ArrowButtonWrapper = styled.span`

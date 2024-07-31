@@ -1,15 +1,22 @@
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Modal, Select } from '../..';
+import { Button, Modal, openToastifyAlert, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
-import { ItemCategoryType, QuizListType } from '../../../types';
+import {
+  AddQuestionListType,
+  EditorDataType,
+  ItemCategoryType,
+  QuestionClassListType,
+  QuizItemListType,
+  QuizListType,
+} from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
@@ -24,7 +31,6 @@ export function ContentHTMLUpload({
   setTabView: React.Dispatch<React.SetStateAction<string>>;
   type: string;
 }) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
@@ -33,7 +39,15 @@ export function ContentHTMLUpload({
   const [content, setContent] = useState<string[]>([]);
   const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
 
-  const [editorData, setEditorData] = useState(null);
+  const [editorData, setEditorData] = useState<EditorDataType | null>(null);
+  const [quizItemList, setQuizItemList] = useState([]); // 대량등록
+  const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType[]>(
+    [],
+  );
+  const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
+    [],
+  );
+  const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
   //셀렉트 값
   const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
@@ -41,12 +55,98 @@ export function ContentHTMLUpload({
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
 
+  // 에디터에서 데이터 가져올시
   useEffect(() => {
-    if (checkedList) {
-      console.log('초기값 임시로 불러와서 넣기', checkedList);
-      // setQuestionList(quizData.quizList);
+    if (editorData) {
+      console.log('editorData-----', editorData.tag_group);
+      const itemDataList = [...editorData.tag_group];
+
+      // setQuizItemList(itemDataList);
     }
-  }, [checkedList]);
+  }, [editorData]);
+
+  useEffect(() => {
+    console.log('quizItemList', quizItemList);
+
+    // 문항 리스트에 추가
+    // if (quizItemList.length > 0) {
+    //   setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
+    // }
+  }, [quizItemList]);
+
+  useEffect(() => {
+    console.log('quizItemArrList', quizItemArrList);
+    // 등록될 값
+    const newQuestionList = quizItemArrList.map((quizItems) => ({
+      commandCode: 0,
+      quizIdx: null,
+      articleList: [],
+      quizItemList: quizItems,
+      quizClassList: quizClassList,
+    }));
+    setAddQuestionList(newQuestionList);
+  }, [quizItemArrList]);
+
+  useEffect(() => {
+    console.log('selectedSubject 교과', selectedSubject);
+    console.log('selectedCourse 과목', selectedCourse);
+    console.log('selectedQuestionType 문항타입', selectedQuestionType);
+    console.log('selectedDifficulty 난이도', selectedDifficulty);
+    //출처
+    console.log('selectedSource 출처', selectedSource);
+
+    const quizClassList: QuestionClassListType = [
+      {
+        type: 'CLASS',
+        quizCategory: {
+          sources: selectedSource,
+          과목: selectedCourse,
+          교과: selectedSubject,
+          난이도: selectedDifficulty,
+          문항타입: selectedQuestionType,
+        },
+      },
+    ];
+
+    // 필수 메타값 추가 및 변경
+    setQuizClassList(quizClassList);
+  }, [
+    selectedSubject,
+    selectedCourse,
+    selectedQuestionType,
+    selectedSource,
+    selectedDifficulty,
+  ]);
+
+  useEffect(() => {
+    if (addQuestionList.length) postQuizDataMutate();
+  }, [addQuestionList]);
+
+  // 문항 등록 후 메타데이터 수정 되게
+  const postQuiz = async () => {
+    const data = addQuestionList[addQuestionList.length - 1];
+
+    return await quizService.post(`/v1/quiz/upload`, data);
+  };
+
+  const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
+    mutationFn: postQuiz,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+    },
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: `문항이 추가 되었습니다 ${response.data.data.quiz.idx}`,
+      });
+      // 추가된 문항의 idx값을 배열에 넣기 전체리스트에서 idx값으로 찾아온뒤 필수 메타값넣고 등록
+    },
+  });
 
   // 카테고리 api 불러오기
   const getCategory = async () => {
@@ -185,8 +285,7 @@ export function ContentHTMLUpload({
   const submitSave = () => {
     // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     // console.log('신규 등록된 문항 리스트 get 요청 API');
-    //TODO : 임시 문항리스트 데이터
-    setQuizList(questionList);
+
     setIsPostMessage(true);
 
     // 등록 api
@@ -196,7 +295,27 @@ export function ContentHTMLUpload({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 난이도', selectedSource);
+    saveHandler();
   };
+  const saveHandler = async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const data = await window.saveExamData();
+    console.log(data);
+    setEditorData(JSON.parse(data));
+  };
+
+  useEffect(() => {
+    if (postQuizData) {
+      setQuestionList([...questionList, postQuizData.data.data.quiz]);
+    }
+  }, [postQuizData]);
+  useEffect(() => {
+    setQuizList([...questionList]);
+  }, [questionList]);
+  useEffect(() => {
+    console.log('quizList', quizList);
+  }, [quizList]);
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -211,50 +330,6 @@ export function ContentHTMLUpload({
       return true;
     }
   }, [selectedSubject, selectedCourse, selectedQuestionType, selectedSource]);
-  // iframe 에디터에 데이터 삽입시
-  useEffect(() => {
-    const iframe = document.getElementById('editorIframe') as HTMLIFrameElement;
-    // console.log('iframe--', iframe);
-    if (iframe) {
-      const contentWindow = iframe.contentWindow;
-      console.log('contentWindow', contentWindow);
-      if (contentWindow) {
-        const message = {
-          functionName: 'setExamData',
-          args: [
-            {
-              origin:
-                '<div class="level7"><p><span style="">(1) 경쟁률이 </span><span style=""><span data-mathinfo="86,1000,2822,688;;empty" class="itexmath" contenteditable="false" data-latex="\\displaystyle 2.5\\,:\\,1" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>2.5</mn><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;0.33em&quot; /><mo>:</mo><mspace width=&quot;0.33em&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mn>1</mn></mrow></mstyle></math>">\\(\\displaystyle 2.5\\,:\\,1\\)</span><span class="itex_eqn_dummy"></span></span><span style="">이므로 합격생 수는</span></p><p><span style="">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo="66,1000,7140,2250;;{ { 600 TIMES  { 1 } over { 2.5 } =240 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 600 \\times { \\dfrac { 1 } { 2.5 } } =240 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x00D7;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mfrac><mn>1</mn><mn>2.5</mn></mfrac></mstyle></mrow><mo>=</mo><mn>240</mn></mrow></mstyle></math>">\\(\\displaystyle  { 600 \\times { \\dfrac { 1 } { 2.5 } } =240 } \\)</span></span><span style="">(명)</span></p><p>(2) 입학 시험 성적이 <span data-mathinfo="86,1000,1050,975;;{ { 70 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 70 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>">\\(\\displaystyle  { 70 } \\)</span>점 이상 <span data-mathinfo="86,1000,1050,975;;{ { 80 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 80 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>80</mn></mrow></mstyle></math>">\\(\\displaystyle  { 80 } \\)</span>점 미만인 학생 수는</p><p>&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo="86,1000,18670,975;;{ { 600-(60+92+96+112+74+56)=110 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 600-(60+92+96+112+74+56)=110 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x2212;</mo><mo stretchy=&quot;false&quot;>(</mo><mn>60</mn><mo>+</mo><mn>92</mn><mo>+</mo><mn>96</mn><mo>+</mo><mn>112</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo stretchy=&quot;false&quot;>)</mo><mo>=</mo><mn>110</mn></mrow></mstyle></math>">\\(\\displaystyle  { 600-(60+92+96+112+74+56)=110 } \\)</span>(명)</p><p><span style="">(3) 입학 시험 성적이 </span><span style=""><span data-mathinfo="86,1000,1050,975;;{ { 70 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 70 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>">\\(\\displaystyle  { 70 } \\)</span></span><span style="">점 이상인 학생 수는</span></p><p><span style="">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo="86,1000,8705,975;;{ { 110+74+56=240 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 110+74+56=240 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>110</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo>=</mo><mn>240</mn></mrow></mstyle></math>">\\(\\displaystyle  { 110+74+56=240 } \\)</span></span><span style="">(명)</span></p><p><span style="">&nbsp;&nbsp;&nbsp;&nbsp;따라서 합격 점수는 </span><span style=""><span data-mathinfo="86,1000,1050,975;;{ { 70 } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle  { 70 } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>">\\(\\displaystyle  { 70 } \\)</span></span><span style="">점 이상이다. </span></p><p></p><p></p></div>',
-            },
-          ],
-        };
-        contentWindow.postMessage(message, 'http://43.201.205.140:40031/');
-        setIsPostMessage(false);
-      }
-    }
-  }, [isPostMessage]);
-
-  // iframe 에디터에 데이터 가져올시
-  useEffect(() => {
-    const handleMessage = (event: { origin: string; data: any }) => {
-      if (event.origin !== 'http://43.201.205.140:40031') {
-        // console.warn('Received message from untrusted source:', event.origin);
-        return;
-      }
-      console.log('parent message');
-      console.log(event.data);
-    };
-
-    window.addEventListener('message', handleMessage);
-
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, [isPostMessage]);
-
-  function saveHandler() {
-    throw new Error('Function not implemented.');
-  }
 
   return (
     <Container>
@@ -283,7 +358,8 @@ export function ContentHTMLUpload({
                           onDefaultSelect={() =>
                             handleDefaultSelect(categoryTitles[6]?.code)
                           }
-                          $positionTop
+                          // $positionTop
+                          heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
                           defaultValue={categoryTitles[6]?.code}
@@ -299,7 +375,8 @@ export function ContentHTMLUpload({
                           onDefaultSelect={() =>
                             handleDefaultSelect(categoryTitles[7]?.code)
                           }
-                          $positionTop
+                          // $positionTop
+                          heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
                           defaultValue={categoryTitles[7]?.code}
