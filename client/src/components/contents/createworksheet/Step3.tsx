@@ -201,7 +201,6 @@ export function Step3() {
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
-    //const sendData = { data: data };
     if (data) {
       localStorage.setItem('sendData', JSON.stringify(data));
     }
@@ -228,8 +227,8 @@ export function Step3() {
     );
     navigate('/content-create/exam/step2');
   };
-  const [fileName, setFileName] = useState('');
 
+  //const [fileName, setFileName] = useState('');
   // node 서버 학습지 만들기 api
   // const postWorkbook = async (data: any) => {
   //   const res = await makingworkbookInstance.post(`/get-pdf`, data);
@@ -290,7 +289,7 @@ export function Step3() {
       isAutoGrade: true,
       article: {
         type: 'PDF',
-        originalName: fileName,
+        originalName: '',
         storedPath: '/usr/share/nginx/html/CB',
         extension: '.pdf',
       },
@@ -352,7 +351,6 @@ export function Step3() {
       //alert 열기
       setIsSuccessAlertOpen(true);
       setIsComplete(true);
-      // window.opener.localStorage.setItem('workbookListUpdated', 'true');
     },
   });
 
@@ -1319,13 +1317,16 @@ const CheckBoxWrapper = styled.div`
   padding-right: 10px;
 `;
 const WorksheetTemplateViewSection = styled.div`
-  max-height: 751px;
+  max-height: 760px;
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1 0 55%;
   border: 1px solid ${COLOR.BORDER_POPUP};
-  border-radius: 25px;
+  //border-radius: 25px;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+
   gap: 10px;
 `;
 const WorksheetTemplateTypeWrapper = styled.div`
