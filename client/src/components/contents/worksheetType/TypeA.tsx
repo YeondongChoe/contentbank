@@ -393,6 +393,12 @@ const Wrapper = styled.div`
   height: 700px;
   overflow-y: auto;
   border-bottom-left-radius: 25px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 
 const WorksheetHeader = styled.div`
@@ -409,9 +415,6 @@ const ContentTitle = styled.div`
   color: #888888;
   padding-bottom: 2px;
   margin-left: -10px;
-`;
-const ContentScript = styled.div`
-  color: #888888;
 `;
 const HeaderTriangle = styled.div`
   position: relative;
