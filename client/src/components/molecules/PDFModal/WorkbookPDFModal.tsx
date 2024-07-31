@@ -36,6 +36,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [gradeValue, setGradeValue] = useState('');
   const [tag, setTag] = useState<string>('');
   const [templateList, setTemplateList] = useState<TemplateList[]>([]);
+  const [createdAt, setCreatedAt] = useState<string>('');
   const [color, setColor] = useState<string>('');
   const [type, setType] = useState<string>('');
   const [multiLevel, setMultiLevel] = useState<string>('');
@@ -74,6 +75,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       setGradeValue(workbookData?.data.data.grade);
       setTag(workbookData?.data.data.tag);
       setTemplateList(workbookData?.data.data.templateList);
+      setCreatedAt(workbookData?.data.data.lastArticle.createdAt);
     }
   }, [workbookData]);
 
@@ -274,6 +276,15 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     multiLevel,
     assign,
   );
+
+  // 현재 시간을 YYYY/MM/DD 형식으로 반환하는 함수
+  const formatDate = (createdAt: string) => {
+    const date = new Date(createdAt);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  };
 
   return (
     <>
@@ -481,7 +492,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                               {isDate && (
                                 <span className="isDate">
                                   <Label
-                                    value="2024/03/19"
+                                    value={formatDate(createdAt)}
                                     fontSize="12px"
                                   ></Label>
                                 </span>
@@ -676,7 +687,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                 {isDate && (
                                   <span className="isDate">
                                     <Label
-                                      value="2024/03/19"
+                                      value={formatDate(createdAt)}
                                       fontSize="12px"
                                     ></Label>
                                   </span>
@@ -874,7 +885,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                             {isDate && (
                               <span className="isDate">
                                 <Label
-                                  value="2024/03/19"
+                                  value={formatDate(createdAt)}
                                   fontSize="12px"
                                 ></Label>
                               </span>
@@ -1052,7 +1063,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                               {isDate && (
                                 <span className="isDate">
                                   <Label
-                                    value="2024/03/19"
+                                    value={formatDate(createdAt)}
                                     fontSize="12px"
                                   ></Label>
                                 </span>
