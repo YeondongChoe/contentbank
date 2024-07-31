@@ -202,6 +202,15 @@ export const TypeB = ({
     }
   }, [quizItemList, multiLevel, assign]);
 
+  // 현재 시간을 YYYY/MM/DD 형식으로 반환하는 함수
+  const getCurrentDate = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  };
+
   return (
     <Container>
       <LabelWrapper>
@@ -344,7 +353,7 @@ export const TypeB = ({
         <WorksheetAdditionalInformation>
           {isDate && (
             <span className="isDate">
-              <Label value="2024/03/19" fontSize="12px"></Label>
+              <Label value={getCurrentDate()} fontSize="12px"></Label>
             </span>
           )}
           <span className="pagenumber">1</span>
