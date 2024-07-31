@@ -170,7 +170,7 @@ export function QuizList({
 
   useEffect(() => {
     // setQuestionList()
-  }, [questionList]);
+  }, [questionList, quizList]);
 
   return (
     <Container>

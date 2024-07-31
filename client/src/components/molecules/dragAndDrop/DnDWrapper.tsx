@@ -72,11 +72,14 @@ export const DnDWrapper = ({
     return newItems.map((item, index) => ({ ...item, order: index }));
   }
 
-  // useEffect(() => { //TODO : 해당 코드가 활성화시 dnd 이후 원복 에러
-  //   if (dragList) {
-  //     setCurrentItems(dragList);
-  //   }
-  // }, [dragList]);
+  useEffect(() => {
+    //TODO : 해당 코드가 활성화시 dnd 이후 원복 에러
+    if (dragList) {
+      setCurrentItems(dragList);
+    }
+  }, [dragList]);
+
+  // useEffect(() => {}, [dragList]);
 
   return (
     <>
