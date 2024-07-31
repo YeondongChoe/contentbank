@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -202,6 +202,15 @@ export const TypeA = ({
     }
   }, [quizItemList, multiLevel, assign]);
 
+  // 현재 시간을 YYYY/MM/DD 형식으로 반환하는 함수
+  const getCurrentDate = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  };
+
   return (
     <Container>
       <LabelWrapper>
@@ -270,10 +279,10 @@ export const TypeA = ({
                         key={i}
                         height={quizItemList.height as number}
                         $padding={
-                          assign === '4문제'
+                          multiLevel === '2' && assign === '4'
                             ? '0 0 600px 0'
-                            : assign === '6문제'
-                              ? '0 0 200px 0'
+                            : multiLevel === '2' && assign === '6'
+                              ? '0 0 100px 0'
                               : ''
                         }
                       >
@@ -316,10 +325,10 @@ export const TypeA = ({
                         key={i}
                         height={quizItemList.height as number}
                         $padding={
-                          assign === '4문제'
+                          multiLevel === '2' && assign === '4'
                             ? '0 0 600px 0'
-                            : assign === '6문제'
-                              ? '0 0 200px 0'
+                            : multiLevel === '2' && assign === '6'
+                              ? '0 0 100px 0'
                               : ''
                         }
                       >
@@ -354,7 +363,7 @@ export const TypeA = ({
           <WorksheetAdditionalInformation>
             {isDate && (
               <span className="isDate">
-                <Label value="2024/03/19" fontSize="12px"></Label>
+                <Label value={getCurrentDate()} fontSize="12px"></Label>
               </span>
             )}
             <span className="pagenumber">1</span>
@@ -384,6 +393,12 @@ const Wrapper = styled.div`
   height: 700px;
   overflow-y: auto;
   border-bottom-left-radius: 25px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 
 const WorksheetHeader = styled.div`
@@ -400,9 +415,6 @@ const ContentTitle = styled.div`
   color: #888888;
   padding-bottom: 2px;
   margin-left: -10px;
-`;
-const ContentScript = styled.div`
-  color: #888888;
 `;
 const HeaderTriangle = styled.div`
   position: relative;

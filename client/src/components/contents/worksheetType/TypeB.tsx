@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -202,6 +202,15 @@ export const TypeB = ({
     }
   }, [quizItemList, multiLevel, assign]);
 
+  // 현재 시간을 YYYY/MM/DD 형식으로 반환하는 함수
+  const getCurrentDate = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  };
+
   return (
     <Container>
       <LabelWrapper>
@@ -261,10 +270,10 @@ export const TypeB = ({
                         key={i}
                         height={quizItemList.height as number}
                         $padding={
-                          assign === '4문제'
+                          multiLevel === '2' && assign === '4'
                             ? '0 0 600px 0'
-                            : assign === '6문제'
-                              ? '0 0 200px 0'
+                            : multiLevel === '2' && assign === '6'
+                              ? '0 0 100px 0'
                               : ''
                         }
                       >
@@ -308,10 +317,10 @@ export const TypeB = ({
                         key={i}
                         height={quizItemList.height as number}
                         $padding={
-                          assign === '4문제'
+                          multiLevel === '2' && assign === '4'
                             ? '0 0 600px 0'
-                            : assign === '6문제'
-                              ? '0 0 200px 0'
+                            : multiLevel === '2' && assign === '6'
+                              ? '0 0 100px 0'
                               : ''
                         }
                       >
@@ -344,7 +353,7 @@ export const TypeB = ({
         <WorksheetAdditionalInformation>
           {isDate && (
             <span className="isDate">
-              <Label value="2024/03/19" fontSize="12px"></Label>
+              <Label value={getCurrentDate()} fontSize="12px"></Label>
             </span>
           )}
           <span className="pagenumber">1</span>
@@ -373,7 +382,13 @@ const Wrapper = styled.div`
   height: 700px;
   overflow-y: auto;
   padding-left: 10px;
-  border-bottom-left-radius: 20px;
+  border-bottom-left-radius: 25px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 const WorksheetHeader = styled.div`
   margin: 0 auto;
@@ -513,7 +528,7 @@ const WorksheetAdditionalInformation = styled.div`
   border-top: 2px solid #e8e8e8;
   gap: 870px;
   margin-top: 80px;
-  margin-bottom: 30px;
+  padding-bottom: 30px;
 
   .isDate {
     font-size: 12px;

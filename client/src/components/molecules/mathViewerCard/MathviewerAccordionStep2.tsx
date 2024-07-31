@@ -3,24 +3,15 @@ import { useState, useEffect, useMemo } from 'react';
 
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import { GoFold, GoUnfold } from 'react-icons/go';
-import { IoMenuOutline } from 'react-icons/io5';
-import { LuSiren, LuBookmarkPlus } from 'react-icons/lu';
+import { LuSiren } from 'react-icons/lu';
 import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import { contentQuotient } from '../../../store/utilAtom';
-import { ItemQuestionType } from '../../../types/ItemQuestionType';
-import {
-  ContentWithScore,
-  QuizList,
-  LastArticle,
-  QuizItemList,
-  QuizCategoryList,
-} from '../../../types/WorkbookType';
-import { Button, Select, CheckBoxI, Icon } from '../../atom';
+import { ContentWithScore, QuizList } from '../../../types/WorkbookType';
+import { Button, Select, Icon } from '../../atom';
 import { COLOR } from '../../constants';
 import { WorkbookMathViewer } from '../../mathViewer';
-import { MathViewer } from '../../mathViewer/MathViewer';
 
 type AccordionProps = {
   onClick: () => void;
@@ -164,8 +155,6 @@ type MathviewerCardProps = {
   className?: string;
   title?: string;
   quotient?: number;
-  minQuotient?: number;
-  maxQuotient?: number;
   equalScore?: number;
   remainderContent?: number;
   nextRemainderContent?: number;
@@ -200,8 +189,6 @@ export function MathviewerAccordionStep2({
   className,
   title,
   quotient,
-  minQuotient,
-  maxQuotient,
   equalScore,
   remainderContent,
   nextRemainderContent,
@@ -225,11 +212,11 @@ export function MathviewerAccordionStep2({
   //console.log('quotient', quotient);
 
   //문항 삭제 추가 될때마다 총점 변경
-  const totalEqualScore = useMemo(
-    () => contentNumQuotient.reduce((acc, el) => acc + el.score, 0),
-    [contentNumQuotient, deleteQuizItem, addQuizItem],
-  );
-  //console.log('totalEqualScore', totalEqualScore);
+  const totalEqualScore = useMemo(() => {
+    const total = contentNumQuotient.reduce((acc, el) => acc + el.score, 0);
+    return isNaN(total) ? 0 : total;
+  }, [contentNumQuotient, deleteQuizItem, addQuizItem]);
+
   useEffect(() => {
     if (setTotalEqualScore) {
       setTotalEqualScore(totalEqualScore);
@@ -346,16 +333,19 @@ export function MathviewerAccordionStep2({
           )}
           <div>{category?.난이도 || 'N/A'}</div>
           <div>{category?.문항타입 || 'N/A'}</div>
-          {!isSimilarQuiz && !isNewQuiz && equalScore === 2 && (
-            <Select
-              width={'90px'}
-              options={quotientOption}
-              isnormalizedOptions
-              defaultValue={getDefaultValue()}
-              setSelectedQuotientValue={setSelectedValue}
-              onClick={() => setSelectedQuizNum(quizNum as number)}
-            ></Select>
-          )}
+          {!isSimilarQuiz &&
+            !isNewQuiz &&
+            equalScore === 2 &&
+            quotient !== 0 && (
+              <Select
+                width={'90px'}
+                options={quotientOption}
+                isnormalizedOptions
+                defaultValue={getDefaultValue()}
+                setSelectedQuotientValue={setSelectedValue}
+                onClick={() => setSelectedQuizNum(quizNum as number)}
+              ></Select>
+            )}
         </div>
         <WorkbookMathViewer
           data={data}

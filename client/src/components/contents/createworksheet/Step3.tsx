@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
-import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -31,7 +30,6 @@ import {
   PurpleTheme,
 } from '../../constants/THEME';
 import { TypeA, TypeB } from '../worksheetType';
-//pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
@@ -104,19 +102,7 @@ export function Step3() {
       setGradeValue(getLocalData.grade);
       setContentAuthor(getLocalData.examiner);
       setTag(getLocalData.tag);
-      setColorChoice(
-        getLocalData.color === '#FA8978'
-          ? 'red'
-          : getLocalData.color === '#FFDD94'
-            ? 'orange'
-            : getLocalData.color === '#D0E6A5'
-              ? 'green'
-              : getLocalData.color === '#86aee3'
-                ? 'blue'
-                : getLocalData.color === '#CCABD8'
-                  ? 'purple'
-                  : 'blue',
-      );
+      setColorChoice(getLocalData.color);
       setTemplateType(getLocalData.type || 'A');
       setColumn(
         getLocalData.multiLevel === '1'
@@ -215,7 +201,6 @@ export function Step3() {
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
-    //const sendData = { data: data };
     if (data) {
       localStorage.setItem('sendData', JSON.stringify(data));
     }
@@ -242,8 +227,8 @@ export function Step3() {
     );
     navigate('/content-create/exam/step2');
   };
-  const [fileName, setFileName] = useState('');
 
+  //const [fileName, setFileName] = useState('');
   // node 서버 학습지 만들기 api
   // const postWorkbook = async (data: any) => {
   //   const res = await makingworkbookInstance.post(`/get-pdf`, data);
@@ -304,7 +289,7 @@ export function Step3() {
       isAutoGrade: true,
       article: {
         type: 'PDF',
-        originalName: fileName,
+        originalName: '',
         storedPath: '/usr/share/nginx/html/CB',
         extension: '.pdf',
       },
@@ -366,7 +351,6 @@ export function Step3() {
       //alert 열기
       setIsSuccessAlertOpen(true);
       setIsComplete(true);
-      // window.opener.localStorage.setItem('workbookListUpdated', 'true');
     },
   });
 
@@ -446,6 +430,11 @@ export function Step3() {
           const childElement = child as HTMLElement;
           const height = childElement.offsetHeight;
 
+          if (answerCommentary === '문제+해설같이') {
+            childElement.style.height = '450px';
+            return 450;
+          }
+
           if (height > 400) {
             childElement.style.height = '400px';
             return 400;
@@ -483,10 +472,28 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        {/* <WorkbookMathViewer
-                          data={quizItem.content}
-                        ></WorkbookMathViewer> */}
                         <div>{quizItem.content}</div>
+                        {initialItems &&
+                          initialItems
+                            .map(
+                              (quizCategoryList: any) =>
+                                quizCategoryList.quizCategoryList.문항타입 ===
+                                '객관식',
+                            )
+                            .map((filteredCategory) =>
+                              initialItems.map((quizItemList: any) =>
+                                quizItemList.quizItemList
+                                  .filter(
+                                    (quizItem: any) =>
+                                      quizItem.type === 'CHOICES',
+                                  )
+                                  .map((quizItem: any, index: number) => (
+                                    <div key={index}>
+                                      <div>{quizItem.content}</div>
+                                    </div>
+                                  )),
+                              ),
+                            )}
                       </div>
                     )),
                 )}
@@ -515,6 +522,27 @@ export function Step3() {
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
                         <div>{quizItem.content}</div>
+                        {initialItems &&
+                          initialItems
+                            .map(
+                              (quizCategoryList: any) =>
+                                quizCategoryList.quizCategoryList.문항타입 ===
+                                '객관식',
+                            )
+                            .map((filteredCategory) =>
+                              initialItems.map((quizItemList: any) =>
+                                quizItemList.quizItemList
+                                  .filter(
+                                    (quizItem: any) =>
+                                      quizItem.type === 'CHOICES',
+                                  )
+                                  .map((quizItem: any, index: number) => (
+                                    <div key={index}>
+                                      <div>{quizItem.content}</div>
+                                    </div>
+                                  )),
+                              ),
+                            )}
                       </div>
                     )),
                 )}
@@ -529,6 +557,28 @@ export function Step3() {
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
                         <div>{quizItem.content}</div>
+
+                        {initialItems &&
+                          initialItems
+                            .map(
+                              (quizCategoryList: any) =>
+                                quizCategoryList.quizCategoryList.문항타입 ===
+                                '객관식',
+                            )
+                            .map((filteredCategory) =>
+                              initialItems.map((quizItemList: any) =>
+                                quizItemList.quizItemList
+                                  .filter(
+                                    (quizItem: any) =>
+                                      quizItem.type === 'CHOICES',
+                                  )
+                                  .map((quizItem: any, index: number) => (
+                                    <div key={index}>
+                                      <div>{quizItem.content}</div>
+                                    </div>
+                                  )),
+                              ),
+                            )}
 
                         {quizItemList.quizItemList
                           .filter(
@@ -1267,13 +1317,16 @@ const CheckBoxWrapper = styled.div`
   padding-right: 10px;
 `;
 const WorksheetTemplateViewSection = styled.div`
-  max-height: 751px;
+  max-height: 760px;
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1 0 55%;
   border: 1px solid ${COLOR.BORDER_POPUP};
-  border-radius: 25px;
+  //border-radius: 25px;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+
   gap: 10px;
 `;
 const WorksheetTemplateTypeWrapper = styled.div`
