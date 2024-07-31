@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
-import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -31,7 +30,6 @@ import {
   PurpleTheme,
 } from '../../constants/THEME';
 import { TypeA, TypeB } from '../worksheetType';
-//pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export function Step3() {
   const [getLocalData, setGetLocalData] = useState<any>(null);
@@ -435,8 +433,8 @@ export function Step3() {
           const height = childElement.offsetHeight;
 
           if (answerCommentary === '문제+해설같이') {
-            childElement.style.height = '500px';
-            return 500;
+            childElement.style.height = '450px';
+            return 450;
           }
 
           if (height > 300) {
