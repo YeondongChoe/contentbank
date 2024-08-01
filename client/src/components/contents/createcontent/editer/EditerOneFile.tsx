@@ -93,10 +93,11 @@ export function EditerOneFile({
   }, [type]);
   useEffect(() => {}, [tabView]);
   return (
-    <Container>
+    <Container className={type === 'type2' ? `type2` : ''}>
       {isMathJaxLoaded ? (
         <>
           {type === 'type1' && <Type1 saveHandler={saveHandler} />}
+          {/* hml 대량등록 */}
           {type === 'type2' && <Type2 />}
           {type === 'type3' && <Type3 saveHandler={saveHandler} />}
         </>
@@ -116,6 +117,10 @@ const Container = styled.div`
   margin: 0;
   display: flex;
   align-items: stretch;
+
+  &.type2 {
+    width: 100%;
+  }
 `;
 
 const LoaderWrapper = styled.div`

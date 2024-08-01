@@ -105,7 +105,7 @@ const Type2 = () => {
                 <button id="pasteButton" className="hml_copy_btn">
                   붙여넣기
                 </button>
-                <div className="origin_img_area h-100 hml_multi">
+                <div className="origin_img_area hml_multi">
                   <div className="itex_ocrimg_area" style={{ width: '100%' }}>
                     <img id="itex_main_img" alt="" />
                   </div>
@@ -277,7 +277,7 @@ const Type2 = () => {
           </button>
         </div>
         <div id="second" className="resizeable">
-          <div className="col-lg-4 p-0 tiny_wrap">
+          <div className="col-lg-4 p-0 tiny_wrap type2">
             <textarea id="tinyeditor"></textarea>
             <div className="save_exam_btn_wrap">
               <button id="exam_change">변경</button>
