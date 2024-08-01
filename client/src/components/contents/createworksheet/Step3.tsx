@@ -456,7 +456,7 @@ export function Step3() {
   return (
     <Container>
       {/* 가상의 돔을 그려서 문항의 높이 측정 */}
-      <div>
+      {/* <div>
         <div
           ref={measureRef}
           style={{
@@ -606,7 +606,7 @@ export function Step3() {
             </>
           )}
         </div>
-      </div>
+      </div> */}
       <AlertBar
         isCloseKor
         type="success"
@@ -1047,16 +1047,12 @@ export function Step3() {
               padding="5px 10px"
               flexEnd
             />
-            <CheckBoxWrapper>
-              <CheckBox height="15px" isChecked={isDate} onClick={selectDate} />
+            <CheckBoxWrapper onClick={selectDate}>
+              <CheckBox height="15px" isChecked={isDate} />
               날짜 표시
             </CheckBoxWrapper>
-            <CheckBoxWrapper>
-              <CheckBox
-                height="15px"
-                isChecked={isContentTypeTitle}
-                onClick={selectContentTypeTitle}
-              />
+            <CheckBoxWrapper onClick={selectContentTypeTitle}>
+              <CheckBox height="15px" isChecked={isContentTypeTitle} />
               문항 유형명 표시
             </CheckBoxWrapper>
           </AddInformationWrapper>
@@ -1310,11 +1306,13 @@ const ContentSpace = styled.div`
 const AddInformationWrapper = styled.div`
   display: flex;
   align-items: center;
+  gap: 10px;
 `;
 const CheckBoxWrapper = styled.div`
   display: flex;
   gap: 2px;
   padding-right: 10px;
+  cursor: pointer;
 `;
 const WorksheetTemplateViewSection = styled.div`
   max-height: 760px;
