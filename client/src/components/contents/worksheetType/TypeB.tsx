@@ -384,10 +384,13 @@ const Wrapper = styled.div`
   padding-left: 10px;
   border-bottom-left-radius: 25px;
 
+  /* Hide scrollbar for Webkit-based browsers (Chrome, Safari, etc.) */
   &::-webkit-scrollbar {
     display: none;
   }
+  /* Hide scrollbar for IE and Edge */
   -ms-overflow-style: none;
+  /* Hide scrollbar for Firefox */
   scrollbar-width: none;
 `;
 const WorksheetHeader = styled.div`
