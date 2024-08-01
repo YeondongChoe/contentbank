@@ -172,7 +172,7 @@
         "r": "itex_rsq",
         "rb": "itex_rcq",
         "k": "itex_han0",
-        "bk": "itex_han10"
+        "kb": "itex_han10"
       },
       {
         "d": "itex_charw",
@@ -180,7 +180,7 @@
         "r": "itex_rsw",
         "rb": "itex_rcw",
         "k": "itex_han1",
-        "bk": "itex_han11"
+        "kb": "itex_han11"
       },
       {
         "d": "itex_chare",
@@ -188,7 +188,7 @@
         "r": "itex_rse",
         "rb": "itex_rce",
         "k": "itex_han2",
-        "bk": "itex_han12"
+        "kb": "itex_han12"
       },
       {
         "d": "itex_charr",
@@ -196,7 +196,7 @@
         "r": "itex_rsr",
         "rb": "itex_rcr",
         "k": "itex_han3",
-        "bk": "itex_han13"
+        "kb": "itex_han13"
       },
       {
         "d": "itex_chart",
@@ -204,7 +204,7 @@
         "r": "itex_rst",
         "rb": "itex_rct",
         "k": "itex_han4",
-        "bk": "itex_han14"
+        "kb": "itex_han14"
       },
       {
         "d": "itex_chary",
@@ -233,7 +233,7 @@
         "r": "itex_rso",
         "rb": "itex_rco",
         "k": "itex_han8",
-        "bk": "itex_han18"
+        "kb": "itex_han18"
       },
       {
         "d": "itex_charp",
@@ -241,7 +241,7 @@
         "r": "itex_rsp",
         "rb": "itex_rcp",
         "k": "itex_han9",
-        "bk": "itex_han19"
+        "kb": "itex_han19"
       }
     ],
     "key_layer_2": [

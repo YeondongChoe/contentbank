@@ -5,3 +5,8 @@
   font-weight: normal;
   font-style: normal;
 }
+/* 폰트 추가 시, 필수 설정 */
+/* @font-face {
+  font-family: "";
+  src: url("");
+} */

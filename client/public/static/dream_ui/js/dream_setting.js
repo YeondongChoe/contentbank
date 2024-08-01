@@ -5,7 +5,8 @@ var dream_server_url = "http://43.201.205.140:40030";
 var tabCount = 5;
 
 // 즐겨찾기 개수
-var bookmarkCount = 30;
+var bookmarkCount = 10;
+var bookmarkCount_pc = 30;
 
 // 편집기 종류(PC: true, tab: false);
 // var editorType = true;
@@ -56,5 +57,8 @@ var getEQData = () => {
       iTeXEQ.recoverynew(output);
       const target = output.querySelector(`.itexmath`);
       target.addEventListener("click", iTeXEQ.eqn_click, false);
+    })
+    .catch(() => {
+      console.log("수식 입력 실패");
     });
 };

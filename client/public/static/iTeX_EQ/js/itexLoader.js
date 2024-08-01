@@ -12,7 +12,6 @@
         ) {
           resolve();
         } else {
-          console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%");
           setTimeout(checkLoaded, 500);
         }
       };
