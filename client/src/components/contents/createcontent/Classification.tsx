@@ -852,38 +852,35 @@ export function Classification({
       let actionElement2: RadioStateType[] = [];
       console.log('lastQuiz---', lastQuiz);
 
-      // category를 순회하며 필요한 형태로 변환
-      if (lastQuiz.quizCategoryList) {
-        lastQuiz.quizCategoryList.forEach((category) => {
-          (
-            Object.keys(category.quizCategory) as (keyof QuizCategory)[]
-          ).forEach((key) => {
-            const value = category.quizCategory[key];
+      // category를 순회하며 필요한 형태로 변환quizCategoryList
+      if (lastQuiz.quizCategoryList[0]) {
+        const category = lastQuiz.quizCategoryList[0];
+        Object.keys(category.quizCategory).forEach((key) => {
+          const value = category.quizCategory[key as keyof QuizCategory];
 
-            // 행동요소1, 행동요소2인 경우 객체 배열로 추가
-            if (key === '행동요소1' && Array.isArray(value)) {
-              actionElement1 = value.map((element, index) => ({
-                title: element,
-                checkValue: 0, // 필요한 경우 적절히 수정
-                code: '행동요소',
-                key: key,
-              }));
-            } else if (key === '행동요소2' && Array.isArray(value)) {
-              actionElement2 = value.map((element, index) => ({
-                title: element,
-                checkValue: 0, // 필요한 경우 적절히 수정
-                code: '행동요소',
-                key: key,
-              }));
-            } else {
-              list.push({
-                title: value as string,
-                checkValue: 0, // 필요한 경우 적절히 수정
-                code: key as string,
-                key: key as string,
-              });
-            }
-          });
+          // 행동요소1, 행동요소2인 경우 객체 배열로 추가
+          if (key === '행동요소1' && Array.isArray(value)) {
+            actionElement1 = value.map((element) => ({
+              title: element,
+              checkValue: 0, // 필요한 경우 적절히 수정
+              code: '행동요소1',
+              key: key,
+            }));
+          } else if (key === '행동요소2' && Array.isArray(value)) {
+            actionElement2 = value.map((element) => ({
+              title: element,
+              checkValue: 0, // 필요한 경우 적절히 수정
+              code: '행동요소2',
+              key: key,
+            }));
+          } else {
+            list.push({
+              title: value as string,
+              checkValue: 0, // 필요한 경우 적절히 수정
+              code: key,
+              key: key,
+            });
+          }
         });
       }
 

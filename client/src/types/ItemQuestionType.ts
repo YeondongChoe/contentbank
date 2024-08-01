@@ -101,8 +101,8 @@ export type QuizCategory = {
   대단원?: string;
   소단원?: string;
   중단원?: string;
-  행동요소1?: string;
-  행동요소2?: string;
+  행동요소1?: string[];
+  행동요소2?: string[];
   sources?: Source[] | any[];
 };
 
