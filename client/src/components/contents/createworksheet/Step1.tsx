@@ -3283,6 +3283,7 @@ export function Step1() {
                       value="문항 수 균등 배분"
                       fontSize="16px"
                       width="140px"
+                      cursor
                     />
                   </AdditionOption>
                   <AdditionOption>
@@ -3296,6 +3297,7 @@ export function Step1() {
                       value="내 문항 우선 추천"
                       fontSize="16px"
                       width="140px"
+                      cursor
                     />
                   </AdditionOption>
                 </AdditionOptionList>
@@ -3922,6 +3924,7 @@ export function Step1() {
                           value="문항 수 균등 배분"
                           fontSize="16px"
                           width="140px"
+                          cursor
                         />
                       </AdditionOption>
                       <AdditionOption>
@@ -3935,6 +3938,7 @@ export function Step1() {
                           value="내 문항 우선 추천"
                           fontSize="16px"
                           width="140px"
+                          cursor
                         />
                       </AdditionOption>
                     </AdditionOptionList>
