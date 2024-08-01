@@ -47,6 +47,7 @@ export function Step3() {
     window.opener.localStorage.clear();
     window.close();
   };
+  console.log(itemHeights);
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
@@ -361,6 +362,7 @@ export function Step3() {
         text: '필수 항목을 선택해 주세요.',
       });
     } else {
+      measureHeights();
       postNewWorkbookData();
     }
   };
@@ -408,6 +410,13 @@ export function Step3() {
     },
   ];
 
+  useEffect(() => {
+    if (initialItems) {
+      setItemHeights([400, 400, 400, 400, 400, 400]);
+      originalHeightsRef.current = [400, 400, 400, 400, 400, 400];
+    }
+  }, [initialItems]);
+
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
@@ -423,40 +432,64 @@ export function Step3() {
   };
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
-  useEffect(() => {
-    const measureHeights = () => {
-      if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map((child) => {
-          const childElement = child as HTMLElement;
-          const height = childElement.offsetHeight;
+  // useEffect(() => {
+  //   const measureHeights = () => {
+  //     if (measureRef.current) {
+  //       const heights = Array.from(measureRef.current.children).map((child) => {
+  //         const childElement = child as HTMLElement;
+  //         const height = childElement.offsetHeight;
 
-          if (answerCommentary === '문제+해설같이') {
-            childElement.style.height = '450px';
-            return 450;
-          }
+  //         if (answerCommentary === '문제+해설같이') {
+  //           childElement.style.height = '450px';
+  //           return 450;
+  //         }
 
-          if (height > 400) {
-            childElement.style.height = '400px';
-            return 400;
-          }
+  //         if (height > 400) {
+  //           childElement.style.height = '400px';
+  //           return 400;
+  //         }
 
-          return height;
-        });
+  //         return height;
+  //       });
 
-        setItemHeights(heights);
-        originalHeightsRef.current = heights;
-      }
-    };
+  //       setItemHeights(heights);
+  //       originalHeightsRef.current = heights;
+  //     }
+  //   };
 
-    if (initialItems) {
-      measureHeights();
+  //   if (initialItems) {
+  //     measureHeights();
+  //   }
+  // }, [initialItems, answerCommentary, contentQuantity]);
+
+  const measureHeights = () => {
+    if (measureRef.current) {
+      const heights = Array.from(measureRef.current.children).map((child) => {
+        const childElement = child as HTMLElement;
+        const height = childElement.offsetHeight;
+
+        if (answerCommentary === '문제+해설같이') {
+          childElement.style.height = '450px';
+          return 450;
+        }
+
+        if (height > 400) {
+          childElement.style.height = '400px';
+          return 400;
+        }
+
+        return height;
+      });
+
+      setItemHeights(heights);
+      originalHeightsRef.current = heights;
     }
-  }, [initialItems, answerCommentary, contentQuantity]);
+  };
 
   return (
     <Container>
       {/* 가상의 돔을 그려서 문항의 높이 측정 */}
-      {/* <div>
+      <div>
         <div
           ref={measureRef}
           style={{
@@ -606,7 +639,7 @@ export function Step3() {
             </>
           )}
         </div>
-      </div> */}
+      </div>
       <AlertBar
         isCloseKor
         type="success"
@@ -1321,7 +1354,6 @@ const WorksheetTemplateViewSection = styled.div`
   align-items: center;
   flex: 1 0 55%;
   border: 1px solid ${COLOR.BORDER_POPUP};
-  //border-radius: 25px;
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
 
