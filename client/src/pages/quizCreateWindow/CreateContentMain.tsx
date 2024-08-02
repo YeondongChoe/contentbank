@@ -104,7 +104,8 @@ export function CreateContentMain() {
             <ContentFileUpload setTabView={setTabView} type={'edit'} />
           )}
           {query.get('state') === 'uploadfile' && (
-            <ContentFileUpload setTabView={setTabView} type={'type1'} />
+            // <ContentFileUpload setTabView={setTabView} type={'type1'} />
+            <ContentFileUpload setTabView={setTabView} type={'edit'} />
           )}
           {query.get('state') === 'uploadhtml' && (
             <ContentHTMLUpload setTabView={setTabView} type={'type2'} />

@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import { styled } from 'styled-components';
+
+import { ValueNone, MathViewer } from '../../../../../components';
+import { QuizListType } from '../../../../../types';
 
 import ArrowClockwiseIcon from './icons/ArrowClockwiseIcon';
 import ArrowCounterclockwiseIcon from './icons/ArrowCounterclockwiseIcon';
@@ -43,6 +48,8 @@ const dynamicallyLoadScripts = (
 
 const Type4 = ({ saveHandler }: { saveHandler?: () => any }) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
+  const [sortedList, setSortedList] = useState<QuizListType[]>([]);
+  const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
 
   const initialScripts = [
     '/static/tinymce5/js/tinymce/tinymce.min.js',
@@ -94,9 +101,54 @@ const Type4 = ({ saveHandler }: { saveHandler?: () => any }) => {
     initComponent();
   }, []);
 
+  // 마지막으로 클릭된 문항 뷰어에 보이게
+  const clickIdx = useMemo(() => {
+    const num = sortedList.length - 1;
+    return num;
+  }, [sortedQuizList]);
+
   return (
     <>
-      <div className="itex_editor_container">
+      <div className="type4_container">
+        <MathViewerWrapper>
+          {sortedList.length > 0 ? (
+            <>
+              {sortedQuizList && sortedQuizList[clickIdx]?.quizItemList ? (
+                sortedList[clickIdx]?.quizItemList?.map((el) => (
+                  <div key={`${el?.code} quizItemList sortedList`}>
+                    {[
+                      'BIG',
+                      'TEXT',
+                      'QUESTION',
+                      'SMALL',
+                      'EXAMPLE',
+                      'CHOICES',
+                      'ANSWER',
+                      'COMMENTARY',
+                      'HINT',
+                      'CONCEPT',
+                      'TITLE',
+                      'TIP',
+                    ].includes(el?.type) &&
+                      el?.content && (
+                        <MathViewer data={el.content}></MathViewer>
+                      )}
+                  </div>
+                ))
+              ) : (
+                <>
+                  <ValueNone info="등록된 데이터가 없습니다" textOnly />
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <ValueNone info="문항을 선택해 주세요" textOnly />
+            </>
+          )}
+        </MathViewerWrapper>
+      </div>
+      <div className="itex_editor_container type4_container">
         <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
             <div id="data_viewer_header">
@@ -327,3 +379,21 @@ const Type4 = ({ saveHandler }: { saveHandler?: () => any }) => {
 };
 
 export default Type4;
+
+const MathViewerWrapper = styled.div`
+  padding: 20px;
+
+  p > img {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  div > img {
+    width: 100% !important;
+    height: auto !important;
+  }
+  table {
+    width: inherit !important;
+    height: auto !important;
+  }
+`;

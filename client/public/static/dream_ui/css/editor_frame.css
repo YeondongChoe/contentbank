@@ -15,6 +15,10 @@
   align-items: stretch;
 }
 
+.type4_container {
+	width: 50%;
+}
+
 .resizeable {
   /* border: 1px solid #000; */
   box-sizing: border-box;
