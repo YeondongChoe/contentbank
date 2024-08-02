@@ -101,7 +101,7 @@ export function CreateContentMain() {
       {tabView === 'DT & Editing' && (
         <ContentBox>
           {query.get('state') === 'edit' && (
-            <ContentFileUpload setTabView={setTabView} type={'type1'} />
+            <ContentFileUpload setTabView={setTabView} type={'edit'} />
           )}
           {query.get('state') === 'uploadfile' && (
             <ContentFileUpload setTabView={setTabView} type={'type1'} />

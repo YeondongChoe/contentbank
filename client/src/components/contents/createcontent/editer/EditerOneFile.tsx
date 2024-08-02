@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Loader } from '../../../../components/atom';
-import { useFetchJsonData } from '../../../../hooks';
 
 import Type1 from './components/Type1';
 import Type2 from './components/Type2';
 import Type3 from './components/Type3';
+import Type4 from './components/Type4';
 
 const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   if (window.MathJax) {
@@ -67,7 +67,7 @@ export function EditerOneFile({
   type?: string;
   tabView?: string;
   setEditorData: React.Dispatch<React.SetStateAction<any>>;
-  saveHandler: () => any;
+  saveHandler?: () => any;
 }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
   const [jsonData, setJsonData] = useState<string | null>(null);
@@ -96,6 +96,7 @@ export function EditerOneFile({
     <Container className={type === 'type2' ? `type2` : ''}>
       {isMathJaxLoaded ? (
         <>
+          {type === 'edit' && <Type4 saveHandler={saveHandler} />}
           {type === 'type1' && <Type1 saveHandler={saveHandler} />}
           {/* hml 대량등록 */}
           {type === 'type2' && <Type2 />}

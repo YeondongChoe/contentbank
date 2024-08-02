@@ -852,7 +852,7 @@ export function Classification({
       let actionElement2: RadioStateType[] = [];
       console.log('lastQuiz---', lastQuiz);
 
-      // category를 순회하며 필요한 형태로 변환quizCategoryList
+      // category를 순회하며 필요한 형태로 변환
       if (lastQuiz.quizCategoryList[0]) {
         const category = lastQuiz.quizCategoryList[0];
         Object.keys(category.quizCategory).forEach((key) => {

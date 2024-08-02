@@ -1,19 +1,17 @@
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-import { quizService } from '../../../../../api/axios';
-import { openToastifyAlert } from '../../../../../components';
+import { useEffect, useRef } from 'react';
 
 import ArrowClockwiseIcon from './icons/ArrowClockwiseIcon';
 import ArrowCounterclockwiseIcon from './icons/ArrowCounterclockwiseIcon';
 import BarCharLineIcon from './icons/BarCharLineIcon';
 import BoxArrowInUpRightIcon from './icons/BoxArrowInUpRightIcon';
+import CameraIcon from './icons/CameraIcon';
 import ChevronLeftIcon from './icons/ChevronLeftIcon';
 import ChevronRightIcon from './icons/ChevronRightIcon';
 import CloseIcon from './icons/CloseIcon';
 import DocumentIcon from './icons/DocumentIcon';
+import ImageIcon from './icons/ImageIcon';
+import PdfIcon from './icons/PdfIcon';
 import TrashIcon from './icons/TrashIcon';
 
 const dynamicallyLoadScripts = (
@@ -43,143 +41,92 @@ const dynamicallyLoadScripts = (
   loadScript(0);
 };
 
-interface QuizItem {
-  type: string;
-  content: string;
-  sort: number;
-}
-
-const Type2 = () => {
+const Type4 = ({ saveHandler }: { saveHandler?: () => any }) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  const [quizItemList, setQuizItemList] = useState<QuizItem[]>([]); // 대량등록
+
+  const initialScripts = [
+    '/static/tinymce5/js/tinymce/tinymce.min.js',
+    '/static/iTeX_EQ/js/jquery-3.3.1.min.js',
+    '/static/iTeX_EQ/js/jquery-ui.min.js',
+    '/static/iTeX_EQ/js/ds.min.js',
+    '/static/OCR/cropper/cropper.js',
+    '/static/OCR/PDF/pdf.js',
+    '/static/iTeX_fulltext/js/bootstrap.bundle.min.js',
+    '/static/iTeX_fulltext/js/sort-list.js',
+    '/static/dream_ui/js/dream_setting.js',
+    '/static/iTeX_EQ/js/itex_total_eq_origin_32.js',
+  ];
+
+  const subsequentScripts = [
+    '/static/dream_ui/js/init_setting.js',
+    '/static/iTeX_EQ/js/itexLoader.js',
+    '/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71',
+    '/static/dream_ui/js/data_view_area.js',
+    '/static/dream_ui/js/frame_controller.js',
+    '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12',
+    '/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1',
+    '/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87',
+    '/static/iTeX_fulltext/js/dream_function.js',
+    '/static/iTeX_fulltext/js/hmlupload.js?v=0.1',
+    '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
+  ];
+
+  const initComponent = () => {
+    dynamicallyLoadScripts(initialScripts, () => {
+      console.log('Initial scripts loaded');
+      dynamicallyLoadScripts(subsequentScripts, () => {
+        console.log('Subsequent scripts loaded');
+        if (ocrIframeContainer.current) {
+          const iframe = document.createElement('iframe');
+          iframe.width = '0';
+          iframe.height = '0';
+          iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
+          iframe.frameBorder = '0';
+          iframe.scrolling = 'no';
+          iframe.id = 'itex_frame_area';
+          ocrIframeContainer.current.appendChild(iframe);
+        }
+      });
+    });
+  };
 
   useEffect(() => {
-    const initialScripts = [
-      '/static/tinymce5/js/tinymce/tinymce.min.js',
-      '/static/iTeX_EQ/js/jquery-3.3.1.min.js',
-      '/static/iTeX_EQ/js/jquery-ui.min.js',
-      '/static/iTeX_EQ/js/ds.min.js',
-      '/static/OCR/cropper/cropper.js',
-      '/static/OCR/PDF/pdf.js',
-      '/static/iTeX_fulltext/js/bootstrap.bundle.min.js',
-      '/static/iTeX_fulltext/js/sort-list.js',
-      '/static/dream_ui/js/dream_setting.js',
-    ];
-
-    const subsequentScripts = [
-      '/static/iTeX_EQ/js/itex_total_eq_origin_32.js',
-      '/static/dream_ui/js/init_setting.js',
-      '/static/iTeX_EQ/js/itexLoader.js',
-      '/static/iTeX_fulltext/js/dream_function.js',
-      '/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71',
-      '/static/dream_ui/js/data_view_area.js',
-      '/static/dream_ui/js/frame_controller.js',
-      '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12',
-      '/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1',
-      '/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87',
-      '/static/iTeX_fulltext/js/hmlupload.js?v=0.1',
-      '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
-    ];
-
-    const initComponent = () => {
-      dynamicallyLoadScripts(initialScripts, () => {
-        console.log('Initial scripts loaded');
-        dynamicallyLoadScripts(subsequentScripts, () => {
-          console.log('Subsequent scripts loaded');
-          if (ocrIframeContainer.current) {
-            const iframe = document.createElement('iframe');
-            iframe.width = '0';
-            iframe.height = '0';
-            iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
-            iframe.frameBorder = '0';
-            iframe.scrolling = 'no';
-            iframe.id = 'itex_frame_area';
-            ocrIframeContainer.current.appendChild(iframe);
-          }
-        });
-      });
-    };
-
     initComponent();
   }, []);
-
-  const saveHandler = async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const data = await window.saveHmlData();
-    console.log('data------------', data);
-
-    setQuizItemList(data);
-  };
-
-  const postQuiz = async () => {
-    const data = {
-      commandCode: 0,
-      quizList: quizItemList,
-    };
-
-    console.log('최종적으로 등록될 데이터------------', data);
-
-    return await quizService.post(`/v1/quiz/upload`, data);
-  };
-
-  const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
-    mutationFn: postQuiz,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: context.response.data.message,
-      });
-    },
-    onSuccess: (response) => {
-      openToastifyAlert({
-        type: 'success',
-        text: `문항들이 추가 되었습니다`,
-      });
-    },
-  });
-
-  useEffect(() => {
-    if (quizItemList.length) postQuizDataMutate();
-  }, [quizItemList]);
-
-  useEffect(() => {
-    if (postQuizData) {
-      console.log('postQuizData', postQuizData);
-    }
-  }, [postQuizData]);
 
   return (
     <>
       <div className="itex_editor_container">
-        <div id="first" className="resizeable">
+        <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
+            <div id="data_viewer_header">
+              <ul id="viewer_list">
+                <li id="add_viewer" className="viewer_li">
+                  +
+                </li>
+              </ul>
+            </div>
             <div id="data_viewer_body">
               <div className="trans_area h-100">
                 <div
                   className="itex_hml_convert_view"
-                  //   contentEditable="true"
+                  contentEditable="true"
                 ></div>
                 <button id="pasteButton" className="hml_copy_btn">
                   붙여넣기
                 </button>
-                <div className="origin_img_area hml_multi">
+                <div className="origin_img_area h-100">
                   <div className="itex_ocrimg_area" style={{ width: '100%' }}>
                     <img id="itex_main_img" alt="" />
                   </div>
-                  <div className="itex-drag-area multi">
+                  <div className="itex-drag-area">
                     <div className="icon">
                       <DocumentIcon />
+                      <CameraIcon />
+                      <ImageIcon />
+                      <PdfIcon />
                     </div>
-                    <input
-                      id="upload_file"
-                      className="hml_multi"
-                      name="images"
-                      type="file"
-                      accept=".hml"
-                    />
+                    <input id="upload_file" name="images" type="file" />
                   </div>
                 </div>
               </div>
@@ -213,7 +160,6 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="왼쪽으로 회전"
-                    disabled
                   >
                     <ArrowCounterclockwiseIcon />
                   </button>
@@ -226,7 +172,6 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="오른쪽으로 회전"
-                    disabled
                   >
                     <ArrowClockwiseIcon />
                   </button>
@@ -238,9 +183,7 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="이전 페이지"
-                    disabled
                   >
-                    {' '}
                     <ChevronLeftIcon />
                   </button>
                   <button
@@ -251,7 +194,6 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="다음 페이지"
-                    disabled
                   >
                     <ChevronRightIcon />
                   </button>
@@ -304,15 +246,18 @@ const Type2 = () => {
                   <button
                     type="button"
                     className="btn btn-primary"
+                    data-bs-placement="top"
                     title="선택영역의 컨텐츠를 인식합니다."
                     id="doc_ocr_converter"
                   >
                     문항인식
                   </button>
+
                   <button
                     type="button"
                     className="btn btn-success"
                     id="img_crop_normal"
+                    data-bs-placement="top"
                     title="선택영역을 이미지로 변환합니다."
                   >
                     그림넣기
@@ -331,18 +276,20 @@ const Type2 = () => {
             </div>
           </div>
         </div>
-        <div id="dragger-left" className="dragger dragger-left">
-          <button className="open_btn_left" style={{ display: 'none' }}>
-            {'>'}
-          </button>
-        </div>
-        <div id="second" className="resizeable">
-          <div className="col-lg-4 p-0 tiny_wrap type2">
+
+        <div id="second3" className="resizeable">
+          <div className="col-lg-4 p-0 tiny_wrap">
             <textarea id="tinyeditor"></textarea>
-            <div className="save_exam_btn_wrap">
-              <button id="exam_change">변경</button>
-              <button id="exam_save_all" onClick={saveHandler}>
-                저장
+            <div
+              className="save_exam_btn_wrap"
+              style={{
+                height: '0%',
+                visibility: 'hidden',
+                position: 'absolute',
+              }}
+            >
+              <button id="exam_save" onClick={saveHandler}>
+                문항 저장
               </button>
             </div>
             <div className="poc_checker_block"></div>
@@ -367,6 +314,7 @@ const Type2 = () => {
             </div>
           </div>
         </div>
+
         <input
           type="file"
           accept=".jpg,.jpeg,.png"
@@ -378,4 +326,4 @@ const Type2 = () => {
   );
 };
 
-export default Type2;
+export default Type4;

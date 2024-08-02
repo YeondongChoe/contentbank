@@ -42,7 +42,7 @@ const dynamicallyLoadScripts = (
   loadScript(0);
 };
 
-const Type1 = ({ saveHandler }: { saveHandler: () => any }) => {
+const Type1 = ({ saveHandler }: { saveHandler?: () => any }) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
