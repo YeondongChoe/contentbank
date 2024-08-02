@@ -21,6 +21,7 @@ export function QuizList({
   setCheckedList,
   isDataColor,
   isHasMeta,
+  onItemClick,
 }: {
   questionList: QuizListType[] | [];
   showTitle?: boolean;
@@ -31,6 +32,7 @@ export function QuizList({
   setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
   isDataColor?: boolean;
   isHasMeta?: boolean;
+  onItemClick?: (item: QuizListType) => void;
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -145,6 +147,17 @@ export function QuizList({
 
     setIsPostMessage(true);
   };
+  // 클릭 된 아이템의 데이터
+  const handleClickItem = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    code: string,
+  ) => {
+    e.preventDefault();
+    const quiz = questionList.filter((el) => el.code === code);
+    console.log('선택된 요소', quiz[0]);
+    const data: QuizListType = quiz[0];
+    if (onItemClick) onItemClick(data);
+  };
 
   // useEffect(() => {
   //   if (isPostMessage && childWindowRef.current) {
@@ -243,7 +256,13 @@ export function QuizList({
                         </span>
                       </button>
                     ) : (
-                      <span className="title">
+                      <button
+                        type="button"
+                        className="title"
+                        onClick={(e) => {
+                          handleClickItem(e, dragItem.code);
+                        }}
+                      >
                         <span className="title_id">
                           {dragItem.quizCategoryList[0]?.quizCategory?.교육과정}
                           / {dragItem.code}
@@ -251,7 +270,7 @@ export function QuizList({
                         <span className="title_tag">
                           {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
                         </span>
-                      </span>
+                      </button>
                     )}
                     <MetaGroup
                       onMouseOver={(e) => showTooltip(e)}

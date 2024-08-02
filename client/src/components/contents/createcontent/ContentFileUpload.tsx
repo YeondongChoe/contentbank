@@ -58,6 +58,9 @@ export function ContentFileUpload({
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
 
+  // 선택된 리스트 아이템 데이터
+  const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
+
   // 수정시 체크리스트 값 가져오기
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
@@ -375,6 +378,8 @@ export function ContentFileUpload({
     if (parsedStoredQuizList.length) setQuizList(parsedStoredQuizList);
   }, [parsedStoredQuizList]);
 
+  useEffect(() => {}, [onItemClickData]);
+
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
@@ -399,6 +404,7 @@ export function ContentFileUpload({
                 type={type}
                 setEditorData={setEditorData}
                 saveHandler={saveHandler}
+                onItemClickData={onItemClickData}
               />
             </EditWrapper>
 
@@ -533,6 +539,7 @@ export function ContentFileUpload({
               }
               $height={`calc(100vh - 100px)`}
               showViewAllButton
+              onItemClick={setOnItemClickData}
               setCheckedList={setCheckedList}
             />
           </ContentList>

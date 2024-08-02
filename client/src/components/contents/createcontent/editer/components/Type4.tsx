@@ -46,10 +46,14 @@ const dynamicallyLoadScripts = (
   loadScript(0);
 };
 
-const Type4 = ({ saveHandler }: { saveHandler?: () => any }) => {
+const Type4 = ({
+  saveHandler,
+  onItemClickData,
+}: {
+  saveHandler?: () => any;
+  onItemClickData?: QuizListType;
+}) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  const [sortedList, setSortedList] = useState<QuizListType[]>([]);
-  const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
 
   const initialScripts = [
     '/static/tinymce5/js/tinymce/tinymce.min.js',
@@ -101,20 +105,14 @@ const Type4 = ({ saveHandler }: { saveHandler?: () => any }) => {
     initComponent();
   }, []);
 
-  // 마지막으로 클릭된 문항 뷰어에 보이게
-  const clickIdx = useMemo(() => {
-    const num = sortedList.length - 1;
-    return num;
-  }, [sortedQuizList]);
-
   return (
     <>
       <div className="type4_container">
         <MathViewerWrapper>
-          {sortedList.length > 0 ? (
+          {onItemClickData ? (
             <>
-              {sortedQuizList && sortedQuizList[clickIdx]?.quizItemList ? (
-                sortedList[clickIdx]?.quizItemList?.map((el) => (
+              {onItemClickData?.quizItemList ? (
+                onItemClickData?.quizItemList?.map((el) => (
                   <div key={`${el?.code} quizItemList sortedList`}>
                     {[
                       'BIG',

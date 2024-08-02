@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Loader } from '../../../../components/atom';
+import { QuizListType } from '../../../../types';
 
 import Type1 from './components/Type1';
 import Type2 from './components/Type2';
@@ -63,11 +64,13 @@ export function EditerOneFile({
   tabView,
   setEditorData,
   saveHandler,
+  onItemClickData,
 }: {
   type?: string;
   tabView?: string;
   setEditorData: React.Dispatch<React.SetStateAction<any>>;
   saveHandler?: () => any;
+  onItemClickData?: QuizListType;
 }) {
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
   const [jsonData, setJsonData] = useState<string | null>(null);
@@ -96,7 +99,12 @@ export function EditerOneFile({
     <Container className={type === 'type2' ? `type2` : ''}>
       {isMathJaxLoaded ? (
         <>
-          {type === 'edit' && <Type4 saveHandler={saveHandler} />}
+          {type === 'edit' && (
+            <Type4
+              saveHandler={saveHandler}
+              onItemClickData={onItemClickData}
+            />
+          )}
           {type === 'type1' && <Type1 saveHandler={saveHandler} />}
           {/* hml 대량등록 */}
           {type === 'type2' && <Type2 />}
