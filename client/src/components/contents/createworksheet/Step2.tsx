@@ -396,7 +396,7 @@ export function Step2() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          // console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
+          //console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
           setGetLocalData(parsedData);
           setNameValue(parsedData.title);
           setGradeValue(parsedData.grade);
@@ -447,7 +447,6 @@ export function Step2() {
       if (itemCount) {
         try {
           const parsedItemCountData = JSON.parse(itemCount);
-          console.log('sendItemCount:', parsedItemCountData); // 디버깅용 콘솔 로그
           setGetItemCountData(parsedItemCountData);
         } catch (error) {
           console.error('로컬 스토리지 sendItemCount 파싱 에러:', error);
