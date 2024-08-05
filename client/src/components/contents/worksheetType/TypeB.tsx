@@ -502,6 +502,7 @@ const MathViewerWrapper = styled.div<{ height: number; $padding: string }>`
   flex-direction: column;
   margin-bottom: 40px;
   font-size: 12px;
+  //padding-bottom: 100px;
 `;
 const EachMathViewer = styled.div`
   max-width: 500px;
