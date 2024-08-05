@@ -6,7 +6,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Modal, openToastifyAlert, Select } from '../..';
+import { Button, Loader, Modal, openToastifyAlert, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
@@ -24,7 +24,7 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
-export function ContentFileUpload({
+export function ContentEdit({
   setTabView,
   type,
 }: {
@@ -32,13 +32,14 @@ export function ContentFileUpload({
   type: string;
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
-  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-
+  const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
+    QuizListType[]
+  >([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [content, setContent] = useState<string[]>([]);
-  const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
+  const [dataFetched, setDataFetched] = useState(false);
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
@@ -58,6 +59,51 @@ export function ContentFileUpload({
 
   // 선택된 리스트 아이템 데이터
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
+
+  // 수정시 체크리스트 값 가져오기
+  useEffect(() => {
+    const storedQuizList = window.localStorage.getItem('quizList');
+
+    console.log(
+      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+      storedQuizList,
+    );
+
+    if (storedQuizList) {
+      setParsedStoredQuizList(JSON.parse(storedQuizList));
+
+      // 로컬스토리지 값 다받은 뒤 초기화
+      window.opener.localStorage.clear();
+      return;
+    }
+  }, []);
+
+  // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
+  const getQuiz = async () => {
+    const idxArray = parsedStoredQuizList.map((list) => list.idx);
+    const idxList = idxArray.join(',');
+    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    return res.data.data.quizList;
+  };
+  const { data: quizData, refetch: quizDataRefetch } = useQuery({
+    queryKey: ['get-idx-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-idx-quizList 에러 메세지',
+    },
+    enabled: parsedStoredQuizList.length > 0,
+  });
+
+  useEffect(() => {
+    if (parsedStoredQuizList.length > 0) quizDataRefetch();
+  }, [parsedStoredQuizList]);
+
+  useEffect(() => {
+    if (quizData) {
+      setQuizList(quizData);
+      setDataFetched(true);
+    }
+  }, [quizData, setQuizList]);
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -324,8 +370,6 @@ export function ContentFileUpload({
     // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     // console.log('신규 등록된 문항 리스트 get 요청 API');
 
-    setIsPostMessage(true);
-
     // 등록 api
     console.log('selectedSubject 교과', selectedSubject);
     console.log('selectedCourse 과목', selectedCourse);
@@ -343,14 +387,14 @@ export function ContentFileUpload({
     setEditorData(JSON.parse(data));
   };
 
-  useEffect(() => {
-    if (postQuizData) {
-      setQuestionList([...questionList, postQuizData.data.data.quiz]);
-    }
-  }, [postQuizData]);
-  useEffect(() => {
-    setQuizList([...questionList]);
-  }, [questionList]);
+  // useEffect(() => {
+  //   if (postQuizData) {
+  //     setQuestionList([...questionList, postQuizData.data.data.quiz]);
+  //   }
+  // }, [postQuizData]);
+  // useEffect(() => {
+  //   setQuizList([...questionList]);
+  // }, [questionList]);
 
   useEffect(() => {
     console.log('quizList', quizList);
@@ -509,13 +553,16 @@ export function ContentFileUpload({
 
         <ContentListWrapper>
           <ContentList>
-            <QuizList
-              questionList={quizList}
-              $height={`calc(100vh - 100px)`}
-              showViewAllButton
-              onItemClick={setOnItemClickData}
-              setCheckedList={setCheckedList}
-            />
+            {dataFetched && (
+              <QuizList
+                questionList={quizList}
+                $height={`calc(100vh - 100px)`}
+                showViewAllButton
+                onItemClick={setOnItemClickData}
+                setCheckedList={setCheckedList}
+              />
+            )}
+            {!dataFetched && <Loader />}
           </ContentList>
         </ContentListWrapper>
 

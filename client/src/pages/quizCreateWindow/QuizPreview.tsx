@@ -68,24 +68,6 @@ export function QuizPreview() {
   //   window.opener.localStorage.clear();
   // };
 
-  // const getQuiz = async () => {
-  //   const idxList = list && list.join(',');
-  //   const res = await quizService.get(`/v1/quiz/${idxList}`);
-  //   return res.data.data;
-  // };
-  // const {
-  //   data: quizData,
-  //   isLoading,
-  //   error: quizDataError,
-  //   refetch: quizDataRefetch,
-  // } = useQuery({
-  //   queryKey: ['get-idx-quizList'],
-  //   queryFn: getQuiz,
-  //   meta: {
-  //     errorMessage: 'get-idx-quizList 에러 메세지',
-  //   },
-  // });
-
   // useEffect(() => {
   //   getLocalData();
   // }, []);
