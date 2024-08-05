@@ -6,7 +6,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Modal, openToastifyAlert, Select } from '../..';
+import { Button, Loader, Modal, openToastifyAlert, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
@@ -32,16 +32,14 @@ export function ContentEdit({
   type: string;
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
-  // const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
     QuizListType[]
   >([]);
-
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [content, setContent] = useState<string[]>([]);
-  const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
+  const [dataFetched, setDataFetched] = useState(false);
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
@@ -81,35 +79,31 @@ export function ContentEdit({
   }, []);
 
   // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
-  useEffect(() => {
-    if (parsedStoredQuizList.length !== 0) quizDataRefetch();
-    console.log('parsedStoredQuizList-----수정용 데이터', parsedStoredQuizList);
-  }, [parsedStoredQuizList]);
-
   const getQuiz = async () => {
     const idxArray = parsedStoredQuizList.map((list) => list.idx);
     const idxList = idxArray.join(',');
-    console.log('수정용 데이터----idxList', idxList);
-    const res = await quizService.get(`/v1/quiz/${idxArray}`);
+    const res = await quizService.get(`/v1/quiz/${idxList}`);
     return res.data.data.quizList;
   };
-  const {
-    data: quizData,
-    refetch: quizDataRefetch,
-    isSuccess,
-  } = useQuery({
+  const { data: quizData, refetch: quizDataRefetch } = useQuery({
     queryKey: ['get-idx-quizList'],
     queryFn: getQuiz,
     meta: {
       errorMessage: 'get-idx-quizList 에러 메세지',
     },
-    enabled: parsedStoredQuizList.length !== 0,
+    enabled: parsedStoredQuizList.length > 0,
   });
 
   useEffect(() => {
-    if (quizData) setQuizList(quizData);
-  }, [quizData]);
-  console.log('quizData-----수정용 데이터', quizData);
+    if (parsedStoredQuizList.length > 0) quizDataRefetch();
+  }, [parsedStoredQuizList]);
+
+  useEffect(() => {
+    if (quizData) {
+      setQuizList(quizData);
+      setDataFetched(true);
+    }
+  }, [quizData, setQuizList]);
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -376,8 +370,6 @@ export function ContentEdit({
     // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     // console.log('신규 등록된 문항 리스트 get 요청 API');
 
-    setIsPostMessage(true);
-
     // 등록 api
     console.log('selectedSubject 교과', selectedSubject);
     console.log('selectedCourse 과목', selectedCourse);
@@ -561,13 +553,16 @@ export function ContentEdit({
 
         <ContentListWrapper>
           <ContentList>
-            <QuizList
-              questionList={quizList}
-              $height={`calc(100vh - 100px)`}
-              showViewAllButton
-              onItemClick={setOnItemClickData}
-              setCheckedList={setCheckedList}
-            />
+            {dataFetched && (
+              <QuizList
+                questionList={quizList}
+                $height={`calc(100vh - 100px)`}
+                showViewAllButton
+                onItemClick={setOnItemClickData}
+                setCheckedList={setCheckedList}
+              />
+            )}
+            {!dataFetched && <Loader />}
           </ContentList>
         </ContentListWrapper>
 
