@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
-import { MathJax } from 'better-react-mathjax';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -51,6 +50,7 @@ export function Step3() {
   };
   //console.log('itemHeights', itemHeights);
   //console.log('initialItems', initialItems);
+  //console.log('newInitialItems', newInitialItems);
 
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
@@ -436,35 +436,55 @@ export function Step3() {
   };
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
+  // useEffect(() => {
+  //   const measureHeights = () => {
+  //     if (measureRef.current) {
+  //       const heights = Array.from(measureRef.current.children).map((child) => {
+  //         const childElement = child as HTMLElement;
+  //         const height = childElement.offsetHeight;
+
+  //         return height;
+  //       });
+
+  //       setItemHeights(heights);
+  //       originalHeightsRef.current = heights;
+  //     }
+  //   };
+
+  //   if (initialItems) {
+  //     measureHeights();
+  //   }
+  // }, [initialItems, answerCommentary, contentQuantity]);
+
+  const measureHeights = () => {
+    if (measureRef.current) {
+      const heights = Array.from(measureRef.current.children).map((child) => {
+        const childElement = child as HTMLElement;
+        const height = childElement.offsetHeight;
+        console.log(`Child height: ${height}`); // 각 child의 높이 로그
+        return height;
+      });
+      console.log(`Measured heights: ${heights}`); // 측정된 높이 배열 로그
+      setItemHeights(heights);
+      originalHeightsRef.current = heights;
+    } else {
+      console.log('measureRef.current is null'); // measureRef가 null인 경우 로그
+    }
+  };
+
   useEffect(() => {
-    const measureHeights = () => {
-      if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map((child) => {
-          const childElement = child as HTMLElement;
-          const height = childElement.offsetHeight;
-
-          if (answerCommentary === '문제+해설같이') {
-            childElement.style.height = '450px';
-            return 450;
-          }
-
-          if (height > 400) {
-            childElement.style.height = '400px';
-            return 400;
-          }
-
-          return height;
-        });
-
-        setItemHeights(heights);
-        originalHeightsRef.current = heights;
+    // 메시지 이벤트 리스너 설정
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data === 'block') {
+        measureHeights();
       }
     };
-
-    if (initialItems) {
-      measureHeights();
-    }
-  }, [initialItems, answerCommentary, contentQuantity]);
+    window.addEventListener('message', handleMessage);
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   const questionItems =
     initialItems?.flatMap((quizItemList: any) =>
@@ -479,6 +499,306 @@ export function Step3() {
         quizCategoryList.quizCategory?.문항타입 === '객관식',
     ) ?? [];
 
+  const renderInputFields = () => {
+    return (
+      <>
+        <InputWrapper>
+          <Label
+            value="학습지명*"
+            fontSize="15px"
+            width="120px"
+            padding="5px 10px"
+          />
+          <Input
+            width="400px"
+            height="35px"
+            padding="10px"
+            border="normal"
+            placeholderSize="14px"
+            fontSize="14px"
+            type="text"
+            placeholder="학습지명을 작성해주세요."
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            maxLength={20}
+          />
+        </InputWrapper>
+        <InputWrapper>
+          <Label
+            value="출제자*"
+            fontSize="15px"
+            width="120px"
+            padding="5px 10px"
+          />
+          <Input
+            width="400px"
+            height="35px"
+            padding="10px"
+            border="normal"
+            placeholderSize="14px"
+            fontSize="14px"
+            type="text"
+            placeholder="출제자명을 작성해주세요."
+            value={contentAuthor}
+            onChange={(e) => {
+              const filteredValue = e.target.value.replace(
+                /[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]/gi,
+                '',
+              );
+              setContentAuthor(filteredValue);
+            }}
+            maxLength={10}
+          />
+        </InputWrapper>
+        <InputWrapper>
+          <Label
+            value="대상 학년*"
+            fontSize="15px"
+            width="120px"
+            padding="5px 10px"
+          />
+          <Input
+            width="400px"
+            height="35px"
+            padding="10px"
+            border="normal"
+            placeholderSize="14px"
+            fontSize="14px"
+            type="text"
+            placeholder="학년을 작성해주세요."
+            value={gradeValue}
+            onChange={(e) => setGradeValue(e.target.value)}
+            maxLength={10}
+          />
+        </InputWrapper>
+      </>
+    );
+  };
+
+  const renderTagButtons = () => {
+    const tags = [
+      { value: 'EXERCISES', label: '연습문제' },
+      { value: 'DAILY_TEST', label: '일일TEST' },
+      { value: 'PRACTICE_TEST', label: '모의고사' },
+      { value: 'TEST_PREP', label: '내신대비' },
+      { value: 'MONTHLY_TEST', label: '월말TEST' },
+    ];
+
+    return tags.map((tagItem) => (
+      <Button
+        key={tagItem.value}
+        buttonType="button"
+        onClick={() => setTag(tagItem.value)}
+        $padding="5px"
+        height={'35px'}
+        width={'80px'}
+        fontSize="14px"
+        $normal={tag !== tagItem.value}
+        $filled={tag === tagItem.value}
+        cursor
+      >
+        <span>{tagItem.label}</span>
+      </Button>
+    ));
+  };
+
+  // 헬퍼 함수
+  const getColorCode = (color: string) => {
+    switch (color) {
+      case 'red':
+        return '#FA8978';
+      case 'orange':
+        return '#FFDD94';
+      case 'green':
+        return '#D0E6A5';
+      case 'blue':
+        return '#86aee3';
+      case 'purple':
+        return '#CCABD8';
+      default:
+        return '#000000';
+    }
+  };
+
+  const renderColorOptions = () => {
+    const colors = ['red', 'orange', 'green', 'blue', 'purple'];
+    return colors.map((color) =>
+      colorChoice === color ? (
+        <FaCircleCheck
+          key={color}
+          color={getColorCode(color)}
+          fontSize={20}
+          style={{ cursor: 'pointer' }}
+          onClick={() => setColorChoice('')}
+        />
+      ) : (
+        <FaCircle
+          key={color}
+          color={getColorCode(color)}
+          fontSize={20}
+          style={{ cursor: 'pointer' }}
+          onClick={() => setColorChoice(color)}
+        />
+      ),
+    );
+  };
+
+  const renderTypeOptions = () => {
+    return ['A', 'B'].map((type) => (
+      <TypeOption key={type} onClick={() => setTemplateType(type)}>
+        <SlPicture color="gray" fontSize={40} />
+        {type} Type
+      </TypeOption>
+    ));
+  };
+
+  const renderColumnOption = () => {
+    return (
+      <ColumnOption>
+        <Label
+          value="학습지 단*"
+          fontSize="15px"
+          width="120px"
+          padding="5px 10px"
+          flexEnd
+        />
+        <ButtonGroup>
+          {['2단', '1단'].map((col) => (
+            <Button
+              key={col}
+              buttonType="button"
+              onClick={() => setColumn(col)}
+              $padding="5px"
+              height={'35px'}
+              width={'80px'}
+              fontSize="14px"
+              $normal={column !== col}
+              $filled={column === col}
+              cursor
+            >
+              <span>{col}</span>
+            </Button>
+          ))}
+        </ButtonGroup>
+      </ColumnOption>
+    );
+  };
+
+  const renderContentQuantityOption = () => {
+    const options = ['최대', '2문제', '4문제', '6문제'];
+    return (
+      <ContentQuantity>
+        <Label
+          value="학습지 배치*"
+          fontSize="15px"
+          width="120px"
+          padding="5px 10px"
+          flexEnd
+        />
+        <ButtonGroup>
+          {options.map((option) => (
+            <Button
+              key={option}
+              buttonType="button"
+              onClick={() => setContentQuantity(option)}
+              $padding="5px"
+              height={'35px'}
+              width={'80px'}
+              fontSize="14px"
+              $normal={contentQuantity !== option}
+              $filled={contentQuantity === option}
+              cursor
+            >
+              <span>{option}</span>
+            </Button>
+          ))}
+        </ButtonGroup>
+      </ContentQuantity>
+    );
+  };
+
+  const renderContentSpaceOption = () => {
+    const selectSpace = [
+      {
+        idx: 0,
+        name: '0줄',
+        value: '0',
+        options: Array.from({ length: 11 }, (_, i) => ({
+          idx: i,
+          name: `${i}줄`,
+          value: `${i}`,
+        })),
+      },
+    ];
+
+    return (
+      <ContentSpace>
+        <Label
+          value="풀이공간"
+          fontSize="15px"
+          width="120px"
+          padding="5px 10px"
+          flexEnd
+        />
+        {selectSpace.map((el) => (
+          <Select
+            key={el.idx}
+            width={'100px'}
+            isnormalizedOptions
+            defaultValue={el.name}
+            options={el.options}
+            heightScroll={'150px'}
+            onSelect={(event) => selectListCategoryOption(event)}
+          />
+        ))}
+      </ContentSpace>
+    );
+  };
+
+  const renderAdditionalInfoOptions = () => {
+    return (
+      <>
+        <Label
+          value="추가 정보 표기"
+          fontSize="14px"
+          width="120px"
+          padding="5px 10px"
+          flexEnd
+        />
+        <CheckBoxWrapper onClick={() => setIsDate(!isDate)}>
+          <CheckBox height="15px" isChecked={isDate} />
+          날짜 표시
+        </CheckBoxWrapper>
+        <CheckBoxWrapper
+          onClick={() => setIsContentTypeTitle(!isContentTypeTitle)}
+        >
+          <CheckBox height="15px" isChecked={isContentTypeTitle} />
+          문항 유형명 표시
+        </CheckBoxWrapper>
+      </>
+    );
+  };
+
+  const renderAnswerCommentaryButtons = () => {
+    const options = ['문제만', '정답만', '문제+해설별도', '문제+해설같이'];
+    return options.map((option) => (
+      <Button
+        key={option}
+        buttonType="button"
+        onClick={() => setAnswerCommentary(option)}
+        $padding="5px"
+        height={'35px'}
+        width={'80px'}
+        fontSize="14px"
+        $normal={answerCommentary !== option}
+        $filled={answerCommentary === option}
+        cursor
+      >
+        <span>{option}</span>
+      </Button>
+    ));
+  };
+
   return (
     <Container>
       {/* 가상의 돔을 그려서 문항의 높이 측정 */}
@@ -486,7 +806,7 @@ export function Step3() {
         <div
           ref={measureRef}
           style={{
-            //visibility: 'hidden',
+            visibility: 'hidden',
             position: 'absolute',
           }}
         >
@@ -655,86 +975,7 @@ export function Step3() {
       </TitleWrapper>
       <Wrapper>
         <WorksheetSettingSection>
-          <InputGroup>
-            <InputWrapper>
-              <Label
-                value="학습지명*"
-                fontSize="15px"
-                width="120px"
-                padding="5px 10px"
-              />
-              <Input
-                width="400px"
-                height="35px"
-                padding="10px"
-                border="normal"
-                placeholderSize="14px"
-                fontSize="14px"
-                type="text"
-                placeholder="학습지명을 작성해주세요."
-                value={nameValue}
-                onChange={(e) => {
-                  setNameValue(e.target.value);
-                }}
-                maxLength={20}
-                //innerRef={nameInputRef}
-              />
-            </InputWrapper>
-            <InputWrapper>
-              <Label
-                value="출제자*"
-                fontSize="15px"
-                width="120px"
-                padding="5px 10px"
-              />
-              <Input
-                width="400px"
-                height="35px"
-                padding="10px"
-                border="normal"
-                placeholderSize="14px"
-                fontSize="14px"
-                type="text"
-                placeholder="출제자명을 작성해주세요."
-                value={contentAuthor}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // 특수문자 제외한 문자만 남기도록 정규표현식을 사용하여 처리
-                  const filteredValue = value.replace(
-                    /[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]/gi,
-                    '',
-                  );
-                  setContentAuthor(filteredValue); // 필터링된 값을 상태로 설정
-                }}
-                maxLength={10}
-                //innerRef={nameInputRef}
-              />
-            </InputWrapper>
-            <InputWrapper>
-              <Label
-                value="대상 학년*"
-                fontSize="15px"
-                width="120px"
-                padding="5px 10px"
-              />
-              <Input
-                width="400px"
-                height="35px"
-                padding="10px"
-                border="normal"
-                placeholderSize="14px"
-                fontSize="14px"
-                type="text"
-                placeholder="학년을 작성해주세요."
-                value={gradeValue}
-                onChange={(e) => {
-                  setGradeValue(e.target.value);
-                }}
-                maxLength={10}
-                //innerRef={nameInputRef}
-              />
-            </InputWrapper>
-          </InputGroup>
+          <InputGroup>{renderInputFields()}</InputGroup>
           <WorksheetNameWrapper>
             <Label
               value="학습지 태그*"
@@ -743,83 +984,7 @@ export function Step3() {
               padding="5px 10px"
               flexEnd
             />
-            <ButtonGroup>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectTag('EXERCISES');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'70px'}
-                fontSize="14px"
-                $normal={tag !== 'EXERCISES'}
-                $filled={tag === 'EXERCISES'}
-                cursor
-              >
-                <span>연습문제</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectTag('DAILY_TEST');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal={tag !== 'DAILY_TEST'}
-                $filled={tag === 'DAILY_TEST'}
-                cursor
-              >
-                <span>일일TEST</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectTag('PRACTICE_TEST');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'70px'}
-                fontSize="14px"
-                $normal={tag !== 'PRACTICE_TEST'}
-                $filled={tag === 'PRACTICE_TEST'}
-                cursor
-              >
-                <span>모의고사</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectTag('TEST_PREP');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'70px'}
-                fontSize="14px"
-                $normal={tag !== 'TEST_PREP'}
-                $filled={tag === 'TEST_PREP'}
-                cursor
-              >
-                <span>내신대비</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectTag('MONTHLY_TEST');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal={tag !== 'MONTHLY_TEST'}
-                $filled={tag === 'MONTHLY_TEST'}
-                cursor
-              >
-                <span>월말TEST</span>
-              </Button>
-            </ButtonGroup>
+            <ButtonGroup>{renderTagButtons()}</ButtonGroup>
           </WorksheetNameWrapper>
           <TemplateWrapper>
             <Label
@@ -831,254 +996,20 @@ export function Step3() {
             />
             <TemplateOption>
               <ColorBox>
-                <ColorOption>
-                  {colorChoice == 'red' ? (
-                    <FaCircleCheck
-                      color="#FA8978"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="#FA8978"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('red')}
-                    />
-                  )}
-                  {colorChoice == 'orange' ? (
-                    <FaCircleCheck
-                      color="#FFDD94"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="#FFDD94"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('orange')}
-                    />
-                  )}
-                  {colorChoice == 'green' ? (
-                    <FaCircleCheck
-                      color="#D0E6A5"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="#D0E6A5"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('green')}
-                    />
-                  )}
-                  {colorChoice == 'blue' ? (
-                    <FaCircleCheck
-                      color="#86aee3"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="#86aee3"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('blue')}
-                    />
-                  )}
-                  {colorChoice == 'purple' ? (
-                    <FaCircleCheck
-                      color="#CCABD8"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('')}
-                    />
-                  ) : (
-                    <FaCircle
-                      color="#CCABD8"
-                      fontSize={20}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setColorChoice('purple')}
-                    />
-                  )}
-                </ColorOption>
+                <ColorOption>{renderColorOptions()}</ColorOption>
               </ColorBox>
               <TypeOptionWrapper>
-                <TypeOption
-                  onClick={() => {
-                    selectTemplateType('A');
-                  }}
-                >
-                  <SlPicture color="gray" fontSize={40} />A Type
-                </TypeOption>
-                <TypeOption
-                  onClick={() => {
-                    selectTemplateType('B');
-                  }}
-                >
-                  <SlPicture color="gray" fontSize={40} />B Type
-                </TypeOption>
+                <TypeOptionWrapper>{renderTypeOptions()}</TypeOptionWrapper>
               </TypeOptionWrapper>
             </TemplateOption>
           </TemplateWrapper>
           <PositionOption>
-            <ColumnOption>
-              <Label
-                value="학습지 단*"
-                fontSize="15px"
-                width="120px"
-                padding="5px 10px"
-                flexEnd
-              />
-              <ButtonGroup>
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    selectColumn('2단');
-                  }}
-                  $padding="5px"
-                  height={'35px'}
-                  width={'80px'}
-                  fontSize="14px"
-                  $normal={column !== '2단'}
-                  $filled={column === '2단'}
-                  cursor
-                >
-                  <span>2단</span>
-                </Button>
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    selectColumn('1단');
-                  }}
-                  $padding="5px"
-                  height={'35px'}
-                  width={'80px'}
-                  fontSize="14px"
-                  $normal={column !== '1단'}
-                  $filled={column === '1단'}
-                  cursor
-                >
-                  <span>1단</span>
-                </Button>
-              </ButtonGroup>
-            </ColumnOption>
-            <ContentQuantity>
-              <Label
-                value="학습지 배치*"
-                fontSize="15px"
-                width="120px"
-                padding="5px 10px"
-                flexEnd
-              />
-              <ButtonGroup>
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    selectContentQuantity('최대');
-                  }}
-                  $padding="5px"
-                  height={'35px'}
-                  width={'80px'}
-                  fontSize="14px"
-                  $normal={contentQuantity !== '최대'}
-                  $filled={contentQuantity === '최대'}
-                  cursor
-                >
-                  <span>최대</span>
-                </Button>
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    selectContentQuantity('2문제');
-                  }}
-                  $padding="5px"
-                  height={'35px'}
-                  width={'80px'}
-                  fontSize="14px"
-                  $normal={contentQuantity !== '2문제'}
-                  $filled={contentQuantity === '2문제'}
-                  cursor
-                >
-                  <span>2문제</span>
-                </Button>
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    selectContentQuantity('4문제');
-                  }}
-                  $padding="5px"
-                  height={'35px'}
-                  width={'80px'}
-                  fontSize="14px"
-                  $normal={contentQuantity !== '4문제'}
-                  $filled={contentQuantity === '4문제'}
-                  cursor
-                >
-                  <span>4문제</span>
-                </Button>
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    selectContentQuantity('6문제');
-                  }}
-                  $padding="5px"
-                  height={'35px'}
-                  width={'80px'}
-                  fontSize="14px"
-                  $normal={contentQuantity !== '6문제'}
-                  $filled={contentQuantity === '6문제'}
-                  cursor
-                >
-                  <span>6문제</span>
-                </Button>
-              </ButtonGroup>
-            </ContentQuantity>
-            {contentQuantity === '최대' && (
-              <ContentSpace>
-                <Label
-                  value="풀이공간"
-                  fontSize="15px"
-                  width="120px"
-                  padding="5px 10px"
-                  flexEnd
-                />
-                {selectSpace.map((el) => (
-                  <Select
-                    width={'100px'}
-                    isnormalizedOptions
-                    key={el.idx}
-                    defaultValue={el.name}
-                    options={el.options}
-                    heightScroll={'150px'}
-                    onSelect={(event) => selectListCategoryOption(event)}
-                  ></Select>
-                ))}
-              </ContentSpace>
-            )}
+            {renderColumnOption()}
+            {renderContentQuantityOption()}
+            {contentQuantity === '최대' && renderContentSpaceOption()}
           </PositionOption>
           <AddInformationWrapper>
-            <Label
-              value="추가 정보 표기"
-              fontSize="14px"
-              width="120px"
-              padding="5px 10px"
-              flexEnd
-            />
-            <CheckBoxWrapper onClick={selectDate}>
-              <CheckBox height="15px" isChecked={isDate} />
-              날짜 표시
-            </CheckBoxWrapper>
-            <CheckBoxWrapper onClick={selectContentTypeTitle}>
-              <CheckBox height="15px" isChecked={isContentTypeTitle} />
-              문항 유형명 표시
-            </CheckBoxWrapper>
+            {renderAdditionalInfoOptions()}
           </AddInformationWrapper>
           <AnswerCommentaryWrapper>
             <Label
@@ -1088,70 +1019,10 @@ export function Step3() {
               padding="5px 10px"
               flexEnd
             />
-            <ButtonGroup>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectAnswerCommentary('문제만');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal={answerCommentary !== '문제만'}
-                $filled={answerCommentary === '문제만'}
-                cursor
-              >
-                <span>문제만</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectAnswerCommentary('정답만');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal={answerCommentary !== '정답만'}
-                $filled={answerCommentary === '정답만'}
-                cursor
-              >
-                <span>정답만</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectAnswerCommentary('문제+해설별도');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal={answerCommentary !== '문제+해설별도'}
-                $filled={answerCommentary === '문제+해설별도'}
-                cursor
-              >
-                <span>문제+해설(별도)</span>
-              </Button>
-              <Button
-                buttonType="button"
-                onClick={() => {
-                  selectAnswerCommentary('문제+해설같이');
-                }}
-                $padding="5px"
-                height={'35px'}
-                width={'80px'}
-                fontSize="14px"
-                $normal={answerCommentary !== '문제+해설같이'}
-                $filled={answerCommentary === '문제+해설같이'}
-                cursor
-              >
-                <span>문제+해설(같이)</span>
-              </Button>
-            </ButtonGroup>
+            <ButtonGroup>{renderAnswerCommentaryButtons()}</ButtonGroup>
           </AnswerCommentaryWrapper>
         </WorksheetSettingSection>
+
         <WorksheetTemplateViewSection>
           {templateType === 'A' && (
             <WorksheetTemplateTypeWrapper>
