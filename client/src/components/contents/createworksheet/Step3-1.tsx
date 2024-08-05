@@ -5,6 +5,7 @@ import { FaCircle, FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
 import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
+import { VariableSizeList as List } from 'react-window';
 import styled from 'styled-components';
 
 import { workbookInstance } from '../../../api/axios';
@@ -121,35 +122,63 @@ export function Step3() {
     }
   }, [itemHeights, initialItems]);
 
+  // useEffect(() => {
+  //   const measureHeights = () => {
+  //     if (measureRef.current) {
+  //       const heights = Array.from(measureRef.current.children).map((child) => {
+  //         const childElement = child as HTMLElement;
+  //         const height = childElement.offsetHeight;
+  //
+  //         if (answerCommentary === '문제+해설같이') {
+  //           childElement.style.height = '450px';
+  //           return 450;
+  //         }
+  //
+  //         if (height > 400) {
+  //           childElement.style.height = '400px';
+  //           return 400;
+  //         }
+  //
+  //         return height;
+  //       });
+  //
+  //       setItemHeights(heights);
+  //       originalHeightsRef.current = heights;
+  //     }
+  //   };
+  //
+  //   if (initialItems) {
+  //     measureHeights();
+  //   }
   useEffect(() => {
     const measureHeights = () => {
       if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map((child) => {
-          const childElement = child as HTMLElement;
-          const height = childElement.offsetHeight;
+        const heights = Array.from(measureRef.current.children).map(
+          (child, index) => {
+            const childElement = child as HTMLElement;
+            const height = childElement.offsetHeight;
 
-          if (answerCommentary === '문제+해설같이') {
-            childElement.style.height = '450px';
-            return 450;
-          }
+            if (answerCommentary === '문제+해설같이') {
+              return 450;
+            }
 
-          if (height > 400) {
-            childElement.style.height = '400px';
-            return 400;
-          }
+            if (height > 400) {
+              return 400;
+            }
 
-          return height;
-        });
+            return height;
+          },
+        );
 
         setItemHeights(heights);
         originalHeightsRef.current = heights;
       }
     };
-
-    if (initialItems) {
-      measureHeights();
-    }
   }, [initialItems, answerCommentary, contentQuantity]);
+
+  const getItemSize = (index: number) => {
+    return itemHeights[index] || 0;
+  };
 
   useEffect(() => {
     console.log('Major state changes:', {
@@ -290,22 +319,46 @@ export function Step3() {
     switch (answerCommentary) {
       case '문제만':
         return (
-          <>
-            {questionItems.map((quizItem: any, index: number) => (
-              <div key={index}>
-                <WorkbookMathViewer data={quizItem.content} />
-              </div>
-            ))}
-            {multipleItems.flatMap((quizItemList: any) =>
-              quizItemList.quizItemList
-                .filter((quizItem: any) => quizItem.type === 'CHOICES')
-                .map((quizItem: any, index: number) => (
-                  <div key={index}>
-                    <WorkbookMathViewer data={quizItem.content} />
-                  </div>
-                )),
-            )}
-          </>
+          <List
+            height={400}
+            itemCount={questionItems.length + multipleItems.length}
+            itemSize={getItemSize}
+            width="100%"
+            outerRef={measureRef}
+          >
+            {({ index, style }) => {
+              const item =
+                index < questionItems.length
+                  ? questionItems[index]
+                  : multipleItems[
+                      index - questionItems.length
+                    ]?.quizItemList.find(
+                      (quizItem: any) => quizItem.type === 'CHOICES',
+                    );
+
+              return (
+                <div style={style}>
+                  {item && <WorkbookMathViewer data={item.content} />}
+                </div>
+              );
+            }}
+          </List>
+          // <>
+          //   {questionItems.map((quizItem: any, index: number) => (
+          //     <div key={index}>
+          //       <WorkbookMathViewer data={quizItem.content} />
+          //     </div>
+          //   ))}
+          //   {multipleItems.flatMap((quizItemList: any) =>
+          //     quizItemList.quizItemList
+          //       .filter((quizItem: any) => quizItem.type === 'CHOICES')
+          //       .map((quizItem: any, index: number) => (
+          //         <div key={index}>
+          //           <WorkbookMathViewer data={quizItem.content} />
+          //         </div>
+          //       )),
+          //   )}
+          // </>
         );
       case '정답만':
         return (
