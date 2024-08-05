@@ -36,7 +36,7 @@ export const TypeA = ({
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-
+  //console.log(initialItems);
   useEffect(() => {
     if (initialItems) {
       setQuizItemList(initialItems);
@@ -65,8 +65,8 @@ export const TypeA = ({
     if (multiLevel === '2단') {
       switch (assign) {
         case '최대':
-          leftMaxItems = Infinity;
-          rightMaxItems = Infinity;
+          leftMaxItems = 8;
+          rightMaxItems = 8;
           break;
         case '2문제':
           leftMaxItems = 1;
@@ -88,7 +88,7 @@ export const TypeA = ({
     } else if (multiLevel === '1단') {
       switch (assign) {
         case '최대':
-          leftMaxItems = Infinity;
+          leftMaxItems = 8;
           rightMaxItems = 0;
           break;
         case '2문제':
@@ -339,6 +339,7 @@ export const TypeA = ({
                           <MathJaxWrapper>
                             <WorkbookMathViewer
                               data={quizItemList}
+                              //height={quizItemList.height.toString()}
                               isSetp3
                               answerCommentary={answerCommentary}
                             ></WorkbookMathViewer>
@@ -510,6 +511,7 @@ const MathViewerWrapper = styled.div<{ height: number; $padding: string }>`
   flex-direction: column;
   margin-bottom: 40px;
   font-size: 12px;
+  //padding-bottom: 100px;
 `;
 //비율
 const EachMathViewer = styled.div`

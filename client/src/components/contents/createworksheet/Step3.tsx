@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
+import { MathJax } from 'better-react-mathjax';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -10,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
+import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -47,7 +49,9 @@ export function Step3() {
     window.opener.localStorage.clear();
     window.close();
   };
-  console.log(itemHeights);
+  //console.log('itemHeights', itemHeights);
+  //console.log('initialItems', initialItems);
+
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
@@ -73,6 +77,7 @@ export function Step3() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
+          //console.log('parsedData', parsedData);
           const parsedquotientData = JSON.parse(quotientData as string);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedquotientData);
@@ -362,7 +367,6 @@ export function Step3() {
         text: '필수 항목을 선택해 주세요.',
       });
     } else {
-      measureHeights();
       postNewWorkbookData();
     }
   };
@@ -410,12 +414,12 @@ export function Step3() {
     },
   ];
 
-  useEffect(() => {
-    if (initialItems) {
-      setItemHeights([400, 400, 400, 400, 400, 400]);
-      originalHeightsRef.current = [400, 400, 400, 400, 400, 400];
-    }
-  }, [initialItems]);
+  // useEffect(() => {
+  //   if (initialItems) {
+  //     setItemHeights([400, 400, 400, 400, 400, 400]);
+  //     originalHeightsRef.current = [400, 400, 400, 400, 400, 400];
+  //   }
+  // }, [initialItems]);
 
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -432,59 +436,48 @@ export function Step3() {
   };
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
-  // useEffect(() => {
-  //   const measureHeights = () => {
-  //     if (measureRef.current) {
-  //       const heights = Array.from(measureRef.current.children).map((child) => {
-  //         const childElement = child as HTMLElement;
-  //         const height = childElement.offsetHeight;
+  useEffect(() => {
+    const measureHeights = () => {
+      if (measureRef.current) {
+        const heights = Array.from(measureRef.current.children).map((child) => {
+          const childElement = child as HTMLElement;
+          const height = childElement.offsetHeight;
 
-  //         if (answerCommentary === '문제+해설같이') {
-  //           childElement.style.height = '450px';
-  //           return 450;
-  //         }
+          if (answerCommentary === '문제+해설같이') {
+            childElement.style.height = '450px';
+            return 450;
+          }
 
-  //         if (height > 400) {
-  //           childElement.style.height = '400px';
-  //           return 400;
-  //         }
+          if (height > 400) {
+            childElement.style.height = '400px';
+            return 400;
+          }
 
-  //         return height;
-  //       });
+          return height;
+        });
 
-  //       setItemHeights(heights);
-  //       originalHeightsRef.current = heights;
-  //     }
-  //   };
+        setItemHeights(heights);
+        originalHeightsRef.current = heights;
+      }
+    };
 
-  //   if (initialItems) {
-  //     measureHeights();
-  //   }
-  // }, [initialItems, answerCommentary, contentQuantity]);
-
-  const measureHeights = () => {
-    if (measureRef.current) {
-      const heights = Array.from(measureRef.current.children).map((child) => {
-        const childElement = child as HTMLElement;
-        const height = childElement.offsetHeight;
-
-        if (answerCommentary === '문제+해설같이') {
-          childElement.style.height = '450px';
-          return 450;
-        }
-
-        if (height > 400) {
-          childElement.style.height = '400px';
-          return 400;
-        }
-
-        return height;
-      });
-
-      setItemHeights(heights);
-      originalHeightsRef.current = heights;
+    if (initialItems) {
+      measureHeights();
     }
-  };
+  }, [initialItems, answerCommentary, contentQuantity]);
+
+  const questionItems =
+    initialItems?.flatMap((quizItemList: any) =>
+      quizItemList.quizItemList.filter(
+        (quizItem: any) => quizItem.type === 'QUESTION',
+      ),
+    ) ?? [];
+
+  const multipleItems =
+    initialItems?.filter(
+      (quizCategoryList: any) =>
+        quizCategoryList.quizCategory?.문항타입 === '객관식',
+    ) ?? [];
 
   return (
     <Container>
@@ -493,45 +486,29 @@ export function Step3() {
         <div
           ref={measureRef}
           style={{
-            visibility: 'hidden',
+            //visibility: 'hidden',
             position: 'absolute',
           }}
         >
           {answerCommentary === '문제만' && (
             <>
-              {initialItems &&
-                initialItems.map((quizItemList: any) =>
-                  quizItemList.quizItemList
-                    .filter((quizItem: any) => quizItem.type === 'QUESTION')
-                    .map((quizItem: any, index: number) => (
-                      <div key={index}>
-                        <div>{quizItem.content}</div>
-                        {initialItems &&
-                          initialItems
-                            .map(
-                              (quizCategoryList: any) =>
-                                quizCategoryList.quizCategoryList.문항타입 ===
-                                '객관식',
-                            )
-                            .map((filteredCategory) =>
-                              initialItems.map((quizItemList: any) =>
-                                quizItemList.quizItemList
-                                  .filter(
-                                    (quizItem: any) =>
-                                      quizItem.type === 'CHOICES',
-                                  )
-                                  .map((quizItem: any, index: number) => (
-                                    <div key={index}>
-                                      <div>{quizItem.content}</div>
-                                    </div>
-                                  )),
-                              ),
-                            )}
-                      </div>
-                    )),
-                )}
+              {questionItems.map((quizItem: any, index: number) => (
+                <div key={index}>
+                  <WorkbookMathViewer data={quizItem.content} />
+                </div>
+              ))}
+              {multipleItems.flatMap((quizItemList: any) =>
+                quizItemList.quizItemList
+                  .filter((quizItem: any) => quizItem.type === 'CHOICES')
+                  .map((quizItem: any, index: number) => (
+                    <div key={index}>
+                      <WorkbookMathViewer data={quizItem.content} />
+                    </div>
+                  )),
+              )}
             </>
           )}
+
           {answerCommentary === '정답만' && (
             <>
               {initialItems &&
@@ -540,7 +517,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'ANSWER')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <div>{quizItem.content}</div>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                       </div>
                     )),
                 )}
@@ -554,7 +533,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <div>{quizItem.content}</div>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
                         {initialItems &&
                           initialItems
                             .map(
@@ -571,7 +552,9 @@ export function Step3() {
                                   )
                                   .map((quizItem: any, index: number) => (
                                     <div key={index}>
-                                      <div>{quizItem.content}</div>
+                                      <WorkbookMathViewer
+                                        data={quizItem.content}
+                                      ></WorkbookMathViewer>
                                     </div>
                                   )),
                               ),
@@ -589,7 +572,9 @@ export function Step3() {
                     .filter((quizItem: any) => quizItem.type === 'QUESTION')
                     .map((quizItem: any, index: number) => (
                       <div key={index}>
-                        <div>{quizItem.content}</div>
+                        <WorkbookMathViewer
+                          data={quizItem.content}
+                        ></WorkbookMathViewer>
 
                         {initialItems &&
                           initialItems
@@ -607,7 +592,9 @@ export function Step3() {
                                   )
                                   .map((quizItem: any, index: number) => (
                                     <div key={index}>
-                                      <div>{quizItem.content}</div>
+                                      <WorkbookMathViewer
+                                        data={quizItem.content}
+                                      ></WorkbookMathViewer>
                                     </div>
                                   )),
                               ),
@@ -620,7 +607,9 @@ export function Step3() {
                           )
                           .map((exampleItem: any, exampleIndex: number) => (
                             <div key={`example-${index}-${exampleIndex}`}>
-                              <div>{exampleItem.content}</div>
+                              <WorkbookMathViewer
+                                data={exampleItem.content}
+                              ></WorkbookMathViewer>
                             </div>
                           ))}
 
@@ -630,7 +619,9 @@ export function Step3() {
                           )
                           .map((answerItem: any, answerIndex: number) => (
                             <div key={`answer-${index}-${answerIndex}`}>
-                              <div>{answerItem.content}</div>
+                              <WorkbookMathViewer
+                                data={answerItem.content}
+                              ></WorkbookMathViewer>
                             </div>
                           ))}
                       </div>
@@ -1199,7 +1190,10 @@ export function Step3() {
       <CreateButtonWrapper>
         <Button
           buttonType="button"
-          onClick={submitCreateWorksheet}
+          onClick={() => {
+            //measureHeights();
+            submitCreateWorksheet();
+          }}
           $padding="10px"
           height={'35px'}
           width={'120px'}
