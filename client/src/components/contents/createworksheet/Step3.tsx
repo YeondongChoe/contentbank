@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
-import { MathJax } from 'better-react-mathjax';
 import { FaCircle } from 'react-icons/fa';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -51,6 +50,7 @@ export function Step3() {
   };
   //console.log('itemHeights', itemHeights);
   //console.log('initialItems', initialItems);
+  //console.log('newInitialItems', newInitialItems);
 
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
@@ -414,12 +414,12 @@ export function Step3() {
     },
   ];
 
-  // useEffect(() => {
-  //   if (initialItems) {
-  //     setItemHeights([400, 400, 400, 400, 400, 400]);
-  //     originalHeightsRef.current = [400, 400, 400, 400, 400, 400];
-  //   }
-  // }, [initialItems]);
+  useEffect(() => {
+    if (initialItems) {
+      setItemHeights([400, 400, 400, 400, 400, 400]);
+      originalHeightsRef.current = [400, 400, 400, 400, 400, 400];
+    }
+  }, [initialItems]);
 
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -436,35 +436,35 @@ export function Step3() {
   };
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
-  useEffect(() => {
-    const measureHeights = () => {
-      if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map((child) => {
-          const childElement = child as HTMLElement;
-          const height = childElement.offsetHeight;
+  // useEffect(() => {
+  //   const measureHeights = () => {
+  //     if (measureRef.current) {
+  //       const heights = Array.from(measureRef.current.children).map((child) => {
+  //         const childElement = child as HTMLElement;
+  //         const height = childElement.offsetHeight;
 
-          if (answerCommentary === '문제+해설같이') {
-            childElement.style.height = '450px';
-            return 450;
-          }
+  //         if (answerCommentary === '문제+해설같이') {
+  //           childElement.style.height = '450px';
+  //           return 450;
+  //         }
 
-          if (height > 400) {
-            childElement.style.height = '400px';
-            return 400;
-          }
+  //         if (height > 400) {
+  //           childElement.style.height = '400px';
+  //           return 400;
+  //         }
 
-          return height;
-        });
+  //         return height;
+  //       });
 
-        setItemHeights(heights);
-        originalHeightsRef.current = heights;
-      }
-    };
+  //       setItemHeights(heights);
+  //       originalHeightsRef.current = heights;
+  //     }
+  //   };
 
-    if (initialItems) {
-      measureHeights();
-    }
-  }, [initialItems, answerCommentary, contentQuantity]);
+  //   if (initialItems) {
+  //     measureHeights();
+  //   }
+  // }, [initialItems, answerCommentary, contentQuantity]);
 
   const questionItems =
     initialItems?.flatMap((quizItemList: any) =>
@@ -486,7 +486,7 @@ export function Step3() {
         <div
           ref={measureRef}
           style={{
-            //visibility: 'hidden',
+            visibility: 'hidden',
             position: 'absolute',
           }}
         >
