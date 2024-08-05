@@ -417,11 +417,11 @@ export function ContentEdit({
   useEffect(() => {
     if (onItemClickData && onItemClickData.quizItemList) {
       setData(onItemClickData.quizItemList);
+      // 선택 데이터 바뀔시 초기화
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.tinymce.activeEditor.setContent('');
     }
-    // 선택 데이터 바뀔시 초기화
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    window.tinymce.activeEditor.setContent('');
   }, [onItemClickData]);
 
   // 문항 추가버튼 disable 처리
