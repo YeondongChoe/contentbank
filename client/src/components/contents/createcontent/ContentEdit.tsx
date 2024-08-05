@@ -16,6 +16,7 @@ import {
   QuestionClassListType,
   QuizItemListType,
   QuizListType,
+  QuizType,
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
@@ -35,6 +36,7 @@ export function ContentEdit({
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
     QuizListType[]
   >([]);
+  const [data, setData] = useState<QuizType[] | null>(null);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
@@ -400,7 +402,23 @@ export function ContentEdit({
     console.log('quizList', quizList);
   }, [quizList]);
 
-  useEffect(() => {}, [onItemClickData]);
+  useEffect(() => {
+    if (data) {
+      const combinedContent = data.map((item) => item.content).join(' ');
+
+      console.log('onItemClickData 선택된 아이템------------', combinedContent);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.usePostJsonData(combinedContent);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (onItemClickData && onItemClickData.quizItemList) {
+      setData(onItemClickData.quizItemList);
+    }
+  }, [onItemClickData]);
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
