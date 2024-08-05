@@ -418,6 +418,10 @@ export function ContentEdit({
     if (onItemClickData && onItemClickData.quizItemList) {
       setData(onItemClickData.quizItemList);
     }
+    // 선택 데이터 바뀔시 초기화
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.tinymce.activeEditor.setContent('');
   }, [onItemClickData]);
 
   // 문항 추가버튼 disable 처리
@@ -597,7 +601,7 @@ export function ContentEdit({
             $filled
             cursor
           >
-            <span>등록</span>
+            <span>수정</span>
           </Button>
           <Button
             buttonType="button"
