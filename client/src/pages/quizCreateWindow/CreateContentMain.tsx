@@ -12,6 +12,7 @@ import {
   ContentCreating,
   ContentFileUpload,
   ContentHTMLUpload,
+  ContentEdit,
 } from '../../components/contents/createcontent';
 
 export function CreateContentMain() {
@@ -101,7 +102,7 @@ export function CreateContentMain() {
       {tabView === 'DT & Editing' && (
         <ContentBox>
           {query.get('state') === 'edit' && (
-            <ContentFileUpload setTabView={setTabView} type={'edit'} />
+            <ContentEdit setTabView={setTabView} type={'edit'} />
           )}
           {query.get('state') === 'uploadfile' && (
             <ContentFileUpload setTabView={setTabView} type={'type1'} />
