@@ -38,6 +38,7 @@ export function Step3() {
     useState<WorkbookQuotientData | null>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>([]);
   const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
+  console.log(newInitialItems);
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -88,6 +89,7 @@ export function Step3() {
         (item: QuizList, index: number) => ({
           ...item,
           num: index + 1,
+          height: 400,
         }),
       );
       setInitialItems(itemsWithNum);
@@ -128,47 +130,47 @@ export function Step3() {
   //       const heights = Array.from(measureRef.current.children).map((child) => {
   //         const childElement = child as HTMLElement;
   //         const height = childElement.offsetHeight;
-  //
+
   //         if (answerCommentary === '문제+해설같이') {
   //           childElement.style.height = '450px';
   //           return 450;
   //         }
-  //
+
   //         if (height > 400) {
   //           childElement.style.height = '400px';
   //           return 400;
   //         }
-  //
+
   //         return height;
   //       });
-  //
+
   //       setItemHeights(heights);
   //       originalHeightsRef.current = heights;
   //     }
   //   };
-  //
+
   //   if (initialItems) {
   //     measureHeights();
   //   }
+  // }, [initialItems, answerCommentary, contentQuantity]);
+
   useEffect(() => {
     const measureHeights = () => {
       if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map(
-          (child, index) => {
-            const childElement = child as HTMLElement;
-            const height = childElement.offsetHeight;
+        const heights = Array.from(measureRef.current.children).map((child) => {
+          const childElement = child as HTMLElement;
+          const height = childElement.offsetHeight;
 
-            if (answerCommentary === '문제+해설같이') {
-              return 450;
-            }
+          if (answerCommentary === '문제+해설같이') {
+            return 450;
+          }
 
-            if (height > 400) {
-              return 400;
-            }
+          if (height > 400) {
+            return 400;
+          }
 
-            return height;
-          },
-        );
+          return height;
+        });
 
         setItemHeights(heights);
         originalHeightsRef.current = heights;
@@ -335,7 +337,6 @@ export function Step3() {
                     ]?.quizItemList.find(
                       (quizItem: any) => quizItem.type === 'CHOICES',
                     );
-
               return (
                 <div style={style}>
                   {item && <WorkbookMathViewer data={item.content} />}
@@ -877,14 +878,7 @@ export function Step3() {
                 templateType,
               });
 
-              if (
-                newInitialItems &&
-                newInitialItems.length > 0 &&
-                nameValue &&
-                nameValue.trim() !== '' &&
-                gradeValue &&
-                gradeValue.trim() !== ''
-              ) {
+              if (newInitialItems && newInitialItems.length > 0) {
                 const CommonProps = {
                   title: nameValue,
                   grade: gradeValue,

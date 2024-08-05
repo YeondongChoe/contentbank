@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import styled from 'styled-components';
@@ -42,13 +42,23 @@ export function WorkbookMathViewer({
   isSetp3,
   answerCommentary,
 }: WorkbookMathViewerProps) {
-  //console.log(data.score);
+  console.log(data);
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
 
   const offLoader = () => {
     setDisplay('block');
   };
+
+  useEffect(() => {
+    const handlePostMessage = () => {
+      window.postMessage('block', '*');
+    };
+
+    if (display === 'block') {
+      handlePostMessage();
+    }
+  }, [display]);
 
   const createMarkup = (data: string) => {
     return { __html: data || '' };
