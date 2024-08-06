@@ -51,6 +51,7 @@ interface ItemTreeIdxListType {
 }
 
 type UnitClassificationType =
+  | CheckedItemType
   | RadioStateType
   | ItemTreeIdxListType
   | RadioStateType[]
@@ -65,6 +66,10 @@ interface ClassificationStateType {
     quizCategory?: Record<string, string>;
   }[];
 }
+
+type CheckedItemType = {
+  [key: string]: string;
+};
 
 export function Classification({
   setTabView,
@@ -141,6 +146,7 @@ export function Classification({
   >([]); // 각 카테고리의 상세 리스트를 저장할 상태
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [checkedItems, setCheckedItems] = useState<CheckedItemType[]>([]);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -565,6 +571,7 @@ export function Classification({
       radioEtc1Check,
       radioEtc2Check,
     );
+
     const newClassification: UnitClassificationType[] = [
       radio1depthCheck,
       radio2depthCheck,
@@ -572,6 +579,7 @@ export function Classification({
       radio4depthCheck,
       radioEtc1Check,
       radioEtc2Check,
+      ...checkedItems,
     ];
 
     if (checkedDepthList.length > 0) {
@@ -597,6 +605,8 @@ export function Classification({
       ...prevList.slice(0, idx),
       ...prevList.slice(idx + 1),
     ]);
+
+    setCheckedItems([]);
   };
 
   //분류 리스트 리셋
@@ -617,6 +627,7 @@ export function Classification({
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
     setCheckedDepthList([]);
+    setCheckedItems([]);
   };
 
   // 수정
@@ -687,9 +698,12 @@ export function Classification({
     console.log('아이템트리키 들어가야할 목록', unitClassificationList);
     const arr = unitClassificationList.map((classification) => {
       const itemTreeKey = classification.reduce(
-        (acc, curr) => {
+        (acc: Record<string, string>, curr) => {
           if ('key' in curr && curr.title) {
             acc[curr.key] = curr.title;
+          } else if (typeof curr === 'object' && !('itemTreeIdxList' in curr)) {
+            // checkedItems 객체 병합
+            Object.assign(acc, curr);
           }
           return acc;
         },
@@ -709,12 +723,15 @@ export function Classification({
 
     return arr;
   };
+
   // 분류 등록 버튼
   const onSubmit = () => {
     // 최종적으로 전송 될 데이터
     console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
 
     const categoryListArr = sortedArr();
+    console.log('categoryList 들어가야할 목록', categoryListArr);
+
     const data: ClassificationStateType = {
       quizCodeList: checkedList,
       categoryList: categoryListArr,
@@ -768,7 +785,15 @@ export function Classification({
   };
 
   // 깊이가 있는 리스트 DepthBlock 체크박스
-  const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
+  const handleSingleCheck = (
+    checked: boolean,
+    idx: number,
+    level: number,
+    name: string,
+    findItemByIdx: (idx: number) => any,
+    findChildItems: (idx: number) => any[],
+  ) => {
+    // idx리스트 담기
     setCheckedDepthList((prev) => {
       let updatedList = checked
         ? [...prev, idx]
@@ -801,10 +826,67 @@ export function Classification({
         };
         removeDescendants(idx);
       }
+      return updatedList;
+    });
+    // 유형 값 담기
+    const getTypeKey = (level: number): string => {
+      switch (level) {
+        case 1:
+          return '대유형';
+        case 2:
+          return '중유형';
+        case 3:
+          return '소유형';
+        case 4:
+          return '유형';
+        default:
+          return '유형';
+      }
+    };
+    const key = getTypeKey(level);
 
+    setCheckedItems((prev) => {
+      let updatedList = checked
+        ? [...prev, { [key]: name }]
+        : prev.filter((item) => Object.values(item)[0] !== name);
+
+      if (checked) {
+        // 상위 요소를 체크
+        let currentItem = findItemByIdx(idx);
+        while (currentItem && currentItem.parentIdx !== 0) {
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
+          if (parentItem) {
+            const parentKey = getTypeKey(parentItem.level);
+            if (
+              !updatedList.some((item) => item[parentKey] === parentItem.name)
+            ) {
+              updatedList.push({ [parentKey]: parentItem.name });
+            }
+            currentItem = parentItem;
+          } else {
+            break;
+          }
+        }
+      } else {
+        // 하위 요소를 모두 체크 해제
+        const removeDescendants = (currentIdx: number) => {
+          const childItems = findChildItems(currentIdx);
+          childItems.forEach((child) => {
+            const childKey = getTypeKey(child.level);
+            updatedList = updatedList.filter(
+              (item) => item[childKey] !== child.name,
+            );
+            removeDescendants(child.idx);
+          });
+        };
+        removeDescendants(idx);
+      }
       return updatedList;
     });
   };
+
+  useEffect(() => {}, [checkedDepthList, checkedItems]);
+
   const findItemByIdx = (idx: number): ItemTreeType | undefined => {
     for (const tree of itemTree) {
       for (const item of tree.itemTreeList) {
@@ -825,7 +907,7 @@ export function Classification({
     return children;
   };
 
-  // 추가된 문항 데이터 TODO : 전역으로 저장한 추가된 문항 데이터들 불러오기
+  // 전역으로 저장한 추가된 문항 데이터들 불러오기
   // 화면 진입시 문항 데이터들 리스트ui에넣기
   useEffect(() => {
     console.log('quizList-----------', quizList);
@@ -1337,6 +1419,9 @@ export function Classification({
                                                     e.target.checked,
                                                     item?.idx,
                                                     item?.level,
+                                                    item.name,
+                                                    findItemByIdx,
+                                                    findChildItems,
                                                   )
                                                 }
                                                 checked={
@@ -1373,6 +1458,9 @@ export function Classification({
                                                     e.target.checked,
                                                     item?.idx,
                                                     item?.level,
+                                                    item.name,
+                                                    findItemByIdx,
+                                                    findChildItems,
                                                   )
                                                 }
                                                 checked={

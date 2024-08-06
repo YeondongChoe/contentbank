@@ -47,6 +47,8 @@ export function DepthBlock({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
+
+    console.log(e.currentTarget.parentElement?.children[1].classList[3]);
     setIsChecked(checked);
     if (onChange) {
       onChange(e);

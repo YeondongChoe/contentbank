@@ -43,7 +43,6 @@ export function ContentCreating({
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [content, setContent] = useState<string[]>([]);
-  const [isPostMessage, setIsPostMessage] = useState<boolean>(false);
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
@@ -62,22 +61,6 @@ export function ContentCreating({
   const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
     [],
   ); //출처
-
-  useEffect(() => {
-    const storedQuizList = window.localStorage.getItem('quizList');
-
-    console.log(
-      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값',
-      storedQuizList,
-    );
-
-    if (storedQuizList) {
-      setQuizList(JSON.parse(storedQuizList));
-      // 로컬스토리지 값 다받은 뒤 초기화
-      window.opener.localStorage.clear();
-      return;
-    }
-  }, []);
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -343,7 +326,6 @@ export function ContentCreating({
     }
   };
   const submitSave = () => {
-    setIsPostMessage(true);
     saveHandler();
   };
   const saveHandler = async () => {

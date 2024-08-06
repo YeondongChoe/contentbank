@@ -88,6 +88,12 @@ export type Source = {
   기출배점?: string;
   기출일시?: string;
 };
+export type Categorie = {
+  대유형?: string; // 1뎁스
+  중유형?: string;
+  소유형?: string;
+  유형?: string; // 4뎁스
+};
 
 export type QuizCategory = {
   교육과정?: string;
@@ -104,6 +110,7 @@ export type QuizCategory = {
   행동요소1?: string[];
   행동요소2?: string[];
   sources?: Source[] | any[];
+  categories?: Categorie[] | any[];
 };
 
 // 등록시
