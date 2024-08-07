@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { Label } from '../../../components/atom';
-import { WorkbookMathViewer } from '../../../components/mathViewer';
+import { Step3MathViewer } from '../../../components/mathViewer';
 import { QuizList } from '../../../types/WorkbookType';
 
 type TypeBProps = {
@@ -16,7 +16,7 @@ type TypeBProps = {
   isContentTypeTitle?: boolean;
   theme?: object;
   initialItems?: QuizList[];
-  answerCommentary?: string;
+  answerCommentary: string;
   multiLevel: string;
 };
 
@@ -282,11 +282,11 @@ export const TypeB = ({
                         )}
                         <EachMathViewer>
                           <MathJaxWrapper>
-                            <WorkbookMathViewer
+                            <Step3MathViewer
                               data={quizItemList}
                               isSetp3
                               answerCommentary={answerCommentary}
-                            ></WorkbookMathViewer>
+                            ></Step3MathViewer>
                             {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]
@@ -329,11 +329,11 @@ export const TypeB = ({
                         )}
                         <EachMathViewer>
                           <MathJaxWrapper>
-                            <WorkbookMathViewer
+                            <Step3MathViewer
                               data={quizItemList}
                               isSetp3
                               answerCommentary={answerCommentary}
-                            ></WorkbookMathViewer>
+                            ></Step3MathViewer>
                             {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]

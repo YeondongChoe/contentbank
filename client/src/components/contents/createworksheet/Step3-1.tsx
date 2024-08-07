@@ -339,7 +339,12 @@ export function Step3() {
                     );
               return (
                 <div style={style}>
-                  {item && <WorkbookMathViewer data={item.content} />}
+                  {item && (
+                    <WorkbookMathViewer
+                      data={item.content}
+                      answerCommentary={''}
+                    />
+                  )}
                 </div>
               );
             }}
@@ -370,7 +375,10 @@ export function Step3() {
                   .filter((quizItem: any) => quizItem.type === 'ANSWER')
                   .map((quizItem: any, index: number) => (
                     <div key={index}>
-                      <WorkbookMathViewer data={quizItem.content} />
+                      <WorkbookMathViewer
+                        data={quizItem.content}
+                        answerCommentary={''}
+                      />
                     </div>
                   )),
               )}
@@ -385,7 +393,10 @@ export function Step3() {
                   .filter((quizItem: any) => quizItem.type === 'QUESTION')
                   .map((quizItem: any, index: number) => (
                     <div key={index}>
-                      <WorkbookMathViewer data={quizItem.content} />
+                      <WorkbookMathViewer
+                        data={quizItem.content}
+                        answerCommentary={''}
+                      />
                       {multipleItems.map((filteredCategory) =>
                         initialItems.map((innerQuizItemList: any) =>
                           innerQuizItemList.quizItemList
@@ -397,6 +408,7 @@ export function Step3() {
                               <div key={innerIndex}>
                                 <WorkbookMathViewer
                                   data={innerQuizItem.content}
+                                  answerCommentary={''}
                                 />
                               </div>
                             )),
@@ -416,7 +428,10 @@ export function Step3() {
                   .filter((quizItem: any) => quizItem.type === 'QUESTION')
                   .map((quizItem: any, index: number) => (
                     <div key={index}>
-                      <WorkbookMathViewer data={quizItem.content} />
+                      <WorkbookMathViewer
+                        data={quizItem.content}
+                        answerCommentary={''}
+                      />
                       {multipleItems.map((filteredCategory) =>
                         initialItems.map((innerQuizItemList: any) =>
                           innerQuizItemList.quizItemList
@@ -428,6 +443,7 @@ export function Step3() {
                               <div key={innerIndex}>
                                 <WorkbookMathViewer
                                   data={innerQuizItem.content}
+                                  answerCommentary={''}
                                 />
                               </div>
                             )),
@@ -439,7 +455,10 @@ export function Step3() {
                         )
                         .map((exampleItem: any, exampleIndex: number) => (
                           <div key={`example-${index}-${exampleIndex}`}>
-                            <WorkbookMathViewer data={exampleItem.content} />
+                            <WorkbookMathViewer
+                              data={exampleItem.content}
+                              answerCommentary={''}
+                            />
                           </div>
                         ))}
                       {quizItemList.quizItemList
@@ -448,7 +467,10 @@ export function Step3() {
                         )
                         .map((answerItem: any, answerIndex: number) => (
                           <div key={`answer-${index}-${answerIndex}`}>
-                            <WorkbookMathViewer data={answerItem.content} />
+                            <WorkbookMathViewer
+                              data={answerItem.content}
+                              answerCommentary={''}
+                            />
                           </div>
                         ))}
                     </div>

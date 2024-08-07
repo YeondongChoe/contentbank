@@ -48,9 +48,6 @@ export function Step3() {
     window.opener.localStorage.clear();
     window.close();
   };
-  //console.log('itemHeights', itemHeights);
-  //console.log('initialItems', initialItems);
-  //console.log('newInitialItems', newInitialItems);
 
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
@@ -99,6 +96,7 @@ export function Step3() {
         (item: QuizList, index: number) => ({
           ...item,
           num: index + 1,
+          height: 1,
         }),
       );
       setInitialItems(itemsWithNum);
@@ -139,7 +137,7 @@ export function Step3() {
               ? '문제+해설별도'
               : getLocalData.itemType === 3
                 ? '문제+해설같이'
-                : '문제만',
+                : '문제+해설같이',
       );
     }
   }, [getLocalData]);
@@ -155,9 +153,10 @@ export function Step3() {
     setTag(newValue);
   };
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
-    '문제만',
+    '문제+해설같이',
   );
   const selectAnswerCommentary = (newValue: string) => {
+    console.log(newValue);
     setAnswerCommentary(newValue);
   };
 
@@ -392,40 +391,10 @@ export function Step3() {
     }
   }, [isComplete]);
 
-  //선택한 문항 보기 정렬
-  const selectSpace = [
-    {
-      idx: 0,
-      name: '0줄',
-      value: '0',
-      options: [
-        { idx: 0, name: '0줄', value: '0' },
-        { idx: 1, name: '1줄', value: '1' },
-        { idx: 2, name: '2줄', value: '2' },
-        { idx: 3, name: '3줄', value: '3' },
-        { idx: 4, name: '4줄', value: '4' },
-        { idx: 5, name: '5줄', value: '5' },
-        { idx: 6, name: '6줄', value: '6' },
-        { idx: 7, name: '7줄', value: '7' },
-        { idx: 8, name: '8줄', value: '8' },
-        { idx: 9, name: '9줄', value: '9' },
-        { idx: 10, name: '10줄', value: '10' },
-      ],
-    },
-  ];
-
-  // useEffect(() => {
-  //   if (initialItems) {
-  //     setItemHeights([400, 400, 400, 400, 400, 400]);
-  //     originalHeightsRef.current = [400, 400, 400, 400, 400, 400];
-  //   }
-  // }, [initialItems]);
-
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     const newValue = (event.target as HTMLButtonElement)?.innerText;
-
     const linesMatch = newValue.match(/^(\d+)줄$/);
     if (linesMatch) {
       const lines = parseInt(linesMatch[1], 10); // '1줄'에서 1을 추출하여 숫자로 변환
@@ -436,60 +405,216 @@ export function Step3() {
   };
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
-  // useEffect(() => {
-  //   const measureHeights = () => {
-  //     if (measureRef.current) {
-  //       const heights = Array.from(measureRef.current.children).map((child) => {
-  //         const childElement = child as HTMLElement;
-  //         const height = childElement.offsetHeight;
-
-  //         return height;
-  //       });
-
-  //       setItemHeights(heights);
-  //       originalHeightsRef.current = heights;
-  //     }
-  //   };
-
-  //   if (initialItems) {
-  //     measureHeights();
-  //   }
-  // }, [initialItems, answerCommentary, contentQuantity]);
-
-  const measureHeights = () => {
-    if (measureRef.current) {
-      const heights = Array.from(measureRef.current.children).map((child) => {
-        const childElement = child as HTMLElement;
-        const height = childElement.offsetHeight;
-        console.log(`Child height: ${height}`); // 각 child의 높이 로그
-        return height;
-      });
-      console.log(`Measured heights: ${heights}`); // 측정된 높이 배열 로그
-      setItemHeights(heights);
-      originalHeightsRef.current = heights;
-    } else {
-      console.log('measureRef.current is null'); // measureRef가 null인 경우 로그
-    }
-  };
-
   useEffect(() => {
-    // 메시지 이벤트 리스너 설정
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data === 'block') {
-        measureHeights();
+    const measureHeights = () => {
+      if (measureRef.current) {
+        const heights = Array.from(measureRef.current.children).map((child) => {
+          const childElement = child as HTMLElement;
+          const height = childElement.offsetHeight;
+
+          return height;
+        });
+
+        setItemHeights(heights);
+        originalHeightsRef.current = heights;
       }
     };
+
+    if (initialItems) {
+      measureHeights();
+    }
+  }, [initialItems, contentQuantity]);
+  //commentary '문제만' 높이 값 관리
+  const [itemQuestionHeight, setItemQuestionHeight] = useState<number[][]>([]);
+  //commentary '문제만' 문항 수만큼 관리
+  const [itemQuestionHeightArray, setItemQuestionHeightArray] = useState<
+    number[]
+  >([]);
+  //commentary '정답만' 높이 값 관리
+  const [itemAnswerHeight, setItemAnswerHeight] = useState<number[][]>([]);
+  //commentary '정답만' 문항 수만큼 관리
+  const [itemAnswerHeightArray, setItemAnswerHeightArray] = useState<number[]>(
+    [],
+  );
+  //commentary '문제+해설 같이' 높이 값 관리
+  const [itemCommenteryHeight, setItemCommenteryHeight] = useState<number[][]>(
+    [],
+  );
+  //commentary '문제+해설 같이' 문항 수 만큼 값 관리
+  const [itemCommenteryHeightArray, setItemCommenteryHeightArray] = useState<
+    number[]
+  >([]);
+
+  const [commentary, setCommentary] = useState<string>('');
+  //console.log('itemQuestionHeight', itemQuestionHeight);
+  //console.log('itemAnswerHeight', itemAnswerHeight);
+  //console.log('itemCommenteryHeight', itemCommenteryHeight);
+  //console.log('itemHeights', itemHeights);
+  //console.log('initialItems', initialItems);
+  //console.log('newInitialItems', newInitialItems);
+
+  useEffect(() => {
+    const getHeight = (heights: number[], commentary: string) => {
+      //console.log('Received heights in Step3:', heights);
+      //console.log('answerCommentary:', commentary);
+
+      // 0보다 큰 값만 필터링
+      const filteredHeights = heights.filter((height) => height > 0);
+
+      if (commentary === '문제만') {
+        setCommentary('문제만');
+        setItemQuestionHeight((prev) => {
+          const newArray = [...prev, filteredHeights];
+          return newArray;
+        });
+      }
+      if (commentary === '정답만') {
+        setCommentary('정답만');
+        setItemAnswerHeight((prev) => {
+          const newArray = [...prev, filteredHeights];
+          return newArray;
+        });
+      }
+      if (commentary === '문제+해설별도') {
+        setCommentary('문제+해설별도');
+        setItemQuestionHeight((prev) => {
+          const newArray = [...prev, filteredHeights];
+          return newArray;
+        });
+      }
+      if (commentary === '문제+해설같이') {
+        setCommentary('문제+해설같이');
+        setItemCommenteryHeight((prev) => {
+          const newArray = [...prev, filteredHeights];
+          return newArray;
+        });
+      }
+    };
+
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        if (typeof event.data === 'string') {
+          const data = JSON.parse(event.data);
+          console.log(data);
+          if (data.heights) {
+            getHeight(data.heights, data.commentary);
+          }
+        } else {
+          console.error('Received non-string data:', event.data);
+        }
+      } catch (error) {
+        console.error('Failed to parse message data:', error);
+      }
+    };
+
     window.addEventListener('message', handleMessage);
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+
     return () => {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
 
+  //commentary '문제만' 문항수 만큼 넣어주기
+  useEffect(() => {
+    if (itemQuestionHeight) {
+      const sliceItemQuestion = itemQuestionHeight.slice(
+        0,
+        initialItems?.length,
+      );
+      const array = sliceItemQuestion.map((item) => item[0]);
+      setItemQuestionHeightArray(array);
+      originalHeightsRef.current = array;
+    }
+  }, [itemQuestionHeight]);
+  //commentary '문제만' 문항수 만큼 setItemHeights에 넣어주기
+  useEffect(() => {
+    if (commentary === '문제만' || commentary === '문제+해설별도') {
+      setItemHeights(itemQuestionHeightArray);
+    }
+  }, [commentary, itemQuestionHeightArray]);
+
+  //commentary '정답만' 문항수 만큼 넣어주기
+  useEffect(() => {
+    if (itemAnswerHeight) {
+      const sliceItemQuestion = itemAnswerHeight.slice(0, initialItems?.length);
+      const array = sliceItemQuestion.map((item) => item[0]);
+      setItemAnswerHeightArray(array);
+      originalHeightsRef.current = array;
+    }
+  }, [itemAnswerHeight]);
+  //commentary '정답만' 높이값 넣어주기
+  useEffect(() => {
+    if (commentary === '정답만') {
+      setItemHeights(itemAnswerHeightArray);
+    }
+  }, [commentary, itemAnswerHeightArray]);
+
+  //commentary '문제+해설같이' 문항수 만큼 넣어주기
+  useEffect(() => {
+    if (itemCommenteryHeight) {
+      const sliceItemQuestion = itemCommenteryHeight.slice(
+        0,
+        initialItems?.length,
+      );
+      const array = sliceItemQuestion.map((item) => item[0]);
+      setItemCommenteryHeightArray(array);
+      originalHeightsRef.current = array;
+    }
+  }, [itemCommenteryHeight]);
+  //commentary '문제+해설같이' 높이값 넣어주기
+  useEffect(() => {
+    if (commentary === '문제+해설같이') {
+      setItemHeights(itemCommenteryHeightArray);
+    }
+  }, [commentary, itemCommenteryHeightArray]);
+
+  // useEffect(() => {
+  //   console.log('1111');
+  //   // 높이 측정과 상태 업데이트를 처리하는 함수
+  //   const measuredHeight = (heights: number[]) => {
+  //     console.log('Received heights in Step3:', heights);
+  //     const filteredHeights = heights.filter((height) => height > 0);
+  //     setNewItemHeight((prevHeights) => {
+  //       const updatedHeights = [...prevHeights, ...filteredHeights];
+  //       originalHeightsRef.current = updatedHeights; // 참조 업데이트
+  //       return updatedHeights;
+  //     });
+  //   };
+
+  //   // 메시지 이벤트 리스너 설정
+  //   const handleMessage = (event: MessageEvent) => {
+  //     try {
+  //       const data = JSON.parse(event.data);
+  //       if (data.heights) {
+  //         measuredHeight(data.heights);
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to parse message data:', error);
+  //     }
+  //   };
+
+  //   window.addEventListener('message', handleMessage);
+
+  //   return () => {
+  //     window.removeEventListener('message', handleMessage);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log('2222');
+  //   if (newItemHeight.length > 0) {
+  //     // 새 아이템 높이를 설정하기 전에 기존 값을 지우기 위해 콜백을 사용
+  //     setItemHeights((prevItemHeights) => {
+  //       // 새로운 값을 설정
+  //       return newItemHeight;
+  //     });
+  //   }
+  // }, [newItemHeight]);
+
   const questionItems =
     initialItems?.flatMap((quizItemList: any) =>
       quizItemList.quizItemList.filter(
-        (quizItem: any) => quizItem.type === 'QUESTION',
+        (quizItem: any) => quizItem.type === 'COMMENTARY',
       ),
     ) ?? [];
 
@@ -588,7 +713,7 @@ export function Step3() {
       <Button
         key={tagItem.value}
         buttonType="button"
-        onClick={() => setTag(tagItem.value)}
+        onClick={() => selectTag(tagItem.value)}
         $padding="5px"
         height={'35px'}
         width={'80px'}
@@ -645,7 +770,7 @@ export function Step3() {
 
   const renderTypeOptions = () => {
     return ['A', 'B'].map((type) => (
-      <TypeOption key={type} onClick={() => setTemplateType(type)}>
+      <TypeOption key={type} onClick={() => selectTemplateType(type)}>
         <SlPicture color="gray" fontSize={40} />
         {type} Type
       </TypeOption>
@@ -667,7 +792,7 @@ export function Step3() {
             <Button
               key={col}
               buttonType="button"
-              onClick={() => setColumn(col)}
+              onClick={() => selectColumn(col)}
               $padding="5px"
               height={'35px'}
               width={'80px'}
@@ -700,7 +825,7 @@ export function Step3() {
             <Button
               key={option}
               buttonType="button"
-              onClick={() => setContentQuantity(option)}
+              onClick={() => selectContentQuantity(option)}
               $padding="5px"
               height={'35px'}
               width={'80px'}
@@ -718,6 +843,7 @@ export function Step3() {
   };
 
   const renderContentSpaceOption = () => {
+    //선택한 문항 보기 정렬
     const selectSpace = [
       {
         idx: 0,
@@ -765,13 +891,11 @@ export function Step3() {
           padding="5px 10px"
           flexEnd
         />
-        <CheckBoxWrapper onClick={() => setIsDate(!isDate)}>
+        <CheckBoxWrapper onClick={() => selectDate()}>
           <CheckBox height="15px" isChecked={isDate} />
           날짜 표시
         </CheckBoxWrapper>
-        <CheckBoxWrapper
-          onClick={() => setIsContentTypeTitle(!isContentTypeTitle)}
-        >
+        <CheckBoxWrapper onClick={() => selectContentTypeTitle()}>
           <CheckBox height="15px" isChecked={isContentTypeTitle} />
           문항 유형명 표시
         </CheckBoxWrapper>
@@ -785,7 +909,7 @@ export function Step3() {
       <Button
         key={option}
         buttonType="button"
-        onClick={() => setAnswerCommentary(option)}
+        onClick={() => selectAnswerCommentary(option)}
         $padding="5px"
         height={'35px'}
         width={'80px'}
@@ -802,7 +926,7 @@ export function Step3() {
   return (
     <Container>
       {/* 가상의 돔을 그려서 문항의 높이 측정 */}
-      <div>
+      {/* <div>
         <div
           ref={measureRef}
           style={{
@@ -814,7 +938,10 @@ export function Step3() {
             <>
               {questionItems.map((quizItem: any, index: number) => (
                 <div key={index}>
-                  <WorkbookMathViewer data={quizItem.content} />
+                  <WorkbookMathViewer
+                    data={quizItem.content}
+                    answerCommentary={''}
+                  />
                 </div>
               ))}
               {multipleItems.flatMap((quizItemList: any) =>
@@ -822,7 +949,10 @@ export function Step3() {
                   .filter((quizItem: any) => quizItem.type === 'CHOICES')
                   .map((quizItem: any, index: number) => (
                     <div key={index}>
-                      <WorkbookMathViewer data={quizItem.content} />
+                      <WorkbookMathViewer
+                        data={quizItem.content}
+                        answerCommentary={''}
+                      />
                     </div>
                   )),
               )}
@@ -839,6 +969,7 @@ export function Step3() {
                       <div key={index}>
                         <WorkbookMathViewer
                           data={quizItem.content}
+                          answerCommentary={''}
                         ></WorkbookMathViewer>
                       </div>
                     )),
@@ -855,6 +986,7 @@ export function Step3() {
                       <div key={index}>
                         <WorkbookMathViewer
                           data={quizItem.content}
+                          answerCommentary={''}
                         ></WorkbookMathViewer>
                         {initialItems &&
                           initialItems
@@ -874,6 +1006,7 @@ export function Step3() {
                                     <div key={index}>
                                       <WorkbookMathViewer
                                         data={quizItem.content}
+                                        answerCommentary={''}
                                       ></WorkbookMathViewer>
                                     </div>
                                   )),
@@ -894,6 +1027,7 @@ export function Step3() {
                       <div key={index}>
                         <WorkbookMathViewer
                           data={quizItem.content}
+                          answerCommentary={''}
                         ></WorkbookMathViewer>
 
                         {initialItems &&
@@ -914,6 +1048,7 @@ export function Step3() {
                                     <div key={index}>
                                       <WorkbookMathViewer
                                         data={quizItem.content}
+                                        answerCommentary={''}
                                       ></WorkbookMathViewer>
                                     </div>
                                   )),
@@ -923,12 +1058,13 @@ export function Step3() {
                         {quizItemList.quizItemList
                           .filter(
                             (exampleItem: any) =>
-                              exampleItem.type === 'EXAMPLE',
+                              exampleItem.type === 'COMMENTARY',
                           )
                           .map((exampleItem: any, exampleIndex: number) => (
                             <div key={`example-${index}-${exampleIndex}`}>
                               <WorkbookMathViewer
                                 data={exampleItem.content}
+                                answerCommentary={''}
                               ></WorkbookMathViewer>
                             </div>
                           ))}
@@ -941,6 +1077,7 @@ export function Step3() {
                             <div key={`answer-${index}-${answerIndex}`}>
                               <WorkbookMathViewer
                                 data={answerItem.content}
+                                answerCommentary={''}
                               ></WorkbookMathViewer>
                             </div>
                           ))}
@@ -950,7 +1087,7 @@ export function Step3() {
             </>
           )}
         </div>
-      </div>
+      </div> */}
       <AlertBar
         isCloseKor
         type="success"
@@ -1034,7 +1171,7 @@ export function Step3() {
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
-                initialItems={newInitialItems}
+                initialItems={newInitialItems ? newInitialItems : initialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
               ></TypeA>
@@ -1050,7 +1187,7 @@ export function Step3() {
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
-                initialItems={newInitialItems}
+                initialItems={newInitialItems ? newInitialItems : initialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
               ></TypeB>

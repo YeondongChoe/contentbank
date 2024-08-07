@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { Label } from '../../../components/atom';
-import { WorkbookMathViewer } from '../../../components/mathViewer';
+import { Step3MathViewer } from '../../../components/mathViewer';
 import { QuizList } from '../../../types/WorkbookType';
 
 type TypeAProps = {
@@ -16,7 +16,7 @@ type TypeAProps = {
   isContentTypeTitle?: boolean;
   theme?: object;
   initialItems?: QuizList[];
-  answerCommentary?: string;
+  answerCommentary: string;
   multiLevel: string;
 };
 
@@ -36,7 +36,7 @@ export const TypeA = ({
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-  //console.log(initialItems);
+
   useEffect(() => {
     if (initialItems) {
       setQuizItemList(initialItems);
@@ -65,8 +65,8 @@ export const TypeA = ({
     if (multiLevel === '2단') {
       switch (assign) {
         case '최대':
-          leftMaxItems = 8;
-          rightMaxItems = 8;
+          leftMaxItems = Infinity;
+          rightMaxItems = Infinity;
           break;
         case '2문제':
           leftMaxItems = 1;
@@ -88,7 +88,7 @@ export const TypeA = ({
     } else if (multiLevel === '1단') {
       switch (assign) {
         case '최대':
-          leftMaxItems = 8;
+          leftMaxItems = Infinity;
           rightMaxItems = 0;
           break;
         case '2문제':
@@ -262,7 +262,6 @@ export const TypeA = ({
             </ColorTextWrapper>
           </WorksheetHeader>
           <HeaderTriangle></HeaderTriangle>
-
           <WorksheetBody>
             <WorksheetBodyLeft>
               {pages[0]?.leftArray?.map((quizItemList) =>
@@ -291,11 +290,11 @@ export const TypeA = ({
                         )}
                         <EachMathViewer>
                           <MathJaxWrapper>
-                            <WorkbookMathViewer
+                            <Step3MathViewer
                               data={quizItemList}
                               isSetp3
                               answerCommentary={answerCommentary}
-                            ></WorkbookMathViewer>
+                            ></Step3MathViewer>
                             {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]
@@ -337,12 +336,12 @@ export const TypeA = ({
                         )}
                         <EachMathViewer>
                           <MathJaxWrapper>
-                            <WorkbookMathViewer
+                            <Step3MathViewer
                               data={quizItemList}
                               //height={quizItemList.height.toString()}
                               isSetp3
                               answerCommentary={answerCommentary}
-                            ></WorkbookMathViewer>
+                            ></Step3MathViewer>
                             {quizItemList.score && quizItemList.score !== 0 ? (
                               <ScoreWrapper>
                                 [{quizItemList.score}점]
