@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import {
@@ -13,7 +12,6 @@ import {
   Search,
   TabMenu,
 } from '../components';
-import Contents2 from '../components/mathViewer/test2.json';
 
 import {
   Button,

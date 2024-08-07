@@ -8,7 +8,7 @@ import { QuizList } from '../../types/WorkbookType';
 import { Loader } from '../atom/Loader';
 
 type WorkbookMathViewerProps = {
-  data: QuizList;
+  data?: QuizList;
   display?: string;
   width?: string;
   padding?: string;
@@ -34,7 +34,7 @@ const config = {
   },
 };
 
-export function WorkbookMathViewer({
+export function Step3MathViewer({
   data,
   width,
   padding,
@@ -42,13 +42,53 @@ export function WorkbookMathViewer({
   isSetp3,
   answerCommentary,
 }: WorkbookMathViewerProps) {
-  //console.log(data);
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [commentary, setCommentary] = useState<string>(
+    answerCommentary as string,
+  );
+  //console.log(commentary);
+
+  useEffect(() => {
+    if (answerCommentary) {
+      setCommentary(answerCommentary as string);
+    }
+  }, [answerCommentary]);
+
+  const measureHeights = () => {
+    if (measureRef.current) {
+      const heights = Array.from(measureRef.current.children).map((child) => {
+        const childElement = child as HTMLElement;
+        const height = childElement.offsetHeight;
+        return height;
+      });
+
+      console.log('Measured heights in WorkbookMathViewer:', heights);
+      console.log('commentary:', commentary);
+      window.postMessage(JSON.stringify({ heights, commentary }), '*');
+    }
+  };
 
   const offLoader = () => {
     setDisplay('block');
   };
+
+  useEffect(() => {
+    if (display === 'block') {
+      measureHeights();
+    }
+  }, [display, commentary]);
+
+  // useEffect(() => {
+  //   const handlePostMessage = () => {
+  //     window.postMessage('block', '*');
+  //   };
+
+  //   if (display === 'block') {
+  //     handlePostMessage();
+  //   }
+  // }, [display]);
 
   const createMarkup = (data: string) => {
     return { __html: data || '' };
@@ -73,6 +113,7 @@ export function WorkbookMathViewer({
     <>
       {display === 'none' && <Loader height="50px" size="35px" />}
       <Component
+        ref={measureRef}
         display={display}
         width={width}
         height={height}
@@ -85,7 +126,9 @@ export function WorkbookMathViewer({
         >
           <MathJaxWrapper>
             {isSetp3 && (
-              <strong>{data.num < 10 ? `0${data.num}` : `${data.num}`}</strong>
+              <strong>
+                {data && data.num < 10 ? `0${data.num}` : `${data?.num}`}
+              </strong>
             )}
             <MathJax
               inline
@@ -94,7 +137,7 @@ export function WorkbookMathViewer({
                 offLoader();
               }}
             >
-              {answerCommentary === '문제만' && (
+              {commentary === '문제만' && (
                 <>
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
@@ -121,7 +164,7 @@ export function WorkbookMathViewer({
                     )}
                 </>
               )}
-              {answerCommentary === '정답만' && (
+              {commentary === '정답만' && (
                 <>
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'ANSWER')
@@ -133,7 +176,7 @@ export function WorkbookMathViewer({
                     ))}
                 </>
               )}
-              {answerCommentary === '문제+해설별도' && (
+              {commentary === '문제+해설별도' && (
                 <>
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
@@ -160,7 +203,7 @@ export function WorkbookMathViewer({
                     )}
                 </>
               )}
-              {answerCommentary === '해설별도' && (
+              {commentary === '해설별도' && (
                 <>
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'COMMENTARY')
@@ -180,8 +223,8 @@ export function WorkbookMathViewer({
                     ))}
                 </>
               )}
-              {(answerCommentary === '문제+해설같이' ||
-                answerCommentary === '문제+정답+해설') && (
+              {(commentary === '문제+해설같이' ||
+                commentary === '문제+정답+해설') && (
                 <>
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
@@ -224,7 +267,7 @@ export function WorkbookMathViewer({
                     ))}
                 </>
               )}
-              {answerCommentary === '문제+정답' && (
+              {commentary === '문제+정답' && (
                 <>
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
@@ -287,7 +330,7 @@ const MathJaxWrapper = styled.div`
 `;
 
 const ContentQuestion = styled.div`
-  padding-bottom: 10px;
+  //padding-bottom: 10px;
   div {
     background-color: white;
   }
