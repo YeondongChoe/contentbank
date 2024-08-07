@@ -2,9 +2,11 @@ import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Button, Modal, openToastifyAlert, Select } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
@@ -43,6 +45,7 @@ export function ContentCreating({
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [content, setContent] = useState<string[]>([]);
+  const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
@@ -64,7 +67,7 @@ export function ContentCreating({
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
-    console.log('editorData', editorData);
+    console.log('editorData', editorData?.tag_group);
 
     if (editorData) {
       const itemDataList: QuizItemListType = [];
@@ -105,8 +108,89 @@ export function ContentCreating({
       });
 
       setQuizItemList(itemDataList);
+
+      const imagesSrc = extractImgSrc(`${editorData?.tag_group}`);
+      setImagesSrc(imagesSrc);
     }
   }, [editorData]);
+
+  // 이미지 태그 src 축출
+  const extractImgSrc = (htmlString: string) => {
+    // <img> 태그와 src 속성 값을 캡처하는 정규 표현식
+    const imgSrcRegex = /<img[^>]+src="([^">]+)"/g;
+    const srcArray = [];
+    let match;
+
+    while ((match = imgSrcRegex.exec(htmlString)) !== null) {
+      // match[1]에는 src 속성 값이 포함됩니다.
+      srcArray.push(match[1]);
+    }
+
+    // 배열 요소를 쉼표로 구분된 하나의 문자열로 결합하여 반환
+    return srcArray.join(',');
+  };
+
+  // 이미지 업로딩
+  const uploadImages = async () => {
+    const blobUrls = imagesSrc.split(',');
+    const uploadedUrls = await Promise.all(blobUrls.map(uploadImage));
+
+    // blob URL을 업로드된 URL로 교체
+    let updatedContent = editorData && editorData.tag_group;
+
+    if (typeof updatedContent === 'string') {
+      blobUrls.forEach((blobUrl, index) => {
+        updatedContent =
+          updatedContent &&
+          updatedContent.replace(blobUrl, uploadedUrls[index]);
+      });
+
+      // 상태 업데이트 또는 업데이트된 콘텐츠 처리
+      console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
+    } else {
+      console.error('updatedContent는 문자열이어야 합니다.');
+    }
+  };
+
+  const uploadImage = async (blobUrl: RequestInfo | URL) => {
+    const response = await fetch(blobUrl);
+    const blob = await response.blob();
+    const file = new File([blob], `${uuidv4()}.png`, { type: blob.type });
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('img_save_type', '1'); // 1: 로컬 저장
+
+    try {
+      const response = await axios.post(
+        'http://localhost:5050/uploadImage',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      const { imgUUID } = response.data;
+      const [year, month, day] = new Date()
+        .toISOString()
+        .split('T')[0]
+        .split('-');
+      const newUrl = `http://localhost:5050/images/${year}/${month}/${day}/${imgUUID}.png`;
+
+      return newUrl;
+    } catch (error) {
+      console.error('파일 업로드 오류:', error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    if (imagesSrc) {
+      uploadImages();
+    }
+  }, [imagesSrc]);
 
   useEffect(() => {
     console.log('quizItemList', quizItemList);
@@ -327,6 +411,7 @@ export function ContentCreating({
   };
   const submitSave = () => {
     saveHandler();
+    // 이미지 데이터 저장
   };
   const saveHandler = async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
