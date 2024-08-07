@@ -61,9 +61,9 @@ type UnitClassificationType =
 interface ClassificationStateType {
   quizCodeList: string[];
   categoryList: {
-    itemTreeKey?: Record<string, string>;
+    itemTreeKey?: QuizCategory;
     itemTreeIdxList?: number[];
-    quizCategory?: Record<string, string>;
+    quizCategory?: QuizCategory;
   }[];
 }
 
@@ -452,11 +452,13 @@ export function Classification({
   useEffect(() => {
     setSelected3depth('');
     setCheckedDepthList([]);
+    setCheckedItems([]);
   }, [selected2depth]);
   useEffect(() => {
     setSelected4depth('');
     setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
     setCheckedDepthList([]);
+    setCheckedItems([]);
   }, [selected3depth]);
   useEffect(() => {
     setSelectedCategoryEtc1([]);
@@ -465,6 +467,7 @@ export function Classification({
     setRadioEtc2Check([]);
     setCheckedDepthList([]);
     setSearchValue('');
+    setCheckedItems([]);
   }, [selected4depth]);
 
   // 카테고리 선택후 아이템트리
@@ -715,8 +718,18 @@ export function Classification({
           (item): item is ItemTreeIdxListType => 'itemTreeIdxList' in item,
         )?.itemTreeIdxList || [];
 
+      // 등록시 앞쪽에서 등록한 필수 메타값도 함께 등록
+      const requiredMetacategory =
+        sortedList[sortedList.length - 1].quizCategoryList[0].quizCategory;
+
+      console.log('itemTreeKey------', itemTreeKey);
+      console.log('requiredMetacategory------', requiredMetacategory);
+      const mergedItemTreeKey = {
+        ...itemTreeKey,
+        ...requiredMetacategory,
+      };
       return {
-        itemTreeKey,
+        itemTreeKey: mergedItemTreeKey,
         itemTreeIdxList,
       };
     });
@@ -885,7 +898,11 @@ export function Classification({
     });
   };
 
-  useEffect(() => {}, [checkedDepthList, checkedItems]);
+  useEffect(() => {
+    // 유형 값 담기
+    console.log('checkedDepthList---', checkedDepthList);
+    console.log('checkedItems---', checkedItems);
+  }, [checkedDepthList, checkedItems]);
 
   const findItemByIdx = (idx: number): ItemTreeType | undefined => {
     for (const tree of itemTree) {

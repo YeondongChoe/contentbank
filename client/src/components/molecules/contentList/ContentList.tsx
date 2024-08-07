@@ -516,7 +516,7 @@ export function ContentList({
                   )}
 
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -563,7 +563,7 @@ export function ContentList({
                   )}
 
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -612,7 +612,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -661,7 +661,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -710,7 +710,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -759,7 +759,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -808,7 +808,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -857,7 +857,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
@@ -904,7 +904,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    arrowPosition={`left: 50%`}
+                    arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
                   >
