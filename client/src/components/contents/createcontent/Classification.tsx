@@ -56,7 +56,8 @@ type UnitClassificationType =
   | ItemTreeIdxListType
   | RadioStateType[]
   | QuizCategoryList
-  | ClassificationStateType;
+  | ClassificationStateType
+  | [];
 
 interface ClassificationStateType {
   quizCodeList: string[];
@@ -131,9 +132,7 @@ export function Classification({
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
-  const [getUnitClassificationList, setGetUnitClassificationList] = useState<
-    UnitClassificationType[][]
-  >([]);
+  const [radioButtonList, setRadioButtonList] = useState<RadioStateType[]>([]);
   const [selectedClassification, setSelectedClassification] = useState<
     UnitClassificationType[]
   >([]);
@@ -676,9 +675,15 @@ export function Classification({
   useEffect(() => {
     if (isModifying && selected4depth !== '') {
       const classification = selectedClassification[4] as ItemTreeIdxListType;
+      // idx 유형 리스트
+      console.log('수정시 idx 리스트 ----- ', classification.itemTreeIdxList);
       setCheckedDepthList(classification.itemTreeIdxList);
 
       const classificationEtc1 = selectedClassification[5] as RadioStateType[];
+      console.log(
+        '수정시 classificationEtc1 리스트 ----- ',
+        classificationEtc1,
+      );
       // 저장되었던 행동 요소1
       setSelectedCategoryEtc1(
         classificationEtc1.map((el) => el.checkValue?.toString()),
@@ -860,8 +865,8 @@ export function Classification({
 
     setCheckedItems((prev) => {
       let updatedList = checked
-        ? [...prev, { [key]: name }]
-        : prev.filter((item) => Object.values(item)[0] !== name);
+        ? [...prev, { [key]: `${name}^^^${idx}` }]
+        : prev.filter((item) => Object.values(item)[0] !== `${name}^^^${idx}`);
 
       if (checked) {
         // 상위 요소를 체크
@@ -871,9 +876,14 @@ export function Classification({
           if (parentItem) {
             const parentKey = getTypeKey(parentItem.level);
             if (
-              !updatedList.some((item) => item[parentKey] === parentItem.name)
+              !updatedList.some(
+                (item) =>
+                  item[parentKey] === `${parentItem.name}^^^${parentItem.idx}`,
+              )
             ) {
-              updatedList.push({ [parentKey]: parentItem.name });
+              updatedList.push({
+                [parentKey]: `${parentItem.name}^^^${parentItem.idx}`,
+              });
             }
             currentItem = parentItem;
           } else {
@@ -887,7 +897,7 @@ export function Classification({
           childItems.forEach((child) => {
             const childKey = getTypeKey(child.level);
             updatedList = updatedList.filter(
-              (item) => item[childKey] !== child.name,
+              (item) => item[childKey] !== `${child.name}^^^${child.idx}`,
             );
             removeDescendants(child.idx);
           });
@@ -946,9 +956,9 @@ export function Classification({
   useEffect(() => {
     if (sortedList.length > 0) {
       const lastQuiz = sortedList[sortedList.length - 1];
-      const list: RadioStateType[] = [];
-      let actionElement1: RadioStateType[] = [];
-      let actionElement2: RadioStateType[] = [];
+      const list: UnitClassificationType[] = [];
+      let actionElement1: UnitClassificationType[] = [];
+      let actionElement2: UnitClassificationType[] = [];
       console.log('lastQuiz---', lastQuiz);
 
       // category를 순회하며 필요한 형태로 변환
@@ -961,21 +971,21 @@ export function Classification({
           if (key === '행동요소1' && Array.isArray(value)) {
             actionElement1 = value.map((element) => ({
               title: element,
-              checkValue: 0, // 필요한 경우 적절히 수정
+              checkValue: 5,
               code: '행동요소1',
               key: key,
             }));
           } else if (key === '행동요소2' && Array.isArray(value)) {
             actionElement2 = value.map((element) => ({
               title: element,
-              checkValue: 0, // 필요한 경우 적절히 수정
+              checkValue: 6,
               code: '행동요소2',
               key: key,
             }));
           } else {
             list.push({
               title: value as string,
-              checkValue: 0, // 필요한 경우 적절히 수정
+              checkValue: 0,
               code: key,
               key: key,
             });
@@ -1010,35 +1020,115 @@ export function Classification({
       );
 
       // 추가 항목들 추가
-      // const itemTreeIdxList: ItemTreeIdxListType = {
-      //   itemTreeIdxList: lastQuiz.itemTreeIdxList || [],
-      // };
-      // finalList.push(itemTreeIdxList);
-
       if (actionElement1.length > 0) {
-        finalList.push(actionElement1 as unknown as RadioStateType);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-expect-error
+        finalList.push(...actionElement1);
       }
 
       if (actionElement2.length > 0) {
-        finalList.push(actionElement2 as unknown as RadioStateType);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-expect-error
+        finalList.push(...actionElement2);
       }
 
       console.log('push on list ----', finalList);
-      setGetUnitClassificationList([finalList]);
+      console.log('actionElement ---- ', actionElement1, actionElement2);
+      // 유형 뎁스 리스트 idx로 축출
+      // 특별 요소들 필터링
+      const depthListElements = finalList.filter(
+        (item) =>
+          item.key === '대유형' ||
+          item.key === '중유형' ||
+          item.key === '소유형' ||
+          item.key === '유형',
+      );
+      console.log('depthListElements 유형리스트 ---- ', depthListElements);
+      // 해당 뎁스객체에서 idx값 축출후 뎁스리스트에 추가
+      const idxArray = depthListElements.map((element) => {
+        const parts = element.title.split('^^^');
+        return parseInt(parts[1], 10);
+      });
+      setCheckedDepthList(idxArray);
+
+      // 새로운 배열 생성
+      const newFinalList: UnitClassificationType = [];
+      // 라디오 버튼에 들어갈 요소 재정의
+      const keysOrder = [
+        '교육과정',
+        '학교급',
+        '학년',
+        '학기',
+        '행동요소1',
+        '행동요소2',
+      ];
+
+      keysOrder.forEach((key) => {
+        // 일반 키 처리
+        const item = finalList.find(
+          (element: RadioStateType) => element.code === key,
+        );
+        if (item) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
+          newFinalList.push(item);
+        } else if (key === '행동요소1' || key === '행동요소2') {
+          // 행동요소가 없을 경우 빈 객체 추가
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
+          newFinalList.push([]);
+        }
+      });
+
+      // checkValue 값 추가
+      newFinalList.forEach((finalItem) => {
+        const categoryItem = categoryItems.find(
+          (catItem) => catItem.name === finalItem.code,
+        );
+        if (categoryItem) {
+          finalItem.checkValue = categoryItem.idx;
+        }
+      });
+
+      setRadioButtonList(newFinalList);
     }
   }, [sortedList]);
 
-  // getUnitClassificationList에 담긴 값을 순서대로 체크값에 넣고 아이템트리 조회
+  // radioButtonList에 담긴 값을 순서대로 체크값에 넣고 아이템트리 조회
   useEffect(() => {
-    // const itemTreeIdxList: ItemTreeIdxListType = {
-    //   itemTreeIdxList:
-    //  // 데이터 구조확인후 추가 필수값이라 추가되야함
-    // };
-    // finalList.push(itemTreeIdxList);
-  }, [getUnitClassificationList]);
+    // 타이틀 값엥 맞는 체크밸류 찾기
+    console.log('radioButtonList ---------', radioButtonList);
+
+    if (radioButtonList[0]?.key == '교육과정') {
+      const newClassification: UnitClassificationType[] = [
+        radioButtonList[0],
+        radioButtonList[1],
+        radioButtonList[2],
+        radioButtonList[3],
+        radioButtonList[4],
+        radioButtonList[5],
+        ...checkedItems,
+      ];
+
+      if (checkedDepthList.length > 0) {
+        newClassification.splice(4, 0, { itemTreeIdxList: checkedDepthList });
+      }
+
+      if (unitClassificationList.length < 6) {
+        setUnitClassificationList((prevList) => [
+          ...prevList,
+          newClassification,
+        ]);
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '교과정보는 최대 5개 까지 저장 가능합니다',
+        });
+      }
+    }
+  }, [radioButtonList]);
 
   // 아이템 트리 체크값 유형 키값으로 타이틀명 맞춰서 체크
-
   useEffect(() => {
     console.log('unitClassificationList', unitClassificationList);
   }, [unitClassificationList]);

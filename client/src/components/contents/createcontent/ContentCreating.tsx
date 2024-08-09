@@ -139,16 +139,28 @@ export function ContentCreating({
     let updatedContent = editorData && editorData.tag_group;
 
     if (typeof updatedContent === 'string') {
-      blobUrls.forEach((blobUrl, index) => {
-        updatedContent =
-          updatedContent &&
-          updatedContent.replace(blobUrl, uploadedUrls[index]);
+      // blobUrls.forEach((blobUrl, index) => {
+      //   updatedContent =
+      //     updatedContent &&
+      //     updatedContent.replace(blobUrl, uploadedUrls[index]);
+      // });
+
+      // 상태 업데이트 또는 업데이트된 콘텐츠 처리
+      console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
+    } else if (Array.isArray(updatedContent)) {
+      updatedContent = updatedContent.map((content) => {
+        if (typeof content === 'string') {
+          blobUrls.forEach((blobUrl, index) => {
+            content = content.replace(blobUrl, uploadedUrls[index]);
+          });
+        }
+        return content;
       });
 
       // 상태 업데이트 또는 업데이트된 콘텐츠 처리
       console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
     } else {
-      console.error('updatedContent는 문자열이어야 합니다.');
+      console.error('updatedContent는 문자열 또는 문자열 배열이어야 합니다.');
     }
   };
 
@@ -159,7 +171,7 @@ export function ContentCreating({
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('img_save_type', '1'); // 1: 로컬 저장
+    formData.append('img_save_type', '1'); // 1을 문자열로 변환
 
     try {
       const response = await axios.post(
