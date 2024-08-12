@@ -129,19 +129,15 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       rightArray: [],
     };
 
-    let leftHeight = 0;
-    let rightHeight = 0;
     let leftMaxItems = 0;
     let rightMaxItems = 0;
-    let leftFull = false; // 왼쪽 배열이 가득 찼는지 여부를 나타내는 플래그
-    let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
 
     // assign 값에 따라 최대 아이템 수 설정
     if (multiLevel === '2') {
       switch (assign) {
         case '0':
-          leftMaxItems = Infinity;
-          rightMaxItems = Infinity;
+          leftMaxItems = 8;
+          rightMaxItems = 8;
           break;
         case '2':
           leftMaxItems = 1;
@@ -156,14 +152,14 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
           rightMaxItems = 3;
           break;
         default:
-          leftMaxItems = Infinity; // Default behavior, unlimited items
-          rightMaxItems = Infinity;
+          leftMaxItems = 8; // Default behavior, unlimited items
+          rightMaxItems = 8;
           break;
       }
     } else if (multiLevel === '1') {
       switch (assign) {
         case '0':
-          leftMaxItems = Infinity;
+          leftMaxItems = 8;
           rightMaxItems = 0;
           break;
         case '2':
@@ -179,86 +175,78 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
           rightMaxItems = 0;
           break;
         default:
-          leftMaxItems = Infinity; // Default behavior, unlimited items
+          leftMaxItems = 8; // Default behavior, unlimited items
           rightMaxItems = 0;
           break;
       }
     }
 
+    let leftTotalHeight = 0;
+    let rightTotalHeight = 0;
+    let leftFull = false; // 왼쪽 배열이 가득 찼는지 여부를 나타내는 플래그
+    let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
     let leftItemCount = 0;
     let rightItemCount = 0;
-
+    //console.log('items:', items);
     items.forEach((item) => {
-      const maxHeight = type === 'A' ? 950 : 1200;
+      const maxHeight = type === 'A' ? 650 : 900;
+      //console.log('if문 전 item:', item);
+      //console.log('if문 전 maxHeight:', maxHeight);
+      //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
+      //console.log('if문 전 rightTotalHeight:', rightTotalHeight);
+      //console.log('if문 전 item.height:', item.height);
+      //console.log('leftFull:', leftFull);
+      //console.log('rightFull:', rightFull);
       if (
-        !leftFull &&
-        leftItemCount < leftMaxItems &&
-        leftHeight + item.height <= maxHeight
+        leftTotalHeight + item.height < maxHeight &&
+        leftItemCount < leftMaxItems
       ) {
+        leftFull = true;
+        rightFull = false;
+        //console.log('leftFull:', leftFull);
+        //console.log('rightFull:', rightFull);
+      } else {
+        leftFull = false;
+        rightFull = true;
+        //console.log('leftFull:', leftFull);
+        //console.log('rightFull:', rightFull);
+      }
+
+      if (leftFull === true && rightFull === false) {
+        //console.log('if문 안 item:', item);
         currentPage.leftArray.push(item);
-        leftHeight += item.height;
+        //console.log('if문 안 currentPage.leftArray:', currentPage.leftArray);
+        leftTotalHeight += item.height;
+        //console.log('if문 안 item.height:', item.height);
+        //console.log('if문 안 leftTotalHeight:', leftTotalHeight);
         leftItemCount++;
-        if (
-          leftHeight + item.height > maxHeight ||
-          leftItemCount >= leftMaxItems
-        ) {
-          leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
-        }
+        //console.log('if문 안 leftItemCount:', leftItemCount);
       } else if (
-        !rightFull &&
-        rightItemCount < rightMaxItems &&
-        rightHeight + item.height <= maxHeight
+        rightFull === true &&
+        leftFull === false &&
+        rightTotalHeight + 200 < maxHeight
       ) {
         currentPage.rightArray.push(item);
-        rightHeight += item.height;
+        //console.log('if문 안 currentPage.rightArray:', currentPage.rightArray);
+        rightTotalHeight += item.height;
+        //console.log('if문 안 item.height:', item.height);
+        //console.log('if문 안 rightTotalHeight:', rightTotalHeight);
         rightItemCount++;
-        if (
-          rightHeight + item.height > maxHeight ||
-          rightItemCount >= rightMaxItems
-        ) {
-          rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
-        }
+        //console.log('if문 안 rightItemCount:', rightItemCount);
+        leftTotalHeight = maxHeight;
       } else {
-        // 새로운 페이지를 시작
+        //console.log('다음페이지 만들기');
         pages.push(currentPage);
         currentPage = { leftArray: [], rightArray: [] };
-        leftHeight = 0;
-        rightHeight = 0;
+        leftTotalHeight = 0;
+        rightTotalHeight = 0;
         leftItemCount = 0;
         rightItemCount = 0;
-        leftFull = false; // 새 페이지에서는 왼쪽 배열이 가득 차지 않았다고 초기화
-        rightFull = false; // 새 페이지에서는 오른쪽 배열이 가득 차지 않았다고 초기화
-
-        // 다음 페이지에 현재 아이템 추가
-        if (
-          !leftFull &&
-          leftItemCount < leftMaxItems &&
-          leftHeight + item.height <= maxHeight
-        ) {
-          currentPage.leftArray.push(item);
-          leftHeight += item.height;
-          leftItemCount++;
-          if (
-            leftHeight + item.height > maxHeight ||
-            leftItemCount >= leftMaxItems
-          ) {
-            leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
-          }
-        } else if (
-          !rightFull &&
-          rightItemCount < rightMaxItems &&
-          rightHeight + item.height <= maxHeight
-        ) {
-          currentPage.rightArray.push(item);
-          rightHeight += item.height;
-          rightItemCount++;
-          if (
-            rightHeight + item.height > maxHeight ||
-            rightItemCount >= rightMaxItems
-          ) {
-            rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
-          }
-        }
+        leftFull = false;
+        rightFull = false;
+        currentPage.leftArray.push(item);
+        leftTotalHeight += item.height;
+        leftItemCount++;
       }
     });
 

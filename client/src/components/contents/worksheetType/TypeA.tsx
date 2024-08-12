@@ -15,7 +15,8 @@ type TypeAProps = {
   isDate?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
-  initialItems?: QuizList[];
+  initialItems: QuizList[];
+  newInitialItems: QuizList[];
   answerCommentary: string;
   multiLevel: string;
 };
@@ -31,17 +32,20 @@ export const TypeA = ({
   isContentTypeTitle,
   theme,
   initialItems,
+  newInitialItems,
   answerCommentary,
   multiLevel,
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-
+  //console.log('quizItemList:', quizItemList);
   useEffect(() => {
-    if (initialItems) {
+    if (newInitialItems.length > 0) {
+      setQuizItemList(newInitialItems);
+    } else {
       setQuizItemList(initialItems);
     }
-  }, [initialItems]);
+  }, [initialItems, newInitialItems]);
 
   const distributeItemsToPages = (
     items: QuizList[],
@@ -192,7 +196,7 @@ export const TypeA = ({
   };
 
   useEffect(() => {
-    if (quizItemList.length > 0) {
+    if (quizItemList?.length > 0) {
       const generatedPages = distributeItemsToPages(
         quizItemList,
         multiLevel,

@@ -924,6 +924,7 @@ export function Step3() {
                     isContentTypeTitle={isContentTypeTitle}
                     theme={selectedTheme}
                     initialItems={newInitialItems}
+                    newInitialItems={newInitialItems}
                     answerCommentary={answerCommentary as string}
                     multiLevel={column}
                   />

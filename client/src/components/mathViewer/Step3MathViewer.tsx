@@ -64,8 +64,8 @@ export function Step3MathViewer({
         return height;
       });
 
-      console.log('Measured heights in WorkbookMathViewer:', heights);
-      console.log('commentary:', commentary);
+      //console.log('Measured heights in WorkbookMathViewer:', heights);
+      //console.log('commentary:', commentary);
       window.postMessage(JSON.stringify({ heights, commentary }), '*');
     }
   };

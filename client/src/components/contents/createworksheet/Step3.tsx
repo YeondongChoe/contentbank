@@ -37,7 +37,7 @@ export function Step3() {
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
+  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>([]);
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -137,7 +137,7 @@ export function Step3() {
               ? '문제+해설별도'
               : getLocalData.itemType === 3
                 ? '문제+해설같이'
-                : '문제+해설같이',
+                : '문제만',
       );
     }
   }, [getLocalData]);
@@ -153,11 +153,12 @@ export function Step3() {
     setTag(newValue);
   };
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
-    '문제+해설같이',
+    '문제만',
   );
   const selectAnswerCommentary = (newValue: string) => {
     console.log(newValue);
     setAnswerCommentary(newValue);
+    setNewInitialItems([]);
   };
 
   const [colorChoice, setColorChoice] = useState('');
@@ -495,7 +496,6 @@ export function Step3() {
       try {
         if (typeof event.data === 'string') {
           const data = JSON.parse(event.data);
-          console.log(data);
           if (data.heights) {
             getHeight(data.heights, data.commentary);
           }
@@ -1171,7 +1171,8 @@ export function Step3() {
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
-                initialItems={newInitialItems ? newInitialItems : initialItems}
+                initialItems={initialItems}
+                newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
               ></TypeA>
@@ -1187,7 +1188,8 @@ export function Step3() {
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
-                initialItems={newInitialItems ? newInitialItems : initialItems}
+                initialItems={initialItems}
+                //newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
               ></TypeB>
