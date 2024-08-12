@@ -115,17 +115,18 @@ export function Step3() {
             ? '2단'
             : '2단',
       );
-      setContentQuantity(
-        getLocalData.assign === '0'
-          ? '최대'
-          : getLocalData.assign === '2'
-            ? '2문제'
-            : getLocalData.assign === '4'
-              ? '4문제'
-              : getLocalData.assign === '6'
-                ? '6문제'
-                : '최대',
-      );
+      // setContentQuantity(
+      //   getLocalData.assign === '0'
+      //     ? '최대'
+      //     : getLocalData.assign === '2'
+      //       ? '2문제'
+      //       : getLocalData.assign === '4'
+      //         ? '4문제'
+      //         : getLocalData.assign === '6'
+      //           ? '6문제'
+      //           : '최대',
+      // );
+      setContentQuantity('최대');
       setIsDate(getLocalData.isDate);
       setIsContentTypeTitle(getLocalData.isQuizType);
       setAnswerCommentary(
