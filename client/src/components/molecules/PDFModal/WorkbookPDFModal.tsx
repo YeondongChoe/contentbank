@@ -177,16 +177,16 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
     let leftItemCount = 0;
     let rightItemCount = 0;
-    //console.log('items:', items);
+    console.log('items:', items);
     items.forEach((item) => {
-      const maxHeight = type === 'A' ? 650 : 900;
-      //console.log('if문 전 item:', item);
+      const maxHeight = type === 'A' ? 700 : 1000;
+      console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
-      //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
-      //console.log('if문 전 rightTotalHeight:', rightTotalHeight);
-      //console.log('if문 전 item.height:', item.height);
-      console.log('if문 전 leftMaxItems:', leftMaxItems);
-      console.log('if문 전 rightMaxItems:', rightMaxItems);
+      console.log('if문 전 leftTotalHeight:', leftTotalHeight);
+      console.log('if문 전 rightTotalHeight:', rightTotalHeight);
+      console.log('if문 전 item.height:', item.height);
+      console.log('if문 전 leftItemCount:', leftItemCount);
+      console.log('if문 전 rightItemCount:', rightItemCount);
       console.log('leftFull:', leftFull);
       console.log('rightFull:', rightFull);
       if (
@@ -371,9 +371,17 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             multiLevel === '2' && assign === '4'
                                               ? '0 0 450px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '6'
-                                                ? '0 0 300px 0'
-                                                : ''
+                                                  assign === '4' &&
+                                                  itemType === 3
+                                                ? '0 0 400px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6'
+                                                  ? '0 0 300px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 100px 0'
+                                                    : ''
                                           }
                                         >
                                           {isQuizType && (
@@ -435,13 +443,17 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             multiLevel === '2' && assign === '4'
                                               ? '0 0 450px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '6'
-                                                ? '0 0 300px 0'
+                                                  assign === '4' &&
+                                                  itemType === 3
+                                                ? '0 0 400px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6' &&
-                                                    itemType === 3
-                                                  ? '0 0 100px 0'
-                                                  : ''
+                                                    assign === '6'
+                                                  ? '0 0 300px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 100px 0'
+                                                    : ''
                                           }
                                         >
                                           {isQuizType && (
@@ -584,11 +596,19 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             padding={
                                               multiLevel === '2' &&
                                               assign === '4'
-                                                ? '0 0 600px 0'
+                                                ? '0 0 450px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 100px 0'
-                                                  : ''
+                                                    assign === '4' &&
+                                                    itemType === 3
+                                                  ? '0 0 400px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6'
+                                                    ? '0 0 300px 0'
+                                                    : multiLevel === '2' &&
+                                                        assign === '6' &&
+                                                        itemType === 3
+                                                      ? '0 0 100px 0'
+                                                      : ''
                                             }
                                           >
                                             {isQuizType && (
@@ -642,11 +662,19 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             padding={
                                               multiLevel === '2' &&
                                               assign === '4'
-                                                ? '0 0 600px 0'
+                                                ? '0 0 450px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 100px 0'
-                                                  : ''
+                                                    assign === '4' &&
+                                                    itemType === 3
+                                                  ? '0 0 400px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6'
+                                                    ? '0 0 300px 0'
+                                                    : multiLevel === '2' &&
+                                                        assign === '6' &&
+                                                        itemType === 3
+                                                      ? '0 0 100px 0'
+                                                      : ''
                                             }
                                           >
                                             {isQuizType && (
@@ -776,9 +804,17 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             multiLevel === '2' && assign === '4'
                                               ? '0 0 600px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '6'
-                                                ? '0 0 100px 0'
-                                                : ''
+                                                  assign === '4' &&
+                                                  itemType === 3
+                                                ? '0 0 400px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6'
+                                                  ? '0 0 350px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 100px 0'
+                                                    : ''
                                           }
                                         >
                                           {isQuizType && (
@@ -837,9 +873,17 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             multiLevel === '2' && assign === '4'
                                               ? '0 0 600px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '6'
-                                                ? '0 0 100px 0'
-                                                : ''
+                                                  assign === '4' &&
+                                                  itemType === 3
+                                                ? '0 0 400px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6'
+                                                  ? '0 0 350px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 100px 0'
+                                                    : ''
                                           }
                                         >
                                           {isQuizType && (
