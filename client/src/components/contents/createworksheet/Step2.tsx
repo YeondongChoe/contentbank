@@ -2168,7 +2168,7 @@ export function Step2() {
     setUnitClassificationList([]);
     onResetList();
   }, [tabVeiw]);
-
+  console.log('initialItems:', initialItems);
   const moveStep3 = () => {
     const data = {
       data: initialItems,

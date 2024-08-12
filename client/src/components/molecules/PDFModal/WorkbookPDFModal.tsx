@@ -35,7 +35,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
   const [tag, setTag] = useState<string>('');
-  const [templateList, setTemplateList] = useState<TemplateList[]>([]);
   const [createdAt, setCreatedAt] = useState<string>('');
   const [color, setColor] = useState<string>('');
   const [type, setType] = useState<string>('');
@@ -74,8 +73,14 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
       setTag(workbookData?.data.data.tag);
-      setTemplateList(workbookData?.data.data.templateList);
       setCreatedAt(workbookData?.data.data.lastArticle.createdAt);
+      setColor(workbookData?.data.data.templateList[0]?.color);
+      setType(workbookData?.data.data.templateList[0]?.type);
+      setMultiLevel(workbookData?.data.data.templateList[0]?.multiLevel);
+      setAssign(workbookData?.data.data.templateList[0]?.assign);
+      setIsDate(workbookData?.data.data.templateList[0]?.isDate);
+      setIsQuizType(workbookData?.data.data.templateList[0]?.isQuizType);
+      setItemType(workbookData?.data.data.templateList[0]?.itemType);
     }
   }, [workbookData]);
 
@@ -86,18 +91,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       setCommentarySeparate(initialItems);
     }
   }, [initialItems, itemType]);
-
-  useEffect(() => {
-    if (templateList) {
-      setColor(templateList[0]?.color);
-      setType(templateList[0]?.type);
-      setMultiLevel(templateList[0]?.multiLevel);
-      setAssign(templateList[0]?.assign);
-      setIsDate(templateList[0]?.isDate);
-      setIsQuizType(templateList[0]?.isQuizType);
-      setItemType(templateList[0]?.itemType);
-    }
-  }, [templateList]);
 
   const selectedTheme = (() => {
     switch (color) {
@@ -115,14 +108,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         return BlueTheme; // 기본값
     }
   })();
-
   const distributeItemsToPages = (
     items: QuizList[],
     multiLevel: string,
     assign: string,
   ): PageType => {
     items.sort((a, b) => a.num - b.num);
-
     const pages: PageType = [];
     let currentPage: { leftArray: QuizList[]; rightArray: QuizList[] } = {
       leftArray: [],
@@ -180,7 +171,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
           break;
       }
     }
-
     let leftTotalHeight = 0;
     let rightTotalHeight = 0;
     let leftFull = false; // 왼쪽 배열이 가득 찼는지 여부를 나타내는 플래그
@@ -195,21 +185,23 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
       //console.log('if문 전 rightTotalHeight:', rightTotalHeight);
       //console.log('if문 전 item.height:', item.height);
-      //console.log('leftFull:', leftFull);
-      //console.log('rightFull:', rightFull);
+      console.log('if문 전 leftMaxItems:', leftMaxItems);
+      console.log('if문 전 rightMaxItems:', rightMaxItems);
+      console.log('leftFull:', leftFull);
+      console.log('rightFull:', rightFull);
       if (
         leftTotalHeight + item.height < maxHeight &&
         leftItemCount < leftMaxItems
       ) {
         leftFull = true;
         rightFull = false;
-        //console.log('leftFull:', leftFull);
-        //console.log('rightFull:', rightFull);
+        console.log('leftFull:', leftFull);
+        console.log('rightFull:', rightFull);
       } else {
         leftFull = false;
         rightFull = true;
-        //console.log('leftFull:', leftFull);
-        //console.log('rightFull:', rightFull);
+        console.log('leftFull:', leftFull);
+        console.log('rightFull:', rightFull);
       }
 
       if (leftFull === true && rightFull === false) {
@@ -220,11 +212,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         //console.log('if문 안 item.height:', item.height);
         //console.log('if문 안 leftTotalHeight:', leftTotalHeight);
         leftItemCount++;
-        //console.log('if문 안 leftItemCount:', leftItemCount);
+        console.log('if문 안 leftItemCount:', leftItemCount);
       } else if (
         rightFull === true &&
         leftFull === false &&
-        rightTotalHeight + 200 < maxHeight
+        rightTotalHeight + 200 < maxHeight &&
+        rightItemCount + 1 <= rightMaxItems
       ) {
         currentPage.rightArray.push(item);
         //console.log('if문 안 currentPage.rightArray:', currentPage.rightArray);
@@ -232,10 +225,10 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         //console.log('if문 안 item.height:', item.height);
         //console.log('if문 안 rightTotalHeight:', rightTotalHeight);
         rightItemCount++;
-        //console.log('if문 안 rightItemCount:', rightItemCount);
+        console.log('if문 안 rightItemCount:', rightItemCount);
         leftTotalHeight = maxHeight;
       } else {
-        //console.log('다음페이지 만들기');
+        console.log('다음페이지 만들기');
         pages.push(currentPage);
         currentPage = { leftArray: [], rightArray: [] };
         leftTotalHeight = 0;
@@ -257,6 +250,18 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
 
     return pages;
   };
+  // const [pages, setPages] = useState<PageType>();
+  // useEffect(() => {
+  //   if (multiLevel !== null && assign !== null) {
+  //     setPages(
+  //       distributeItemsToPages(
+  //         initialItems,
+  //         multiLevel as string,
+  //         assign as string,
+  //       ),
+  //     );
+  //   }
+  // }, [initialItems, multiLevel, assign]);
 
   const pages = distributeItemsToPages(initialItems, multiLevel, assign);
   const commentaryPage = distributeItemsToPages(
@@ -364,10 +369,10 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '2' && assign === '4'
-                                              ? '0 0 600px 0'
+                                              ? '0 0 450px 0'
                                               : multiLevel === '2' &&
                                                   assign === '6'
-                                                ? '0 0 100px 0'
+                                                ? '0 0 300px 0'
                                                 : ''
                                           }
                                         >
@@ -428,11 +433,15 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '2' && assign === '4'
-                                              ? '0 0 600px 0'
+                                              ? '0 0 450px 0'
                                               : multiLevel === '2' &&
                                                   assign === '6'
-                                                ? '0 0 100px 0'
-                                                : ''
+                                                ? '0 0 300px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '6' &&
+                                                    itemType === 3
+                                                  ? '0 0 100px 0'
+                                                  : ''
                                           }
                                         >
                                           {isQuizType && (

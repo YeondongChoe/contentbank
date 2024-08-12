@@ -15,7 +15,8 @@ type TypeBProps = {
   isDate?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
-  initialItems?: QuizList[];
+  initialItems: QuizList[];
+  newInitialItems: QuizList[];
   answerCommentary: string;
   multiLevel: string;
 };
@@ -31,6 +32,7 @@ export const TypeB = ({
   isContentTypeTitle,
   theme,
   initialItems,
+  newInitialItems,
   answerCommentary,
   multiLevel,
 }: TypeBProps) => {
@@ -38,10 +40,14 @@ export const TypeB = ({
   const [pages, setPages] = useState<PageType>([]);
 
   useEffect(() => {
-    if (initialItems) {
+    if (newInitialItems.length > 0) {
+      //console.log('newInitialItems가 들어감', newInitialItems);
+      setQuizItemList(newInitialItems);
+    } else {
+      //console.log('initialItems가 들어감', initialItems);
       setQuizItemList(initialItems);
     }
-  }, [initialItems]);
+  }, [initialItems, newInitialItems]);
 
   const distributeItemsToPages = (
     items: QuizList[],
