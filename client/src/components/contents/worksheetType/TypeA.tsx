@@ -43,10 +43,8 @@ export const TypeA = ({
   //console.log('quizItemList:', quizItemList);
   useEffect(() => {
     if (newInitialItems.length > 0) {
-      //console.log('newInitialItems가 들어감', newInitialItems);
       setQuizItemList(newInitialItems);
     } else {
-      //console.log('initialItems가 들어감', initialItems);
       setQuizItemList(initialItems);
     }
   }, [initialItems, newInitialItems]);
