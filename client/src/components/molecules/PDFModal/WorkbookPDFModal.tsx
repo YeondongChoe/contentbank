@@ -43,6 +43,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [isDate, setIsDate] = useState<boolean>(false);
   const [isQuizType, setIsQuizType] = useState<boolean>(false);
   const [itemType, setItemType] = useState<number>();
+  console.log('itemType:', itemType);
+  console.log('multiLevel:', multiLevel);
+  console.log('assign:', assign);
 
   const getWorkbookData = async () => {
     const res = await workbookInstance.get(
@@ -177,31 +180,31 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
     let leftItemCount = 0;
     let rightItemCount = 0;
-    console.log('items:', items);
+    //console.log('items:', items);
     items.forEach((item) => {
       const maxHeight = type === 'A' ? 700 : 1000;
-      console.log('if문 전 item:', item);
+      //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
-      console.log('if문 전 leftTotalHeight:', leftTotalHeight);
-      console.log('if문 전 rightTotalHeight:', rightTotalHeight);
-      console.log('if문 전 item.height:', item.height);
-      console.log('if문 전 leftItemCount:', leftItemCount);
-      console.log('if문 전 rightItemCount:', rightItemCount);
-      console.log('leftFull:', leftFull);
-      console.log('rightFull:', rightFull);
+      //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
+      //console.log('if문 전 rightTotalHeight:', rightTotalHeight);
+      //console.log('if문 전 item.height:', item.height);
+      //console.log('if문 전 leftItemCount:', leftItemCount);
+      //console.log('if문 전 rightItemCount:', rightItemCount);
+      //console.log('leftFull:', leftFull);
+      //console.log('rightFull:', rightFull);
       if (
         leftTotalHeight + item.height < maxHeight &&
         leftItemCount < leftMaxItems
       ) {
         leftFull = true;
         rightFull = false;
-        console.log('leftFull:', leftFull);
-        console.log('rightFull:', rightFull);
+        //console.log('leftFull:', leftFull);
+        //console.log('rightFull:', rightFull);
       } else {
         leftFull = false;
         rightFull = true;
-        console.log('leftFull:', leftFull);
-        console.log('rightFull:', rightFull);
+        //console.log('leftFull:', leftFull);
+        //console.log('rightFull:', rightFull);
       }
 
       if (leftFull === true && rightFull === false) {
@@ -212,7 +215,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         //console.log('if문 안 item.height:', item.height);
         //console.log('if문 안 leftTotalHeight:', leftTotalHeight);
         leftItemCount++;
-        console.log('if문 안 leftItemCount:', leftItemCount);
+        //console.log('if문 안 leftItemCount:', leftItemCount);
       } else if (
         rightFull === true &&
         leftFull === false &&
@@ -225,10 +228,10 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         //console.log('if문 안 item.height:', item.height);
         //console.log('if문 안 rightTotalHeight:', rightTotalHeight);
         rightItemCount++;
-        console.log('if문 안 rightItemCount:', rightItemCount);
+        //console.log('if문 안 rightItemCount:', rightItemCount);
         leftTotalHeight = maxHeight;
       } else {
-        console.log('다음페이지 만들기');
+        //console.log('다음페이지 만들기');
         pages.push(currentPage);
         currentPage = { leftArray: [], rightArray: [] };
         leftTotalHeight = 0;
@@ -368,19 +371,20 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           key={i}
                                           height={quizItemList.height as number}
                                           padding={
-                                            multiLevel === '2' && assign === '4'
-                                              ? '0 0 450px 0'
+                                            multiLevel === '2' &&
+                                            assign === '4' &&
+                                            itemType === 3
+                                              ? '0 0 400px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '4' &&
-                                                  itemType === 3
-                                                ? '0 0 400px 0'
+                                                  assign === '4'
+                                                ? '0 0 450px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 300px 0'
+                                                    assign === '6' &&
+                                                    itemType === 3
+                                                  ? '0 0 250px 0'
                                                   : multiLevel === '2' &&
-                                                      assign === '6' &&
-                                                      itemType === 3
-                                                    ? '0 0 100px 0'
+                                                      assign === '6'
+                                                    ? '0 0 250px 0'
                                                     : ''
                                           }
                                         >
@@ -440,19 +444,20 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           key={i}
                                           height={quizItemList.height as number}
                                           padding={
-                                            multiLevel === '2' && assign === '4'
-                                              ? '0 0 450px 0'
+                                            multiLevel === '2' &&
+                                            assign === '4' &&
+                                            itemType === 3
+                                              ? '0 0 400px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '4' &&
-                                                  itemType === 3
-                                                ? '0 0 400px 0'
+                                                  assign === '4'
+                                                ? '0 0 450px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 300px 0'
+                                                    assign === '6' &&
+                                                    itemType === 3
+                                                  ? '0 0 250px 0'
                                                   : multiLevel === '2' &&
-                                                      assign === '6' &&
-                                                      itemType === 3
-                                                    ? '0 0 100px 0'
+                                                      assign === '6'
+                                                    ? '0 0 250px 0'
                                                     : ''
                                           }
                                         >
@@ -595,27 +600,27 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             }
                                             padding={
                                               multiLevel === '2' &&
-                                              assign === '4'
-                                                ? '0 0 450px 0'
+                                              assign === '4' &&
+                                              itemType === 3
+                                                ? '0 0 400px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '4' &&
-                                                    itemType === 3
-                                                  ? '0 0 400px 0'
+                                                    assign === '4'
+                                                  ? '0 0 450px 0'
                                                   : multiLevel === '2' &&
-                                                      assign === '6'
-                                                    ? '0 0 300px 0'
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 250px 0'
                                                     : multiLevel === '2' &&
-                                                        assign === '6' &&
-                                                        itemType === 3
-                                                      ? '0 0 100px 0'
+                                                        assign === '6'
+                                                      ? '0 0 300px 0'
                                                       : ''
                                             }
                                           >
-                                            {isQuizType && (
+                                            {/* {isQuizType && (
                                               <ContentTitleA>
                                                 |{quizCategory?.유형}|
                                               </ContentTitleA>
-                                            )}
+                                            )} */}
                                             <EachMathViewerA>
                                               <MathJaxWrapperA>
                                                 <WorkbookMathViewer
@@ -661,27 +666,27 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             }
                                             padding={
                                               multiLevel === '2' &&
-                                              assign === '4'
-                                                ? '0 0 450px 0'
+                                              assign === '4' &&
+                                              itemType === 3
+                                                ? '0 0 400px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '4' &&
-                                                    itemType === 3
-                                                  ? '0 0 400px 0'
+                                                    assign === '4'
+                                                  ? '0 0 450px 0'
                                                   : multiLevel === '2' &&
-                                                      assign === '6'
-                                                    ? '0 0 300px 0'
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 250px 0'
                                                     : multiLevel === '2' &&
-                                                        assign === '6' &&
-                                                        itemType === 3
-                                                      ? '0 0 100px 0'
+                                                        assign === '6'
+                                                      ? '0 0 300px 0'
                                                       : ''
                                             }
                                           >
-                                            {isQuizType && (
+                                            {/* {isQuizType && (
                                               <ContentTitleA>
                                                 |{quizCategory?.유형}|
                                               </ContentTitleA>
-                                            )}
+                                            )} */}
                                             <EachMathViewerA>
                                               <MathJaxWrapperA>
                                                 <WorkbookMathViewer
@@ -801,19 +806,20 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           key={i}
                                           height={quizItemList.height as number}
                                           padding={
-                                            multiLevel === '2' && assign === '4'
-                                              ? '0 0 600px 0'
+                                            multiLevel === '2' &&
+                                            assign === '4' &&
+                                            itemType === 3
+                                              ? '0 0 400px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '4' &&
-                                                  itemType === 3
-                                                ? '0 0 400px 0'
+                                                  assign === '4'
+                                                ? '0 0 500px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 350px 0'
+                                                    assign === '6' &&
+                                                    itemType === 3
+                                                  ? '0 0 250px 0'
                                                   : multiLevel === '2' &&
-                                                      assign === '6' &&
-                                                      itemType === 3
-                                                    ? '0 0 100px 0'
+                                                      assign === '6'
+                                                    ? '0 0 300px 0'
                                                     : ''
                                           }
                                         >
@@ -870,19 +876,20 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           key={i}
                                           height={quizItemList.height as number}
                                           padding={
-                                            multiLevel === '2' && assign === '4'
-                                              ? '0 0 600px 0'
+                                            multiLevel === '2' &&
+                                            assign === '4' &&
+                                            itemType === 3
+                                              ? '0 0 400px 0'
                                               : multiLevel === '2' &&
-                                                  assign === '4' &&
-                                                  itemType === 3
-                                                ? '0 0 400px 0'
+                                                  assign === '4'
+                                                ? '0 0 500px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 350px 0'
+                                                    assign === '6' &&
+                                                    itemType === 3
+                                                  ? '0 0 250px 0'
                                                   : multiLevel === '2' &&
-                                                      assign === '6' &&
-                                                      itemType === 3
-                                                    ? '0 0 100px 0'
+                                                      assign === '6'
+                                                    ? '0 0 300px 0'
                                                     : ''
                                           }
                                         >
@@ -1011,19 +1018,27 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             }
                                             padding={
                                               multiLevel === '2' &&
-                                              assign === '4'
-                                                ? '0 0 600px 0'
+                                              assign === '4' &&
+                                              itemType === 3
+                                                ? '0 0 400px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 100px 0'
-                                                  : ''
+                                                    assign === '4'
+                                                  ? '0 0 500px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 250px 0'
+                                                    : multiLevel === '2' &&
+                                                        assign === '6'
+                                                      ? '0 0 300px 0'
+                                                      : ''
                                             }
                                           >
-                                            {isQuizType && (
+                                            {/* {isQuizType && (
                                               <ContentTitleB>
                                                 |{quizCategory?.유형}|
                                               </ContentTitleB>
-                                            )}
+                                            )} */}
                                             <EachMathViewerB>
                                               <MathJaxWrapperB>
                                                 <WorkbookMathViewer
@@ -1066,19 +1081,27 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                             }
                                             padding={
                                               multiLevel === '2' &&
-                                              assign === '4'
-                                                ? '0 0 600px 0'
+                                              assign === '4' &&
+                                              itemType === 3
+                                                ? '0 0 400px 0'
                                                 : multiLevel === '2' &&
-                                                    assign === '6'
-                                                  ? '0 0 100px 0'
-                                                  : ''
+                                                    assign === '4'
+                                                  ? '0 0 500px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '6' &&
+                                                      itemType === 3
+                                                    ? '0 0 250px 0'
+                                                    : multiLevel === '2' &&
+                                                        assign === '6'
+                                                      ? '0 0 300px 0'
+                                                      : ''
                                             }
                                           >
-                                            {isQuizType && (
+                                            {/* {isQuizType && (
                                               <ContentTitleB>
                                                 |{quizCategory?.유형}|
                                               </ContentTitleB>
-                                            )}
+                                            )} */}
                                             <EachMathViewerB>
                                               <MathJaxWrapperB>
                                                 <WorkbookMathViewer
