@@ -1,5 +1,5 @@
 // 업로드 다운로드 요청 url
-var dream_server_url = "http://43.201.205.140:40030";
+var dream_server_url = 'http://43.201.205.140:40030';
 
 // 데이터 로드 화면 탭 개수 설정
 var tabCount = 5;
@@ -9,8 +9,8 @@ var bookmarkCount = 10;
 var bookmarkCount_pc = 30;
 
 // 편집기 종류(PC: true, tab: false);
-// var editorType = true;
-var editorType = false;
+var editorType = true;
+// var editorType = false;
 
 // redo, undo 단계 설정
 var undo_redo_level = 10;
@@ -31,7 +31,7 @@ var undo_redo_level = 10;
 // TIP(팁): tag_tip
 // GROUP(그룹): tag_group
 // var divideKey = ["tag_bigcontent", "tag_exam"];
-var divideKey = ["tag_group"];
+var divideKey = ['tag_group'];
 
 // 이미지 저장 설정 (1: 로컬, 2: ftp, 3: s3)
 var img_save_type = 1;
@@ -40,7 +40,7 @@ var img_save_type = 1;
 
 // 수식만 넣을때 수식을 넣는 공간의 class명
 var onlyEQ = false;
-var onlyEQNode = "";
+var onlyEQNode = '';
 var getEQData = () => {
   // const output = document.querySelector(`.${onlyEQNode}`);
   iTeXEQ
@@ -56,9 +56,9 @@ var getEQData = () => {
     .then(() => {
       iTeXEQ.recoverynew(output);
       const target = output.querySelector(`.itexmath`);
-      target.addEventListener("click", iTeXEQ.eqn_click, false);
+      target.addEventListener('click', iTeXEQ.eqn_click, false);
     })
     .catch(() => {
-      console.log("수식 입력 실패");
+      console.log('수식 입력 실패');
     });
 };

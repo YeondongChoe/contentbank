@@ -82,10 +82,10 @@ const router = createBrowserRouter([
         path: '/createcontentmain',
         element: <CreateContentMain />,
       },
-      {
-        path: '/formula',
-        element: <Formula />,
-      },
+      // {
+      //   path: '/formula',
+      //   element: <Formula />,
+      // },
       {
         path: '/quizpreview',
         element: <QuizPreview />,

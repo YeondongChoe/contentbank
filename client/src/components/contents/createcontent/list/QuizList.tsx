@@ -22,6 +22,7 @@ export function QuizList({
   isDataColor,
   isHasMeta,
   onItemClick,
+  setIsCheck,
 }: {
   questionList: QuizListType[] | [];
   showTitle?: boolean;
@@ -33,6 +34,7 @@ export function QuizList({
   isDataColor?: boolean;
   isHasMeta?: boolean;
   onItemClick?: (item: QuizListType) => void;
+  setIsCheck?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -40,6 +42,7 @@ export function QuizList({
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [isPostMessage, setIsPostMessage] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -61,7 +64,14 @@ export function QuizList({
     } else {
       setCheckList(checkList.filter((el) => el !== id));
     }
+
+    setIsChecked(checked);
   };
+
+  useEffect(() => {
+    if (setIsCheck) setIsCheck(isChecked);
+  }, [isChecked]);
+
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
     id: string,
