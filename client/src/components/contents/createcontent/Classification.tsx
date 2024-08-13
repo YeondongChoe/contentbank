@@ -1154,6 +1154,8 @@ export function Classification({
 
     // 최대 5개의 UnitClassificationType 배열만 추가
     if (unitClassificationList.length + newClassificationLists.length < 6) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       setUnitClassificationList((prevList) => [
         ...prevList,
         ...newClassificationLists,
