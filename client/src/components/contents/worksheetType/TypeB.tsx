@@ -6,6 +6,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import { Label } from '../../../components/atom';
 import { Step3MathViewer } from '../../../components/mathViewer';
 import { QuizList } from '../../../types/WorkbookType';
+import { Loader } from '../../atom/Loader';
 
 type TypeBProps = {
   title?: string;
@@ -38,12 +39,15 @@ export const TypeB = ({
 }: TypeBProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
+  const [isNewInitialItems, setIsNewInitialItems] = useState<boolean>(false);
 
   useEffect(() => {
     if (newInitialItems.length > 0) {
       setQuizItemList(newInitialItems);
+      setIsNewInitialItems(true);
     } else {
       setQuizItemList(initialItems);
+      setIsNewInitialItems(false);
     }
   }, [initialItems, newInitialItems]);
 
@@ -258,7 +262,8 @@ export const TypeB = ({
               </div>
             </TextWrapper>
           </WorksheetHeader>
-          <WorksheetBody>
+          {isNewInitialItems === false && <Loader height="50px" size="100px" />}
+          <WorksheetBody $isNewInitialItems={isNewInitialItems}>
             <WorksheetBodyLeft>
               {pages[0]?.leftArray?.map((quizItemList) =>
                 quizItemList.quizItemList
@@ -481,7 +486,9 @@ const Divider = styled.span`
   margin: 0 10px;
 `;
 
-const WorksheetBody = styled.div`
+const WorksheetBody = styled.div<{ $isNewInitialItems: boolean }>`
+  visibility: ${({ $isNewInitialItems }) =>
+    $isNewInitialItems ? 'visible' : 'hidden'};
   margin: 0 auto;
   display: flex;
   width: 1000px;

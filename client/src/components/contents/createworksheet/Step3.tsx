@@ -157,7 +157,6 @@ export function Step3() {
     '문제만',
   );
   const selectAnswerCommentary = (newValue: string) => {
-    console.log(newValue);
     setAnswerCommentary(newValue);
     setNewInitialItems([]);
   };
@@ -446,17 +445,17 @@ export function Step3() {
   >([]);
 
   const [commentary, setCommentary] = useState<string>('');
-  console.log('itemQuestionHeight', itemQuestionHeight);
-  console.log('itemAnswerHeight', itemAnswerHeight);
-  console.log('itemCommenteryHeight', itemCommenteryHeight);
-  console.log('itemHeights', itemHeights);
-  console.log('initialItems', initialItems);
-  console.log('newInitialItems', newInitialItems);
+  //console.log('itemQuestionHeight', itemQuestionHeight);
+  //console.log('itemAnswerHeight', itemAnswerHeight);
+  //console.log('itemCommenteryHeight', itemCommenteryHeight);
+  //console.log('itemHeights', itemHeights);
+  //console.log('initialItems', initialItems);
+  //console.log('newInitialItems', newInitialItems);
 
   useEffect(() => {
     const getHeight = (heights: number[], commentary: string) => {
-      console.log('Received heights in Step3:', heights);
-      console.log('answerCommentary:', commentary);
+      //console.log('Received heights in Step3:', heights);
+      //console.log('answerCommentary:', commentary);
 
       // 0보다 큰 값만 필터링
       const filteredHeights = heights.filter((height) => height > 0);
@@ -1173,7 +1172,6 @@ export function Step3() {
                 initialItems={initialItems}
                 newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
-                isEditWorkbook={isEditWorkbook as number}
                 multiLevel={column}
               ></TypeA>
             </WorksheetTemplateTypeWrapper>
