@@ -250,18 +250,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
 
     return pages;
   };
-  // const [pages, setPages] = useState<PageType>();
-  // useEffect(() => {
-  //   if (multiLevel !== null && assign !== null) {
-  //     setPages(
-  //       distributeItemsToPages(
-  //         initialItems,
-  //         multiLevel as string,
-  //         assign as string,
-  //       ),
-  //     );
-  //   }
-  // }, [initialItems, multiLevel, assign]);
 
   const pages = distributeItemsToPages(initialItems, multiLevel, assign);
   const commentaryPage = distributeItemsToPages(
@@ -834,28 +822,36 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                           key={i}
                                           height={quizItemList.height as number}
                                           padding={
-                                            multiLevel === '2' &&
+                                            multiLevel === '1' &&
                                             assign === '4' &&
                                             itemType === 3
-                                              ? '0 0 400px 0'
-                                              : multiLevel === '2' &&
+                                              ? '0 0 150px 0'
+                                              : multiLevel === '1' &&
                                                   assign === '4'
-                                                ? '0 0 500px 0'
-                                                : multiLevel === '1' &&
-                                                    assign === '6' &&
+                                                ? '0 0 200px 0'
+                                                : multiLevel === '2' &&
+                                                    assign === '4' &&
                                                     itemType === 3
-                                                  ? '0 0 150px 0'
-                                                  : multiLevel === '1' &&
-                                                      assign === '6'
-                                                    ? '0 0 80px 0'
-                                                    : multiLevel === '2' &&
+                                                  ? '0 0 400px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '4'
+                                                    ? '0 0 500px 0'
+                                                    : multiLevel === '1' &&
                                                         assign === '6' &&
                                                         itemType === 3
-                                                      ? '0 0 250px 0'
-                                                      : multiLevel === '2' &&
+                                                      ? '0 0 150px 0'
+                                                      : multiLevel === '1' &&
                                                           assign === '6'
-                                                        ? '0 0 300px 0'
-                                                        : ''
+                                                        ? '0 0 80px 0'
+                                                        : multiLevel === '2' &&
+                                                            assign === '6' &&
+                                                            itemType === 3
+                                                          ? '0 0 250px 0'
+                                                          : multiLevel ===
+                                                                '2' &&
+                                                              assign === '6'
+                                                            ? '0 0 300px 0'
+                                                            : ''
                                           }
                                         >
                                           {isQuizType && (
@@ -1052,28 +1048,37 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                               quizItemList.height as number
                                             }
                                             padding={
-                                              multiLevel === '2' &&
+                                              multiLevel === '1' &&
                                               assign === '4' &&
                                               itemType === 3
-                                                ? '0 0 400px 0'
-                                                : multiLevel === '2' &&
+                                                ? '0 0 150px 0'
+                                                : multiLevel === '1' &&
                                                     assign === '4'
-                                                  ? '0 0 500px 0'
-                                                  : multiLevel === '1' &&
-                                                      assign === '6' &&
+                                                  ? '0 0 200px 0'
+                                                  : multiLevel === '2' &&
+                                                      assign === '4' &&
                                                       itemType === 3
-                                                    ? '0 0 150px 0'
-                                                    : multiLevel === '1' &&
-                                                        assign === '6'
-                                                      ? '0 0 80px 0'
-                                                      : multiLevel === '2' &&
+                                                    ? '0 0 400px 0'
+                                                    : multiLevel === '2' &&
+                                                        assign === '4'
+                                                      ? '0 0 500px 0'
+                                                      : multiLevel === '1' &&
                                                           assign === '6' &&
                                                           itemType === 3
-                                                        ? '0 0 250px 0'
-                                                        : multiLevel === '2' &&
+                                                        ? '0 0 150px 0'
+                                                        : multiLevel === '1' &&
                                                             assign === '6'
-                                                          ? '0 0 300px 0'
-                                                          : ''
+                                                          ? '0 0 80px 0'
+                                                          : multiLevel ===
+                                                                '2' &&
+                                                              assign === '6' &&
+                                                              itemType === 3
+                                                            ? '0 0 250px 0'
+                                                            : multiLevel ===
+                                                                  '2' &&
+                                                                assign === '6'
+                                                              ? '0 0 300px 0'
+                                                              : ''
                                             }
                                           >
                                             {/* {isQuizType && (
