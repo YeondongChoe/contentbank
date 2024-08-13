@@ -6,6 +6,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import { Label } from '../../../components/atom';
 import { Step3MathViewer } from '../../../components/mathViewer';
 import { QuizList } from '../../../types/WorkbookType';
+import { Loader } from '../../atom/Loader';
 
 type TypeAProps = {
   title?: string;
@@ -15,7 +16,8 @@ type TypeAProps = {
   isDate?: boolean;
   isContentTypeTitle?: boolean;
   theme?: object;
-  initialItems?: QuizList[];
+  initialItems: QuizList[];
+  newInitialItems: QuizList[];
   answerCommentary: string;
   multiLevel: string;
 };
@@ -31,17 +33,23 @@ export const TypeA = ({
   isContentTypeTitle,
   theme,
   initialItems,
+  newInitialItems,
   answerCommentary,
   multiLevel,
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
-
+  const [isNewInitialItems, setIsNewInitialItems] = useState<boolean>(false);
+  //console.log('quizItemList:', quizItemList);
   useEffect(() => {
-    if (initialItems) {
+    if (newInitialItems.length > 0) {
+      setQuizItemList(newInitialItems);
+      setIsNewInitialItems(true);
+    } else {
       setQuizItemList(initialItems);
+      setIsNewInitialItems(false);
     }
-  }, [initialItems]);
+  }, [initialItems, newInitialItems]);
 
   const distributeItemsToPages = (
     items: QuizList[],
@@ -192,7 +200,7 @@ export const TypeA = ({
   };
 
   useEffect(() => {
-    if (quizItemList.length > 0) {
+    if (quizItemList?.length > 0) {
       const generatedPages = distributeItemsToPages(
         quizItemList,
         multiLevel,
@@ -262,7 +270,8 @@ export const TypeA = ({
             </ColorTextWrapper>
           </WorksheetHeader>
           <HeaderTriangle></HeaderTriangle>
-          <WorksheetBody>
+          {isNewInitialItems === false && <Loader height="50px" size="100px" />}
+          <WorksheetBody $isNewInitialItems={isNewInitialItems}>
             <WorksheetBodyLeft>
               {pages[0]?.leftArray?.map((quizItemList) =>
                 quizItemList.quizItemList
@@ -481,7 +490,9 @@ const Divider = styled.span`
 `;
 
 //전체
-const WorksheetBody = styled.div`
+const WorksheetBody = styled.div<{ $isNewInitialItems: boolean }>`
+  visibility: ${({ $isNewInitialItems }) =>
+    $isNewInitialItems ? 'visible' : 'hidden'};
   position: relative;
   top: -50px;
   margin: 0 auto;

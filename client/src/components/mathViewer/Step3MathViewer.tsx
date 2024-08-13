@@ -48,7 +48,6 @@ export function Step3MathViewer({
   const [commentary, setCommentary] = useState<string>(
     answerCommentary as string,
   );
-  //console.log(commentary);
 
   useEffect(() => {
     if (answerCommentary) {
@@ -64,8 +63,8 @@ export function Step3MathViewer({
         return height;
       });
 
-      console.log('Measured heights in WorkbookMathViewer:', heights);
-      console.log('commentary:', commentary);
+      //console.log('Measured heights in WorkbookMathViewer:', heights);
+      //console.log('commentary:', commentary);
       window.postMessage(JSON.stringify({ heights, commentary }), '*');
     }
   };
@@ -79,16 +78,6 @@ export function Step3MathViewer({
       measureHeights();
     }
   }, [display, commentary]);
-
-  // useEffect(() => {
-  //   const handlePostMessage = () => {
-  //     window.postMessage('block', '*');
-  //   };
-
-  //   if (display === 'block') {
-  //     handlePostMessage();
-  //   }
-  // }, [display]);
 
   const createMarkup = (data: string) => {
     return { __html: data || '' };

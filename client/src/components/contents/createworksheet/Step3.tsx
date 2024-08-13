@@ -37,7 +37,7 @@ export function Step3() {
   const [getQuotientLocalData, setGetQuotientLocalData] =
     useState<WorkbookQuotientData | null>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>(getLocalData);
-  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>();
+  const [newInitialItems, setNewInitialItems] = useState<QuizList[]>([]);
   const [itemHeights, setItemHeights] = useState<number[]>([]);
   const originalHeightsRef = useRef<number[]>([]);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -115,17 +115,18 @@ export function Step3() {
             ? '2단'
             : '2단',
       );
-      setContentQuantity(
-        getLocalData.assign === '0'
-          ? '최대'
-          : getLocalData.assign === '2'
-            ? '2문제'
-            : getLocalData.assign === '4'
-              ? '4문제'
-              : getLocalData.assign === '6'
-                ? '6문제'
-                : '최대',
-      );
+      // setContentQuantity(
+      //   getLocalData.assign === '0'
+      //     ? '최대'
+      //     : getLocalData.assign === '2'
+      //       ? '2문제'
+      //       : getLocalData.assign === '4'
+      //         ? '4문제'
+      //         : getLocalData.assign === '6'
+      //           ? '6문제'
+      //           : '최대',
+      // );
+      setContentQuantity('최대');
       setIsDate(getLocalData.isDate);
       setIsContentTypeTitle(getLocalData.isQuizType);
       setAnswerCommentary(
@@ -137,7 +138,7 @@ export function Step3() {
               ? '문제+해설별도'
               : getLocalData.itemType === 3
                 ? '문제+해설같이'
-                : '문제+해설같이',
+                : '문제만',
       );
     }
   }, [getLocalData]);
@@ -153,11 +154,11 @@ export function Step3() {
     setTag(newValue);
   };
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
-    '문제+해설같이',
+    '문제만',
   );
   const selectAnswerCommentary = (newValue: string) => {
-    console.log(newValue);
     setAnswerCommentary(newValue);
+    setNewInitialItems([]);
   };
 
   const [colorChoice, setColorChoice] = useState('');
@@ -185,13 +186,11 @@ export function Step3() {
   };
 
   const [column, setColumn] = useState<string>('2단');
-
   const selectColumn = (newValue: string) => {
     setColumn(newValue);
   };
 
   const [contentQuantity, setContentQuantity] = useState<string>('최대');
-
   const selectContentQuantity = (newValue: string) => {
     setContentQuantity(newValue);
   };
@@ -495,7 +494,6 @@ export function Step3() {
       try {
         if (typeof event.data === 'string') {
           const data = JSON.parse(event.data);
-          console.log(data);
           if (data.heights) {
             getHeight(data.heights, data.commentary);
           }
@@ -1171,7 +1169,8 @@ export function Step3() {
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
-                initialItems={newInitialItems ? newInitialItems : initialItems}
+                initialItems={initialItems}
+                newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
               ></TypeA>
@@ -1187,7 +1186,8 @@ export function Step3() {
                 isDate={isDate}
                 isContentTypeTitle={isContentTypeTitle}
                 theme={selectedTheme}
-                initialItems={newInitialItems ? newInitialItems : initialItems}
+                initialItems={initialItems}
+                newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
               ></TypeB>
