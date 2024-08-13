@@ -10,7 +10,7 @@ import { styled, ThemeProvider } from 'styled-components';
 import { workbookInstance } from '../../../api/axios';
 import { Label } from '../../../components/atom';
 import { WorkbookMathViewer } from '../../../components/mathViewer';
-import { QuizList, TemplateList } from '../../../types/WorkbookType';
+import { QuizList } from '../../../types/WorkbookType';
 import { A4_HEIGHT, A4_WIDTH, COLOR } from '../../constants';
 import {
   RedTheme,
@@ -43,9 +43,6 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [isDate, setIsDate] = useState<boolean>(false);
   const [isQuizType, setIsQuizType] = useState<boolean>(false);
   const [itemType, setItemType] = useState<number>();
-  console.log('itemType:', itemType);
-  console.log('multiLevel:', multiLevel);
-  console.log('assign:', assign);
 
   const getWorkbookData = async () => {
     const res = await workbookInstance.get(
@@ -182,7 +179,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightItemCount = 0;
     //console.log('items:', items);
     items.forEach((item) => {
-      const maxHeight = type === 'A' ? 700 : 1000;
+      const maxHeight = type === 'A' ? 750 : 1000;
       //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
       //console.log('if문 전 leftTotalHeight:', leftTotalHeight);

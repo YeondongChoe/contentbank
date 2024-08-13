@@ -100,9 +100,7 @@ export function Step2() {
     useState<WorkbookCategoryData | null>(null);
   const [getEditData, setGetEditData] = useState<EditWorkbookData | null>(null);
   const [getItemCountData, setGetItemCountData] = useState<number | null>(null);
-  const [initialItems, setInitialItems] = useState<QuizList[]>(
-    getLocalData?.data.quizList || [],
-  );
+  const [initialItems, setInitialItems] = useState<QuizList[]>([]);
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
 
   const categoryType = initialItems.map((item) => {
@@ -211,7 +209,6 @@ export function Step2() {
   //배점이 바뀔때마다 변경되는 전역변수
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-
   //기존 문항 데이타에 배점 넣기
   useEffect(() => {
     const updatedItems = initialItems.map((item) => {
@@ -219,7 +216,6 @@ export function Step2() {
       const matchingItem = contentNumQuotient.find(
         (quotient) => quotient.code === item.code,
       );
-
       // 일치하는 항목이 있으면 score를 추가합니다.
       if (matchingItem) {
         return {
@@ -333,12 +329,11 @@ export function Step2() {
         }
         return item;
       });
-
       if (updated) {
         setInitialItems(updatedItems);
       }
     }
-  }, [initialItems]);
+  }, []);
 
   //배점 옵션 => MathviewerAccordionStep2로 넘겨줌
   const [quotientOption, setQuotientOption] = useState<
@@ -463,17 +458,28 @@ export function Step2() {
     return () => clearTimeout(retryTimeout);
   }, []);
 
-  //로컬데이터에서 데이타 가져 온 후 상태관리 변수에 저장
+  //로컬데이터에서 데이타 가져 온 후 번호 부여와 함께 상태관리 변수에 저장
   useEffect(() => {
-    //문항 번호 부여
-    if (getLocalData?.data.quizList) {
-      const updatedQuizList = getLocalData.data.quizList.map((quiz, i) => ({
+    const itemWithScore = initialItems.some((item) => 'score' in item);
+    if (itemWithScore === false && getLocalData?.data.quizList) {
+      const updatedQuizList = getLocalData?.data.quizList.map((quiz, i) => ({
         ...quiz,
         num: quiz.num ? quiz.num : i + 1,
       }));
       setInitialItems(updatedQuizList);
     }
   }, [getLocalData]);
+
+  // useEffect(() => {
+  //   if (initialItems) {
+  //     const updatedQuizList = initialItems.map((quiz, i) => ({
+  //       ...quiz,
+  //       num: quiz.num ? quiz.num : i + 1,
+  //     }));
+  //     console.log('33333');
+  //     setInitialItems(updatedQuizList);
+  //   }
+  // }, [initialItems]);
   //수정, 복제후 수정일 때 step3 갔다가 돌아왔을 때 상태관리
   useEffect(() => {
     if (getLocalData) {
