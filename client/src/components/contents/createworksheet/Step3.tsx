@@ -157,7 +157,6 @@ export function Step3() {
     '문제만',
   );
   const selectAnswerCommentary = (newValue: string) => {
-    console.log(newValue);
     setAnswerCommentary(newValue);
     setNewInitialItems([]);
   };
