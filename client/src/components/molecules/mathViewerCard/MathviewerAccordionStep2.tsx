@@ -138,6 +138,7 @@ type MathviewerCardProps = {
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
   deleteQuizItem?: () => void;
+  clickSwapQuizItem?: () => void;
   favoriteQuizItem?: (e: any) => void;
   isFavorite?: boolean;
   isSimilar?: boolean;
@@ -172,6 +173,7 @@ export function MathviewerAccordionStep2({
   changeQuizitem,
   addQuizItem,
   deleteQuizItem,
+  clickSwapQuizItem,
   favoriteQuizItem,
   isFavorite,
   isSimilar,
@@ -215,7 +217,7 @@ export function MathviewerAccordionStep2({
   const totalEqualScore = useMemo(() => {
     const total = contentNumQuotient.reduce((acc, el) => acc + el.score, 0);
     return isNaN(total) ? 0 : total;
-  }, [contentNumQuotient, deleteQuizItem, addQuizItem]);
+  }, [contentNumQuotient, deleteQuizItem, addQuizItem, clickSwapQuizItem]);
 
   useEffect(() => {
     if (setTotalEqualScore) {
