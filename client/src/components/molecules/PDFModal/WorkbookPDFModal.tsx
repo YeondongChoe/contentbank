@@ -179,7 +179,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightItemCount = 0;
     //console.log('items:', items);
     items.forEach((item) => {
-      const maxHeight = type === 'A' ? 820 : 900;
+      const maxHeight = type === 'A' ? 740 : 900;
       //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
       //console.log('if문 전 leftTotalHeight:', leftTotalHeight);

@@ -309,6 +309,7 @@ export function Step2() {
 
   //문항 번호가 없을 때 문항 번호 부여해주기
   useEffect(() => {
+    console.log('1111');
     if (initialItems && initialItems.length > 0) {
       // initialItems 배열에서 num 속성이 있는 항목들만 모아서 정렬
       const itemsWithNum = initialItems
@@ -470,16 +471,6 @@ export function Step2() {
     }
   }, [getLocalData]);
 
-  // useEffect(() => {
-  //   if (initialItems) {
-  //     const updatedQuizList = initialItems.map((quiz, i) => ({
-  //       ...quiz,
-  //       num: quiz.num ? quiz.num : i + 1,
-  //     }));
-  //     console.log('33333');
-  //     setInitialItems(updatedQuizList);
-  //   }
-  // }, [initialItems]);
   //수정, 복제후 수정일 때 step3 갔다가 돌아왔을 때 상태관리
   useEffect(() => {
     if (getLocalData) {
@@ -1835,6 +1826,7 @@ export function Step2() {
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
+  console.log('similarItems:', similarItems);
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
@@ -1866,9 +1858,9 @@ export function Step2() {
         type: 'error',
         text: context.response.data.message,
       });
-      // if (context.response.data.code == 'GE-002') {
-      //   postRefreshToken();
-      // }
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { data: SimilarQuizList } }) => {
       setSimilarItems(response.data.data);
@@ -2001,6 +1993,8 @@ export function Step2() {
       }
     }
   };
+  console.log('initialItems:', initialItems);
+  console.log('totalEqualScore:', totalEqualScore);
   const clickAddNewQuizItem = (code: string) => {
     // 새문항 불러오기 리스트
     if (newQuizItems && getItemCountData) {
@@ -2020,7 +2014,15 @@ export function Step2() {
           } else {
             setInitialItems((prevItems) => {
               if (prevItems) {
-                return [...prevItems, selectedQuizItem];
+                // 현재 문항들 중에서 num이 있는 문항들만 필터링하여 num의 최대값 찾기
+                const maxNum = prevItems.reduce((max, item) => {
+                  return item.num && item.num > max ? item.num : max;
+                }, 0);
+                const updatedQuizItem = {
+                  ...selectedQuizItem,
+                  num: selectedQuizItem.num ?? maxNum + 1,
+                };
+                return [...prevItems, updatedQuizItem];
               }
               return [selectedQuizItem]; // 초기 상태 설정
             });
@@ -2070,7 +2072,7 @@ export function Step2() {
                   return item.num && item.num > max ? item.num : max;
                 }, 0);
 
-                // selectedQuizItem에 num이 없으면 부여 + score 부여
+                // selectedQuizItem에 num이 없으면 부여해서 score 부여
                 const updatedQuizItem = {
                   ...selectedQuizItem,
                   num: selectedQuizItem.num ?? maxNum + 1,
@@ -2091,21 +2093,39 @@ export function Step2() {
     }
   };
 
-  //리스트 문항 교체하기
+  //리스트 문항 교체하기 버그 발견/해결요망
   const clickSwapQuizItem = (
     similarItems: SimilarQuizList | undefined,
     similarItemIndex: number,
     initialItems: QuizList[],
     initialItemIndex: number,
   ) => {
+    console.log('similarItems;', similarItems);
+    console.log('similarItemIndex;', similarItemIndex);
+    console.log('initialItems;', initialItems);
+    console.log('initialItemIndex;', initialItemIndex);
     if (similarItems && initialItems) {
       const newSimilarItems = [...similarItems.quizList];
       const newInitialItems = [...initialItems];
+      console.log('newSimilarItems;', newSimilarItems);
+      console.log('newInitialItems;', newInitialItems);
 
       // 교체할 항목을 임시 저장
       const temp = newSimilarItems[similarItemIndex];
-      newSimilarItems[similarItemIndex] = newInitialItems[initialItemIndex];
-      newInitialItems[initialItemIndex] = temp;
+
+      // Update the 'num' values before swapping
+      newSimilarItems[similarItemIndex] = {
+        ...newInitialItems[initialItemIndex],
+        num: temp.num, // Assign the 'num' of the similar item to the initial item,
+      };
+
+      newInitialItems[initialItemIndex] = {
+        ...temp,
+        num: newInitialItems[initialItemIndex].num, // Assign the 'num' of the initial item to the similar item
+        score: temp.score, // Assign the 'num' of the similar item to the initial item
+      };
+      console.log('newSimilarItems;', newSimilarItems);
+      console.log('newInitialItems;', newInitialItems);
 
       setSimilarItems({
         ...similarItems,
@@ -3284,6 +3304,14 @@ export function Step2() {
                                       deleteQuizItem(
                                         dragItem.code,
                                         dragItem.idx,
+                                      )
+                                    }
+                                    clickSwapQuizItem={() =>
+                                      clickSwapQuizItem(
+                                        similarItems as SimilarQuizList,
+                                        0,
+                                        initialItems,
+                                        similarItemIndex as number,
                                       )
                                     }
                                     code={dragItem.code}
