@@ -1993,8 +1993,6 @@ export function Step2() {
       }
     }
   };
-  console.log('initialItems:', initialItems);
-  console.log('totalEqualScore:', totalEqualScore);
   const clickAddNewQuizItem = (code: string) => {
     // 새문항 불러오기 리스트
     if (newQuizItems && getItemCountData) {
@@ -2100,32 +2098,32 @@ export function Step2() {
     initialItems: QuizList[],
     initialItemIndex: number,
   ) => {
-    console.log('similarItems;', similarItems);
-    console.log('similarItemIndex;', similarItemIndex);
-    console.log('initialItems;', initialItems);
-    console.log('initialItemIndex;', initialItemIndex);
+    //console.log('similarItems;', similarItems);
+    //console.log('similarItemIndex;', similarItemIndex);
+    //console.log('initialItems;', initialItems);
+    //console.log('initialItemIndex;', initialItemIndex);
     if (similarItems && initialItems) {
       const newSimilarItems = [...similarItems.quizList];
       const newInitialItems = [...initialItems];
-      console.log('newSimilarItems;', newSimilarItems);
-      console.log('newInitialItems;', newInitialItems);
+      //console.log('newSimilarItems;', newSimilarItems);
+      //console.log('newInitialItems;', newInitialItems);
 
       // 교체할 항목을 임시 저장
       const temp = newSimilarItems[similarItemIndex];
 
-      // Update the 'num' values before swapping
+      //문항 번호 넣어주기
       newSimilarItems[similarItemIndex] = {
         ...newInitialItems[initialItemIndex],
-        num: temp.num, // Assign the 'num' of the similar item to the initial item,
+        //num: temp.num,
       };
 
       newInitialItems[initialItemIndex] = {
         ...temp,
-        num: newInitialItems[initialItemIndex].num, // Assign the 'num' of the initial item to the similar item
-        score: temp.score, // Assign the 'num' of the similar item to the initial item
+        num: newInitialItems[initialItemIndex].num,
+        score: temp.score, //기존의 배점 넣어주기
       };
-      console.log('newSimilarItems;', newSimilarItems);
-      console.log('newInitialItems;', newInitialItems);
+      //console.log('newSimilarItems;', newSimilarItems);
+      //console.log('newInitialItems;', newInitialItems);
 
       setSimilarItems({
         ...similarItems,
