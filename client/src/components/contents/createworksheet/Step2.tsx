@@ -309,7 +309,6 @@ export function Step2() {
 
   //문항 번호가 없을 때 문항 번호 부여해주기
   useEffect(() => {
-    console.log('1111');
     if (initialItems && initialItems.length > 0) {
       // initialItems 배열에서 num 속성이 있는 항목들만 모아서 정렬
       const itemsWithNum = initialItems
@@ -1826,7 +1825,6 @@ export function Step2() {
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-  console.log('similarItems:', similarItems);
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
@@ -1908,7 +1906,22 @@ export function Step2() {
     if (newQuizItems && getItemCountData) {
       const allNewQuizItems = newQuizItems.quizList;
       if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
-        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+        setInitialItems((prevItems) => {
+          const maxNum = prevItems.reduce((max, item) => {
+            return item.num && item.num > max ? item.num : max;
+          }, 0);
+          const updatedQuizItem = allNewQuizItems.map((item, index) => ({
+            ...item,
+            num: item.num ?? maxNum + 1 + index,
+          }));
+          const filteredQuizItem = updatedQuizItem.filter(
+            (updatedItem) =>
+              !initialItems.some(
+                (initialItem) => initialItem.code === updatedItem.code,
+              ),
+          );
+          return [...prevItems, ...filteredQuizItem];
+        });
         setNewQuizItems((prevItems) => {
           if (prevItems) {
             return {
@@ -1929,7 +1942,22 @@ export function Step2() {
     else if (favoriteQuestionList && getItemCountData) {
       const allNewQuizItems = favoriteQuestionList.quizList;
       if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
-        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
+        setInitialItems((prevItems) => {
+          const maxNum = prevItems.reduce((max, item) => {
+            return item.num && item.num > max ? item.num : max;
+          }, 0);
+          const updatedQuizItem = allNewQuizItems.map((item, index) => ({
+            ...item,
+            num: item.num ?? maxNum + 1 + index,
+          }));
+          const filteredQuizItem = updatedQuizItem.filter(
+            (updatedItem) =>
+              !initialItems.some(
+                (initialItem) => initialItem.code === updatedItem.code,
+              ),
+          );
+          return [...prevItems, ...filteredQuizItem];
+        });
         setFavoriteQuestionList((prevItems) => {
           if (prevItems) {
             return {
@@ -1968,7 +1996,14 @@ export function Step2() {
           } else {
             setInitialItems((prevItems) => {
               if (prevItems) {
-                return [...prevItems, selectedQuizItem];
+                const maxNum = prevItems.reduce((max, item) => {
+                  return item.num && item.num > max ? item.num : max;
+                }, 0);
+                const updatedQuizItem = {
+                  ...selectedQuizItem,
+                  num: selectedQuizItem.num ?? maxNum + 1,
+                };
+                return [...prevItems, updatedQuizItem];
               }
               return [selectedQuizItem]; // 초기 상태 설정
             });
