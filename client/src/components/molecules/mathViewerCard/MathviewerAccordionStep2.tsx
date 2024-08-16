@@ -207,11 +207,6 @@ export function MathviewerAccordionStep2({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-  //console.log('quizNum', quizNum);
-  //console.log('index', index);
-  //console.log('data', data);
-  //console.log('contentNumQuotient', contentNumQuotient);
-  //console.log('quotient', quotient);
   //문항 삭제 추가 될때마다 총점 변경
   const totalEqualScore = useMemo(() => {
     const total = contentNumQuotient.reduce((acc, el) => acc + el.score, 0);
