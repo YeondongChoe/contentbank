@@ -212,7 +212,6 @@ export function MathviewerAccordionStep2({
   //console.log('data', data);
   //console.log('contentNumQuotient', contentNumQuotient);
   //console.log('quotient', quotient);
-
   //문항 삭제 추가 될때마다 총점 변경
   const totalEqualScore = useMemo(() => {
     const total = contentNumQuotient.reduce((acc, el) => acc + el.score, 0);
@@ -251,6 +250,7 @@ export function MathviewerAccordionStep2({
     setDidMount(true);
   }, []);
 
+  //최초 문항이 추가
   useEffect(() => {
     if (didMount) {
       const isQuizNumExists = contentNumQuotient.some(
