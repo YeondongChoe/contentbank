@@ -1825,6 +1825,7 @@ export function Step2() {
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
+  console.log('similarItems:', similarItems);
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
@@ -1906,22 +1907,7 @@ export function Step2() {
     if (newQuizItems && getItemCountData) {
       const allNewQuizItems = newQuizItems.quizList;
       if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
-        setInitialItems((prevItems) => {
-          const maxNum = prevItems.reduce((max, item) => {
-            return item.num && item.num > max ? item.num : max;
-          }, 0);
-          const updatedQuizItem = allNewQuizItems.map((item, index) => ({
-            ...item,
-            num: item.num ?? maxNum + 1 + index,
-          }));
-          const filteredQuizItem = updatedQuizItem.filter(
-            (updatedItem) =>
-              !initialItems.some(
-                (initialItem) => initialItem.code === updatedItem.code,
-              ),
-          );
-          return [...prevItems, ...filteredQuizItem];
-        });
+        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
         setNewQuizItems((prevItems) => {
           if (prevItems) {
             return {
@@ -1942,22 +1928,7 @@ export function Step2() {
     else if (favoriteQuestionList && getItemCountData) {
       const allNewQuizItems = favoriteQuestionList.quizList;
       if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
-        setInitialItems((prevItems) => {
-          const maxNum = prevItems.reduce((max, item) => {
-            return item.num && item.num > max ? item.num : max;
-          }, 0);
-          const updatedQuizItem = allNewQuizItems.map((item, index) => ({
-            ...item,
-            num: item.num ?? maxNum + 1 + index,
-          }));
-          const filteredQuizItem = updatedQuizItem.filter(
-            (updatedItem) =>
-              !initialItems.some(
-                (initialItem) => initialItem.code === updatedItem.code,
-              ),
-          );
-          return [...prevItems, ...filteredQuizItem];
-        });
+        setInitialItems((prevItems) => [...prevItems, ...allNewQuizItems]);
         setFavoriteQuestionList((prevItems) => {
           if (prevItems) {
             return {
@@ -2047,15 +2018,7 @@ export function Step2() {
           } else {
             setInitialItems((prevItems) => {
               if (prevItems) {
-                // 현재 문항들 중에서 num이 있는 문항들만 필터링하여 num의 최대값 찾기
-                const maxNum = prevItems.reduce((max, item) => {
-                  return item.num && item.num > max ? item.num : max;
-                }, 0);
-                const updatedQuizItem = {
-                  ...selectedQuizItem,
-                  num: selectedQuizItem.num ?? maxNum + 1,
-                };
-                return [...prevItems, updatedQuizItem];
+                return [...prevItems, selectedQuizItem];
               }
               return [selectedQuizItem]; // 초기 상태 설정
             });
