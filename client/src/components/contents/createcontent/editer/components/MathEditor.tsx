@@ -30,9 +30,8 @@ const dynamicallyLoadScripts = (
 
 const MathEditor = () => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  window.editorType_s = true;
+
+  // window.editorType_s = true;
 
   useEffect(() => {
     const initialScripts = [
