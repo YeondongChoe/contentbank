@@ -634,6 +634,10 @@ export function Classification({
   // 수정
   const changeUnitClassification = (idx: number) => {
     console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
+    console.log(
+      '수정에서의 itemTree unitClassificationList',
+      unitClassificationList[idx],
+    );
     onResetList();
     setSelectedClassification(unitClassificationList[idx]);
     setIsModifying(true);
@@ -642,41 +646,72 @@ export function Classification({
   useEffect(() => {
     if (isModifying && selectedClassification.length > 0) {
       const classification = selectedClassification[0] as RadioStateType;
-      setSelected1depth(classification?.checkValue?.toString() || '');
-      setRadio1depthCheck(classification);
-      console.log('1뎁스--------------', classification.checkValue);
+      const matchingItem = categoryList[0].find(
+        (item) => item.name === classification.title,
+      );
+      if (matchingItem) {
+        const updatedObject = {
+          ...classification,
+          checkValue: matchingItem.idx as number,
+        };
+        console.log('1뎁스----------updatedObject----', updatedObject);
+        // 체크 밸류값을 재설정
+        setSelected1depth(matchingItem.idx.toString());
+        setRadio1depthCheck(updatedObject);
+      }
     }
   }, [isModifying, selectedClassification]);
 
   useEffect(() => {
     if (isModifying && selected1depth !== '') {
       const classification = selectedClassification[1] as RadioStateType;
-      setSelected2depth(classification?.checkValue?.toString() || '');
-      setRadio2depthCheck(classification);
-      console.log('2뎁스--------------', classification.checkValue);
+      const matchingItem = nextListData1.data.categoryClassList.find(
+        (item: { name: string }) => item.name === classification.title,
+      );
+      if (matchingItem) {
+        const updatedObject = {
+          ...classification,
+          checkValue: matchingItem.idx as number,
+        };
+        setSelected2depth(matchingItem.idx.toString());
+        setRadio2depthCheck(updatedObject);
+      }
     }
   }, [isModifying, selected1depth]);
-
   useEffect(() => {
     if (isModifying && selected2depth !== '') {
       const classification = selectedClassification[2] as RadioStateType;
-      setSelected3depth(classification?.checkValue?.toString() || '');
-      setRadio3depthCheck(classification);
-      console.log('3뎁스--------------', classification.checkValue);
+      const matchingItem = nextListData2.data.categoryClassList.find(
+        (item: { name: string }) => item.name === classification.title,
+      );
+      if (matchingItem) {
+        const updatedObject = {
+          ...classification,
+          checkValue: matchingItem.idx as number,
+        };
+        setSelected3depth(matchingItem.idx.toString());
+        setRadio3depthCheck(updatedObject);
+      }
     }
   }, [isModifying, selected2depth]);
-
   useEffect(() => {
     if (isModifying && selected3depth !== '') {
       const classification = selectedClassification[3] as RadioStateType;
-      setSelected4depth(classification?.checkValue?.toString() || '');
-      setRadio4depthCheck(classification as RadioStateType);
-      console.log('4뎁스--------------', classification.checkValue);
+      const matchingItem = nextListData3.data.categoryClassList.find(
+        (item: { name: string }) => item.name === classification.title,
+      );
+      if (matchingItem) {
+        const updatedObject = {
+          ...classification,
+          checkValue: matchingItem.idx as number,
+        };
+        setSelected4depth(matchingItem.idx.toString());
+        setRadio4depthCheck(updatedObject);
+      }
     }
   }, [isModifying, selected3depth]);
-
   useEffect(() => {
-    if (isModifying && selected4depth !== '') {
+    if (selected4depth !== '') {
       const classification = selectedClassification[4] as ItemTreeIdxListType;
       // idx 유형 리스트
       console.log('수정시 idx 리스트 ----- ', classification);
@@ -1092,13 +1127,14 @@ export function Classification({
           }
         });
 
-        // checkValue 값 추가
+        // checkValue 값 추가 선택 전 임시
         newFinalList.forEach((finalItem: RadioStateType) => {
           const categoryItem = categoryItems.find(
             (catItem) => catItem.name === finalItem.code,
           );
 
           if (categoryItem) {
+            console.log('categoryItem --- ', categoryItem);
             finalItem.checkValue = categoryItem.idx;
           }
         });

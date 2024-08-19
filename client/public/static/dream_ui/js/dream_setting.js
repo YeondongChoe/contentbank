@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // 업로드 다운로드 요청 url
 var dream_server_url = 'http://43.201.205.140:40030';
 

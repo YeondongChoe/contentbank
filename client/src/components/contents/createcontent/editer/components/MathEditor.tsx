@@ -28,7 +28,7 @@ const dynamicallyLoadScripts = (
   loadScript(0);
 };
 
-export function Formula({ saveDataHandler }: { saveDataHandler: () => void }) {
+const MathEditor = () => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
@@ -320,4 +320,6 @@ export function Formula({ saveDataHandler }: { saveDataHandler: () => void }) {
       </div>
     </div>
   );
-}
+};
+
+export default MathEditor;

@@ -1,15 +1,8 @@
-// 스크립트 불러오기
 (async function () {
-  // 스크립트 로딩
   try {
     await new Promise((resolve) => {
       const checkLoaded = () => {
-        // console.log(window.MathJax)
-        // console.log(window.MathJax.getMetricsFor)
-        if (
-          typeof window.MathJax !== "undefined"
-          // typeof window.MathJax.getMetricsFor !== "undefined"
-        ) {
+        if (typeof window.MathJax !== "undefined") {
           resolve();
         } else {
           setTimeout(checkLoaded, 500);
@@ -17,13 +10,14 @@
       };
       checkLoaded();
     });
-    // console.log("MathJax 로딩 성공");
+
     let otherScriptUrls = [
       "/static/iTeX_EQ/js/ds.min.js",
       "/static/iTeX_EQ/js/hangul.min.js",
       "/static/iTeX_EQ/js/itex_eq_common.js?v=0.1",
-      // "/static/iTeX_EQ/js/itex_eq_common (1).js?v=0.1",
       editorType
+        ? "/static/iTeX_EQ/js/itex_keyboard_v3_pc.js"
+        : window.editorType_s
         ? "/static/iTeX_EQ/js/itex_keyboard_v3_pc.js"
         : "/static/iTeX_EQ/js/itex_keyboard_v3.js",
       "/static/iTeX_EQ/js/itex_setting.js?v=0.1",
@@ -79,10 +73,12 @@
       console.log(error);
       console.log("수식편집기 레이아웃 그리기 실패");
     }
-
+    console.log("editorType_s: ", window.editorType_s);
     // 키보드 데이터 불러오기
     try {
       const key_data_file = editorType
+        ? "/static/iTeX_EQ/key_data_pc.json"
+        : window.editorType_s
         ? "/static/iTeX_EQ/key_data_pc.json"
         : "/static/iTeX_EQ/key_data.json";
       await iTeXEQ.fetchJsonFile(key_data_file);
