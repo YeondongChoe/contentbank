@@ -138,6 +138,7 @@ type MathviewerCardProps = {
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
   deleteQuizItem?: () => void;
+  clickSwapQuizItem?: () => void;
   favoriteQuizItem?: (e: any) => void;
   isFavorite?: boolean;
   isSimilar?: boolean;
@@ -172,6 +173,7 @@ export function MathviewerAccordionStep2({
   changeQuizitem,
   addQuizItem,
   deleteQuizItem,
+  clickSwapQuizItem,
   favoriteQuizItem,
   isFavorite,
   isSimilar,
@@ -205,17 +207,11 @@ export function MathviewerAccordionStep2({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-  //console.log('quizNum', quizNum);
-  //console.log('index', index);
-  //console.log('data', data);
-  //console.log('contentNumQuotient', contentNumQuotient);
-  //console.log('quotient', quotient);
-
   //문항 삭제 추가 될때마다 총점 변경
   const totalEqualScore = useMemo(() => {
     const total = contentNumQuotient.reduce((acc, el) => acc + el.score, 0);
     return isNaN(total) ? 0 : total;
-  }, [contentNumQuotient, deleteQuizItem, addQuizItem]);
+  }, [contentNumQuotient, deleteQuizItem, addQuizItem, clickSwapQuizItem]);
 
   useEffect(() => {
     if (setTotalEqualScore) {
@@ -249,6 +245,7 @@ export function MathviewerAccordionStep2({
     setDidMount(true);
   }, []);
 
+  //최초 문항이 추가
   useEffect(() => {
     if (didMount) {
       const isQuizNumExists = contentNumQuotient.some(
