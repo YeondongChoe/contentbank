@@ -1825,7 +1825,6 @@ export function Step2() {
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-  console.log('similarItems:', similarItems);
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
