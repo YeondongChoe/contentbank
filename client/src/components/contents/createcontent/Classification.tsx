@@ -665,7 +665,7 @@ export function Classification({
   useEffect(() => {
     if (isModifying && selected1depth !== '') {
       const classification = selectedClassification[1] as RadioStateType;
-      const matchingItem = nextListData1.data.categoryClassList.find(
+      const matchingItem = nextListData1?.data?.categoryClassList.find(
         (item: { name: string }) => item.name === classification.title,
       );
       if (matchingItem) {
@@ -681,7 +681,7 @@ export function Classification({
   useEffect(() => {
     if (isModifying && selected2depth !== '') {
       const classification = selectedClassification[2] as RadioStateType;
-      const matchingItem = nextListData2.data.categoryClassList.find(
+      const matchingItem = nextListData2?.data?.categoryClassList.find(
         (item: { name: string }) => item.name === classification.title,
       );
       if (matchingItem) {
@@ -697,7 +697,7 @@ export function Classification({
   useEffect(() => {
     if (isModifying && selected3depth !== '') {
       const classification = selectedClassification[3] as RadioStateType;
-      const matchingItem = nextListData3.data.categoryClassList.find(
+      const matchingItem = nextListData3?.data?.categoryClassList.find(
         (item: { name: string }) => item.name === classification.title,
       );
       if (matchingItem) {
@@ -712,17 +712,16 @@ export function Classification({
   }, [isModifying, selected3depth]);
   useEffect(() => {
     if (selected4depth !== '') {
-      // const classification = selectedClassification[4] as ItemTreeIdxListType;
+      const classification = selectedClassification[4] as ItemTreeIdxListType;
       // idx 유형 리스트
-      console.log('수정시 idx 리스트 ----- ', selectedClassification);
-      // console.log('수정시 idx 리스트 ----- ', classification);
-      // if (classification.itemTreeIdxList)
-      //   setCheckedDepthList(classification.itemTreeIdxList);
+      console.log('수정시 idx 리스트 ----- ', classification);
+      if (classification?.itemTreeIdxList)
+        setCheckedDepthList(classification.itemTreeIdxList);
 
       const classificationEtc1 = selectedClassification[5] as RadioStateType[];
       console.log(
         '수정시 classificationEtc1 리스트 ----- ',
-        classificationEtc1,
+        selectedClassification,
       );
       // 저장되었던 행동 요소1
       if (classificationEtc1) {
@@ -752,7 +751,15 @@ export function Classification({
     if (radio1depthCheck?.code !== '') nextListData1Refetch();
     if (radio2depthCheck?.code !== '') nextListData2Refetch();
     if (radio3depthCheck?.code !== '') nextListData3Refetch();
-  }, [radio1depthCheck, radio2depthCheck, radio3depthCheck]);
+  }, [
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    selected1depth,
+    selected2depth,
+    selected3depth,
+    selected4depth,
+  ]);
 
   const sortedArr = () => {
     console.log('아이템트리키 들어가야할 목록', unitClassificationList);
