@@ -14,21 +14,35 @@ export function ResizeLayout({
   item2,
   item3,
   height,
+  item3Width = 250,
+  item1Width = 250,
+  minWidth = 130,
+  maxWidth = Infinity,
 }: {
   column: '2nd' | '3rd';
   item1?: React.ReactNode;
   item2?: React.ReactNode;
   item3?: React.ReactNode;
   height: string;
+  item3Width?: number;
+  item1Width?: number;
+  minWidth?: number;
+  maxWidth?: number;
 }) {
+  const item1InitWidth = item1Width;
+  const item3InitWidth = item3Width;
+  const minInitWidth = minWidth;
+  const maxInitWidth = maxWidth;
+
   const {
     isDragging: isFirstDragging,
     position: firstW,
     splitterProps: firstDragBarProps,
   } = useResizable({
     axis: 'x',
-    initial: 250,
-    min: 50,
+    initial: item1InitWidth,
+    min: minInitWidth,
+    max: maxInitWidth,
   });
 
   const {
@@ -37,8 +51,9 @@ export function ResizeLayout({
     splitterProps: secondDragBarProps,
   } = useResizable({
     axis: 'x',
-    initial: 200,
-    min: 50,
+    initial: item3InitWidth,
+    min: minInitWidth,
+    max: maxInitWidth,
     reverse: true,
   });
 

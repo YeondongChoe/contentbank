@@ -8,7 +8,7 @@ import { modalState } from '../store/modalAtom';
 type OpenModalType = {
   title: string;
   content: JSX.Element | string;
-  callback?: () => any;
+  callback?: () => void;
 };
 
 export const useModal = () => {

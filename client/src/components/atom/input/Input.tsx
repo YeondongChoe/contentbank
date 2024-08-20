@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 
 import { styled } from 'styled-components';
 
@@ -12,6 +12,7 @@ type InputProps = {
   placeholderTextAlign?: boolean;
   value?: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onKeyUp?: React.KeyboardEventHandler<HTMLInputElement>;
   onClick?: () => void;
   padding?: string;
   width?: string;
@@ -23,10 +24,13 @@ type InputProps = {
   borderbottom?: boolean;
   margin?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   errorMessage?: boolean | string;
+  successMessage?: boolean | string;
   innerRef?: React.Ref<HTMLInputElement>;
   maxLength?: number;
   minLength?: number;
+  error?: boolean;
 };
 
 export function Input({
@@ -48,16 +52,22 @@ export function Input({
   borderbottom,
   margin,
   errorMessage,
+  successMessage,
   innerRef,
   maxLength,
   minLength,
+  readOnly,
+  onKeyUp,
+  error,
 }: InputProps) {
+  useEffect(() => {}, [errorMessage]);
   return (
     <Warpper>
       <Component
         className={className}
         type={type}
         disabled={disabled}
+        readOnly={readOnly}
         placeholder={placeholder}
         value={value}
         width={width}
@@ -70,13 +80,16 @@ export function Input({
         $borderRadius={borderradius}
         $borderBottom={borderbottom}
         $margin={margin}
+        $error={error}
         onClick={onClick}
         onChange={onChange}
         ref={innerRef}
         maxLength={maxLength}
         minLength={minLength}
+        onKeyUp={onKeyUp}
       ></Component>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </Warpper>
   );
 }
@@ -93,6 +106,7 @@ type InputStyleProps = {
   $placeholderTextAlign?: boolean;
   $margin?: string;
   disabled?: boolean;
+  $error?: boolean;
 };
 
 const Warpper = styled.div`
@@ -102,6 +116,7 @@ const Warpper = styled.div`
 const Component = styled.input<InputStyleProps>`
   display: flex;
   align-items: center;
+  text-overflow: ellipsis;
   ${({ $placeholderTextAlign }) =>
     $placeholderTextAlign && ' text-align: center;'};
   justify-content: center;
@@ -122,6 +137,10 @@ const Component = styled.input<InputStyleProps>`
         : 'border: none;'}
   ${({ $borderBottom }) =>
     $borderBottom && `border: none; border-bottom: 1px solid ${COLOR.ERROR};`};
+
+  ${({ $error }) =>
+    $error && `color: ${COLOR.ERROR}; border: 1px solid ${COLOR.ERROR};`};
+
   &::placeholder {
     ${({ $placeholderSize }) =>
       $placeholderSize ? `font-size: ${$placeholderSize};` : '16px;'};
@@ -137,5 +156,9 @@ const Component = styled.input<InputStyleProps>`
 `;
 const ErrorMessage = styled.p`
   color: ${COLOR.ERROR};
+  font-size: 12px;
+`;
+const SuccessMessage = styled.p`
+  color: ${COLOR.SUCCESS};
   font-size: 12px;
 `;

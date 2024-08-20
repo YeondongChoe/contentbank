@@ -1,89 +1,119 @@
 import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { IoMdClose, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { CheckBox, Button, TabMenu, Input, Label, Search } from '../..';
-import { TextbookType, MockexamType } from '../../../types';
+import {
+  DifficultyRate,
+  openToastifyAlert,
+  CheckBox,
+  Button,
+  TabMenu,
+  Input,
+  Label,
+  Search,
+  ButtonFormatRadio,
+  Accordion,
+  DepthBlock,
+  ValueNone,
+  Loader,
+  Icon,
+  IconButton,
+  PaginationBox,
+  Alert,
+  ButtonFormatMultiRadio,
+} from '../..';
+import { classificationInstance, quizService } from '../../../api/axios';
+import { pageAtom } from '../../../store/utilAtom';
+import {
+  ItemCategoryType,
+  ItemTreeListType,
+  csatListType,
+  CastQuizListType,
+  ItemTreeType,
+} from '../../../types';
+import { TextbookInfoType } from '../../../types/TextbookType';
+import { DifficultyDataType } from '../../../types/WorkbookType';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
-import dummy from '../../constants/data.json';
 
-type Content = {
-  seq: number;
-  title: string;
-  isChecked?: boolean;
-  pageTitle: string;
+type ProcessTextbookDataType = {
+  pageList: {
+    bookPage: string;
+    isChecked: boolean;
+    quizList: {
+      idx: number;
+      code: string;
+      bookQuizNumber: string;
+      isChecked: boolean;
+      seq: string;
+    }[];
+  }[];
+  subChapter: string;
 };
 
-type Page = {
-  seq: number;
-  title: string;
-  isChecked?: boolean;
-  content: Content[];
+type QuizType = {
+  idx: number;
+  code: string;
+  isChecked: boolean;
 };
 
-type DataType = {
+type HierarchicalDataType = {
   title: string;
-  page: Page[];
+  seq: string;
+  value: HierarchicalDataType[] | QuizType[] | any;
+  isChecked: boolean;
 };
 
-type MockDataType = {
-  seq: number;
-  grade: string;
+type NodeDataType = {
+  hierarchicalData: HierarchicalDataType[];
+};
+
+type ProcessCsatListDataType = {
+  id: string;
+  grade: number;
+  level: string;
+  month: number;
   year: string;
-  month: string;
-  isChecked?: boolean;
-  content: MockContent[];
+  isChecked: boolean;
+  nodeData: NodeDataType;
 };
 
-type MockContent = {
-  seq: number;
+type ProcessCsatQuizListDataType = {
+  id: string;
+  grade: number;
+  level: string;
+  month: number;
+  year: string;
+  isChecked: boolean;
+  quizNumberList: {
+    idx: number;
+    code: string;
+    quizNumber: string;
+    isChecked: boolean;
+  }[];
+};
+
+interface RadioStateType {
   title: string;
-  isChecked?: boolean;
-};
+  checkValue: number;
+  code: string;
+  key: string;
+}
 
-const processData = (data: TextbookType): DataType => {
-  const newData: DataType = {
-    title: data.title || '',
-    page:
-      data.type?.flatMap((type) =>
-        type.page?.map((page) => ({
-          seq: page.seq || 0,
-          title: page.title || '',
-          isChecked: false,
-          content:
-            page.content?.map((content) => ({
-              seq: content.seq || 0,
-              title: content.title || '',
-              isChecked: false,
-              pageTitle: page.title,
-            })) || [],
-        })),
-      ) || [],
-  };
+interface ItemTreeIdxListType {
+  itemTreeIdxList: number[];
+}
 
-  return newData;
-};
-
-const processMockexam = (dataList: MockexamType[]): MockDataType[] => {
-  return dataList.map((data) => {
-    return {
-      seq: data.seq,
-      grade: data.grade,
-      year: data.year,
-      month: data.month,
-      isChecked: false,
-      content: data.content.map((contentItem) => ({
-        seq: contentItem.seq,
-        title: contentItem.title,
-        isChecked: false,
-      })),
-    };
-  });
-};
+type UnitClassificationType =
+  | RadioStateType
+  | ItemTreeIdxListType
+  | RadioStateType[];
 
 export function Step1() {
   const menuList = [
@@ -101,29 +131,885 @@ export function Step1() {
     },
   ];
 
-  const [tabVeiw, setTabVeiw] = useState<string>('수능/모의고사');
-
+  const [tabVeiw, setTabVeiw] = useState<string>('단원·유형별');
   const navigate = useNavigate();
-  const moveStep2 = () => {
-    navigate('/content-create/exam/step2');
-    console.log('선택된 값으로 학습지 문항리스트() get 요청 API');
-    console.log('가져온 값을 상태관리 한 후 다음 단계에 전달');
+
+  const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radio2depthCheck, setRadio2depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radio3depthCheck, setRadio3depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radio4depthCheck, setRadio4depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radio5depthCheck, setRadio5depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radio6depthCheck, setRadio6depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
+  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
+  const [selected1depth, setSelected1depth] = useState<string>('');
+  const [selected2depth, setSelected2depth] = useState<string>('');
+  const [selected3depth, setSelected3depth] = useState<string>('');
+  const [selected4depth, setSelected4depth] = useState<string>('');
+  const [selected5depth, setSelected5depth] = useState<string>('');
+  const [selected6depth, setSelected6depth] = useState<string>('');
+
+  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
+    '',
+  ]);
+  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string[]>([
+    '',
+  ]);
+  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
+  const [nextList1depth, setNextList1depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList2depth, setNextList2depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList3depth, setNextList3depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList4depth, setNextList4depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList5depth, setNextList5depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+
+  const [unitClassificationList, setUnitClassificationList] = useState<
+    UnitClassificationType[][]
+  >([]);
+
+  const [selectedClassification, setSelectedClassification] = useState<
+    UnitClassificationType[]
+  >([]);
+
+  const [isModifying, setIsModifying] = useState(false);
+
+  const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
+  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([
+    [{ code: '', idx: 0, name: '' }],
+  ]);
+  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
+  const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
+
+  const [categoryAddInfoList, setCategoryAddInfoList] = useState<
+    ItemCategoryType[][]
+  >([]); // 각 카테고리의 상세 리스트를 저장할 상태
+  const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  //  카테고리 불러오기 api
+  const getCategory = async () => {
+    const res = await classificationInstance.get(`/v1/category`);
+    return res;
+  };
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    error: categoryDataError,
+    refetch: categoryDataRefetch,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+  });
+
+  // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
+  useEffect(() => {
+    if (categoryDataError) {
+      categoryDataRefetch();
+    }
+    if (categoryData) {
+      setCategoryItems(categoryData.data.data.categoryItemList);
+    }
+  }, [categoryData, categoryDataError, categoryDataRefetch]);
+
+  // 카테고리의 그룹 유형 조회
+  const getCategoryGroups = async () => {
+    const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    return response.data.data.typeList;
+  };
+  const {
+    data: groupsData,
+    isFetching: groupsDataAIsFetching,
+    refetch: groupsDataRefetch,
+  } = useQuery({
+    queryKey: ['get-category-groups-A'],
+    queryFn: getCategoryGroups,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (tabVeiw === '단원·유형별' && groupsData) {
+      fetchCategoryItems(groupsData, setCategoryList);
+    }
+  }, [groupsData, tabVeiw]);
+
+  // 카테고리의 그룹 유형 조회 (출처)
+  const getCategoryGroupsE = async () => {
+    const response = await classificationInstance.get('/v1/category/group/E');
+    return response.data.data.typeList;
+  };
+  const {
+    data: groupsEData,
+    refetch: groupsDataERefetch,
+    isFetching: groupsDataEIsFetching,
+  } = useQuery({
+    queryKey: ['get-category-groups-E'],
+    queryFn: getCategoryGroupsE,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-E 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsEData) {
+      fetchCategoryItems(groupsEData, setCategoriesE);
+    }
+  }, [groupsEData]);
+
+  // 카테고리의 그룹 유형 조회
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
+    const typeIds = typeList.split(',');
+    try {
+      setIsCategoryLoaded(true);
+
+      const requests = typeIds.map((id) =>
+        classificationInstance.get(`/v1/category/${id}`).catch((error) => {
+          // console.log(error);
+          if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
+            setRefreshTokenCalled(true);
+            postRefreshToken().then(() => {
+              setRefreshTokenCalled(false);
+            });
+          }
+        }),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+
+      setCategory(itemsList);
+    } finally {
+      setIsCategoryLoaded(false);
+    }
   };
 
-  const [didMount, setDidMount] = useState(false);
+  // 라디오 버튼 설정
+  const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const depth =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.classList[0];
+    const itemId =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.id;
 
-  useEffect(() => {
-    setDidMount(true);
-  }, []);
-
-  useEffect(() => {
-    if (didMount) {
-      //console.log('schoolLevel, schoolYear이 선택 됐을 때 범위 트리 get API');
+    switch (depth) {
+      case '1depth':
+        setSelected1depth(e.currentTarget.value);
+        setRadio1depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      case '2depth':
+        setSelected2depth(e.currentTarget.value);
+        setRadio2depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      case '3depth':
+        setSelected3depth(e.currentTarget.value);
+        setRadio3depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      case '4depth':
+        setSelected4depth(e.currentTarget.value);
+        setRadio4depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      case '5depth':
+        setSelected5depth(e.currentTarget.value);
+        setRadio5depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      case '6depth':
+        setSelected6depth(e.currentTarget.value);
+        setRadio6depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      default:
+        break;
     }
-  }, [didMount]);
+  };
+  // 다중 라디오 버튼 설정
+  const handleMultiRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const depth =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.classList[0];
+    const itemId =
+      e.target.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement?.id;
+
+    const title = e.currentTarget.name;
+    const code = e.currentTarget.className;
+    const value = e.currentTarget.value;
+
+    switch (depth) {
+      case 'etc1':
+        setSelectedCategoryEtc1(() => {
+          if (selectedCategoryEtc1.includes(value)) {
+            const updated = selectedCategoryEtc1.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc1, value];
+            return updated;
+          }
+        });
+
+        setRadioEtc1Check(() => {
+          if (radioEtc1Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc1Check.filter(
+              (item) => item.checkValue !== Number(value),
+            );
+          } else {
+            return [
+              ...radioEtc1Check,
+              {
+                title: title,
+                checkValue: Number(value),
+                code: code,
+                key: itemId as string,
+              },
+            ];
+          }
+        });
+        break;
+
+      case 'etc2':
+        setSelectedCategoryEtc2(() => {
+          if (selectedCategoryEtc2.includes(value)) {
+            const updated = selectedCategoryEtc2.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc2, value];
+            return updated;
+          }
+        });
+
+        setRadioEtc2Check(() => {
+          if (radioEtc2Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc2Check.filter(
+              (item) => item.checkValue !== Number(value),
+            );
+          } else {
+            return [
+              ...radioEtc2Check,
+              {
+                title: title,
+                checkValue: Number(value),
+                code: code,
+                key: itemId as string,
+              },
+            ];
+          }
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  /* 선택된 유형에따라 항목 조회 */
+  //1뎁스 선택시 2뎁스 설정되게
+  const getNextList1 = async () => {
+    const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList1depth(res?.data.data.categoryClassList);
+      return res.data;
+    } catch (error: any) {
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          //groupsDataRefetch();
+        });
+      return undefined;
+    }
+  };
+  const { data: nextListData1, refetch: nextListData1Refetch } = useQuery({
+    queryKey: ['get-nextList1'],
+    queryFn: getNextList1,
+    meta: {
+      errorMessage: 'get-nextList1 에러 메세지',
+    },
+    // 체크된 값이 있을때 조회
+    enabled: radio1depthCheck?.code !== '',
+  });
+
+  //2뎁스 선택시 3뎁스 설정되게
+  const getNextList2 = async () => {
+    const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
+    const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList2depth(res?.data.data.categoryClassList);
+      return res.data;
+    } catch (error: any) {
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          nextListData1Refetch();
+        });
+      return undefined;
+    }
+  };
+  const { data: nextListData2, refetch: nextListData2Refetch } = useQuery({
+    queryKey: ['get-nextList2'],
+    queryFn: getNextList2,
+    meta: {
+      errorMessage: 'get-nextList2 에러 메세지',
+    },
+    // 체크된 값이 있을때 조회
+    enabled: radio2depthCheck?.code !== '',
+  });
+
+  //3뎁스 선택시 4뎁스 설정되게
+  const getNextList3 = async () => {
+    const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
+    const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      setNextList3depth(res?.data.data.categoryClassList);
+      return res.data;
+    } catch (error: any) {
+      if (error.response?.data?.code == 'GE-002')
+        postRefreshToken().then(() => {
+          nextListData2Refetch();
+        });
+      return undefined;
+    }
+  };
+  const { data: nextListData3, refetch: nextListData3Refetch } = useQuery({
+    queryKey: ['get-nextList3'],
+    queryFn: getNextList3,
+    meta: {
+      errorMessage: 'get-nextList3 에러 메세지',
+    },
+    // 체크된 값이 있을때 조회
+    enabled: radio3depthCheck?.code !== '',
+  });
+
+  const setNextList = (idx: number) => {
+    //교과 과목 오픈여부 라디오 버튼 셋팅
+    if (categoriesE && idx == 4) {
+      setNextList4depth(categoriesE[0]);
+    }
+    if (categoriesE && idx == 5) {
+      setNextList5depth(categoriesE[1]);
+    }
+  };
+
+  useEffect(() => {
+    if (radio1depthCheck.code !== '') nextListData1Refetch();
+    if (radio2depthCheck.code !== '') nextListData2Refetch();
+    if (radio3depthCheck.code !== '') nextListData3Refetch();
+    if (radio4depthCheck.code !== '') setNextList(4);
+    if (radio5depthCheck.code !== '') setNextList(5);
+    if (radio6depthCheck.code !== '') setNextList(6);
+  }, [
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    radio4depthCheck,
+    radio5depthCheck,
+    radio6depthCheck,
+  ]);
+
+  // 체크값 변경시 초기화
+  useEffect(() => {
+    setSelected2depth('');
+    setCheckedDepthList([]);
+  }, [selected1depth]);
+  useEffect(() => {
+    setSelected3depth('');
+    setCheckedDepthList([]);
+  }, [selected2depth]);
+  useEffect(() => {
+    setSelected4depth('');
+    setCheckedDepthList([]);
+    setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected3depth]);
+  useEffect(() => {
+    setSelected5depth('');
+    setCheckedDepthList([]);
+    setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected4depth]);
+  useEffect(() => {
+    setSelected6depth('');
+    setCheckedDepthList([]);
+    setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected5depth]);
+  useEffect(() => {
+    setSearchValue('');
+    setCheckedDepthList([]);
+    setSelectedCategoryEtc1([]);
+    setSelectedCategoryEtc2([]);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+  }, [selected6depth]);
+
+  // 카테고리 선택후 아이템트리
+  // 아이템 트리 불러오기 api
+  const postCategoryItemTree = async () => {
+    const depthChecks = [
+      radio1depthCheck,
+      radio2depthCheck,
+      radio3depthCheck,
+      radio4depthCheck,
+    ];
+
+    const keyValuePairs = categoryItems.reduce<Record<string, string>>(
+      (acc, item, index) => {
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item.name] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
+        }
+        return acc;
+      },
+      {},
+    );
+
+    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
+
+    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    return res;
+  };
+
+  const {
+    data: categoryItemTreeData,
+    mutate: categoryItemTreeDataMutate,
+    isPending,
+  } = useMutation({
+    mutationFn: postCategoryItemTree,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data?.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+      // setItemTreeList(res.data.data[0].itemTreeList);
+      setItemTree(response.data.data);
+    },
+  });
+
+  useEffect(() => {
+    if (selected6depth == '') return;
+    categoryItemTreeDataMutate();
+  }, [selected6depth]);
+
+  // 카테고리의 그룹 유형 조회 (추가정보)
+  const getAddInfoGroups = async () => {
+    const response = await classificationInstance.get('/v1/category/group/B');
+    return response.data.data.typeList;
+  };
+  const { data: addInfoData } = useQuery({
+    queryKey: ['get-add-info-groups'],
+    queryFn: getAddInfoGroups,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-add-info-groups 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (addInfoData) {
+      fetchAddInfoItems(addInfoData);
+    }
+  }, [addInfoData]);
+
+  // 카테고리의 그룹 아이템 조회 (추가정보)
+  const fetchAddInfoItems = async (typeList: string) => {
+    const typeIds = typeList.split(',');
+    try {
+      const requests = typeIds.map((id) =>
+        classificationInstance.get(`/v1/category/${id}`),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+      setCategoryAddInfoList(itemsList);
+    } catch (error: any) {
+      if (error.response?.data?.code == 'GE-002') {
+        postRefreshToken();
+        groupsDataRefetch();
+      }
+    }
+  };
+
+  const saveCheckItems = () => {
+    const newClassification: UnitClassificationType[] = [
+      radio1depthCheck,
+      radio2depthCheck,
+      radio3depthCheck,
+      radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
+      radioEtc1Check,
+      radioEtc2Check,
+    ];
+
+    if (checkedDepthList.length > 0) {
+      newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
+    }
+
+    if (unitClassificationList.length < 6) {
+      setUnitClassificationList((prevList) => [...prevList, newClassification]);
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '교과정보는 최대 5개 까지 저장 가능합니다',
+      });
+    }
+    //선택정보 저장과 함께 체크상태 초기화
+    //저장 성공 후
+    onResetList();
+  };
+  //삭제
+  const deleteUnitClassification = (idx: number) => {
+    setUnitClassificationList((prevList) => [
+      ...prevList.slice(0, idx),
+      ...prevList.slice(idx + 1),
+    ]);
+  };
+
+  //분류 리스트 리셋
+  const onResetList = () => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    const listReset = [{ code: '', idx: 0, name: '' }];
+    setRadio1depthCheck(reset);
+    setRadio2depthCheck(reset);
+    setRadio3depthCheck(reset);
+    setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+    setSelected1depth('');
+    setSelected2depth('');
+    setSelected3depth('');
+    setSelected4depth('');
+    setSelected5depth('');
+    setSelected6depth('');
+    setNextList1depth(listReset);
+    setNextList2depth(listReset);
+    setNextList3depth(listReset);
+    setNextList4depth(listReset);
+    setNextList5depth(listReset);
+    setSelectedCategoryEtc1([]);
+    setSelectedCategoryEtc2([]);
+    setCheckedDepthList([]);
+  };
+
+  // 수정
+  const changeUnitClassification = (idx: number) => {
+    onResetList();
+    setSelectedClassification(unitClassificationList[idx]);
+    setIsModifying(true);
+  };
+
+  // 수정시 작동
+  useEffect(() => {
+    if (isModifying && selectedClassification.length > 0) {
+      const classification = selectedClassification[0] as RadioStateType;
+      setSelected1depth(classification?.checkValue?.toString() || '');
+      setRadio1depthCheck(classification);
+    }
+  }, [isModifying, selectedClassification]);
+
+  useEffect(() => {
+    if (isModifying && selected1depth !== '') {
+      const classification = selectedClassification[1] as RadioStateType;
+      setSelected2depth(classification?.checkValue?.toString() || '');
+      setRadio2depthCheck(classification);
+    }
+  }, [isModifying, selected1depth]);
+
+  useEffect(() => {
+    if (isModifying && selected2depth !== '') {
+      const classification = selectedClassification[2] as RadioStateType;
+      setSelected3depth(classification?.checkValue?.toString() || '');
+      setRadio3depthCheck(classification);
+    }
+  }, [isModifying, selected2depth]);
+
+  useEffect(() => {
+    if (isModifying && selected3depth !== '') {
+      const classification = selectedClassification[3] as RadioStateType;
+      setSelected4depth(classification?.checkValue?.toString() || '');
+      setRadio4depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected3depth]);
+
+  useEffect(() => {
+    if (isModifying && selected4depth !== '') {
+      const classification = selectedClassification[4] as RadioStateType;
+      setSelected5depth(classification?.checkValue?.toString() || '');
+      setRadio5depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected4depth]);
+
+  useEffect(() => {
+    if (isModifying && selected5depth !== '') {
+      const classification = selectedClassification[5] as RadioStateType;
+      setSelected6depth(classification?.checkValue?.toString() || '');
+      setRadio6depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected5depth]);
+
+  useEffect(() => {
+    if (isModifying && selected6depth !== '') {
+      const classification = selectedClassification[6] as ItemTreeIdxListType;
+      setCheckedDepthList(classification.itemTreeIdxList);
+
+      const classificationEtc1 = selectedClassification[7] as RadioStateType[];
+      // 저장되었던 행동 요소1
+      setSelectedCategoryEtc1(
+        classificationEtc1.map((el) => el.checkValue?.toString()),
+      );
+      setRadioEtc1Check(classificationEtc1);
+
+      const classificationEtc2 = selectedClassification[8] as RadioStateType[];
+      // 저장되었던 행동 요소2
+      setSelectedCategoryEtc2(
+        classificationEtc2.map((el) => el.checkValue?.toString()),
+      );
+      setRadioEtc2Check(classificationEtc2);
+
+      //초기화
+      setIsModifying(false);
+    }
+  }, [isModifying, selected6depth]);
+
+  // 교과정보 추가버튼 disable 처리
+  const addButtonBool = useMemo(() => {
+    if (
+      unitClassificationList.length < 5 &&
+      radio1depthCheck?.code !== '' &&
+      radio2depthCheck?.code !== '' &&
+      radio3depthCheck?.code !== '' &&
+      radio4depthCheck?.code !== '' &&
+      radio5depthCheck?.code !== '' &&
+      radio6depthCheck?.code !== '' &&
+      checkedDepthList.length > 0
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [
+    unitClassificationList,
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    radio4depthCheck,
+    radio5depthCheck,
+    radio6depthCheck,
+    checkedDepthList,
+  ]);
+
+  useEffect(() => {}, [tabVeiw]);
+
+  const [searchValue, setSearchValue] = useState<string>('');
+
+  // 검색 기능
+  const filterSearchValue = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    // 쿼리 스트링 변경 로직
+    setSearchValue(e.currentTarget.value);
+  };
+  const filterSearchValueEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchValue(e.currentTarget.value);
+    }
+  };
+
+  // 깊이가 있는 리스트 DepthBlock 체크박스
+  const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
+    setCheckedDepthList((prev) => {
+      let updatedList = checked
+        ? [...prev, idx]
+        : prev.filter((item) => item !== idx);
+
+      if (checked) {
+        // 상위 요소를 체크
+        let currentItem = findItemByIdx(idx);
+        while (currentItem && currentItem.parentIdx !== 0) {
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
+          if (parentItem) {
+            if (!updatedList.includes(parentItem.idx)) {
+              updatedList.push(parentItem.idx);
+            }
+            currentItem = parentItem;
+          } else {
+            break;
+          }
+        }
+      } else {
+        // 하위 요소를 모두 체크 해제
+        const removeDescendants = (currentIdx: number) => {
+          const childItems = findChildItems(currentIdx);
+          childItems.forEach((child) => {
+            updatedList = updatedList.filter(
+              (itemIdx) => itemIdx !== child.idx,
+            );
+            removeDescendants(child.idx);
+          });
+        };
+        removeDescendants(idx);
+      }
+
+      return updatedList;
+    });
+  };
+  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
+    for (const tree of itemTree) {
+      for (const item of tree.itemTreeList) {
+        if (item.idx === idx) {
+          return item;
+        }
+      }
+    }
+    return undefined;
+  };
+  const findChildItems = (parentIdx: number): ItemTreeType[] => {
+    const children: ItemTreeType[] = [];
+    for (const tree of itemTree) {
+      children.push(
+        ...tree.itemTreeList.filter((item) => item.parentIdx === parentIdx),
+      );
+    }
+    return children;
+  };
+
+  // 검색 단어 하이라이트 && 하이라이트간 이동 처리
+  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const highlightText = (text: string, searchValue: string) => {
+    if (searchValue.length < 2) return text;
+    const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
+    return (
+      <span className="text">
+        {parts.map((part, index) => {
+          const className =
+            part.toLowerCase() === searchValue.toLowerCase() ? 'highlight' : '';
+          return (
+            <span key={index} className={className}>
+              {part}
+            </span>
+          );
+        })}
+      </span>
+    );
+  };
+
+  const prevHighlight = () => {
+    setHighlightIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
+
+  const nextHighlight = () => {
+    setHighlightIndex((prevIndex) => prevIndex + 1);
+  };
+
+  useEffect(() => {
+    const highlightedElements = document.querySelectorAll('.highlight');
+    if (highlightedElements.length > 0 && highlightIndex !== -1) {
+      highlightedElements.forEach((el) => el.classList.remove('current'));
+      const currentElement =
+        highlightedElements[highlightIndex % highlightedElements.length];
+      if (currentElement) {
+        currentElement.classList.add('current');
+        currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [highlightIndex]);
+
+  useEffect(() => {
+    setHighlightIndex(-1);
+  }, [itemTree, searchValue]);
 
   //단원.유형별
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState<string>('');
+
   const changeInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
 
@@ -131,11 +1017,18 @@ export function Step1() {
     inputValue = inputValue.replace(/[^0-9]/g, '');
 
     const parsedValue = parseInt(inputValue, 10);
-
-    if (!isNaN(parsedValue) && parsedValue > 0) {
-      setInputValue(
-        parsedValue < 1 ? '1' : parsedValue >= 100 ? '100' : inputValue,
-      );
+    if (tabVeiw === '시중교재') {
+      if (!isNaN(parsedValue) && parsedValue > 0) {
+        setInputValue(
+          parsedValue < 1 ? '1' : parsedValue >= 5 ? '5' : inputValue,
+        );
+      }
+    } else {
+      if (!isNaN(parsedValue) && parsedValue > 0) {
+        setInputValue(
+          parsedValue < 1 ? '1' : parsedValue >= 100 ? '100' : inputValue,
+        );
+      }
     }
   };
 
@@ -150,19 +1043,32 @@ export function Step1() {
     setQuestionLevel(newValue);
   };
 
-  const [questionType, setQuestionType] = useState<string[]>([]);
-  const selectQuestionType = (newValue: string) => {
+  const [questionType, setQuestionType] = useState<string[] | null>(null);
+
+  const selectQuestionType = (newValue: string | null) => {
     setQuestionType((prev) => {
-      if (prev.includes(newValue)) {
+      // prev가 null일 경우 빈 배열로 초기화
+      const prevArray = prev ?? [];
+
+      if (newValue === null) {
+        return prevArray; // newValue가 null이면 변경하지 않음
+      }
+
+      if (prevArray.includes(newValue)) {
         // 이미 선택된 경우 선택 취소
-        return prev.filter((type) => type !== newValue);
+        return prevArray.filter((type) => type !== newValue);
       } else {
         // 새로운 선택 추가
-        return [...prev, newValue];
+        return [...prevArray, newValue];
       }
     });
   };
+  //난이도
   const [isDifficulty, setIsDifficulty] = useState(false);
+  const [difficultyData, setDifficultyData] = useState<DifficultyDataType[]>(
+    [],
+  );
+
   const openDifficultySetting = () => {
     setIsDifficulty(true);
   };
@@ -170,41 +1076,263 @@ export function Step1() {
     setIsDifficulty(false);
   };
 
-  const [isAutoGrading, setIsAutoGrading] = useState(false);
-  const checkAutoGrading = () => {
-    setIsAutoGrading(!isAutoGrading);
+  const getDifficulty = async () => {
+    const res = await quizService.get(`/v1/difficulty`);
+    return res;
   };
+  const { data: difficultyRate } = useQuery({
+    queryKey: ['get-difficultyDetail'],
+    queryFn: getDifficulty,
+    meta: {
+      errorMessage: 'get-difficultyDetail 에러 메세지',
+    },
+    //enabled: !!selectedTextbookIdx,
+  });
+
+  useEffect(() => {
+    setDifficultyData(difficultyRate?.data.data.difficultyList);
+  }, [difficultyRate]);
 
   const isAllSelectedQuestionType =
-    questionType.includes('객관식') &&
-    questionType.includes('주관식') &&
-    questionType.includes('서술형');
+    questionType?.includes('MULTIPLE_CHOICE') &&
+    questionType?.includes('SHORT_ANSWER') &&
+    questionType?.includes('ESSAY_ANSWER');
 
-  const [containMock, setContainMock] = useState<string | null>(null);
-  const selectContainMock = (newValue: string | null) => {
+  const [containMock, setContainMock] = useState<number | null>(null);
+  const selectContainMock = (newValue: number | null) => {
     setContainMock(newValue);
   };
+  //배점
+  const [equalScore, setEqualScore] = useState<number | null>(null);
+  const selectEqualScore = (newValue: number | null) => {
+    if (newValue === null) {
+      setRemainderContent(0);
+      setNextRemainderContent(0);
+      setQuotient(0);
+      setMinQuotient(0);
+      setMaxQuotient(0);
+    }
+    setEqualScore(newValue);
+  };
+  //배점 모달 띄우는 값
+  const [isEqualScoreModal, setIsEqualScoreModal] = useState<boolean>(false);
 
-  const [isOption1, setIsOption1] = useState(false);
-  const selectOption1 = () => {
-    setIsOption1(!isOption1);
+  const openEqualScoreSettingModal = () => {
+    if (questionNum || inputValue || includeQuizList.length > 0) {
+      setIsEqualScoreModal(true);
+      setIsSaveEqualValue(false);
+      //setEqualTotlaValue('0');
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '문항을 먼저 선택해주세요',
+      });
+      selectEqualScore(null);
+      setIsSaveEqualValue(false);
+    }
   };
-  const [isOption2, setIsOption2] = useState(false);
-  const selectOption2 = () => {
-    setIsOption2(!isOption2);
+  //총 배점
+  const [equalTotalValue, setEqualTotlaValue] = useState('0');
+  // 문항당 배점
+  const [isSaveEqualValue, setIsSaveEqualValue] = useState<boolean>(false);
+
+  //나머지 시작 컨텐츠
+  const [remainderContent, setRemainderContent] = useState<number>();
+  //나머지 시작 전 컨텐츠
+  const [nextRemainderContent, setNextRemainderContent] = useState<number>();
+  //문항당 배점
+  const [quotient, setQuotient] = useState<number>(0);
+  const [remainder, setRemainder] = useState<number>();
+  //문항수 확인
+  const [receivedQuizCount, setReceivedQuizCount] = useState<number | null>(
+    null,
+  );
+  //문항 재배점
+  const [isResaveEqualValue, setIsResaveEqualValue] = useState(false);
+  //최종 확인
+  const [isConfirm, setIsConfirm] = useState(false);
+
+  // 균등배점 모달 닫기
+  const closeEqualScoreSettingModal = () => {
+    setIsEqualScoreModal(false);
   };
-  const [isOption3, setIsOption3] = useState(false);
-  const selectOption3 = () => {
-    setIsOption3(!isOption3);
+  //균등배점 저장
+  const saveEqualScoreSettingModal = () => {
+    if (isSaveEqualValue) {
+      //재균등배점
+      if (isResaveEqualValue) {
+        setIsConfirm(true);
+        closeEqualScoreSettingModal();
+        //로컬에 배점 저장하기
+        saveLocalQutientData();
+      } else {
+        closeEqualScoreSettingModal();
+        saveLocalQutientData();
+      }
+    } else {
+      if (equalTotalValue) {
+        openToastifyAlert({
+          type: 'error',
+          text: '저장을 눌러주세요.',
+        });
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '배점을 입력해주세요.',
+        });
+      }
+    }
   };
-  const [isOption4, setIsOption4] = useState(false);
-  const selectOption4 = () => {
-    setIsOption4(!isOption4);
+  //균등배점 취소
+  const cancelEqualScoreSettingModal = () => {
+    closeEqualScoreSettingModal();
+    setEqualScore(null);
+    setEqualTotlaValue('0');
+    setRemainderContent(0);
+    setNextRemainderContent(0);
+    setQuotient(0);
+    setMinQuotient(0);
+    setMaxQuotient(0);
+  };
+
+  const changeEqualInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let equalTotalValue = e.target.value;
+    // 정규표현식을 사용하여 숫자 이외의 문자 제거
+    equalTotalValue = equalTotalValue.replace(/[^0-9]/g, '');
+
+    const parsedValue = parseInt(equalTotalValue, 10);
+
+    setEqualTotlaValue(parsedValue >= 200 ? '200' : equalTotalValue);
+  };
+
+  useEffect(() => {
+    if (receivedQuizCount) {
+      setEqualTotlaValue(receivedQuizCount.toString());
+      //값초기화
+      setRemainderContent(0);
+      setNextRemainderContent(0);
+    }
+  }, [receivedQuizCount]);
+
+  const saveEqualInputValue = () => {
+    //받아온 문항 수 넘버타입 변경
+    const parsedreceivedQuiz = receivedQuizCount?.toString();
+    //받아온 문항 수 넘버타입 변경
+    const parsedreceivedQuizValue = parseInt(parsedreceivedQuiz as string, 10);
+    //총배점 타입 변경
+    const parsedValue = parseInt(equalTotalValue, 10);
+
+    //선택된 문항 수
+    const questionNumValue = parseInt(
+      questionNum ||
+        inputValue ||
+        (includeQuizList.length as unknown as string),
+      10,
+    );
+    if (equalTotalValue === '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '총 배점을 입력해주세요.',
+      });
+      setIsSaveEqualValue(false);
+      setEqualTotlaValue('0');
+      setQuotient(0);
+    } else if (
+      !receivedQuizCount &&
+      !parsedreceivedQuizValue &&
+      equalTotalValue &&
+      parsedValue < questionNumValue
+    ) {
+      openToastifyAlert({
+        type: 'error',
+        text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
+      });
+      setEqualTotlaValue(
+        questionNum ||
+          inputValue ||
+          (includeQuizList.length as unknown as string),
+      );
+      setIsSaveEqualValue(false);
+    } else if (equalTotalValue && parsedValue < parsedreceivedQuizValue) {
+      openToastifyAlert({
+        type: 'error',
+        text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
+      });
+      if (receivedQuizCount) {
+        setEqualTotlaValue(receivedQuizCount.toString());
+      }
+      setIsSaveEqualValue(false);
+    } else {
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      setEqualTotlaValue(equalTotalValue);
+      setIsSaveEqualValue(true);
+    }
+  };
+
+  const [minQuotient, setMinQuotient] = useState<number>();
+  const [maxQuotient, setMaxQuotient] = useState<number>();
+
+  useEffect(() => {
+    const parsedValue = parseInt(equalTotalValue, 10);
+    const questionNumValue = parseInt(
+      questionNum ||
+        inputValue ||
+        (includeQuizList.length as unknown as string),
+      10,
+    );
+
+    if (isSaveEqualValue && receivedQuizCount) {
+      const quotient = Math.floor(parsedValue / receivedQuizCount);
+      const remainder = parsedValue % receivedQuizCount;
+      setQuotient(quotient);
+      setRemainder(remainder);
+      if (quotient || remainder) {
+        const remainderContent = receivedQuizCount - remainder;
+        const minQuotient = quotient - 1;
+        const maxQuotient = quotient + 1;
+        setRemainderContent(remainderContent);
+        setNextRemainderContent(remainderContent + 1);
+        setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
+        setMaxQuotient(maxQuotient);
+      }
+    } else if (isSaveEqualValue && !receivedQuizCount) {
+      const quotient = Math.floor(parsedValue / questionNumValue);
+      const remainder = parsedValue % questionNumValue;
+      setQuotient(quotient);
+      setRemainder(remainder);
+      if (quotient || remainder) {
+        const remainderContent = questionNumValue - remainder;
+        const minQuotient = quotient - 1;
+        const maxQuotient = quotient + 1;
+        setRemainderContent(remainderContent);
+        setNextRemainderContent(remainderContent + 1);
+        setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
+        setMaxQuotient(maxQuotient);
+      }
+    }
+  }, [isSaveEqualValue, equalTotalValue, receivedQuizCount]);
+
+  //문항 수 균등 배분
+  const [isQuizEven, setIsQuizEven] = useState(false);
+  const selectQuizEven = () => {
+    setIsQuizEven(!isQuizEven);
+  };
+  //내 문항 우선 추천
+  const [isPriority, setIsPriority] = useState(false);
+  const selectPriority = () => {
+    setIsPriority(!isPriority);
   };
 
   //시중교재
-  const [schoolLevel, setSchoolLevel] = useState<string | null>(null);
-  const selectSchoolLevel = (newValue: string | null) => {
+  const [page, setPage] = useRecoilState(pageAtom);
+  const changeTab = () => {
+    setPage(1);
+  };
+  const [schoolLevel, setSchoolLevel] = useState<string>('초등');
+  const selectSchoolLevel = (newValue: string) => {
     setSchoolLevel(newValue);
   };
   const [gradeLevel, setgradeLevel] = useState<string | null>(null);
@@ -212,113 +1340,288 @@ export function Step1() {
     setgradeLevel(newValue);
   };
 
-  const [searchValue, setSearchValue] = useState<string>('');
-  const filterSearchValue = () => {
-    console.log('기존데이터 입력된 값으로 솎아낸뒤 재출력');
+  //시중교재 검색값
+  const [searchTextbookValue, setSearchTextbookValue] = useState<string>('');
+
+  const searchTextbook = (value: string) => {
+    setSearchTextbookValue(value);
   };
 
-  const textbookList: TextbookType[] = dummy.Textbook;
   const [isSelectTextbook, setIsSelectTextbook] = useState(true);
-  const [selectedTextbook, setSelectedTextbook] = useState<TextbookType>();
+  const [selectedTextbookTitle, setSelectedTextbookTitle] = useState<
+    string | null
+  >(null);
+  const [selectedTextbookIdx, setSelectedTextbookIdx] = useState<number | null>(
+    null,
+  );
   const [isSelectTextbookContent, setIsSelectTextbookContent] = useState(false);
 
-  const selectTextbook = (book: TextbookType) => {
-    setSelectedTextbook(book);
+  //선택한 시중교재 get api
+  const selectTextbook = async (idx: number, title: string) => {
+    setSelectedTextbookIdx(idx);
+    setSelectedTextbookTitle(title);
     setIsSelectTextbook(false);
     setIsSelectTextbookContent(true);
-    setClickedTitle('');
   };
+  const getTextbookDetail = async (idx: number) => {
+    const res = await quizService.get(`/v1/textbook/${idx}`);
+    return res;
+  };
+  const { data: textbookDetailData } = useQuery({
+    queryKey: ['get-textbookDetail'],
+    queryFn: () => getTextbookDetail(selectedTextbookIdx as number),
+    meta: {
+      errorMessage: 'get-textbookDetail 에러 메세지',
+    },
+    enabled: !!selectedTextbookIdx,
+  });
+  const [selectedTextbook, setSelectedTextbook] = useState<
+    ProcessTextbookDataType[]
+  >([]);
+  useEffect(() => {
+    if (textbookDetailData) {
+      setSelectedTextbook(textbookDetailData?.data.data.textbookList);
+    }
+  }, [textbookDetailData]);
+
+  //다른 교재 선택
   const selectOtherTextbook = () => {
+    setQuestionNum('');
     setIsSelectTextbook(true);
     setIsSelectTextbookContent(false);
     setIsChoice(false);
-    setClickedIdx(0);
-    setClickedTitle('');
+    setProcessTextbookData([]);
+    setTextbookList([]);
+    setSelectedTextbookIdx(null);
+    setSelectedTextbook([]);
+    setClickedIdx(null);
+    setClickedPageIdx(null);
+    textbookDataRefetch();
   };
+  // 시중교재 불러오기 api
+  const getTextbook = async () => {
+    const res = await quizService.get(
+      `/v1/textbook?pageIndex=${page}&pageUnit=${8}&level=${schoolLevel}&grade=${gradeLevel || ''}&searchKeyword=${searchTextbookValue || ''}`,
+    );
+    return res;
+  };
+  const { data: textbookData, refetch: textbookDataRefetch } = useQuery({
+    queryKey: ['get-textbook'],
+    queryFn: getTextbook,
+    meta: {
+      errorMessage: 'get-textbook 에러 메세지',
+    },
+    enabled: false,
+  });
+  const [textbookList, setTextbookList] = useState<TextbookInfoType[]>([]);
+  useEffect(() => {
+    if (textbookData) {
+      setTextbookList(textbookData?.data.data.textbookList);
+    }
+  }, [textbookData]);
+
+  //조건값이 바뀔때 재검색
+  useEffect(() => {
+    if (tabVeiw === '시중교재') {
+      textbookDataRefetch();
+    }
+  }, [page, schoolLevel, gradeLevel, searchTextbookValue, tabVeiw]);
 
   const [isChoice, setIsChoice] = useState(false);
-  const [clickedIdx, setClickedIdx] = useState<number>();
-  const [clickedTitle, setClickedTitle] = useState<string>();
+  const [clickedIdx, setClickedIdx] = useState<number | null>(null);
+  const [clickedPageIdx, setClickedPageIdx] = useState<string | null>(null);
+  const [processTextbookData, setProcessTextbookData] = useState<
+    ProcessTextbookDataType[]
+  >([]);
 
-  const [data, setData] = useState<DataType | undefined>();
-
-  useEffect(() => {
-    if (selectedTextbook && selectedTextbook.type) {
-      setData(() => {
-        return processData(selectedTextbook);
-      });
+  // 클릭한 페이지 인덱스를 기억하는 함수
+  const handlePageClick = (bookPage: string) => {
+    if (clickedPageIdx !== bookPage) {
+      setClickedPageIdx(bookPage);
+    } else {
+      setClickedPageIdx(null); // 같은 페이지를 다시 클릭하면 숨기기
     }
-  }, [selectedTextbook, tabVeiw]);
+  };
+
+  // 시중교재 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (selectedTextbook && selectedTextbook.length > 0) {
+      const initialData = selectedTextbook.map((textbook) => ({
+        subChapter: textbook?.subChapter || '',
+        pageList: (textbook?.pageList || [])
+          .map((page) => ({
+            bookPage: page?.bookPage || '',
+            isChecked: false,
+            quizList: (page?.quizList || [])
+              .map((quiz) => ({
+                ...quiz,
+                isChecked: false,
+                seq: `${quiz.code}${quiz.bookQuizNumber}`,
+              }))
+              .sort(
+                (a, b) => Number(a.bookQuizNumber) - Number(b.bookQuizNumber),
+              ),
+          }))
+          .sort((a, b) => Number(a.bookPage) - Number(b.bookPage)), // quizNumber로 정렬
+      }));
+      setProcessTextbookData(initialData);
+    }
+  }, [selectedTextbook]);
 
   // 선택시 배경색이 나타남
-  const choiceType = (idx: number, title: string) => {
-    setIsChoice(!isChoice);
-    setClickedIdx(idx);
-    setClickedTitle(title);
+  const choiceType = (idx: number) => {
+    if (clickedIdx !== idx) {
+      setClickedIdx(idx);
+      setIsChoice(!isChoice);
+    } else {
+      setClickedIdx(null);
+      setIsChoice(!isChoice);
+    }
+  };
+
+  const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
+  // 선택된 문항 코드 넣기
+  const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
+    if (Array.isArray(quizCode)) {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => !quizCode.includes(code));
+        } else {
+          // isChecked가 false일 때: 중복을 제거하고 quizCode를 추가
+          const uniqueCodesToAdd = quizCode.filter(
+            (code, index, self) =>
+              self.indexOf(code) === index && !prev.includes(code),
+          );
+          return [...prev, ...uniqueCodesToAdd];
+        }
+      });
+    } else {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => code !== quizCode);
+        } else {
+          // isChecked가 false일 때: quizCode를 추가
+          if (!prev.includes(quizCode)) {
+            return [...prev, quizCode];
+          }
+          return prev;
+        }
+      });
+    }
   };
 
   // 전체 선택
   const checkAllToggle = (
-    pageSeq: number,
+    subChapter: string,
     isChecked: boolean,
-    contentSeqs: number[],
+    contentSeqs: string[],
+    quizCode: string,
   ) => {
-    setData((prevData) => {
+    setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
-      const targetPage = prevData.page.find((page) => page.seq === pageSeq);
+      return prevData.map((textbook) => {
+        if (textbook.subChapter === subChapter) {
+          const updatedPageList = textbook.pageList.map((page) => {
+            const updatedQuizList = page.quizList.map((quiz) => {
+              if (contentSeqs.includes(quiz.seq)) {
+                return { ...quiz, isChecked: !isChecked };
+              }
+              return quiz;
+            });
 
-      if (targetPage) {
-        targetPage.isChecked = !isChecked;
+            // 모든 퀴즈가 선택되어 있는지 확인
+            const allContentsChecked = updatedQuizList.every(
+              (quiz) => quiz.isChecked,
+            );
 
-        if (contentSeqs.length > 0) {
-          targetPage.content.forEach((content) => {
-            if (contentSeqs.includes(content.seq)) {
-              content.isChecked = !isChecked;
-            }
+            return {
+              ...page,
+              isChecked: allContentsChecked,
+              quizList: updatedQuizList,
+            };
           });
-        }
-      }
 
-      return { ...prevData };
+          return { ...textbook, pageList: updatedPageList };
+        }
+        return textbook;
+      });
     });
+    toggleQuizCode(quizCode, isChecked);
   };
 
   //부분 선택
   const checkPartialToggle = (
-    pageSeq: number,
-    contentSeq: number,
+    subChapter: string,
+    contentSeq: string,
     isChecked: boolean,
+    quizCode: string,
   ) => {
-    setData((prevData) => {
+    setProcessTextbookData((prevData) => {
       if (!prevData) return prevData;
 
-      const targetPage = prevData.page.find((page) => page.seq === pageSeq);
+      return prevData.map((textbook) => {
+        if (textbook.subChapter === subChapter) {
+          const updatedPageList = textbook.pageList.map((page) => {
+            const updatedQuizList = page.quizList.map((quiz) => {
+              if (quiz.seq === contentSeq) {
+                return { ...quiz, isChecked: !isChecked };
+              }
+              return quiz;
+            });
 
-      if (targetPage) {
-        const targetContent = targetPage.content.find(
-          (content) => content.seq === contentSeq,
-        );
+            // 모든 퀴즈가 선택되어 있는지 확인
+            const allContentsChecked = updatedQuizList.every(
+              (quiz) => quiz.isChecked,
+            );
 
-        if (targetContent) {
-          targetContent.isChecked = !isChecked;
+            return {
+              ...page,
+              isChecked: allContentsChecked,
+              quizList: updatedQuizList,
+            };
+          });
 
-          // 모든 컨텐츠가 선택되어 있는지 확인
-          const allContentsChecked = targetPage.content.every(
-            (content) => content.isChecked,
+          // 모든 페이지가 선택되어 있는지 확인
+          const allPagesChecked = updatedPageList.every(
+            (page) => page.isChecked,
           );
 
-          // 페이지의 isChecked 업데이트
-          targetPage.isChecked = allContentsChecked;
+          return {
+            ...textbook,
+            isChecked: allPagesChecked,
+            pageList: updatedPageList,
+          };
         }
-      }
-
-      const newData = { ...prevData, page: [...prevData.page] };
-      return newData;
+        return textbook;
+      });
     });
+    toggleQuizCode(quizCode, isChecked);
   };
 
   // 수능/모의고사
+  // 수능/모의고사 드롭다운 카테고리 get api
+  const getCategoryExamGroups = async () => {
+    const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    return response.data.data.typeList;
+  };
+  const { data: examData } = useQuery({
+    queryKey: ['get-category-exam-groups'],
+    queryFn: getCategoryExamGroups,
+    meta: {
+      errorMessage: 'get-category-exam-groups 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (tabVeiw === '수능/모의고사' && examData) {
+      fetchCategoryItems(examData, setCategoryList);
+    }
+  }, [examData, tabVeiw]);
+
+  const excludedNames = ['1', '2', '8', '12'];
+
   // 드롭다운에서 선택한 값으로 더미데이터를 대신해서 넣고 선택 완료를 누르면 서버에 요청해서 값을 저장함
   const [isDropdown, setIsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -361,9 +1664,9 @@ export function Step1() {
     });
   };
   const isAllSelectedExamGrade =
-    examGrade.includes('고1') &&
-    examGrade.includes('고2') &&
-    examGrade.includes('고3');
+    examGrade.includes('1') &&
+    examGrade.includes('2') &&
+    examGrade.includes('3');
 
   const [examYear, setExamYear] = useState<string[]>([]);
   const selectExamYear = (newValue: string) => {
@@ -379,11 +1682,11 @@ export function Step1() {
   };
 
   const isAllSelectedExamYear =
-    examYear.includes('2024년') &&
-    examYear.includes('2023년') &&
-    examYear.includes('2022년') &&
-    examYear.includes('2021년') &&
-    examYear.includes('2020년');
+    examYear.includes('2024') &&
+    examYear.includes('2023') &&
+    examYear.includes('2022') &&
+    examYear.includes('2021') &&
+    examYear.includes('2020');
 
   const [examMonthly, setExamMonthly] = useState<string[]>([]);
   const selectExamMonthly = (newValue: string) => {
@@ -399,114 +1702,1262 @@ export function Step1() {
   };
 
   const isAllSelectedExamMonthly =
-    examMonthly.includes('3월') &&
-    examMonthly.includes('4월') &&
-    examMonthly.includes('5월') &&
-    examMonthly.includes('6월') &&
-    examMonthly.includes('7월') &&
-    examMonthly.includes('9월') &&
-    examMonthly.includes('10월') &&
-    examMonthly.includes('11월');
+    examMonthly.includes('3') &&
+    examMonthly.includes('4') &&
+    examMonthly.includes('5') &&
+    examMonthly.includes('6') &&
+    examMonthly.includes('7') &&
+    examMonthly.includes('9') &&
+    examMonthly.includes('10') &&
+    examMonthly.includes('11');
 
-  const [examOption, setExamOption] = useState<string | null>(null);
-  const selectExamOption = (newValue: string | null) => {
+  const [examOption, setExamOption] = useState<number | null>(null);
+  const selectExamOption = (newValue: number | null) => {
     setExamOption(newValue);
   };
+  //선택 초기화
   const selectExamReset = () => {
     setExamGrade([]);
     setExamYear([]);
     setExamMonthly([]);
+    setIncludeQuizList([]);
     setExamOption(null);
+    setProcessCastQuizListData([]);
+    setProcessCastListData([]);
+    setCastQuizListData([]);
+    setCastListData([]);
   };
+
+  // 수능 모의고사 문항 get api 선택 완료
   const selectExam = () => {
     setIsDropdown(false);
+    setIncludeQuizList([]);
+    setProcessCastQuizListData([]);
+    setProcessCastListData([]);
+    setCastQuizListData([]);
+    setCastListData([]);
+    castDataRefetch();
+  };
+  const getcsat = async () => {
+    const grades = examGrade.join(',');
+    const years = examYear.join(',');
+    const months = examMonthly.join(',');
+    const res = await quizService.get(
+      `/v1/csat?option=${examOption}&level=고등&subject=수학&grades=${grades}&years=${years}&months=${months}`,
+    );
+    return res;
   };
 
-  const mockexamList: MockexamType[] = dummy.Mockexam;
-  //const processedData: MockexamType[] = processMockexam(mockexamList);
-  const [processedData, setProcessedData] = useState(
-    processMockexam(mockexamList),
+  const {
+    data: castData,
+    refetch: castDataRefetch,
+    isLoading: castDataLoading,
+  } = useQuery({
+    queryKey: ['get-cast'],
+    queryFn: getcsat,
+    meta: {
+      errorMessage: 'get-cast 에러 메세지',
+    },
+    enabled: false,
+  });
+
+  //문항 번호로 추가
+  const [castQuizListData, setCastQuizListData] = useState<CastQuizListType[]>(
+    [],
   );
-  //console.log(processedData);
+  useEffect(() => {
+    if (castData) {
+      setCastQuizListData(castData?.data.data.quizList);
+    }
+  }, [castData]);
 
-  const removeMockexam = (seq: number) => {
-    setProcessedData((prevData) => prevData.filter((mock) => mock.seq !== seq));
-  };
+  //문항 번호로 추가 데이터 가공
+  const [processCastQuizListData, setProcessCastQuizListData] = useState<
+    ProcessCsatQuizListDataType[]
+  >([]);
 
-  // 전체 선택
-  const checkAllMockexamToggle = (
-    seq: number,
+  // 문항 번호 전체 선택
+  const toggleCheckAllCastQuiz = (
+    id: string,
+    quizCode: string[],
     isChecked: boolean,
-    contentSeqs: number[],
   ) => {
-    //setProcessedData에 있는 기존 값을 가져와서 그 값을 순회하며 비교하여 값을 갱신
-    setProcessedData((prevData) => {
-      const newData = prevData.map((mock) => {
-        if (mock.seq === seq) {
-          mock.isChecked = !isChecked;
-
-          if (contentSeqs.length > 0) {
-            mock.content.forEach((content) => {
-              if (contentSeqs.includes(content.seq)) {
-                content.isChecked = !isChecked;
-              }
-            });
-          }
+    setProcessCastQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.id === id) {
+          const isChecked = !item.isChecked;
+          return {
+            ...item,
+            isChecked,
+            quizNumberList: item.quizNumberList.map((quiz) => ({
+              ...quiz,
+              isChecked,
+            })),
+          };
         }
-        // 갱신된 값을 가져오기
-        return mock;
+        return item;
       });
-      //가져온 값을 최종적으로 상태값으로 갱신하기
-      return [...newData];
     });
+    toggleQuizCode(quizCode, isChecked);
   };
-
-  //부분 선택
-  const checkPartialMockexamToggle = (
-    seq: number,
-    contentSeq: number,
+  // 문항 번호 부분 선택
+  const toggleCheckPartialCastQuiz = (
+    parentId: string,
+    quizNumber: string,
+    quizCode: string,
     isChecked: boolean,
   ) => {
-    setProcessedData((prevData) => {
-      const newData = prevData.map((mock) => {
-        if (mock.seq === seq) {
-          const targetContent = mock.content.find(
-            (content) => content.seq === contentSeq,
+    setProcessCastQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.id === parentId) {
+          const updatedQuizNumberList = item.quizNumberList.map((quiz) => {
+            if (quiz.quizNumber === quizNumber) {
+              return {
+                ...quiz,
+                isChecked: !quiz.isChecked,
+              };
+            }
+            return quiz;
+          });
+          const isChecked = updatedQuizNumberList.every(
+            (quiz) => quiz.isChecked,
           );
+          return {
+            ...item,
+            isChecked,
+            quizNumberList: updatedQuizNumberList,
+          };
+        }
+        return item;
+      });
+    });
+    toggleQuizCode(quizCode, isChecked);
+  };
 
-          if (targetContent) {
-            targetContent.isChecked = !isChecked;
+  // 수능/모의고사 문항 번호 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castQuizListData?.length > 0) {
+      const initialData = castQuizListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        ...mock,
+        isChecked: false,
+        quizNumberList: mock.quizNumberList
+          .map((quiz) => ({
+            ...quiz,
+            isChecked: false,
+          }))
+          .sort((a, b) => Number(a.quizNumber) - Number(b.quizNumber)), // quizNumber로 정렬
+      }));
+      setProcessCastQuizListData(initialData);
+    }
+  }, [castQuizListData, castDataRefetch]);
 
-            const allContentsChecked = mock.content.every(
-              (content) => content.isChecked,
-            );
-            mock.isChecked = allContentsChecked;
-          }
+  //단원으로 추가
+  const [castListData, setCastListData] = useState<csatListType[]>([]);
+  useEffect(() => {
+    if (castData) {
+      setCastListData(castData?.data.data.csatList);
+    }
+  }, [castData]);
+  //단원으로 추가 데이터 가공
+  const [processCastListData, setProcessCastListData] = useState<
+    ProcessCsatListDataType[]
+  >([]);
+
+  // 단원으로 추가 재귀형태 함수
+  const renderHierarchicalData = (
+    data: HierarchicalDataType[],
+    depth: number = 0,
+  ) => {
+    return data.map((item, index) => (
+      <CastListWrapper key={index} style={{ paddingLeft: `${depth * 15}px` }}>
+        {item.title &&
+          item.title !== 'root' && ( // key 값이 존재하고 "root"가 아닌 경우에만 렌더링
+            <CheckBoxWrapper>
+              <CheckBox
+                isChecked={item.isChecked}
+                width="15"
+                height="15"
+                onClick={() =>
+                  toggleCheckPartialCastList(
+                    item.seq,
+                    extractCodesFromHierarchicalData(item.value),
+                    item.isChecked,
+                    depth,
+                  )
+                }
+              />
+              <Label value={item.title} width="100px" />
+            </CheckBoxWrapper>
+          )}
+        {/* key 값이 존재하고 "root"가 아닌 경우에만 하위 요소 렌더링 */}
+        {Array.isArray(item.value) &&
+          renderHierarchicalData(
+            item.value as HierarchicalDataType[],
+            depth + 1,
+          )}
+      </CastListWrapper>
+    ));
+  };
+  // 재귀함수 사용해서 isChecked값 부여
+  const addIsCheckedToHierarchicalData = (
+    data: any,
+    seq: string,
+  ): HierarchicalDataType[] => {
+    if (Array.isArray(data)) {
+      // 배열인 경우
+      return [
+        {
+          title: 'root',
+          seq: seq + 'root',
+          value: data.map((item: any) => ({
+            ...item,
+            isChecked: false,
+          })),
+          isChecked: false,
+        },
+      ];
+    } else {
+      // 객체인 경우, 재귀적으로 호출하여 처리
+      const hierarchicalData: HierarchicalDataType[] = [];
+      for (const title in data) {
+        if (Object.prototype.hasOwnProperty.call(data, title)) {
+          const value = data[title];
+          hierarchicalData.push({
+            title: title,
+            seq: seq + title,
+            value: addIsCheckedToHierarchicalData(value, seq), // 재귀 호출로 하위 항목 처리
+            isChecked: false,
+          });
+        }
+      }
+      return hierarchicalData;
+    }
+  };
+
+  // 수능/모의고사 단원 값을 받아왔을 때 원하는 모양의 데이타로 가공
+  useEffect(() => {
+    if (castListData?.length > 0) {
+      const initialData = castListData.map((mock) => ({
+        id: `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+        grade: mock.grade,
+        level: mock.level,
+        month: mock.month,
+        year: mock.year,
+        isChecked: false,
+        nodeData: {
+          hierarchicalData: addIsCheckedToHierarchicalData(
+            mock.nodeData.hierarchicalData,
+            `${mock.grade}-${mock.level}-${mock.month}-${mock.year}`,
+          ),
+        },
+      }));
+      setProcessCastListData(initialData);
+    }
+  }, [castListData, castDataRefetch]);
+
+  // HierarchicalDataType 배열에서 QuizType 객체의 code 값들을 추출하는 함수
+  const extractCodesFromHierarchicalData = (
+    data: HierarchicalDataType[],
+  ): string[] => {
+    const codes: string[] = [];
+
+    const extractCodes = (value: any) => {
+      if (Array.isArray(value)) {
+        value.forEach((item) => extractCodes(item));
+      } else if (value && typeof value === 'object') {
+        if ('code' in value) {
+          codes.push(value.code);
+        } else {
+          Object.values(value).forEach((item) => extractCodes(item));
+        }
+      }
+    };
+
+    data.forEach((item) => {
+      extractCodes(item.value);
+    });
+
+    return codes;
+  };
+
+  // 단원 전체 선택
+  const toggleCheckAllCastList = (
+    id: string,
+    codes: string[],
+    isChecked: boolean,
+  ) => {
+    setProcessCastListData((prevData) =>
+      prevData.map((mock) => {
+        if (mock.id === id) {
+          const updatedHierarchicalData = updateCheckStatus(
+            mock.nodeData.hierarchicalData,
+            isChecked,
+          );
+          return {
+            ...mock,
+            isChecked: !isChecked,
+            nodeData: {
+              ...mock.nodeData,
+              hierarchicalData: updatedHierarchicalData,
+            },
+          };
         }
         return mock;
-      });
+      }),
+    );
+    toggleQuizCode(codes, isChecked);
+  };
 
-      return [...newData];
+  // 단원 전체 선택 isChecked 값 갱신
+  const updateCheckStatus = (
+    data: HierarchicalDataType[],
+    isChecked: boolean,
+  ): HierarchicalDataType[] => {
+    return data.map((item) => {
+      if (Array.isArray(item.value)) {
+        return {
+          ...item,
+          isChecked: !isChecked,
+          value: updateCheckStatus(
+            item.value as HierarchicalDataType[],
+            isChecked,
+          ),
+        };
+      } else {
+        return {
+          ...item,
+          isChecked: !isChecked,
+        };
+      }
     });
+  };
+
+  // 단원 부분 선택
+  const toggleCheckPartialCastList = (
+    seq: string,
+    codes: string[],
+    isChecked: boolean,
+    depth: number,
+  ) => {
+    setProcessCastListData((prevData) =>
+      prevData.map((mock) => {
+        const updatedHierarchicalData = updateCheckStatusByKey(
+          mock.nodeData.hierarchicalData,
+          seq,
+          isChecked,
+          depth,
+        );
+        return {
+          ...mock,
+          nodeData: {
+            ...mock.nodeData,
+            hierarchicalData: updatedHierarchicalData,
+          },
+        };
+      }),
+    );
+    toggleQuizCode(codes, isChecked);
+  };
+
+  // 부분 클릭 isChecked 값 갱신
+  const updateCheckStatusByKey = (
+    data: HierarchicalDataType[],
+    seq: string,
+    isChecked: boolean,
+    depth: number,
+  ): HierarchicalDataType[] => {
+    const traverseToDepth = (
+      items: HierarchicalDataType[],
+      currentDepth: number,
+    ): HierarchicalDataType[] => {
+      return items.map((item) => {
+        if (currentDepth === depth) {
+          if (item.seq === seq) {
+            return { ...item, isChecked: !isChecked };
+          }
+        } else if (Array.isArray(item.value)) {
+          return {
+            ...item,
+            value: traverseToDepth(
+              item.value as HierarchicalDataType[],
+              currentDepth + 1,
+            ),
+          };
+        }
+        return item;
+      });
+    };
+
+    return traverseToDepth(data, 0);
+  };
+
+  // 항목 삭제
+  const removeMockexam = (id: string, title: string) => {
+    if (title === '문항') {
+      setProcessCastQuizListData((prevData) =>
+        prevData.filter((mock) => mock.id !== id),
+      );
+    }
+    if (title === '단원') {
+      setProcessCastListData((prevData) =>
+        prevData.filter((mock) => mock.id !== id),
+      );
+    }
+  };
+  //선택한 유형 확인
+  const [selectedItemTreeCount, setSelectedItemTreeCount] = useState<number[]>(
+    [],
+  );
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  //alert 취소클릭
+  const cancelAlert = () => {
+    //alert 끄기
+    setIsAlertOpen(false);
+    //선택된 값 초기화
+    setQuestionNum('');
+    selectEqualScore(null);
+    setQuestionLevel('');
+    setQuestionType([]);
+    setContainMock(null);
+    setIsQuizEven(false);
+    setIsPriority(false);
+    setReceivedQuizCount(null);
+    setRemainderContent(0);
+    setNextRemainderContent(0);
+    setQuotient(0);
+    setMinQuotient(0);
+    setMaxQuotient(0);
+    setEqualTotlaValue('');
+  };
+
+  //alert 진행클릭
+  const keepGoingAlert = () => {
+    //난이도 설정 다시 열기
+    if (equalScore === 2) {
+      setIsEqualScoreModal(true);
+      setIsAlertOpen(false);
+      setIsResaveEqualValue(true);
+      setIsSaveEqualValue(false);
+    } else {
+      navigate('/content-create/exam/step2');
+    }
   };
 
   useEffect(() => {
+    if (isConfirm) {
+      navigate('/content-create/exam/step2');
+    }
+  }, [isConfirm]);
+
+  // step1 선택된 문항 불러오기 api
+  const postWorkbookStep1 = async (data: any) => {
+    return await quizService.post(`/v1/search/quiz/step/1`, data);
+  };
+
+  const { mutate: postStep1Data, isPending: postStep1Pending } = useMutation({
+    mutationFn: postWorkbookStep1,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //성공했을 때 문항 수 카운트
+      setReceivedQuizCount(response.data.data.quizList.length);
+      saveLocalData(response.data.data);
+      //받아온 문항수와 선택한 문항수가 같을경우 다음단계
+      if (tabVeiw === '단원·유형별') {
+        if (response.data.data.quizList.length === 0) {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          return;
+        } else {
+          if (
+            response.data.data.quizList.length === Number(questionNum) ||
+            response.data.data.quizList.length === Number(inputValue)
+          ) {
+            navigate('/content-create/exam/step2');
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          } else {
+            setIsAlertOpen(true);
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          }
+        }
+      } else if (tabVeiw === '시중교재') {
+        if (response.data.data.quizList.length === 0) {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          return;
+        } else {
+          if (
+            response.data.data.quizList.length === Number(questionNum) ||
+            response.data.data.quizList.length === Number(inputValue)
+          ) {
+            navigate('/content-create/exam/step2');
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          } else {
+            setIsAlertOpen(true);
+            const itemCount =
+              Number(questionNum) ||
+              Number(inputValue) ||
+              Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          }
+        }
+      } else if (tabVeiw === '수능/모의고사') {
+        if (response.data.data.quizList.length === 0) {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          return;
+        } else {
+          if (
+            response.data.data.quizList.length === Number(questionNum) ||
+            response.data.data.quizList.length === Number(inputValue)
+          ) {
+            navigate('/content-create/exam/step2');
+            const itemCount = Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          } else {
+            setIsAlertOpen(true);
+            const itemCount = Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          }
+        }
+      }
+    },
+  });
+
+  const isRadioStateType = (
+    item: UnitClassificationType,
+  ): item is RadioStateType => {
+    return (item as RadioStateType).title !== undefined;
+  };
+
+  //useMemo를 사용하여 makingdata값을 기억하며 unitClassificationList가 변경될때 업데이트
+  const makingdata = useMemo(
+    () =>
+      unitClassificationList.map((item) => {
+        // 타입 가드로 RadioStateType인지 확인 후 title에 접근
+        const itemTreeKey = {
+          교육과정: isRadioStateType(item[0]) ? item[0].title : '',
+          학교급: isRadioStateType(item[1]) ? item[1].title : '',
+          학년: isRadioStateType(item[2]) ? item[2].title : '',
+          학기: isRadioStateType(item[3]) ? item[3].title : '',
+          교과: isRadioStateType(item[4]) ? item[4].title : '',
+          과목: isRadioStateType(item[5]) ? item[5].title : '',
+        };
+        // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
+        const itemTreeIdxList =
+          (item[6] as ItemTreeIdxListType).itemTreeIdxList || [];
+
+        return {
+          itemTreeKey,
+          itemTreeIdxList,
+        };
+      }),
+    [unitClassificationList],
+  );
+
+  useEffect(() => {
+    const allItemTreeIdxList = makingdata.flatMap(
+      (data) => data.itemTreeIdxList,
+    );
+    setSelectedItemTreeCount(allItemTreeIdxList);
+  }, [makingdata]);
+
+  const clickNextButton = () => {
+    const data = {
+      itemTreeKeyList: tabVeiw === '단원·유형별' ? makingdata : null,
+      count:
+        tabVeiw !== '수능/모의고사'
+          ? Number(questionNum) || Number(inputValue)
+          : Number(includeQuizList.length),
+      //수능/모의고사 경우 어떻게 보내야할지 나중에 수정해야함
+      difficulty: questionLevel === '선택안함' ? null : questionLevel || null,
+      type: questionType,
+      mock: containMock,
+      score: equalScore,
+      //isScoreEven 안쓰는거
+      isScoreEven: true,
+      isQuizEven: isQuizEven,
+      isMePriority: isPriority,
+      filterList: null,
+      includeList: tabVeiw === '단원·유형별' ? null : includeQuizList,
+    };
+
+    postStep1Data(data);
+  };
+
+  const [getLocalData, setGetLocalData] = useState<any | null>(null);
+
+  // 로컬 스토리지에서 데이터 가져오기
+  useEffect(() => {
+    const data = localStorage.getItem('sendData');
+    if (data) {
+      const parsedData = JSON.parse(data);
+      setGetLocalData(parsedData);
+    }
+  }, []);
+
+  // 로컬 스토리지 값 다 받은 뒤 초기화
+  useEffect(() => {
+    if (getLocalData) {
+      //window.opener.localStorage.clear();
+    }
+  }, [getLocalData]);
+  //로컬 스토리지에서 받아온 값이 있다면 보여주기
+  useEffect(() => {
+    if (getLocalData) {
+      setQuestionNum(getLocalData.문항수);
+      setInputValue(getLocalData.문항수);
+      setQuestionLevel(getLocalData.난이도);
+      setQuestionType([getLocalData.문항타입]);
+    }
+  }, [getLocalData]);
+
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = (data: any) => {
+    const sendData = { data: data };
+    const categoryData = makingdata;
+    localStorage.setItem('sendData', JSON.stringify(sendData));
+    localStorage.setItem('sendCategoryData', JSON.stringify(categoryData));
+  };
+
+  const saveLocalQutientData = () => {
+    const sendQuotientData = {
+      equalScore: equalScore,
+      equalTotalValue: equalTotalValue,
+      remainderContent: remainderContent,
+      quotient: quotient,
+      nextRemainderContent: nextRemainderContent,
+      minQuotient: minQuotient,
+      maxQuotient: maxQuotient,
+    };
+    if (equalScore === 2) {
+      localStorage.setItem(
+        'sendQuotientData',
+        JSON.stringify(sendQuotientData),
+      );
+    }
+  };
+
+  const moveStep2 = () => {
+    if (tabVeiw === '단원·유형별')
+      if (unitClassificationList.length > 0) {
+        if (
+          inputValue !== '' ||
+          (questionNum !== null &&
+            questionNum !== '' &&
+            questionLevel !== null &&
+            questionType !== null &&
+            containMock !== null &&
+            equalScore !== null)
+        ) {
+          clickNextButton();
+        } else {
+          openToastifyAlert({
+            type: 'error',
+            text: '필수항목을 선택해주세요',
+          });
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '교과정보 추가버튼을 눌러주세요.',
+        });
+      }
+    else if (tabVeiw === '시중교재') {
+      if (
+        inputValue !== '' ||
+        (questionNum !== null &&
+          questionNum !== '' &&
+          includeQuizList.length > 0 &&
+          questionLevel !== null &&
+          questionType !== null &&
+          containMock !== null &&
+          equalScore !== null)
+      ) {
+        clickNextButton();
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '필수항목을 선택해주세요',
+        });
+      }
+    } else if (tabVeiw === '수능/모의고사') {
+      if (includeQuizList.length > 0 && equalScore !== null) {
+        clickNextButton();
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '필수항목을 선택해주세요',
+        });
+      }
+    }
+  };
+
+  //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
+  useEffect(() => {
+    if (
+      tabVeiw === '단원·유형별' ||
+      tabVeiw === '시중교재' ||
+      tabVeiw === '수능/모의고사'
+    ) {
+      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        // 사용자에게 경고 메시지를 표시하도록 설정
+        const message =
+          '저장 버튼을 누르지 않을시 저장되지 않습니다. 정말 나가시겠습니까?';
+        event.preventDefault();
+        event.returnValue = message; // 표준에 따른 설정 (Chrome에서는 무시됨)
+        return message; // 대부분의 브라우저에서 필요
+      };
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [tabVeiw]);
+
+  useEffect(() => {
+    setReceivedQuizCount(null);
     //단원 유형별버튼 초기화
-    setQuestionNum(null);
+    setQuestionNum('');
     setQuestionLevel('');
     setQuestionType([]);
-    setContainMock('');
-    setIsOption1(false);
-    setIsOption2(false);
-    setIsOption3(false);
-    setIsOption4(false);
+    setContainMock(null);
+    selectEqualScore(null);
+    setIsQuizEven(false);
+    setIsPriority(false);
+    setUnitClassificationList([]);
+    onResetList();
+    //시중교재
+    setSearchTextbookValue('');
+    setSchoolLevel('초등');
+    setgradeLevel(null);
+    setIncludeQuizList([]);
+    setClickedIdx(null);
+    setClickedPageIdx(null);
     //모의시험 버튼 초기화
+    setProcessCastQuizListData([]);
+    setProcessCastListData([]);
+    setCastQuizListData([]);
+    setCastListData([]);
     setIsDropdown(false);
     setExamGrade([]);
     setExamYear([]);
     setExamMonthly([]);
     setExamOption(null);
   }, [tabVeiw]);
+
+  const renderCategoryFields = () => {
+    return (
+      <>
+        <UnitClassifications>
+          {unitClassificationList.length > 0 ? (
+            <>
+              <p className="info">교과정보는 최대 5개 까지 저장 가능합니다</p>
+              {unitClassificationList.map((el, idx) => (
+                <IconButtonWrapper key={`${el} ${idx} `}>
+                  <IconButton
+                    width={`calc(100% - 25px)`}
+                    fontSize="14px"
+                    height="35px"
+                    textAlign="left"
+                    $padding="0 50px 0 10px"
+                    onClick={() => changeUnitClassification(idx)}
+                  >
+                    <span>
+                      {el
+                        .filter(
+                          (item): item is RadioStateType => 'title' in item,
+                        )
+                        .map((item) => `${item.title} / `)}
+                    </span>
+                  </IconButton>
+
+                  <Icon
+                    onClick={() => deleteUnitClassification(idx)}
+                    $margin={'0 0 0 2px'}
+                    width={`15px`}
+                    src={`/images/icon/icoclose.svg`}
+                  />
+                </IconButtonWrapper>
+              ))}
+            </>
+          ) : (
+            <p className="info">교과정보는 최대 5개 까지 저장 가능합니다</p>
+          )}
+        </UnitClassifications>
+
+        {/* 교육과정 라디오 버튼 부분 */}
+        {categoryItems[0] && categoryList && (
+          <>
+            {/* 교육과정 */}
+            {[categoryItems[0]].map((item) => (
+              <div
+                className={`1depth`}
+                id={`${item.name}`}
+                key={`selected1depth ${item.idx}`}
+              >
+                <ButtonFormatRadio
+                  branchValue={`${item.name}`}
+                  titleText={`${item.name}`}
+                  list={categoryList[0]}
+                  selected={selected1depth}
+                  onChange={(e) => handleRadioCheck(e)}
+                  // defaultChecked={}
+                  checkedInput={radio1depthCheck}
+                  $margin={`10px 0 0 0`}
+                />
+              </div>
+            ))}
+            {/* 학교급 */}
+            {radio1depthCheck.code !== '' &&
+              selected1depth !== '' &&
+              [categoryItems[1]].map((item) => (
+                <div
+                  className={`2depth`}
+                  id={`${item.name}`}
+                  key={`selected2depth ${item.idx}`}
+                >
+                  <ButtonFormatRadio
+                    branchValue={`${item.name}`}
+                    titleText={`${item.name}`}
+                    list={nextList1depth}
+                    selected={selected2depth}
+                    onChange={(e) => handleRadioCheck(e)}
+                    // defaultChecked={}
+                    checkedInput={radio2depthCheck}
+                  />
+                </div>
+              ))}
+            {/* 학년 */}
+            {radio2depthCheck.code !== '' &&
+              selected2depth !== '' &&
+              [categoryItems[2]].map((item) => (
+                <div
+                  className={`3depth`}
+                  id={`${item.name}`}
+                  key={`selected3depth ${item.idx}`}
+                >
+                  <ButtonFormatRadio
+                    branchValue={`${item.name}`}
+                    titleText={`${item.name}`}
+                    list={nextList2depth}
+                    selected={selected3depth}
+                    onChange={(e) => handleRadioCheck(e)}
+                    // defaultChecked={}
+                    checkedInput={radio3depthCheck}
+                  />
+                </div>
+              ))}
+            {/* 학기 */}
+            {radio3depthCheck.code !== '' &&
+              selected3depth !== '' &&
+              [categoryItems[3]].map((item) => (
+                <div
+                  className={`4depth`}
+                  id={`${item.name}`}
+                  key={`selected4depth ${item.idx}`}
+                >
+                  <ButtonFormatRadio
+                    branchValue={`${item.name}`}
+                    titleText={`${item.name}`}
+                    list={nextList3depth}
+                    selected={selected4depth}
+                    onChange={(e) => handleRadioCheck(e)}
+                    // defaultChecked={}
+                    checkedInput={radio4depthCheck}
+                  />
+                </div>
+              ))}
+            {/* 교과 */}
+            {radio4depthCheck.code !== '' &&
+              selected4depth !== '' &&
+              [categoryItems[6]].map((item) => (
+                <div
+                  className={`5depth`}
+                  id={`${item.name}`}
+                  key={`selected5depth ${item.idx}`}
+                >
+                  <ButtonFormatRadio
+                    branchValue={`${item.name}`}
+                    titleText={`${item.name}`}
+                    list={nextList4depth}
+                    selected={selected5depth}
+                    onChange={(e) => handleRadioCheck(e)}
+                    // defaultChecked={}
+                    checkedInput={radio5depthCheck}
+                  />
+                </div>
+              ))}
+            {/* 과목 */}
+            {radio5depthCheck.code !== '' &&
+              selected5depth !== '' &&
+              [categoryItems[7]].map((item) => (
+                <div
+                  className={`6depth`}
+                  id={`${item.name}`}
+                  key={`selected6depth ${item.idx}`}
+                >
+                  <ButtonFormatRadio
+                    overFlow
+                    branchValue={`${item.name}`}
+                    titleText={`${item.name}`}
+                    list={nextList5depth}
+                    selected={selected6depth}
+                    onChange={(e) => handleRadioCheck(e)}
+                    // defaultChecked={}
+                    checkedInput={radio6depthCheck}
+                  />
+                </div>
+              ))}
+          </>
+        )}
+
+        <p className="line"></p>
+
+        {!postStep1Pending ? (
+          <>
+            {/* 교과정보 아코디언 리스트  */}
+            {radio1depthCheck?.code !== '' &&
+            radio2depthCheck?.code !== '' &&
+            radio3depthCheck?.code !== '' &&
+            radio4depthCheck?.code !== '' &&
+            radio5depthCheck?.code !== '' &&
+            radio6depthCheck?.code !== '' &&
+            selected1depth !== '' &&
+            selected2depth !== '' &&
+            selected3depth !== '' &&
+            selected4depth !== '' &&
+            selected5depth !== '' ? (
+              <AccordionWrapper>
+                <Accordion
+                  defaultChecked={isModifying}
+                  title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                  id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                >
+                  <RowListWrapper>
+                    <Search
+                      height={'30px'}
+                      value={searchValue}
+                      onClick={(e) => filterSearchValue(e)}
+                      onKeyDown={(e) => filterSearchValueEnter(e)}
+                      onChange={(e) => {
+                        setSearchValue(e.target.value);
+                      }}
+                      placeholder="검색어를 입력해주세요.(두글자 이상)"
+                      maxLength={20}
+                    />
+                    {searchValue.length > 1 && (
+                      <p className="line bottom_text">
+                        {`총 
+															${
+                                categoryItemTreeData && itemTree.length
+                                  ? itemTree.reduce(
+                                      (total, el) =>
+                                        total +
+                                        el.itemTreeList.filter((item) =>
+                                          item.name.includes(searchValue),
+                                        ).length,
+                                      0,
+                                    )
+                                  : 0
+                              } 
+															건`}
+                        <ArrowButtonWrapper>
+                          <button onClick={() => prevHighlight()}>
+                            <IoMdArrowDropup />
+                          </button>
+                          <button onClick={() => nextHighlight()}>
+                            <IoMdArrowDropdown />
+                          </button>
+                        </ArrowButtonWrapper>
+                      </p>
+                    )}
+                    {isPending && (
+                      <LoaderWrapper>
+                        <Loader width="50px" />
+                      </LoaderWrapper>
+                    )}
+                    {categoryItemTreeData ? (
+                      <AccordionItemWrapper>
+                        {itemTree.length ? (
+                          <div ref={contentRef} className="content">
+                            {searchValue.length > 0 ? (
+                              <>
+                                {itemTree.map((el) => (
+                                  <div key={`${el.itemTreeKey}`}>
+                                    {el.itemTreeList.map((item) => (
+                                      <DepthBlock
+                                        branchValue={`${item.name}`}
+                                        highlightText={highlightText}
+                                        defaultChecked
+                                        key={`depthList${item?.idx} ${item.name}`}
+                                        classNameList={`depth-${item.level}`}
+                                        id={item?.idx}
+                                        name={item.name}
+                                        value={item?.idx}
+                                        level={item?.level}
+                                        onChange={(e) =>
+                                          handleSingleCheck(
+                                            e.target.checked,
+                                            item?.idx,
+                                            item?.level,
+                                          )
+                                        }
+                                        checked={
+                                          checkedDepthList.includes(item?.idx)
+                                            ? true
+                                            : false
+                                        }
+                                        searchValue={searchValue}
+                                      >
+                                        <span>
+                                          {highlightText(
+                                            item.name,
+                                            searchValue,
+                                          )}
+                                        </span>
+                                      </DepthBlock>
+                                    ))}
+                                  </div>
+                                ))}
+                              </>
+                            ) : (
+                              <>
+                                {itemTree.map((el) => (
+                                  <div key={`${el.itemTreeKey}`}>
+                                    {el.itemTreeList.map((item) => (
+                                      <DepthBlock
+                                        branchValue={`${item.name}`}
+                                        defaultChecked
+                                        key={`depthList${item?.idx} ${item.name}`}
+                                        classNameList={`depth-${item.level}`}
+                                        id={item?.idx}
+                                        name={item.name}
+                                        value={item?.idx}
+                                        level={item?.level}
+                                        onChange={(e) =>
+                                          handleSingleCheck(
+                                            e.target.checked,
+                                            item?.idx,
+                                            item?.level,
+                                          )
+                                        }
+                                        checked={
+                                          checkedDepthList.includes(item?.idx)
+                                            ? true
+                                            : false
+                                        }
+                                        searchValue={searchValue}
+                                      >
+                                        <span>{item.name}</span>
+                                      </DepthBlock>
+                                    ))}
+                                  </div>
+                                ))}
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <ValueNone textOnly info="등록된 데이터가 없습니다" />
+                        )}
+                      </AccordionItemWrapper>
+                    ) : (
+                      <Loader />
+                    )}
+                  </RowListWrapper>
+                </Accordion>
+
+                <Accordion
+                  title={'추가정보'}
+                  id={'추가정보'}
+                  $margin={'4px 0 0 0 '}
+                  defaultChecked={isModifying}
+                >
+                  <RowListWrapper>
+                    {categoryAddInfoList ? (
+                      <>
+                        {[categoryItems[4]].map((item) => (
+                          <div
+                            id={`${item.name}`}
+                            className={`etc1`}
+                            key={`etc1 ${item.idx}`}
+                          >
+                            <ButtonFormatMultiRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={categoryAddInfoList[0]}
+                              selected={selectedCategoryEtc1}
+                              onChange={(e) => handleMultiRadioCheck(e)}
+                              checkedInputs={radioEtc1Check}
+                            />
+                          </div>
+                        ))}
+                        {[categoryItems[5]].map((item) => (
+                          <div
+                            id={`${item.name}`}
+                            className={`etc2`}
+                            key={`etc2 ${item.idx}`}
+                          >
+                            <ButtonFormatMultiRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={categoryAddInfoList[1]}
+                              selected={selectedCategoryEtc2}
+                              onChange={(e) => handleMultiRadioCheck(e)}
+                              checkedInputs={radioEtc2Check}
+                            />
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <ValueNone textOnly info="등록된 데이터가 없습니다" />
+                    )}
+                  </RowListWrapper>
+                </Accordion>
+              </AccordionWrapper>
+            ) : (
+              <ValueNoneWrapper>
+                <ValueNone
+                  textOnly
+                  info="교육과정, 학교급, 학년, 학기를 선택해주세요"
+                />
+              </ValueNoneWrapper>
+            )}
+            <SubmitButtonWrapper>
+              <Button
+                $filled
+                disabled={addButtonBool}
+                cursor
+                width={'150px'}
+                $margin={'0 10px 0 0'}
+                onClick={() => saveCheckItems()}
+              >
+                교과정보 추가
+              </Button>
+            </SubmitButtonWrapper>
+          </>
+        ) : (
+          <>
+            <Loader width="50px" />
+          </>
+        )}
+      </>
+    );
+  };
+
+  const renderQuestionButtons = () => {
+    const buttonOption = [
+      { value: '25', label: '25' },
+      { value: '50', label: '50' },
+      { value: '100', label: '100' },
+    ];
+
+    return (
+      <>
+        {buttonOption.map((button) => (
+          <Button
+            key={button.value}
+            onClick={() => selectQuestionNum(button.value)}
+            $padding="10px"
+            height={'34px'}
+            width={'100px'}
+            fontSize="14px"
+            $normal={questionNum !== button.value}
+            $filled={questionNum === button.value}
+            cursor
+          >
+            <span>{button.label}</span>
+          </Button>
+        ))}
+        <DivideBar>|</DivideBar>
+        <NumberInputWrapper>
+          <NumberInput
+            value={inputValue}
+            maxLength={3}
+            onClick={() => selectQuestionNum(null)}
+            style={{
+              color: questionNum === null ? 'white' : `${COLOR.PRIMARY}`,
+              backgroundColor:
+                questionNum === null ? `${COLOR.PRIMARY}` : 'white',
+            }}
+            onChange={(e) => {
+              changeInputValue(e);
+            }}
+          ></NumberInput>
+          문항
+        </NumberInputWrapper>
+      </>
+    );
+  };
+
+  const renderDifficultyButtons = () => {
+    const buttonOption = [
+      { value: '선택안함', label: '선택안함' },
+      { value: 'LOWER', label: '하' },
+      { value: 'INTERMEDIATE', label: '중하' },
+      { value: 'MEDIUM', label: '중' },
+      { value: 'UPPER', label: '상' },
+      { value: 'BEST', label: '최상' },
+    ];
+
+    return buttonOption.map((button) => (
+      <Button
+        key={button.value}
+        buttonType="button"
+        onClick={() => {
+          selectQuestionLevel(button.value);
+        }}
+        $padding="10px"
+        height={'34px'}
+        width={'100%'}
+        fontSize="13px"
+        $normal={questionLevel !== button.value}
+        $filled={questionLevel === button.value}
+        cursor
+      >
+        <span>{button.label}</span>
+      </Button>
+    ));
+  };
+
+  const renderTypeButtons = () => {
+    const isAllSelectedQuestionType =
+      questionType?.includes('MULTIPLE_CHOICE') &&
+      questionType?.includes('SHORT_ANSWER') &&
+      questionType?.includes('ESSAY_ANSWER');
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -527,171 +2978,29 @@ export function Step1() {
                     lineStyle
                     selected={tabVeiw}
                     setTabVeiw={setTabVeiw}
+                    onClickTab={changeTab}
                   />
                 </TabWrapper>
-                <CategoryWrapper></CategoryWrapper>
+                <CategoryWrapper>{renderCategoryFields()}</CategoryWrapper>
               </CategorySection>
               <SchoolSelectorSection>
                 <SubTitleWrapper>
                   <Label value="*문항수" fontSize="16px" width="60px" />
                   <Label value="최대 100문항" fontSize="12px" width="440px" />
                 </SubTitleWrapper>
-                <SelectorGroup>
-                  <SelectorWrapper>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectQuestionNum('25');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={questionNum !== '25'}
-                      $filled={questionNum === '25'}
-                      cursor
-                    >
-                      <span>25</span>
-                    </Button>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectQuestionNum('50');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={questionNum !== '50'}
-                      $filled={questionNum === '50'}
-                      cursor
-                    >
-                      <span>50</span>
-                    </Button>
-                    <Button
-                      buttonType="button"
-                      onClick={() => {
-                        selectQuestionNum('100');
-                      }}
-                      $padding="10px"
-                      height={'34px'}
-                      width={'100px'}
-                      fontSize="14px"
-                      $normal={questionNum !== '100'}
-                      $filled={questionNum === '100'}
-                      cursor
-                    >
-                      <span>100</span>
-                    </Button>
-                    <DivideBar>|</DivideBar>
-                    <NumberInput
-                      value={inputValue}
-                      maxLength={3}
-                      onClick={() => selectQuestionNum('')}
-                      style={{
-                        color:
-                          questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
-                        backgroundColor:
-                          questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
-                      }}
-                      onChange={(e) => {
-                        changeInputValue(e);
-                      }}
-                    ></NumberInput>
-                    문항
-                  </SelectorWrapper>
-                </SelectorGroup>
+                <SelectorGroup>{renderQuestionButtons()}</SelectorGroup>
 
                 <SubTitleWrapper>
                   <Label value="*난이도" fontSize="16px" width="200px" />
-                  <AdditionOption>
-                    <IoSettingsOutline
-                      onClick={openDifficultySetting}
-                      style={{ cursor: 'pointer' }}
-                    />
+                  <AdditionOption onClick={openDifficultySetting}>
+                    <IoSettingsOutline />
                     난이도 설정
                   </AdditionOption>
                 </SubTitleWrapper>
-                <SelectorGroup>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('하');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '하'}
-                    $filled={questionLevel === '하'}
-                    cursor
-                  >
-                    <span>하</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('중하');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '중하'}
-                    $filled={questionLevel === '중하'}
-                    cursor
-                  >
-                    <span>중하</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('중');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '중'}
-                    $filled={questionLevel === '중'}
-                    cursor
-                  >
-                    <span>중</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('상');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'92px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '상'}
-                    $filled={questionLevel === '상'}
-                    cursor
-                  >
-                    <span>상</span>
-                  </Button>
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      selectQuestionLevel('최상');
-                    }}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'93px'}
-                    fontSize="14px"
-                    $normal={questionLevel !== '최상'}
-                    $filled={questionLevel === '최상'}
-                    cursor
-                  >
-                    <span>최상</span>
-                  </Button>
-                </SelectorGroup>
+                <SelectorGroup>{renderDifficultyButtons()}</SelectorGroup>
                 <SubTitleWrapper>
                   <Label value="*문항 타입" fontSize="16px" width="200px" />
-                  <AdditionOption>
+                  {/* <AdditionOption>
                     자동 체점
                     <CheckBox
                       width="16"
@@ -699,7 +3008,7 @@ export function Step1() {
                       isChecked={isAutoGrading}
                       onClick={checkAutoGrading}
                     />
-                  </AdditionOption>
+                  </AdditionOption> */}
                 </SubTitleWrapper>
                 <SelectorGroup>
                   <Button
@@ -708,7 +3017,11 @@ export function Step1() {
                       if (isAllSelectedQuestionType) {
                         setQuestionType([]);
                       } else {
-                        setQuestionType(['객관식', '주관식', '서술형']);
+                        setQuestionType([
+                          'MULTIPLE_CHOICE',
+                          'SHORT_ANSWER',
+                          'ESSAY_ANSWER',
+                        ]);
                       }
                     }}
                     $padding="10px"
@@ -724,14 +3037,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionType('객관식');
+                      selectQuestionType('MULTIPLE_CHOICE');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'117px'}
                     fontSize="14px"
-                    $normal={!questionType.includes('객관식')}
-                    $filled={questionType.includes('객관식')}
+                    $normal={!questionType?.includes('MULTIPLE_CHOICE')}
+                    $filled={questionType?.includes('MULTIPLE_CHOICE')}
                     cursor
                   >
                     <span>객관식</span>
@@ -739,14 +3052,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionType('주관식');
+                      selectQuestionType('SHORT_ANSWER');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'117px'}
                     fontSize="14px"
-                    $normal={!questionType.includes('주관식')}
-                    $filled={questionType.includes('주관식')}
+                    $normal={!questionType?.includes('SHORT_ANSWER')}
+                    $filled={questionType?.includes('SHORT_ANSWER')}
                     cursor
                   >
                     <span>주관식</span>
@@ -754,14 +3067,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectQuestionType('서술형');
+                      selectQuestionType('ESSAY_ANSWER');
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'117px'}
                     fontSize="14px"
-                    $normal={!questionType.includes('서술형')}
-                    $filled={questionType.includes('서술형')}
+                    $normal={!questionType?.includes('ESSAY_ANSWER')}
+                    $filled={questionType?.includes('ESSAY_ANSWER')}
                     cursor
                   >
                     <span>서술형</span>
@@ -776,14 +3089,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectContainMock('포함');
+                      selectContainMock(1);
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'161px'}
                     fontSize="14px"
-                    $normal={containMock !== '포함'}
-                    $filled={containMock === '포함'}
+                    $normal={containMock !== 1}
+                    $filled={containMock === 1}
                     cursor
                   >
                     <span>포함</span>
@@ -791,14 +3104,14 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectContainMock('제외');
+                      selectContainMock(2);
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'160px'}
                     fontSize="14px"
-                    $normal={containMock !== '제외'}
-                    $filled={containMock === '제외'}
+                    $normal={containMock !== 2}
+                    $filled={containMock === 2}
                     cursor
                   >
                     <span>제외</span>
@@ -806,43 +3119,95 @@ export function Step1() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      selectContainMock('모의고사만');
+                      selectContainMock(3);
                     }}
                     $padding="10px"
                     height={'34px'}
                     width={'160px'}
                     fontSize="14px"
-                    $normal={containMock !== '모의고사만'}
-                    $filled={containMock === '모의고사만'}
+                    $normal={containMock !== 3}
+                    $filled={containMock === 3}
                     cursor
                   >
                     <span>모의고사만</span>
                   </Button>
                 </SelectorGroup>
+                <Label value="*배점" fontSize="16px" width="200px" />
+                <SelectorGroup>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {
+                      selectEqualScore(1);
+                    }}
+                    $padding="10px"
+                    height={'34px'}
+                    width={'246px'}
+                    fontSize="14px"
+                    $normal={equalScore !== 1}
+                    $filled={equalScore === 1}
+                    cursor
+                  >
+                    <span>선택안함</span>
+                  </Button>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {
+                      selectEqualScore(2);
+                      openEqualScoreSettingModal();
+                    }}
+                    $padding="10px"
+                    height={'34px'}
+                    width={'245px'}
+                    fontSize="14px"
+                    $normal={equalScore !== 2}
+                    $filled={equalScore === 2}
+                    cursor
+                  >
+                    <span>균등 배점</span>
+                  </Button>
+                </SelectorGroup>
                 <AdditionOptionList>
                   <Label value="추가 옵션" fontSize="16px" width="200px" />
-                  <AdditionOption>
+                  {/* <AdditionOption>
                     <CheckBox isChecked={isOption1} onClick={selectOption1} />
                     기존 출제 문항 제외
                   </AdditionOption>
                   <AdditionOption>
                     <CheckBox isChecked={isOption2} onClick={selectOption2} />
                     교육 과정 외 유형 제외
-                  </AdditionOption>
+                  </AdditionOption> */}
                   <AdditionOption>
-                    <CheckBox isChecked={isOption3} onClick={selectOption3} />
-                    문항 수 균등 배분
+                    <CheckBox
+                      $margin={`0 0 5px 0`}
+                      isChecked={isQuizEven}
+                      onClick={selectQuizEven}
+                    />
+                    <Label
+                      onClick={selectQuizEven}
+                      value="문항 수 균등 배분"
+                      fontSize="16px"
+                      width="140px"
+                      cursor
+                    />
                   </AdditionOption>
                   <AdditionOption>
                     <CheckBox
-                      isChecked={isOption4}
-                      onClick={selectOption4}
+                      $margin={`0 0 5px 0`}
+                      isChecked={isPriority}
+                      onClick={selectPriority}
                     ></CheckBox>
-                    내 문항 우선 추천
+                    <Label
+                      onClick={selectPriority}
+                      value="내 문항 우선 추천"
+                      fontSize="16px"
+                      width="140px"
+                      cursor
+                    />
                   </AdditionOption>
                 </AdditionOptionList>
                 <Summary>
-                  학습지 문항수 {inputValue || questionNum} 개 | 유형 3개
+                  학습지 문항수 {inputValue || questionNum} 개 | 유형
+                  {selectedItemTreeCount.length}개
                 </Summary>
               </SchoolSelectorSection>
             </>
@@ -852,12 +3217,7 @@ export function Step1() {
               {isSelectTextbook && (
                 <>
                   <CategorySection>
-                    <TabWrapper
-                      onClick={() => {
-                        selectSchoolLevel('초');
-                        setgradeLevel('');
-                      }}
-                    >
+                    <TabWrapper>
                       <TabMenu
                         length={3}
                         menu={menuList}
@@ -872,15 +3232,15 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectSchoolLevel('초');
+                            selectSchoolLevel('초등');
                             selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'97px'}
                           fontSize="14px"
-                          $normal={schoolLevel !== '초'}
-                          $filled={schoolLevel === '초'}
+                          $normal={schoolLevel !== '초등'}
+                          $filled={schoolLevel === '초등'}
                           cursor
                         >
                           <span>초</span>
@@ -888,15 +3248,15 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectSchoolLevel('중');
+                            selectSchoolLevel('중등');
                             selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'97px'}
                           fontSize="14px"
-                          $normal={schoolLevel !== '중'}
-                          $filled={schoolLevel === '중'}
+                          $normal={schoolLevel !== '중등'}
+                          $filled={schoolLevel === '중등'}
                           cursor
                         >
                           <span>중</span>
@@ -904,33 +3264,33 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectSchoolLevel('고');
+                            selectSchoolLevel('고등');
                             selectGradeLevel('');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'97px'}
                           fontSize="14px"
-                          $normal={schoolLevel !== '고'}
-                          $filled={schoolLevel === '고'}
+                          $normal={schoolLevel !== '고등'}
+                          $filled={schoolLevel === '고등'}
                           cursor
                         >
                           <span>고</span>
                         </Button>
                         <DivideBar>|</DivideBar>
-                        {schoolLevel === '중' || schoolLevel === '고' ? (
+                        {schoolLevel === '중등' || schoolLevel === '고등' ? (
                           <SelectorGroup>
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('1학년');
+                                selectGradeLevel('1');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '1학년'}
-                              $filled={gradeLevel === '1학년'}
+                              $normal={gradeLevel !== '1'}
+                              $filled={gradeLevel === '1'}
                               cursor
                             >
                               <span>1학년</span>
@@ -938,14 +3298,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('2학년');
+                                selectGradeLevel('2');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '2학년'}
-                              $filled={gradeLevel === '2학년'}
+                              $normal={gradeLevel !== '2'}
+                              $filled={gradeLevel === '2'}
                               cursor
                             >
                               <span>2학년</span>
@@ -953,14 +3313,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('3학년');
+                                selectGradeLevel('3');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '3학년'}
-                              $filled={gradeLevel === '3학년'}
+                              $normal={gradeLevel !== '3'}
+                              $filled={gradeLevel === '3'}
                               cursor
                             >
                               <span>3학년</span>
@@ -971,14 +3331,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('1학년');
+                                selectGradeLevel('1');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '1학년'}
-                              $filled={gradeLevel === '1학년'}
+                              $normal={gradeLevel !== '1'}
+                              $filled={gradeLevel === '1'}
                               cursor
                             >
                               <span>1학년</span>
@@ -986,14 +3346,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('2학년');
+                                selectGradeLevel('2');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '2학년'}
-                              $filled={gradeLevel === '2학년'}
+                              $normal={gradeLevel !== '2'}
+                              $filled={gradeLevel === '2'}
                               cursor
                             >
                               <span>2학년</span>
@@ -1001,14 +3361,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('3학년');
+                                selectGradeLevel('3');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '3학년'}
-                              $filled={gradeLevel === '3학년'}
+                              $normal={gradeLevel !== '3'}
+                              $filled={gradeLevel === '3'}
                               cursor
                             >
                               <span>3학년</span>
@@ -1016,14 +3376,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('4학년');
+                                selectGradeLevel('4');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '4학년'}
-                              $filled={gradeLevel === '4학년'}
+                              $normal={gradeLevel !== '4'}
+                              $filled={gradeLevel === '4'}
                               cursor
                             >
                               <span>4학년</span>
@@ -1031,14 +3391,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('5학년');
+                                selectGradeLevel('5');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '5학년'}
-                              $filled={gradeLevel === '5학년'}
+                              $normal={gradeLevel !== '5'}
+                              $filled={gradeLevel === '5'}
                               cursor
                             >
                               <span>5학년</span>
@@ -1046,14 +3406,14 @@ export function Step1() {
                             <Button
                               buttonType="button"
                               onClick={() => {
-                                selectGradeLevel('6학년');
+                                selectGradeLevel('6');
                               }}
                               $padding="10px"
                               height={'34px'}
                               width={'90px'}
                               fontSize="14px"
-                              $normal={gradeLevel !== '6학년'}
-                              $filled={gradeLevel === '6학년'}
+                              $normal={gradeLevel !== '6'}
+                              $filled={gradeLevel === '6'}
                               cursor
                             >
                               <span>6학년</span>
@@ -1064,13 +3424,13 @@ export function Step1() {
                     </SchoolGradeWrapper>
                     <SearchWrapper>
                       <Search
-                        value={searchValue}
+                        value={searchTextbookValue}
                         width={'50%'}
                         height="40px"
-                        onClick={() => filterSearchValue()}
                         onKeyDown={(e) => {}}
-                        onChange={(e) => setSearchValue(e.target.value)}
+                        onChange={(e) => searchTextbook(e.target.value)}
                         placeholder="교재명 검색"
+                        maxLength={20}
                       />
                     </SearchWrapper>
                     <ListWrapper>
@@ -1080,18 +3440,40 @@ export function Step1() {
                         <ListTitle className="series">시리즈</ListTitle>
                         <ListTitle className="publisher">출판사</ListTitle>
                       </ListTitleWrapper>
-                      {textbookList.map((book, idx) => (
-                        <TextbookList
-                          key={idx}
-                          onClick={() => selectTextbook(book)}
-                        >
-                          <div className="schoolGrade">{book.schoolGrade}</div>
-                          <div className="title">{book.title}</div>
-                          <div className="series">{book.series}</div>
-                          <div className="publisher">{book.publisher}</div>
-                        </TextbookList>
-                      ))}
+                      {textbookList && textbookList?.length > 0 ? (
+                        <>
+                          {textbookList?.map((book, idx) => (
+                            <TextbookList
+                              key={idx}
+                              onClick={() =>
+                                selectTextbook(book.idx, book.title)
+                              }
+                            >
+                              <div className="schoolGrade">
+                                {book.schoolLevel}
+                                {book.grade}-{book.semester}
+                              </div>
+                              <div className="title">{book.title}</div>
+                              <div className="series">{book.series}</div>
+                              <div className="publisher">{book.publisher}</div>
+                            </TextbookList>
+                          ))}
+                        </>
+                      ) : (
+                        <ValueNone
+                          textOnly
+                          info="선택하신 조건의 교재가 없습니다"
+                        />
+                      )}
                     </ListWrapper>
+                    <PaginationBox
+                      itemsCountPerPage={
+                        textbookData?.data.data.pagination.pageUnit as number
+                      }
+                      totalItemsCount={
+                        textbookData?.data.data.pagination.totalCount as number
+                      }
+                    />
                   </CategorySection>
                   <SchoolSelectorSection
                     $isSelectTextbookContent={isSelectTextbookContent}
@@ -1100,7 +3482,7 @@ export function Step1() {
                     <SubTitleWrapper>
                       <Label value="*문항수" fontSize="16px" width="60px" />
                       <Label
-                        value="최대 100문항"
+                        value="한 문제당 최대 유사문항수"
                         fontSize="12px"
                         width="440px"
                       />
@@ -1110,58 +3492,62 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('25');
+                            selectQuestionNum('1');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '25'}
-                          $filled={questionNum === '25'}
+                          $normal={questionNum !== '1'}
+                          $filled={questionNum === '1'}
                           cursor
                         >
-                          <span>25</span>
+                          <span>1</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('50');
+                            selectQuestionNum('3');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '50'}
-                          $filled={questionNum === '50'}
+                          $normal={questionNum !== '3'}
+                          $filled={questionNum === '3'}
                           cursor
                         >
-                          <span>50</span>
+                          <span>3</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('100');
+                            selectQuestionNum('5');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '100'}
-                          $filled={questionNum === '100'}
+                          $normal={questionNum !== '5'}
+                          $filled={questionNum === '5'}
                           cursor
                         >
-                          <span>100</span>
+                          <span>5</span>
                         </Button>
                         <DivideBar>|</DivideBar>
                         <NumberInput
                           value={inputValue}
                           maxLength={3}
-                          onClick={() => selectQuestionNum('')}
+                          onClick={() => selectQuestionNum(null)}
                           style={{
                             color:
-                              questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
+                              questionNum === null
+                                ? 'white'
+                                : `${COLOR.PRIMARY}`,
                             backgroundColor:
-                              questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
+                              questionNum === null
+                                ? `${COLOR.PRIMARY}`
+                                : 'white',
                           }}
                           onChange={(e) => {
                             changeInputValue(e);
@@ -1173,11 +3559,8 @@ export function Step1() {
 
                     <SubTitleWrapper>
                       <Label value="*난이도" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        <IoSettingsOutline
-                          onClick={openDifficultySetting}
-                          style={{ cursor: 'pointer' }}
-                        />
+                      <AdditionOption onClick={openDifficultySetting}>
+                        <IoSettingsOutline />
                         난이도 설정
                       </AdditionOption>
                     </SubTitleWrapper>
@@ -1185,14 +3568,29 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('하');
+                          selectQuestionLevel('선택안함');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'81px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '하'}
-                        $filled={questionLevel === '하'}
+                        $normal={questionLevel !== '선택안함'}
+                        $filled={questionLevel === '선택안함'}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('LOWER');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'74px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== 'LOWER'}
+                        $filled={questionLevel === 'LOWER'}
                         cursor
                       >
                         <span>하</span>
@@ -1200,14 +3598,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중하');
+                          selectQuestionLevel('INTERMEDIATE');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중하'}
-                        $filled={questionLevel === '중하'}
+                        $normal={questionLevel !== 'INTERMEDIATE'}
+                        $filled={questionLevel === 'INTERMEDIATE'}
                         cursor
                       >
                         <span>중하</span>
@@ -1215,14 +3613,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중');
+                          selectQuestionLevel('MEDIUM');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중'}
-                        $filled={questionLevel === '중'}
+                        $normal={questionLevel !== 'MEDIUM'}
+                        $filled={questionLevel === 'MEDIUM'}
                         cursor
                       >
                         <span>중</span>
@@ -1230,14 +3628,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('상');
+                          selectQuestionLevel('UPPER');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '상'}
-                        $filled={questionLevel === '상'}
+                        $normal={questionLevel !== 'UPPER'}
+                        $filled={questionLevel === 'UPPER'}
                         cursor
                       >
                         <span>상</span>
@@ -1245,14 +3643,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('최상');
+                          selectQuestionLevel('BEST');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'93px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '최상'}
-                        $filled={questionLevel === '최상'}
+                        $normal={questionLevel !== 'BEST'}
+                        $filled={questionLevel === 'BEST'}
                         cursor
                       >
                         <span>최상</span>
@@ -1260,15 +3658,6 @@ export function Step1() {
                     </SelectorGroup>
                     <SubTitleWrapper>
                       <Label value="*문항 타입" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        자동 체점
-                        <CheckBox
-                          width="16"
-                          height="16"
-                          isChecked={isAutoGrading}
-                          onClick={checkAutoGrading}
-                        />
-                      </AdditionOption>
                     </SubTitleWrapper>
                     <SelectorGroup>
                       <Button
@@ -1277,7 +3666,11 @@ export function Step1() {
                           if (isAllSelectedQuestionType) {
                             setQuestionType([]);
                           } else {
-                            setQuestionType(['객관식', '주관식', '서술형']);
+                            setQuestionType([
+                              'MULTIPLE_CHOICE',
+                              'SHORT_ANSWER',
+                              'ESSAY_ANSWER',
+                            ]);
                           }
                         }}
                         $padding="10px"
@@ -1293,14 +3686,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('객관식');
+                          selectQuestionType('MULTIPLE_CHOICE');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('객관식')}
-                        $filled={questionType.includes('객관식')}
+                        $normal={!questionType?.includes('MULTIPLE_CHOICE')}
+                        $filled={questionType?.includes('MULTIPLE_CHOICE')}
                         cursor
                       >
                         <span>객관식</span>
@@ -1308,14 +3701,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('주관식');
+                          selectQuestionType('SHORT_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('주관식')}
-                        $filled={questionType.includes('주관식')}
+                        $normal={!questionType?.includes('SHORT_ANSWER')}
+                        $filled={questionType?.includes('SHORT_ANSWER')}
                         cursor
                       >
                         <span>주관식</span>
@@ -1323,14 +3716,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('서술형');
+                          selectQuestionType('ESSAY_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('서술형')}
-                        $filled={questionType.includes('서술형')}
+                        $normal={!questionType?.includes('ESSAY_ANSWER')}
+                        $filled={questionType?.includes('ESSAY_ANSWER')}
                         cursor
                       >
                         <span>서술형</span>
@@ -1345,14 +3738,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('포함');
+                          selectContainMock(1);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'161px'}
                         fontSize="14px"
-                        $normal={containMock !== '포함'}
-                        $filled={containMock === '포함'}
+                        $normal={containMock !== 1}
+                        $filled={containMock === 1}
                         cursor
                       >
                         <span>포함</span>
@@ -1360,14 +3753,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('제외');
+                          selectContainMock(2);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '제외'}
-                        $filled={containMock === '제외'}
+                        $normal={containMock !== 2}
+                        $filled={containMock === 2}
                         cursor
                       >
                         <span>제외</span>
@@ -1375,48 +3768,82 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('모의고사만');
+                          selectContainMock(3);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '모의고사만'}
-                        $filled={containMock === '모의고사만'}
+                        $normal={containMock !== 3}
+                        $filled={containMock === 3}
                         cursor
                       >
                         <span>모의고사만</span>
+                      </Button>
+                    </SelectorGroup>
+                    <Label value="*배점" fontSize="16px" width="200px" />
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectEqualScore(1);
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'246px'}
+                        fontSize="14px"
+                        $normal={equalScore !== 1}
+                        $filled={equalScore === 1}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectEqualScore(2);
+                          //openEqualScoreSettingModal();
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'245px'}
+                        fontSize="14px"
+                        $normal={equalScore !== 2}
+                        $filled={equalScore === 2}
+                        cursor
+                      >
+                        <span>균등 배점</span>
                       </Button>
                     </SelectorGroup>
                     <AdditionOptionList>
                       <Label value="추가 옵션" fontSize="16px" width="200px" />
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption1}
-                          onClick={selectOption1}
+                          $margin={`0 0 5px 0`}
+                          isChecked={isQuizEven}
+                          onClick={selectQuizEven}
                         />
-                        기존 출제 문항 제외
+                        <Label
+                          onClick={selectQuizEven}
+                          value="문항 수 균등 배분"
+                          fontSize="16px"
+                          width="140px"
+                          cursor
+                        />
                       </AdditionOption>
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption2}
-                          onClick={selectOption2}
-                        />
-                        교육 과정 외 유형 제외
-                      </AdditionOption>
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption3}
-                          onClick={selectOption3}
-                        />
-                        문항 수 균등 배분
-                      </AdditionOption>
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption4}
-                          onClick={selectOption4}
+                          $margin={`0 0 5px 0`}
+                          isChecked={isPriority}
+                          onClick={selectPriority}
                         ></CheckBox>
-                        내 문항 우선 추천
+                        <Label
+                          onClick={selectPriority}
+                          value="내 문항 우선 추천"
+                          fontSize="16px"
+                          width="140px"
+                          cursor
+                        />
                       </AdditionOption>
                     </AdditionOptionList>
                     {/* <Summary>
@@ -1440,7 +3867,7 @@ export function Step1() {
                     </TabWrapper>
                     <TextbookTitleWrapper>
                       <Label
-                        value={selectedTextbook?.title as string}
+                        value={selectedTextbookTitle as string}
                         width="500px"
                         fontSize="15px"
                       />
@@ -1457,82 +3884,132 @@ export function Step1() {
                         <span>다른 교재 선택</span>
                       </Button>
                     </TextbookTitleWrapper>
-                    <TextbookWrapper>
-                      {selectedTextbook?.type?.map((types, idx) => (
-                        <TextbookTypeWrapper key={idx}>
-                          <TextbookTypeTitleWrapper>
-                            <TextbookTypeTitleWrapperLeft>
-                              <Label
-                                value={types.title as string}
-                                width="100%"
-                              />
-                            </TextbookTypeTitleWrapperLeft>
-                            <TextbookTypeTitleWrapperRight>
-                              <Label
-                                value="유형UP"
-                                width="100%"
-                                padding="5px 20px"
-                              />
-                            </TextbookTypeTitleWrapperRight>
-                          </TextbookTypeTitleWrapper>
-                          {data?.page.map((page) => (
-                            <SelectWrapper key={page.seq}>
-                              <LeftWrapper
-                                onClick={() => choiceType(page.seq, page.title)}
-                                $isChoice={clickedIdx === page.seq}
-                                $choicedIdx={clickedIdx}
-                              >
-                                <CheckBox
-                                  onClick={() =>
-                                    checkAllToggle(
-                                      page.seq,
-                                      page.isChecked as boolean,
-                                      page.content.map((el) => el.seq),
-                                    )
-                                  }
-                                  isChecked={page.isChecked as boolean}
-                                  width="15"
-                                  height="15"
-                                />
-                                <Label value={page.title} width="100px" />
-                              </LeftWrapper>
-                              <RightWrapper>
-                                {/* <Label value="유형UP" /> */}
-                                {page.content.map(
-                                  (content) =>
-                                    clickedTitle === content.pageTitle && (
-                                      <CheckBoxWrapper key={content.seq}>
-                                        <CheckBox
-                                          onClick={() =>
-                                            checkPartialToggle(
-                                              page.seq,
-                                              content.seq,
-                                              content.isChecked || false,
-                                            )
-                                          }
-                                          isChecked={content.isChecked || false}
-                                          width="15"
-                                          height="15"
-                                        />
-                                        <Label
-                                          value={content.title}
-                                          width="30px"
-                                        />
-                                      </CheckBoxWrapper>
-                                    ),
+                    {!postStep1Pending ? (
+                      <TextbookWrapper>
+                        {selectedTextbook &&
+                          selectedTextbook?.length > 0 &&
+                          selectedTextbook?.map((item, idx) => (
+                            <TextbookTypeWrapper key={idx}>
+                              <TextbookTypeTitleWrapper>
+                                <TextbookTypeTitleWrapperLeft>
+                                  <Label
+                                    value={item.subChapter as string}
+                                    width="100%"
+                                  />
+                                </TextbookTypeTitleWrapperLeft>
+                                <TextbookTypeTitleWrapperRight>
+                                  <Label
+                                    value="유형UP"
+                                    width="100%"
+                                    padding="5px 20px"
+                                  />
+                                </TextbookTypeTitleWrapperRight>
+                              </TextbookTypeTitleWrapper>
+                              <SelectWrapper>
+                                {processTextbookData &&
+                                  processTextbookData?.length > 0 &&
+                                  processTextbookData?.map((item, i) => (
+                                    <LeftWrapper key={i}>
+                                      {item.pageList.map((page, j) => (
+                                        <TextBookCheckBoxWrapper
+                                          key={j}
+                                          onClick={() => {
+                                            handlePageClick(page.bookPage);
+                                            choiceType(j);
+                                          }}
+                                          $isChoice={clickedIdx === j}
+                                        >
+                                          <CheckBox
+                                            key={`checkbox-${j}`}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              checkAllToggle(
+                                                item.subChapter,
+                                                page.isChecked,
+                                                page.quizList.map(
+                                                  (quiz) => quiz.seq,
+                                                ),
+                                                page.quizList[0]?.code || '',
+                                              );
+                                            }}
+                                            isChecked={page.isChecked}
+                                            width="15"
+                                            height="15"
+                                            $margin="0 0 5px 0"
+                                          />
+                                          <Label
+                                            key={`label-${j}`}
+                                            value={`${page.bookPage}P`}
+                                            width="100px"
+                                          />
+                                        </TextBookCheckBoxWrapper>
+                                      ))}
+                                    </LeftWrapper>
+                                  ))}
+
+                                {clickedPageIdx !== null && (
+                                  <RightWrapper key={clickedPageIdx}>
+                                    {processTextbookData.map((item) => {
+                                      const page = item.pageList.find(
+                                        (page) =>
+                                          page.bookPage === clickedPageIdx,
+                                      );
+
+                                      if (page) {
+                                        return (
+                                          <BookListWrapper
+                                            key={`page-${clickedPageIdx}`}
+                                          >
+                                            {page.quizList.map((quiz, m) => (
+                                              <CheckBoxWrapper
+                                                key={`quiz-${m}`}
+                                              >
+                                                <CheckBox
+                                                  onClick={() =>
+                                                    checkPartialToggle(
+                                                      item.subChapter,
+                                                      quiz.seq,
+                                                      quiz.isChecked || false,
+                                                      quiz.code,
+                                                    )
+                                                  }
+                                                  isChecked={
+                                                    quiz.isChecked || false
+                                                  }
+                                                  width="15"
+                                                  height="15"
+                                                  $margin="0 0 5px 0"
+                                                />
+                                                <Label
+                                                  key={`label-${m}`}
+                                                  value={`${quiz.bookQuizNumber}번`}
+                                                  width="40px"
+                                                />
+                                              </CheckBoxWrapper>
+                                            ))}
+                                          </BookListWrapper>
+                                        );
+                                      }
+
+                                      return null;
+                                    })}
+                                  </RightWrapper>
                                 )}
-                              </RightWrapper>
-                            </SelectWrapper>
+                              </SelectWrapper>
+                            </TextbookTypeWrapper>
                           ))}
-                        </TextbookTypeWrapper>
-                      ))}
-                    </TextbookWrapper>
+                      </TextbookWrapper>
+                    ) : (
+                      <>
+                        <Loader width="50px" />
+                      </>
+                    )}
                   </CategorySection>
                   <SchoolSelectorSection>
                     <SubTitleWrapper>
                       <Label value="*문항수" fontSize="16px" width="60px" />
                       <Label
-                        value="최대 100문항"
+                        value="한 문제당 최대 유사문항수"
                         fontSize="12px"
                         width="440px"
                       />
@@ -1542,58 +4019,62 @@ export function Step1() {
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('25');
+                            selectQuestionNum('1');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '25'}
-                          $filled={questionNum === '25'}
+                          $normal={questionNum !== '1'}
+                          $filled={questionNum === '1'}
                           cursor
                         >
-                          <span>25</span>
+                          <span>1</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('50');
+                            selectQuestionNum('3');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '50'}
-                          $filled={questionNum === '50'}
+                          $normal={questionNum !== '3'}
+                          $filled={questionNum === '3'}
                           cursor
                         >
-                          <span>50</span>
+                          <span>3</span>
                         </Button>
                         <Button
                           buttonType="button"
                           onClick={() => {
-                            selectQuestionNum('100');
+                            selectQuestionNum('5');
                           }}
                           $padding="10px"
                           height={'34px'}
                           width={'100px'}
                           fontSize="14px"
-                          $normal={questionNum !== '100'}
-                          $filled={questionNum === '100'}
+                          $normal={questionNum !== '5'}
+                          $filled={questionNum === '5'}
                           cursor
                         >
-                          <span>100</span>
+                          <span>5</span>
                         </Button>
                         <DivideBar>|</DivideBar>
                         <NumberInput
                           value={inputValue}
                           maxLength={3}
-                          onClick={() => selectQuestionNum('')}
+                          onClick={() => selectQuestionNum(null)}
                           style={{
                             color:
-                              questionNum === '' ? 'white' : `${COLOR.PRIMARY}`,
+                              questionNum === null
+                                ? 'white'
+                                : `${COLOR.PRIMARY}`,
                             backgroundColor:
-                              questionNum === '' ? `${COLOR.PRIMARY}` : 'white',
+                              questionNum === null
+                                ? `${COLOR.PRIMARY}`
+                                : 'white',
                           }}
                           onChange={(e) => {
                             changeInputValue(e);
@@ -1604,11 +4085,8 @@ export function Step1() {
                     </SelectorGroup>
                     <SubTitleWrapper>
                       <Label value="*난이도" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        <IoSettingsOutline
-                          onClick={openDifficultySetting}
-                          style={{ cursor: 'pointer' }}
-                        />
+                      <AdditionOption onClick={openDifficultySetting}>
+                        <IoSettingsOutline />
                         난이도 설정
                       </AdditionOption>
                     </SubTitleWrapper>
@@ -1616,14 +4094,29 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('하');
+                          selectQuestionLevel('선택안함');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'81px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '하'}
-                        $filled={questionLevel === '하'}
+                        $normal={questionLevel !== '선택안함'}
+                        $filled={questionLevel === '선택안함'}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectQuestionLevel('LOWER');
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'74px'}
+                        fontSize="14px"
+                        $normal={questionLevel !== 'LOWER'}
+                        $filled={questionLevel === 'LOWER'}
                         cursor
                       >
                         <span>하</span>
@@ -1631,14 +4124,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중하');
+                          selectQuestionLevel('INTERMEDIATE');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중하'}
-                        $filled={questionLevel === '중하'}
+                        $normal={questionLevel !== 'INTERMEDIATE'}
+                        $filled={questionLevel === 'INTERMEDIATE'}
                         cursor
                       >
                         <span>중하</span>
@@ -1646,14 +4139,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('중');
+                          selectQuestionLevel('MEDIUM');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '중'}
-                        $filled={questionLevel === '중'}
+                        $normal={questionLevel !== 'MEDIUM'}
+                        $filled={questionLevel === 'MEDIUM'}
                         cursor
                       >
                         <span>중</span>
@@ -1661,14 +4154,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('상');
+                          selectQuestionLevel('UPPER');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'92px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '상'}
-                        $filled={questionLevel === '상'}
+                        $normal={questionLevel !== 'UPPER'}
+                        $filled={questionLevel === 'UPPER'}
                         cursor
                       >
                         <span>상</span>
@@ -1676,14 +4169,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionLevel('최상');
+                          selectQuestionLevel('BEST');
                         }}
                         $padding="10px"
                         height={'34px'}
-                        width={'93px'}
+                        width={'74px'}
                         fontSize="14px"
-                        $normal={questionLevel !== '최상'}
-                        $filled={questionLevel === '최상'}
+                        $normal={questionLevel !== 'BEST'}
+                        $filled={questionLevel === 'BEST'}
                         cursor
                       >
                         <span>최상</span>
@@ -1691,15 +4184,6 @@ export function Step1() {
                     </SelectorGroup>
                     <SubTitleWrapper>
                       <Label value="*문항 타입" fontSize="16px" width="200px" />
-                      <AdditionOption>
-                        자동 체점
-                        <CheckBox
-                          width="16"
-                          height="16"
-                          isChecked={isAutoGrading}
-                          onClick={checkAutoGrading}
-                        />
-                      </AdditionOption>
                     </SubTitleWrapper>
                     <SelectorGroup>
                       <Button
@@ -1708,7 +4192,11 @@ export function Step1() {
                           if (isAllSelectedQuestionType) {
                             setQuestionType([]);
                           } else {
-                            setQuestionType(['객관식', '주관식', '서술형']);
+                            setQuestionType([
+                              'MULTIPLE_CHOICE',
+                              'SHORT_ANSWER',
+                              'ESSAY_ANSWER',
+                            ]);
                           }
                         }}
                         $padding="10px"
@@ -1724,14 +4212,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('객관식');
+                          selectQuestionType('MULTIPLE_CHOICE');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('객관식')}
-                        $filled={questionType.includes('객관식')}
+                        $normal={!questionType?.includes('MULTIPLE_CHOICE')}
+                        $filled={questionType?.includes('MULTIPLE_CHOICE')}
                         cursor
                       >
                         <span>객관식</span>
@@ -1739,14 +4227,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('주관식');
+                          selectQuestionType('SHORT_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('주관식')}
-                        $filled={questionType.includes('주관식')}
+                        $normal={!questionType?.includes('SHORT_ANSWER')}
+                        $filled={questionType?.includes('SHORT_ANSWER')}
                         cursor
                       >
                         <span>주관식</span>
@@ -1754,14 +4242,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectQuestionType('서술형');
+                          selectQuestionType('ESSAY_ANSWER');
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'117px'}
                         fontSize="14px"
-                        $normal={!questionType.includes('서술형')}
-                        $filled={questionType.includes('서술형')}
+                        $normal={!questionType?.includes('ESSAY_ANSWER')}
+                        $filled={questionType?.includes('ESSAY_ANSWER')}
                         cursor
                       >
                         <span>서술형</span>
@@ -1776,14 +4264,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('포함');
+                          selectContainMock(1);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'161px'}
                         fontSize="14px"
-                        $normal={containMock !== '포함'}
-                        $filled={containMock === '포함'}
+                        $normal={containMock !== 1}
+                        $filled={containMock === 1}
                         cursor
                       >
                         <span>포함</span>
@@ -1791,14 +4279,14 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('제외');
+                          selectContainMock(2);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '제외'}
-                        $filled={containMock === '제외'}
+                        $normal={containMock !== 2}
+                        $filled={containMock === 2}
                         cursor
                       >
                         <span>제외</span>
@@ -1806,53 +4294,83 @@ export function Step1() {
                       <Button
                         buttonType="button"
                         onClick={() => {
-                          selectContainMock('모의고사만');
+                          selectContainMock(3);
                         }}
                         $padding="10px"
                         height={'34px'}
                         width={'160px'}
                         fontSize="14px"
-                        $normal={containMock !== '모의고사만'}
-                        $filled={containMock === '모의고사만'}
+                        $normal={containMock !== 3}
+                        $filled={containMock === 3}
                         cursor
                       >
                         <span>모의고사만</span>
+                      </Button>
+                    </SelectorGroup>
+                    <Label value="*배점" fontSize="16px" width="200px" />
+                    <SelectorGroup>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectEqualScore(1);
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'246px'}
+                        fontSize="14px"
+                        $normal={equalScore !== 1}
+                        $filled={equalScore === 1}
+                        cursor
+                      >
+                        <span>선택안함</span>
+                      </Button>
+                      <Button
+                        buttonType="button"
+                        onClick={() => {
+                          selectEqualScore(2);
+                          //openEqualScoreSettingModal();
+                        }}
+                        $padding="10px"
+                        height={'34px'}
+                        width={'245px'}
+                        fontSize="14px"
+                        $normal={equalScore !== 2}
+                        $filled={equalScore === 2}
+                        cursor
+                      >
+                        <span>균등 배점</span>
                       </Button>
                     </SelectorGroup>
                     <AdditionOptionList>
                       <Label value="추가 옵션" fontSize="16px" width="200px" />
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption1}
-                          onClick={selectOption1}
+                          isChecked={isQuizEven}
+                          onClick={selectQuizEven}
                         />
-                        기존 출제 문항 제외
+                        <Label
+                          onClick={selectQuizEven}
+                          value="문항 수 균등 배분"
+                          fontSize="16px"
+                          width="140px"
+                        />
                       </AdditionOption>
                       <AdditionOption>
                         <CheckBox
-                          isChecked={isOption2}
-                          onClick={selectOption2}
-                        />
-                        교육 과정 외 유형 제외
-                      </AdditionOption>
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption3}
-                          onClick={selectOption3}
-                        />
-                        문항 수 균등 배분
-                      </AdditionOption>
-                      <AdditionOption>
-                        <CheckBox
-                          isChecked={isOption4}
-                          onClick={selectOption4}
+                          isChecked={isPriority}
+                          onClick={selectPriority}
                         ></CheckBox>
-                        내 문항 우선 추천
+                        <Label
+                          onClick={selectPriority}
+                          value="내 문항 우선 추천"
+                          fontSize="16px"
+                          width="140px"
+                        />
                       </AdditionOption>
                     </AdditionOptionList>
-                    <Summary>
+                    {/* <Summary>
                       학습지 문항수 {inputValue || questionNum} 개
-                    </Summary>
+                    </Summary> */}
                   </SchoolSelectorSection>
                 </>
               )}
@@ -1904,7 +4422,40 @@ export function Step1() {
                     </MockExamSelect>
                     {!isDropdown && (
                       <MockExamSummaryWrapper>
-                        <MockExamSummary>학습지 문항수 {100}개</MockExamSummary>
+                        <MockExamSummary>
+                          학습지 문항수 {includeQuizList.length}개
+                        </MockExamSummary>
+                        <Button
+                          buttonType="button"
+                          onClick={() => {
+                            selectEqualScore(2);
+                            openEqualScoreSettingModal();
+                          }}
+                          $padding="10px"
+                          height={'35px'}
+                          width={'160px'}
+                          fontSize="13px"
+                          $normal={equalScore !== 2}
+                          $filled={equalScore === 2}
+                          cursor
+                        >
+                          <span>균등 배점</span>
+                        </Button>
+                        <Button
+                          buttonType="button"
+                          onClick={() => {
+                            selectEqualScore(1);
+                          }}
+                          $padding="10px"
+                          height={'35px'}
+                          width={'160px'}
+                          fontSize="13px"
+                          $normal={equalScore !== 1}
+                          $filled={equalScore === 1}
+                          cursor
+                        >
+                          <span>배점 선택안함</span>
+                        </Button>
                         <Button
                           buttonType="button"
                           onClick={selectExamReset}
@@ -1924,8 +4475,12 @@ export function Step1() {
                     <MockExamDropdownWrapper ref={dropdownRef}>
                       <MockExamOptionWrapper>
                         <MockExamTitleWrapper>
-                          <Label value="학년 선택" fontSize="14px" />
-                          <Label value="복수 선택 가능" fontSize="12px" />
+                          <Label value="학년 선택" fontSize="14px" center />
+                          <Label
+                            value="복수 선택 가능"
+                            fontSize="12px"
+                            center
+                          />
                         </MockExamTitleWrapper>
                         <MockExamButtonWrapper>
                           <Button
@@ -1934,7 +4489,7 @@ export function Step1() {
                               if (isAllSelectedExamGrade) {
                                 setExamGrade([]);
                               } else {
-                                setExamGrade(['고1', '고2', '고3']);
+                                setExamGrade(['1', '2', '3']);
                               }
                             }}
                             $padding="10px"
@@ -1949,39 +4504,39 @@ export function Step1() {
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamGrade('고1')}
+                            onClick={() => selectExamGrade('1')}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={!examGrade.includes('고1')}
-                            $filled={examGrade.includes('고1')}
+                            $normal={!examGrade.includes('1')}
+                            $filled={examGrade.includes('1')}
                             cursor
                           >
                             <span>고1</span>
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamGrade('고2')}
+                            onClick={() => selectExamGrade('2')}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={!examGrade.includes('고2')}
-                            $filled={examGrade.includes('고2')}
+                            $normal={!examGrade.includes('2')}
+                            $filled={examGrade.includes('2')}
                             cursor
                           >
                             <span>고2</span>
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamGrade('고3')}
+                            onClick={() => selectExamGrade('3')}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={!examGrade.includes('고3')}
-                            $filled={examGrade.includes('고3')}
+                            $normal={!examGrade.includes('3')}
+                            $filled={examGrade.includes('3')}
                             cursor
                           >
                             <span>고3</span>
@@ -1990,8 +4545,12 @@ export function Step1() {
                       </MockExamOptionWrapper>
                       <MockExamOptionWrapper>
                         <MockExamTitleWrapper>
-                          <Label value="년도 선택" fontSize="14px" />
-                          <Label value="복수 선택 가능" fontSize="12px" />
+                          <Label value="년도 선택" fontSize="14px" center />
+                          <Label
+                            value="복수 선택 가능"
+                            fontSize="12px"
+                            center
+                          />
                         </MockExamTitleWrapper>
                         <MockExamHalfButtonWrapper>
                           <Button
@@ -2001,11 +4560,11 @@ export function Step1() {
                                 setExamYear([]);
                               } else {
                                 setExamYear([
-                                  '2024년',
-                                  '2023년',
-                                  '2022년',
-                                  '2021년',
-                                  '2020년',
+                                  '2024',
+                                  '2023',
+                                  '2022',
+                                  '2021',
+                                  '2020',
                                 ]);
                               }
                             }}
@@ -2019,77 +4578,31 @@ export function Step1() {
                           >
                             <span>전체</span>
                           </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2024년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2024년')}
-                            $filled={examYear.includes('2024년')}
-                            cursor
-                          >
-                            <span>2024년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2023년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2023년')}
-                            $filled={examYear.includes('2023년')}
-                            cursor
-                          >
-                            <span>2023년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2022년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2022년')}
-                            $filled={examYear.includes('2022년')}
-                            cursor
-                          >
-                            <span>2022년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2021년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2021년')}
-                            $filled={examYear.includes('2021년')}
-                            cursor
-                          >
-                            <span>2021년</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamYear('2020년')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examYear.includes('2020년')}
-                            $filled={examYear.includes('2020년')}
-                            cursor
-                          >
-                            <span>2020년</span>
-                          </Button>
+                          {categoryList[2].map((el) => (
+                            <Button
+                              key={el.idx}
+                              onClick={() => selectExamYear(el.name)}
+                              $padding="10px"
+                              height={'35px'}
+                              width={'80px'}
+                              fontSize="13px"
+                              $normal={!examYear.includes(el.name)}
+                              $filled={examYear.includes(el.name)}
+                              cursor
+                            >
+                              <span>{el.name}년</span>
+                            </Button>
+                          ))}
                         </MockExamHalfButtonWrapper>
                       </MockExamOptionWrapper>
                       <MockExamOptionWrapper>
                         <MockExamTitleWrapper>
-                          <Label value="월 선택" fontSize="14px" />
-                          <Label value="복수 선택 가능" fontSize="12px" />
+                          <Label value="월 선택" fontSize="14px" center />
+                          <Label
+                            value="복수 선택 가능"
+                            fontSize="12px"
+                            center
+                          />
                         </MockExamTitleWrapper>
                         <MockExamHalfButtonWrapper>
                           <Button
@@ -2099,14 +4612,14 @@ export function Step1() {
                                 setExamMonthly([]);
                               } else {
                                 setExamMonthly([
-                                  '3월',
-                                  '4월',
-                                  '5월',
-                                  '6월',
-                                  '7월',
-                                  '9월',
-                                  '10월',
-                                  '11월',
+                                  '3',
+                                  '4',
+                                  '5',
+                                  '6',
+                                  '7',
+                                  '9',
+                                  '10',
+                                  '11',
                                 ]);
                               }
                             }}
@@ -2120,110 +4633,26 @@ export function Step1() {
                           >
                             <span>전체</span>
                           </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('3월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('3월')}
-                            $filled={examMonthly.includes('3월')}
-                            cursor
-                          >
-                            <span>3월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('4월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('4월')}
-                            $filled={examMonthly.includes('4월')}
-                            cursor
-                          >
-                            <span>4월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('5월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('5월')}
-                            $filled={examMonthly.includes('5월')}
-                            cursor
-                          >
-                            <span>5월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('6월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('6월')}
-                            $filled={examMonthly.includes('6월')}
-                            cursor
-                          >
-                            <span>6월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('7월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('7월')}
-                            $filled={examMonthly.includes('7월')}
-                            cursor
-                          >
-                            <span>7월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('9월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('9월')}
-                            $filled={examMonthly.includes('9월')}
-                            cursor
-                          >
-                            <span>9월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('10월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('10월')}
-                            $filled={examMonthly.includes('10월')}
-                            cursor
-                          >
-                            <span>10월</span>
-                          </Button>
-                          <Button
-                            buttonType="button"
-                            onClick={() => selectExamMonthly('11월')}
-                            $padding="10px"
-                            height={'35px'}
-                            width={'80px'}
-                            fontSize="13px"
-                            $normal={!examMonthly.includes('11월')}
-                            $filled={examMonthly.includes('11월')}
-                            cursor
-                          >
-                            <span>11월</span>
-                          </Button>
+                          {categoryList[3]
+                            .filter((el) => {
+                              return !excludedNames.includes(el.name);
+                            })
+                            .map((el) => (
+                              <Button
+                                key={el.idx}
+                                buttonType="button"
+                                onClick={() => selectExamMonthly(el.name)}
+                                $padding="10px"
+                                height={'35px'}
+                                width={'80px'}
+                                fontSize="13px"
+                                $normal={!examMonthly.includes(el.name)}
+                                $filled={examMonthly.includes(el.name)}
+                                cursor
+                              >
+                                <span>{el.name}월</span>
+                              </Button>
+                            ))}
                         </MockExamHalfButtonWrapper>
                       </MockExamOptionWrapper>
                       <MockExamOptionWrapper>
@@ -2231,32 +4660,33 @@ export function Step1() {
                           <Label
                             value="문항 추가 옵션"
                             fontSize="14px"
-                            width="100px"
+                            //width="100px"
+                            center
                           />
                         </MockExamSingleTitleWrapper>
                         <MockExamButtonWrapper>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamOption('문항 번호로 추가')}
+                            onClick={() => selectExamOption(0)}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={examOption !== '문항 번호로 추가'}
-                            $filled={examOption === '문항 번호로 추가'}
+                            $normal={examOption !== 0}
+                            $filled={examOption === 0}
                             cursor
                           >
                             <span>문항 번호로 추가</span>
                           </Button>
                           <Button
                             buttonType="button"
-                            onClick={() => selectExamOption('단원으로 추가')}
+                            onClick={() => selectExamOption(1)}
                             $padding="10px"
                             height={'35px'}
                             width={'160px'}
                             fontSize="13px"
-                            $normal={examOption !== '단원으로 추가'}
-                            $filled={examOption === '단원으로 추가'}
+                            $normal={examOption !== 1}
+                            $filled={examOption === 1}
                             cursor
                           >
                             <span>단원으로 추가</span>
@@ -2299,57 +4729,128 @@ export function Step1() {
                       </MockExamOptionWrapper>
                     </MockExamDropdownWrapper>
                   )}
-                  <MockExamContentWrapper>
-                    {processedData.map((mock) => (
-                      <MockExamBox key={mock.seq}>
-                        <MockExamLabelWrapper>
-                          <CheckBoxWrapper>
-                            <CheckBox
-                              isChecked={mock.isChecked as boolean}
-                              width="15"
-                              height="15"
-                              onClick={() =>
-                                checkAllMockexamToggle(
-                                  mock.seq,
-                                  mock.isChecked as boolean,
-                                  mock.content.map((content) => content.seq),
-                                )
-                              }
-                            ></CheckBox>
-                            <Label
-                              value={`${mock.grade} | ${mock.year} ${mock.month}`}
-                              width="150px"
-                            />
-                          </CheckBoxWrapper>
-                          <CloseIconWrapper>
-                            <IoMdClose
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => removeMockexam(mock.seq)}
-                            />
-                          </CloseIconWrapper>
-                        </MockExamLabelWrapper>
-                        <MockExamContent>
-                          {mock.content.map((el) => (
-                            <CheckBoxWrapper key={el.seq}>
-                              <CheckBox
-                                isChecked={el.isChecked as boolean}
-                                width="15"
-                                height="15"
-                                onClick={() =>
-                                  checkPartialMockexamToggle(
-                                    mock.seq,
-                                    el.seq,
-                                    el.isChecked as boolean,
-                                  )
-                                }
-                              ></CheckBox>
-                              <Label value={el.title} width="30px" />
-                            </CheckBoxWrapper>
-                          ))}
-                        </MockExamContent>
-                      </MockExamBox>
-                    ))}
-                  </MockExamContentWrapper>
+                  {!castDataLoading ? (
+                    <>
+                      {!postStep1Pending ? (
+                        <>
+                          {examOption === 0 &&
+                            processCastQuizListData.length > 0 && (
+                              <MockExamContentWrapper>
+                                {processCastQuizListData?.map((mock) => (
+                                  <MockExamBox key={mock.id}>
+                                    <MockExamLabelWrapper>
+                                      <CheckBoxWrapper>
+                                        <CheckBox
+                                          isChecked={mock.isChecked}
+                                          width="15"
+                                          height="15"
+                                          onClick={() =>
+                                            toggleCheckAllCastQuiz(
+                                              mock.id,
+                                              mock.quizNumberList.map(
+                                                (item) => item.code,
+                                              ),
+                                              mock.isChecked,
+                                            )
+                                          }
+                                        ></CheckBox>
+                                        <Label
+                                          value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                          width="150px"
+                                        />
+                                      </CheckBoxWrapper>
+                                      <CloseIconWrapper>
+                                        <IoMdClose
+                                          style={{ cursor: 'pointer' }}
+                                          onClick={() =>
+                                            removeMockexam(mock.id, '문항')
+                                          }
+                                        />
+                                      </CloseIconWrapper>
+                                    </MockExamLabelWrapper>
+                                    <MockExamContent>
+                                      {mock.quizNumberList.map((el, i) => (
+                                        <CheckBoxWrapper key={i}>
+                                          <CheckBox
+                                            isChecked={el.isChecked}
+                                            width="15"
+                                            height="15"
+                                            onClick={() =>
+                                              toggleCheckPartialCastQuiz(
+                                                mock.id,
+                                                el.quizNumber,
+                                                el.code,
+                                                el.isChecked,
+                                              )
+                                            }
+                                          ></CheckBox>
+                                          <Label
+                                            value={`${el.quizNumber}번`}
+                                            width="30px"
+                                          />
+                                        </CheckBoxWrapper>
+                                      ))}
+                                    </MockExamContent>
+                                  </MockExamBox>
+                                ))}
+                              </MockExamContentWrapper>
+                            )}
+                          {examOption === 1 &&
+                            processCastListData.length > 0 && (
+                              <MockExamContentWrapper>
+                                {processCastListData?.map((mock) => (
+                                  <MockExamBox key={mock.id}>
+                                    <MockExamLabelWrapper>
+                                      <CheckBoxWrapper>
+                                        <CheckBox
+                                          isChecked={mock.isChecked}
+                                          width="15"
+                                          height="15"
+                                          onClick={() =>
+                                            toggleCheckAllCastList(
+                                              mock.id,
+                                              extractCodesFromHierarchicalData(
+                                                mock.nodeData.hierarchicalData,
+                                              ),
+                                              mock.isChecked,
+                                            )
+                                          }
+                                        ></CheckBox>
+                                        <Label
+                                          value={`${mock.level}${mock.grade} | ${mock.year}년 ${mock.month}월`}
+                                          width="150px"
+                                        />
+                                      </CheckBoxWrapper>
+                                      <CloseIconWrapper>
+                                        <IoMdClose
+                                          style={{ cursor: 'pointer' }}
+                                          onClick={() =>
+                                            removeMockexam(mock.id, '단원')
+                                          }
+                                        />
+                                      </CloseIconWrapper>
+                                    </MockExamLabelWrapper>
+                                    <MockExamContent>
+                                      {renderHierarchicalData(
+                                        mock.nodeData.hierarchicalData,
+                                      )}
+                                    </MockExamContent>
+                                  </MockExamBox>
+                                ))}
+                              </MockExamContentWrapper>
+                            )}
+                        </>
+                      ) : (
+                        <>
+                          <Loader width="50px" />
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Loader width="50px" />
+                    </>
+                  )}
                 </MockExamWrapper>
               </CategorySection>
             </>
@@ -2370,511 +4871,148 @@ export function Step1() {
           </Button>
         </NextStepButtonWrapper>
       </Wrapper>
+      <Alert
+        top="calc(50% - 100px)"
+        isAlertOpen={isAlertOpen}
+        description={`가지고 올 수 있는 문항의 수가 ${receivedQuizCount}개 입니다.`}
+        subDescription={
+          equalScore === 2
+            ? '이대로 진행할 경우 균등 배점을 다시 설정해야합니다.'
+            : '이대로 진행하시겠습니까?'
+        }
+        action="진행"
+        isWarning={true}
+        onClick={keepGoingAlert}
+        onClose={cancelAlert}
+      />
       {isDifficulty && (
         <Overlay>
-          <ModalContainer>
-            <ModalWrapper>
-              <ModalTitleWrapper>
-                <ModalTitle>난이도 비율 선택</ModalTitle>
-                <ModalSubTitle>
-                  난이도 별로 출제 비율의 총합은 각각 100이 되어야 합니다.
-                </ModalSubTitle>
-              </ModalTitleWrapper>
-              <IoMdClose
-                onClick={closeDifficultySetting}
-                style={{ fontSize: '25px' }}
-              />
-            </ModalWrapper>
-            <ModalCategory>
-              <ModalCategoryOption>하</ModalCategoryOption>
-              <ModalCategoryOption>중하</ModalCategoryOption>
-              <ModalCategoryOption>중</ModalCategoryOption>
-              <ModalCategoryOption>상</ModalCategoryOption>
-              <ModalCategoryOption>최상</ModalCategoryOption>
-              <ModalCategoryOption>총합</ModalCategoryOption>
-            </ModalCategory>
-            <div>
-              <InputWrapper>
-                <Label value="최상 선택시" fontSize="16px" width="200px" />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
+          <DifficultyRate
+            onClose={closeDifficultySetting}
+            difficultyData={difficultyData}
+            setDifficultyData={setDifficultyData}
+          />
+        </Overlay>
+      )}
+      {isEqualScoreModal && (
+        <Overlay>
+          <EqualScoreModalContainer>
+            <EqualScoreModalWrapper>
+              <EqualScoreModalTitleWrapper>
+                <Label
+                  value={`총 ${receivedQuizCount ? receivedQuizCount : questionNum || inputValue || includeQuizList.length} 문항`}
+                  fontSize="25px"
+                  width="160px"
                 />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="상 선택시" fontSize="16px" width="200px" />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="중 선택시" fontSize="16px" width="200px" />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="중하 선택시" fontSize="16px" width="200px" />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <Label value="하 선택시" fontSize="16px" width="200px" />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-                <Input
-                  width="80px"
-                  height="40px"
-                  padding="10px"
-                  border="normal"
-                  placeholderSize="14px"
-                  fontSize="14px"
-                  type="text"
-                  placeholder="0"
-                  placeholderTextAlign
-                  //value={gradeValue}
-                  // onChange={(e) => {
-                  //   setGradeValue(e.target.value);
-                  // }}
-                />
-              </InputWrapper>
-            </div>
-            <ModalButtonWrapper>
-              <Button
-                buttonType="button"
-                onClick={() => {}}
-                $padding="10px"
-                height={'35px'}
-                width={'100px'}
-                fontSize="13px"
-                $filled
-                cursor
-              >
-                <span>저장</span>
-              </Button>
-            </ModalButtonWrapper>
-          </ModalContainer>
+                <EqualScoreModalOptionWrapper>
+                  <Label value="총 배점" fontSize="25px" width="89px" />
+                  <Input
+                    width="50px"
+                    height="34px"
+                    border="black"
+                    placeholderSize="16px"
+                    padding="10px"
+                    fontSize="16px"
+                    type="text"
+                    value={equalTotalValue}
+                    maxLength={10}
+                    minLength={2}
+                    onClick={() => {
+                      setEqualTotlaValue('');
+                      setIsSaveEqualValue(false);
+                      setRemainderContent(0);
+                      setNextRemainderContent(0);
+                    }}
+                    onChange={(e) => {
+                      changeEqualInputValue(e);
+                    }}
+                  ></Input>
+                  <Button
+                    buttonType="button"
+                    onClick={saveEqualInputValue}
+                    $padding="10px"
+                    height={'34px'}
+                    width={'100px'}
+                    fontSize="13px"
+                    $filled
+                    cursor
+                  >
+                    <span>저장</span>
+                  </Button>
+                </EqualScoreModalOptionWrapper>
+              </EqualScoreModalTitleWrapper>
+              <EqualScoreModalScript>
+                {remainder === 0 || (remainder === null && isSaveEqualValue) ? (
+                  <>
+                    {/* 나머지가 없는경우 */}
+                    <div>
+                      01번 문항부터
+                      {receivedQuizCount
+                        ? receivedQuizCount
+                        : questionNum || inputValue || includeQuizList.length}
+                      번 문항까지
+                      {quotient || 0}점
+                    </div>
+                    {isSaveEqualValue ? (
+                      <div className="pointsPerQuestion">
+                        문항당 배점 {minQuotient}점 ~ {quotient + 1}점
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* 나머지가 있는경우 */}
+                    <div>
+                      01번 문항부터
+                      {remainderContent}번 문항까지 {quotient || 0}점
+                    </div>
+                    <div>
+                      {nextRemainderContent}번 문항부터
+                      {receivedQuizCount
+                        ? receivedQuizCount
+                        : questionNum || inputValue || includeQuizList.length}
+                      번 문항까지 {quotient + 1 || 0}점
+                    </div>
+                    {isSaveEqualValue ? (
+                      <div className="pointsPerQuestion">
+                        문항당 배점 {minQuotient}점 ~ {maxQuotient}점
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                )}
+              </EqualScoreModalScript>
+              <EqualScoreModalButtonWrapper>
+                <Button
+                  buttonType="button"
+                  onClick={cancelEqualScoreSettingModal}
+                  $padding="10px"
+                  height={'100%'}
+                  width={'100%'}
+                  fontSize="13px"
+                  $normal
+                  cursor
+                >
+                  <span>취소</span>
+                </Button>
+                <Button
+                  buttonType="button"
+                  onClick={saveEqualScoreSettingModal}
+                  $padding="10px"
+                  height={'100%'}
+                  width={'100%'}
+                  fontSize="13px"
+                  $filled
+                  cursor
+                >
+                  <span>확인</span>
+                </Button>
+              </EqualScoreModalButtonWrapper>
+            </EqualScoreModalWrapper>
+          </EqualScoreModalContainer>
         </Overlay>
       )}
     </Container>
@@ -2906,8 +5044,7 @@ const MainWrapper = styled.div`
   display: flex;
   gap: 20px;
 `;
-const CategorySection = styled.section`
-  //flex: 1 0 30%;
+const CategorySection = styled.div`
   min-width: 956px;
   display: flex;
   flex-direction: column;
@@ -2931,8 +5068,83 @@ const CategoryWrapper = styled.div`
   width: 100%;
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   padding: 10px;
+  .line {
+    border-top: 1px solid ${COLOR.BORDER_GRAY};
+    margin: 10px 0;
+
+    &.bottom_text {
+      font-size: 13px;
+      padding-top: 2px;
+    }
+  }
 `;
-const SchoolSelectorSection = styled.section<{
+const IconWrapper = styled.div`
+  .icon_button {
+    padding: 5px;
+    border: none;
+    font-size: 13px;
+    font-weight: bold;
+    color: ${COLOR.SECONDARY};
+    background-color: transparent;
+    cursor: pointer;
+    color: ${COLOR.PRIMARY};
+  }
+`;
+const IconButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  img {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+`;
+const UnitClassifications = styled.div`
+  padding: 10px 20px;
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  background-color: ${COLOR.IS_HAVE_DATA};
+  .info {
+    color: ${COLOR.SECONDARY};
+    font-size: 14px;
+  }
+`;
+const AccordionWrapper = styled.div`
+  margin: 10px;
+`;
+const RowListWrapper = styled.div`
+  padding: 10px;
+`;
+const LoaderWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding-bottom: 50px;
+  padding-left: calc(50% - 35px);
+`;
+const ArrowButtonWrapper = styled.span`
+  padding: 0 10px;
+  > button {
+    cursor: pointer;
+    padding: 4px;
+    background-color: transparent;
+    border: none;
+  }
+`;
+const AccordionItemWrapper = styled.div`
+  overflow-y: auto;
+  max-height: 200px;
+`;
+const SubmitButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+const ValueNoneWrapper = styled.div`
+  display: flex;
+`;
+const SchoolSelectorSection = styled.div<{
   $isSelectTextbookContent?: boolean;
   $tabVeiw?: string;
 }>`
@@ -2976,6 +5188,12 @@ const SelectorWrapper = styled.div`
     }
   }
 `;
+const NumberInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+`;
 const NumberInput = styled.input`
   width: 100px;
   height: 34px;
@@ -3000,6 +5218,7 @@ const AdditionOption = styled.div`
   align-items: center;
   gap: 10px;
   padding-left: 10px;
+  cursor: pointer;
 `;
 const Summary = styled.div`
   font-size: 20px;
@@ -3096,7 +5315,7 @@ const TextbookTitleWrapper = styled.div`
 `;
 const TextbookWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: 550px;
   padding: 10px;
   display: flex;
   border-top: 1px solid ${COLOR.BORDER_BLUE};
@@ -3121,22 +5340,39 @@ const SelectWrapper = styled.div`
 `;
 const LeftWrapper = styled.div<{
   $isChoice?: boolean;
-  $choicedIdx?: number;
+}>`
+  height: 550px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px 10px;
+  background-color: ${({ $isChoice }) =>
+    $isChoice ? COLOR.SELECT_BLUE : 'white'};
+  overflow-y: auto;
+`;
+const TextBookCheckBoxWrapper = styled.div<{
+  $isChoice?: boolean;
 }>`
   display: flex;
   align-items: center;
-  flex: 1 0 0;
-  gap: 5px;
-  padding: 5px 10px;
-  background-color: ${({ $isChoice, $choicedIdx }) =>
-    $isChoice && $choicedIdx ? COLOR.SELECT_BLUE : 'white'};
+  background-color: ${({ $isChoice }) =>
+    $isChoice ? COLOR.SELECT_BLUE : 'white'};
 `;
+
 const RightWrapper = styled.div`
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
   flex: 1 0 50%;
   padding-left: 10px;
+`;
+const BookListWrapper = styled.div`
+  width: 794px;
+  height: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  overflow-y: auto;
 `;
 const CheckBoxWrapper = styled.div`
   display: flex;
@@ -3250,7 +5486,10 @@ const CloseIconWrapper = styled.div`
 const MockExamContent = styled.div`
   padding: 10px;
 `;
-//학습지 난이도 모달
+const CastListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -3264,53 +5503,53 @@ const Overlay = styled.div`
   align-items: center;
   z-index: 1;
 `;
-const ModalContainer = styled.div`
-  width: 1000px;
-  height: 500px;
+//균등 배점 모달
+const EqualScoreModalContainer = styled.div`
+  width: 800px;
+  height: 400px;
   background-color: white;
   border: 1px solid ${COLOR.BORDER_GRAY};
   border-radius: 10px;
   padding: 10px;
 `;
-const ModalWrapper = styled.div`
+const EqualScoreModalWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  padding-bottom: 40px;
+  flex-direction: column;
+  align-items: center;
 `;
-const ModalTitleWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-`;
-const ModalTitle = styled.div`
-  font-size: 25px;
-`;
-const ModalSubTitle = styled.div`
-  font-size: 16px;
-`;
-const ModalCategory = styled.div`
+const EqualScoreModalTitleWrapper = styled.div`
   width: 100%;
   display: flex;
-  justify-content: flex-end;
-  font-size: 20px;
-  gap: 88px;
-  border-bottom: 2px solid ${COLOR.BORDER_GRAY};
-  padding: 10px 40px;
+  justify-content: space-evenly;
+  padding-bottom: 10px;
 `;
-const ModalCategoryOption = styled.div`
+const EqualScoreModalOptionWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const EqualScoreModalScript = styled.div`
+  width: 100%;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  //padding: 20px 0;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  div {
+    font-size: 20px;
+  }
+  .pointsPerQuestion {
+    padding-top: 20px;
+  }
+`;
+const EqualScoreModalButtonWrapper = styled.div`
+  width: 100%;
+  height: 75px;
   display: flex;
   justify-content: center;
-  width: 45px;
-`;
-const InputWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px 20px;
-  gap: 53px;
-`;
-const ModalButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
+  gap: 10px;
   padding-top: 10px;
-  padding-right: 10px;
 `;

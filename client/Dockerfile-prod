@@ -1,17 +1,27 @@
 # 노드 이미지를 최신 버전으로 가져옴
 FROM node:20.10.0 as build
 
-## npm install & build
 WORKDIR /app
 COPY . .
 
-RUN npm install
-RUN npm run build:prod --verbose
+# npm 캐시 위치를 설정하여 ENOSPC 오류를 피하고, npm 캐시를 정리
+RUN npm config set cache /tmp/npm-cache --global
+RUN npm cache clean --force
 
-# nginx 설치
+# 의존성 설치
+RUN npm install
+
+# 개발 모드에서 프로젝트 빌드
+RUN npm run build:dev --verbose
+
+# 디스크 공간을 확보하기 위해 node_modules 및 npm 캐시 제거
+RUN rm -rf node_modules
+RUN rm -rf /tmp/npm-cache
+
+# nginx를 사용하여 빌드된 파일을 제공
 FROM nginx:stable-alpine
 
-# 빌드한 폴더를 nginx의 html 으로 Copy
+# 이전 단계에서 빌드된 파일을 nginx html 디렉토리로 복사
 COPY --from=build /app/build /usr/share/nginx/html
 
 # 충돌을 위한 기본 conf 파일 삭제

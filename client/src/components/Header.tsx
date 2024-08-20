@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { authInstance } from '../api/axios';
-import { openNaviationBoolAtom } from '../store/utilAtom';
+import { getLogout } from '../api/auth';
+import { openNaviationBoolAtom, pageIndexAtom } from '../store/utilAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
 
 import { IndexInfo } from './atom';
@@ -18,37 +18,51 @@ export function Header() {
   const [isOpenNavigation, setIsOpenNavigation] = useRecoilState(
     openNaviationBoolAtom,
   );
+  const [isLogin, setIsLogin] = useState(true);
+  const pageIndexValue = useRecoilValue(pageIndexAtom);
 
   const navigate = useNavigate();
 
   const openNavigation = () => {
-    setIsOpenNavigation(!isOpenNavigation);
-  };
-
-  const logout = async () => {
-    return await authInstance.get('/v1/auth/logout');
+    // setIsOpenNavigation(!isOpenNavigation); // TODO : 아이콘 배경 변경
   };
 
   // 사이드메뉴 로그아웃 시
   const onLogout = () => {
-    // logout();
-    //500 에러
-    //쿠키 삭제
-    // queryClient.removeQueries();
-    // queryClient.clear();
-    queryClient.getQueryCache().clear;
-    removeAuthorityCookie('accessToken', {
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-    });
-    removeAuthorityCookie('sessionId', {
-      path: '/',
-      sameSite: 'strict',
-      secure: false,
-    });
+    setIsLogin(false);
   };
 
+  const { isSuccess } = useQuery({
+    queryKey: ['get-logout'],
+    queryFn: getLogout,
+    meta: {
+      errorMessage: 'get-logout 에러 메세지',
+    },
+    enabled: !isLogin,
+  });
+
+  useEffect(() => {
+    //로그아웃시 초기화
+    if (isSuccess) {
+      navigate('/login');
+      queryClient.getQueryCache().clear;
+      removeAuthorityCookie('accessToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('refreshToken', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+      removeAuthorityCookie('sessionId', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
+    }
+  }, [isSuccess]);
   return (
     <Container $isOpenNavigation={isOpenNavigation}>
       <Wrapper>
@@ -66,7 +80,7 @@ export function Header() {
             />
           </svg>
         </IconWrapper>
-        <IndexInfo list={['콘텐츠 제작', '문항']} />
+        <IndexInfo list={pageIndexValue} />
       </Wrapper>
 
       {/* 사이드메뉴 */}
@@ -74,9 +88,7 @@ export function Header() {
         <Link to="/preparing">가이드</Link>
         <Link to="/preparing">고객센터</Link>
         <Link to="/mypage">마이페이지</Link>
-        <Link to="/login" onClick={onLogout}>
-          로그아웃
-        </Link>
+        <button onClick={() => onLogout()}>로그아웃</button>
       </SideMenuWrapper>
     </Container>
   );
@@ -106,13 +118,14 @@ const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-right: 20px;
-  cursor: pointer;
+  /* cursor: pointer; */
 `;
 
 const SideMenuWrapper = styled.div`
   display: flex;
 
-  a {
+  a,
+  button {
     display: flex;
     align-items: center;
     font-size: 14px;
@@ -121,6 +134,9 @@ const SideMenuWrapper = styled.div`
     padding: 5px 10px;
     text-decoration: none;
     position: relative;
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
 
     &::after {
       content: '';

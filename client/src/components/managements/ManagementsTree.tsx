@@ -4,10 +4,9 @@ import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { TabMenu, IndexInfo } from '../../components';
+import { TabMenu } from '../../components';
 import { Button } from '../../components/atom';
 import { COLOR } from '../../components/constants';
-import { ManagemantTreePopup } from '../../pages/managementPopup/ManagementTreePopup';
 
 export function ManagementsTree() {
   const menuList = [
@@ -26,9 +25,8 @@ export function ManagementsTree() {
 
   return (
     <Container>
-      <IndexInfo list={['콘텐츠 관리', '문항 트리 구조', `${tabVeiw}`]} />
-
-      <HeadWrapper>
+      <div>준비중인 페이지입니다....</div>
+      {/* <HeadWrapper>
         <TabMenu
           length={1}
           menu={menuList}
@@ -48,7 +46,7 @@ export function ManagementsTree() {
         </Button>
       </HeadWrapper>
       <TableWrapper></TableWrapper>
-      {isOpenPopup && <ManagemantTreePopup setIsOpenPopup={setIsOpenPopup} />}
+      {isOpenPopup && <ManagemantTreePopup setIsOpenPopup={setIsOpenPopup} />} */}
     </Container>
   );
 }
@@ -57,6 +55,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
 `;
 const HeadWrapper = styled.div`
   width: 100%;

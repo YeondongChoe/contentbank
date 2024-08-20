@@ -13,6 +13,7 @@ type AlertProps = {
   notice?: boolean;
   isAlertOpen: boolean;
   isWarning?: boolean;
+  top?: string;
 };
 
 export function Alert({
@@ -24,11 +25,12 @@ export function Alert({
   notice,
   isAlertOpen,
   isWarning,
+  top,
 }: AlertProps) {
   return (
     <>
       {isAlertOpen && (
-        <Overlay>
+        <Overlay $top={top}>
           <Container>
             <AlertWrapper>
               {isWarning && (
@@ -103,9 +105,9 @@ export function Alert({
   );
 }
 
-const Overlay = styled.div`
+const Overlay = styled.div<{ $top?: string }>`
   position: fixed;
-  top: 0;
+  top: ${({ $top }) => ($top ? `${$top};` : '0px')};
   left: 0;
   width: 100%;
   height: 100%;

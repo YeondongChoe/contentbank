@@ -1,49 +1,15 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
 
+import { ItemCategoryType } from '../../../../types';
 import { IconButton } from '../../../atom/button';
 import { COLOR } from '../../../constants';
 
-export type OptionsDepsProps = {
-  id?: string | number;
-  label: string;
-  value?: number | string;
-  code?: string;
-  options?: OptionsProps[];
-};
-
-export type OptionsProps = {
-  id?: string | number;
-  label?: string;
-  value?: number | string;
-  code?: string;
-  type?: string;
-  inputValue?: string;
-  dateValue?: string;
-  options?: OptionsItemProps[];
-};
-
-export type OptionsItemProps = {
-  id?: string | number;
-  label?: string;
-  value?: string | number;
-  type?: string;
-  inputValue?: string;
-  dateValue?: string;
-  options?: ItemProps[];
-};
-
-type ItemProps = {
-  id?: string | number;
-  label?: string;
-  value?: string | number;
-};
-
 type SelectProps = {
-  options?: OptionsDepsProps[];
+  options?: ItemCategoryType[];
   onClick?: () => void;
   onSelect: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -52,14 +18,14 @@ type SelectProps = {
   defaultValue?: null | string;
   width?: string;
   height?: string;
-  children?: string;
   padding?: string;
   text?: string;
   top?: string;
   blackMode?: boolean;
   disabled?: boolean;
-  selected: any;
-  setSelected: any;
+  selected: string;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
+  $positionTop?: boolean;
 };
 
 export function OtionsSelect({
@@ -73,14 +39,17 @@ export function OtionsSelect({
   text,
   blackMode,
   disabled,
-  selected,
+  // selected,
   setSelected,
+  $positionTop,
 }: SelectProps) {
   const [isOptionShow, setIsOptionShow] = useState(false);
-  const [select, setSelect] = useState<string>();
-  React.useEffect(() => {
+
+  const [select, setSelect] = useState<string>('');
+  useEffect(() => {
     setSelected(select);
   }, [select]);
+
   return (
     <Component
       $padding={padding}
@@ -99,27 +68,31 @@ export function OtionsSelect({
         rightIconSrc={React.createElement(IoMdArrowDropdown)}
         blackMode={blackMode}
       >
-        {select || defaultValue}
+        <span>{select || defaultValue}</span>
       </IconButton>
       {isOptionShow && (
         <SelectOptionsList
-          onClick={() => setIsOptionShow(false)}
+          onClick={() => {
+            setIsOptionShow(false);
+          }}
           onMouseLeave={() => {
             setIsOptionShow(false);
           }}
           $top={height}
+          $positionTop={$positionTop}
+          height={height}
         >
           {options?.map((el) => (
-            <li key={el.id}>
+            <li key={el.idx}>
               <button
                 disabled={disabled}
-                value={el.label}
+                value={el.name}
                 onClick={(event) => {
                   onSelect(event, el.code),
                     setSelect(event.currentTarget.value);
                 }}
               >
-                <span>{el.label}</span>
+                <span>{el.name}</span>
               </button>
             </li>
           ))}
@@ -133,16 +106,26 @@ const Component = styled.div<{ $padding?: string }>`
   position: relative;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
 `;
-const SelectOptionsList = styled.ul<{ $top?: string }>`
+const SelectOptionsList = styled.ul<{
+  $top?: string;
+  $positionTop?: boolean;
+  height?: string;
+}>`
   padding-top: 5px;
   position: absolute;
   top: ${({ $top }) => ($top ? `${$top};` : '40px')};
+  margin-bottom: ${({ height, $positionTop }) =>
+    height && $positionTop ? `${height};` : '0px'};
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 9;
+  z-index: 1;
   width: 100%;
   height: 100%;
+  ${({ $positionTop }) =>
+    $positionTop
+      ? `top: auto; bottom: 0; left: 0; right: 0; padding-bottom: 5px;padding-top: 0;height: fit-content;`
+      : ''};
 
   li {
     width: 100%;

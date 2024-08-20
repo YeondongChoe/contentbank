@@ -25,12 +25,14 @@ export function CreateContentModal() {
   const goToPage = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const target = e.currentTarget.value;
     // 로컬스토리지에 보낼데이터 저장
-    const sendData = { data: target };
-    localStorage.setItem('sendData', JSON.stringify(sendData));
+    // const sendData = { data: target };
+    // localStorage.setItem('sendData', JSON.stringify(sendData));
 
     windowOpenHandler({
       name: 'createcontentmain',
       url: '/createcontentmain',
+      $height: 850,
+      queryParams: { state: `${target}` },
     });
   };
 
@@ -67,21 +69,21 @@ export function CreateContentModal() {
             <MenuDiscription>(PDF, JPG, PNG, HWP 등)</MenuDiscription>
           </TextWrapper>
         </MenuWrapper>
-        {/* <MenuWrapper
+        <MenuWrapper
           onClick={(e) => {
             goToPage(e);
             closeModal();
           }}
-          value="uploadfile"
+          value="uploadhtml"
         >
           <IconWrapper>
             <TbFileUpload style={styleIcon} />
           </IconWrapper>
           <TextWrapper>
             <MenuName>대량 문항 등록</MenuName>
-            <MenuDiscription>(hwp, hml, xml)</MenuDiscription>
+            <MenuDiscription>(HWP, HML 등)</MenuDiscription>
           </TextWrapper>
-        </MenuWrapper> */}
+        </MenuWrapper>
       </MenuListWrapper>
     </Container>
   );

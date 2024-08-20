@@ -7,22 +7,48 @@ export const windowOpenHandler = ({
   name = '_blank',
   url,
   options = '', // sendData = '',
+  $height = 800,
+  $width = 1400,
+  queryParams = {},
 }: {
   name?: string;
   url: string;
   options?: string;
+  $width?: number;
+  $height?: number;
+  queryParams?: { [key: string]: any };
   // sendData?: unknown;
 }) => {
-  const windowWidth = 1200;
-  const windowHeight = 800;
+  const windowWidth = $width;
+  const windowHeight = $height;
   const left = Math.round(window.screen.width / 2 - windowWidth / 2);
   const top = Math.round(window.screen.height / 2 - windowHeight / 2);
 
   const target = `${name}`;
   const defaultOption = `width=${windowWidth},height=${windowHeight},top=${top},left=${left},toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no`;
-  //TODO : url 에 ${BASEURL} 추가
 
-  window.open(url, target, options ? options : `${defaultOption}`);
+  // 쿼리 스트링 생성
+  const queryString = Object.keys(queryParams)
+    .map((key) => `${key}=${encodeURIComponent(queryParams[key])}`)
+    .join('&');
+  const finalUrl = queryString ? `${url}?${queryString}` : url;
+
+  const newWindow = window.open(
+    finalUrl,
+    target,
+    options ? options : `${defaultOption}`,
+  );
+
+  if (newWindow) {
+    newWindow.onload = () => {
+      const parentQuizList = window.localStorage.getItem('quizList');
+      if (parentQuizList) {
+        newWindow.localStorage.setItem('quizList', parentQuizList);
+      }
+    };
+  } else {
+    console.error('Failed to open new window');
+  }
 };
 
 //TODO: 함수 분기 추가 커스텀 필요

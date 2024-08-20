@@ -16,6 +16,9 @@ interface DnDWrapperPropsType {
     isDragging: boolean,
   ) => React.ReactNode; // 각 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름(각  드래그리스트는 섹션 이름을 다르게 해야 각 섹션 아이템간 이동이 불가)
+  doubleDnD?: boolean; // 한페이지 드래그 2개일때(Cannot have two HTML5 backends at the same time 해결)
+  isStartDnD?: boolean;
+  setIsStartDnd?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface DraggableItemProps {
@@ -38,6 +41,9 @@ export const DnDWrapper = ({
   onDragEnd,
   children,
   dragSectionName,
+  doubleDnD,
+  isStartDnD,
+  setIsStartDnd,
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
 
@@ -47,41 +53,72 @@ export const DnDWrapper = ({
     hoverIndex: number,
     isFinished: boolean,
   ) => {
-    const newItems = [...currentItems];
-    const [draggedItem] = newItems.splice(dragIndex, 1);
-    newItems.splice(hoverIndex, 0, draggedItem);
-    setCurrentItems(newItems);
-    newItems.forEach((item, index) => {
-      item.order = index;
-    });
+    // 상태 업데이트 로직을 함수 밖으로 빼내서, 렌더링 중에 호출되지 않도록 함
+    const newItems = updateItems(dragIndex, hoverIndex);
+
     if (isFinished) {
-      onDragEnd(newItems); // 드래그가 종료되었을 때 콜백 함수를 호출.
+      // 상태 업데이트 요청을 상위 컴포넌트로 전달
+      onDragEnd(newItems);
     } else {
-      onDragging && onDragging(newItems); // 항목이 드래그 중일 때 콜백 함수를 호출.
+      // 드래깅 중인 상태 업데이트는 로컬 상태로 처리
+      setCurrentItems(newItems);
     }
   };
+  // 항목 업데이트 로직 분리
+  function updateItems(dragIndex: number, hoverIndex: number) {
+    const newItems = [...currentItems];
+    const draggedItem = newItems.splice(dragIndex, 1)[0];
+    newItems.splice(hoverIndex, 0, draggedItem);
+    return newItems.map((item, index) => ({ ...item, order: index }));
+  }
+
   useEffect(() => {
-    setCurrentItems(dragList);
+    //TODO : 해당 코드가 활성화시 dnd 이후 원복 에러
+    if (dragList) {
+      setCurrentItems(dragList);
+    }
   }, [dragList]);
 
-  // 각 항목을 랜더링.
+  // useEffect(() => {}, [dragList]);
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      {currentItems.length !== 0 ? (
-        currentItems.map((item, idx) => (
-          <DraggableItem
-            key={item.id}
-            dragItem={item}
-            itemIndex={idx}
-            onMove={handleItemMove}
-            itemRenderer={children}
-            dragSectionName={dragSectionName}
-          />
-        ))
+    <>
+      {doubleDnD ? (
+        <>
+          {currentItems.length !== 0 ? (
+            currentItems.map((item, idx) => (
+              <DraggableItem
+                key={idx}
+                dragItem={item}
+                itemIndex={idx}
+                onMove={handleItemMove}
+                itemRenderer={children}
+                dragSectionName={dragSectionName}
+              />
+            ))
+          ) : (
+            <></>
+          )}
+        </>
       ) : (
-        <></>
+        <DndProvider backend={HTML5Backend}>
+          {currentItems.length !== 0 ? (
+            currentItems.map((item, idx) => (
+              <DraggableItem
+                key={idx}
+                dragItem={item}
+                itemIndex={idx}
+                onMove={handleItemMove}
+                itemRenderer={children}
+                dragSectionName={dragSectionName}
+              />
+            ))
+          ) : (
+            <></>
+          )}
+        </DndProvider>
       )}
-    </DndProvider>
+    </>
   );
 };
 

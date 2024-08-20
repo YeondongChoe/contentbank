@@ -5,6 +5,11 @@ export const accessTokenAtom = atom({
   default: '',
 });
 
+export const refreshTokenAtom = atom({
+  key: 'refreshTokenAtom',
+  default: '',
+});
+
 export const sessionIdAtom = atom({
   key: 'sessionIdAtom',
   default: '',

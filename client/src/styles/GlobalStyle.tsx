@@ -13,7 +13,11 @@ ul,
 ol,
 li {
 	list-style: none;
+	margin: 0;
+	padding: 0;
 }
+
+p {margin:0}
 
 a,
 img {
@@ -54,6 +58,9 @@ code {
 	padding: 0 20px;
 	}
 } */
+
+
+
 `;
 
 export default GlobalStyle;

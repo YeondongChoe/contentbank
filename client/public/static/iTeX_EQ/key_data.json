@@ -1,0 +1,605 @@
+{
+  "layout_1": {
+    "key_layer_1": [
+      {
+        "d": "itex_subset",
+        "a": [
+          { "d": "itex_nsubset" },
+          { "d": "itex_in" },
+          { "d": "itex_notin" }
+        ]
+      },
+      {
+        "e": true,
+        "d": "itex_supset",
+        "a": [
+          { "d": "itex_nsupset" },
+          { "d": "itex_ni" },
+          { "d": "itex_notni" }
+        ]
+      },
+      { "d": "itex_frac", "a": [{ "d": "itex_bigfrac" }] },
+      { "d": "itex_sqrt", "a": [{ "d": "itex_root" }] },
+      { "d": "itex_super", "a": [{ "d": "itex_superbox" }] },
+      { "e": true, "d": "itex_suber", "a": [{ "d": "itex_suberbox" }] },
+      {
+        "d": "itex_tnum7",
+        "a": [
+          { "d": "itex_circle07" },
+          { "d": "itex_circle17" },
+          { "d": "itex_circle27" },
+          { "d": "itex_circle37" }
+        ]
+      },
+      {
+        "d": "itex_tnum8",
+        "a": [
+          { "d": "itex_circle08" },
+          { "d": "itex_circle18" },
+          { "d": "itex_circle28" },
+          { "d": "itex_circle38" }
+        ]
+      },
+      {
+        "d": "itex_tnum9",
+        "a": [
+          { "d": "itex_circle09" },
+          { "d": "itex_circle19" },
+          { "d": "itex_circle29" },
+          { "d": "itex_circle39" }
+        ]
+      },
+      { "d": "itex_charx", "a": [{ "d": "itex_chary" }, { "d": "itex_charz" }] }
+    ],
+    "key_layer_2": [
+      { "d": "itex_lt", "a": [{ "d": "itex_leq" }] },
+      { "e": true, "d": "itex_gt", "a": [{ "d": "itex_geq" }] },
+      { "d": "itex_lim" },
+      { "d": "itex_sum", "a": [{ "d": "itex_sum2" }] },
+      { "d": "itex_int", "a": [{ "d": "itex_int2" }] },
+      { "e": true, "d": "itex_infty" },
+      {
+        "d": "itex_tnum4",
+        "a": [
+          { "d": "itex_circle04" },
+          { "d": "itex_circle14" },
+          { "d": "itex_circle24" },
+          { "d": "itex_circle34" }
+        ]
+      },
+      {
+        "d": "itex_tnum5",
+        "a": [
+          { "d": "itex_circle05" },
+          { "d": "itex_circle14" },
+          { "d": "itex_circle25" },
+          { "d": "itex_circle35" }
+        ]
+      },
+      {
+        "d": "itex_tnum6",
+        "a": [
+          { "d": "itex_circle06" },
+          { "d": "itex_circle14" },
+          { "d": "itex_circle26" },
+          { "d": "itex_circle36" }
+        ]
+      },
+      {
+        "d": "itex_gkalpha",
+        "a": [{ "d": "itex_gkbeta" }, { "d": "itex_gkgamma" }]
+      }
+    ],
+    "key_layer_3": [
+      { "d": "itex_lbs", "a": [{ "d": "itex_lbm" }, { "d": "itex_lbb" }] },
+      {
+        "e": true,
+        "d": "itex_rbs",
+        "a": [{ "d": "itex_rbm" }, { "d": "itex_rbb" }]
+      },
+      { "d": "itex_addarray" },
+      {
+        "d": "itex_overline",
+        "a": [
+          { "d": "itex_overrightarrow" },
+          { "d": "itex_overleftarrow" },
+          { "d": "itex_overleftrightarrow" }
+        ]
+      },
+      { "d": "itex_angle", "a": [{ "d": "itex_bot" }] },
+      {
+        "e": true,
+        "d": "itex_sin",
+        "a": [{ "d": "itex_cos" }, { "d": "itex_tan" }]
+      },
+      {
+        "d": "itex_tnum1",
+        "a": [
+          { "d": "itex_circle01" },
+          { "d": "itex_circle11" },
+          { "d": "itex_circle21" },
+          { "d": "itex_circle31" }
+        ]
+      },
+      {
+        "d": "itex_tnum2",
+        "a": [
+          { "d": "itex_circle02" },
+          { "d": "itex_circle12" },
+          { "d": "itex_circle22" },
+          { "d": "itex_circle32" }
+        ]
+      },
+      {
+        "d": "itex_tnum3",
+        "a": [
+          { "d": "itex_circle03" },
+          { "d": "itex_circle13" },
+          { "d": "itex_circle23" },
+          { "d": "itex_circle33" }
+        ]
+      },
+      { "d": "itex_tnum_enter" }
+    ],
+    "key_layer_4": [
+      { "e": true, "c": "2", "d": "itex_emsp1", "a": [{ "d": "itex_emsp4" }] },
+      { "d": "itex_tnumplus" },
+      { "d": "itex_tnumminus" },
+      { "d": "itex_tnumtimes" },
+      { "e": true, "d": "itex_tnumdiv" },
+      {
+        "d": "itex_tnumeq",
+        "a": [{ "d": "itex_neq" }, { "d": "itex_fallingdotseq" }]
+      },
+      {
+        "d": "itex_tnum0",
+        "a": [
+          { "d": "itex_circle00" },
+          { "d": "itex_circle10" },
+          { "d": "itex_circle20" },
+          { "d": "itex_circle30" }
+        ]
+      },
+      { "d": "itex_tnum_dot", "a": [{ "d": "itex_tnum_rest" }] },
+      { "d": "itex_maindel", "del": true }
+    ]
+  },
+  "layout_2": {
+    "key_layer_1": [
+      {
+        "d": "itex_charq",
+        "b": "itex_capq",
+        "r": "itex_rsq",
+        "rb": "itex_rcq",
+        "k": "itex_han0",
+        "kb": "itex_han10"
+      },
+      {
+        "d": "itex_charw",
+        "b": "itex_capw",
+        "r": "itex_rsw",
+        "rb": "itex_rcw",
+        "k": "itex_han1",
+        "kb": "itex_han11"
+      },
+      {
+        "d": "itex_chare",
+        "b": "itex_cape",
+        "r": "itex_rse",
+        "rb": "itex_rce",
+        "k": "itex_han2",
+        "kb": "itex_han12"
+      },
+      {
+        "d": "itex_charr",
+        "b": "itex_capr",
+        "r": "itex_rsr",
+        "rb": "itex_rcr",
+        "k": "itex_han3",
+        "kb": "itex_han13"
+      },
+      {
+        "d": "itex_chart",
+        "b": "itex_capt",
+        "r": "itex_rst",
+        "rb": "itex_rct",
+        "k": "itex_han4",
+        "kb": "itex_han14"
+      },
+      {
+        "d": "itex_chary",
+        "b": "itex_capy",
+        "r": "itex_rsy",
+        "rb": "itex_rcy",
+        "k": "itex_han5"
+      },
+      {
+        "d": "itex_charu",
+        "b": "itex_capu",
+        "r": "itex_rsu",
+        "rb": "itex_rcu",
+        "k": "itex_han6"
+      },
+      {
+        "d": "itex_chari",
+        "b": "itex_capi",
+        "r": "itex_rsi",
+        "rb": "itex_rci",
+        "k": "itex_han7"
+      },
+      {
+        "d": "itex_charo",
+        "b": "itex_capo",
+        "r": "itex_rso",
+        "rb": "itex_rco",
+        "k": "itex_han8",
+        "kb": "itex_han18"
+      },
+      {
+        "d": "itex_charp",
+        "b": "itex_capp",
+        "r": "itex_rsp",
+        "rb": "itex_rcp",
+        "k": "itex_han9",
+        "kb": "itex_han19"
+      }
+    ],
+    "key_layer_2": [
+      {
+        "d": "itex_chara",
+        "b": "itex_capa",
+        "r": "itex_rsa",
+        "rb": "itex_rca",
+        "k": "itex_han20"
+      },
+      {
+        "d": "itex_chars",
+        "b": "itex_caps",
+        "r": "itex_rss",
+        "rb": "itex_rcs",
+        "k": "itex_han21"
+      },
+      {
+        "d": "itex_chard",
+        "b": "itex_capd",
+        "r": "itex_rsd",
+        "rb": "itex_rcd",
+        "k": "itex_han22"
+      },
+      {
+        "d": "itex_charf",
+        "b": "itex_capf",
+        "r": "itex_rsf",
+        "rb": "itex_rcf",
+        "k": "itex_han23"
+      },
+      {
+        "d": "itex_charg",
+        "b": "itex_capg",
+        "r": "itex_rsg",
+        "rb": "itex_rcg",
+        "k": "itex_han24"
+      },
+      {
+        "d": "itex_charh",
+        "b": "itex_caph",
+        "r": "itex_rsh",
+        "rb": "itex_rch",
+        "k": "itex_han25"
+      },
+      {
+        "d": "itex_charj",
+        "b": "itex_capj",
+        "r": "itex_rsj",
+        "rb": "itex_rcj",
+        "k": "itex_han26"
+      },
+      {
+        "d": "itex_chark",
+        "b": "itex_capk",
+        "r": "itex_rsk",
+        "rb": "itex_rck",
+        "k": "itex_han27"
+      },
+      {
+        "d": "itex_charl",
+        "b": "itex_capl",
+        "r": "itex_rsl",
+        "rb": "itex_rcl",
+        "k": "itex_han28"
+      },
+      { "d": "itex_sp2col" }
+    ],
+    "key_layer_3": [
+      {
+        "d": "itex_ko",
+        "b": "itex_ko",
+        "r": "itex_ko",
+        "rb": "itex_ko",
+        "k": "itex_en",
+        "t": true
+      },
+      {
+        "d": "itex_charz",
+        "b": "itex_capz",
+        "r": "itex_rsz",
+        "rb": "itex_rcz",
+        "k": "itex_han29"
+      },
+      {
+        "d": "itex_charx",
+        "b": "itex_capx",
+        "r": "itex_rsx",
+        "rb": "itex_rcx",
+        "k": "itex_han30"
+      },
+      {
+        "d": "itex_charc",
+        "b": "itex_capc",
+        "r": "itex_rsc",
+        "rb": "itex_rcc",
+        "k": "itex_han31"
+      },
+      {
+        "d": "itex_charv",
+        "b": "itex_capv",
+        "r": "itex_rsv",
+        "rb": "itex_rcv",
+        "k": "itex_han32"
+      },
+      {
+        "d": "itex_charb",
+        "b": "itex_capb",
+        "r": "itex_rsb",
+        "rb": "itex_rcb",
+        "k": "itex_han33"
+      },
+      {
+        "d": "itex_charn",
+        "b": "itex_capn",
+        "r": "itex_rsn",
+        "rb": "itex_rcn",
+        "k": "itex_han34"
+      },
+      {
+        "d": "itex_charm",
+        "b": "itex_capm",
+        "r": "itex_rsm",
+        "rb": "itex_rcm",
+        "k": "itex_han35"
+      },
+      {
+        "d": "itex_tnum_dot",
+        "b": "itex_tnum_rest",
+        "r": "itex_tnum_dot",
+        "rb": "itex_tnum_rest"
+      },
+      { "d": "itex_tnum_enter" }
+    ],
+    "key_layer_4": [
+      { "c": "3", "d": "itex_shift", "s": true },
+      { "d": "itex_vert", "b": "", "r": "", "rb": "" },
+      { "d": "itex_slash", "b": "", "r": "", "rb": "" },
+      {
+        "c": "4",
+        "d": "itex_emsp1",
+        "b": "itex_emsp4",
+        "r": "itex_emsp1",
+        "rb": "itex_emsp4"
+      },
+      { "d": "itex_tnum_rest", "b": "", "r": "", "rb": "" },
+      { "d": "itex_question" },
+      { "c": "3", "d": "itex_maindel", "del": true }
+    ]
+  },
+  "layout_3": {
+    "key_layer_1": [
+      { "d": "itex_cap" },
+      { "e": true, "d": "itex_cup" },
+      { "d": "itex_frac", "a": [{ "d": "itex_bigfrac" }] },
+      { "d": "itex_sqrt", "a": [{ "d": "itex_root" }] },
+      { "d": "itex_super", "a": [{ "d": "itex_superbox" }] },
+      { "e": true, "d": "itex_suber", "a": [{ "d": "itex_suberbox" }] },
+      { "d": "itex_varnothing", "b": "itex_nwarrow" },
+      {
+        "d": "itex_therefore",
+        "a": [{ "d": "itex_because" }],
+        "b": "itex_uparrow"
+      },
+      {
+        "d": "itex_cdots",
+        "a": [{ "d": "itex_vdots" }, { "d": "itex_cdot" }],
+        "b": "itex_nearrow"
+      },
+      { "d": "itex_notpar" }
+    ],
+    "key_layer_2": [
+      { "d": "itex_pm" },
+      { "e": true, "d": "itex_mp" },
+      { "d": "itex_lim" },
+      { "d": "itex_sum", "a": [{ "d": "itex_sum2" }] },
+      { "d": "itex_int", "a": [{ "d": "itex_int2" }] },
+      { "e": true, "d": "itex_infty" },
+      {
+        "d": "itex_insquare",
+        "a": [{ "d": "itex_square" }],
+        "b": "itex_leftarrow",
+        "ba": [{ "d": "itex_blarrow" }]
+      },
+      {
+        "d": "itex_incirc",
+        "a": [{ "d": "itex_bigcirc" }],
+        "b": "itex_leftrightarrow",
+        "ba": [{ "d": "itex_blrarrow" }]
+      },
+      {
+        "d": "itex_intriangle",
+        "a": [{ "d": "itex_triangle" }],
+        "b": "itex_rightarrow"
+      },
+      { "d": "itex_indiamond", "a": [{ "d": "itex_diamond" }] }
+    ],
+    "key_layer_3": [
+      { "d": "itex_fx", "a": [{ "d": "itex_gx" }, { "d": "itex_hx" }] },
+      { "e": true, "d": "itex_equiv" },
+      { "d": "itex_addarray" },
+      {
+        "d": "itex_overdot",
+        "a": [
+          { "d": "itex_overrightarrow" },
+          { "d": "itex_overleftarrow" },
+          { "d": "itex_overleftrightarrow" }
+        ]
+      },
+      { "d": "itex_boxed1", "a": [{ "d": "itex_boxed2" }] },
+      {
+        "e": true,
+        "d": "itex_sec",
+        "a": [{ "d": "itex_csc" }, { "d": "itex_cot" }]
+      },
+      {
+        "d": "itex_oplus",
+        "a": [{ "d": "itex_odot" }, { "d": "itex_ominus" }],
+        "b": "itex_swarrow"
+      },
+      {
+        "d": "itex_bigstar",
+        "a": [{ "d": "itex_whitestar" }],
+        "b": "itex_downarrow"
+      },
+      {
+        "d": "itex_heart",
+        "a": [{ "d": "itex_whiteheart" }],
+        "b": "itex_searrow"
+      },
+      { "d": "itex_tnum_enter" }
+    ],
+    "key_layer_4": [
+      { "s": true, "e": true, "c": "2", "d": "itex_shift" },
+      { "d": "itex_abs" },
+      { "d": "itex_syseq" },
+      { "d": "itex_arch" },
+      {
+        "e": true,
+        "d": "itex_brace1",
+        "a": [{ "d": "itex_brace2" }, { "d": "itex_brace3" }]
+      },
+      {
+        "d": "itex_deg",
+        "a": [{ "d": "itex_unitCel" }, { "d": "itex_unitFah" }]
+      },
+      { "d": "itex_unitper" },
+      { "d": "itex_parallel" },
+      { "d": "itex_maindel", "del": true }
+    ]
+  },
+  "layout_4": {
+    "key_layer_1": [
+      { "d": "itex_greeknum1", "b": "itex_greekbnum1" },
+      { "d": "itex_greeknum2", "b": "itex_greekbnum2" },
+      { "d": "itex_greeknum3", "b": "itex_greekbnum3" },
+      { "d": "itex_greeknum4", "b": "itex_greekbnum4" },
+      { "d": "itex_greeknum5", "b": "itex_greekbnum5" },
+      { "d": "itex_greeknum6", "b": "itex_greekbnum6" },
+      { "d": "itex_greeknum7", "b": "itex_greekbnum7" },
+      { "d": "itex_greeknum8", "b": "itex_greekbnum8" },
+      { "d": "itex_greeknum9", "b": "itex_greekbnum9" },
+      { "d": "itex_greeknum10", "b": "itex_greekbnum10" }
+    ],
+    "key_layer_2": [
+      { "d": "itex_gkalpha", "b": "", "ex": "Alpha" },
+      { "d": "itex_gkbeta", "b": "", "ex": "Beta" },
+      { "d": "itex_gkgamma", "b": "itex_grbgamma", "ex": "Gamma" },
+      { "d": "itex_gkdelta", "b": "itex_grbdelta", "ex": "Delta" },
+      { "d": "itex_spbbr", "b": "itex_grbepsilon", "ex": "Epsilon" },
+      { "d": "itex_gkzeta", "b": "", "ex": "Zeta" },
+      { "d": "itex_gketa", "b": "", "ex": "Eta" },
+      { "d": "itex_gktheta", "b": "itex_grbtheta", "ex": "Theta" },
+      { "d": "itex_gkiota", "b": "", "ex": "Iota" },
+      { "d": "itex_gkkappa", "b": "", "ex": "Kappa" }
+    ],
+    "key_layer_3": [
+      { "d": "itex_gklambda", "b": "itex_grblambda", "ex": "Lambda" },
+      { "d": "itex_gkmu", "b": "", "ex": "Mu" },
+      { "d": "itex_gknu", "b": "", "ex": "Nu" },
+      { "d": "itex_gkxi", "b": "itex_grbxi", "ex": "Xi" },
+      { "d": "itex_gkomicron", "b": "", "ex": "Omicron" },
+      { "d": "itex_gkpi", "b": "itex_grbpi", "ex": "Pi" },
+      { "d": "itex_gkrho", "b": "", "ex": "Rho" },
+      { "d": "itex_gksigma", "b": "itex_grbsigma", "ex": "Sigma" },
+      { "d": "itex_gktau", "b": "", "ex": "Tau" },
+      { "d": "itex_gkupsilon", "b": "", "ex": "Upsilon" }
+    ],
+    "key_layer_4": [
+      { "c": "3", "d": "itex_shift", "s": true },
+      { "d": "itex_gkphi", "b": "itex_grbphi", "ex": "Phi" },
+      { "d": "itex_gkchi", "b": "", "ex": "Chi" },
+      { "d": "itex_gkpsi", "b": "itex_grbpsi", "ex": "Psi" },
+      { "d": "itex_gkomega", "b": "itex_grbomega", "ex": "Omega" },
+      { "d": "itex_spbbi", "ex": "varPhi" },
+      { "d": "itex_spbbn", "ex": "varSigma" },
+      { "d": "itex_spbbq", "ex": "varTheta" },
+      { "c": "3", "d": "itex_maindel", "del": true }
+    ]
+  },
+  "layout_form": {
+    "key_layer_1": [
+      {
+        "d": "",
+        "a": [{ "d": "" }, { "d": "" }, { "d": "" }]
+      },
+      {
+        "e": true,
+        "d": "",
+        "a": [{ "d": "" }, { "d": "" }, { "d": "" }]
+      },
+
+      { "d": "" },
+      { "d": "", "a": [{ "d": "" }, { "d": "" }] },
+      { "d": "" },
+      { "e": true, "d": "" },
+      { "d": "", "b": "2196", "ba": [{ "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "a": [{ "d": "" }, { "d": "" }] }
+    ],
+    "key_layer_2": [
+      { "d": "", "a": [{ "d": "" }] },
+      { "e": true, "d": "", "a": [{ "d": "" }] },
+      { "d": "" },
+      { "d": "" },
+      { "d": "", "a": [{ "d": "" }] },
+      { "e": true, "d": "" },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "a": [{ "d": "" }, { "d": "" }] }
+    ],
+    "key_layer_3": [
+      { "d": "", "a": [{ "d": "" }, { "d": "" }] },
+      { "e": true, "d": "", "a": [{ "d": "" }, { "d": "" }] },
+      { "d": "" },
+      {
+        "d": "",
+        "a": [{ "d": "" }, { "d": "" }]
+      },
+      { "d": "" },
+      { "e": true, "d": "", "a": [{ "d": "" }, { "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "a": [{ "d": "" }, { "d": "" }] }
+    ],
+    "key_layer_4": [
+      { "s": true, "e": true, "c": "2", "d": "" },
+      { "d": "" },
+      { "d": "" },
+      { "d": "" },
+      { "e": true, "d": "" },
+      { "d": "", "a": [{ "d": "" }, { "d": "" }] },
+      { "d": "", "b": "", "ba": [{ "d": "" }] },
+      { "d": "", "a": [{ "d": "" }, { "d": "" }, { "d": "" }] },
+      { "d": "", "del": true }
+    ]
+  }
+}

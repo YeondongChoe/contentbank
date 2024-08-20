@@ -1,0 +1,12 @@
+@font-face {
+  font-family: "SDSamliphopangche_Outline";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/SDSamliphopangche_Outline.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+/* 폰트 추가 시, 필수 설정 */
+/* @font-face {
+  font-family: "";
+  src: url("");
+} */

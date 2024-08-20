@@ -5,10 +5,10 @@ import { styled } from 'styled-components';
 import { COLOR } from '../../constants';
 
 type IconButtonProps = {
-  children?: React.ReactNode;
+  children: JSX.Element | JSX.Element[];
   text?: string;
   buttonType?: 'button' | 'submit' | 'reset';
-  onClick: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onChange?: (x: any) => void;
   onMouseLeave?: () => void;
   $padding?: string;

@@ -40,7 +40,7 @@ export function Tab({
       className={className}
       $active={value === selected}
       onClick={() => {
-        onClickTab;
+        if (onClickTab) onClickTab();
         onChange(value);
       }}
     >

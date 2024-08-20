@@ -9,6 +9,8 @@ export const COLOR = {
   FONT_BLACK: '#252525',
   FONT_NAVI: '#8299D4',
   LIGHT_GRAY: '#eeeeee',
+  SPAN_BlUE: '#1976d2',
+  SPAN_LIGHT_BLUE: '#a3aed0',
 
   BUTTON_NORMAL: '#d9d9d9',
   BUTTON_LIGHT_NORMAL: '#d9d9d9',
@@ -23,6 +25,9 @@ export const COLOR = {
   ALERTBAR_WARNING: '#FFCC06',
 
   TABLE_GRAY: '#f0f0f0',
+
+  IS_HAVE_DATA: 'rgb(195, 209, 247)',
+  IS_CHECK_BACKGROUND: 'rgb(229, 236, 255)',
   //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ//
   HOVER: '#f4f7fe',
   GRAY: '#9a9a9a',

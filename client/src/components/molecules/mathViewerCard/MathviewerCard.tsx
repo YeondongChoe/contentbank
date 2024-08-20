@@ -6,6 +6,7 @@ import { LuSiren, LuBookmarkPlus } from 'react-icons/lu';
 import { styled } from 'styled-components';
 
 import { ItemQuestionType } from '../../../types';
+import { QuizList } from '../../../types/WorkbookType';
 import { Button } from '../../atom';
 import { COLOR } from '../../constants';
 import { MathViewer } from '../../mathViewer/MathViewer';
@@ -13,7 +14,7 @@ import { MathViewer } from '../../mathViewer/MathViewer';
 type MathviewerCardProps = {
   onClick: () => void;
   isSimilar?: boolean;
-  data: ItemQuestionType;
+  data: QuizList;
   index: number;
   selectedCardIndex: number | undefined;
   onSelectCard: (index: number) => void;

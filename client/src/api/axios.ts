@@ -1,113 +1,85 @@
-/* eslint-disable no-undef */
-import * as React from 'react';
+import axios from 'axios';
 
-import axios, { AxiosResponse } from 'axios';
-
-import {
-  getAuthorityCookie,
-  removeAuthorityCookie,
-  setAuthorityCookie,
-} from '../utils/cookies';
+import { getAuthorityCookie } from '../utils/cookies';
 
 // axios 전역 설정
 axios.defaults.withCredentials = true; // withCredentials 전역 설정
+console.log(`${process.env.REACT_APP_AXIOS_BASE_URL}`);
 
-/** 인증 서비스 API Instance*/
-export const authInstance = axios.create({
-  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-    'session-id': `${getAuthorityCookie('sessionId')}`,
-    'Accept-Language': `ko_KR`,
-  },
-});
-
+/*  토큰 재발급 API Instance */
 export const tokenInstance = axios.create({
   baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/auth-service`,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('refreshToken')}`,
+    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
+    Refresh: `Bearer ${getAuthorityCookie('refreshToken')}`,
     'session-id': `${getAuthorityCookie('sessionId')}`,
     'Accept-Language': `ko_KR`,
   },
 });
+tokenInstance.interceptors.request.use(function (config) {
+  const headerAuth =
+    config.headers.Authorization?.toString().split('Bearer ')[1];
+  const headerSessionId = config.headers['session-id'];
 
-authInstance.interceptors.request.use(function (config) {
-  if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
+  if (headerAuth !== getAuthorityCookie('accessToken')) {
     config.headers.Authorization = `Bearer ${getAuthorityCookie(
       'accessToken',
     )}`;
   }
-  if (config.headers['session-id'] !== getAuthorityCookie('sessionId')) {
+  if (headerAuth !== getAuthorityCookie('refreshToken')) {
+    config.headers.Refresh = `Bearer ${getAuthorityCookie('refreshToken')}`;
+  }
+  if (headerSessionId !== getAuthorityCookie('sessionId')) {
     config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
   }
+
   return config;
 });
 
-/** accessToken 확인 후 갱신하는 로직*/
-export const handleAuthorizationRenewal = (code: string) => {
-  if (code !== 'S-001')
-    tokenInstance.post('/v1/auth/refresh-token').then((res) => {
-      // removeAuthorityCookie('accessToken');
-      console.log('/refresh-token', res);
+// 공통으로 사용되는 인스턴스 생성 로직
+function createAPIInstance(baseURL: string) {
+  const instance = axios.create({
+    baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/${baseURL}`,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
+      'session-id': `${getAuthorityCookie('sessionId')}`,
+      'Accept-Language': `ko_KR`,
+    },
+  });
 
-      if (res.data.data.accessToken) {
-        setAuthorityCookie('accessToken', res.data.data.accessToken, {
-          path: '/',
-          sameSite: 'strict',
-          secure: false,
-        });
-      }
-    });
-};
+  // 공통으로 사용되는 요청 인터셉터 설정 로직
+  instance.interceptors.request.use(function (config) {
+    const accessToken = getAuthorityCookie('accessToken');
+    const sessionId = getAuthorityCookie('sessionId');
 
-// 유저 서비스
-export const userInstance = axios.create({
-  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/user-service`,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-    'session-id': `${getAuthorityCookie('sessionId')}`,
-    'Accept-Language': `ko_KR`,
-  },
-});
+    if (`Bearer ${accessToken}` !== config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    if (sessionId !== config.headers['session-id']) {
+      config.headers['session-id'] = sessionId;
+    }
 
-userInstance.interceptors.request.use(function (config) {
-  console.log('config', config);
-  if (config.headers.Authorization !== getAuthorityCookie('accessToken')) {
-    config.headers.Authorization = `Bearer ${getAuthorityCookie(
-      'accessToken',
-    )}`;
-  }
-  if (config.headers['session-id'] !== getAuthorityCookie('sessionId')) {
-    config.headers['session-id'] = `${getAuthorityCookie('sessionId')}`;
-  }
-  return config;
-});
+    return config;
+  });
 
-// 메뉴 리소스 서비스
-export const resourceInstance = axios.create({
-  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/resource-service`,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-  },
-});
+  return instance;
+}
 
-/** 문항서버 API Instance*/
-export const questionInstance = axios.create({
-  baseURL: `${process.env.REACT_APP_AXIOS_BASE_URL}/question-service`,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${getAuthorityCookie('accessToken')}`,
-    'Accept-Language': `ko_KR`,
-  },
-});
-
-questionInstance.interceptors.request.use(function (config) {
-  config.headers.Authorization = `Bearer ${getAuthorityCookie('accessToken')}`;
-  return config;
-});
-
-/** 404 5** 따로 반환 하지 않음 - TODO: 기획 변경시 반영  */
+/* 인증 서비스 API Instance */
+export const authInstance = createAPIInstance('auth-service');
+/* 유저 서비스 API Instance */
+export const userInstance = createAPIInstance('user-service');
+/* 분류 API Instance */
+export const classificationInstance = createAPIInstance(
+  'classification-service',
+);
+/* 학습지 API Instance */
+export const workbookInstance = createAPIInstance('workbook-service');
+/* 학습지 만들기API Instance */
+export const makingworkbookInstance = createAPIInstance('file-service');
+/* 문항 API Instance */
+export const quizService = createAPIInstance('quiz-service');
+/* 문항 API Instance */
+export const historyService = createAPIInstance('history-service');

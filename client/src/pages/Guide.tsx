@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import { useSetRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import {
@@ -13,7 +12,6 @@ import {
   Search,
   TabMenu,
 } from '../components';
-import Contents2 from '../components/mathViewer/test2.json';
 
 import {
   Button,
@@ -94,7 +92,7 @@ export function Guide() {
         <span>border 커스텀 버튼</span>
       </Button>
       <h3>index info</h3>
-      <IndexInfo list={['1deps', '2deps', '3deps']}></IndexInfo>
+      <IndexInfo list={['1depth', '2depth', '3depth']}></IndexInfo>
       <h3>label</h3>
       <Label value="커스텀 라벨"></Label>
       <Label type="error" value="커스텀 라벨"></Label>
@@ -117,10 +115,9 @@ export function Guide() {
         width={'150px'}
         defaultValue={'커스텀 select'}
         options={[
-          { id: '0', label: '개정과정', value: '0' },
-          { id: '1', label: '2015학년', value: '1' },
-          { id: '2', label: '2018학년', value: '2' },
-          { id: '3', label: '2020학년', value: '3' },
+          { code: '0', idx: 0, name: 'name1' },
+          { code: '1', idx: 1, name: 'name2' },
+          { code: '2', idx: 3, name: 'name3' },
         ]}
         onSelect={(event) => selectCategoryOption(event)}
       />
@@ -215,18 +212,18 @@ export function Guide() {
         setShowDropDown={() => setShowDropDown(!showDropDown)}
       ></DropDown>
       <h3>date picker</h3>
-      <CommonDate></CommonDate>
+
       <h3>barchart</h3>
       <BarChart data={Data}></BarChart>
       <h3>mathviewer</h3>
       <div style={{ width: '480px' }}>
-        <MathviewerCard
+        {/* <MathviewerCard
           onClick={() => {}}
           data={Contents2}
           index={1}
           selectedCardIndex={1}
           onSelectCard={() => {}}
-        ></MathviewerCard>
+        ></MathviewerCard> */}
       </div>
       <h3>pagination</h3>
       <PaginationBox itemsCountPerPage={1} totalItemsCount={10}></PaginationBox>

@@ -7,25 +7,41 @@ import { RecoilRoot } from 'recoil';
 
 import { App } from './App';
 import {
-  ContentList,
+  AuthorityPage,
+  FirstLoginPage,
+  LoginPage,
+  ManagementsTreePage,
+  MemberPage,
+  MypagePage,
+  QuizManagementListPage,
+  ReloginPage,
   ContentWorksheet,
-  CreateContentMain,
   CreateWorksheetStep1,
   CreateWorksheetStep2,
   CreateWorksheetStep3,
-} from './pages/content';
+  QuizCreateListPage,
+} from './pages';
 import { Guide } from './pages/Guide';
-import { ManagementList } from './pages/management/ManagementList';
-import { ManagementTree } from './pages/management/ManagementTree';
-import { FirstLogin } from './pages/members/FirstLogin';
-import { Login } from './pages/members/Login';
-import { Relogin } from './pages/members/Relogin';
-import { Mypage } from './pages/mypage/Mypage';
+import { ManagementEditMain } from './pages/managementWindow';
+import { Formula } from './pages/managementWindow/Formula';
 import { Notfound } from './pages/Notfound';
-import { OperationAuthority } from './pages/operate/OperationAuthority';
-import { OperationMember } from './pages/operate/OperationMember';
 import { Preparing } from './pages/Preparing';
+import { CreateContentMain, QuizPreview } from './pages/quizCreateWindow';
 import GlobalStyle from './styles/GlobalStyle';
+
+import 'react-perfect-scrollbar/dist/css/styles.css';
+
+const lazyWrap = (factory: () => Promise<any>) => {
+  return async () => {
+    const page = await factory();
+    // https://reactrouter.com/en/main/route/lazy
+    return {
+      Component: page.default || page.Component,
+      ErrorBoundary: page.ErrorBoundary,
+      loader: page.loader,
+    };
+  };
+};
 
 const router = createBrowserRouter([
   {
@@ -33,7 +49,7 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <Notfound />,
     children: [
-      { index: true, path: '/', element: <ContentList /> },
+      { index: true, path: '/', element: <QuizCreateListPage /> },
       {
         path: 'dev/v1/guide',
         element: <Guide />,
@@ -44,31 +60,35 @@ const router = createBrowserRouter([
       },
       {
         path: '/login',
-        element: <Login />,
+        element: <LoginPage />,
       },
       {
         path: '/init-change-password',
-        element: <FirstLogin />,
+        element: <FirstLoginPage />,
       },
       {
         path: '/relogin',
-        element: <Relogin />,
+        element: <ReloginPage />,
       },
       {
         path: '/mypage',
-        element: <Mypage />,
+        element: <MypagePage />,
       },
       {
         path: '/content-create/quiz',
-        element: <ContentList />,
+        element: <QuizCreateListPage />,
       },
-      // {
-      //   path: '/createcontentwindow',
-      //   element: <CreateContentWindow />,
-      // },
       {
         path: '/createcontentmain',
         element: <CreateContentMain />,
+      },
+      // {
+      //   path: '/formula',
+      //   element: <Formula />,
+      // },
+      {
+        path: '/quizpreview',
+        element: <QuizPreview />,
       },
       {
         path: '/content-create/exam',
@@ -88,19 +108,25 @@ const router = createBrowserRouter([
       },
       {
         path: '/content-manage/quiz',
-        element: <ManagementList />,
+        element: <QuizManagementListPage />,
+      },
+      {
+        path: '/managementEditMain',
+        element: <ManagementEditMain />,
       },
       {
         path: '/content-manage/classify',
-        element: <ManagementTree />,
+        element: <ManagementsTreePage />,
       },
+
       {
         path: '/operation-manage/member',
-        element: <OperationMember />,
+        element: <MemberPage />,
+        // lazy: lazyWrap(() => import('./pages/operate/MemberPage')),
       },
       {
         path: '/operation-manage/authority',
-        element: <OperationAuthority />,
+        element: <AuthorityPage />,
       },
     ],
   },

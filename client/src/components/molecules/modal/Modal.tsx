@@ -53,7 +53,7 @@ export const ModalDimmer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2;
+  z-index: 9;
 `;
 export const ModalBody = styled.div`
   display: flex;
