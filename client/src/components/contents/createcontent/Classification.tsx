@@ -638,8 +638,9 @@ export function Classification({
       '수정에서의 itemTree unitClassificationList',
       unitClassificationList[idx],
     );
-    onResetList();
     setSelectedClassification(unitClassificationList[idx]);
+    onResetList();
+
     setIsModifying(true);
   };
   // 수정시 작동
@@ -673,6 +674,7 @@ export function Classification({
           ...classification,
           checkValue: matchingItem.idx as number,
         };
+        console.log('2뎁스----------updatedObject----', updatedObject);
         setSelected2depth(matchingItem.idx.toString());
         setRadio2depthCheck(updatedObject);
       }
@@ -689,6 +691,7 @@ export function Classification({
           ...classification,
           checkValue: matchingItem.idx as number,
         };
+        console.log('3뎁스----------updatedObject----', updatedObject);
         setSelected3depth(matchingItem.idx.toString());
         setRadio3depthCheck(updatedObject);
       }
@@ -705,6 +708,7 @@ export function Classification({
           ...classification,
           checkValue: matchingItem.idx as number,
         };
+        console.log('4뎁스----------updatedObject----', updatedObject);
         setSelected4depth(matchingItem.idx.toString());
         setRadio4depthCheck(updatedObject);
       }
@@ -719,12 +723,14 @@ export function Classification({
         setCheckedDepthList(classification.itemTreeIdxList);
 
       const classificationEtc1 = selectedClassification[5] as RadioStateType[];
-      console.log(
-        '수정시 classificationEtc1 리스트 ----- ',
-        selectedClassification,
-      );
+
       // 저장되었던 행동 요소1
       if (classificationEtc1) {
+        // const filteredArrayE1 = classificationEtc1.filter(
+        //   (item) => item.key === '행동요소1',
+        // );
+        // console.log(filteredArrayE1);
+
         setSelectedCategoryEtc1(
           classificationEtc1.map((el) => el.checkValue?.toString()),
         );
@@ -735,6 +741,9 @@ export function Classification({
         '수정시 classificationEtc2 리스트 ----- ',
         classificationEtc2,
       );
+      // const filteredArrayE2 = classificationEtc2.filter(
+      //   (item) => item.key === '행동요소2',
+      // );
       // 저장되었던 행동 요소2
       if (classificationEtc2) {
         setSelectedCategoryEtc2(
@@ -1115,7 +1124,6 @@ export function Classification({
             return null; // ^^^이 포함되지 않은 경우 null 반환
           })
           .filter((number) => number !== null);
-        console.log('Extracted idxList:', idxList);
 
         // 새로운 배열 생성
         const newFinalList: RadioStateType[] = [];
@@ -1204,7 +1212,12 @@ export function Classification({
             radioButtonList[index][2],
             radioButtonList[index][3],
             radioButtonList[index][4],
-            ...checkedItems,
+            radioButtonList[index].filter(
+              (item: RadioStateType) => item.key === '행동요소1',
+            ),
+            radioButtonList[index].filter(
+              (item: RadioStateType) => item.key === '행동요소2',
+            ),
           ];
 
           if (checkedDepthList.length > 0) {
