@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import _shuffle from 'lodash/shuffle';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -55,7 +55,6 @@ import {
   ItemCategoryType,
   ItemTreeListType,
   ItemTreeType,
-  QuizListType,
 } from '../../../types';
 import {
   WorkbookData,
@@ -63,9 +62,7 @@ import {
   WorkbookCategoryData,
   FavoriteQuizList,
   QuizList,
-  QuizCategory,
   SimilarQuizList,
-  Data,
   ContentWithScore,
 } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -883,7 +880,6 @@ export function Step2() {
 
       const requests = typeIds.map((id) =>
         classificationInstance.get(`/v1/category/${id}`).catch((error) => {
-          // console.log(error);
           if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
             setRefreshTokenCalled(true);
             postRefreshToken().then(() => {
@@ -1825,7 +1821,6 @@ export function Step2() {
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
-  console.log('similarItems:', similarItems);
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
@@ -2560,16 +2555,6 @@ export function Step2() {
                                                       idx,
                                                     )
                                                   }
-                                                  // rightIconSrc={
-                                                  //   <IconWrapper>
-                                                  //     <button
-                                                  //       type="button"
-                                                  //       className="icon_button primery"
-                                                  //     >
-                                                  //       수정
-                                                  //     </button>
-                                                  //   </IconWrapper>
-                                                  // }
                                                 >
                                                   <span>
                                                     {el
@@ -2631,7 +2616,6 @@ export function Step2() {
                                             />
                                           </div>
                                         ))}
-
                                         {/* 학교급 */}
                                         {radio1depthCheck.code !== '' &&
                                           selected1depth !== '' &&
@@ -3704,16 +3688,6 @@ const ContentListWrapper = styled.div`
   gap: 10px;
   overflow-y: auto;
 `;
-const MathviewerCardWrapper = styled.div<{ $isSelected?: boolean }>`
-  &.dragging {
-    transition: transform 0.3s ease-in-out;
-    transform: translate(0, 0);
-    background-color: ${({ $isSelected }) =>
-      $isSelected ? `${COLOR.BORDER_BLUE}` : 'none'};
-    color: ${({ $isSelected }) => ($isSelected ? 'white' : 'none')};
-  }
-`;
-
 const ContentsList = styled.div`
   padding: 10px 20px;
   height: 450px;
