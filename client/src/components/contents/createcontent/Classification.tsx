@@ -712,11 +712,12 @@ export function Classification({
   }, [isModifying, selected3depth]);
   useEffect(() => {
     if (selected4depth !== '') {
-      const classification = selectedClassification[4] as ItemTreeIdxListType;
+      // const classification = selectedClassification[4] as ItemTreeIdxListType;
       // idx 유형 리스트
-      console.log('수정시 idx 리스트 ----- ', classification);
-      if (classification.itemTreeIdxList)
-        setCheckedDepthList(classification.itemTreeIdxList);
+      console.log('수정시 idx 리스트 ----- ', selectedClassification);
+      // console.log('수정시 idx 리스트 ----- ', classification);
+      // if (classification.itemTreeIdxList)
+      //   setCheckedDepthList(classification.itemTreeIdxList);
 
       const classificationEtc1 = selectedClassification[5] as RadioStateType[];
       console.log(
@@ -1097,6 +1098,17 @@ export function Classification({
         }
 
         console.log('push on list ----', finalList);
+        //idx 리스트 재구축
+        const idxList = finalList
+          .map((item) => {
+            if (typeof item.title === 'string' && item.title.includes('^^^')) {
+              const parts = item.title.split('^^^');
+              return parseInt(parts[1], 10); // ^^^ 뒤의 숫자를 추출하여 정수로 변환
+            }
+            return null; // ^^^이 포함되지 않은 경우 null 반환
+          })
+          .filter((number) => number !== null);
+        console.log('Extracted idxList:', idxList);
 
         // 새로운 배열 생성
         const newFinalList: RadioStateType[] = [];
@@ -1106,6 +1118,7 @@ export function Classification({
           '학교급',
           '학년',
           '학기',
+          'itemTreeIdxList',
           '행동요소1',
           '행동요소2',
         ];
@@ -1119,7 +1132,20 @@ export function Classification({
           if (items.length > 0) {
             // 찾은 모든 요소를 newFinalList에 추가
             newFinalList.push(...items);
-          } else if (key === '행동요소1' || key === '행동요소2') {
+          } else if (key === 'itemTreeIdxList') {
+            // itemTreeIdxList 일때 배열로 값추가
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            newFinalList.push({ itemTreeIdxList: idxList });
+          } else if (key === '행동요소1') {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            newFinalList.push([...items]);
+          } else if (key === '행동요소2') {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            newFinalList.push([...items]);
+          } else {
             // 행동요소가 없을 경우 빈 배열 추가
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
