@@ -1,4 +1,5 @@
 export * from './search';
+export * from './SearchableSelect';
 export * from './alert';
 export * from './tapMenu';
 export * from './dropDown';
