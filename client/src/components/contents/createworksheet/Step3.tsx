@@ -9,7 +9,7 @@ import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
+import { workbookInstance } from '../../../api/axios';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -114,17 +114,6 @@ export function Step3() {
             ? '2단'
             : '2단',
       );
-      // setContentQuantity(
-      //   getLocalData.assign === '0'
-      //     ? '최대'
-      //     : getLocalData.assign === '2'
-      //       ? '2문제'
-      //       : getLocalData.assign === '4'
-      //         ? '4문제'
-      //         : getLocalData.assign === '6'
-      //           ? '6문제'
-      //           : '최대',
-      // );
       setContentQuantity('최대');
       setIsDate(getLocalData.isDate);
       setIsContentTypeTitle(getLocalData.isQuizType);
@@ -231,54 +220,6 @@ export function Step3() {
     navigate('/content-create/exam/step2');
   };
 
-  //const [fileName, setFileName] = useState('');
-  // node 서버 학습지 만들기 api
-  // const postWorkbook = async (data: any) => {
-  //   const res = await makingworkbookInstance.post(`/get-pdf`, data);
-  //   // console.log(`학습지 만들기결과값`, res);
-  //   return res;
-  // };
-
-  // const makingWorkbook = (nameValue: string) => {
-  //   const currentTime = new Date().getTime();
-  //   const data = {
-  //     title: nameValue,
-  //     content: newInitialItems,
-  //     column: 2,
-  //     uploadDir: '/usr/share/nginx/html/CB',
-  //     fileName: `${nameValue}_${currentTime}.pdf`,
-  //     //fileName: `testYD.pdf`,
-  //   };
-  //   if (
-  //     nameValue === '' ||
-  //     contentAuthor === '' ||
-  //     gradeValue === '' ||
-  //     tag === ''
-  //   ) {
-  //     openToastifyAlert({
-  //       type: 'error',
-  //       text: '필수 항목을 선택해 주세요.',
-  //     });
-  //   } else {
-  //     workbookData(data);
-  //     setFileName(data.fileName);
-  //   }
-  // };
-
-  // const { mutate: workbookData } = useMutation({
-  //   mutationFn: postWorkbook,
-  //   onError: (error) => {
-  //     //console.error('post-workbook 에러:', error);
-  //     // 에러 처리 로직 추가
-  //   },
-  //   onSuccess: (data) => {
-  //     //console.log('post-workbook 성공:', data);
-  //     postNewWorkbookData();
-  //     // 성공 처리 로직 추가
-  //     setIsComplete(true);
-  //   },
-  // });
-
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
     const data: any = {
@@ -384,7 +325,6 @@ export function Step3() {
 
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
-        //window.opener.localStorage.clear();
       };
     }
   }, [isComplete]);
@@ -979,7 +919,6 @@ export function Step3() {
         <Button
           buttonType="button"
           onClick={() => {
-            //measureHeights();
             submitCreateWorksheet();
           }}
           $padding="10px"
@@ -1138,7 +1077,6 @@ const WorksheetTemplateViewSection = styled.div`
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
-
   gap: 10px;
 `;
 const WorksheetTemplateTypeWrapper = styled.div`
