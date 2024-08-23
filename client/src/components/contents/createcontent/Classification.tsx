@@ -631,6 +631,21 @@ export function Classification({
     setCheckedItems([]);
   };
 
+  useEffect(() => {
+    if (radio1depthCheck?.code !== '') nextListData1Refetch();
+    if (radio2depthCheck?.code !== '') nextListData2Refetch();
+    if (radio3depthCheck?.code !== '') nextListData3Refetch();
+  }, [
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    selected1depth,
+    selected2depth,
+    selected3depth,
+    selected4depth,
+    isModifying,
+  ]);
+
   // 수정
   const changeUnitClassification = (idx: number) => {
     console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
@@ -639,8 +654,6 @@ export function Classification({
       unitClassificationList[idx],
     );
     setSelectedClassification(unitClassificationList[idx]);
-    onResetList();
-
     setIsModifying(true);
   };
   // 수정시 작동
@@ -660,9 +673,12 @@ export function Classification({
         setSelected1depth(matchingItem.idx.toString());
         setRadio1depthCheck(updatedObject);
       }
+      // onDepths();
     }
   }, [isModifying, selectedClassification]);
-
+  // const onDepths = () => {
+  // 1뎁스이후 2뎁스 활성화
+  // };
   useEffect(() => {
     if (isModifying && selected1depth !== '') {
       const classification = selectedClassification[1] as RadioStateType;
@@ -723,14 +739,12 @@ export function Classification({
         setCheckedDepthList(classification.itemTreeIdxList);
 
       const classificationEtc1 = selectedClassification[5] as RadioStateType[];
-
       // 저장되었던 행동 요소1
       if (classificationEtc1) {
         // const filteredArrayE1 = classificationEtc1.filter(
         //   (item) => item.key === '행동요소1',
         // );
         // console.log(filteredArrayE1);
-
         setSelectedCategoryEtc1(
           classificationEtc1.map((el) => el.checkValue?.toString()),
         );
@@ -755,20 +769,6 @@ export function Classification({
       setIsModifying(false);
     }
   }, [isModifying, selected4depth]);
-
-  useEffect(() => {
-    if (radio1depthCheck?.code !== '') nextListData1Refetch();
-    if (radio2depthCheck?.code !== '') nextListData2Refetch();
-    if (radio3depthCheck?.code !== '') nextListData3Refetch();
-  }, [
-    radio1depthCheck,
-    radio2depthCheck,
-    radio3depthCheck,
-    selected1depth,
-    selected2depth,
-    selected3depth,
-    selected4depth,
-  ]);
 
   const sortedArr = () => {
     console.log('아이템트리키 들어가야할 목록', unitClassificationList);
@@ -1025,10 +1025,12 @@ export function Classification({
     const sorted = questionList.filter((el) => checkedList.includes(el.code));
     console.log('sortedList------------', sorted);
     setSortedList(sorted);
+    onResetList();
   };
 
   useEffect(() => {
     // console.log('checkedList------------', checkedList);
+    setUnitClassificationList([]);
     sortList();
   }, [checkedList]);
 
@@ -1191,33 +1193,47 @@ export function Classification({
   useEffect(() => {
     console.log('문항에 등록된 분류 묶음 --- ', radioButtonArr);
     if (radioButtonArr.length > 0) {
-      radioButtonArr.map((el) => {
-        setRadioButtonList([el]);
+      // 라디오 버튼 배열을 순차적으로 추가
+      radioButtonArr.forEach((radioButtonGroup, index) => {
+        setTimeout(
+          () => {
+            setRadioButtonList((prevList) => {
+              // 중복 확인: 이미 존재하는지 검사
+              const isDuplicate = prevList.some((existingGroup) =>
+                existingGroup.every(
+                  (item, i) => item.title === radioButtonGroup[i]?.title,
+                ),
+              );
+
+              // 중복이 아닌 경우에만 추가
+              if (!isDuplicate) {
+                return [...prevList, radioButtonGroup];
+              }
+              return prevList; // 중복이면 기존 리스트를 그대로 반환
+            });
+          },
+          (index - 1) * 1000,
+        ); // 각 그룹마다 1초 간격으로 추가
       });
     }
   }, [radioButtonArr]);
 
   // radioButtonList에 담긴 값을 순서대로 체크값에 넣고 아이템트리 조회
   useEffect(() => {
+    if (radioButtonList.length === 0) return;
     // 타이틀 값에 맞는 체크밸류 찾기
     console.log('radioButtonList ---------', radioButtonList);
 
-    //TODO : 중복되서 나타남
     const newClassificationLists = radioButtonList
       .map((buttonList, index) => {
-        if (buttonList[index].key === '교육과정') {
+        if (buttonList[0].key === '교육과정') {
           const newClassification: UnitClassificationType[] = [
-            radioButtonList[index][0],
-            radioButtonList[index][1],
-            radioButtonList[index][2],
-            radioButtonList[index][3],
-            radioButtonList[index][4],
-            radioButtonList[index].filter(
-              (item: RadioStateType) => item.key === '행동요소1',
-            ),
-            radioButtonList[index].filter(
-              (item: RadioStateType) => item.key === '행동요소2',
-            ),
+            buttonList[0],
+            buttonList[1],
+            buttonList[2],
+            buttonList[3],
+            ...buttonList.filter((item) => item.key === '행동요소1'),
+            ...buttonList.filter((item) => item.key === '행동요소2'),
           ];
 
           if (checkedDepthList.length > 0) {
@@ -1255,11 +1271,10 @@ export function Classification({
   // 아이템 트리 체크값 유형 키값으로 타이틀명 맞춰서 체크
   useEffect(() => {
     console.log('isChecked----------', isChecked);
-    if (!isChecked) {
-      setUnitClassificationList([]);
-      setRadioButtonList([]);
-      setRadioButtonArr([]);
-    }
+    //문항 단원 분류 초기화
+    setUnitClassificationList([]);
+    setRadioButtonList([]);
+    setRadioButtonArr([]);
   }, [isChecked]);
   useEffect(() => {
     console.log('unitClassificationList', unitClassificationList);
