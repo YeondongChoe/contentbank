@@ -27,7 +27,6 @@ import {
   PaginationBox,
   Alert,
   ButtonFormatMultiRadio,
-  Select,
   SearchableSelect,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
@@ -2464,6 +2463,10 @@ export function Step1() {
     setExamYear([]);
     setExamMonthly([]);
     setExamOption(null);
+    //기출
+    setPreviousExamMenu(0);
+    setPreviousExamYear(0);
+    setSelectedValue('');
   }, [tabVeiw]);
 
   //단원.유형별
@@ -3442,13 +3445,19 @@ export function Step1() {
       name: '고등학교',
       value: '0',
       options: [
-        { idx: 0, name: '성동고등학교', value: '0' },
         { idx: 1, name: '대한고등학교', value: '1' },
         { idx: 2, name: '민국고등학교', value: '2' },
         { idx: 3, name: '만세고등학교', value: '3' },
         { idx: 4, name: '드림고등학교', value: '4' },
         { idx: 5, name: '소울고등학교', value: '5' },
         { idx: 6, name: '송고등학교', value: '6' },
+        { idx: 7, name: '빨강고등학교', value: '7' },
+        { idx: 8, name: '주황고등학교', value: '8' },
+        { idx: 9, name: '노랑고등학교', value: '9' },
+        { idx: 10, name: '초록고등학교', value: '10' },
+        { idx: 11, name: '파랑고등학교', value: '11' },
+        { idx: 12, name: '남색고등학교', value: '12' },
+        { idx: 13, name: '보라고등학교', value: '13' },
       ],
     },
   ];
@@ -3698,9 +3707,9 @@ export function Step1() {
                   <CategorySection>
                     <TabWrapper onClick={selectOtherTextbook}>
                       <TabMenu
-                        length={3}
+                        length={4}
                         menu={menuList}
-                        width={'350px'}
+                        width={'450px'}
                         lineStyle
                         selected={tabVeiw}
                         setTabVeiw={setTabVeiw}
@@ -4210,20 +4219,20 @@ export function Step1() {
                     <PreviousExamSearchWrapper>
                       <Label value="시험명" fontSize="16px" width="60px" />
                       <Search
-                        value={searchTextbookValue}
+                        value={searchTextbookValue} //수정필요
                         width={'400px'}
                         height="40px"
                         onKeyDown={(e) => {}}
-                        onChange={(e) => searchTextbook(e.target.value)}
+                        onChange={(e) => searchTextbook(e.target.value)} //수정필요
                         placeholder="기출 속성을 선택해주세요"
                         maxLength={20}
                       />
                       <Search
-                        value={searchTextbookValue}
+                        value={searchTextbookValue} //수정필요
                         width={'400px'}
                         height="40px"
                         onKeyDown={(e) => {}}
-                        onChange={(e) => searchTextbook(e.target.value)}
+                        onChange={(e) => searchTextbook(e.target.value)} //수정필요
                         placeholder="기출명을 선택해주세요"
                         maxLength={20}
                       />
@@ -4255,7 +4264,7 @@ export function Step1() {
                 )}
               </CategorySection>
               <SchoolSelectorSection
-                $isSelectTextbookContent={false}
+                $isSelectPreviousExamContent={false} //수정필요
                 $tabVeiw={tabVeiw}
               >
                 <SubTitleWrapper>
@@ -4927,7 +4936,7 @@ const PreviousExamSearchWrapper = styled.div`
   display: flex;
   justify-content: flex-start;
   padding: 10px 0 0 10px;
-  gap: 10px;
+  gap: 5px;
 `;
 const PreviousExamYearWrapper = styled.div`
   width: 950px;
