@@ -127,11 +127,11 @@ export function SearchableSelect({
         >
           <ScrollWrapper $heightScroll={heightScroll}>
             {normalizedOptions.map((el) => (
-              <div className="li" key={el.code}>
+              <div className="li" key={`${el.idx} - ${el.name}`}>
                 <button
                   disabled={disabled}
                   value={el.name}
-                  className={el.code}
+                  className={el.name}
                   onClick={(event) => {
                     handleOptionSelect(event, el.code);
                     clickQuotientValue(el.name);
