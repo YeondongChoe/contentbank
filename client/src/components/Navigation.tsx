@@ -423,7 +423,7 @@ export function Navigation() {
 
               {/* 프로세스 관리 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/content-manage/process'}>
                   <GiProcessor
                     style={{ width: '20px', height: '20px' }}
                   ></GiProcessor>
@@ -433,7 +433,7 @@ export function Navigation() {
 
               {/* 메타정보 관리 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/content-manage/metainfo'}>
                   <MdOutlineMedicalInformation
                     style={{ width: '20px', height: '20px' }}
                   ></MdOutlineMedicalInformation>
@@ -865,7 +865,7 @@ export function Navigation() {
 
               {/* 프로세스 관리 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/content-manage/process'}>
                   <GiProcessor
                     style={{ width: '20px', height: '20px', fill: 'white' }}
                   ></GiProcessor>
@@ -875,7 +875,7 @@ export function Navigation() {
 
               {/* 메타정보 관리 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/content-manage/metainfo'}>
                   <MdOutlineMedicalInformation
                     style={{ width: '20px', height: '20px', fill: 'white' }}
                   ></MdOutlineMedicalInformation>

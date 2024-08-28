@@ -20,6 +20,8 @@ import {
   CreateWorksheetStep2,
   CreateWorksheetStep3,
   QuizCreateListPage,
+  MetaInfoPage,
+  ProcessPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -118,7 +120,14 @@ const router = createBrowserRouter([
         path: '/content-manage/classify',
         element: <ManagementsTreePage />,
       },
-
+      {
+        path: '/content-manage/metainfo',
+        element: <MetaInfoPage />,
+      },
+      {
+        path: '/content-manage/process',
+        element: <ProcessPage />,
+      },
       {
         path: '/operation-manage/member',
         element: <MemberPage />,
