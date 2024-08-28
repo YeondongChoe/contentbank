@@ -9,7 +9,7 @@ import { AlertBar, Button, Loader } from '../atom';
 import { TabMenu } from '../molecules';
 
 export function MetaInfo() {
-  const [tabVeiw, setTabVeiw] = useState<string>('전체');
+  const [tabVeiw, setTabVeiw] = useState<string>('카테고리 관리');
   const backgroundRef = useRef<HTMLDivElement>(null);
   /* 안내 알럿 */
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
@@ -18,16 +18,12 @@ export function MetaInfo() {
   };
   const tabMenuList = [
     {
-      label: '전체',
-      value: '전체',
+      label: '카테고리 관리',
+      value: '카테고리 관리',
     },
     {
-      label: '활성화',
-      value: '활성화',
-    },
-    {
-      label: '비활성화',
-      value: '비활성화',
+      label: '그룹 관리',
+      value: '그룹 관리',
     },
   ];
 
@@ -62,7 +58,7 @@ export function MetaInfo() {
         message={'아이디가 생성 되었습니다.'}
       ></AlertBar>
       <TitleWrapper>
-        <Title>회원 관리</Title>
+        <Title>메타정보 관리</Title>
         <Button
           height={'35px'}
           width={'130px'}
@@ -71,7 +67,7 @@ export function MetaInfo() {
           $filled
           cursor
         >
-          + 아이디 만들기
+          카테고리 추가
         </Button>
       </TitleWrapper>
 

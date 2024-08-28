@@ -9,27 +9,12 @@ import { AlertBar, Button, Loader } from '../atom';
 import { TabMenu } from '../molecules';
 
 export function Process() {
-  const [tabVeiw, setTabVeiw] = useState<string>('전체');
   const backgroundRef = useRef<HTMLDivElement>(null);
   /* 안내 알럿 */
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
   };
-  const tabMenuList = [
-    {
-      label: '전체',
-      value: '전체',
-    },
-    {
-      label: '활성화',
-      value: '활성화',
-    },
-    {
-      label: '비활성화',
-      value: '비활성화',
-    },
-  ];
 
   /*  모달 열기 */
   const openCreateModal = () => {
@@ -62,7 +47,7 @@ export function Process() {
         message={'아이디가 생성 되었습니다.'}
       ></AlertBar>
       <TitleWrapper>
-        <Title>Process 관리</Title>
+        <Title>프로세스 관리</Title>
         <Button
           height={'35px'}
           width={'130px'}
@@ -71,7 +56,7 @@ export function Process() {
           $filled
           cursor
         >
-          + 아이디 만들기
+          신규 프로세스 추가
         </Button>
       </TitleWrapper>
 
@@ -82,18 +67,7 @@ export function Process() {
         </LoaderWrapper>
       )} */}
       {/* {!isLoading && memberListData && ( */}
-      <>
-        <TabMenu
-          length={3}
-          menu={tabMenuList}
-          selected={tabVeiw}
-          width={'300px'}
-          setTabVeiw={setTabVeiw}
-          lineStyle
-          $margin={'10px 0'}
-          onClickTab={changeTab}
-        />
-      </>
+      <></>
       {/* )} */}
     </Container>
   );
