@@ -734,7 +734,7 @@ export function Authority() {
               // 수정 테이블
               <>
                 {!isPending && isSuccess ? (
-                  <table>
+                  <table className="authority_table">
                     <thead>
                       <tr>
                         <th colSpan={2}>권한</th>
@@ -1504,8 +1504,8 @@ const TableWrapper = styled.div`
       text-align: center;
       border: 1px solid ${COLOR.SECONDARY};
       padding: 15px;
-      text-align: center;
       font-size: 13px;
+      font-weight: 300;
     }
     .textLeft {
       text-align: left;
@@ -1536,6 +1536,7 @@ const AuthorityWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
+  padding: 0 10px;
 `;
 const AuthorityName = styled.button`
   width: 100%;
@@ -1546,10 +1547,11 @@ const AuthorityName = styled.button`
   border-radius: 5px;
   background-color: white;
   border: none;
-  margin-right: 5px;
+  margin-right: 8px;
   cursor: pointer;
   font-weight: bold;
   position: relative;
+  font-size: 14px;
   &::after {
     content: '| 수정';
     display: flex;

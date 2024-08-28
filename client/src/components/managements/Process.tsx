@@ -50,7 +50,7 @@ export function Process() {
         <Title>프로세스 관리</Title>
         <Button
           height={'35px'}
-          width={'130px'}
+          width={'150px'}
           onClick={openCreateModal}
           fontSize="13px"
           $filled

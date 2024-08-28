@@ -5,12 +5,16 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import { AlertBar, Button, Loader } from '../atom';
+import { COLOR } from '../../components/constants';
+import { AlertBar, Button, Loader, ValueNone } from '../atom';
 import { TabMenu } from '../molecules';
+
+import { CategroyManagement, GroupManagement } from './metainfotab';
 
 export function MetaInfo() {
   const [tabVeiw, setTabVeiw] = useState<string>('카테고리 관리');
   const backgroundRef = useRef<HTMLDivElement>(null);
+
   /* 안내 알럿 */
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
@@ -26,14 +30,6 @@ export function MetaInfo() {
       value: '그룹 관리',
     },
   ];
-
-  /*  모달 열기 */
-  const openCreateModal = () => {
-    // openModal({
-    //   title: '',
-    //   content: <RegisterModal memberList={totalMemberList} refetch={refetch} />,
-    // });
-  };
 
   // 탭메뉴 클릭시
   const changeTab = () => {};
@@ -59,16 +55,6 @@ export function MetaInfo() {
       ></AlertBar>
       <TitleWrapper>
         <Title>메타정보 관리</Title>
-        <Button
-          height={'35px'}
-          width={'130px'}
-          onClick={openCreateModal}
-          fontSize="13px"
-          $filled
-          cursor
-        >
-          카테고리 추가
-        </Button>
       </TitleWrapper>
 
       {/* TODO : 데이터 연결후 로딩 처리 */}
@@ -89,6 +75,9 @@ export function MetaInfo() {
           $margin={'10px 0'}
           onClickTab={changeTab}
         />
+
+        {tabVeiw == '카테고리 관리' && <CategroyManagement />}
+        {tabVeiw == '그룹 관리' && <GroupManagement />}
       </>
       {/* )} */}
     </Container>
@@ -107,11 +96,4 @@ const TitleWrapper = styled.div`
 const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
-`;
-
-const LoaderWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  padding-top: 30px;
-  padding-left: calc(50% - 35px);
 `;
