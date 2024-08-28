@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { IoMdArrowDropdown } from 'react-icons/io';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { styled } from 'styled-components';
 
 import { ItemCategoryType } from '../../../types';
@@ -39,7 +38,6 @@ type SelectProps = {
   setSelectedQuotientValue?: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
-
   onDefaultSelect?: () => void;
   selectedValue?: string;
   heightScroll?: string;
@@ -143,36 +141,34 @@ export function Select({
           height={height}
         >
           <ScrollWrapper $heightScroll={heightScroll}>
-            <PerfectScrollbar>
-              {isnormalizedOptions
-                ? normalizedOptions.map((el) => (
-                    <div className="li" key={el.code}>
-                      <button
-                        disabled={disabled}
-                        value={el.name}
-                        className={el.code}
-                        onClick={(event) => {
-                          handleOptionSelect(event, el.code);
-                          clickQuotientValue(el.value as number);
-                        }}
-                      >
-                        <span>{el.name}</span>
-                      </button>
-                    </div>
-                  ))
-                : optionsWithDefault.map((el) => (
-                    <div className="li" key={el.code}>
-                      <button
-                        disabled={disabled}
-                        value={el.name}
-                        className={el.code}
-                        onClick={(event) => handleOptionSelect(event, el.code)}
-                      >
-                        <span>{el.name}</span>
-                      </button>
-                    </div>
-                  ))}
-            </PerfectScrollbar>
+            {isnormalizedOptions
+              ? normalizedOptions.map((el) => (
+                  <div className="li" key={el.code}>
+                    <button
+                      disabled={disabled}
+                      value={el.name}
+                      className={el.code}
+                      onClick={(event) => {
+                        handleOptionSelect(event, el.code);
+                        clickQuotientValue(el.value as number);
+                      }}
+                    >
+                      <span>{el.name}</span>
+                    </button>
+                  </div>
+                ))
+              : optionsWithDefault.map((el) => (
+                  <div className="li" key={el.code}>
+                    <button
+                      disabled={disabled}
+                      value={el.name}
+                      className={el.code}
+                      onClick={(event) => handleOptionSelect(event, el.code)}
+                    >
+                      <span>{el.name}</span>
+                    </button>
+                  </div>
+                ))}
           </ScrollWrapper>
         </SelectOptionsList>
       )}

@@ -27,6 +27,7 @@ import {
   PaginationBox,
   Alert,
   ButtonFormatMultiRadio,
+  SearchableSelect,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { pageAtom } from '../../../store/utilAtom';
@@ -128,6 +129,10 @@ export function Step1() {
     {
       label: '수능/모의고사',
       value: '수능/모의고사',
+    },
+    {
+      label: '기출',
+      value: '기출',
     },
   ];
 
@@ -1093,11 +1098,6 @@ export function Step1() {
     setDifficultyData(difficultyRate?.data.data.difficultyList);
   }, [difficultyRate]);
 
-  const isAllSelectedQuestionType =
-    questionType?.includes('MULTIPLE_CHOICE') &&
-    questionType?.includes('SHORT_ANSWER') &&
-    questionType?.includes('ESSAY_ANSWER');
-
   const [containMock, setContainMock] = useState<number | null>(null);
   const selectContainMock = (newValue: number | null) => {
     setContainMock(newValue);
@@ -1620,8 +1620,6 @@ export function Step1() {
     }
   }, [examData, tabVeiw]);
 
-  const excludedNames = ['1', '2', '8', '12'];
-
   // 드롭다운에서 선택한 값으로 더미데이터를 대신해서 넣고 선택 완료를 누르면 서버에 요청해서 값을 저장함
   const [isDropdown, setIsDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -1663,10 +1661,6 @@ export function Step1() {
       }
     });
   };
-  const isAllSelectedExamGrade =
-    examGrade.includes('1') &&
-    examGrade.includes('2') &&
-    examGrade.includes('3');
 
   const [examYear, setExamYear] = useState<string[]>([]);
   const selectExamYear = (newValue: string) => {
@@ -1681,13 +1675,6 @@ export function Step1() {
     });
   };
 
-  const isAllSelectedExamYear =
-    examYear.includes('2024') &&
-    examYear.includes('2023') &&
-    examYear.includes('2022') &&
-    examYear.includes('2021') &&
-    examYear.includes('2020');
-
   const [examMonthly, setExamMonthly] = useState<string[]>([]);
   const selectExamMonthly = (newValue: string) => {
     setExamMonthly((prev) => {
@@ -1701,20 +1688,21 @@ export function Step1() {
     });
   };
 
-  const isAllSelectedExamMonthly =
-    examMonthly.includes('3') &&
-    examMonthly.includes('4') &&
-    examMonthly.includes('5') &&
-    examMonthly.includes('6') &&
-    examMonthly.includes('7') &&
-    examMonthly.includes('9') &&
-    examMonthly.includes('10') &&
-    examMonthly.includes('11');
-
   const [examOption, setExamOption] = useState<number | null>(null);
   const selectExamOption = (newValue: number | null) => {
     setExamOption(newValue);
   };
+
+  const [previousExamMenu, setPreviousExamMenu] = useState<number>(0);
+  const selectPreviousExamMenu = (newValue: number) => {
+    setPreviousExamMenu(newValue);
+  };
+
+  const [previousExamYear, setPreviousExamYear] = useState<number>(0);
+  const selectPreviousExamYear = (newValue: number) => {
+    setPreviousExamYear(newValue);
+  };
+
   //선택 초기화
   const selectExamReset = () => {
     setExamGrade([]);
@@ -2475,6 +2463,10 @@ export function Step1() {
     setExamYear([]);
     setExamMonthly([]);
     setExamOption(null);
+    //기출
+    setPreviousExamMenu(0);
+    setPreviousExamYear(0);
+    setSelectedValue('');
   }, [tabVeiw]);
 
   //단원.유형별
@@ -2910,7 +2902,7 @@ export function Step1() {
             ))}
           </>
         )}
-        {tabVeiw === '시중교재' && (
+        {(tabVeiw === '시중교재' || tabVeiw === '기출') && (
           <>
             {buttonOption1.map((button) => (
               <Button
@@ -3353,6 +3345,7 @@ export function Step1() {
       examMonthly.includes('9') &&
       examMonthly.includes('10') &&
       examMonthly.includes('11');
+    const excludedNames = ['1', '2', '8', '12'];
 
     return (
       <>
@@ -3422,6 +3415,111 @@ export function Step1() {
     ));
   };
 
+  //기출
+  const renderPreviousExamMenuButtons = () => {
+    const buttonOption = [
+      { value: 0, label: '학교내신' },
+      { value: 1, label: '전국시험' },
+    ];
+
+    return buttonOption.map((button) => (
+      <Button
+        key={button.value}
+        buttonType="button"
+        onClick={() => selectPreviousExamMenu(button.value)}
+        $padding="10px"
+        height={'35px'}
+        width={'100%'}
+        fontSize="14px"
+        $normal={previousExamMenu !== button.value}
+        $filled={previousExamMenu === button.value}
+        cursor
+      >
+        <span>{button.label}</span>
+      </Button>
+    ));
+  };
+  const selectArrange = [
+    {
+      idx: 0,
+      name: '고등학교',
+      value: '0',
+      options: [
+        { idx: 1, name: '대한고등학교', value: '1' },
+        { idx: 2, name: '민국고등학교', value: '2' },
+        { idx: 3, name: '만세고등학교', value: '3' },
+        { idx: 4, name: '드림고등학교', value: '4' },
+        { idx: 5, name: '소울고등학교', value: '5' },
+        { idx: 6, name: '송고등학교', value: '6' },
+        { idx: 7, name: '빨강고등학교', value: '7' },
+        { idx: 8, name: '주황고등학교', value: '8' },
+        { idx: 9, name: '노랑고등학교', value: '9' },
+        { idx: 10, name: '초록고등학교', value: '10' },
+        { idx: 11, name: '파랑고등학교', value: '11' },
+        { idx: 12, name: '남색고등학교', value: '12' },
+        { idx: 13, name: '보라고등학교', value: '13' },
+      ],
+    },
+  ];
+  //학교 검색값
+  const [selectedValue, setSelectedValue] = useState<string>();
+
+  //출제년도 슬라이더 화살표
+  const scrollLeft = () => {
+    const slider = document.querySelector('.button-slider');
+    if (slider) {
+      slider.scrollLeft -= 200; // 200px만큼 왼쪽으로 스크롤
+    }
+  };
+
+  const scrollRight = () => {
+    const slider = document.querySelector('.button-slider');
+    if (slider) {
+      slider.scrollLeft += 200; // 200px만큼 오른쪽으로 스크롤
+    }
+  };
+  const renderPreviousExamYearButtons = () => {
+    const buttonOption = [
+      { value: 0, label: '2024년' },
+      { value: 1, label: '2023년' },
+      { value: 2, label: '2022년' },
+      { value: 3, label: '2021년' },
+      { value: 4, label: '2020년' },
+      { value: 5, label: '2019년' },
+      { value: 6, label: '2018년' },
+      { value: 7, label: '2017년' },
+      { value: 8, label: '2016년' },
+      { value: 9, label: '2015년' },
+      { value: 10, label: '2014년' },
+      { value: 11, label: '2013년' },
+      { value: 12, label: '2012년' },
+      { value: 13, label: '2011년' },
+      { value: 14, label: '2010년' },
+      { value: 15, label: '2009년' },
+    ];
+
+    return (
+      <>
+        {buttonOption.map((button) => (
+          <Button
+            key={button.value}
+            buttonType="button"
+            onClick={() => selectPreviousExamYear(button.value)}
+            $padding="10px"
+            height={'35px'}
+            width={'100%'}
+            fontSize="14px"
+            $normal={previousExamYear !== button.value}
+            $filled={previousExamYear === button.value}
+            cursor
+          >
+            <span>{button.label}</span>
+          </Button>
+        ))}
+      </>
+    );
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -3436,9 +3534,9 @@ export function Step1() {
               <CategorySection>
                 <TabWrapper>
                   <TabMenu
-                    length={3}
+                    length={4}
                     menu={menuList}
-                    width={'350px'}
+                    width={'450px'}
                     lineStyle
                     selected={tabVeiw}
                     setTabVeiw={setTabVeiw}
@@ -3500,9 +3598,9 @@ export function Step1() {
                   <CategorySection>
                     <TabWrapper>
                       <TabMenu
-                        length={3}
+                        length={4}
                         menu={menuList}
-                        width={'350px'}
+                        width={'450px'}
                         lineStyle
                         selected={tabVeiw}
                         setTabVeiw={setTabVeiw}
@@ -3609,9 +3707,9 @@ export function Step1() {
                   <CategorySection>
                     <TabWrapper onClick={selectOtherTextbook}>
                       <TabMenu
-                        length={3}
+                        length={4}
                         menu={menuList}
-                        width={'350px'}
+                        width={'450px'}
                         lineStyle
                         selected={tabVeiw}
                         setTabVeiw={setTabVeiw}
@@ -3801,9 +3899,9 @@ export function Step1() {
               <CategorySection>
                 <TabWrapper>
                   <TabMenu
-                    length={3}
+                    length={4}
                     menu={menuList}
-                    width={'350px'}
+                    width={'450px'}
                     lineStyle
                     selected={tabVeiw}
                     setTabVeiw={setTabVeiw}
@@ -4055,6 +4153,155 @@ export function Step1() {
                   )}
                 </MockExamWrapper>
               </CategorySection>
+            </>
+          )}
+          {tabVeiw === '기출' && (
+            <>
+              <CategorySection>
+                <TabWrapper>
+                  <TabMenu
+                    length={4}
+                    menu={menuList}
+                    width={'450px'}
+                    lineStyle
+                    selected={tabVeiw}
+                    setTabVeiw={setTabVeiw}
+                  />
+                </TabWrapper>
+                <SchoolGradeWrapper>
+                  <PreviousExamMenuWrapper>
+                    {renderPreviousExamMenuButtons()}
+                  </PreviousExamMenuWrapper>
+                </SchoolGradeWrapper>
+                {previousExamMenu === 0 && (
+                  <>
+                    <PreviousExamSearchWrapper>
+                      <Label value="학교명" fontSize="16px" width="60px" />
+                      {selectArrange.map((el) => (
+                        <SearchableSelect
+                          key={`${el.idx} - ${el.name}`}
+                          width={'400px'}
+                          height="40px"
+                          placeholder="학교명을 입력해주세요"
+                          options={el.options}
+                          selectedQuotientValue={selectedValue}
+                          setSelectedQuotientValue={setSelectedValue}
+                        ></SearchableSelect>
+                      ))}
+                    </PreviousExamSearchWrapper>
+                    <PreviousExamYearWrapper>
+                      <Label value="출제년도" fontSize="16px" width="80px" />
+                      <ArrowButton
+                        className="arrow left-arrow"
+                        onClick={scrollLeft}
+                      >
+                        {'<'}
+                      </ArrowButton>
+                      <ButtonSlider className="button-slider">
+                        {renderPreviousExamYearButtons()}
+                      </ButtonSlider>
+                      <ArrowButton
+                        className="arrow right-arrow"
+                        onClick={scrollRight}
+                      >
+                        {'>'}
+                      </ArrowButton>
+                    </PreviousExamYearWrapper>
+                    <PreviousExamListWrapper>
+                      <PreviousExamDefoultBox>
+                        학교명과 출제년도를 선택해주세요
+                      </PreviousExamDefoultBox>
+                    </PreviousExamListWrapper>
+                  </>
+                )}
+                {previousExamMenu === 1 && (
+                  <>
+                    <PreviousExamSearchWrapper>
+                      <Label value="시험명" fontSize="16px" width="60px" />
+                      <Search
+                        value={searchTextbookValue} //수정필요
+                        width={'400px'}
+                        height="40px"
+                        onKeyDown={(e) => {}}
+                        onChange={(e) => searchTextbook(e.target.value)} //수정필요
+                        placeholder="기출 속성을 선택해주세요"
+                        maxLength={20}
+                      />
+                      <Search
+                        value={searchTextbookValue} //수정필요
+                        width={'400px'}
+                        height="40px"
+                        onKeyDown={(e) => {}}
+                        onChange={(e) => searchTextbook(e.target.value)} //수정필요
+                        placeholder="기출명을 선택해주세요"
+                        maxLength={20}
+                      />
+                    </PreviousExamSearchWrapper>
+                    <PreviousExamYearWrapper>
+                      <Label value="출제년도" fontSize="16px" width="80px" />
+                      <ArrowButton
+                        className="arrow left-arrow"
+                        onClick={scrollLeft}
+                      >
+                        {'<'}
+                      </ArrowButton>
+                      <ButtonSlider className="button-slider">
+                        {renderPreviousExamYearButtons()}
+                      </ButtonSlider>
+                      <ArrowButton
+                        className="arrow right-arrow"
+                        onClick={scrollRight}
+                      >
+                        {'>'}
+                      </ArrowButton>
+                    </PreviousExamYearWrapper>
+                    <PreviousExamListWrapper>
+                      <PreviousExamDefoultBox>
+                        학교명과 출제년도를 선택해주세요
+                      </PreviousExamDefoultBox>
+                    </PreviousExamListWrapper>
+                  </>
+                )}
+              </CategorySection>
+              <SchoolSelectorSection
+                $isSelectPreviousExamContent={false} //수정필요
+                $tabVeiw={tabVeiw}
+              >
+                <SubTitleWrapper>
+                  <Label value="*문항수" fontSize="16px" width="60px" />
+                  <Label
+                    value="한 문제당 최대 유사문항수"
+                    fontSize="12px"
+                    width="440px"
+                  />
+                </SubTitleWrapper>
+                <SelectorGroup>{renderQuestionButtons()}</SelectorGroup>
+                <SubTitleWrapper>
+                  <Label value="*난이도" fontSize="16px" width="200px" />
+                  <AdditionOption onClick={openDifficultySetting}>
+                    <IoSettingsOutline />
+                    난이도 설정
+                  </AdditionOption>
+                </SubTitleWrapper>
+                <SelectorGroup>{renderDifficultyButtons()}</SelectorGroup>
+                <SubTitleWrapper>
+                  <Label value="*문항 타입" fontSize="16px" width="200px" />
+                </SubTitleWrapper>
+                <SelectorGroup>{renderTypeButtons()}</SelectorGroup>
+                {/* <Label
+                  value="*모의고사 포함 여부"
+                  fontSize="16px"
+                  width="200px"
+                />
+                <SelectorGroup>{renderMockButtons()}</SelectorGroup> */}
+                <Label value="*배점" fontSize="16px" width="200px" />
+                <SelectorGroup>{renderScoreButtons()}</SelectorGroup>
+                {/* <AdditionOptionList>
+                  <Label value="추가 옵션" fontSize="16px" width="200px" />
+                  {renderAdditionOption()}
+                </AdditionOptionList> */}
+                <PreviousExamSpace></PreviousExamSpace>
+              </SchoolSelectorSection>
             </>
           )}
         </MainWrapper>
@@ -4336,6 +4583,7 @@ const ValueNoneWrapper = styled.div`
 `;
 const SchoolSelectorSection = styled.div<{
   $isSelectTextbookContent?: boolean;
+  $isSelectPreviousExamContent?: boolean;
   $tabVeiw?: string;
 }>`
   display: flex;
@@ -4348,6 +4596,10 @@ const SchoolSelectorSection = styled.div<{
   ${({ $isSelectTextbookContent, $tabVeiw }) =>
     !$isSelectTextbookContent &&
     $tabVeiw === '시중교재' &&
+    'pointer-events: none; opacity: 0.5;'}
+  ${({ $isSelectPreviousExamContent, $tabVeiw }) =>
+    !$isSelectPreviousExamContent &&
+    $tabVeiw === '기출' &&
     'pointer-events: none; opacity: 0.5;'}
 `;
 const SubTitleWrapper = styled.div`
@@ -4672,6 +4924,73 @@ const Overlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1;
+`;
+//기출
+const PreviousExamMenuWrapper = styled.div`
+  width: 50%;
+  display: flex;
+  gap: 5px;
+`;
+const PreviousExamSearchWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 0 0 10px;
+  gap: 5px;
+`;
+const PreviousExamYearWrapper = styled.div`
+  width: 950px;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 0 10px;
+  gap: 10px;
+`;
+const ButtonSlider = styled.div`
+  display: flex;
+  flex-wrap: nowrap; /* 버튼들이 한 줄에 유지되도록 설정 */
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  width: 850px; /* 화살표 버튼을 제외한 너비 */
+  gap: 10px;
+
+  &::-webkit-scrollbar {
+    display: none; /* 스크롤바 숨기기 */
+  }
+
+  button {
+    flex: 0 0 100px; /* 버튼의 기본 크기를 설정하고 줄어들지 않도록 함 */
+  }
+`;
+const ArrowButton = styled.button`
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`;
+const PreviousExamListWrapper = styled.div`
+  width: 100%;
+  height: 530px;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
+  margin-top: 10px;
+  padding: 10px;
+`;
+const PreviousExamDefoultBox = styled.div`
+  height: 150px;
+  background-color: ${COLOR.TABLE_GRAY};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 10px;
+`;
+const PreviousExamSpace = styled.div`
+  padding-bottom: 260px;
 `;
 //균등 배점 모달
 const EqualScoreModalContainer = styled.div`
