@@ -1,4 +1,5 @@
 export * from './Classification';
+export * from './ClassificationEdit';
 export * from './ContentEdit';
 export * from './ContentCreating';
 export * from './ContentFileUpload';

@@ -73,7 +73,7 @@ type CheckedItemType = {
   [key: string]: string;
 };
 
-export function Classification({
+export function ClassificationEdit({
   setTabView,
 }: {
   setTabView: React.Dispatch<React.SetStateAction<string>>;
@@ -350,6 +350,434 @@ export function Classification({
     }
   };
 
+  // 분류 바꾸기 (등록) api
+  const putClassification = async (data: ClassificationStateType) => {
+    const res = await classificationInstance.put(`/v1/item/quiz`, data);
+    console.log('putClassification', res);
+    return res;
+  };
+
+  const { data: changeClassificationData, mutate: mutateChangeClassification } =
+    useMutation({
+      mutationFn: putClassification,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: context.response.data.message,
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response: { data: { message: string } }) => {
+        openToastifyAlert({
+          type: 'success',
+          text: response.data.message,
+        });
+        //초기화
+        onResetList();
+      },
+    });
+
+  // 검색 기능
+  const filterSearchValue = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    // 쿼리 스트링 변경 로직
+    setSearchValue(e.currentTarget.value);
+  };
+  const filterSearchValueEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchValue(e.currentTarget.value);
+    }
+  };
+
+  // 깊이가 있는 리스트 DepthBlock 체크박스
+  const handleSingleCheck = (
+    checked: boolean,
+    idx: number,
+    level: number,
+    name: string,
+    findItemByIdx: (idx: number) => any,
+    findChildItems: (idx: number) => any[],
+  ) => {
+    // idx리스트 담기
+    setCheckedDepthList((prev) => {
+      let updatedList = checked
+        ? [...prev, idx]
+        : prev.filter((item) => item !== idx);
+
+      if (checked) {
+        // 상위 요소를 체크
+        let currentItem = findItemByIdx(idx);
+        while (currentItem && currentItem.parentIdx !== 0) {
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
+          if (parentItem) {
+            if (!updatedList.includes(parentItem.idx)) {
+              updatedList.push(parentItem.idx);
+            }
+            currentItem = parentItem;
+          } else {
+            break;
+          }
+        }
+      } else {
+        // 하위 요소를 모두 체크 해제
+        const removeDescendants = (currentIdx: number) => {
+          const childItems = findChildItems(currentIdx);
+          childItems.forEach((child) => {
+            updatedList = updatedList.filter(
+              (itemIdx) => itemIdx !== child.idx,
+            );
+            removeDescendants(child.idx);
+          });
+        };
+        removeDescendants(idx);
+      }
+      return updatedList;
+    });
+    // 유형 값 담기
+    const getTypeKey = (level: number): string => {
+      switch (level) {
+        case 1:
+          return '대유형';
+        case 2:
+          return '중유형';
+        case 3:
+          return '소유형';
+        case 4:
+          return '유형';
+        default:
+          return '유형';
+      }
+    };
+    const key = getTypeKey(level);
+
+    setCheckedItems((prev) => {
+      let updatedList = checked
+        ? [...prev, { [key]: `${name}^^^${idx}` }]
+        : prev.filter((item) => Object.values(item)[0] !== `${name}^^^${idx}`);
+
+      if (checked) {
+        // 상위 요소를 체크
+        let currentItem = findItemByIdx(idx);
+        while (currentItem && currentItem.parentIdx !== 0) {
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
+          if (parentItem) {
+            const parentKey = getTypeKey(parentItem.level);
+            if (
+              !updatedList.some(
+                (item) =>
+                  item[parentKey] === `${parentItem.name}^^^${parentItem.idx}`,
+              )
+            ) {
+              updatedList.push({
+                [parentKey]: `${parentItem.name}^^^${parentItem.idx}`,
+              });
+            }
+            currentItem = parentItem;
+          } else {
+            break;
+          }
+        }
+      } else {
+        // 하위 요소를 모두 체크 해제
+        const removeDescendants = (currentIdx: number) => {
+          const childItems = findChildItems(currentIdx);
+          childItems.forEach((child) => {
+            const childKey = getTypeKey(child.level);
+            updatedList = updatedList.filter(
+              (item) => item[childKey] !== `${child.name}^^^${child.idx}`,
+            );
+            removeDescendants(child.idx);
+          });
+        };
+        removeDescendants(idx);
+      }
+      return updatedList;
+    });
+  };
+
+  useEffect(() => {
+    // 유형 값 담기
+    console.log('checkedDepthList---', checkedDepthList);
+    console.log('checkedItems---', checkedItems);
+  }, [checkedDepthList, checkedItems]);
+
+  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
+    for (const tree of itemTree) {
+      for (const item of tree.itemTreeList) {
+        if (item.idx === idx) {
+          return item;
+        }
+      }
+    }
+    return undefined;
+  };
+  const findChildItems = (parentIdx: number): ItemTreeType[] => {
+    const children: ItemTreeType[] = [];
+    for (const tree of itemTree) {
+      children.push(
+        ...tree.itemTreeList.filter((item) => item.parentIdx === parentIdx),
+      );
+    }
+    return children;
+  };
+
+  // 전역으로 저장한 추가된 문항 데이터들 불러오기
+  // 화면 진입시 문항 데이터들 리스트ui에넣기
+  useEffect(() => {
+    console.log('quizList-----------', quizList);
+    setQuestionList(quizList);
+  }, []);
+
+  const sortList = () => {
+    const sorted = questionList.filter((el) => checkedList.includes(el.code));
+    console.log('체크된 요소 sortedList------------', sorted);
+    setSortedList(sorted);
+    onResetList();
+  };
+
+  useEffect(() => {
+    // console.log('checkedList------------', checkedList);
+    setUnitClassificationList([]);
+    sortList();
+  }, [checkedList]);
+
+  // 수정시 체크된 리스트의 카테고리값에서 메타값 속아내기
+  useEffect(() => {
+    if (sortedList.length > 0) {
+      const lastQuiz = sortedList[sortedList.length - 1];
+      console.log('체크된 마지막 lastQuiz------------', lastQuiz);
+      const radioButtonLists: RadioStateType[][] = [];
+
+      lastQuiz.quizCategoryList.map((category) => {
+        const list: UnitClassificationType[] = [];
+        const actionElement1: UnitClassificationType[] = [];
+        const actionElement2: UnitClassificationType[] = [];
+
+        // category를 순회하며 필요한 형태로 변환
+        Object.keys(category.quizCategory).forEach((key) => {
+          const value = category.quizCategory[
+            key as keyof UnitClassificationType
+          ] as any;
+          console.log('value key----', value);
+          // 행동요소1, 행동요소2인 경우 객체 배열로 추가
+          if ((value.key as string) === '행동요소1') {
+            console.log('typedKey key---- in ', value);
+            actionElement1.push({
+              title: value.title as string,
+              checkValue: value.checkValue,
+              code: value.code,
+              key: value.key,
+            });
+          } else if ((value.key as string) === '행동요소2') {
+            actionElement2.push({
+              title: value.title as string,
+              checkValue: value.checkValue,
+              code: value.code,
+              key: value.key,
+            });
+          } else {
+            list.push({
+              title: value as string,
+              checkValue: 0,
+              code: key,
+              key: key,
+            });
+          }
+        });
+
+        // order 변수를 선언 및 초기화
+        const order: Record<string, number> = {
+          교육과정: 0,
+          학교급: 1,
+          학년: 2,
+          학기: 3,
+        };
+
+        // order에 따른 정렬된 배열 만들기
+        const sortedArray: (RadioStateType | null)[] = new Array(
+          Object.keys(order).length,
+        ).fill(null);
+
+        list.forEach((item) => {
+          if ('code' in item && order[item.code] !== undefined) {
+            sortedArray[order[item.code]] = item as RadioStateType;
+          } else {
+            sortedArray.push(item as RadioStateType);
+          }
+        });
+
+        // null 항목 필터링
+        const finalList = sortedArray.filter(
+          (item): item is RadioStateType => item !== null,
+        );
+
+        console.log('actionElement 1 2 ---- ', actionElement1, actionElement2);
+
+        // 추가 항목들 추가
+        if (actionElement1.length > 0) {
+          finalList.push(...(actionElement1 as unknown as RadioStateType[]));
+        }
+
+        if (actionElement2.length > 0) {
+          finalList.push(...(actionElement2 as unknown as RadioStateType[]));
+        }
+
+        console.log('push on list ----', finalList);
+        //idx 리스트 재구축
+        const idxList = finalList
+          .map((item) => {
+            if (typeof item.title === 'string' && item.title.includes('^^^')) {
+              const parts = item.title.split('^^^');
+              return parseInt(parts[1], 10); // ^^^ 뒤의 숫자를 추출하여 정수로 변환
+            }
+            return null; // ^^^이 포함되지 않은 경우 null 반환
+          })
+          .filter((number) => number !== null);
+
+        // 새로운 배열 생성
+        const newFinalList: RadioStateType[] = [];
+        // 라디오 버튼에 들어갈 요소 재정의
+        const keysOrder = [
+          '교육과정',
+          '학교급',
+          '학년',
+          '학기',
+          'itemTreeIdxList',
+          '행동요소1',
+          '행동요소2',
+        ];
+
+        keysOrder.forEach((key) => {
+          // 일반 키 처리
+          const items = finalList.filter(
+            (element: RadioStateType) => element.key === key,
+          );
+
+          if (items.length > 0) {
+            // 찾은 모든 요소를 newFinalList에 추가
+            newFinalList.push(...items);
+          } else if (key === 'itemTreeIdxList') {
+            // itemTreeIdxList 일때 배열로 값추가
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            newFinalList.push({ itemTreeIdxList: idxList });
+          } else if (key === '행동요소1') {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            newFinalList.push([...items]);
+          } else if (key === '행동요소2') {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            newFinalList.push([...items]);
+          } else {
+            // 행동요소가 없을 경우 빈 배열 추가
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            newFinalList.push([]);
+          }
+        });
+
+        // checkValue 값 추가 선택 전 임시
+        newFinalList.forEach((finalItem: RadioStateType) => {
+          const categoryItem = categoryItems.find(
+            (catItem) => catItem.name === finalItem.code,
+          );
+
+          if (categoryItem) {
+            console.log('categoryItem --- ', categoryItem);
+            finalItem.checkValue = categoryItem.idx;
+          }
+        });
+
+        console.log('newFinalList ---------', newFinalList);
+        radioButtonLists.push(newFinalList);
+      });
+
+      setRadioButtonArr(radioButtonLists);
+    }
+  }, [sortedList]);
+
+  useEffect(() => {
+    console.log('문항에 등록된 분류 묶음 --- ', radioButtonArr);
+
+    if (radioButtonArr.length > 0) {
+      // 중복 제거 작업
+      const uniqueRadioButtonArr = radioButtonArr.map((group) => {
+        const uniqueGroup = group.filter(
+          (item, index, self) =>
+            index ===
+            self.findIndex((t) => JSON.stringify(t) === JSON.stringify(item)),
+        );
+        return uniqueGroup;
+      });
+
+      // 라디오 버튼 배열을 순차적으로 추가
+      uniqueRadioButtonArr.forEach((radioButtonGroup, index) => {
+        setTimeout(
+          () => {
+            setRadioButtonList((prevList) => [...prevList, radioButtonGroup]);
+          },
+          index - 1 * 1000,
+        ); // 각 그룹마다 1초 간격으로 추가
+      });
+    }
+  }, [radioButtonArr]);
+
+  // radioButtonList에 담긴 값을 순서대로 체크값에 넣고 아이템트리 조회
+  useEffect(() => {
+    if (radioButtonList.length === 0) return;
+    // 타이틀 값에 맞는 체크밸류 찾기
+    console.log('radioButtonList ---------', radioButtonList);
+
+    const newClassificationLists = radioButtonList
+      .map((buttonList, index) => {
+        if (buttonList[0].key === '교육과정') {
+          const newClassification: UnitClassificationType[] = [
+            buttonList[0],
+            buttonList[1],
+            buttonList[2],
+            buttonList[3],
+            ...buttonList.filter((item) => item.key === '행동요소1'),
+            ...buttonList.filter((item) => item.key === '행동요소2'),
+          ];
+
+          if (checkedDepthList.length > 0) {
+            newClassification.splice(4, 0, {
+              itemTreeIdxList: checkedDepthList,
+            });
+          }
+
+          return newClassification;
+        }
+        return null; // 조건을 만족하지 않는 경우 null 반환
+      })
+      .filter((item) => item !== null); // null 값 필터링
+
+    console.log('newClassificationLists ---------', newClassificationLists);
+
+    // 최대 5개의 UnitClassificationType 배열만 추가
+    if (unitClassificationList.length + newClassificationLists.length < 6) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      setUnitClassificationList((prevList) => [
+        ...prevList,
+        ...newClassificationLists,
+      ]);
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '교과정보는 최대 5개 까지 저장 가능합니다',
+      });
+    }
+
+    onResetList();
+  }, [radioButtonList]);
+
   /* 선택된 유형에따라 항목 조회 */
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
@@ -600,6 +1028,9 @@ export function Classification({
     onResetList();
   };
 
+  // 수정
+  const changeUnitClassification = (idx: number) => {};
+
   //삭제
   const deleteUnitClassification = (idx: number) => {
     setUnitClassificationList((prevList) => [
@@ -646,627 +1077,6 @@ export function Classification({
     isModifying,
   ]);
 
-  // 수정
-  const changeUnitClassification = (idx: number) => {
-    console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
-    console.log(
-      '수정에서의 itemTree unitClassificationList',
-      unitClassificationList[idx],
-    );
-    setSelectedClassification(unitClassificationList[idx]);
-    setIsModifying(true);
-  };
-  // 수정시 작동
-  useEffect(() => {
-    if (isModifying && selectedClassification.length > 0) {
-      const classification = selectedClassification[0] as RadioStateType;
-      const matchingItem = categoryList[0].find(
-        (item) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('1뎁스----------updatedObject----', updatedObject);
-        // 체크 밸류값을 재설정
-        setSelected1depth(matchingItem.idx.toString());
-        setRadio1depthCheck(updatedObject);
-      }
-      // onDepths();
-    }
-  }, [isModifying, selectedClassification]);
-  // const onDepths = () => {
-  // 1뎁스이후 2뎁스 활성화
-  // };
-  useEffect(() => {
-    if (isModifying && selected1depth !== '') {
-      const classification = selectedClassification[1] as RadioStateType;
-      const matchingItem = nextListData1?.data?.categoryClassList.find(
-        (item: { name: string }) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('2뎁스----------updatedObject----', updatedObject);
-        setSelected2depth(matchingItem.idx.toString());
-        setRadio2depthCheck(updatedObject);
-      }
-    }
-  }, [isModifying, selected1depth]);
-  useEffect(() => {
-    if (isModifying && selected2depth !== '') {
-      const classification = selectedClassification[2] as RadioStateType;
-      const matchingItem = nextListData2?.data?.categoryClassList.find(
-        (item: { name: string }) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('3뎁스----------updatedObject----', updatedObject);
-        setSelected3depth(matchingItem.idx.toString());
-        setRadio3depthCheck(updatedObject);
-      }
-    }
-  }, [isModifying, selected2depth]);
-  useEffect(() => {
-    if (isModifying && selected3depth !== '') {
-      const classification = selectedClassification[3] as RadioStateType;
-      const matchingItem = nextListData3?.data?.categoryClassList.find(
-        (item: { name: string }) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('4뎁스----------updatedObject----', updatedObject);
-        setSelected4depth(matchingItem.idx.toString());
-        setRadio4depthCheck(updatedObject);
-      }
-    }
-  }, [isModifying, selected3depth]);
-  useEffect(() => {
-    if (selected4depth !== '') {
-      const classification = selectedClassification[4] as ItemTreeIdxListType;
-      // idx 유형 리스트
-      console.log('수정시 idx 리스트 ----- ', classification);
-      if (classification?.itemTreeIdxList)
-        setCheckedDepthList(classification.itemTreeIdxList);
-
-      const classificationEtc1 = selectedClassification[5] as RadioStateType[];
-      // 저장되었던 행동 요소1
-      if (classificationEtc1) {
-        // const filteredArrayE1 = classificationEtc1.filter(
-        //   (item) => item.key === '행동요소1',
-        // );
-        // console.log(filteredArrayE1);
-        setSelectedCategoryEtc1(
-          classificationEtc1.map((el) => el.checkValue?.toString()),
-        );
-        setRadioEtc1Check(classificationEtc1);
-      }
-      const classificationEtc2 = selectedClassification[6] as RadioStateType[];
-      console.log(
-        '수정시 classificationEtc2 리스트 ----- ',
-        classificationEtc2,
-      );
-      // const filteredArrayE2 = classificationEtc2.filter(
-      //   (item) => item.key === '행동요소2',
-      // );
-      // 저장되었던 행동 요소2
-      if (classificationEtc2) {
-        setSelectedCategoryEtc2(
-          classificationEtc2.map((el) => el.checkValue?.toString()),
-        );
-        setRadioEtc2Check(classificationEtc2);
-      }
-      //초기화
-      setIsModifying(false);
-    }
-  }, [isModifying, selected4depth]);
-
-  const sortedArr = () => {
-    console.log('아이템트리키 들어가야할 목록', unitClassificationList);
-    const arr = unitClassificationList.map((classification) => {
-      const itemTreeKey = classification.reduce(
-        (acc: Record<string, string | string[]>, curr) => {
-          if ('key' in curr && curr.title) {
-            if (curr.key === '행동요소1' || curr.key === '행동요소2') {
-              // 행동요소1 또는 행동요소2인 경우 배열로 처리
-              if (acc[curr.key]) {
-                // 이미 해당 키가 존재하는 경우 배열에 추가
-                (acc[curr.key] as string[]).push(curr.title);
-              } else {
-                // 새로 배열을 생성하여 추가
-                acc[curr.key] = [curr.title];
-              }
-            } else {
-              // 일반적인 키 처리
-              acc[curr.key] = curr.title;
-            }
-          } else if (typeof curr === 'object' && !('itemTreeIdxList' in curr)) {
-            // checkedItems 객체 병합
-            Object.assign(acc, curr);
-          }
-          return acc;
-        },
-        {} as Record<string, string | string[]>,
-      );
-
-      const itemTreeIdxList =
-        classification.find(
-          (item): item is ItemTreeIdxListType => 'itemTreeIdxList' in item,
-        )?.itemTreeIdxList || [];
-
-      // 등록시 앞쪽에서 등록한 필수 메타값도 함께 등록
-      const requiredMetacategory =
-        sortedList[sortedList.length - 1].quizCategoryList[0].quizCategory;
-
-      console.log('itemTreeKey------', itemTreeKey);
-      console.log('requiredMetacategory------', requiredMetacategory);
-      const mergedItemTreeKey = {
-        ...itemTreeKey,
-        ...requiredMetacategory,
-      };
-      return {
-        itemTreeKey: mergedItemTreeKey,
-        itemTreeIdxList,
-      };
-    });
-
-    return arr;
-  };
-
-  // 분류 등록 버튼
-  const onSubmit = () => {
-    // 최종적으로 전송 될 데이터
-    console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
-
-    const categoryListArr = sortedArr();
-    console.log('categoryList 들어가야할 목록', categoryListArr);
-
-    const data: ClassificationStateType = {
-      quizCodeList: checkedList,
-      categoryList: categoryListArr,
-    };
-    console.log('최종 전송 데이터 형태', data);
-    mutateChangeClassification(data);
-  };
-
-  // 분류 바꾸기 (등록) api
-  const putClassification = async (data: ClassificationStateType) => {
-    const res = await classificationInstance.put(`/v1/item/quiz`, data);
-    console.log('putClassification', res);
-    return res;
-  };
-
-  const { data: changeClassificationData, mutate: mutateChangeClassification } =
-    useMutation({
-      mutationFn: putClassification,
-      onError: (context: {
-        response: { data: { message: string; code: string } };
-      }) => {
-        openToastifyAlert({
-          type: 'error',
-          text: context.response.data.message,
-        });
-        if (context.response.data.code == 'GE-002') {
-          postRefreshToken();
-        }
-      },
-      onSuccess: (response: { data: { message: string } }) => {
-        openToastifyAlert({
-          type: 'success',
-          text: response.data.message,
-        });
-        //초기화
-        onResetList();
-      },
-    });
-
-  // 검색 기능
-  const filterSearchValue = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    // 쿼리 스트링 변경 로직
-    setSearchValue(e.currentTarget.value);
-  };
-  const filterSearchValueEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      setSearchValue(e.currentTarget.value);
-    }
-  };
-
-  // 깊이가 있는 리스트 DepthBlock 체크박스
-  const handleSingleCheck = (
-    checked: boolean,
-    idx: number,
-    level: number,
-    name: string,
-    findItemByIdx: (idx: number) => any,
-    findChildItems: (idx: number) => any[],
-  ) => {
-    // idx리스트 담기
-    setCheckedDepthList((prev) => {
-      let updatedList = checked
-        ? [...prev, idx]
-        : prev.filter((item) => item !== idx);
-
-      if (checked) {
-        // 상위 요소를 체크
-        let currentItem = findItemByIdx(idx);
-        while (currentItem && currentItem.parentIdx !== 0) {
-          const parentItem = findItemByIdx(currentItem.parentIdx as number);
-          if (parentItem) {
-            if (!updatedList.includes(parentItem.idx)) {
-              updatedList.push(parentItem.idx);
-            }
-            currentItem = parentItem;
-          } else {
-            break;
-          }
-        }
-      } else {
-        // 하위 요소를 모두 체크 해제
-        const removeDescendants = (currentIdx: number) => {
-          const childItems = findChildItems(currentIdx);
-          childItems.forEach((child) => {
-            updatedList = updatedList.filter(
-              (itemIdx) => itemIdx !== child.idx,
-            );
-            removeDescendants(child.idx);
-          });
-        };
-        removeDescendants(idx);
-      }
-      return updatedList;
-    });
-    // 유형 값 담기
-    const getTypeKey = (level: number): string => {
-      switch (level) {
-        case 1:
-          return '대유형';
-        case 2:
-          return '중유형';
-        case 3:
-          return '소유형';
-        case 4:
-          return '유형';
-        default:
-          return '유형';
-      }
-    };
-    const key = getTypeKey(level);
-
-    setCheckedItems((prev) => {
-      let updatedList = checked
-        ? [...prev, { [key]: `${name}^^^${idx}` }]
-        : prev.filter((item) => Object.values(item)[0] !== `${name}^^^${idx}`);
-
-      if (checked) {
-        // 상위 요소를 체크
-        let currentItem = findItemByIdx(idx);
-        while (currentItem && currentItem.parentIdx !== 0) {
-          const parentItem = findItemByIdx(currentItem.parentIdx as number);
-          if (parentItem) {
-            const parentKey = getTypeKey(parentItem.level);
-            if (
-              !updatedList.some(
-                (item) =>
-                  item[parentKey] === `${parentItem.name}^^^${parentItem.idx}`,
-              )
-            ) {
-              updatedList.push({
-                [parentKey]: `${parentItem.name}^^^${parentItem.idx}`,
-              });
-            }
-            currentItem = parentItem;
-          } else {
-            break;
-          }
-        }
-      } else {
-        // 하위 요소를 모두 체크 해제
-        const removeDescendants = (currentIdx: number) => {
-          const childItems = findChildItems(currentIdx);
-          childItems.forEach((child) => {
-            const childKey = getTypeKey(child.level);
-            updatedList = updatedList.filter(
-              (item) => item[childKey] !== `${child.name}^^^${child.idx}`,
-            );
-            removeDescendants(child.idx);
-          });
-        };
-        removeDescendants(idx);
-      }
-      return updatedList;
-    });
-  };
-
-  useEffect(() => {
-    // 유형 값 담기
-    console.log('checkedDepthList---', checkedDepthList);
-    console.log('checkedItems---', checkedItems);
-  }, [checkedDepthList, checkedItems]);
-
-  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
-    for (const tree of itemTree) {
-      for (const item of tree.itemTreeList) {
-        if (item.idx === idx) {
-          return item;
-        }
-      }
-    }
-    return undefined;
-  };
-  const findChildItems = (parentIdx: number): ItemTreeType[] => {
-    const children: ItemTreeType[] = [];
-    for (const tree of itemTree) {
-      children.push(
-        ...tree.itemTreeList.filter((item) => item.parentIdx === parentIdx),
-      );
-    }
-    return children;
-  };
-
-  // 전역으로 저장한 추가된 문항 데이터들 불러오기
-  // 화면 진입시 문항 데이터들 리스트ui에넣기
-  useEffect(() => {
-    console.log('quizList-----------', quizList);
-    setQuestionList(quizList);
-  }, []);
-
-  const sortList = () => {
-    const sorted = questionList.filter((el) => checkedList.includes(el.code));
-    console.log('sortedList------------', sorted);
-    setSortedList(sorted);
-    onResetList();
-  };
-
-  useEffect(() => {
-    // console.log('checkedList------------', checkedList);
-    setUnitClassificationList([]);
-    sortList();
-  }, [checkedList]);
-
-  // 수정시 체크된 리스트의 카테고리값에서 메타값 속아내기
-  useEffect(() => {
-    if (sortedList.length > 0) {
-      const lastQuiz = sortedList[sortedList.length - 1];
-      const radioButtonLists: RadioStateType[][] = [];
-      console.log('lastQuiz---', lastQuiz);
-
-      lastQuiz.quizCategoryList.map((category) => {
-        const list: UnitClassificationType[] = [];
-        const actionElement1: UnitClassificationType[] = [];
-        const actionElement2: UnitClassificationType[] = [];
-
-        // category를 순회하며 필요한 형태로 변환
-        Object.keys(category.quizCategory).forEach((key) => {
-          const value = category.quizCategory[
-            key as keyof UnitClassificationType
-          ] as any;
-          console.log('value key----', value);
-          // 행동요소1, 행동요소2인 경우 객체 배열로 추가
-          if ((value.key as string) === '행동요소1') {
-            console.log('typedKey key---- in ', value);
-            actionElement1.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else if ((value.key as string) === '행동요소2') {
-            actionElement2.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else {
-            list.push({
-              title: value as string,
-              checkValue: 0,
-              code: key,
-              key: key,
-            });
-          }
-        });
-
-        // order 변수를 선언 및 초기화
-        const order: Record<string, number> = {
-          교육과정: 0,
-          학교급: 1,
-          학년: 2,
-          학기: 3,
-        };
-
-        // order에 따른 정렬된 배열 만들기
-        const sortedArray: (RadioStateType | null)[] = new Array(
-          Object.keys(order).length,
-        ).fill(null);
-
-        list.forEach((item) => {
-          if ('code' in item && order[item.code] !== undefined) {
-            sortedArray[order[item.code]] = item as RadioStateType;
-          } else {
-            sortedArray.push(item as RadioStateType);
-          }
-        });
-
-        // null 항목 필터링
-        const finalList = sortedArray.filter(
-          (item): item is RadioStateType => item !== null,
-        );
-
-        console.log('actionElement 1 2 ---- ', actionElement1, actionElement2);
-
-        // 추가 항목들 추가
-        if (actionElement1.length > 0) {
-          finalList.push(...(actionElement1 as unknown as RadioStateType[]));
-        }
-
-        if (actionElement2.length > 0) {
-          finalList.push(...(actionElement2 as unknown as RadioStateType[]));
-        }
-
-        console.log('push on list ----', finalList);
-        //idx 리스트 재구축
-        const idxList = finalList
-          .map((item) => {
-            if (typeof item.title === 'string' && item.title.includes('^^^')) {
-              const parts = item.title.split('^^^');
-              return parseInt(parts[1], 10); // ^^^ 뒤의 숫자를 추출하여 정수로 변환
-            }
-            return null; // ^^^이 포함되지 않은 경우 null 반환
-          })
-          .filter((number) => number !== null);
-
-        // 새로운 배열 생성
-        const newFinalList: RadioStateType[] = [];
-        // 라디오 버튼에 들어갈 요소 재정의
-        const keysOrder = [
-          '교육과정',
-          '학교급',
-          '학년',
-          '학기',
-          'itemTreeIdxList',
-          '행동요소1',
-          '행동요소2',
-        ];
-
-        keysOrder.forEach((key) => {
-          // 일반 키 처리
-          const items = finalList.filter(
-            (element: RadioStateType) => element.key === key,
-          );
-
-          if (items.length > 0) {
-            // 찾은 모든 요소를 newFinalList에 추가
-            newFinalList.push(...items);
-          } else if (key === 'itemTreeIdxList') {
-            // itemTreeIdxList 일때 배열로 값추가
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push({ itemTreeIdxList: idxList });
-          } else if (key === '행동요소1') {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([...items]);
-          } else if (key === '행동요소2') {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([...items]);
-          } else {
-            // 행동요소가 없을 경우 빈 배열 추가
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([]);
-          }
-        });
-
-        // checkValue 값 추가 선택 전 임시
-        newFinalList.forEach((finalItem: RadioStateType) => {
-          const categoryItem = categoryItems.find(
-            (catItem) => catItem.name === finalItem.code,
-          );
-
-          if (categoryItem) {
-            console.log('categoryItem --- ', categoryItem);
-            finalItem.checkValue = categoryItem.idx;
-          }
-        });
-
-        console.log('newFinalList ---------', newFinalList);
-        radioButtonLists.push(newFinalList);
-      });
-
-      setRadioButtonArr(radioButtonLists);
-    }
-  }, [sortedList]);
-
-  useEffect(() => {
-    console.log('문항에 등록된 분류 묶음 --- ', radioButtonArr);
-    if (radioButtonArr.length > 0) {
-      // 라디오 버튼 배열을 순차적으로 추가
-      radioButtonArr.forEach((radioButtonGroup, index) => {
-        setTimeout(
-          () => {
-            setRadioButtonList((prevList) => {
-              // 중복 확인: 이미 존재하는지 검사
-              const isDuplicate = prevList.some((existingGroup) =>
-                existingGroup.every(
-                  (item, i) => item.title === radioButtonGroup[i]?.title,
-                ),
-              );
-
-              // 중복이 아닌 경우에만 추가
-              if (!isDuplicate) {
-                return [...prevList, radioButtonGroup];
-              }
-              return prevList; // 중복이면 기존 리스트를 그대로 반환
-            });
-          },
-          (index - 1) * 1000,
-        ); // 각 그룹마다 1초 간격으로 추가
-      });
-    }
-  }, [radioButtonArr]);
-
-  // radioButtonList에 담긴 값을 순서대로 체크값에 넣고 아이템트리 조회
-  useEffect(() => {
-    if (radioButtonList.length === 0) return;
-    // 타이틀 값에 맞는 체크밸류 찾기
-    console.log('radioButtonList ---------', radioButtonList);
-    const newClassificationLists = radioButtonList
-      .map((buttonList, index) => {
-        if (buttonList[0].key === '교육과정') {
-          const newClassification: UnitClassificationType[] = [
-            buttonList[0],
-            buttonList[1],
-            buttonList[2],
-            buttonList[3],
-            ...buttonList.filter((item) => item.key === '행동요소1'),
-            ...buttonList.filter((item) => item.key === '행동요소2'),
-          ];
-
-          if (checkedDepthList.length > 0) {
-            newClassification.splice(4, 0, {
-              itemTreeIdxList: checkedDepthList,
-            });
-          }
-
-          return newClassification;
-        }
-        return null; // 조건을 만족하지 않는 경우 null 반환
-      })
-      .filter((item) => item !== null); // null 값 필터링
-
-    console.log('newClassificationLists ---------', newClassificationLists);
-
-    // 최대 5개의 UnitClassificationType 배열만 추가
-    if (unitClassificationList.length + newClassificationLists.length < 6) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      setUnitClassificationList((prevList) => [
-        ...prevList,
-        ...newClassificationLists,
-      ]);
-    } else {
-      openToastifyAlert({
-        type: 'error',
-        text: '교과정보는 최대 5개 까지 저장 가능합니다',
-      });
-    }
-
-    onResetList();
-  }, [radioButtonList]);
-
   // 아이템 트리 체크값 유형 키값으로 타이틀명 맞춰서 체크
   useEffect(() => {
     console.log('isChecked----------', isChecked);
@@ -1280,6 +1090,13 @@ export function Classification({
   }, [unitClassificationList]);
 
   useEffect(() => {}, [questionList]);
+
+  // 분류 등록 버튼
+  const onSubmit = () => {
+    // 최종적으로 전송 될 데이터
+    console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
+  };
+
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
