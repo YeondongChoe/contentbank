@@ -6,11 +6,12 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { COLOR } from '../../../components/constants';
-import { Button, Loader, ValueNone } from '../../atom';
+import { Button, Loader, Switch, ValueNone } from '../../atom';
 
 export function CategroyManagement() {
   const [categoryList, setCategoryList] = useState(['교육과정', '교과']);
   const [isAdd, setIsAdd] = useState<boolean>(false);
+  const [switchOn, setSwitchOn] = useState<boolean>(false);
 
   const openAddCategory = () => {
     setIsAdd(!isAdd);
@@ -83,7 +84,12 @@ export function CategroyManagement() {
             </div>
             <div className="input_wrap">
               <span className="input_label">활성화 여부</span>
-              <input type="text" />
+              <Switch
+                ison={switchOn}
+                onClick={() => {
+                  setSwitchOn(!switchOn);
+                }}
+              />
             </div>
             <div className="input_wrap">
               <span className="input_label">입력 타입</span>
