@@ -5,8 +5,12 @@ import { BiSolidTrashAlt } from 'react-icons/bi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
+import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
+import { useModal } from '../../../hooks';
 import { Button, Loader, Switch, ValueNone } from '../../atom';
+
+import { TagsModal } from './modal';
 
 export function CategroyManagement() {
   const [categoryList, setCategoryList] = useState(['교육과정', '교과']);
@@ -24,6 +28,7 @@ export function CategroyManagement() {
   const [switchOn, setSwitchOn] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [name, setName] = useState<string>('');
+  const { openModal } = useModal();
 
   const openAddCategory = () => {
     setIsAdd(!isAdd);
@@ -31,6 +36,16 @@ export function CategroyManagement() {
 
   const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
+  };
+
+  /*  모달 열기 */
+  const openTagsModal = () => {
+    console.log('modal open');
+
+    openModal({
+      title: '',
+      content: <TagsModal tags={tagsList} />,
+    });
   };
 
   const inputTypeBtnArr = [
@@ -149,8 +164,6 @@ export function CategroyManagement() {
               <div className="input_wrap">
                 <span className="input_label">태그</span>
                 <div className="button_wrap">
-                  {/* 앞쪽으로 버튼 배열 추가 */}
-
                   <button
                     type="button"
                     className="add_button"
@@ -238,6 +251,13 @@ export function CategroyManagement() {
                   <br />({`${tagsList.length}`}개)
                 </span>
                 <div className="button_wrap">
+                  <button
+                    type="button"
+                    className="add_button"
+                    onClick={() => {}}
+                  >
+                    +추가
+                  </button>
                   {/* 앞쪽으로 버튼 배열 추가 */}
                   {tagsList.map((tag) => (
                     <button
@@ -251,10 +271,10 @@ export function CategroyManagement() {
                   ))}
                   <button
                     type="button"
-                    className="add_button"
-                    onClick={() => {}}
+                    className={`value_button`}
+                    onClick={() => openTagsModal()}
                   >
-                    +추가
+                    <span className="transform">⁝</span>
                   </button>
                   <p className="sub_text wid_100">
                     카테고리에 속한 속성값으로, 그룹 관리에서 매핑이 가능합니다.
@@ -302,6 +322,7 @@ export function CategroyManagement() {
           </div>
         </ButtonWrapper>
       </CategoryManageWrapper>
+      <Modal />
     </Container>
   );
 }
@@ -427,6 +448,10 @@ const FormBox = styled.div`
   }
   .value_button.on {
     border: 1px solid ${COLOR.PRIMARY};
+  }
+  .transform {
+    display: block;
+    transform: rotate(90deg);
   }
 `;
 

@@ -18,6 +18,7 @@ import {
   CommonDate,
   IconButton,
   Icon,
+  Modal,
 } from '..';
 import { classificationInstance, quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
@@ -601,6 +602,8 @@ export function QuizCreateList() {
           )}
         </>
       )}
+
+      <Modal />
     </Container>
   );
 }
