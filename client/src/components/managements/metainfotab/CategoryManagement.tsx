@@ -12,11 +12,28 @@ export function CategroyManagement() {
   const [categoryList, setCategoryList] = useState(['교육과정', '교과']);
   const [isAdd, setIsAdd] = useState<boolean>(false);
   const [switchOn, setSwitchOn] = useState<boolean>(false);
+  const [name, setName] = useState<string>('');
 
   const openAddCategory = () => {
     setIsAdd(!isAdd);
   };
 
+  const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  const inputTypeBtnArr = [
+    '태그 선택',
+    '텍스트 입력',
+    '날짜 선택',
+    '숫자 입력',
+  ];
+  const tagNumberingBtnArr = [
+    '없음',
+    '숫자(1,2,3)',
+    '로마숫자(I, II, III)',
+    '영문(a,b,c)',
+  ];
   return (
     <Container>
       <CategoryListWrapper>
@@ -80,7 +97,12 @@ export function CategroyManagement() {
           <div className="form">
             <div className="input_wrap">
               <span className="input_label">카테고리명</span>
-              <input type="text" />
+              <input
+                type="text"
+                placeholder="카테고리명을 입력해주세요"
+                value={name}
+                onChange={(e) => changeName(e)}
+              />
             </div>
             <div className="input_wrap">
               <span className="input_label">활성화 여부</span>
@@ -93,15 +115,43 @@ export function CategroyManagement() {
             </div>
             <div className="input_wrap">
               <span className="input_label">입력 타입</span>
-              <input type="text" />
+              <div className="button_wrap">
+                {inputTypeBtnArr.map((type) => (
+                  <button
+                    key={`입력 타입 : ${type}`}
+                    type="button"
+                    className={`value_button ${'on'}`}
+                    onClick={() => {}}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="input_wrap">
               <span className="input_label">태그</span>
-              <input type="text" />
+              <div className="button_wrap">
+                {/* 앞쪽으로 버튼 배열 추가 */}
+
+                <button type="button" className="add_button" onClick={() => {}}>
+                  +추가
+                </button>
+              </div>
             </div>
             <div className="input_wrap">
               <span className="input_label">태그 자동 넘버링</span>
-              <input type="text" />
+              <div className="button_wrap">
+                {tagNumberingBtnArr.map((numbering) => (
+                  <button
+                    key={`입력 타입 : ${numbering}`}
+                    type="button"
+                    className={`value_button ${'on'}`}
+                    onClick={() => {}}
+                  >
+                    {numbering}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </FormBox>
@@ -165,13 +215,50 @@ const FormBox = styled.div`
     padding: 5px 20px;
     display: flex;
     align-items: center;
+    flex-wrap: nowrap;
+  }
+  .input_wrap input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 2px 0;
+    text-indent: 10px;
+  }
+
+  .input_wrap input::placeholder {
+    color: #aeaeae;
+    font-size: 12px;
+    text-indent: 10px;
   }
   .input_label {
     width: 150px;
     text-align: right;
     margin-right: 10px;
-    font-size: bold;
+    font-size: 800;
     font-size: 15px;
+  }
+  .button_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1 1 0;
+    gap: 5px;
+  }
+  .add_button {
+    border: 1px dashed ${COLOR.PRIMARY};
+    border-radius: 5px;
+    padding: 5px 15px;
+    font-size: 13px;
+    color: ${COLOR.PRIMARY};
+    background-color: transparent;
+  }
+  .value_button {
+    border: 1px solid #ddd;
+    background-color: transparent;
+    border-radius: 5px;
+    font-size: 13px;
+    padding: 5px 15px;
+  }
+  .value_button.on {
+    border: 1px solid ${COLOR.PRIMARY};
   }
 `;
 
