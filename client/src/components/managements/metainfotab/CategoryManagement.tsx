@@ -10,8 +10,19 @@ import { Button, Loader, Switch, ValueNone } from '../../atom';
 
 export function CategroyManagement() {
   const [categoryList, setCategoryList] = useState(['교육과정', '교과']);
+  const [tagsList, setTagsList] = useState([
+    '분류1',
+    '분류2',
+    '분류3',
+    '분류4',
+    '분류5',
+    '분류6',
+    '분류7777777',
+    '분류분류분류분류분류분류분류분류분류분류',
+  ]);
   const [isAdd, setIsAdd] = useState<boolean>(false);
   const [switchOn, setSwitchOn] = useState<boolean>(false);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   const [name, setName] = useState<string>('');
 
   const openAddCategory = () => {
@@ -93,68 +104,203 @@ export function CategroyManagement() {
             </Button>
           )}
         </ButtonWrapper>
-        <FormBox>
-          <div className="form">
-            <div className="input_wrap">
-              <span className="input_label">카테고리명</span>
-              <input
-                type="text"
-                placeholder="카테고리명을 입력해주세요"
-                value={name}
-                onChange={(e) => changeName(e)}
-              />
-            </div>
-            <div className="input_wrap">
-              <span className="input_label">활성화 여부</span>
-              <Switch
-                ison={switchOn}
-                onClick={() => {
-                  setSwitchOn(!switchOn);
-                }}
-              />
-            </div>
-            <div className="input_wrap">
-              <span className="input_label">입력 타입</span>
-              <div className="button_wrap">
-                {inputTypeBtnArr.map((type) => (
-                  <button
-                    key={`입력 타입 : ${type}`}
-                    type="button"
-                    className={`value_button ${'on'}`}
-                    onClick={() => {}}
-                  >
-                    {type}
-                  </button>
-                ))}
+        {isAdd && (
+          <FormBox>
+            <div className="form">
+              <div className="input_wrap">
+                <span className="input_label">카테고리명</span>
+                <input
+                  type="text"
+                  placeholder="카테고리명을 입력해주세요"
+                  value={name}
+                  onChange={(e) => changeName(e)}
+                />
               </div>
-            </div>
-            <div className="input_wrap">
-              <span className="input_label">태그</span>
-              <div className="button_wrap">
-                {/* 앞쪽으로 버튼 배열 추가 */}
+              <div className="input_wrap">
+                <span className="input_label">활성화 여부</span>
+                <div className="button_wrap">
+                  <Switch
+                    ison={switchOn}
+                    onClick={() => {
+                      setSwitchOn(!switchOn);
+                    }}
+                  />
+                  <span className="sub_text">
+                    카테고리 사용 여부를 설정합니다. 비활성화 시, 화면 노출이
+                    제한됩니다.
+                  </span>
+                </div>
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">입력 타입</span>
+                <div className="button_wrap">
+                  {inputTypeBtnArr.map((type, index) => (
+                    <button
+                      key={`입력 타입 : ${type}`}
+                      type="button"
+                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
+                      onClick={() => setActiveIndex(index)}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">태그</span>
+                <div className="button_wrap">
+                  {/* 앞쪽으로 버튼 배열 추가 */}
 
-                <button type="button" className="add_button" onClick={() => {}}>
-                  +추가
-                </button>
-              </div>
-            </div>
-            <div className="input_wrap">
-              <span className="input_label">태그 자동 넘버링</span>
-              <div className="button_wrap">
-                {tagNumberingBtnArr.map((numbering) => (
                   <button
-                    key={`입력 타입 : ${numbering}`}
                     type="button"
-                    className={`value_button ${'on'}`}
+                    className="add_button"
                     onClick={() => {}}
                   >
-                    {numbering}
+                    +추가
                   </button>
-                ))}
+                  <p className="sub_text wid_100">
+                    카테고리에 속한 속성값으로, 그룹 관리에서 매핑이 가능합니다.
+                  </p>
+                </div>
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">태그 자동 넘버링</span>
+                <div className="button_wrap">
+                  {tagNumberingBtnArr.map((numbering, index) => (
+                    <button
+                      key={`태그 자동 넘버링 : ${numbering}`}
+                      type="button"
+                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
+                      onClick={() => setActiveIndex(index)}
+                    >
+                      {numbering}
+                    </button>
+                  ))}
+                  <p className="sub_text wid_100">
+                    태그 매핑 시, 태그가 추가될 때마다 화면에서 자동으로 숫자를
+                    부여합니다.
+                  </p>
+                </div>
               </div>
             </div>
+          </FormBox>
+        )}
+        {!isAdd && (
+          <FormBox>
+            <div className="form">
+              <div className="input_wrap">
+                <span className="input_label">카테고리명</span>
+                <input
+                  type="text"
+                  placeholder="카테고리명을 입력해주세요"
+                  value={name}
+                  onChange={(e) => changeName(e)}
+                />
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">활성화 여부</span>
+                <div className="button_wrap">
+                  <Switch
+                    ison={switchOn}
+                    onClick={() => {
+                      setSwitchOn(!switchOn);
+                    }}
+                  />
+                  <span className="sub_text">
+                    카테고리 사용 여부를 설정합니다. 비활성화 시, 화면 노출이
+                    제한됩니다.
+                  </span>
+                </div>
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">그룹</span>
+                {/* TODO : 그룹 데이터 */}
+                <input type="text" readOnly value={'업체정보'} />
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">입력 타입</span>
+                <div className="button_wrap">
+                  {inputTypeBtnArr.map((type, index) => (
+                    <button
+                      key={`입력 타입 : ${type}`}
+                      type="button"
+                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
+                      onClick={() => setActiveIndex(index)}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">
+                  태그
+                  <br />({`${tagsList.length}`}개)
+                </span>
+                <div className="button_wrap">
+                  {/* 앞쪽으로 버튼 배열 추가 */}
+                  {tagsList.map((tag) => (
+                    <button
+                      key={`태그 : ${tag}`}
+                      type="button"
+                      className={`value_button`}
+                      onClick={() => {}}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className="add_button"
+                    onClick={() => {}}
+                  >
+                    +추가
+                  </button>
+                  <p className="sub_text wid_100">
+                    카테고리에 속한 속성값으로, 그룹 관리에서 매핑이 가능합니다.
+                  </p>
+                </div>
+              </div>
+              <div className="input_wrap">
+                <span className="input_label">태그 자동 넘버링</span>
+                <div className="button_wrap">
+                  {tagNumberingBtnArr.map((numbering, index) => (
+                    <button
+                      key={`태그 자동 넘버링 : ${numbering}`}
+                      type="button"
+                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
+                      onClick={() => setActiveIndex(index)}
+                    >
+                      {numbering}
+                    </button>
+                  ))}
+                  <p className="sub_text wid_100">
+                    태그 매핑 시, 태그가 추가될 때마다 화면에서 자동으로 숫자를
+                    부여합니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </FormBox>
+        )}
+        <ButtonWrapper className="position_right">
+          <div className="display gap">
+            <Button height={'35px'} width={'130px'} $filled onClick={() => {}}>
+              저장
+            </Button>
+            {isAdd && (
+              <Button
+                height={'35px'}
+                width={'130px'}
+                onClick={() => {
+                  setIsAdd(false);
+                }}
+              >
+                취소
+              </Button>
+            )}
           </div>
-        </FormBox>
+        </ButtonWrapper>
       </CategoryManageWrapper>
     </Container>
   );
@@ -180,6 +326,17 @@ const CategoryManageWrapper = styled.div`
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  .gap {
+    gap: 10px;
+  }
+  &.position_right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .display {
+    display: flex;
+    margin: 0 20px 20px 20px;
+  }
 `;
 
 const SubTitle = styled.span`
@@ -202,7 +359,7 @@ const SubTitle = styled.span`
 const FormBox = styled.div`
   background-color: #fff;
   margin: 20px;
-  margin-top: 0;
+  margin-top: 10px;
   border: 1px solid #eee;
   border-radius: 10px;
   width: calc(100% - 40px);
@@ -214,8 +371,8 @@ const FormBox = styled.div`
   .input_wrap {
     padding: 5px 20px;
     display: flex;
-    align-items: center;
     flex-wrap: nowrap;
+    align-items: flex-start;
   }
   .input_wrap input {
     border: 1px solid #ddd;
@@ -223,7 +380,6 @@ const FormBox = styled.div`
     padding: 2px 0;
     text-indent: 10px;
   }
-
   .input_wrap input::placeholder {
     color: #aeaeae;
     font-size: 12px;
@@ -233,8 +389,20 @@ const FormBox = styled.div`
     width: 150px;
     text-align: right;
     margin-right: 10px;
-    font-size: 800;
+    font-weight: 800;
     font-size: 15px;
+    display: flex;
+    flex-direction: column-reverse;
+    padding-top: 4px;
+  }
+  .sub_text {
+    font-size: 12px;
+    color: #7d7d7d;
+    padding-left: 5px;
+    line-height: 1.2;
+  }
+  .wid_100 {
+    width: 100%;
   }
   .button_wrap {
     display: flex;
