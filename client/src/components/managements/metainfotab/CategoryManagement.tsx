@@ -115,6 +115,7 @@ export function CategroyManagement() {
   useEffect(() => {}, [newTagsList, tagsList]);
   return (
     <Container>
+      {/* 카테고리 리스트 */}
       <CategoryListWrapper>
         <ScrollWrapper>
           <PerfectScrollbar>
@@ -154,6 +155,8 @@ export function CategroyManagement() {
           </PerfectScrollbar>
         </ScrollWrapper>
       </CategoryListWrapper>
+
+      {/* 카테고리 등록 수정 */}
       <CategoryManageWrapper>
         <ButtonWrapper>
           {!isAdd && <SubTitle>카테고리 관리</SubTitle>}
