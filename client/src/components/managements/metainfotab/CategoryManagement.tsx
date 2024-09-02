@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
-import { Button, Loader, Switch, ValueNone } from '../../atom';
+import { Button, Icon, Loader, Switch, ValueNone } from '../../atom';
 
 import { TagsModal } from './modal';
 
@@ -16,17 +16,16 @@ export function CategroyManagement() {
   const [categoryList, setCategoryList] = useState(['교육과정', '교과']);
   const [tagsList, setTagsList] = useState([
     '분류1',
-    '분류2',
-    '분류3',
-    '분류4',
-    '분류5',
-    '분류6',
     '분류7777777',
     '분류분류분류분류분류분류분류분류분류분류',
   ]);
+  const [newTagsList, setNewTagsList] = useState<string[]>([]);
   const [isAdd, setIsAdd] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<number | null>(null);
+  const [tagInputValue, setTagInputValue] = useState<string>('');
   const [switchOn, setSwitchOn] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [activeAdd, setActiveAdd] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const { openModal } = useModal();
 
@@ -48,6 +47,51 @@ export function CategroyManagement() {
     });
   };
 
+  const tagInputHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isAdd && e.key === 'Enter') {
+      setNewTagsList([tagInputValue, ...newTagsList]);
+      // 등록 후 초기화
+      setActiveAdd(false);
+      setTagInputValue('');
+    }
+    if (!isAdd && e.key === 'Enter') {
+      setTagsList([tagInputValue, ...tagsList]);
+      // 등록 후 초기화
+      setActiveAdd(false);
+      setTagInputValue('');
+    }
+  };
+
+  const tagEditInputHandler = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    if (isAdd && e.key === 'Enter') {
+      const newEditTagsList = [...newTagsList];
+      newEditTagsList[index] = tagInputValue;
+      setNewTagsList(newEditTagsList);
+      // 등록 후 초기화
+      setIsEdit(null);
+      setTagInputValue('');
+    }
+    if (!isAdd && e.key === 'Enter') {
+      const newEditTagsList = [...tagsList];
+      newEditTagsList[index] = tagInputValue;
+      setTagsList(newEditTagsList);
+      // 등록 후 초기화
+      setIsEdit(null);
+      setTagInputValue('');
+    }
+  };
+  const tagButtonHandler = (index: number) => {
+    setIsEdit(index);
+    if (isAdd) {
+      setTagInputValue(newTagsList[index]);
+    }
+    if (!isAdd) {
+      setTagInputValue(tagsList[index]);
+    }
+  };
   const inputTypeBtnArr = [
     '태그 선택',
     '텍스트 입력',
@@ -60,6 +104,15 @@ export function CategroyManagement() {
     '로마숫자(I, II, III)',
     '영문(a,b,c)',
   ];
+
+  useEffect(() => {
+    // 핸들러 상태값 초기화
+    setIsEdit(null);
+    setActiveAdd(false);
+    setTagInputValue('');
+    setNewTagsList([]);
+  }, [isAdd]);
+  useEffect(() => {}, [newTagsList, tagsList]);
   return (
     <Container>
       <CategoryListWrapper>
@@ -164,13 +217,54 @@ export function CategroyManagement() {
               <div className="input_wrap">
                 <span className="input_label">태그</span>
                 <div className="button_wrap">
-                  <button
-                    type="button"
-                    className="add_button"
-                    onClick={() => {}}
-                  >
-                    +추가
-                  </button>
+                  {activeAdd ? (
+                    <span className={`active_add ${''}`}>
+                      <input
+                        className={`tag_add_input ${''}`}
+                        onKeyDown={(e) => tagInputHandler(e)}
+                        onChange={(e) => setTagInputValue(e.target.value)}
+                        value={tagInputValue}
+                        placeholder="태그명"
+                      />
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`add_button`}
+                      onClick={() => setActiveAdd(!activeAdd)}
+                    >
+                      +추가
+                    </button>
+                  )}
+                  {/* 앞쪽으로 버튼 배열 추가 */}
+                  {newTagsList.map((tag, index) => (
+                    <React.Fragment key={`태그 ${index}: ${tag}`}>
+                      {isEdit === index ? (
+                        <span className={`active_add ${''}`}>
+                          <input
+                            className={`tag_add_input ${''}`}
+                            onKeyDown={(e) => tagEditInputHandler(e, index)}
+                            onChange={(e) => setTagInputValue(e.target.value)}
+                            value={tagInputValue}
+                            placeholder="태그명"
+                          />
+
+                          <button type="button" onClick={() => setIsEdit(null)}>
+                            X
+                          </button>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className={`value_button ${tag}`}
+                          onClick={() => tagButtonHandler(index)}
+                        >
+                          {tag}
+                        </button>
+                      )}
+                    </React.Fragment>
+                  ))}
+
                   <p className="sub_text wid_100">
                     카테고리에 속한 속성값으로, 그룹 관리에서 매핑이 가능합니다.
                   </p>
@@ -251,23 +345,55 @@ export function CategroyManagement() {
                   <br />({`${tagsList.length}`}개)
                 </span>
                 <div className="button_wrap">
-                  <button
-                    type="button"
-                    className="add_button"
-                    onClick={() => {}}
-                  >
-                    +추가
-                  </button>
-                  {/* 앞쪽으로 버튼 배열 추가 */}
-                  {tagsList.map((tag) => (
+                  {activeAdd ? (
+                    <span className={`active_add ${''}`}>
+                      <input
+                        className={`tag_add_input ${''}`}
+                        onKeyDown={(e) => tagInputHandler(e)}
+                        onChange={(e) => setTagInputValue(e.target.value)}
+                        value={tagInputValue}
+                        placeholder="태그명"
+                      />
+                    </span>
+                  ) : (
                     <button
-                      key={`태그 : ${tag}`}
                       type="button"
-                      className={`value_button`}
-                      onClick={() => {}}
+                      className={`add_button`}
+                      onClick={() => setActiveAdd(!activeAdd)}
                     >
-                      {tag}
+                      +추가
                     </button>
+                  )}
+                  {/* 앞쪽으로 버튼 배열 추가 */}
+                  {tagsList.map((tag, index) => (
+                    <React.Fragment key={`태그 ${index}: ${tag}`}>
+                      {isEdit === index ? (
+                        <span className={`active_add ${''}`}>
+                          <input
+                            className={`tag_add_input ${''}`}
+                            onKeyDown={(e) => tagEditInputHandler(e, index)}
+                            onChange={(e) => setTagInputValue(e.target.value)}
+                            value={tagInputValue}
+                            placeholder="태그명"
+                          />
+                          {
+                            // 태그가 사용되고 있을시 삭제불가
+                            // 사용되고 있지 않은 태그일시 삭제가능
+                            // <button type="button" onClick={() => setIsEdit(null)}>
+                            //   X
+                            // </button>
+                          }
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className={`value_button ${tag}`}
+                          onClick={() => tagButtonHandler(index)}
+                        >
+                          {tag}
+                        </button>
+                      )}
+                    </React.Fragment>
                   ))}
                   <button
                     type="button"
@@ -438,6 +564,33 @@ const FormBox = styled.div`
     font-size: 13px;
     color: ${COLOR.PRIMARY};
     background-color: transparent;
+  }
+
+  .active_add {
+    border: 1px solid ${COLOR.PRIMARY};
+    padding: 2px 10px;
+    padding-right: 20px;
+    border-radius: 5px;
+    position: relative;
+  }
+  .active_add > button {
+    position: absolute;
+    right: 5px;
+    color: ${COLOR.PRIMARY};
+    border: none;
+    background-color: transparent;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .input_wrap .button_wrap .active_add .tag_add_input {
+    border: none;
+    text-indent: 0;
+    padding: 0;
+    margin: 0;
+    width: 60px;
+  }
+  .input_wrap .button_wrap .active_add .tag_add_input::placeholder {
+    text-indent: 5px;
   }
   .value_button {
     border: 1px solid #ddd;
