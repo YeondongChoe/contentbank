@@ -4,23 +4,28 @@ import { useEffect, useRef, useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
+import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
+import { useModal } from '../../../hooks';
 import { Button, Icon, Loader, ValueNone } from '../../atom';
+
+import { CategoryAddModal } from './modal';
 
 export function GroupManagement() {
   const [isTitleEdit, setIsTitleEdit] = useState(false);
   const [tagInputValue, setTagInputValue] = useState<string>('');
+  const { openModal } = useModal();
 
   const titleEditHandler = () => {
     // 등록 후 초기화
     setTagInputValue('');
   };
   /*  모달 열기 */
-  const openCreateModal = () => {
-    // openModal({
-    //   title: '',
-    //   content: <RegisterModal memberList={totalMemberList} refetch={refetch} />,
-    // });
+  const openCategoryAddModal = () => {
+    openModal({
+      title: '',
+      content: <CategoryAddModal category={[]} />,
+    });
   };
   return (
     <Container>
@@ -32,7 +37,7 @@ export function GroupManagement() {
         <Button
           height={'35px'}
           width={'130px'}
-          onClick={openCreateModal}
+          onClick={() => {}}
           fontSize="13px"
           $filled
           cursor
@@ -100,7 +105,11 @@ export function GroupManagement() {
                   <li>dsa</li>
 
                   <li>
-                    <button type="button" className="category_add_button">
+                    <button
+                      type="button"
+                      className="category_add_button"
+                      onClick={openCategoryAddModal}
+                    >
                       + 카테고리 추가
                     </button>
                   </li>
@@ -120,6 +129,7 @@ export function GroupManagement() {
           </GroupList>
         </PerfectScrollbar>
       </ScrollWrapper>
+      <Modal />
     </Container>
   );
 }
