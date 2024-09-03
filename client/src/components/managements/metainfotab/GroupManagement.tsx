@@ -9,7 +9,7 @@ import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
 import { Button, Icon, Loader, ValueNone } from '../../atom';
 
-import { CategoryAddModal, CreateGroupModal } from './modal';
+import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
 
 export function GroupManagement() {
   const [isTitleEdit, setIsTitleEdit] = useState(false);
@@ -25,6 +25,12 @@ export function GroupManagement() {
     openModal({
       title: '',
       content: <CategoryAddModal category={[]} />,
+    });
+  };
+  const openScreenPathModal = () => {
+    openModal({
+      title: '',
+      content: <ScreenPathModal paths={[]} />,
     });
   };
   const openCreateGroupModal = () => {
@@ -93,7 +99,10 @@ export function GroupManagement() {
 
                 <span className="list_link_box">
                   <span className="linktree">{`${`link>link>link 1건`}`}</span>
-                  <button className="link_button" onClick={() => {}}>
+                  <button
+                    className="link_button"
+                    onClick={() => openScreenPathModal()}
+                  >
                     <Icon
                       src={`/images/icon/link_off.svg`}
                       width={'20px'}

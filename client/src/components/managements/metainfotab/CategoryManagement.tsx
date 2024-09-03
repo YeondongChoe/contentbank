@@ -13,6 +13,7 @@ import { Button, Icon, Loader, Switch, ValueNone } from '../../atom';
 import { TagsModal } from './modal';
 
 export function CategroyManagement() {
+  const { openModal } = useModal();
   const [categoryList, setCategoryList] = useState(['교육과정', '교과']);
   const [tagsList, setTagsList] = useState([
     '분류1',
@@ -27,7 +28,6 @@ export function CategroyManagement() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [activeAdd, setActiveAdd] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
-  const { openModal } = useModal();
 
   const openAddCategory = () => {
     setIsAdd(!isAdd);

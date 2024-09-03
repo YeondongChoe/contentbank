@@ -9,60 +9,36 @@ import { COLOR } from '../../../../components/constants';
 import { Search } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
 
-export function CategoryAddModal({ category }: { category: string[] }) {
+export function ScreenPathModal({ paths }: { paths: string[] }) {
   const { closeModal } = useModal();
-  const [tagsList, setTagsList] = useState([
-    '분류1',
-    '분류2',
-    '분류3',
-    '분류4',
-    '분류5',
-    '분류6',
-    '분류7777777',
+  const [pathList, setTagsList] = useState([
+    '분류1 분류1 분류1 분류1 분류1분류1분류1',
+    '분류777777dsadsad dsadsaddsd dsa7',
+    '분류777777dsadsad dsadsadd dsa7',
+    '분류777777dsadsad dsadsadssd dsa7',
     '분류분류분류분류분류분류분류분류분류분류',
   ]);
-  const [tags, setTags] = useState<string[]>([]);
-
-  const handleCategoryClick = (category: string) => {
-    setTags((prevSelected) =>
-      prevSelected.includes(category)
-        ? prevSelected.filter((c) => c !== category)
-        : [...prevSelected, category],
-    );
-  };
 
   return (
     <Container>
-      <Title>카테고리 추가</Title>
-      <div className="search_wrap">
-        <Search
-          placeholder="카테고리를 검색해주세요."
-          value={''}
-          onChange={() => {}}
-          onKeyDown={() => {}}
-        />
-      </div>
+      <Title>화면 경로</Title>
+      <strong className="sub_title">화면 경로</strong>
       <ScrollWrapper>
         <PerfectScrollbar>
           <ListWrapper>
-            {tagsList.map((tag) => (
-              <button
-                key={tag}
-                className={`value_button ${tags.includes(tag) ? 'selected' : ''}`}
-                onClick={() => handleCategoryClick(tag)}
-              >
-                {tag}
-              </button>
+            {pathList.map((path, index) => (
+              <li key={path} className={`path_list`} onClick={() => {}}>
+                <span className="path_name">{`${index + 1}.${path}`}</span>
+                <button className="path_button" onClick={() => {}}>
+                  화면 설정으로 이동
+                </button>
+              </li>
             ))}
           </ListWrapper>
         </PerfectScrollbar>
       </ScrollWrapper>
       <ButtonWrapper>
-        <p>총 {tags.length}개의 카테고리 선택</p>
         <Button onClick={() => closeModal()}>취소</Button>
-        <Button onClick={() => {}} $filled>
-          확인
-        </Button>
       </ButtonWrapper>
     </Container>
   );
@@ -72,8 +48,10 @@ const Container = styled.div`
   min-width: 600px;
   overflow: hidden;
   border-radius: 20px;
-  .search_wrap {
-    padding: 0 20px;
+  .sub_title {
+    display: flex;
+    padding: 10px 20px 0 20px;
+    font-size: 14px;
   }
 `;
 const Title = styled.strong`
@@ -88,24 +66,30 @@ const Title = styled.strong`
   margin-bottom: 10px;
 `;
 
-const ListWrapper = styled.div`
+const ListWrapper = styled.ol`
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   padding: 15px 20px;
 
-  .value_button {
-    border: 1px solid #ddd;
+  .path_list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .path_name {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .path_button {
+    border: none;
     background-color: transparent;
-    border-radius: 5px;
     font-size: 13px;
-    padding: 5px 15px;
-    cursor: pointer;
-
-    &.selected {
-      color: ${COLOR.PRIMARY};
-      border-color: ${COLOR.PRIMARY};
-    }
+    font-weight: 400;
+    text-decoration: underline;
+    color: ${COLOR.PRIMARY};
+    padding: 5px;
   }
 `;
 
@@ -114,13 +98,8 @@ const ButtonWrapper = styled.div`
   padding: 20px;
   display: flex;
   align-items: center;
+  flex-direction: row-reverse;
 
-  p {
-    flex: 1 1 0;
-    font-size: 12px;
-    font-weight: 700;
-    color: ${COLOR.PRIMARY};
-  }
   button {
     margin-left: 10px;
     width: 100px;
