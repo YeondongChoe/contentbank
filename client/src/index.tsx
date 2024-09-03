@@ -22,6 +22,7 @@ import {
   QuizCreateListPage,
   MetaInfoPage,
   ProcessPage,
+  TagMappingPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -113,7 +114,7 @@ const router = createBrowserRouter([
         element: <QuizManagementListPage />,
       },
       {
-        path: '/managementEditMain',
+        path: '/managementeditmain',
         element: <ManagementEditMain />,
       },
       {
@@ -125,8 +126,12 @@ const router = createBrowserRouter([
         element: <MetaInfoPage />,
       },
       {
-        path: '/content-manage/process',
-        element: <ProcessPage />,
+        path: '/content-manage/metainfo',
+        element: <MetaInfoPage />,
+      },
+      {
+        path: '/content-manage/tagmapping',
+        element: <TagMappingPage />,
       },
       {
         path: '/operation-manage/member',

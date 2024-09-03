@@ -353,8 +353,8 @@ export function QuizManagementList() {
   ) => {
     e.preventDefault();
     windowOpenHandler({
-      name: 'managementEditMain',
-      url: '/managementEditMain',
+      name: 'managementeditmain',
+      url: '/managementeditmain',
       // $height: 850,
       // $width: 1250,
     });
