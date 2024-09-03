@@ -107,7 +107,9 @@ export function App() {
           location.pathname !== '/managementEditMain' &&
           location.pathname !== '/content-create/exam/step1' &&
           location.pathname !== '/content-create/exam/step2' &&
-          location.pathname !== '/content-create/exam/step3' && <Navigation />}
+          location.pathname !== '/content-create/exam/step3' &&
+          location.pathname !== '/contentListSetting' &&
+          location.pathname !== '/contentDtEditingSetting' && <Navigation />}
         <MainWrapper>
           {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
@@ -119,7 +121,9 @@ export function App() {
             location.pathname !== '/managementEditMain' &&
             location.pathname !== '/content-create/exam/step1' &&
             location.pathname !== '/content-create/exam/step2' &&
-            location.pathname !== '/content-create/exam/step3' && <Header />}
+            location.pathname !== '/content-create/exam/step3' &&
+            location.pathname !== '/contentListSetting' &&
+            location.pathname !== '/contentDtEditingSetting' && <Header />}
           <BodyWrapper>
             <ToastifyAlert />
             <Outlet />
