@@ -212,20 +212,6 @@ export function WorkbookList({
     },
   });
 
-  //pdf 미리보기
-  const [showPdf, setShowPdf] = useState(false);
-
-  const closePdfViewer = () => {
-    setShowPdf(false);
-  };
-
-  const [pdfUrl, setPdfUrl] = useState<string>('');
-
-  const getPdf = (fileName: string) => {
-    setShowPdf(true);
-    setPdfUrl(`https://j-dev01.dreamonesys.co.kr/CB/${fileName}`);
-  };
-
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -260,33 +246,9 @@ export function WorkbookList({
 
   return (
     <>
-      {showPdf ? (
-        <IframeWrapper>
-          <IframeButtonWrapper>
-            <Button
-              height={'30px'}
-              width={'80px'}
-              fontSize="13px"
-              $filled
-              cursor
-              onClick={closePdfViewer}
-            >
-              닫기
-            </Button>
-          </IframeButtonWrapper>
-          <iframe
-            title="PDF Viewer"
-            src={pdfUrl}
-            width="1100"
-            height="750"
-            style={{ border: 'none', borderRadius: 25 }}
-          ></iframe>
-        </IframeWrapper>
-      ) : (
-        <>
-          <Total> Total : {totalCount ? totalCount : 0}</Total>
-          <ListButtonWrapper>
-            {/* <InputWrapper>
+      <Total> Total : {totalCount ? totalCount : 0}</Total>
+      <ListButtonWrapper>
+        {/* <InputWrapper>
               <ButtonWrapper>
                 <CheckBoxWrapper>
                   <CheckBoxI
@@ -315,144 +277,134 @@ export function WorkbookList({
                 </ActionButtonWrapper>
               </ButtonWrapper>
             </InputWrapper> */}
-          </ListButtonWrapper>
-          <ListWrapper ref={backgroundRef}>
-            <List margin={`10px 0`}>
-              {list.map((item: WorksheetListType) => (
-                <ListItem
-                  height="80px"
-                  key={item.code as string}
-                  isChecked={checkList.includes(item.code)}
-                  onClick={(e) => handleButtonCheck(e, item.code)}
-                >
-                  <CheckBoxI
-                    id={item.code}
-                    value={item.code}
-                    $margin={`0 5px 0 0`}
-                    checked={checkList.includes(item.code)}
-                    readOnly
+      </ListButtonWrapper>
+      <ListWrapper ref={backgroundRef}>
+        <List margin={`10px 0`}>
+          {list.map((item: WorksheetListType) => (
+            <ListItem
+              height="80px"
+              key={item.code as string}
+              isChecked={checkList.includes(item.code)}
+              onClick={(e) => handleButtonCheck(e, item.code)}
+            >
+              <CheckBoxI
+                id={item.code}
+                value={item.code}
+                $margin={`0 5px 0 0`}
+                checked={checkList.includes(item.code)}
+                readOnly
+              />
+              {item.isFavorite ? (
+                <Icon
+                  width={`18px`}
+                  $margin={'0 0 0 12px'}
+                  src={`/images/icon/favorites_on.svg`}
+                  onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
+                  cursor
+                />
+              ) : (
+                <Icon
+                  width={`18px`}
+                  $margin={'0 0 0 12px'}
+                  src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
+                  onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
+                  cursor
+                />
+              )}
+              <ItemLayout>
+                <i className="line"></i>
+                <span>{item.grade}</span>
+                <i className="line"></i>
+                <span>
+                  {(item.tag === 'DAILY_TEST' && '일일테스트') ||
+                    (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
+                    (item.tag === 'EXERCISES' && '연습문제') ||
+                    (item.tag === 'PRACTICE_TEST' && '모의고사') ||
+                    (item.tag === 'TEST_PREP' && '내신대비')}
+                </span>
+                <i className="line"></i>
+                <span className="width_20">{item.name}</span>
+                <i className="line"></i>
+                <span className="width_20">{item.createdAt}</span>
+                <i className="line"></i>
+                <span className="width_5">{item.examiner}</span>
+                <i className="line"></i>
+                <span className="width_5">
+                  <LuFileSearch2
+                    style={{ fontSize: '22px', cursor: 'pointer' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openCreatePDFModal(item.idx);
+                    }}
                   />
-                  {item.isFavorite ? (
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/favorites_on.svg`}
-                      onClick={(e) =>
-                        clickFavorite(e, item.idx, item.isFavorite)
-                      }
-                      cursor
+                </span>
+                <i className="line"></i>
+                <span className="width_5">
+                  <SettingButton
+                    type="button"
+                    onClick={(e) => openSettingList(e)}
+                    onMouseLeave={(e) => closeSettingList(e)}
+                  >
+                    <SlOptionsVertical
+                      style={{ fontSize: '16px', cursor: 'pointer' }}
                     />
-                  ) : (
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
-                      onClick={(e) =>
-                        clickFavorite(e, item.idx, item.isFavorite)
-                      }
-                      cursor
-                    />
-                  )}
-                  <ItemLayout>
-                    {/* //TODO */}
-                    <i className="line"></i>
-                    <span>{item.grade}</span>
-                    <i className="line"></i>
-                    <span>
-                      {(item.tag === 'DAILY_TEST' && '일일테스트') ||
-                        (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
-                        (item.tag === 'EXERCISES' && '연습문제') ||
-                        (item.tag === 'PRACTICE_TEST' && '모의고사') ||
-                        (item.tag === 'TEST_PREP' && '내신대비')}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_20">{item.name}</span>
-                    <i className="line"></i>
-                    <span className="width_20">{item.createdAt}</span>
-                    <i className="line"></i>
-                    <span className="width_5">{item.examiner}</span>
-                    <i className="line"></i>
-                    <span className="width_5">
-                      <LuFileSearch2
-                        style={{ fontSize: '22px', cursor: 'pointer' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openCreatePDFModal(item.idx);
-                        }}
-                        // onClick={() =>
-                        //   getPdf(item.lastArticle.originalName as string)
-                        // }
-                      />
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_5">
-                      <SettingButton
-                        type="button"
-                        onClick={(e) => openSettingList(e)}
-                        onMouseLeave={(e) => closeSettingList(e)}
-                      >
-                        <SlOptionsVertical
-                          style={{ fontSize: '16px', cursor: 'pointer' }}
-                        />
-                        <SettingList>
-                          <li>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openCreateEditWindow(item.idx);
-                                setIsEditWorkbook(true);
-                              }}
-                            >
-                              수정
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openCreateEditWindow(item.idx);
-                                setIsEditWorkbook(false);
-                              }}
-                            >
-                              복제 후 수정
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                clickDeleteWorkbook(item.idx);
-                              }}
-                            >
-                              삭제
-                            </button>
-                          </li>
-                        </SettingList>
-                      </SettingButton>
-                    </span>
-                  </ItemLayout>
-                </ListItem>
-              ))}
-            </List>
-          </ListWrapper>
-          {isDeleteWorkbook && (
-            <Alert
-              description={'학습지를 삭제하시겠습니까?'}
-              isAlertOpen={isDeleteWorkbook}
-              action="삭제"
-              onClose={() => setIsDeleteWorkbook(false)}
-              onClick={() => deleteItemMutate()}
-            ></Alert>
-          )}
-          <PaginationBox
-            itemsCountPerPage={itemsCountPerPage as number}
-            totalItemsCount={totalCount as number}
-          />
-        </>
+                    <SettingList>
+                      <li>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openCreateEditWindow(item.idx);
+                            setIsEditWorkbook(true);
+                          }}
+                        >
+                          수정
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openCreateEditWindow(item.idx);
+                            setIsEditWorkbook(false);
+                          }}
+                        >
+                          복제 후 수정
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clickDeleteWorkbook(item.idx);
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </li>
+                    </SettingList>
+                  </SettingButton>
+                </span>
+              </ItemLayout>
+            </ListItem>
+          ))}
+        </List>
+      </ListWrapper>
+      {isDeleteWorkbook && (
+        <Alert
+          description={'학습지를 삭제하시겠습니까?'}
+          isAlertOpen={isDeleteWorkbook}
+          action="삭제"
+          onClose={() => setIsDeleteWorkbook(false)}
+          onClick={() => deleteItemMutate()}
+        ></Alert>
       )}
+      <PaginationBox
+        itemsCountPerPage={itemsCountPerPage as number}
+        totalItemsCount={totalCount as number}
+      />
       <Modal />
     </>
   );

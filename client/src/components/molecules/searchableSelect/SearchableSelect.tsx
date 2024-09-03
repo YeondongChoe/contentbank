@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { IoMdArrowDropdown } from 'react-icons/io';
+import { IoSearch } from 'react-icons/io5';
 import { styled } from 'styled-components';
 
 import { COLOR } from '../../constants';
@@ -114,10 +115,16 @@ export function SearchableSelect({
           setSearchValue('');
         }}
       />
-      <IoMdArrowDropdown
-        onClick={() => setIsOptionShow(true)}
-      ></IoMdArrowDropdown>
-      {isOptionShow && (
+
+      {isOptionShow && !searchValue ? (
+        <IoMdArrowDropdown
+          onClick={() => setIsOptionShow(true)}
+        ></IoMdArrowDropdown>
+      ) : (
+        <IoSearch style={{ cursor: 'pointer' }}></IoSearch>
+      )}
+      {/* TODO: 검색 한 결과값을 리스트로 넣어주기*/}
+      {isOptionShow && !searchValue && (
         <SelectOptionsList
           onMouseLeave={() => {
             setIsOptionShow(false);

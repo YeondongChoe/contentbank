@@ -5,8 +5,6 @@ import { styled } from 'styled-components';
 import { COLOR } from '../../constants';
 
 type ListItemProps = {
-  // onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;
-  // onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   ref?: React.RefObject<HTMLLIElement>;
   width?: string;
   height?: string;
@@ -39,7 +37,6 @@ export function ListItem({
       onClick(event);
     }
   };
-
   return (
     <Component
       className={`${isChecked && 'on'} ${className}`}
@@ -51,7 +48,6 @@ export function ListItem({
       <Wrapper
         className={`${isChecked && 'on'}`}
         onClick={handleClick}
-        type="button"
         $padding={$padding}
       >
         {children}
@@ -73,7 +69,6 @@ const Component = styled.li<ListItemStyleProps>`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  /* min-height: 40px; */
   border: 1px solid ${COLOR.BORDER_GRAY};
   border-radius: 10px;
   margin-bottom: 10px;
@@ -83,9 +78,13 @@ const Component = styled.li<ListItemStyleProps>`
   &.on {
     border: 1px solid transparent;
   }
+  //부트스트랩 커서 설정 초기화
+  button {
+    cursor: default;
+  }
 `;
 
-const Wrapper = styled.button<{ $padding?: string }>`
+const Wrapper = styled.button<{ $padding?: string; $noCursor?: boolean }>`
   width: 100%;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '20px')};
   display: flex;
@@ -94,7 +93,6 @@ const Wrapper = styled.button<{ $padding?: string }>`
   border: none;
   background-color: white;
   color: ${COLOR.FONT_BLACK};
-  cursor: pointer;
 
   &.on {
     background-color: ${COLOR.SECONDARY};
