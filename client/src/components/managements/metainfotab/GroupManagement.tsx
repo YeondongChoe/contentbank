@@ -9,7 +9,7 @@ import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
 import { Button, Icon, Loader, ValueNone } from '../../atom';
 
-import { CategoryAddModal } from './modal';
+import { CategoryAddModal, CreateGroupModal } from './modal';
 
 export function GroupManagement() {
   const [isTitleEdit, setIsTitleEdit] = useState(false);
@@ -27,6 +27,13 @@ export function GroupManagement() {
       content: <CategoryAddModal category={[]} />,
     });
   };
+  const openCreateGroupModal = () => {
+    openModal({
+      title: '',
+      content: <CreateGroupModal />,
+    });
+  };
+
   return (
     <Container>
       <SubTitle>
@@ -37,7 +44,7 @@ export function GroupManagement() {
         <Button
           height={'35px'}
           width={'130px'}
-          onClick={() => {}}
+          onClick={() => openCreateGroupModal()}
           fontSize="13px"
           $filled
           cursor
