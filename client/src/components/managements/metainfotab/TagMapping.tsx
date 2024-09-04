@@ -3,7 +3,18 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 export function TagMapping() {
-  return <Container>dsad</Container>;
+  return (
+    <Container>
+      <>
+        {/* 최초 진입 */}
+        <TagListWrapper>
+          <strong>태그 선택</strong>
+          <span className="sub">매핑할 태그를 선택해주세요.</span>
+          <></>
+        </TagListWrapper>
+      </>
+    </Container>
+  );
 }
 
 const Container = styled.div`
@@ -12,3 +23,4 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
 `;
+const TagListWrapper = styled.div``;

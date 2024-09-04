@@ -105,6 +105,7 @@ export function App() {
           location.pathname !== '/formula' &&
           location.pathname !== '/quizpreview' &&
           location.pathname !== '/managementeditmain' &&
+          location.pathname !== '/content-manage/tagmapping' &&
           location.pathname !== '/content-create/exam/step1' &&
           location.pathname !== '/content-create/exam/step2' &&
           location.pathname !== '/content-create/exam/step3' && <Navigation />}
@@ -117,6 +118,7 @@ export function App() {
             location.pathname !== '/formula' &&
             location.pathname !== '/quizpreview' &&
             location.pathname !== '/managementeditmain' &&
+            location.pathname !== '/content-manage/tagmapping' &&
             location.pathname !== '/content-create/exam/step1' &&
             location.pathname !== '/content-create/exam/step2' &&
             location.pathname !== '/content-create/exam/step3' && <Header />}

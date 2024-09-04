@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
+import { windowOpenHandler } from '../../../utils/windowHandler';
 import { Button, Icon, Loader, ValueNone } from '../../atom';
 
 import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
@@ -37,6 +38,13 @@ export function GroupManagement() {
     openModal({
       title: '',
       content: <CreateGroupModal />,
+    });
+  };
+  const openTagMappingWindow = () => {
+    windowOpenHandler({
+      name: 'tagmapping',
+      url: '/content-manage/tagmapping',
+      // queryParams: { state: '' },
     });
   };
 
@@ -135,7 +143,7 @@ export function GroupManagement() {
                 <button
                   className="mapping_button"
                   type="button"
-                  onClick={() => {}}
+                  onClick={() => openTagMappingWindow()}
                 >
                   태그 매핑
                 </button>
