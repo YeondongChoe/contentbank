@@ -26,6 +26,8 @@ import {
   ManagingContentSetting,
   MetaInfoPage,
   TagMappingPage,
+  TagMappingInitPage,
+  ProcessPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -129,8 +131,16 @@ const router = createBrowserRouter([
         element: <MetaInfoPage />,
       },
       {
+        path: '/content-manage/process',
+        element: <ProcessPage />,
+      },
+      {
         path: '/content-manage/tagmapping',
         element: <TagMappingPage />,
+      },
+      {
+        path: '/content-manage/tagmappinginit',
+        element: <TagMappingInitPage />,
       },
       {
         path: '/operation-manage/member',

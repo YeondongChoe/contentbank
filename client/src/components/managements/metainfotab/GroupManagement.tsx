@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
 import { windowOpenHandler } from '../../../utils/windowHandler';
-import { Button, Icon, Loader, ValueNone } from '../../atom';
+import { Button, Icon } from '../../atom';
 
 import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
 

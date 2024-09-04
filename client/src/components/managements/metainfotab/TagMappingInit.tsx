@@ -2,12 +2,13 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
-export function TagMapping() {
+export function TagMappingInit() {
   return (
     <Container>
+      {/* 최초 진입 */}
       <ListWrapper>
-        <strong>태그 선택</strong>
-        <span className="sub">매핑할 태그를 선택해주세요.</span>
+        <strong>카테고리 순서</strong>
+        <span className="sub">매핑할 태그 간의 순서를 지정해주세요.</span>
         <></>
       </ListWrapper>
       <ListItemWrapper>
