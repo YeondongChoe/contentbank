@@ -1,5 +1,5 @@
 export * from './search';
-export * from './SearchableSelect';
+export * from './searchableSelect';
 export * from './alert';
 export * from './tapMenu';
 export * from './dropDown';
@@ -17,3 +17,4 @@ export * from './accordion';
 export * from './difficultyRate';
 export * from './depthBlockList';
 export * from './PDFModal';
+export * from './settingList';

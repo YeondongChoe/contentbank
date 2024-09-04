@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 // eslint-disable-next-line import/order, import/default
+import { ContentListSetting, ContentDtEditingSetting } from './components';
+// eslint-disable-next-line import/default
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
@@ -20,8 +22,9 @@ import {
   CreateWorksheetStep2,
   CreateWorksheetStep3,
   QuizCreateListPage,
+  CreatingContentSetting,
+  ManagingContentSetting,
   MetaInfoPage,
-  ProcessPage,
   TagMappingPage,
 } from './pages';
 import { Guide } from './pages/Guide';
@@ -126,10 +129,6 @@ const router = createBrowserRouter([
         element: <MetaInfoPage />,
       },
       {
-        path: '/content-manage/metainfo',
-        element: <MetaInfoPage />,
-      },
-      {
         path: '/content-manage/tagmapping',
         element: <TagMappingPage />,
       },
@@ -141,6 +140,22 @@ const router = createBrowserRouter([
       {
         path: '/operation-manage/authority',
         element: <AuthorityPage />,
+      },
+      {
+        path: '/creatingcontentSetting',
+        element: <CreatingContentSetting />,
+      },
+      {
+        path: '/contentListSetting',
+        element: <ContentListSetting />,
+      },
+      {
+        path: '/contentDtEditingSetting',
+        element: <ContentDtEditingSetting />,
+      },
+      {
+        path: '/managingcontentSetting',
+        element: <ManagingContentSetting />,
       },
     ],
   },

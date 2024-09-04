@@ -478,7 +478,7 @@ export function Navigation() {
 
               {/* 콘텐츠 제작 설정 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/creatingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px' }}
                   ></IoSettingsOutline>
@@ -488,7 +488,7 @@ export function Navigation() {
 
               {/* 콘텐츠 관리 설정 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/managingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px' }}
                   ></IoSettingsOutline>
@@ -921,7 +921,7 @@ export function Navigation() {
 
               {/* 콘텐츠 제작 설정 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/creatingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px', stroke: 'white' }}
                   ></IoSettingsOutline>
@@ -931,7 +931,7 @@ export function Navigation() {
 
               {/* 콘텐츠 관리 설정 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/managingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px', stroke: 'white' }}
                   ></IoSettingsOutline>
