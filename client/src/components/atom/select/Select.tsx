@@ -28,6 +28,7 @@ type SelectProps = {
   height?: string;
   children?: string;
   padding?: string;
+  margin?: string;
   text?: string;
   top?: string;
   blackMode?: boolean;
@@ -52,6 +53,7 @@ export function Select({
   width,
   height = '40px',
   padding,
+  margin,
   text,
   blackMode,
   disabled,
@@ -68,18 +70,34 @@ export function Select({
   const [selected, setSelected] = useState<string>();
   const [code, setCode] = useState<string>();
 
+  // useEffect(() => {
+  //   setSelected(selectedValue);
+  // }, [selectedValue]);
+
+  // if (setSelectedValue !== undefined && selected && code) {
+  //   setSelectedValue(selected);
+  // }
+
+  // // 권한 코드
+  // if (setSelectedCode !== undefined && selected && code) {
+  //   setSelectedCode(code);
+  // }
+
   useEffect(() => {
-    setSelected(selectedValue);
+    if (selectedValue !== undefined) {
+      setSelected(selectedValue);
+    }
   }, [selectedValue]);
 
-  if (setSelectedValue !== undefined && selected && code) {
-    setSelectedValue(selected);
-  }
-
-  // 권한 코드
-  if (setSelectedCode !== undefined && selected && code) {
-    setSelectedCode(code);
-  }
+  // `setSelectedValue`와 `setSelectedCode` 호출을 useEffect 외부에서 수행
+  useEffect(() => {
+    if (setSelectedValue && selected) {
+      setSelectedValue(selected);
+    }
+    if (setSelectedCode && code) {
+      setSelectedCode(code);
+    }
+  }, [selected, code, setSelectedValue, setSelectedCode]);
 
   const normalizedOptions = Array.isArray(options)
     ? options
@@ -113,10 +131,12 @@ export function Select({
   return (
     <Component
       $padding={padding}
+      $margin={margin}
       onMouseLeave={() => {
         setIsOptionShow(false);
       }}
       onClick={onClick}
+      disabled={disabled}
     >
       <IconButton
         width={width}
@@ -176,9 +196,15 @@ export function Select({
   );
 }
 
-const Component = styled.div<{ $padding?: string }>`
+const Component = styled.div<{
+  $padding?: string;
+  $margin?: string;
+  disabled?: boolean;
+}>`
   position: relative;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
+  margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
+  ${({ disabled }) => disabled && 'opacity: 0.5;'};
 `;
 
 const ScrollWrapper = styled.div<{ $heightScroll?: string }>`
