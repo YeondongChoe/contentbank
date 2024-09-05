@@ -23,6 +23,7 @@ import {
   QuizCreateListPage,
   CreatingContentSetting,
   ManagingContentSetting,
+  EnterprisePage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -130,6 +131,10 @@ const router = createBrowserRouter([
       {
         path: '/operation-manage/authority',
         element: <AuthorityPage />,
+      },
+      {
+        path: '/operation-manage/enterprise',
+        element: <EnterprisePage />,
       },
       {
         path: '/creatingcontentSetting',

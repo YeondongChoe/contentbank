@@ -111,7 +111,6 @@ export function WorkbookList({
   //문항 삭제
   const [isDeleteWorkbook, setIsDeleteWorkbook] = useState(false);
   const clickDeleteWorkbook = (idx: number) => {
-    console.log(idx);
     setIsDeleteWorkbook(true);
     setWorkbookIdx(idx);
   };
