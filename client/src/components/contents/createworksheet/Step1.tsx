@@ -130,10 +130,10 @@ export function Step1() {
       label: '수능/모의고사',
       value: '수능/모의고사',
     },
-    {
-      label: '기출',
-      value: '기출',
-    },
+    // {
+    //   label: '기출',
+    //   value: '기출',
+    // },
   ];
 
   const [tabVeiw, setTabVeiw] = useState<string>('단원·유형별');
@@ -4155,7 +4155,7 @@ export function Step1() {
               </CategorySection>
             </>
           )}
-          {tabVeiw === '기출' && (
+          {/* {tabVeiw === '기출' && (
             <>
               <CategorySection>
                 <TabWrapper>
@@ -4288,22 +4288,12 @@ export function Step1() {
                   <Label value="*문항 타입" fontSize="16px" width="200px" />
                 </SubTitleWrapper>
                 <SelectorGroup>{renderTypeButtons()}</SelectorGroup>
-                {/* <Label
-                  value="*모의고사 포함 여부"
-                  fontSize="16px"
-                  width="200px"
-                />
-                <SelectorGroup>{renderMockButtons()}</SelectorGroup> */}
                 <Label value="*배점" fontSize="16px" width="200px" />
                 <SelectorGroup>{renderScoreButtons()}</SelectorGroup>
-                {/* <AdditionOptionList>
-                  <Label value="추가 옵션" fontSize="16px" width="200px" />
-                  {renderAdditionOption()}
-                </AdditionOptionList> */}
                 <PreviousExamSpace></PreviousExamSpace>
               </SchoolSelectorSection>
             </>
-          )}
+          )} */}
         </MainWrapper>
         <NextStepButtonWrapper>
           <Button
