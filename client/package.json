@@ -101,5 +101,5 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.0.3"
   },
-  "proxy": "https://210.124.177.35:40102"
+  "proxy": "https://3.34.77.233:40102"
 }
