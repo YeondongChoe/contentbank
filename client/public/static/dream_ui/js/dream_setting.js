@@ -48,7 +48,7 @@ var img_save_type = 1;
 var onlyEQ = false;
 var onlyEQNode = 'eq_wrap_node'; // 수식 입력창 열리는 곳 부모요소
 var getEQData = () => {
-  // const output = document.querySelector(`.${onlyEQNode}`);
+  const output = document.querySelector(`.${onlyEQNode}`);
   iTeXEQ
     .insertEqn()
     .then((node) => {
