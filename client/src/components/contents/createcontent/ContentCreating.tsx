@@ -244,6 +244,10 @@ export function ContentCreating({
           문항타입: selectedQuestionType,
         },
       },
+      {
+        type: 'CATEGORY',
+        quizCategory: {},
+      },
     ];
 
     // 필수 메타값 추가 및 변경
@@ -264,7 +268,7 @@ export function ContentCreating({
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
     const data = addQuestionList[addQuestionList.length - 1];
-    console.log('최종 적으로 등록될 메타값', data);
+    console.log('최종 적으로 등록될 문항 data값', data);
 
     return await quizService.post(`/v1/quiz`, data);
   };

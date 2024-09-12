@@ -21,6 +21,14 @@ import {
   openToastifyAlert,
 } from '../../components';
 import { COLOR } from '../../components/constants';
+import ArrowClockwiseIcon from '../../components/contents/createcontent/editer/components/icons/ArrowClockwiseIcon';
+import ArrowCounterclockwiseIcon from '../../components/contents/createcontent/editer/components/icons/ArrowCounterclockwiseIcon';
+import BarCharLineIcon from '../../components/contents/createcontent/editer/components/icons/BarCharLineIcon';
+import BoxArrowInUpRightIcon from '../../components/contents/createcontent/editer/components/icons/BoxArrowInUpRightIcon';
+import ChevronLeftIcon from '../../components/contents/createcontent/editer/components/icons/ChevronLeftIcon';
+import ChevronRightIcon from '../../components/contents/createcontent/editer/components/icons/ChevronRightIcon';
+import CloseIcon from '../../components/contents/createcontent/editer/components/icons/CloseIcon';
+import TrashIcon from '../../components/contents/createcontent/editer/components/icons/TrashIcon';
 import { QuizList } from '../../components/contents/createcontent/list';
 import { pageAtom } from '../../store/utilAtom';
 import {
@@ -45,34 +53,6 @@ interface RadioStateType {
 interface ItemTreeKeyType {
   [key: string]: string;
 }
-
-// 스크립트 로드 함수
-const dynamicallyLoadScripts = (
-  scripts: string | any[],
-  callback: { (): void; (): void; (): void },
-) => {
-  const loadScript = (index: number) => {
-    if (scripts.length === 0) {
-      if (callback) callback();
-      return;
-    }
-
-    const src = scripts[index];
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = true;
-    script.onload = () => {
-      // console.log(`${src} loaded successfully`);
-      dynamicallyLoadScripts(scripts, callback);
-    };
-    script.onerror = () => {
-      console.error(`Failed to load script: ${src}`);
-      dynamicallyLoadScripts(scripts, callback);
-    };
-    document.body.appendChild(script);
-  };
-  loadScript(0);
-};
 
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
@@ -801,30 +781,13 @@ export function ContentInformationChange() {
     // saveHandler();
     // 이미지 데이터 저장
   };
-  const saveHmlDataHandler = async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const data = await window.saveHmlData();
-    console.log('test---- in 수식 데이터', data);
-  };
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   window.editorType = true;
-
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  const [scriptsLoaded, setScriptsLoaded] = useState(false);
-  //수식 입력기
-  const openFormula = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const target = e.currentTarget.value;
-    // 로컬스토리지에 보낼데이터 저장
-    // const sendData = { data: target };
-    // localStorage.setItem('sendData', JSON.stringify(sendData));
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    window.openEQ();
-  };
+  const [eqText, setEqText] = useState<string>('');
+  const textBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initialScripts = [
@@ -853,37 +816,122 @@ export function ContentInformationChange() {
       '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
     ];
 
+    // 동적 스크립트 로딩 함수
+    const dynamicallyLoadScripts = (
+      scriptUrls: any[],
+      callback: { (): Promise<void>; (): void; (): void },
+    ) => {
+      const promises = scriptUrls.map((url) => {
+        return new Promise((resolve, reject) => {
+          // 스크립트가 이미 존재하는지 확인
+          if (document.querySelector(`script[src="${url}"]`)) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            resolve(); // 이미 로드된 경우 건너뜀
+            return;
+          }
+
+          // 존재하지 않는 경우 새로 로드
+          const script = document.createElement('script');
+          script.src = url;
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          script.onload = () => resolve();
+          script.onerror = () =>
+            reject(new Error(`Failed to load script ${url}`));
+          document.body.appendChild(script);
+        });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          if (callback) callback();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    };
+
     const initComponent = async () => {
       dynamicallyLoadScripts([...initialScripts], async () => {
         console.log('Initial scripts loaded');
+        const checkTinyMCEReady = () => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          if (window.tinymce) {
+            console.log('tinymce loaded successfully');
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            dynamicallyLoadScripts([...subsequentScripts], () => {
+              console.log('Subsequent scripts loaded');
 
-        // const html = await fetchHtmlContent();
-        // setHtmlContent(html);
+              if (ocrIframeContainer.current) {
+                const iframe = document.createElement('iframe');
+                iframe.width = '0';
+                iframe.height = '0';
+                iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
+                iframe.frameBorder = '0';
+                iframe.scrolling = 'no';
+                iframe.id = 'itex_frame_area';
+                ocrIframeContainer.current.appendChild(iframe);
+              }
+            });
+          } else {
+            setTimeout(checkTinyMCEReady, 50);
+          }
+        };
 
-        setTimeout(() => {
-          dynamicallyLoadScripts([...subsequentScripts], () => {
-            // console.log("Subsequent scripts loaded");
-            // Add the iframe after the subsequent scripts are loaded
-            if (ocrIframeContainer.current) {
-              const iframe = document.createElement('iframe');
-              iframe.width = '0';
-              iframe.height = '0';
-              iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
-              iframe.frameBorder = '0';
-              iframe.scrolling = 'no';
-              iframe.id = 'itex_frame_area';
-              ocrIframeContainer.current.appendChild(iframe);
-            }
-          });
-        }, 0);
+        checkTinyMCEReady();
       });
     };
 
     initComponent();
   }, []);
 
+  //수식 입력기
+  const openFormula = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const target = e.currentTarget.value;
+    // 로컬스토리지에 보낼데이터 저장
+    // const sendData = { data: target };
+    // localStorage.setItem('sendData', JSON.stringify(sendData));
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.openEQ();
+  };
+
+  const targetNode = textBoxRef.current;
+
+  useEffect(() => {
+    if (!targetNode) return;
+    const observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        if (
+          mutation.type === 'childList' ||
+          (mutation.type === 'characterData' && targetNode.textContent != '')
+        ) {
+          // 텍스트가 바뀔 때마다 상태 업데이트
+          setEqText(targetNode.textContent || '');
+        }
+      });
+    });
+
+    // 감시할 옵션 설정
+    const config = { childList: true, subtree: true, characterData: true };
+
+    // observer 시작
+    if (targetNode) {
+      observer.observe(targetNode, config);
+    }
+
+    // 컴포넌트 언마운트 시 observer 해제
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+  console.log('eqText-----------', eqText);
+
   return (
-    <div className="eq_wrap_node">
+    <>
       <Container>
         <ResizeLayout
           height={'calc(100vh - 100px)'}
@@ -1126,10 +1174,11 @@ export function ContentInformationChange() {
                     type="text"
                     minLength={2}
                     maxLength={20}
-                    value={searchValue}
+                    value={`${searchValue}`}
                     onChange={(e) => setSearchValue(e.target.value)}
                     placeholder="찾을값을 입력해주세요(두글자 이상)"
                   />
+                  <span>{`${eqText}`}</span>
                   <Button
                     width={'80px'}
                     height={'35px'}
@@ -1291,7 +1340,7 @@ export function ContentInformationChange() {
         />
       </Container>
 
-      {/* <div id="iframe_ocr_box" ref={ocrIframeContainer}></div> */}
+      <span className="eq_wrap_node" ref={textBoxRef}></span>
       <div className="itex_editor_container">
         <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
@@ -1339,7 +1388,7 @@ export function ContentInformationChange() {
                     data-bs-trigger="hover"
                     title="지우기"
                   >
-                    {/* <TrashIcon /> */}
+                    <TrashIcon />
                   </button>
                   <button
                     type="button"
@@ -1352,7 +1401,7 @@ export function ContentInformationChange() {
                     title="왼쪽으로 회전"
                     disabled={true}
                   >
-                    {/* <ArrowCounterclockwiseIcon /> */}
+                    <ArrowCounterclockwiseIcon />
                   </button>
                   <button
                     type="button"
@@ -1365,7 +1414,7 @@ export function ContentInformationChange() {
                     title="오른쪽으로 회전"
                     disabled={true}
                   >
-                    {/* <ArrowClockwiseIcon /> */}
+                    <ArrowClockwiseIcon />
                   </button>
                   <button
                     type="button"
@@ -1377,8 +1426,7 @@ export function ContentInformationChange() {
                     title="이전 페이지"
                     disabled={true}
                   >
-                    {' '}
-                    {/* <ChevronLeftIcon /> */}
+                    <ChevronLeftIcon />
                   </button>
                   <button
                     type="button"
@@ -1390,7 +1438,7 @@ export function ContentInformationChange() {
                     title="다음 페이지"
                     disabled={true}
                   >
-                    {/* <ChevronRightIcon /> */}
+                    <ChevronRightIcon />
                   </button>
                   <div className="pdf_page_show pdf_page_hidden">
                     <input
@@ -1414,7 +1462,7 @@ export function ContentInformationChange() {
                     title="모바일 환경에서 에디터 창으로 이동합니다."
                     style={{ display: 'none' }}
                   >
-                    {/* <BoxArrowInUpRightIcon /> */}
+                    <BoxArrowInUpRightIcon />
                   </button>
                   <button
                     type="button"
@@ -1425,7 +1473,7 @@ export function ContentInformationChange() {
                     title="변환 내역"
                     style={{ display: 'none' }}
                   >
-                    {/* <BarCharLineIcon /> */}
+                    <BarCharLineIcon />
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                       <span className="itex_obj_count">0</span>
                       <span className="visually-hidden"></span>
@@ -1461,7 +1509,7 @@ export function ContentInformationChange() {
                     title="크롭 해제"
                     aria-label="Close"
                   >
-                    {/* <CloseIcon /> */}
+                    <CloseIcon />
                   </button>
                 </div>
               </div>
@@ -1478,12 +1526,7 @@ export function ContentInformationChange() {
             <textarea id="tinyeditor"></textarea>
             <div className="save_exam_btn_wrap">
               {/* <button id="exam_change">변경</button> */}
-              <button
-                id="exam_save_all"
-                onClick={() => {
-                  // saveDataHandler()
-                }}
-              >
+              <button id="exam_save_all" onClick={() => {}}>
                 저장
               </button>
             </div>
@@ -1493,7 +1536,7 @@ export function ContentInformationChange() {
 
         <div className="tools_wrap eq_config_hidden">
           <div id="editor_container"></div>
-          <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>{' '}
+          <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>
           <div id="itexhml_board"></div>
           <div id="modal_block">
             <div className="sk-cube-grid">
@@ -1516,7 +1559,7 @@ export function ContentInformationChange() {
           style={{ display: 'none' }}
         />
       </div>
-    </div>
+    </>
   );
 }
 const Container = styled.div`

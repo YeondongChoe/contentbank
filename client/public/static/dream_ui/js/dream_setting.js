@@ -15,8 +15,8 @@ var bookmarkCount = 10;
 var bookmarkCount_pc = 30;
 
 // 편집기 종류(PC: true, tab: false);
-// var editorType = true;
-var editorType = false;
+var editorType = true;
+// var editorType = false;
 
 // redo, undo 단계 설정
 var undo_redo_level = 10;
@@ -52,11 +52,11 @@ var getEQData = () => {
   iTeXEQ
     .insertEqn()
     .then((node) => {
-      openEQ();
+      window.openEQ();
       console.log(node);
-      console.log(node.html);
+      console.log(node[0].html);
       // result에 들어가는 값
-      const result = node.html;
+      const result = node[0].html;
       output.innerHTML = result;
     })
     .then(() => {

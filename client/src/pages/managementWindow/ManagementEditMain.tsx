@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { IoMdClose } from 'react-icons/io';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -14,7 +14,63 @@ import { ChangeHistory } from './ChangeHistory';
 import { ContentCategoryChange } from './ContentCategoryChange';
 import { ContentInformationChange } from './ContentInformationChange';
 
+const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
+  if (window.MathJax) {
+    setLoaded(true);
+    return;
+  }
+
+  (window as any).MathJax = {
+    startup: {
+      ready: () => {
+        const { MathJax } = window as any;
+        MathJax.startup.defaultReady();
+        console.log('MathJax is loaded, version: ', MathJax.version);
+        setLoaded(true);
+      },
+    },
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+    },
+    svg: {
+      scale: 1.0,
+      fontCache: 'local',
+      minScale: 0.1,
+    },
+    options: {
+      renderActions: {
+        addMenu: [
+          /* ... */
+        ],
+      },
+      menuOptions: {
+        settings: {},
+      },
+    },
+  };
+
+  const script = document.createElement('script');
+  script.id = 'MathJax-script';
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  script.async = true;
+  script.onload = () => {
+    setLoaded(true);
+  };
+  script.onerror = () => {
+    console.error('Failed to load MathJax.');
+  };
+  document.head.appendChild(script);
+};
+
 export function ManagementEditMain() {
+  const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
+  const [jsonData, setJsonData] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isMathJaxLoaded) {
+      loadMathJax(setMathJaxLoaded);
+    }
+  }, [isMathJaxLoaded]);
   const [page, setPage] = useRecoilState(pageAtom);
 
   const location = useLocation();

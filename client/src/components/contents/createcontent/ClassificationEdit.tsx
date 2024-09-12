@@ -752,6 +752,8 @@ export function ClassificationEdit({
             });
           }
 
+          // 리디오 배열값 초기화
+          setRadioButtonList([]);
           return newClassification;
         }
         return null; // 조건을 만족하지 않는 경우 null 반환
@@ -765,7 +767,7 @@ export function ClassificationEdit({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       setUnitClassificationList((prevList) => [
-        ...prevList,
+        // ...prevList,
         ...newClassificationLists,
       ]);
     } else {
