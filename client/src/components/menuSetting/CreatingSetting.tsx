@@ -28,6 +28,7 @@ export function CreatingSetting() {
       name: '문항 등록/수정 > 문항분류',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/contentClassificationSetting',
     },
     {
       idx: 4,
@@ -35,6 +36,7 @@ export function CreatingSetting() {
       name: '학습지 리스트',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/workbookListSetting',
     },
     {
       idx: 5,
@@ -42,6 +44,7 @@ export function CreatingSetting() {
       name: '학습지 등록/수정 > 단원유형별',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/workbookClassificationSetting',
     },
     {
       idx: 6,
@@ -49,6 +52,7 @@ export function CreatingSetting() {
       name: '학습지 등록/수정 > 기출(학교내신)',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/workbookSchoolReportSetting',
     },
     {
       idx: 7,
@@ -56,6 +60,7 @@ export function CreatingSetting() {
       name: '학습지 등록/수정 > 기출(전국시험)',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/workbookCSATSetting',
     },
   ];
 

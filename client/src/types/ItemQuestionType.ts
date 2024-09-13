@@ -52,6 +52,8 @@ export type QuizListType = {
   quizCategoryList: QuizCategoryList[];
   quizItemList?: QuizType[];
   quizList: QuizType[];
+  process?: string;
+  condition?: string;
 };
 
 export type QuizCategoryList = {

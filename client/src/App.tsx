@@ -109,7 +109,17 @@ export function App() {
           location.pathname !== '/content-create/exam/step2' &&
           location.pathname !== '/content-create/exam/step3' &&
           location.pathname !== '/contentListSetting' &&
-          location.pathname !== '/contentDtEditingSetting' && <Navigation />}
+          location.pathname !== '/contentDtEditingSetting' &&
+          location.pathname !== '/contentClassificationSetting' &&
+          location.pathname !== '/workbookListSetting' &&
+          location.pathname !== '/workbookClassificationSetting' &&
+          location.pathname !== '/workbookSchoolReportSetting' &&
+          location.pathname !== '/workbookCSATSetting' &&
+          location.pathname !== '/contentListManagementSetting' &&
+          location.pathname !== '/contentEditingSetting' &&
+          location.pathname !== '/inspectionManagementSetting' && (
+            <Navigation />
+          )}
         <MainWrapper>
           {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
@@ -123,7 +133,15 @@ export function App() {
             location.pathname !== '/content-create/exam/step2' &&
             location.pathname !== '/content-create/exam/step3' &&
             location.pathname !== '/contentListSetting' &&
-            location.pathname !== '/contentDtEditingSetting' && <Header />}
+            location.pathname !== '/contentDtEditingSetting' &&
+            location.pathname !== '/contentClassificationSetting' &&
+            location.pathname !== '/workbookListSetting' &&
+            location.pathname !== '/workbookClassificationSetting' &&
+            location.pathname !== '/workbookSchoolReportSetting' &&
+            location.pathname !== '/workbookCSATSetting' &&
+            location.pathname !== '/contentListManagementSetting' &&
+            location.pathname !== '/contentEditingSetting' &&
+            location.pathname !== '/inspectionManagementSetting' && <Header />}
           <BodyWrapper>
             <ToastifyAlert />
             <Outlet />
