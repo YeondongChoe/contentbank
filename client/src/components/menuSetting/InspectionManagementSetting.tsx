@@ -5,20 +5,12 @@ import { BsArrowsMove, BsEyeSlash, BsEye } from 'react-icons/bs';
 import { TbFilter, TbFilterOff } from 'react-icons/tb';
 import styled from 'styled-components';
 
-import {
-  List,
-  ListItem,
-  Icon,
-  CheckBoxI,
-  Label,
-  Button,
-  Select,
-} from '../../components';
-import { SettingDnDWrapper } from '../../components/molecules';
+import { List, ListItem, Icon, CheckBoxI, Label, Button, Select } from '..';
 import { ItemCategoryType, QuizListType } from '../../types';
 import { COLOR } from '../constants';
+import { SettingDnDWrapper } from '../molecules';
 
-export function ContentListSetting() {
+export function InspectionManagementSetting() {
   const ContentListData: QuizListType[] = [
     {
       code: '1',
@@ -62,6 +54,8 @@ export function ContentListSetting() {
       ],
       quizItemList: [],
       quizList: [],
+      process: '수학 알바1(검수)',
+      condition: '보류',
     },
     {
       code: '2',
@@ -105,6 +99,8 @@ export function ContentListSetting() {
       ],
       quizItemList: [],
       quizList: [],
+      process: '수학 알바1(편집)',
+      condition: '반려',
     },
     {
       code: '3',
@@ -148,6 +144,8 @@ export function ContentListSetting() {
       ],
       quizItemList: [],
       quizList: [],
+      process: '수학 알바1(검수)',
+      condition: '-',
     },
     {
       code: '4',
@@ -191,6 +189,8 @@ export function ContentListSetting() {
       ],
       quizItemList: [],
       quizList: [],
+      process: '수학 알바1(편집)',
+      condition: '-',
     },
     {
       code: '5',
@@ -234,6 +234,8 @@ export function ContentListSetting() {
       ],
       quizItemList: [],
       quizList: [],
+      process: '수학 알바1(검수)',
+      condition: '-',
     },
     {
       code: '6',
@@ -277,6 +279,8 @@ export function ContentListSetting() {
       ],
       quizItemList: [],
       quizList: [],
+      process: '수학 알바1(편집)',
+      condition: '-',
     },
   ];
   const CategoryDummy = [
@@ -513,7 +517,7 @@ export function ContentListSetting() {
     <Container>
       <Wrapper>
         <TitleWrapper>
-          <Title>문항 리스트</Title>
+          <Title>검수관리 리스트</Title>
         </TitleWrapper>
         <MainWrapper>
           <SettingWrapper>
@@ -747,7 +751,7 @@ export function ContentListSetting() {
                       $margin={'0 0 0 12px'}
                       src={`/images/icon/favorites_off_B.svg`}
                     />
-                    <span className="width_80px tooltip_wrapper ">
+                    <span className="width_5">
                       <strong className="title">출처</strong>
                       {item.quizCategoryList ? (
                         <span className="tag ellipsis">
@@ -778,7 +782,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_80px tooltip_wrapper ">
+                    <span className="width_10">
                       <strong className="title">교육과정</strong>
 
                       {item.quizCategoryList ? (
@@ -807,7 +811,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_60px tooltip_wrapper ">
+                    <span className="width_5">
                       <strong className="title">학교급</strong>
 
                       {item.quizCategoryList ? (
@@ -836,7 +840,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_50px tooltip_wrapper ">
+                    <span className="width_5">
                       <strong className="title">학년</strong>
 
                       {item.quizCategoryList ? (
@@ -865,7 +869,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_60px tooltip_wrapper ">
+                    <span className="width_5">
                       <strong className="title">학기</strong>
 
                       {item.quizCategoryList ? (
@@ -894,7 +898,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_60px tooltip_wrapper ">
+                    <span className="width_5">
                       <strong className="title">교과</strong>
 
                       {item.quizCategoryList ? (
@@ -923,7 +927,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_80px tooltip_wrapper ">
+                    <span className="width_10">
                       <strong className="title">과목</strong>
 
                       {item.quizCategoryList ? (
@@ -952,7 +956,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_150px tooltip_wrapper ">
+                    <span className="width_10">
                       <strong className="title">대단원</strong>
 
                       {item.quizCategoryList ? (
@@ -981,7 +985,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_60px tag_s tooltip_wrapper ">
+                    <span className="width_5">
                       <span></span>
                       {item.quizCategoryList ? (
                         <span className="tag ellipsis">
@@ -1010,7 +1014,7 @@ export function ContentListSetting() {
                       )}
                     </span>
                     <i className="line"></i>
-                    <span className="width_10">{item.createdBy} </span>
+                    <span className="width_5">{item.createdBy} </span>
                     <i className="line"></i>
                     <span className="width_10">{item.createdAt}</span>
                     <i className="line"></i>
@@ -1022,6 +1026,11 @@ export function ContentListSetting() {
                         disabled={true}
                       />
                     </span>
+                    <i className="line"></i>
+
+                    <span className="width_5">{item.process} </span>
+                    <i className="line"></i>
+                    <span className="width_5">{item.condition} </span>
                   </ItemLayout>
                 </ListItem>
               ))}

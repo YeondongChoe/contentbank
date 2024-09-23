@@ -316,8 +316,8 @@ export function Navigation() {
               </strong>
 
               {/* 기업 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+              <button type="button" onClick={(e) => clickLink(e)}>
+                <Link to={'/operation-manage/enterprise'}>
                   <FaRegBuilding
                     style={{ width: '18px', height: '18px' }}
                   ></FaRegBuilding>
@@ -758,8 +758,8 @@ export function Navigation() {
               </strong>
 
               {/* 기업 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+              <button type="button" onClick={(e) => clickLink(e)}>
+                <Link to={'/operation-manage/enterprise'}>
                   <FaRegBuilding
                     style={{ width: '18px', height: '18px', fill: 'white' }}
                   ></FaRegBuilding>

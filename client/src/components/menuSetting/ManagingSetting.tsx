@@ -12,6 +12,7 @@ export function ManagingSetting() {
       name: '문항 리스트',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/contentListManagementSetting',
     },
     {
       idx: 2,
@@ -19,6 +20,7 @@ export function ManagingSetting() {
       name: '문항 일괄편집',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/contentEditingSetting',
     },
     {
       idx: 3,
@@ -26,6 +28,7 @@ export function ManagingSetting() {
       name: '검수관리 리스트',
       lastModifiedAt: '2024.06.01',
       examiner: '김드림',
+      path: '/inspectionManagementSetting',
     },
   ];
 
