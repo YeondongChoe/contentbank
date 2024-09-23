@@ -1,3 +1,3 @@
 export * from './AuthorityPage';
 export * from './MemberPage';
-export * from './EnterprisePage';
+export * from './CompanyPage';

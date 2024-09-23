@@ -34,7 +34,7 @@ import {
   QuizCreateListPage,
   CreatingContentSetting,
   ManagingContentSetting,
-  EnterprisePage,
+  CompanyPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -159,8 +159,8 @@ const router = createBrowserRouter([
         element: <AuthorityPage />,
       },
       {
-        path: '/operation-manage/enterprise',
-        element: <EnterprisePage />,
+        path: '/operation-manage/company',
+        element: <CompanyPage />,
       },
       {
         path: '/creatingcontentSetting',

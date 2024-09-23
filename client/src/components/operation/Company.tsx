@@ -24,7 +24,7 @@ import { pageAtom } from '../../store/utilAtom';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
-export function Enterprise() {
+export function Company() {
   //페이지네이션
   const [page, setPage] = useRecoilState(pageAtom);
   //기업리스트 값
@@ -103,7 +103,6 @@ export function Enterprise() {
     ],
   };
 
-  console.log(searchValue);
   // 기업 리스트 불러오기 api
   const getCompanyList = async () => {
     const res = await userInstance.get(
