@@ -66,7 +66,7 @@ export const postRefreshToken = async () => {
         });
         // navigator('/login');
         if (
-          window.location.pathname.includes('/managementEditMain') ||
+          window.location.pathname.includes('/managementeditmain') ||
           window.location.pathname.includes('/createcontentmain')
         ) {
           window.close();

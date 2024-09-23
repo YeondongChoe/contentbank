@@ -13,6 +13,7 @@ import {
   ContentFileUpload,
   ContentHTMLUpload,
   ContentEdit,
+  ClassificationEdit,
 } from '../../components/contents/createcontent';
 
 export function CreateContentMain() {
@@ -121,7 +122,11 @@ export function CreateContentMain() {
       )}
       {tabView === '문항 분류' && (
         <ContentBox>
-          <Classification setTabView={setTabView} />
+          {query.get('state') === 'edit' ? (
+            <ClassificationEdit setTabView={setTabView} />
+          ) : (
+            <Classification setTabView={setTabView} />
+          )}
         </ContentBox>
       )}
       {/* {tabView === '개체 라벨링' && (

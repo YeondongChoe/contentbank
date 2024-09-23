@@ -104,7 +104,8 @@ export function App() {
           location.pathname !== '/createcontentmain' &&
           location.pathname !== '/formula' &&
           location.pathname !== '/quizpreview' &&
-          location.pathname !== '/managementEditMain' &&
+          location.pathname !== '/managementeditmain' &&
+          location.pathname !== '/content-manage/tagmapping' &&
           location.pathname !== '/content-create/exam/step1' &&
           location.pathname !== '/content-create/exam/step2' &&
           location.pathname !== '/content-create/exam/step3' &&
@@ -128,7 +129,8 @@ export function App() {
             location.pathname !== '/createcontentmain' &&
             location.pathname !== '/formula' &&
             location.pathname !== '/quizpreview' &&
-            location.pathname !== '/managementEditMain' &&
+            location.pathname !== '/managementeditmain' &&
+            location.pathname !== '/content-manage/tagmapping' &&
             location.pathname !== '/content-create/exam/step1' &&
             location.pathname !== '/content-create/exam/step2' &&
             location.pathname !== '/content-create/exam/step3' &&

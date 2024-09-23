@@ -529,13 +529,13 @@ export function ContentEdit({
                       {categoriesE && categoryTitles[40] && (
                         <Select
                           onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[40]?.code)
+                            handleDefaultSelect('문항타입')
                           }
                           $positionTop
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={categoryTitles[40]?.code}
-                          key={categoryTitles[40]?.code}
+                          defaultValue={'문항타입'}
+                          key={'문항타입'}
                           options={categoriesE[3]}
                           onSelect={(event) => selectCategoryOption(event)}
                           setSelectedValue={setSelectedQuestionType}
@@ -552,14 +552,12 @@ export function ContentEdit({
                     <SelectWrapper>
                       {categoriesE && categoryTitles[41] && (
                         <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[41]?.code)
-                          }
+                          onDefaultSelect={() => handleDefaultSelect('난이도')}
                           $positionTop
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={categoryTitles[41]?.code}
-                          key={categoryTitles[41]?.code}
+                          defaultValue={'난이도'}
+                          key={'난이도'}
                           options={categoriesE[4]}
                           onSelect={(event) => selectCategoryOption(event)}
                           setSelectedValue={setSelectedDifficulty}
