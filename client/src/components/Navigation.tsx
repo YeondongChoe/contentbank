@@ -323,7 +323,7 @@ export function Navigation() {
                   ></FaRegBuilding>
                   <span>기업 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {decodingInfo?.permissionList &&
               // 회원 관리
@@ -765,7 +765,7 @@ export function Navigation() {
                   ></FaRegBuilding>
                   <span style={{ display: 'none' }}>기업 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {decodingInfo?.permissionList &&
               // 회원 관리
