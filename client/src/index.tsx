@@ -35,6 +35,10 @@ import {
   CreatingContentSetting,
   ManagingContentSetting,
   CompanyPage,
+  MetaInfoPage,
+  ProcessPage,
+  TagMappingPage,
+  TagMappingInitPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -133,22 +137,22 @@ const router = createBrowserRouter([
         path: '/content-manage/classify',
         element: <ManagementsTreePage />,
       },
-      // {
-      //   path: '/content-manage/metainfo',
-      //   element: <MetaInfoPage />,
-      // },
-      // {
-      //   path: '/content-manage/process',
-      //   element: <ProcessPage />,
-      // },
-      // {
-      //   path: '/content-manage/tagmapping',
-      //   element: <TagMappingPage />,
-      // },
-      // {
-      //   path: '/content-manage/tagmappinginit',
-      //   element: <TagMappingInitPage />,
-      // },
+      {
+        path: '/content-manage/metainfo',
+        element: <MetaInfoPage />,
+      },
+      {
+        path: '/content-manage/process',
+        element: <ProcessPage />,
+      },
+      {
+        path: '/content-manage/tagmapping',
+        element: <TagMappingPage />,
+      },
+      {
+        path: '/content-manage/tagmappinginit',
+        element: <TagMappingInitPage />,
+      },
       {
         path: '/operation-manage/member',
         element: <MemberPage />,
