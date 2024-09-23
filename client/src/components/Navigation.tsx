@@ -293,22 +293,22 @@ export function Navigation() {
               </button>
 
               {/* 신고문항 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <LuSiren style={{ width: '20px', height: '20px' }}></LuSiren>
                   <span>신고 문항</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 검수 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <GoCodescanCheckmark
                     style={{ width: '20px', height: '20px' }}
                   ></GoCodescanCheckmark>
                   <span>검수 관리</span>
                 </Link>
-              </button> */}
+              </button>
             </NavigationMenu>
             <NavigationMenu>
               <strong>
@@ -421,79 +421,79 @@ export function Navigation() {
               )}
 
               {/* 프로세스 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/process'}>
                   <GiProcessor
                     style={{ width: '20px', height: '20px' }}
                   ></GiProcessor>
                   <span>프로세스 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 메타정보 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/metainfo'}>
                   <MdOutlineMedicalInformation
                     style={{ width: '20px', height: '20px' }}
                   ></MdOutlineMedicalInformation>
                   <span>메타정보 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 로그 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <MdManageHistory
                     style={{ width: '20px', height: '20px' }}
                   ></MdManageHistory>
                   <span>로그 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 통계 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <VscGraph
                     style={{ width: '18px', height: '18px' }}
                   ></VscGraph>
                   <span>통계 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 정산 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <TbReportMoney
                     style={{ width: '20px', height: '20px' }}
                   ></TbReportMoney>
                   <span>정산 관리</span>
                 </Link>
-              </button> */}
+              </button>
             </NavigationMenu>
             <NavigationMenu>
-              {/* <strong>
+              <strong>
                 <Label type="navi" value={'메뉴 관리'}></Label>
-              </strong> */}
+              </strong>
 
               {/* 콘텐츠 제작 설정 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/creatingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px' }}
                   ></IoSettingsOutline>
                   <span>콘텐츠 제작 설정</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 콘텐츠 관리 설정 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/managingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px' }}
                   ></IoSettingsOutline>
                   <span>콘텐츠 관리 설정</span>
                 </Link>
-              </button> */}
+              </button>
             </NavigationMenu>
           </NavigationMenuWrapper>
         </Container>
@@ -732,24 +732,24 @@ export function Navigation() {
               </button>
 
               {/* 신고문항 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <LuSiren
                     style={{ width: '20px', height: '20px', stroke: 'white' }}
                   ></LuSiren>
                   <span style={{ display: 'none' }}>신고 문항</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 검수 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <GoCodescanCheckmark
                     style={{ width: '20px', height: '20px', fill: 'white' }}
                   ></GoCodescanCheckmark>
                   <span style={{ display: 'none' }}>검수 관리</span>
                 </Link>
-              </button> */}
+              </button>
             </MiniNavigationMenu>
             <MiniNavigationMenu>
               <strong>
@@ -863,80 +863,80 @@ export function Navigation() {
               )}
 
               {/* 프로세스 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/process'}>
                   <GiProcessor
                     style={{ width: '20px', height: '20px', fill: 'white' }}
                   ></GiProcessor>
                   <span style={{ display: 'none' }}>프로세스 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 메타정보 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/metainfo'}>
                   <MdOutlineMedicalInformation
                     style={{ width: '20px', height: '20px', fill: 'white' }}
                   ></MdOutlineMedicalInformation>
                   <span style={{ display: 'none' }}>메타정보 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 로그 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <MdManageHistory
                     style={{ width: '20px', height: '20px', fill: 'white' }}
                   ></MdManageHistory>
                   <span style={{ display: 'none' }}>로그 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 통계 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <VscGraph
                     style={{ width: '18px', height: '18px', fill: 'white' }}
                   ></VscGraph>
                   <span style={{ display: 'none' }}>통계 관리</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 정산 관리 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
                   <TbReportMoney
                     style={{ width: '20px', height: '20px', stroke: 'white' }}
                   ></TbReportMoney>
                   <span style={{ display: 'none' }}>정산 관리</span>
                 </Link>
-              </button> */}
+              </button>
             </MiniNavigationMenu>
             <MiniNavigationMenu>
-              {/* <strong>
+              <strong>
                 <Label value={'메뉴 관리'} display></Label>
                 <Label type="navi" value={'메뉴'} margin="10px 0 0 0"></Label>
-              </strong> */}
+              </strong>
 
               {/* 콘텐츠 제작 설정 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/creatingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px', stroke: 'white' }}
                   ></IoSettingsOutline>
                   <span style={{ display: 'none' }}>콘텐츠 제작 설정</span>
                 </Link>
-              </button> */}
+              </button>
 
               {/* 콘텐츠 관리 설정 */}
-              {/* <button type="button" onClick={(e) => clickLink(e)}>
+              <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/managingcontentSetting'}>
                   <IoSettingsOutline
                     style={{ width: '18px', height: '18px', stroke: 'white' }}
                   ></IoSettingsOutline>
                   <span style={{ display: 'none' }}>콘텐츠 관리 설정</span>
                 </Link>
-              </button> */}
+              </button>
             </MiniNavigationMenu>
           </MiniNavigationMenuWrapper>
         </MiniContainer>

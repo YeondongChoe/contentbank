@@ -25,7 +25,7 @@ import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
 export function Company() {
-  //페이지네이션z
+  //페이지네이션
   const [page, setPage] = useRecoilState(pageAtom);
   //기업리스트 값
   const [companyList, setCompanyList] = useState<any[]>([]);
