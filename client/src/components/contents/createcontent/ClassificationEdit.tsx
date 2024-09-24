@@ -27,14 +27,12 @@ import {
 } from '../../../components/molecules';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
-  AddQuestionListType,
   ItemCategoryType,
   ItemTreeListType,
   ItemTreeType,
   QuizCategory,
   QuizCategoryList,
   QuizClassificationData,
-  QuizItemListType,
   QuizListType,
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -156,15 +154,6 @@ export function ClassificationEdit({
   const [searchValue, setSearchValue] = useState<string>('');
   const [checkedItems, setCheckedItems] = useState<CheckedItemType[]>([]);
   const [isChecked, setIsChecked] = useState<boolean>(false);
-
-  // 등록시
-  const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
-  const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType[]>(
-    [],
-  );
-  const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
-    [],
-  );
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -365,29 +354,6 @@ export function ClassificationEdit({
   };
 
   // 분류 바꾸기 (등록) api
-  const postQuiz = async (data: AddQuestionListType) => {
-    return await quizService.post(`/v1/quiz`, data);
-  };
-
-  const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
-    mutationFn: postQuiz,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: context.response.data.message,
-      });
-    },
-    onSuccess: (response) => {
-      openToastifyAlert({
-        type: 'success',
-        text: `문항이 추가 되었습니다 ${response.data.data.quiz.idx}`,
-      });
-    },
-  });
-
-  // 분류 바꾸기 (수정) api
   const putClassification = async (data: ClassificationStateType) => {
     const res = await classificationInstance.put(`/v1/item/quiz`, data);
     console.log('putClassification', res);
@@ -1194,79 +1160,10 @@ export function ClassificationEdit({
       quizCodeList: checkedList,
       categoryList: categoryListArr,
     };
+
     console.log('최종 전송 데이터 형태', data);
-
-    // const dataAdd: AddQuestionListType = {
-    //   quizCodeList: checkedList,
-    //   categoryList: categoryListArr,
-    // };
-
-    if (type === 'copyedit') {
-      // postQuizDataMutate(dataAdd);
-    }
-    if (type === 'edit') {
-      mutateChangeClassification(data);
-    }
+    mutateChangeClassification(data);
   };
-  useEffect(() => {
-    console.log('quizItemList', quizItemList);
-    //문항 리스트에 추가
-    if (quizItemList.length > 0) {
-      setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
-    }
-  }, [quizItemList]);
-  // useEffect(() => {
-  //   console.log('quizItemArrList', quizItemArrList);
-  //   // 등록될 값
-  //   const newQuestionList = quizItemArrList.map((quizItems) => ({
-  //     commandCode: 0,
-  //     quizIdx: null,
-  //     articleList: [],
-  //     quizItemList: quizItems,
-  //     quizClassList: quizClassList,
-  //   }));
-  //   setAddQuestionList(newQuestionList);
-  // }, [quizItemArrList]);
-
-  // useEffect(() => {
-  //   console.log('selectedSubject 교과', selectedSubject);
-  //   console.log('selectedCourse 과목', selectedCourse);
-  //   console.log('selectedQuestionType 문항타입', selectedQuestionType);
-  //   console.log('selectedDifficulty 난이도', selectedDifficulty);
-  //   //출처
-  //   console.log('selectedSource 출처', selectedSource);
-
-  //   const quizClassList: QuestionClassListType = [
-  //     {
-  //       type: 'CLASS',
-  //       quizCategory: {
-  //         sources: selectedSource,
-  //         과목: selectedCourse,
-  //         교과: selectedSubject,
-  //         난이도: selectedDifficulty,
-  //         문항타입: selectedQuestionType,
-  //       },
-  //     },
-  //     {
-  //       type: 'CATEGORY',
-  //       quizCategory: {},
-  //     },
-  //   ];
-
-  //   // 필수 메타값 추가 및 변경
-  //   setQuizClassList(quizClassList);
-  // }, [
-  //   selectedSubject,
-  //   selectedCourse,
-  //   selectedQuestionType,
-  //   selectedSource,
-  //   selectedDifficulty,
-  // ]);
-
-  // useEffect(() => {
-  //   // 등록 api
-  //   if (addQuestionList.length) postQuizDataMutate();
-  // }, [addQuestionList]);
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {

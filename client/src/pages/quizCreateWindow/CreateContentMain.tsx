@@ -14,6 +14,7 @@ import {
   ContentHTMLUpload,
   ContentEdit,
   ClassificationEdit,
+  ContentCopyEdit,
 } from '../../components/contents/createcontent';
 
 export function CreateContentMain() {
@@ -106,7 +107,7 @@ export function CreateContentMain() {
             <ContentEdit setTabView={setTabView} type={'edit'} />
           )}
           {query.get('state') === 'copyedit' && (
-            <ContentEdit setTabView={setTabView} type={'copyedit'} />
+            <ContentCopyEdit setTabView={setTabView} type={'copyedit'} />
           )}
           {query.get('state') === 'uploadfile' && (
             <ContentFileUpload setTabView={setTabView} type={'type1'} />

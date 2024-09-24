@@ -898,10 +898,6 @@ export function ContentInformationChange() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>;
     state?: string;
   }) => {
-    const target = e.currentTarget.value;
-    // 로컬스토리지에 보낼데이터 저장
-    // const sendData = { data: target };
-    // localStorage.setItem('sendData', JSON.stringify(sendData));
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     window.openEQ();
@@ -1358,7 +1354,7 @@ export function ContentInformationChange() {
                   <span
                     ref={textChangeBoxRef}
                     style={{ height: '20px' }}
-                    className="eq_wrap_node"
+                    className="eq_wrap_node2"
                   ></span>
                   <input
                     type="text"

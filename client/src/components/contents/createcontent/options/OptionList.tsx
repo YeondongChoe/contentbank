@@ -24,6 +24,7 @@ interface Props {
   groupsDataG: string;
   groupsDataH: string;
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
+  quizCategory?: any[];
 }
 
 export function OptionList({
@@ -33,6 +34,7 @@ export function OptionList({
   groupsDataG,
   groupsDataH,
   setSelectedSource,
+  quizCategory,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -271,6 +273,11 @@ export function OptionList({
     // console.log('restructuredData', restructuredData);
     setSelectedSource(restructuredData);
   }, [sourceArr]);
+
+  useEffect(() => {
+    console.log('quizCategory---', quizCategory);
+    if (quizCategory) setSourceArr(quizCategory);
+  }, []);
 
   return (
     <Container>
