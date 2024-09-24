@@ -85,7 +85,7 @@ export function ContentList({
       key: 'ListTable/DropDownList복제 후 수정',
       title: '복제 후 수정',
       onClick: () => {
-        openCreateEditWindow();
+        openCreateCopyEditWindow();
         setShowDropDown(false);
       },
     },
@@ -99,6 +99,16 @@ export function ContentList({
       name: 'createcontentmain',
       url: '/createcontentmain',
       queryParams: { state: 'edit' },
+    });
+  };
+
+  // 문항 복제후 수정 윈도우 열기
+  const openCreateCopyEditWindow = () => {
+    saveLocalData();
+    windowOpenHandler({
+      name: 'createcontentmain',
+      url: '/createcontentmain',
+      queryParams: { state: 'copyedit' },
     });
   };
 

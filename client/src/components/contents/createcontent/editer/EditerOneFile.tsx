@@ -105,6 +105,12 @@ export function EditerOneFile({
               onItemClickData={onItemClickData}
             />
           )}
+          {type === 'copyedit' && (
+            <Type4
+              saveHandler={saveHandler}
+              onItemClickData={onItemClickData}
+            />
+          )}
           {type === 'type1' && <Type1 saveHandler={saveHandler} />}
           {/* hml 대량등록 */}
           {type === 'type2' && <Type2 />}

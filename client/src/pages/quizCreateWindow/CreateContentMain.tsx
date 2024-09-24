@@ -105,6 +105,9 @@ export function CreateContentMain() {
           {query.get('state') === 'edit' && (
             <ContentEdit setTabView={setTabView} type={'edit'} />
           )}
+          {query.get('state') === 'copyedit' && (
+            <ContentEdit setTabView={setTabView} type={'copyedit'} />
+          )}
           {query.get('state') === 'uploadfile' && (
             <ContentFileUpload setTabView={setTabView} type={'type1'} />
           )}
@@ -122,8 +125,12 @@ export function CreateContentMain() {
       )}
       {tabView === '문항 분류' && (
         <ContentBox>
-          {query.get('state') === 'edit' ? (
-            <ClassificationEdit setTabView={setTabView} />
+          {query.get('state') === 'edit' ||
+          query.get('state') === 'copyedit' ? (
+            <ClassificationEdit
+              setTabView={setTabView}
+              type={query.get('state') as string}
+            />
           ) : (
             <Classification setTabView={setTabView} />
           )}

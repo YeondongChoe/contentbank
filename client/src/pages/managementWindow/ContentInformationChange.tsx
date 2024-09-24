@@ -786,8 +786,10 @@ export function ContentInformationChange() {
   // @ts-expect-error
   window.editorType = true;
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  const [eqText, setEqText] = useState<string>('');
+  const [eqText, setEqText] = useState<string | null>(null);
   const textBoxRef = useRef<HTMLDivElement>(null);
+  const [eqChangeText, setEqChangeText] = useState<string | null>(null);
+  const textChangeBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initialScripts = [
@@ -889,7 +891,13 @@ export function ContentInformationChange() {
   }, []);
 
   //수식 입력기
-  const openFormula = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const openFormula = ({
+    e,
+    state,
+  }: {
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>;
+    state?: string;
+  }) => {
     const target = e.currentTarget.value;
     // 로컬스토리지에 보낼데이터 저장
     // const sendData = { data: target };
@@ -899,18 +907,24 @@ export function ContentInformationChange() {
     window.openEQ();
   };
 
-  const targetNode = textBoxRef.current;
-
   useEffect(() => {
+    const targetNode = textBoxRef.current; // targetNode 가져오기
+
     if (!targetNode) return;
+
+    // 초기 텍스트를 상태에 설정
+    setEqText(`${targetNode.textContent}`);
+
     const observer = new MutationObserver((mutationsList) => {
+      console.log('targetNode.textContent----------', targetNode.textContent);
       mutationsList.forEach((mutation) => {
         if (
           mutation.type === 'childList' ||
-          (mutation.type === 'characterData' && targetNode.textContent != '')
+          (mutation.type === 'characterData' && targetNode.textContent !== '')
         ) {
           // 텍스트가 바뀔 때마다 상태 업데이트
-          setEqText(targetNode.textContent || '');
+          setEqText(`${targetNode.textContent}`);
+          setSearchValue(`${targetNode.textContent}`);
         }
       });
     });
@@ -919,16 +933,47 @@ export function ContentInformationChange() {
     const config = { childList: true, subtree: true, characterData: true };
 
     // observer 시작
-    if (targetNode) {
-      observer.observe(targetNode, config);
-    }
+    observer.observe(targetNode, config);
 
     // 컴포넌트 언마운트 시 observer 해제
     return () => {
       observer.disconnect();
     };
   }, []);
-  console.log('eqText-----------', eqText);
+
+  useEffect(() => {
+    const targetNode = textChangeBoxRef.current; // targetNode 가져오기
+
+    if (!targetNode) return;
+
+    // 초기 텍스트를 상태에 설정
+    setEqChangeText(`${targetNode.textContent}`);
+
+    const observer = new MutationObserver((mutationsList) => {
+      console.log('targetNode.textContent----------', targetNode.textContent);
+      mutationsList.forEach((mutation) => {
+        if (
+          mutation.type === 'childList' ||
+          (mutation.type === 'characterData' && targetNode.textContent !== '')
+        ) {
+          // 텍스트가 바뀔 때마다 상태 업데이트
+          setEqChangeText(`${targetNode.textContent}`);
+          setChangeValue(`${targetNode.textContent}`);
+        }
+      });
+    });
+
+    // 감시할 옵션 설정
+    const config = { childList: true, subtree: true, characterData: true };
+
+    // observer 시작
+    observer.observe(targetNode, config);
+
+    // 컴포넌트 언마운트 시 observer 해제
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <>
@@ -1170,15 +1215,21 @@ export function ContentInformationChange() {
               </ScrollWrapper>
               <ButtonWrapper>
                 <InputWrapper>
+                  <span
+                    ref={textBoxRef}
+                    style={{ height: '20px' }}
+                    className="eq_wrap_node"
+                  ></span>
+
                   <input
                     type="text"
                     minLength={2}
                     maxLength={20}
                     value={`${searchValue}`}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    placeholder="찾을값을 입력해주세요(두글자 이상)"
+                    placeholder={`${`찾을값을 입력해주세요(두글자 이상)`}`}
                   />
-                  <span>{`${eqText}`}</span>
+
                   <Button
                     width={'80px'}
                     height={'35px'}
@@ -1188,12 +1239,13 @@ export function ContentInformationChange() {
                     $filled
                     $success
                     onClick={(e) => {
-                      openFormula(e);
+                      openFormula({ e, state: '' });
                     }}
                   >
                     수식
                   </Button>
                 </InputWrapper>
+
                 <Button
                   $filled
                   cursor
@@ -1303,6 +1355,11 @@ export function ContentInformationChange() {
               )}
               <ButtonWrapper>
                 <InputWrapper>
+                  <span
+                    ref={textChangeBoxRef}
+                    style={{ height: '20px' }}
+                    className="eq_wrap_node"
+                  ></span>
                   <input
                     type="text"
                     minLength={2}
@@ -1319,7 +1376,7 @@ export function ContentInformationChange() {
                     cursor
                     $filled
                     $success
-                    onClick={(e) => openFormula(e)}
+                    onClick={(e) => openFormula({ e, state: 'change' })}
                   >
                     수식
                   </Button>
@@ -1340,7 +1397,7 @@ export function ContentInformationChange() {
         />
       </Container>
 
-      <span className="eq_wrap_node" ref={textBoxRef}></span>
+      {/* <span className="eq_wrap_node"></span> */}
       <div className="itex_editor_container">
         <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
