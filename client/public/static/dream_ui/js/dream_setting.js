@@ -47,10 +47,8 @@ var img_save_type = 1;
 // 수식만 넣을때 수식을 넣는 공간의 class명
 var onlyEQ = false;
 var onlyEQNode = 'eq_wrap_node'; // 수식 입력창 열리는 곳 부모요소
-var onlyEQNode2 = 'eq_wrap_node2'; // 수식 입력창 열리는 곳 부모요소
 var getEQData = () => {
   const output = document.querySelector(`.${onlyEQNode}`);
-  const output2 = document.querySelector(`.${onlyEQNode2}`);
   iTeXEQ
     .insertEqn()
     .then((node) => {
@@ -59,17 +57,12 @@ var getEQData = () => {
       console.log(node[0].html);
       // result에 들어가는 값
       const result = node[0].html;
-      output.innerHTML = result;
-      output2.innerHTML = result;
+      output.innerHTML += result;
     })
     .then(() => {
       iTeXEQ.recoverynew(output);
       const target = output.querySelector(`.itexmath`);
       target.addEventListener('click', iTeXEQ.eqn_click, false);
-
-      iTeXEQ.recoverynew(output2);
-      const target2 = output2.querySelector(`.itexmath`);
-      target2.addEventListener('click', iTeXEQ.eqn_click, false);
     })
     .catch(() => {
       console.log('수식 입력 실패');

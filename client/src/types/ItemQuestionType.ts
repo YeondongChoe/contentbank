@@ -133,7 +133,7 @@ export type EditorDataType = {
 
 export type AddQuestionListType = {
   commandCode: number;
-  quizIdx: null;
+  quizIdx: number | null;
   articleList: never[];
   quizItemList: QuizItemListType;
   quizClassList: QuestionClassListType;

@@ -54,12 +54,6 @@ export function ContentCopyEdit({
     [],
   );
   const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
-  //셀렉트 값
-  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
-  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
-  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
-  const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
 
   // 선택된 리스트 아이템 데이터
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
@@ -81,6 +75,29 @@ export function ContentCopyEdit({
       return;
     }
   }, []);
+
+  //셀렉트 값
+  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
+  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
+  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
+  const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
+
+  // 리스트 선택시 기존값 셋팅
+  useEffect(() => {
+    if (onItemClickData) {
+      const quizCategory = onItemClickData.quizCategoryList[0].quizCategory;
+
+      // 값이 존재하면 상태값을 업데이트
+      if (quizCategory) {
+        setSelectedSubject(quizCategory.교과 || '');
+        setSelectedCourse(quizCategory.과목 || '');
+        setSelectedQuestionType(quizCategory.문항타입 || '');
+        setSelectedDifficulty(quizCategory.난이도 || '');
+        setSelectedSource(quizCategory.sources || []);
+      }
+    }
+  }, [onItemClickData]);
 
   // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
   const getQuiz = async () => {
@@ -446,22 +463,6 @@ export function ContentCopyEdit({
   // useEffect(() => {
   //   setQuizList([...questionList]);
   // }, [questionList]);
-
-  // 초기값을 설정할 수 있는 방법 (첫 렌더링 시 값을 초기화하는 경우)
-  useEffect(() => {
-    if (onItemClickData) {
-      const quizCategory = onItemClickData.quizCategoryList?.[0]?.quizCategory;
-
-      // 값이 존재하면 상태값을 업데이트
-      if (quizCategory) {
-        setSelectedSubject(quizCategory.교과 || '');
-        setSelectedCourse(quizCategory.과목 || '');
-        setSelectedQuestionType(quizCategory.문항타입 || '');
-        setSelectedDifficulty(quizCategory.난이도 || '');
-        setSelectedSource(quizCategory.sources || []);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     console.log('quizList', quizList);

@@ -39,9 +39,6 @@ import {
   QuizListType,
 } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
-import { windowOpenHandler } from '../../utils/windowHandler';
-
-import { Formula } from './Formula';
 
 interface RadioStateType {
   title: string;
@@ -784,12 +781,10 @@ export function ContentInformationChange() {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  window.editorType = true;
+  window.editorType_s = true;
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
   const [eqText, setEqText] = useState<string | null>(null);
-  const textBoxRef = useRef<HTMLDivElement>(null);
   const [eqChangeText, setEqChangeText] = useState<string | null>(null);
-  const textChangeBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initialScripts = [
@@ -891,85 +886,15 @@ export function ContentInformationChange() {
   }, []);
 
   //수식 입력기
-  const openFormula = ({
-    e,
-    state,
-  }: {
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>;
-    state?: string;
-  }) => {
+  const openFormula = (state: string) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    window.openEQ();
+    window.openEQ(state);
   };
 
   useEffect(() => {
-    const targetNode = textBoxRef.current; // targetNode 가져오기
-
-    if (!targetNode) return;
-
-    // 초기 텍스트를 상태에 설정
-    setEqText(`${targetNode.textContent}`);
-
-    const observer = new MutationObserver((mutationsList) => {
-      console.log('targetNode.textContent----------', targetNode.textContent);
-      mutationsList.forEach((mutation) => {
-        if (
-          mutation.type === 'childList' ||
-          (mutation.type === 'characterData' && targetNode.textContent !== '')
-        ) {
-          // 텍스트가 바뀔 때마다 상태 업데이트
-          setEqText(`${targetNode.textContent}`);
-          setSearchValue(`${targetNode.textContent}`);
-        }
-      });
-    });
-
-    // 감시할 옵션 설정
-    const config = { childList: true, subtree: true, characterData: true };
-
-    // observer 시작
-    observer.observe(targetNode, config);
-
-    // 컴포넌트 언마운트 시 observer 해제
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const targetNode = textChangeBoxRef.current; // targetNode 가져오기
-
-    if (!targetNode) return;
-
-    // 초기 텍스트를 상태에 설정
-    setEqChangeText(`${targetNode.textContent}`);
-
-    const observer = new MutationObserver((mutationsList) => {
-      console.log('targetNode.textContent----------', targetNode.textContent);
-      mutationsList.forEach((mutation) => {
-        if (
-          mutation.type === 'childList' ||
-          (mutation.type === 'characterData' && targetNode.textContent !== '')
-        ) {
-          // 텍스트가 바뀔 때마다 상태 업데이트
-          setEqChangeText(`${targetNode.textContent}`);
-          setChangeValue(`${targetNode.textContent}`);
-        }
-      });
-    });
-
-    // 감시할 옵션 설정
-    const config = { childList: true, subtree: true, characterData: true };
-
-    // observer 시작
-    observer.observe(targetNode, config);
-
-    // 컴포넌트 언마운트 시 observer 해제
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+    console.log('텍스트 내용 ----- ', eqText, eqChangeText);
+  }, [eqText, eqChangeText]);
 
   return (
     <>
@@ -1211,12 +1136,14 @@ export function ContentInformationChange() {
               </ScrollWrapper>
               <ButtonWrapper>
                 <InputWrapper>
-                  <span
-                    ref={textBoxRef}
-                    style={{ height: '20px' }}
-                    className="eq_wrap_node"
-                  ></span>
-
+                  <textarea
+                    className="first_area_test"
+                    style={{
+                      display: 'inline-block',
+                    }}
+                    // onChange={(e) => setEqText(e.target.value)}
+                  ></textarea>
+                  <span className="first_area_test"></span>
                   <input
                     type="text"
                     minLength={2}
@@ -1234,8 +1161,8 @@ export function ContentInformationChange() {
                     cursor
                     $filled
                     $success
-                    onClick={(e) => {
-                      openFormula({ e, state: '' });
+                    onClick={() => {
+                      openFormula('first_area_test');
                     }}
                   >
                     수식
@@ -1351,16 +1278,19 @@ export function ContentInformationChange() {
               )}
               <ButtonWrapper>
                 <InputWrapper>
-                  <span
-                    ref={textChangeBoxRef}
-                    style={{ height: '20px' }}
-                    className="eq_wrap_node2"
-                  ></span>
+                  <textarea
+                    className="second_area_test"
+                    style={{
+                      display: 'inline-block',
+                    }}
+                    // onChange={(e) => setEqChangeText(e.target.value)}
+                  ></textarea>
                   <input
                     type="text"
                     minLength={2}
                     maxLength={20}
                     value={changeValue}
+                    className="second_area_test"
                     onChange={(e) => setChangeValue(e.target.value)}
                     placeholder="변경값을 입력해주세요"
                   />
@@ -1372,7 +1302,7 @@ export function ContentInformationChange() {
                     cursor
                     $filled
                     $success
-                    onClick={(e) => openFormula({ e, state: 'change' })}
+                    onClick={() => openFormula('second_area_test')}
                   >
                     수식
                   </Button>
@@ -1393,7 +1323,7 @@ export function ContentInformationChange() {
         />
       </Container>
 
-      {/* <span className="eq_wrap_node"></span> */}
+      {/* 수식 입력창 영역 */}
       <div className="itex_editor_container">
         <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
@@ -1579,7 +1509,15 @@ export function ContentInformationChange() {
             <textarea id="tinyeditor"></textarea>
             <div className="save_exam_btn_wrap">
               {/* <button id="exam_change">변경</button> */}
-              <button id="exam_save_all" onClick={() => {}}>
+              <button
+                id="exam_save_all"
+                onClick={async () => {
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-expect-error
+                  const gggg = await window.saveHmlData();
+                  console.log(gggg);
+                }}
+              >
                 저장
               </button>
             </div>
