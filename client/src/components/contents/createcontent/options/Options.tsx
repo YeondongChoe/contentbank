@@ -110,6 +110,8 @@ export function Options({
     if (categoryItems) categoryItemsRefetch();
   }, [listItem]);
 
+  //있는 값을 받아와 넣을때
+
   return (
     <OptionWrapper>
       <li>
