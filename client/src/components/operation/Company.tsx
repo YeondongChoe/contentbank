@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
+import { opacity } from 'html2canvas/dist/types/css/property-descriptors/opacity';
 import { BiToggleRight } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -105,10 +107,68 @@ export function Company() {
   const [companyAccountList, setCompanyAccountList] = useState<
     companyAccountListProps[]
   >([]);
+  //접근 메뉴 팝업 여기
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  //접근 메뉴 리스트
   const [accessMenuList, setAccessMenuList] = useState<accessMenuListProps[]>(
     [],
   );
-  console.log(accessMenuList);
+  //제작 체크박스
+  const [createAllChecked, setCreateAllChecked] = useState(false);
+  //관리 체크박스
+  const [manageAllChecked, setManageAllChecked] = useState(false);
+  //운영 체크박스
+  const [operateAllChecked, setOperateAllChecked] = useState(false);
+  //메뉴 체크박스
+  const [menuAllChecked, setMenuAllChecked] = useState(false);
+
+  // useEffect를 사용하여 accessMenuList의 제작 상태 값이 변경될 때마다 검사
+  useEffect(() => {
+    // 'QE', 'WE'에 해당하는 항목 중 하나라도 체크되지 않은 것이 있는지 확인
+    const allChecked = accessMenuList
+      .filter((menu) => ['QE', 'WE'].includes(menu.menuCode)) // 'QE', 'WE'만 검사
+      .every((menu) => menu.isUse); // 모두 true이면 true, 아니면 false
+
+    setCreateAllChecked(allChecked);
+  }, [accessMenuList]);
+
+  // useEffect를 사용하여 accessMenuList의 관리 상태 값이 변경될 때마다 검사
+  useEffect(() => {
+    // 'QM', 'RM', 'IM'에 해당하는 항목 중 하나라도 체크되지 않은 것이 있는지 확인
+    const allChecked = accessMenuList
+      .filter((menu) => ['QM', 'RM', 'IM'].includes(menu.menuCode)) // 'QE', 'WE'만 검사
+      .every((menu) => menu.isUse); // 모두 true이면 true, 아니면 false
+
+    setManageAllChecked(allChecked);
+  }, [accessMenuList]);
+
+  // useEffect를 사용하여 accessMenuList의 운영 상태 값이 변경될 때마다 검사
+  useEffect(() => {
+    // 'PSM', 'COM', 'MIM', 'LOM', 'STM'에 해당하는 항목 중 하나라도 체크되지 않은 것이 있는지 확인
+    const allChecked = accessMenuList
+      .filter((menu) =>
+        ['PSM', 'COM', 'MIM', 'LOM', 'STM'].includes(menu.menuCode),
+      ) // 'QE', 'WE'만 검사
+      .every((menu) => menu.isUse); // 모두 true이면 true, 아니면 false
+
+    setOperateAllChecked(allChecked);
+  }, [accessMenuList]);
+
+  // useEffect를 사용하여 accessMenuList의 메뉴 상태 값이 변경될 때마다 검사
+  useEffect(() => {
+    // 'CCC', 'CMC'에 해당하는 항목 중 하나라도 체크되지 않은 것이 있는지 확인
+    const allChecked = accessMenuList
+      .filter((menu) => ['CCC', 'CMC'].includes(menu.menuCode)) // 'QE', 'WE'만 검사
+      .every((menu) => menu.isUse); // 모두 true이면 true, 아니면 false
+
+    setMenuAllChecked(allChecked);
+  }, [accessMenuList]);
+
+  //모달 오픈 함수
+  const isModalOpenClick = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   //계정 활성화 여부
   const [isActivate, setIsActivate] = useState(false);
   //탭
@@ -384,6 +444,78 @@ export function Company() {
       setAccessMenuList(companyAccessMenuData?.data.data.accessMenuList);
   }, [companyAccessMenuData]);
 
+  const accessMenuCheckChange = (menuCode: string) => {
+    // accessMenuList 복사본을 생성한 후 상태 업데이트
+    const updatedList = accessMenuList.map((menu) =>
+      menu.menuCode === menuCode ? { ...menu, isUse: !menu.isUse } : menu,
+    );
+    setAccessMenuList(updatedList); // 상태 업데이트
+  };
+
+  // 콘텐츠 제작 체크박스 클릭 시 호출되는 핸들러
+  const createAllClick = () => {
+    const newCheckedState = !createAllChecked;
+    setCreateAllChecked(newCheckedState);
+
+    // 특정 menuCode들만 업데이트
+    const updatedList = accessMenuList.map((menu) => {
+      // 원하는 menuCode에 대해서만 isUse 값을 변경
+      if (['QE', 'WE'].includes(menu.menuCode)) {
+        return { ...menu, isUse: newCheckedState };
+      }
+      return menu; // 나머지는 변경하지 않음
+    });
+    setAccessMenuList(updatedList);
+  };
+
+  // 콘텐츠 관리 체크박스 클릭 시 호출되는 핸들러
+  const manageAllClick = () => {
+    const newCheckedState = !manageAllChecked;
+    setManageAllChecked(newCheckedState);
+
+    // 특정 menuCode들만 업데이트
+    const updatedList = accessMenuList.map((menu) => {
+      // 원하는 menuCode에 대해서만 isUse 값을 변경
+      if (['QM', 'RM', 'IM'].includes(menu.menuCode)) {
+        return { ...menu, isUse: newCheckedState };
+      }
+      return menu; // 나머지는 변경하지 않음
+    });
+    setAccessMenuList(updatedList);
+  };
+
+  // 운영 관리 체크박스 클릭 시 호출되는 핸들러
+  const operateAllClick = () => {
+    const newCheckedState = !operateAllChecked;
+    setOperateAllChecked(newCheckedState);
+
+    // 특정 menuCode들만 업데이트
+    const updatedList = accessMenuList.map((menu) => {
+      // 원하는 menuCode에 대해서만 isUse 값을 변경
+      if (['PSM', 'COM', 'MIM', 'LOM', 'STM'].includes(menu.menuCode)) {
+        return { ...menu, isUse: newCheckedState };
+      }
+      return menu; // 나머지는 변경하지 않음
+    });
+    setAccessMenuList(updatedList);
+  };
+
+  // 메뉴 관리 체크박스 클릭 시 호출되는 핸들러
+  const menuAllClick = () => {
+    const newCheckedState = !menuAllChecked;
+    setMenuAllChecked(newCheckedState);
+
+    // 특정 menuCode들만 업데이트
+    const updatedList = accessMenuList.map((menu) => {
+      // 원하는 menuCode에 대해서만 isUse 값을 변경
+      if (['CCC', 'CMC'].includes(menu.menuCode)) {
+        return { ...menu, isUse: newCheckedState };
+      }
+      return menu; // 나머지는 변경하지 않음
+    });
+    setAccessMenuList(updatedList);
+  };
+
   //초기화
   useEffect(() => {
     if (idxValue === null) {
@@ -539,6 +671,36 @@ export function Company() {
         text: '삭제 되었습니다.',
       });
       companyListRefetch();
+    },
+  });
+
+  //접근 메뉴 업데이트 api
+  const putAccessMenu = async () => {
+    //서버로 생성 요청
+    const data = { accessMenuList: accessMenuList };
+    return await userInstance.put(`/v1/company/access`, data);
+  };
+
+  const { mutate: putAccessMenuData } = useMutation({
+    mutationFn: putAccessMenu,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      setIsModalOpen(false);
     },
   });
 
@@ -904,12 +1066,18 @@ export function Company() {
         <ModalContainer>
           <ModalTitleWrapper>
             <div>접근 메뉴 설정</div>
-            <div>x</div>
+            <div onClick={isModalOpenClick} style={{ cursor: 'pointer' }}>
+              x
+            </div>
           </ModalTitleWrapper>
           <ModalBodyWrapper>
             <ModalBody>
               <ModalCheckboxWrapper>
-                <input type="checkbox"></input>
+                <input
+                  type="checkbox"
+                  checked={createAllChecked}
+                  onChange={createAllClick}
+                ></input>
                 <Label value={'콘텐츠 제작'} />
               </ModalCheckboxWrapper>
               {accessMenuList.slice(0, 2).map((menu) => (
@@ -917,12 +1085,20 @@ export function Company() {
                   className="padding"
                   key={`${menu.menuCode} - ${menu.menuName}`}
                 >
-                  <input type="checkbox" checked={menu.isUse}></input>
+                  <input
+                    type="checkbox"
+                    checked={menu.isUse}
+                    onChange={() => accessMenuCheckChange(menu.menuCode)}
+                  ></input>
                   <Label value={menu.menuName} />
                 </ModalCheckboxWrapper>
               ))}
               <ModalCheckboxWrapper>
-                <input type="checkbox"></input>
+                <input
+                  type="checkbox"
+                  checked={manageAllChecked}
+                  onChange={manageAllClick}
+                ></input>
                 <Label value={'콘텐츠 관리'} />
               </ModalCheckboxWrapper>
               {accessMenuList.slice(2, 5).map((menu) => (
@@ -930,25 +1106,43 @@ export function Company() {
                   className="padding"
                   key={`${menu.menuCode} - ${menu.menuName}`}
                 >
-                  <input type="checkbox"></input>
+                  <input
+                    type="checkbox"
+                    checked={menu.isUse}
+                    onChange={() => accessMenuCheckChange(menu.menuCode)}
+                  ></input>
                   <Label value={menu.menuName} />
                 </ModalCheckboxWrapper>
               ))}
               <ModalCheckboxWrapper>
-                <input type="checkbox"></input>
+                <input
+                  type="checkbox"
+                  checked={operateAllChecked}
+                  onChange={operateAllClick}
+                ></input>
                 <Label value={'운영 관리'} />
               </ModalCheckboxWrapper>
               {accessMenuList.slice(5, 12).map((menu) => (
                 <ModalCheckboxWrapper
                   className="padding"
                   key={`${menu.menuCode} - ${menu.menuName}`}
+                  $disable={menu.isLock}
                 >
-                  <input type="checkbox"></input>
+                  <input
+                    type="checkbox"
+                    checked={menu.isUse}
+                    disabled={menu.isLock}
+                    onChange={() => accessMenuCheckChange(menu.menuCode)}
+                  ></input>
                   <Label value={menu.menuName} />
                 </ModalCheckboxWrapper>
               ))}
               <ModalCheckboxWrapper>
-                <input type="checkbox"></input>
+                <input
+                  type="checkbox"
+                  checked={menuAllChecked}
+                  onChange={menuAllClick}
+                ></input>
                 <Label value={'메뉴 관리'} />
               </ModalCheckboxWrapper>
               {accessMenuList.slice(12, 14).map((menu) => (
@@ -956,12 +1150,42 @@ export function Company() {
                   className="padding"
                   key={`${menu.menuCode} - ${menu.menuName}`}
                 >
-                  <input type="checkbox"></input>
+                  <input
+                    type="checkbox"
+                    checked={menu.isUse}
+                    onChange={() => accessMenuCheckChange(menu.menuCode)}
+                  ></input>
                   <Label value={menu.menuName} />
                 </ModalCheckboxWrapper>
               ))}
             </ModalBody>
           </ModalBodyWrapper>
+          <ModalButtonWrapper>
+            <Button
+              buttonType="button"
+              onClick={isModalOpenClick}
+              $padding="10px"
+              height={'34px'}
+              width={'100px'}
+              fontSize="14px"
+              $normal
+              cursor
+            >
+              <span>취소</span>
+            </Button>
+            <Button
+              buttonType="button"
+              onClick={() => putAccessMenuData()}
+              $padding="10px"
+              height={'34px'}
+              width={'100px'}
+              fontSize="14px"
+              $filled
+              cursor
+            >
+              <span>저장</span>
+            </Button>
+          </ModalButtonWrapper>
         </ModalContainer>
       </ModalOverlay>
     );
@@ -1053,7 +1277,7 @@ export function Company() {
                 <TabButtonWrapper>
                   <Button
                     buttonType="button"
-                    onClick={() => {}}
+                    onClick={isModalOpenClick}
                     $padding="10px"
                     height={'34px'}
                     width={'140px'}
@@ -1133,7 +1357,9 @@ export function Company() {
               </ButtonWrapper>
             )}
             {tabVeiw === '계정 관리' && <>{renderAccountInputFields()}</>}
-            {tabVeiw === '계정 관리' && <>{accessMenuSettingModal()}</>}
+            {tabVeiw === '계정 관리' && isModalOpen && (
+              <>{accessMenuSettingModal()}</>
+            )}
           </ListWrapper>
           {isDeleteCompany && (
             <Alert
@@ -1154,7 +1380,6 @@ export function Company() {
 
 const ModalContainer = styled.div`
   width: 400px;
-  height: 800px;
   background-color: white;
   border: 1px solid ${COLOR.BORDER_GRAY};
   border-radius: 10px;
@@ -1171,7 +1396,7 @@ const ModalTitleWrapper = styled.div`
 `;
 const ModalBodyWrapper = styled.div`
   width: 370px;
-  height: 600px;
+  height: 620px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1181,7 +1406,7 @@ const ModalBodyWrapper = styled.div`
 `;
 const ModalBody = styled.div`
   width: 340px;
-  height: 570px;
+  height: 590px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1192,11 +1417,17 @@ const ModalBody = styled.div`
     padding-left: 25px;
   }
 `;
-const ModalCheckboxWrapper = styled.div`
+const ModalCheckboxWrapper = styled.div<{ $disable?: boolean }>`
   display: flex;
   gap: 10px;
+  ${({ $disable }) => $disable === true && `opacity : 0.5;`}
 `;
-const ModalButtonWrapper = styled.div``;
+const ModalButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 10px 12px;
+`;
 
 const Container = styled.div`
   padding: 40px;
