@@ -137,6 +137,8 @@ export function ContentInformationChange() {
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
   const [IsSearchOn, setIsSearchOn] = useState(false);
 
+  const searchDivRef = useRef<HTMLDivElement | null>(null);
+
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
@@ -552,7 +554,16 @@ export function ContentInformationChange() {
     //   radio7depthCheck,
     // );
     // console.log('checkedDepthList', checkedDepthList);
-    searchCategoryDataMutate();
+    // searchCategoryDataMutate();
+
+    if (searchDivRef.current) {
+      const divContent = searchDivRef.current.innerHTML;
+      setSearchValue(divContent);
+      console.log('Div content:', divContent);
+
+      // 여기에 기존의 검색 로직을 추가합니다.
+      searchCategoryDataMutate();
+    }
   };
 
   // 문항 분류 검색 api
@@ -886,7 +897,7 @@ export function ContentInformationChange() {
   }, []);
 
   //수식 입력기
-  const openFormula = (state: string) => {
+  const openFormula = (state: unknown) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     window.openEQ(state);
@@ -895,6 +906,19 @@ export function ContentInformationChange() {
   useEffect(() => {
     console.log('텍스트 내용 ----- ', eqText, eqChangeText);
   }, [eqText, eqChangeText]);
+
+  // useEffect(() => {
+  //   if (searchDivRef.current) {
+  //     searchDivRef.current.innerHTML = searchValue;
+  //   }
+  // }, [searchValue]);
+
+  const handleSearchValueChange = (e: React.FormEvent<HTMLDivElement>) => {
+    const newValue = e.currentTarget.innerHTML;
+    if (newValue !== searchValue) {
+      setSearchValue(newValue);
+    }
+  };
 
   return (
     <>
@@ -1136,22 +1160,55 @@ export function ContentInformationChange() {
               </ScrollWrapper>
               <ButtonWrapper>
                 <InputWrapper>
-                  <textarea
-                    className="first_area_test"
-                    style={{
-                      display: 'inline-block',
+                  {/*<textarea*/}
+                  {/*  className="first_area_test"*/}
+                  {/*  style={{*/}
+                  {/*    display: 'inline-block',*/}
+                  {/*  }}*/}
+                  {/*  // onChange={(e) => setEqText(e.target.value)}*/}
+                  {/*></textarea>*/}
+                  {/*<span className="first_area_test"></span>*/}
+                  {/*<input*/}
+                  {/*  type="text"*/}
+                  {/*  minLength={2}*/}
+                  {/*  maxLength={20}*/}
+                  {/*  value={`${searchValue}`}*/}
+                  {/*  onChange={(e) => setSearchValue(e.target.value)}*/}
+                  {/*  placeholder={`${`찾을값을 입력해주세요(두글자 이상)`}`}*/}
+                  {/*/>*/}
+                  <div
+                    ref={(el) => {
+                      if (el && el.innerHTML !== searchValue) {
+                        el.innerHTML = searchValue;
+                      }
+                      searchDivRef.current = el;
                     }}
-                    // onChange={(e) => setEqText(e.target.value)}
-                  ></textarea>
-                  <span className="first_area_test"></span>
-                  <input
-                    type="text"
-                    minLength={2}
-                    maxLength={20}
-                    value={`${searchValue}`}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    placeholder={`${`찾을값을 입력해주세요(두글자 이상)`}`}
+                    className="first_area_test"
+                    contentEditable
+                    onInput={handleSearchValueChange}
+                    style={{
+                      minHeight: '35px',
+                      padding: '5px 10px',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                      outline: 'none',
+                      width: 'calc(100% - 85px)',
+                      overflowWrap: 'break-word',
+                    }}
                   />
+                  {searchValue === '' && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '5px',
+                        left: '10px',
+                        color: '#999',
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      찾을값을 입력해주세요(두글자 이상)
+                    </div>
+                  )}
 
                   <Button
                     width={'80px'}
