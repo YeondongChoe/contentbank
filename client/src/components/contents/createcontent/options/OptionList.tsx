@@ -161,12 +161,6 @@ export function OptionList({
     }
   };
 
-  useEffect(() => {
-    Object.keys(selectedValues).forEach((key) => {
-      listSwitch(selectedValues[Number(key)], Number(key));
-    });
-  }, [selectedValues]);
-
   const addSourceOptions = () => {
     // console.log('출처 카테고리 추가 API');
     setCount(count + 1);
@@ -276,26 +270,82 @@ export function OptionList({
     setSelectedSource(restructuredData);
   }, [sourceArr]);
 
-  const onItem = onItemClickData;
+  const [titleArr, setTitleArr] = useState<string[]>([]);
   useEffect(() => {
     console.log('quizCategory---', quizCategory);
+    setSourceOptions([]);
+
     if (quizCategory) {
       // 기존 출처값 배열을
       // 객체내 출처키의 값이 해당하는 값들을 각기
-      // defaultValue={categoryTitles[16]?.name}
       const titleArr = quizCategory.map((el) => el.출처);
-      console.log('titleArr -----', titleArr);
-      // setSourceArr(quizCategory);
+      setTitleArr(titleArr);
+      console.log('titleArr -----', categoryTitles[16]?.name, titleArr);
+      const arr = [];
+      for (let i = 0; i < titleArr.length; i++) {
+        arr.push(quizCategory[i].출처);
 
-      //버튼
-      setCount(count + quizCategory.length);
-      if (sourceOptions.length < 5) {
-        setSourceOptions([...sourceOptions, count]);
+        if (i == 0) {
+          setOptionsList1({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 1) {
+          setOptionsList2({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 2) {
+          setOptionsList3({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 3) {
+          setOptionsList4({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 4) {
+          setOptionsList5({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
       }
+
+      // console.log('해당 순번에 들어갈 출처리스트', arr);
+      setSelectedValues(arr);
+    }
+  }, [onItemClickData]); // 체크된 값이 변할때
+
+  useEffect(() => {
+    //버튼
+    setCount(count + titleArr.length);
+    if (sourceOptions.length < 5) {
+      const arr = [];
+      for (let i = 0; i < titleArr.length; i++) {
+        arr.push(i);
+      }
+      setSourceOptions([...sourceOptions, ...arr]);
+    }
+
+    if (sourceOptions.length >= 5) {
       //셀렉트 선택시에만 추가 가능하도록 초기화
       setDisabled(true);
     }
-  }, [onItem]); // 체크된 값이 변할때
+  }, [titleArr]);
+
+  useEffect(() => {
+    Object.keys(selectedValues).forEach((key) => {
+      listSwitch(selectedValues[Number(key)], Number(key));
+    });
+  }, [selectedValues]);
+
+  console.log('=--------------selectedValues', selectedValues);
 
   return (
     <Container>
@@ -340,7 +390,11 @@ export function OptionList({
                     $positionTop
                     width={'110px'}
                     height={'30px'}
-                    defaultValue={categoryTitles[16]?.name}
+                    defaultValue={
+                      titleArr.length
+                        ? titleArr[index]
+                        : categoryTitles[16]?.name
+                    }
                     key={categoryTitles[16]?.name}
                     options={categoriesE}
                     onSelect={(
