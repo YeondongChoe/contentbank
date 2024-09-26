@@ -130,10 +130,10 @@ export function Step1() {
       label: '수능/모의고사',
       value: '수능/모의고사',
     },
-    // {
-    //   label: '기출',
-    //   value: '기출',
-    // },
+    {
+      label: '기출',
+      value: '기출',
+    },
   ];
 
   const [tabVeiw, setTabVeiw] = useState<string>('단원·유형별');
@@ -4155,7 +4155,7 @@ export function Step1() {
               </CategorySection>
             </>
           )}
-          {/* {tabVeiw === '기출' && (
+          {tabVeiw === '기출' && (
             <>
               <CategorySection>
                 <TabWrapper>
@@ -4293,7 +4293,7 @@ export function Step1() {
                 <PreviousExamSpace></PreviousExamSpace>
               </SchoolSelectorSection>
             </>
-          )} */}
+          )}
         </MainWrapper>
         <NextStepButtonWrapper>
           <Button

@@ -2,14 +2,13 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { BiToggleRight } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
   List,
   ListItem,
-  Icon,
-  CheckBoxI,
   TabMenu,
   Label,
   Button,
@@ -18,13 +17,40 @@ import {
   Input,
   openToastifyAlert,
   Alert,
+  Modal,
+  PaginationBox,
 } from '..';
 import { userInstance } from '../../api/axios';
+import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
+import { RegisterModal } from './member/RegisterModal';
+
+type companyAccountListProps = {
+  authorityName: string;
+  companyIdx: number;
+  createdAt: string;
+  createdBy: string;
+  id: string;
+  idx: number;
+  isUse: boolean;
+  lastModifiedAt: string;
+  lastModifiedBy: string;
+  name: string;
+  userKey: string;
+};
+
+type accessMenuListProps = {
+  isLock: boolean;
+  isUse: boolean;
+  menuCode: string;
+  menuName: string;
+};
+
 export function Company() {
+  const { openModal } = useModal();
   //페이지네이션
   const [page, setPage] = useRecoilState(pageAtom);
   //기업리스트 값
@@ -75,6 +101,16 @@ export function Company() {
   const [industryList, setIndustryList] = useState([]);
   //표준 산업 소분류 리스트
   const [industryDetailList, setIndustryDetailList] = useState([]);
+  //계정 리스트
+  const [companyAccountList, setCompanyAccountList] = useState<
+    companyAccountListProps[]
+  >([]);
+  const [accessMenuList, setAccessMenuList] = useState<accessMenuListProps[]>(
+    [],
+  );
+  console.log(accessMenuList);
+  //계정 활성화 여부
+  const [isActivate, setIsActivate] = useState(false);
   //탭
   const changeTab = () => {
     setPage(1);
@@ -243,7 +279,7 @@ export function Company() {
     setIndustryList(companyIndustryData?.data.data.largeItemList);
   }, [companyIndustryData]);
 
-  // 기업 표준 산업 세분류 목록 불러오기 api
+  // 기업 표준 산업 소분류 목록 불러오기 api
   const getCompanyIndustryCode = async () => {
     if (largeItemCodeValue === '') {
       return null;
@@ -275,6 +311,78 @@ export function Company() {
   useEffect(() => {
     setIndustryDetailList(companyIndustryCodeData?.data.data.detailedInfoList);
   }, [companyIndustryCodeData]);
+
+  //계정 리스트 불러오기 api
+  const getCompanyAccount = async () => {
+    const res = await userInstance.get(
+      `/v1/account?pageIndex=${page}&pageUnit=${6}&searchCondition=${idxValue}`,
+    );
+    //console.log(`getAccount 결과값`, res);
+    return res;
+  };
+
+  const {
+    //isLoading,
+    data: companyAccountData,
+    refetch: companyAccountRefetch,
+  } = useQuery({
+    queryKey: ['get-companyAccount'],
+    queryFn: getCompanyAccount,
+    meta: {
+      errorMessage: 'get-companyAccount 에러 메세지',
+    },
+    enabled: !idxValue && idxValue !== null,
+  });
+
+  useEffect(() => {
+    if (idxValue) {
+      companyAccountRefetch();
+    }
+  }, [idxValue, page]);
+  useEffect(() => {
+    if (companyAccountData) {
+      setCompanyAccountList(companyAccountData?.data.data.list);
+    }
+  }, [companyAccountData]);
+
+  /* 아이디 만들기 모달 열기 */
+  const openCreateModal = () => {
+    //모달 열릴시 체크리스트 초기화
+    openModal({
+      title: '',
+      content: (
+        <RegisterModal
+          // memberList={totalMemberList}
+          refetch={companyListRefetch}
+        />
+      ),
+    });
+  };
+
+  //접근 메뉴 리스트 불러오기 api
+  const getAccessMenu = async () => {
+    const res = await userInstance.get(`/v1/company/access`);
+    //console.log(`getAccessMenu 결과값`, res);
+    return res;
+  };
+
+  const {
+    //isLoading,
+    data: companyAccessMenuData,
+    refetch: companyAccessMenuRefetch,
+  } = useQuery({
+    queryKey: ['get-companyAccessMenu'],
+    queryFn: getAccessMenu,
+    meta: {
+      errorMessage: 'get-companyAccessMenu 에러 메세지',
+    },
+    //enabled: !idxValue,
+  });
+
+  useEffect(() => {
+    if (companyAccessMenuData)
+      setAccessMenuList(companyAccessMenuData?.data.data.accessMenuList);
+  }, [companyAccessMenuData]);
 
   //초기화
   useEffect(() => {
@@ -309,8 +417,8 @@ export function Company() {
         address2: address2Value,
         phoneNumber: phoneNumberValue,
         email: emailValue,
-        largeItem: largeItemValue,
-        detailItem: detailItemValue,
+        largeItemCode: largeItemCodeValue,
+        detailItemCode: detailItemCodeValue,
       };
       //서버로 생성 요청
       return await userInstance.post(`/v1/company`, data);
@@ -326,8 +434,8 @@ export function Company() {
         address2: address2Value,
         phoneNumber: phoneNumberValue,
         email: emailValue,
-        largeItem: largeItemValue,
-        detailItem: detailItemValue,
+        largeItemCode: largeItemCodeValue,
+        detailItemCode: detailItemCodeValue,
       };
       //서버로 생성 요청
       return await userInstance.put(`/v1/company`, data);
@@ -370,11 +478,15 @@ export function Company() {
       setLargeItemValue('');
       setDetailItemCodeValue('');
       setDetailItemValue('');
-      setIdxValue('1');
+      setIdxValue('1'); //응답받은 기업 idx값
+      setSelectedIdxValue('1'); //리스트 idx값
     },
   });
-  // !languageValue || 언어코드 빠진상황
+
+  //기업 생성
   const submitCreateCompany = () => {
+    //기업명, 기업 식별자, 대표자명
+    // !languageValue || 언어코드 빠진상황
     if (!nameValue || !corporateIdentifierValue || !representativeNameValue) {
       openToastifyAlert({
         type: 'error',
@@ -384,11 +496,19 @@ export function Company() {
       postNewCompanyData();
     }
   };
-  // console.log(largeItemValue);
-  // console.log(largeItemCodeValue);
-  // console.log(detailItemValue);
-  // console.log(detailItemCodeValue);
-  // console.log(idxValue);
+
+  //기업 수정
+  const submitEditCompany = () => {
+    //기업명, 대표자명
+    if (!nameValue || !representativeNameValue) {
+      openToastifyAlert({
+        type: 'error',
+        text: '필수 항목을 선택해 주세요.',
+      });
+    } else {
+      postNewCompanyData();
+    }
+  };
 
   //기업 삭제
   const [isDeleteCompany, setIsDeleteCompany] = useState(false);
@@ -422,7 +542,11 @@ export function Company() {
     },
   });
 
-  const renderInputFields = () => {
+  const activateToggle = () => {
+    setIsActivate(!isActivate);
+  };
+
+  const renderCompanyInputFields = () => {
     return (
       <InputContainer>
         <InputWrapper>
@@ -476,7 +600,7 @@ export function Company() {
 
         <InputWrapper>
           <Label
-            value={'언어코드*'}
+            value={idxValue !== null ? '언어코드' : '언어코드*'}
             width="110px"
             bold
             fontSize="14px"
@@ -496,7 +620,7 @@ export function Company() {
         </InputWrapper>
         <InputWrapper>
           <Label
-            value={'기업 식별자*'}
+            value={idxValue !== null ? '기업 식별자' : '기업 식별자*'}
             width="110px"
             bold
             fontSize="14px"
@@ -717,6 +841,132 @@ export function Company() {
     );
   };
 
+  const renderAccountInputFields = () => {
+    return (
+      <>
+        <List margin={`10px 0`}>
+          {companyAccountList.map((account) => (
+            <ListItem
+              isChecked={false}
+              height="80px"
+              $padding="10px"
+              key={`${account.name} - ${account.id}`}
+            >
+              <ItemLayout>
+                <div>
+                  <span className="title">
+                    {account.name}({account.id})
+                    <span className="tag">{account.authorityName}</span>
+                  </span>
+                  {isActivate ? (
+                    <span className="iconWrapper">
+                      <span className="title">활성화</span>
+                      <BiToggleRight
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          cursor: 'pointer',
+                          fill: `${COLOR.PRIMARY}`,
+                        }}
+                        onClick={activateToggle}
+                      ></BiToggleRight>
+                    </span>
+                  ) : (
+                    <span className="iconWrapperDeactivated">
+                      <span className="title">비활성화</span>
+                      <BiToggleRight
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          cursor: 'pointer',
+                          fill: `${COLOR.FONT_GRAY}`,
+                        }}
+                        onClick={activateToggle}
+                      ></BiToggleRight>
+                    </span>
+                  )}
+                </div>
+              </ItemLayout>
+            </ListItem>
+          ))}
+        </List>
+        <PaginationBox
+          itemsCountPerPage={companyAccountData?.data.data.pagination.pageUnit}
+          totalItemsCount={companyAccountData?.data.data.pagination.totalCount}
+        />
+      </>
+    );
+  };
+
+  const accessMenuSettingModal = () => {
+    return (
+      <ModalOverlay>
+        <ModalContainer>
+          <ModalTitleWrapper>
+            <div>접근 메뉴 설정</div>
+            <div>x</div>
+          </ModalTitleWrapper>
+          <ModalBodyWrapper>
+            <ModalBody>
+              <ModalCheckboxWrapper>
+                <input type="checkbox"></input>
+                <Label value={'콘텐츠 제작'} />
+              </ModalCheckboxWrapper>
+              {accessMenuList.slice(0, 2).map((menu) => (
+                <ModalCheckboxWrapper
+                  className="padding"
+                  key={`${menu.menuCode} - ${menu.menuName}`}
+                >
+                  <input type="checkbox" checked={menu.isUse}></input>
+                  <Label value={menu.menuName} />
+                </ModalCheckboxWrapper>
+              ))}
+              <ModalCheckboxWrapper>
+                <input type="checkbox"></input>
+                <Label value={'콘텐츠 관리'} />
+              </ModalCheckboxWrapper>
+              {accessMenuList.slice(2, 5).map((menu) => (
+                <ModalCheckboxWrapper
+                  className="padding"
+                  key={`${menu.menuCode} - ${menu.menuName}`}
+                >
+                  <input type="checkbox"></input>
+                  <Label value={menu.menuName} />
+                </ModalCheckboxWrapper>
+              ))}
+              <ModalCheckboxWrapper>
+                <input type="checkbox"></input>
+                <Label value={'운영 관리'} />
+              </ModalCheckboxWrapper>
+              {accessMenuList.slice(5, 12).map((menu) => (
+                <ModalCheckboxWrapper
+                  className="padding"
+                  key={`${menu.menuCode} - ${menu.menuName}`}
+                >
+                  <input type="checkbox"></input>
+                  <Label value={menu.menuName} />
+                </ModalCheckboxWrapper>
+              ))}
+              <ModalCheckboxWrapper>
+                <input type="checkbox"></input>
+                <Label value={'메뉴 관리'} />
+              </ModalCheckboxWrapper>
+              {accessMenuList.slice(12, 14).map((menu) => (
+                <ModalCheckboxWrapper
+                  className="padding"
+                  key={`${menu.menuCode} - ${menu.menuName}`}
+                >
+                  <input type="checkbox"></input>
+                  <Label value={menu.menuName} />
+                </ModalCheckboxWrapper>
+              ))}
+            </ModalBody>
+          </ModalBodyWrapper>
+        </ModalContainer>
+      </ModalOverlay>
+    );
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -783,7 +1033,7 @@ export function Company() {
                 setTabVeiw={setTabVeiw}
                 onClickTab={changeTab}
               />
-              {idxValue !== null && (
+              {idxValue !== null && tabVeiw === '기업 관리' && (
                 <Button
                   buttonType="button"
                   onClick={() => {
@@ -799,53 +1049,91 @@ export function Company() {
                   <span>+기업 추가</span>
                 </Button>
               )}
-            </TabWrapper>
-            {renderInputFields()}
-            <ButtonWrapper>
-              <Button
-                buttonType="button"
-                onClick={submitCreateCompany}
-                $padding="10px"
-                height={'35px'}
-                width={'120px'}
-                fontSize="13px"
-                $filled
-                cursor
-              >
-                <span>저장</span>
-              </Button>
-              {idxValue === null ? (
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    setIdxValue('1');
-                  }}
-                  $padding="10px"
-                  height={'35px'}
-                  width={'120px'}
-                  fontSize="13px"
-                  $normal
-                  cursor
-                >
-                  <span>취소</span>
-                </Button>
-              ) : (
-                <Button
-                  buttonType="button"
-                  onClick={() => {
-                    clickDeleteCompany();
-                  }}
-                  $padding="10px"
-                  height={'35px'}
-                  width={'120px'}
-                  fontSize="13px"
-                  $normal
-                  cursor
-                >
-                  <span>삭제</span>
-                </Button>
+              {tabVeiw === '계정 관리' && (
+                <TabButtonWrapper>
+                  <Button
+                    buttonType="button"
+                    onClick={() => {}}
+                    $padding="10px"
+                    height={'34px'}
+                    width={'140px'}
+                    fontSize="14px"
+                    $normal
+                    cursor
+                  >
+                    <span>접근 메뉴 설정</span>
+                  </Button>
+                  <Button
+                    buttonType="button"
+                    onClick={openCreateModal}
+                    $padding="10px"
+                    height={'34px'}
+                    width={'140px'}
+                    fontSize="14px"
+                    $filled
+                    cursor
+                  >
+                    <span>아이디 만들기</span>
+                  </Button>
+                </TabButtonWrapper>
               )}
-            </ButtonWrapper>
+            </TabWrapper>
+            {tabVeiw === '기업 관리' && <>{renderCompanyInputFields()}</>}
+            {tabVeiw === '기업 관리' && (
+              <ButtonWrapper>
+                <Button
+                  buttonType="button"
+                  onClick={() => {
+                    if (idxValue !== null) {
+                      submitEditCompany();
+                    } else {
+                      submitCreateCompany();
+                    }
+                  }}
+                  $padding="10px"
+                  height={'35px'}
+                  width={'120px'}
+                  fontSize="13px"
+                  $filled
+                  cursor
+                >
+                  <span>저장</span>
+                </Button>
+                {idxValue === null ? (
+                  <Button
+                    buttonType="button"
+                    onClick={() => {
+                      setIdxValue('1');
+                    }}
+                    $padding="10px"
+                    height={'35px'}
+                    width={'120px'}
+                    fontSize="13px"
+                    $normal
+                    cursor
+                  >
+                    <span>취소</span>
+                  </Button>
+                ) : (
+                  <Button
+                    buttonType="button"
+                    onClick={() => {
+                      clickDeleteCompany();
+                    }}
+                    $padding="10px"
+                    height={'35px'}
+                    width={'120px'}
+                    fontSize="13px"
+                    $normal
+                    cursor
+                  >
+                    <span>삭제</span>
+                  </Button>
+                )}
+              </ButtonWrapper>
+            )}
+            {tabVeiw === '계정 관리' && <>{renderAccountInputFields()}</>}
+            {tabVeiw === '계정 관리' && <>{accessMenuSettingModal()}</>}
           </ListWrapper>
           {isDeleteCompany && (
             <Alert
@@ -859,9 +1147,56 @@ export function Company() {
           )}
         </MainWrapper>
       </Wrapper>
+      <Modal />
     </Container>
   );
 }
+
+const ModalContainer = styled.div`
+  width: 400px;
+  height: 800px;
+  background-color: white;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+`;
+const ModalTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+`;
+const ModalBodyWrapper = styled.div`
+  width: 370px;
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f2f2f2;
+  margin-top: 20px;
+  margin-left: 15px;
+`;
+const ModalBody = styled.div`
+  width: 340px;
+  height: 570px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  padding-left: 100px;
+
+  .padding {
+    padding-left: 25px;
+  }
+`;
+const ModalCheckboxWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const ModalButtonWrapper = styled.div``;
 
 const Container = styled.div`
   padding: 40px;
@@ -957,99 +1292,57 @@ const TabWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 `;
+const TabButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: end;
+  gap: 10px;
+`;
 const InputContainer = styled.div`
   width: 100%;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  //justify-content: flex-start;
 `;
 const InputWrapper = styled.div`
-  //width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
 `;
 const ItemLayout = styled.span`
-  display: flex;
   width: 100%;
-  min-height: 40px;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
 
-  .tooltip_wrapper {
-    position: relative;
-  }
-  > span {
-    display: flex;
-    /* flex: 1 0 0; */
-    justify-content: space-around;
-    flex-wrap: wrap;
-    word-break: break-all;
-    min-width: 30px;
-    max-width: 150px;
-    font-weight: normal;
-  }
-
-  /* 두줄 이상 ellipsis 처리  */
-  .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  .title {
+  div {
     width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  .title {
     font-weight: 600;
     margin-bottom: 2px;
+    font-size: 16px;
   }
   .tag {
-    margin: 0 5px;
-    padding: 3px 5px;
-    border-radius: 5px;
-    background-color: ${COLOR.BORDER_GRAY};
+    padding: 0 10px;
+    font-weight: 600;
+    color: ${COLOR.FONT_GRAY};
+    font-size: 16px;
   }
-  .tag_s {
-    font-weight: bold;
-    font-size: 12px;
-    padding: 2px;
-    border-radius: 5px;
-    background-color: ${COLOR.BORDER_GRAY};
+  .iconWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: ${COLOR.PRIMARY};
   }
-  .line {
-    width: 1px;
-    height: 15px;
-    background-color: ${COLOR.BORDER_GRAY};
+  .iconWrapperDeactivated {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: ${COLOR.FONT_GRAY};
   }
-  .width_5 {
-    width: 5%;
-  }
-  .width_10 {
-    width: 10%;
-  }
-  .width_20px {
-    width: 20px;
-  }
-  .width_50px {
-    width: 50px;
-  }
-  .width_60px {
-    width: 60px;
-  }
-  .width_80px {
-    width: 80px;
-  }
-`;
-const ListDescription = styled.p`
-  display: flex;
-  justify-content: center;
-  font-size: 12px;
-  color: ${COLOR.PRIMARY};
-  font-weight: bold;
 `;
 const ButtonWrapper = styled.div`
   width: 100%;
@@ -1058,4 +1351,17 @@ const ButtonWrapper = styled.div`
   justify-content: flex-end;
   align-items: end;
   gap: 10px;
+`;
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
 `;

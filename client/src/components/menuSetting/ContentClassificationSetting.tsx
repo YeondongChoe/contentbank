@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { BiToggleRight } from 'react-icons/bi';
-import { BsEyeSlash, BsEye } from 'react-icons/bs';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
