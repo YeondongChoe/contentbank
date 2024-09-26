@@ -62,10 +62,10 @@ export function ContentCopyEdit({
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
 
-    console.log(
-      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
-      storedQuizList,
-    );
+    // console.log(
+    //   '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+    //   storedQuizList,
+    // );
 
     if (storedQuizList) {
       setParsedStoredQuizList(JSON.parse(storedQuizList));
@@ -180,7 +180,7 @@ export function ContentCopyEdit({
   }, [quizItemList]);
 
   useEffect(() => {
-    console.log('quizItemArrList', quizItemArrList);
+    // console.log('quizItemArrList', quizItemArrList);
     // 등록될 값
     const newQuestionList = quizItemArrList.map((quizItems) => ({
       commandCode: 0,
@@ -608,6 +608,7 @@ export function ContentCopyEdit({
                         quizCategory={
                           quizCategory.sources && quizCategory.sources
                         }
+                        onItemClickData={onItemClickData}
                       />
                     )}
                 </SourceOptionWrapper>
