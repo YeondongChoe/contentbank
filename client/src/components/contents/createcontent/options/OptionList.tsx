@@ -413,6 +413,7 @@ export function OptionList({
                         listItem={category}
                         key={`${category?.name} optionsdepth${idx}`}
                         onOptionChange={setSourceValue}
+                        initList={quizCategory && quizCategory[index]}
                       />
                     ),
                   )}
