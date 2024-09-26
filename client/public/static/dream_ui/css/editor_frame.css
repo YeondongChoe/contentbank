@@ -17,6 +17,7 @@
 
 .type4_container {
 	width: 50%;
+	overflow: auto;
 }
 
 .resizeable {

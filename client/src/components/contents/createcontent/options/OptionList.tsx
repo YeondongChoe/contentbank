@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Alert } from '../../../../components/molecules';
-import { ItemCategoryType } from '../../../../types';
+import { ItemCategoryType, QuizListType } from '../../../../types';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 
@@ -25,6 +25,7 @@ interface Props {
   groupsDataH: string;
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
   quizCategory?: any[];
+  onItemClickData?: QuizListType;
 }
 
 export function OptionList({
@@ -35,6 +36,7 @@ export function OptionList({
   groupsDataH,
   setSelectedSource,
   quizCategory,
+  onItemClickData,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -274,10 +276,26 @@ export function OptionList({
     setSelectedSource(restructuredData);
   }, [sourceArr]);
 
+  const onItem = onItemClickData;
   useEffect(() => {
     console.log('quizCategory---', quizCategory);
-    if (quizCategory) setSourceArr(quizCategory);
-  }, []);
+    if (quizCategory) {
+      // 기존 출처값 배열을
+      // 객체내 출처키의 값이 해당하는 값들을 각기
+      // defaultValue={categoryTitles[16]?.name}
+      const titleArr = quizCategory.map((el) => el.출처);
+      console.log('titleArr -----', titleArr);
+      // setSourceArr(quizCategory);
+
+      //버튼
+      setCount(count + quizCategory.length);
+      if (sourceOptions.length < 5) {
+        setSourceOptions([...sourceOptions, count]);
+      }
+      //셀렉트 선택시에만 추가 가능하도록 초기화
+      setDisabled(true);
+    }
+  }, [onItem]); // 체크된 값이 변할때
 
   return (
     <Container>

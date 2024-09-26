@@ -63,10 +63,10 @@ export function ContentEdit({
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
 
-    console.log(
-      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
-      storedQuizList,
-    );
+    // console.log(
+    //   '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+    //   storedQuizList,
+    // );
 
     if (storedQuizList) {
       setParsedStoredQuizList(JSON.parse(storedQuizList));
@@ -130,13 +130,13 @@ export function ContentEdit({
   // 에디터에서 데이터 가져올시
   useEffect(() => {
     if (editorData) {
-      console.log(editorData, 'editorData--------');
+      // console.log(editorData, 'editorData--------');
       const itemDataList: QuizItemListType = [];
       let sort = 1;
 
       Object.keys(editorData).forEach((key) => {
         const value = editorData[key];
-        console.log('value----', value);
+        // console.log('value----', value);
         if (Array.isArray(value) && value.length > 0) {
           let type = key.replace('tag_', '').replace('tl_', '').toUpperCase();
 
@@ -173,7 +173,7 @@ export function ContentEdit({
   }, [editorData]);
 
   useEffect(() => {
-    console.log('quizItemList', quizItemList);
+    // console.log('quizItemList', quizItemList);
     //문항 리스트에 추가
     if (quizItemList.length > 0) {
       setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
@@ -181,8 +181,8 @@ export function ContentEdit({
   }, [quizItemList]);
 
   useEffect(() => {
-    console.log('quizItemArrList', quizItemArrList);
-    console.log('quizIdx', quizIdx);
+    // console.log('quizItemArrList', quizItemArrList);
+    // console.log('quizIdx', quizIdx);
 
     // 등록될 값
     const newQuestionList = quizItemArrList.map((quizItems, idx) => ({
@@ -245,7 +245,7 @@ export function ContentEdit({
 
     // 카테고리 매핑
     const category = mapQuizCategoryList(onItemClickData?.quizCategoryList);
-    console.log('매핑된 카테고리값 ----', category);
+    // console.log('매핑된 카테고리값 ----', category);
 
     const quizClassList: QuestionClassListType = [
       {
@@ -474,7 +474,7 @@ export function ContentEdit({
     if (data) {
       const combinedContent = data.map((item) => item.content).join(' ');
 
-      console.log('onItemClickData 선택된 아이템------------', combinedContent);
+      // console.log('onItemClickData 선택된 아이템------------', combinedContent);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -618,6 +618,7 @@ export function ContentEdit({
                         quizCategory={
                           quizCategory.sources && quizCategory.sources
                         }
+                        onItemClickData={onItemClickData}
                       />
                     )}
                 </SourceOptionWrapper>
