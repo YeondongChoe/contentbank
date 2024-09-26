@@ -83,7 +83,7 @@ export function ContentList({
     },
     {
       key: 'ListTable/DropDownList복제 후 수정',
-      title: '복제 후 수정',
+      title: '수정 후 복제',
       onClick: () => {
         openCreateCopyEditWindow();
         setShowDropDown(false);
