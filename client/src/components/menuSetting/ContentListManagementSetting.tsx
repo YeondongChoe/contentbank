@@ -5,20 +5,12 @@ import { BsArrowsMove, BsEyeSlash, BsEye } from 'react-icons/bs';
 import { TbFilter, TbFilterOff } from 'react-icons/tb';
 import styled from 'styled-components';
 
-import {
-  List,
-  ListItem,
-  Icon,
-  CheckBoxI,
-  Label,
-  Button,
-  Select,
-} from '../../components';
-import { SettingDnDWrapper } from '../../components/molecules';
+import { List, ListItem, Icon, CheckBoxI, Label, Button, Select } from '..';
 import { ItemCategoryType, QuizListType } from '../../types';
 import { COLOR } from '../constants';
+import { SettingDnDWrapper } from '../molecules';
 
-export function ContentListSetting() {
+export function ContentListManagementSetting() {
   const ContentListData: QuizListType[] = [
     {
       code: '1',

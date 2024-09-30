@@ -1,8 +1,18 @@
 import * as React from 'react';
 
 // eslint-disable-next-line import/order, import/default
-import { ContentListSetting, ContentDtEditingSetting } from './components';
-// eslint-disable-next-line import/default
+import {
+  ContentListSetting,
+  ContentDtEditingSetting,
+  ContentClassificationSetting,
+  WorkbookListSetting,
+  WorkbookClassificationSetting,
+  WorkbookSchoolReportSetting,
+  WorkbookCSATSetting,
+  ContentListManagementSetting,
+  InspectionManagementSetting,
+  ContentEditingSetting,
+} from './components';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
@@ -24,10 +34,11 @@ import {
   QuizCreateListPage,
   CreatingContentSetting,
   ManagingContentSetting,
+  CompanyPage,
   MetaInfoPage,
+  ProcessPage,
   TagMappingPage,
   TagMappingInitPage,
-  ProcessPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -152,6 +163,10 @@ const router = createBrowserRouter([
         element: <AuthorityPage />,
       },
       {
+        path: '/operation-manage/company',
+        element: <CompanyPage />,
+      },
+      {
         path: '/creatingcontentSetting',
         element: <CreatingContentSetting />,
       },
@@ -164,8 +179,40 @@ const router = createBrowserRouter([
         element: <ContentDtEditingSetting />,
       },
       {
+        path: '/contentClassificationSetting',
+        element: <ContentClassificationSetting />,
+      },
+      {
+        path: '/workbookListSetting',
+        element: <WorkbookListSetting />,
+      },
+      {
+        path: '/workbookClassificationSetting',
+        element: <WorkbookClassificationSetting />,
+      },
+      {
+        path: '/workbookSchoolReportSetting',
+        element: <WorkbookSchoolReportSetting />,
+      },
+      {
+        path: '/workbookCSATSetting',
+        element: <WorkbookCSATSetting />,
+      },
+      {
         path: '/managingcontentSetting',
         element: <ManagingContentSetting />,
+      },
+      {
+        path: '/contentListManagementSetting',
+        element: <ContentListManagementSetting />,
+      },
+      {
+        path: '/contentEditingSetting',
+        element: <ContentEditingSetting />,
+      },
+      {
+        path: '/inspectionManagementSetting',
+        element: <InspectionManagementSetting />,
       },
     ],
   },

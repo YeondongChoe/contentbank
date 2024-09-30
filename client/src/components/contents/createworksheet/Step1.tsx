@@ -4288,18 +4288,8 @@ export function Step1() {
                   <Label value="*문항 타입" fontSize="16px" width="200px" />
                 </SubTitleWrapper>
                 <SelectorGroup>{renderTypeButtons()}</SelectorGroup>
-                {/* <Label
-                  value="*모의고사 포함 여부"
-                  fontSize="16px"
-                  width="200px"
-                />
-                <SelectorGroup>{renderMockButtons()}</SelectorGroup> */}
                 <Label value="*배점" fontSize="16px" width="200px" />
                 <SelectorGroup>{renderScoreButtons()}</SelectorGroup>
-                {/* <AdditionOptionList>
-                  <Label value="추가 옵션" fontSize="16px" width="200px" />
-                  {renderAdditionOption()}
-                </AdditionOptionList> */}
                 <PreviousExamSpace></PreviousExamSpace>
               </SchoolSelectorSection>
             </>

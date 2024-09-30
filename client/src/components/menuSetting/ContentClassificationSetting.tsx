@@ -2,12 +2,11 @@ import * as React from 'react';
 import { useState } from 'react';
 
 import { BiToggleRight } from 'react-icons/bi';
-import { BsEyeSlash, BsEye } from 'react-icons/bs';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { TabMenu, Label, Button, Select } from '..';
-import Image from '../../assets/images/EditerImg.png';
+import Image from '../../assets/images/ClassificationImg.png';
 import { pageAtom } from '../../store/utilAtom';
 import { COLOR } from '../constants';
 
@@ -31,11 +30,11 @@ type CategoryDummyType = {
   additionalInformationList: TagClass[];
 };
 
-export function ContentDtEditingSetting() {
+export function ContentClassificationSetting() {
   const menuList = [
     {
-      label: '출처',
-      value: '출처',
+      label: '단원분류',
+      value: '단원분류',
     },
     {
       label: '추가정보',
@@ -47,307 +46,115 @@ export function ContentDtEditingSetting() {
       tageClassList: [
         {
           idx: 1,
-          name: '교재',
+          name: '단원분류',
           code: '1',
           option: [
             {
               idx: 1,
-              title: '교재속성',
+              title: '교육과정',
               isNecessary: false,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 2,
-              title: '출판사',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '텍스트 입력',
-            },
-            {
-              idx: 3,
-              title: '시리즈',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 4,
-              title: '교재명',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 5,
-              title: '교재페이지',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '숫자 입력',
-            },
-            {
-              idx: 6,
-              title: '교재번호',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '숫자 입력',
-            },
-            {
-              idx: 7,
-              title: '출판년도',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-          ],
-        },
-        {
-          idx: 2,
-          name: '내신',
-          code: '2',
-          option: [
-            {
-              idx: 1,
-              title: '내신형식',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '학교명',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '텍스트 입력',
-            },
-            {
-              idx: 3,
-              title: '학사일정',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 4,
-              title: '내신페이지',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '숫자 입력',
-            },
-            {
-              idx: 5,
-              title: '문항번호',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '숫자 입력',
-            },
-            {
-              idx: 6,
-              title: '내신배점',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '숫자 입력',
-            },
-            {
-              idx: 7,
-              title: '기출일시',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '숫자 입력',
-            },
-          ],
-        },
-        {
-          idx: 3,
-          name: '기출',
-          code: '3',
-          option: [
-            {
-              idx: 1,
-              title: '내신배점',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '텍스트 입력',
-            },
-            {
-              idx: 2,
-              title: '기출속성',
+              title: '교과',
               isNecessary: true,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 3,
-              title: '주관사',
+              title: '과목',
               isNecessary: true,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 4,
-              title: '기출명',
+              title: '학교급',
               isNecessary: true,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 5,
-              title: '시행학제',
+              title: '학년',
               isNecessary: false,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 6,
-              title: '시행학년',
+              title: '학기',
               isNecessary: false,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 7,
-              title: '시험지타입',
+              title: '대단원',
               isNecessary: false,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 8,
-              title: '문항번호',
+              title: '중단원',
               isNecessary: false,
               isDisplay: true,
-              tag: '숫자 입력',
+              tag: '태그 선택',
             },
             {
               idx: 9,
-              title: '기출배점',
+              title: '소단원',
               isNecessary: false,
               isDisplay: true,
-              tag: '숫자 입력',
+              tag: '태그 선택',
             },
             {
               idx: 10,
-              title: '기출일시',
+              title: '유형',
               isNecessary: false,
               isDisplay: true,
-              tag: '숫자 입력',
+              tag: '태그 선택',
+            },
+            {
+              idx: 11,
+              title: '세분류',
+              isNecessary: false,
+              isDisplay: true,
+              tag: '태그 선택',
+            },
+            {
+              idx: 12,
+              title: '미세분류',
+              isNecessary: false,
+              isDisplay: true,
+              tag: '태그 선택',
             },
           ],
-        },
-        {
-          idx: 4,
-          name: '자체제작',
-          code: '4',
-        },
-        {
-          idx: 5,
-          name: '기타',
-          code: '5',
         },
       ],
       additionalInformationList: [
         {
           idx: 1,
-          name: '교재',
+          name: '추가정보',
           code: '1',
           option: [
             {
               idx: 1,
-              title: '문항타입',
+              title: '행동요소1',
               isNecessary: true,
               isDisplay: true,
               tag: '태그 선택',
             },
             {
               idx: 2,
-              title: '난이도',
+              title: '행동요소2',
               isNecessary: true,
-              isDisplay: true,
-              tag: '텍스트 입력',
-            },
-          ],
-        },
-        {
-          idx: 2,
-          name: '내신',
-          code: '2',
-          option: [
-            {
-              idx: 1,
-              title: '문항타입',
-              isNecessary: false,
               isDisplay: true,
               tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '난이도',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '텍스트 입력',
-            },
-          ],
-        },
-        {
-          idx: 3,
-          name: '기출',
-          code: '3',
-          option: [
-            {
-              idx: 1,
-              title: '문항타입',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '난이도',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '텍스트 입력',
-            },
-          ],
-        },
-        {
-          idx: 4,
-          name: '자체제작',
-          code: '4',
-          option: [
-            {
-              idx: 1,
-              title: '문항타입',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '난이도',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '텍스트 입력',
-            },
-          ],
-        },
-        {
-          idx: 5,
-          name: '기타',
-          code: '5',
-          option: [
-            {
-              idx: 1,
-              title: '문항타입',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '난이도',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '텍스트 입력',
             },
           ],
         },
@@ -356,8 +163,7 @@ export function ContentDtEditingSetting() {
   ];
   const [categoryList, setCategoryList] =
     useState<CategoryDummyType[]>(CategoryDummy);
-  const [selectedValue, setSelectedValue] = useState<string>('교재'); //태그
-  const [tabVeiw, setTabVeiw] = useState<string>('출처');
+  const [tabVeiw, setTabVeiw] = useState<string>('단원분류'); //태그가 없어서 탭에 따라 카테고리 노출
   const [page, setPage] = useRecoilState(pageAtom);
 
   const changeTab = () => {
@@ -368,7 +174,7 @@ export function ContentDtEditingSetting() {
     <Container>
       <Wrapper>
         <TitleWrapper>
-          <Title>문항 등록/수정(DT&Editing)</Title>
+          <Title>문항 등록/수정(문항 분류)</Title>
         </TitleWrapper>
         <MainWrapper>
           <SettingWrapper>
@@ -389,30 +195,6 @@ export function ContentDtEditingSetting() {
                 리스트에 노출되는 필터의 순서를 변경합니다.
               </PageDescription>
               <Label
-                value={'출처'}
-                width="100%"
-                bold
-                fontSize="17px"
-                padding="10px 0 0px 5px"
-              />
-              <Label
-                value={'태그'}
-                width="100%"
-                bold
-                fontSize="14px"
-                padding="10px 0 10px 5px"
-              />
-              {categoryList && (
-                <Select
-                  isnormalizedOptions
-                  width={'100%'}
-                  defaultValue="교재"
-                  key="교재"
-                  options={categoryList[0].tageClassList}
-                  setSelectedValue={setSelectedValue}
-                />
-              )}
-              <Label
                 value={'그룹'}
                 width="100%"
                 bold
@@ -421,11 +203,11 @@ export function ContentDtEditingSetting() {
               />
               <Select
                 width={'100%'}
-                defaultValue="출처교재"
-                key="출처교재"
+                defaultValue="문항분류1"
+                key="문항분류1"
                 isnormalizedOptions
               />
-              {tabVeiw === '출처' && (
+              {tabVeiw === '단원분류' && (
                 <>
                   <CategoryWrapper>
                     <Label
@@ -445,15 +227,6 @@ export function ContentDtEditingSetting() {
                         }}
                       ></BiToggleRight>
                       <PageDescription>필수값설정</PageDescription>
-                      <BsEye
-                        style={{
-                          width: '18px',
-                          height: '18px',
-                          cursor: 'pointer',
-                          fill: `${COLOR.PRIMARY}`,
-                        }}
-                      ></BsEye>
-                      <PageDescription>노출여부</PageDescription>
                     </IconWrapper>
                   </CategoryWrapper>
                   <ContentListWrapper>
@@ -463,7 +236,7 @@ export function ContentDtEditingSetting() {
                         {(() => {
                           const filteredCategory =
                             categoryList[0].tageClassList.find(
-                              (item: TagClass) => item.name === selectedValue,
+                              (item: TagClass) => item.name === tabVeiw,
                             );
 
                           // 필터링된 카테고리가 존재할 때만 option을 렌더링
@@ -579,129 +352,26 @@ export function ContentDtEditingSetting() {
                                         />
                                       </div>
                                     )}
-                                    {category.isDisplay ? (
-                                      <div className="icon">
-                                        <BsEye
-                                          style={{
-                                            width: '20px',
-                                            height: '20px',
-                                            cursor: 'pointer',
-                                            fill: `${COLOR.PRIMARY}`,
-                                          }}
-                                          onClick={() => {
-                                            setCategoryList((prevState) =>
-                                              prevState.map((catListItem) => {
-                                                // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isDisplay 상태를 변경
-                                                const updatedTageClassList =
-                                                  catListItem.tageClassList.map(
-                                                    (tagClass) => {
-                                                      const updatedOptions =
-                                                        tagClass.option?.map(
-                                                          (optionItem) => {
-                                                            if (
-                                                              optionItem.title ===
-                                                              category.title
-                                                            ) {
-                                                              return {
-                                                                ...optionItem,
-                                                                isDisplay:
-                                                                  !optionItem.isDisplay, // 해당 옵션의 isDisplay만 토글
-                                                              };
-                                                            }
-                                                            return optionItem; // 나머지 옵션은 그대로 유지
-                                                          },
-                                                        );
-
-                                                      return {
-                                                        ...tagClass,
-                                                        option: updatedOptions, // 변경된 옵션 배열로 업데이트
-                                                      };
-                                                    },
-                                                  );
-
-                                                return {
-                                                  ...catListItem,
-                                                  tageClassList:
-                                                    updatedTageClassList, // 업데이트된 tageClassList로 교체
-                                                };
-                                              }),
-                                            );
-                                          }}
-                                        />
-                                      </div>
-                                    ) : (
-                                      <div className="icon">
-                                        <BsEyeSlash
-                                          style={{
-                                            width: '20px',
-                                            height: '20px',
-                                            cursor: 'pointer',
-                                            fill: `${COLOR.MUTE}`,
-                                          }}
-                                          onClick={() => {
-                                            setCategoryList((prevState) =>
-                                              prevState.map((catListItem) => {
-                                                // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isDisplay 상태를 변경
-                                                const updatedTageClassList =
-                                                  catListItem.tageClassList.map(
-                                                    (tagClass) => {
-                                                      const updatedOptions =
-                                                        tagClass.option?.map(
-                                                          (optionItem) => {
-                                                            if (
-                                                              optionItem.title ===
-                                                              category.title
-                                                            ) {
-                                                              return {
-                                                                ...optionItem,
-                                                                isDisplay:
-                                                                  !optionItem.isDisplay, // 해당 옵션의 isDisplay만 토글
-                                                              };
-                                                            }
-                                                            return optionItem; // 나머지 옵션은 그대로 유지
-                                                          },
-                                                        );
-
-                                                      return {
-                                                        ...tagClass,
-                                                        option: updatedOptions, // 변경된 옵션 배열로 업데이트
-                                                      };
-                                                    },
-                                                  );
-
-                                                return {
-                                                  ...catListItem,
-                                                  tageClassList:
-                                                    updatedTageClassList, // 업데이트된 tageClassList로 교체
-                                                };
-                                              }),
-                                            );
-                                          }}
-                                        />
-                                      </div>
-                                    )}
                                   </Content>
                                 </ContentList>
                               ),
                             );
                           }
                         })()}
-                        <ButtonWrapper>
-                          <Button
-                            height={'40px'}
-                            width={'100%'}
-                            //onClick={openWindowCreateWorksheet}
-                            fontSize="13px"
-                            $margin="20px 0 0 0"
-                            $filled
-                            cursor
-                          >
-                            변경사항 저장
-                          </Button>
-                        </ButtonWrapper>
                       </>
                     )}
                   </ContentListWrapper>
+                  <Button
+                    height={'40px'}
+                    width={'100%'}
+                    //onClick={openWindowCreateWorksheet}
+                    fontSize="13px"
+                    $margin="20px 0 0 0"
+                    $filled
+                    cursor
+                  >
+                    변경사항 저장
+                  </Button>
                 </>
               )}
               {tabVeiw === '추가정보' && (
@@ -733,7 +403,7 @@ export function ContentDtEditingSetting() {
                         {(() => {
                           const filteredCategory =
                             categoryList[0].additionalInformationList.find(
-                              (item: TagClass) => item.name === selectedValue,
+                              (item: TagClass) => item.name === tabVeiw,
                             );
 
                           // 필터링된 카테고리가 존재할 때만 option을 렌더링
@@ -876,69 +546,178 @@ export function ContentDtEditingSetting() {
             </>
           </SettingWrapper>
           <ListWrapper>
-            <img
-              src={Image}
-              alt="editer"
-              style={{
-                borderTopLeftRadius: '15px',
-                borderTopRightRadius: '15px',
-              }}
-            />
-            <SelectWrapper>
-              <Label value={'출처'} width="100%" bold fontSize="17px" />
-              {/* selectedValue와 일치하는 필터된 카테고리 찾기 */}
-              {(() => {
-                const filteredCategory = categoryList[0].tageClassList.find(
-                  (item: TagClass) => item.name === selectedValue,
-                );
-                // 필터링된 카테고리가 존재할 때만 option을 렌더링
-                if (filteredCategory) {
-                  return filteredCategory.option?.map((optionItem) => {
-                    if (optionItem.isDisplay) {
-                      return (
-                        <Select
-                          width={'130px'}
-                          isnormalizedOptions
-                          defaultValue={
-                            optionItem.isNecessary
-                              ? `${optionItem.title}*`
-                              : optionItem.title
-                          }
-                          key={optionItem.idx}
-                        />
-                      );
-                    }
-                    return null; // isDisplay가 false인 항목은 렌더링하지 않음
-                  });
-                }
-                return null; // filteredCategory가 없는 경우 null 반환
-              })()}
-              <Label value={'추가정보'} width="100%" bold fontSize="17px" />
-              {(() => {
-                const filteredCategory =
-                  categoryList[0].additionalInformationList.find(
-                    (item: TagClass) => item.name === selectedValue,
-                  );
-                // 필터링된 카테고리가 존재할 때만 option을 렌더링
-                if (filteredCategory) {
-                  return filteredCategory.option?.map((optionItem) => {
-                    return (
-                      <Select
-                        width={'130px'}
-                        isnormalizedOptions
-                        defaultValue={
-                          optionItem.isNecessary
-                            ? `${optionItem.title}*`
-                            : optionItem.title
-                        }
-                        key={optionItem.idx}
-                      />
-                    );
-                  });
-                }
-                return null; // filteredCategory가 없는 경우 null 반환
-              })()}
-            </SelectWrapper>
+            <ClassificationWrapper>
+              <ImgWrapper>
+                <img
+                  src={Image}
+                  alt="editer"
+                  style={{
+                    borderTopLeftRadius: '15px',
+                    borderTopRightRadius: '15px',
+                  }}
+                />
+              </ImgWrapper>
+              <SelectWrapper>
+                <SubtitleWrapper>
+                  <Label
+                    value={'문항 단원분류'}
+                    width="100%"
+                    padding="0"
+                    bold
+                    fontSize="20px"
+                  />
+                </SubtitleWrapper>
+                <LabelWrapper>
+                  <LabelWithButton>
+                    <Label
+                      value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[0].isNecessary ? '교육과정*' : '교육과정'}`}
+                      width="80px"
+                      bold
+                      fontSize="14px"
+                    />
+                    <ButtonWrapper>
+                      <Button
+                        width="90px"
+                        height="30px"
+                        $normal
+                        fontSize="14px"
+                      >
+                        <span>10차</span>
+                      </Button>
+                      <Button
+                        width="90px"
+                        height="30px"
+                        $normal
+                        fontSize="14px"
+                      >
+                        <span>9차</span>
+                      </Button>
+                      <Button
+                        width="90px"
+                        height="30px"
+                        $normal
+                        fontSize="14px"
+                      >
+                        <span>8차</span>
+                      </Button>
+                    </ButtonWrapper>
+                  </LabelWithButton>
+                  <Label
+                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[1].isNecessary ? '교과*' : '교과'}`}
+                    width="100%"
+                    bold
+                    fontSize="14px"
+                  />
+                  <Label
+                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[2].isNecessary ? '과목*' : '과목'}`}
+                    width="100%"
+                    bold
+                    fontSize="14px"
+                  />
+                  <Label
+                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[3].isNecessary ? '학교급*' : '학교급'}`}
+                    width="100%"
+                    bold
+                    fontSize="14px"
+                  />
+                  <Label
+                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[4].isNecessary ? '학년*' : '학년'}`}
+                    width="100%"
+                    bold
+                    fontSize="14px"
+                  />
+                  <Label
+                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[5].isNecessary ? '학기*' : '학기'}`}
+                    width="100%"
+                    bold
+                    fontSize="14px"
+                  />
+                </LabelWrapper>
+                <ButtonBox>
+                  <div>
+                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[6].isNecessary ? '대단원*' : '대단원'}`}
+                  </div>
+                  <div>
+                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[7].isNecessary ? '중단원*' : '중단원'}`}
+                  </div>
+                  <div>
+                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[8].isNecessary ? '소단원*' : '소단원'}`}
+                  </div>
+                  <div>
+                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[9].isNecessary ? '유형*' : '유형'}`}
+                  </div>
+                  <div>
+                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[10].isNecessary ? '세분류*' : '세분류'}`}
+                  </div>
+                  <div>
+                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[11].isNecessary ? '미세분류*' : '미세분류'}`}
+                  </div>
+                </ButtonBox>
+                <Label
+                  value={'추가정보'}
+                  width="100%"
+                  padding="20px 10px 10px 10px"
+                  bold
+                  fontSize="20px"
+                />
+                <LabelWrapper>
+                  <LabelWithButton>
+                    <Label
+                      value={`${categoryList[0].additionalInformationList[0].option && categoryList[0].additionalInformationList[0].option[0].isNecessary ? '행동요소1*' : '행동요소1'}`}
+                      width="80px"
+                      bold
+                      fontSize="14px"
+                    />
+                    <ButtonWrapper>
+                      <Button
+                        width="90px"
+                        height="30px"
+                        $normal
+                        fontSize="14px"
+                      >
+                        <span>계산</span>
+                      </Button>
+                      <Button
+                        width="90px"
+                        height="30px"
+                        $normal
+                        fontSize="14px"
+                      >
+                        <span>이해</span>
+                      </Button>
+                      <Button
+                        width="90px"
+                        height="30px"
+                        $normal
+                        fontSize="14px"
+                      >
+                        <span>추론</span>
+                      </Button>
+                    </ButtonWrapper>
+                  </LabelWithButton>
+                </LabelWrapper>
+                <LabelWrapper>
+                  <LabelWithButton>
+                    <Label
+                      value={`${categoryList[0].additionalInformationList[0].option && categoryList[0].additionalInformationList[0].option[1].isNecessary ? '행동요소2*' : '행동요소2'}`}
+                      width="80px"
+                      bold
+                      fontSize="14px"
+                    />
+                    <ButtonWrapper>
+                      <Button
+                        width="90px"
+                        height="30px"
+                        $normal
+                        fontSize="14px"
+                      >
+                        <span>문제해결</span>
+                      </Button>
+                    </ButtonWrapper>
+                  </LabelWithButton>
+                </LabelWrapper>
+              </SelectWrapper>
+            </ClassificationWrapper>
             <ListDescription>
               화면에 보이는 데이터는 예시로 구성된 데이터 입니다. 실제
               화면에서는 적용된 데이터로 확인하실 수 있습니다.
@@ -1005,7 +784,7 @@ const IconWrapper = styled.div`
   }
 `;
 const ContentListWrapper = styled.div`
-  max-height: 530px; /* 컨테이너의 최대 높이 설정 */
+  max-height: 500px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
 `;
 const ContentList = styled.li`
@@ -1049,20 +828,7 @@ const Content = styled.div`
     width: 10%;
   }
 `;
-const ButtonWrapper = styled.div`
-  display: flex;
-  height: 210px;
-  align-items: flex-end;
-`;
-const SelectWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 5px;
-  padding: 10px;
-  border-top: 1px solid ${COLOR.BORDER_POPUP};
-`;
+
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -1070,15 +836,78 @@ const ListWrapper = styled.div`
   border-radius: 15px;
   border: 1px solid ${COLOR.BORDER_POPUP};
 `;
+const ClassificationWrapper = styled.div`
+  display: flex;
+  height: 750px;
+  border-bottom: 1px solid ${COLOR.BORDER_POPUP};
+`;
+const ImgWrapper = styled.div`
+  width: 60%;
+  //height: 100%;
+`;
+const SelectWrapper = styled.div`
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid ${COLOR.BORDER_POPUP};
+`;
+const SubtitleWrapper = styled.div`
+  padding: 10px;
+  border-bottom: 1px solid ${COLOR.BORDER_POPUP};
+`;
+const LabelWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+`;
+const LabelWithButton = styled.div`
+  display: flex;
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const ButtonBox = styled.div`
+  padding: 10px;
+  background-color: ${COLOR.LIGHT_GRAY};
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  div {
+    width: 230px;
+    border: 1px dotted ${COLOR.BORDER_GRAY};
+    background-color: white;
+    padding-left: 10px;
+    color: ${COLOR.FONT_GRAY};
+  }
+  :nth-child(2) {
+    margin-left: 30px;
+  }
+  :nth-child(3) {
+    margin-left: 60px;
+  }
+  :nth-child(4) {
+    margin-left: 90px;
+  }
+  :nth-child(5) {
+    margin-left: 120px;
+  }
+  :nth-child(6) {
+    margin-left: 150px;
+  }
+`;
 const ListDescription = styled.p`
+  height: 80px;
   display: flex;
   justify-content: center;
+  align-items: center;
   font-size: 12px;
   color: ${COLOR.PRIMARY};
   font-weight: bold;
 `;
 const AdditionalButtonWrapper = styled.div`
   display: flex;
-  height: 419px;
+  height: 475px;
   align-items: flex-end;
 `;

@@ -8,3 +8,13 @@ declare module 'html2pdf.js' {
 
   export default html2pdf;
 }
+
+declare module '*.png' {
+  const value: string;
+  export default value;
+}
+
+// 다음 지도 API
+interface Window {
+  daum: any;
+}
