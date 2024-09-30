@@ -1,6 +1,12 @@
 import * as React from 'react';
 
 // eslint-disable-next-line import/order, import/default
+import ReactDOM from 'react-dom/client';
+
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
+
+import { App } from './App';
 import {
   ContentListSetting,
   ContentDtEditingSetting,
@@ -13,11 +19,6 @@ import {
   InspectionManagementSetting,
   ContentEditingSetting,
 } from './components';
-import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { RecoilRoot } from 'recoil';
-
-import { App } from './App';
 import {
   AuthorityPage,
   FirstLoginPage,
@@ -42,7 +43,7 @@ import {
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
-import { Formula } from './pages/managementWindow/Formula';
+import { ChangeHistory } from './pages/managementWindow/ChangeHistory';
 import { Notfound } from './pages/Notfound';
 import { Preparing } from './pages/Preparing';
 import { CreateContentMain, QuizPreview } from './pages/quizCreateWindow';
@@ -101,10 +102,10 @@ const router = createBrowserRouter([
         path: '/createcontentmain',
         element: <CreateContentMain />,
       },
-      // {
-      //   path: '/formula',
-      //   element: <Formula />,
-      // },
+      {
+        path: '/change-history',
+        element: <ChangeHistory />,
+      },
       {
         path: '/quizpreview',
         element: <QuizPreview />,

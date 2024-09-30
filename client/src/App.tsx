@@ -102,7 +102,7 @@ export function App() {
           location.pathname !== '/init-change-password' &&
           location.pathname !== '/relogin' &&
           location.pathname !== '/createcontentmain' &&
-          location.pathname !== '/formula' &&
+          location.pathname !== '/change-history' &&
           location.pathname !== '/quizpreview' &&
           location.pathname !== '/managementeditmain' &&
           location.pathname !== '/content-manage/tagmapping' &&
@@ -127,7 +127,7 @@ export function App() {
             location.pathname !== '/init-change-password' &&
             location.pathname !== '/relogin' &&
             location.pathname !== '/createcontentmain' &&
-            location.pathname !== '/formula' &&
+            location.pathname !== '/change-history' &&
             location.pathname !== '/quizpreview' &&
             location.pathname !== '/managementeditmain' &&
             location.pathname !== '/content-manage/tagmapping' &&

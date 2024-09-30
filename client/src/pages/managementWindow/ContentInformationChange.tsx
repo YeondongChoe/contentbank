@@ -21,6 +21,14 @@ import {
   openToastifyAlert,
 } from '../../components';
 import { COLOR } from '../../components/constants';
+import ArrowClockwiseIcon from '../../components/contents/createcontent/editer/components/icons/ArrowClockwiseIcon';
+import ArrowCounterclockwiseIcon from '../../components/contents/createcontent/editer/components/icons/ArrowCounterclockwiseIcon';
+import BarCharLineIcon from '../../components/contents/createcontent/editer/components/icons/BarCharLineIcon';
+import BoxArrowInUpRightIcon from '../../components/contents/createcontent/editer/components/icons/BoxArrowInUpRightIcon';
+import ChevronLeftIcon from '../../components/contents/createcontent/editer/components/icons/ChevronLeftIcon';
+import ChevronRightIcon from '../../components/contents/createcontent/editer/components/icons/ChevronRightIcon';
+import CloseIcon from '../../components/contents/createcontent/editer/components/icons/CloseIcon';
+import TrashIcon from '../../components/contents/createcontent/editer/components/icons/TrashIcon';
 import { QuizList } from '../../components/contents/createcontent/list';
 import { pageAtom } from '../../store/utilAtom';
 import {
@@ -31,9 +39,6 @@ import {
   QuizListType,
 } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
-import { windowOpenHandler } from '../../utils/windowHandler';
-
-import { Formula } from './Formula';
 
 interface RadioStateType {
   title: string;
@@ -45,38 +50,6 @@ interface RadioStateType {
 interface ItemTreeKeyType {
   [key: string]: string;
 }
-
-// 스크립트 로드 함수
-const dynamicallyLoadScripts = (
-  scripts: any[],
-  onSuccess: { (): void; (): void; (): void },
-  onError: ((arg0: any) => void) | undefined,
-) => {
-  let loadedScripts = 0;
-
-  const scriptLoadHandler = () => {
-    loadedScripts++;
-    if (loadedScripts === scripts.length) {
-      onSuccess();
-    }
-  };
-
-  const scriptErrorHandler = (src: any) => {
-    console.error(`Failed to load script: ${src}`);
-    if (onError) {
-      onError(src);
-    }
-  };
-
-  scripts.forEach((src) => {
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = true;
-    script.onload = scriptLoadHandler;
-    script.onerror = () => scriptErrorHandler(src);
-    document.body.appendChild(script);
-  });
-};
 
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
@@ -163,6 +136,9 @@ export function ContentInformationChange() {
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
   const [IsSearchOn, setIsSearchOn] = useState(false);
+
+  const searchDivRef = useRef<HTMLDivElement | null>(null);
+  const changeDivRef = useRef<HTMLDivElement | null>(null);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -579,7 +555,16 @@ export function ContentInformationChange() {
     //   radio7depthCheck,
     // );
     // console.log('checkedDepthList', checkedDepthList);
-    searchCategoryDataMutate();
+    // searchCategoryDataMutate();
+
+    if (searchDivRef.current) {
+      const divContent = searchDivRef.current.innerHTML;
+      setSearchValue(divContent);
+      console.log('Div content:', divContent);
+
+      // 여기에 기존의 검색 로직을 추가합니다.
+      searchCategoryDataMutate();
+    }
   };
 
   // 문항 분류 검색 api
@@ -801,42 +786,15 @@ export function ContentInformationChange() {
     }
   }, [changeValue, checkedList]);
 
-  //수식 입력기
-  const openFormula = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    const target = e.currentTarget.value;
-    // 로컬스토리지에 보낼데이터 저장
-    // const sendData = { data: target };
-    // localStorage.setItem('sendData', JSON.stringify(sendData));
-
-    // windowOpenHandler({
-    //   name: 'formula',
-    //   url: '/formula',
-    //   $width: 500,
-    //   $height: 500,
-    // });
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    window.openEQ();
-  };
-
   const submitSave = () => {
     // saveHandler();
     // 이미지 데이터 저장
   };
-  const saveHmlDataHandler = async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const data = await window.saveHmlData();
-    console.log('test---- in 수식 데이터', data);
-  };
 
-  const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  const [scriptsLoaded, setScriptsLoaded] = useState(false);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  window.editorType = true;
+  window.editorType_s = true;
+  const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const initialScripts = [
@@ -865,457 +823,589 @@ export function ContentInformationChange() {
       '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
     ];
 
-    const handleScriptsLoaded = () => {
-      console.log('Initial scripts loaded');
-      setScriptsLoaded(true);
-
-      dynamicallyLoadScripts(
-        subsequentScripts,
-        () => {
-          console.log('Subsequent scripts loaded');
-
-          if (ocrIframeContainer.current) {
-            const iframe = document.createElement('iframe');
-            iframe.width = '0';
-            iframe.height = '0';
-            iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
-            iframe.frameBorder = '0';
-            iframe.scrolling = 'no';
-            iframe.id = 'itex_frame_area';
-            ocrIframeContainer.current.appendChild(iframe);
-          }
-
-          // `window.openEQ` 호출은 모든 스크립트가 로드된 후에
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          if (window.openEQ) {
+    // 동적 스크립트 로딩 함수
+    const dynamicallyLoadScripts = (
+      scriptUrls: any[],
+      callback: { (): Promise<void>; (): void; (): void },
+    ) => {
+      const promises = scriptUrls.map((url) => {
+        return new Promise((resolve, reject) => {
+          // 스크립트가 이미 존재하는지 확인
+          if (document.querySelector(`script[src="${url}"]`)) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            window.openEQ();
-          } else {
-            console.error('openEQ function is not available on window.');
+            resolve(); // 이미 로드된 경우 건너뜀
+            return;
           }
-        },
-        (src) => {
-          console.error(`Failed to load subsequent script: ${src}`);
-        },
-      );
+
+          // 존재하지 않는 경우 새로 로드
+          const script = document.createElement('script');
+          script.src = url;
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          script.onload = () => resolve();
+          script.onerror = () =>
+            reject(new Error(`Failed to load script ${url}`));
+          document.body.appendChild(script);
+        });
+      });
+
+      Promise.all(promises)
+        .then(() => {
+          if (callback) callback();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     };
 
-    dynamicallyLoadScripts(initialScripts, handleScriptsLoaded, (src) => {
-      console.error(`Failed to load initial script: ${src}`);
-    });
+    const initComponent = async () => {
+      dynamicallyLoadScripts([...initialScripts], async () => {
+        console.log('Initial scripts loaded');
+        const checkTinyMCEReady = () => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          if (window.tinymce) {
+            console.log('tinymce loaded successfully');
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            dynamicallyLoadScripts([...subsequentScripts], () => {
+              console.log('Subsequent scripts loaded');
+
+              if (ocrIframeContainer.current) {
+                const iframe = document.createElement('iframe');
+                iframe.width = '0';
+                iframe.height = '0';
+                iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
+                iframe.frameBorder = '0';
+                iframe.scrolling = 'no';
+                iframe.id = 'itex_frame_area';
+                ocrIframeContainer.current.appendChild(iframe);
+              }
+            });
+          } else {
+            setTimeout(checkTinyMCEReady, 50);
+          }
+        };
+
+        checkTinyMCEReady();
+      });
+    };
+
+    initComponent();
   }, []);
 
+  //수식 입력기
+  const openFormula = (state: unknown) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.openEQ(state);
+  };
+
+  const handleSearchValueChange = (e: React.FormEvent<HTMLDivElement>) => {
+    const newValue = e.currentTarget.innerHTML;
+    if (newValue !== searchValue) {
+      setSearchValue(newValue);
+    }
+  };
+
+  const handleChangeValueChange = (e: React.FormEvent<HTMLDivElement>) => {
+    const newValue = e.currentTarget.innerHTML;
+    if (newValue !== changeValue) {
+      setChangeValue(newValue);
+    }
+  };
+
   return (
-    <div className="eq_wrap_node">
-      <div className="itex_editor_container">
-        <Container>
-          <ResizeLayout
-            height={'calc(100vh - 100px)'}
-            column={'3rd'}
-            item1Width={400}
-            minWidth={330}
-            maxWidth={1000}
-            item1={
-              <PositionWrapper>
-                <Title>
-                  <span className="title_top">
-                    <span className="point_text">STEP1</span> 찾을 내용 입력
-                  </span>
-                </Title>
-                <ScrollWrapper>
-                  <PerfectScrollbar>
-                    {isCategoryIsFething &&
-                      groupsDataAIsFetching &&
-                      groupsDataEIsFetching &&
-                      isCategoryLoaded && (
-                        <LoaderWrapper>
-                          <Loader height="50px" size="50px" />
-                        </LoaderWrapper>
-                      )}
-                    {/* 라디오 버튼 부분 */}
-                    <div className="meta_radio_select">
-                      {categoryItems[0] && categoryList && (
+    <>
+      <Container>
+        <ResizeLayout
+          height={'calc(100vh - 100px)'}
+          column={'3rd'}
+          item1Width={400}
+          minWidth={330}
+          maxWidth={1000}
+          item1={
+            <PositionWrapper>
+              <Title>
+                <span className="title_top">
+                  <span className="point_text">STEP1</span> 찾을 내용 입력
+                </span>
+              </Title>
+              <ScrollWrapper>
+                <PerfectScrollbar>
+                  {isCategoryIsFething &&
+                    groupsDataAIsFetching &&
+                    groupsDataEIsFetching &&
+                    isCategoryLoaded && (
+                      <LoaderWrapper>
+                        <Loader height="50px" size="50px" />
+                      </LoaderWrapper>
+                    )}
+                  {/* 라디오 버튼 부분 */}
+                  <div className="meta_radio_select">
+                    {categoryItems[0] && categoryList && (
+                      <>
+                        {/* 교육과정 */}
+                        {[categoryItems[0]].map((item) => (
+                          <div
+                            className={`1depth`}
+                            id={`${item.name}`}
+                            key={`selected1depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={categoryList[0]}
+                              selected={selected1depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio1depthCheck}
+                              $margin={`10px 0 0 0`}
+                            />
+                          </div>
+                        ))}
+                        {/* 학교급 */}
+                        {[categoryItems[1]].map((item) => (
+                          <div
+                            className={`2depth`}
+                            id={`${item.name}`}
+                            key={`selected2depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList1depth}
+                              selected={selected2depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio2depthCheck}
+                            />
+                          </div>
+                        ))}
+                        {/* 학년 */}
+                        {[categoryItems[2]].map((item) => (
+                          <div
+                            className={`3depth`}
+                            id={`${item.name}`}
+                            key={`selected3depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList2depth}
+                              selected={selected3depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio3depthCheck}
+                            />
+                          </div>
+                        ))}
+                        {/* 학기 */}
+                        {[categoryItems[3]].map((item) => (
+                          <div
+                            className={`4depth`}
+                            id={`${item.name}`}
+                            key={`selected4depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList3depth}
+                              selected={selected4depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio4depthCheck}
+                            />
+                          </div>
+                        ))}
+                        {/* 교과 */}
+                        {[categoryItems[6]].map((item) => (
+                          <div
+                            className={`5depth`}
+                            id={`${item.name}`}
+                            key={`selected5depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList4depth}
+                              selected={selected5depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio5depthCheck}
+                            />
+                          </div>
+                        ))}
+                        {/* 과목 */}
+                        {[categoryItems[7]].map((item) => (
+                          <div
+                            className={`6depth`}
+                            id={`${item.name}`}
+                            key={`selected6depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList5depth}
+                              selected={selected6depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio6depthCheck}
+                            />
+                          </div>
+                        ))}
+                        {/* 오픈여부 */}
+                        {[
+                          {
+                            idx: 0,
+                            name: '오픈여부',
+                            code: '오픈여부',
+                            type: 'SELECT',
+                          },
+                        ].map((item) => (
+                          <div
+                            className={`7depth`}
+                            id={`${item.name}`}
+                            key={`selected7depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              titleText={`${item.name}`}
+                              list={nextList6depth}
+                              selected={selected7depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio7depthCheck}
+                            />
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                  <div className="meta_accordion_select">
+                    {selected1depth &&
+                      selected2depth &&
+                      selected3depth &&
+                      selected4depth &&
+                      selected5depth &&
+                      selected6depth &&
+                      selected7depth && (
                         <>
-                          {/* 교육과정 */}
-                          {[categoryItems[0]].map((item) => (
-                            <div
-                              className={`1depth`}
-                              id={`${item.name}`}
-                              key={`selected1depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={categoryList[0]}
-                                selected={selected1depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio1depthCheck}
-                                $margin={`10px 0 0 0`}
-                              />
-                            </div>
-                          ))}
-                          {/* 학교급 */}
-                          {[categoryItems[1]].map((item) => (
-                            <div
-                              className={`2depth`}
-                              id={`${item.name}`}
-                              key={`selected2depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList1depth}
-                                selected={selected2depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio2depthCheck}
-                              />
-                            </div>
-                          ))}
-                          {/* 학년 */}
-                          {[categoryItems[2]].map((item) => (
-                            <div
-                              className={`3depth`}
-                              id={`${item.name}`}
-                              key={`selected3depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList2depth}
-                                selected={selected3depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio3depthCheck}
-                              />
-                            </div>
-                          ))}
-                          {/* 학기 */}
-                          {[categoryItems[3]].map((item) => (
-                            <div
-                              className={`4depth`}
-                              id={`${item.name}`}
-                              key={`selected4depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList3depth}
-                                selected={selected4depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio4depthCheck}
-                              />
-                            </div>
-                          ))}
-                          {/* 교과 */}
-                          {[categoryItems[6]].map((item) => (
-                            <div
-                              className={`5depth`}
-                              id={`${item.name}`}
-                              key={`selected5depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList4depth}
-                                selected={selected5depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio5depthCheck}
-                              />
-                            </div>
-                          ))}
-                          {/* 과목 */}
-                          {[categoryItems[7]].map((item) => (
-                            <div
-                              className={`6depth`}
-                              id={`${item.name}`}
-                              key={`selected6depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList5depth}
-                                selected={selected6depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio6depthCheck}
-                              />
-                            </div>
-                          ))}
-                          {/* 오픈여부 */}
-                          {[
-                            {
-                              idx: 0,
-                              name: '오픈여부',
-                              code: '오픈여부',
-                              type: 'SELECT',
-                            },
-                          ].map((item) => (
-                            <div
-                              className={`7depth`}
-                              id={`${item.name}`}
-                              key={`selected7depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                titleText={`${item.name}`}
-                                list={nextList6depth}
-                                selected={selected7depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio7depthCheck}
-                              />
-                            </div>
-                          ))}
+                          <strong>세부 검색조건</strong>
+                          <Accordion
+                            $backgroundColor={`${COLOR.GRAY}`}
+                            title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}/${radio5depthCheck.title}/${radio6depthCheck.title}`}
+                            id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}/${radio5depthCheck.title}/${radio6depthCheck.title}`}
+                            $margin={`0 0 20px 0`}
+                            defaultChecked={true}
+                          >
+                            <>
+                              {categoryItemTreeData ? (
+                                <>
+                                  {itemTree && itemTree.length ? (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              branchValue={`${item.name}`}
+                                              defaultChecked
+                                              key={`depthList${item?.idx} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item?.idx}
+                                              name={item.name}
+                                              value={item?.idx}
+                                              level={item?.level}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                  item?.level,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  ) : (
+                                    <ValueNone
+                                      textOnly
+                                      info="등록된 데이터가 없습니다"
+                                    />
+                                  )}
+                                </>
+                              ) : (
+                                <Loader />
+                              )}
+                            </>
+                          </Accordion>
                         </>
                       )}
-                    </div>
-                    <div className="meta_accordion_select">
-                      {selected1depth &&
-                        selected2depth &&
-                        selected3depth &&
-                        selected4depth &&
-                        selected5depth &&
-                        selected6depth &&
-                        selected7depth && (
-                          <>
-                            <strong>세부 검색조건</strong>
-                            <Accordion
-                              $backgroundColor={`${COLOR.GRAY}`}
-                              title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}/${radio5depthCheck.title}/${radio6depthCheck.title}`}
-                              id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}/${radio5depthCheck.title}/${radio6depthCheck.title}`}
-                              $margin={`0 0 20px 0`}
-                              defaultChecked={true}
-                            >
-                              <>
-                                {categoryItemTreeData ? (
-                                  <>
-                                    {itemTree && itemTree.length ? (
-                                      <>
-                                        {itemTree.map((el) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                branchValue={`${item.name}`}
-                                                defaultChecked
-                                                key={`depthList${item?.idx} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item?.idx}
-                                                name={item.name}
-                                                value={item?.idx}
-                                                level={item?.level}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                    item?.level,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </>
-                                    ) : (
-                                      <ValueNone
-                                        textOnly
-                                        info="등록된 데이터가 없습니다"
-                                      />
-                                    )}
-                                  </>
-                                ) : (
-                                  <Loader />
-                                )}
-                              </>
-                            </Accordion>
-                          </>
-                        )}
-                    </div>
-                  </PerfectScrollbar>
-                </ScrollWrapper>
-                <ButtonWrapper>
-                  <InputWrapper>
-                    <input
-                      type="text"
-                      minLength={2}
-                      maxLength={20}
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                      placeholder="찾을값을 입력해주세요(두글자 이상)"
-                    />
-                    <Button
-                      width={'80px'}
-                      height={'35px'}
-                      fontSize={'14px'}
-                      $margin={'0 0 0 5px'}
-                      cursor
-                      $filled
-                      $success
-                      onClick={(e) => openFormula(e)}
+                  </div>
+                </PerfectScrollbar>
+              </ScrollWrapper>
+              <ButtonWrapper>
+                <InputWrapper>
+                  <div
+                    ref={(el) => {
+                      if (el && el.innerHTML !== searchValue) {
+                        el.innerHTML = searchValue;
+                      }
+                      searchDivRef.current = el;
+                    }}
+                    className="first_area_test"
+                    contentEditable
+                    onInput={handleSearchValueChange}
+                    style={{
+                      minHeight: '35px',
+                      padding: '5px 10px',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                      outline: 'none',
+                      width: 'calc(100% - 85px)',
+                      overflowWrap: 'break-word',
+                    }}
+                  />
+                  {searchValue === '' && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '21px',
+                        left: '25px',
+                        color: '#999',
+                        pointerEvents: 'none',
+                        width: 'calc(100% - 125px)',
+                        height: '20px',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                      }}
                     >
-                      수식
-                    </Button>
-                  </InputWrapper>
-                  <Button
-                    $filled
-                    cursor
-                    disabled={buttonDisabled}
-                    onClick={() => onSearchList()}
-                  >
-                    <span>
-                      찾기 <IoSearch />
+                      <span>찾을값을 입력해주세요(두글자 이상)</span>
                     </span>
-                  </Button>
-                </ButtonWrapper>
-              </PositionWrapper>
-            }
-            item2={
-              <QuizListWrapper>
-                <Title>
-                  <span className="title_top">
-                    <span className="point_text">STEP2</span> 문항 선택
-                  </span>
-                </Title>
-                {/*TODO : 데이터 확인 */}
-                {questionList.length ? (
-                  <>
-                    <QuizList
-                      questionList={questionList}
-                      $height={`calc(100vh - 220px)`}
-                      showTitle
-                      showCheckBox
-                      showViewAllButton
-                      setCheckedList={setCheckedList}
-                    />
-                    <ButtonWrapper className="pagination">
-                      <PaginationBox
-                        itemsCountPerPage={
-                          searchCategoryData?.data.data.pagination
-                            .pageUnit as number
-                        }
-                        totalItemsCount={
-                          searchCategoryData?.data.data.pagination
-                            .totalCount as number
-                        }
-                      />
-                    </ButtonWrapper>
-                  </>
-                ) : (
-                  <ValueNoneWrapper>
-                    {searchValue.length < 1 && !IsSearchOn && (
-                      <ValueNone
-                        textOnly
-                        info={'STEP1 찾을 내용을 입력해주세요'}
-                      />
-                    )}
-                    {IsSearchOn && (
-                      <ValueNone textOnly info={'데이터가 없습니다'} />
-                    )}
-                  </ValueNoneWrapper>
-                )}
-              </QuizListWrapper>
-            }
-            item3Width={400}
-            item3={
-              <PositionWrapper>
-                <Title>
-                  <span className="title_top">
-                    <span className="point_text">STEP3</span> 바꿀 내용 입력
-                  </span>
-                </Title>
-                {checkedList.length ? (
-                  <>
-                    <ScrollWrapper>
-                      <PerfectScrollbar>
-                        <ChangeInfoWrapper>
-                          <p className="info_total">
-                            선택한 문항 총 {checkedList.length} 건
-                          </p>
-                          <div className="info_box">
-                            {checkedList.length && (
-                              <p>
-                                총
-                                <span className="strong">
-                                  {checkedList.length}
-                                </span>
-                                건
-                              </p>
-                            )}
-                            {searchValue && (
-                              <p>
-                                <span className="strong">{searchValue}</span>
-                                를(을)
-                              </p>
-                            )}
-                            {changeValue && (
-                              <p>
-                                <span className="strong">{changeValue}</span>로
-                                변경 하시겠습니까?
-                              </p>
-                            )}
-                          </div>
-                        </ChangeInfoWrapper>
-                      </PerfectScrollbar>
-                    </ScrollWrapper>
-                  </>
-                ) : (
-                  <ValueNoneWrapper>
-                    <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
-                  </ValueNoneWrapper>
-                )}
-                <ButtonWrapper>
-                  <InputWrapper>
-                    <input
-                      type="text"
-                      minLength={2}
-                      maxLength={20}
-                      value={changeValue}
-                      onChange={(e) => setChangeValue(e.target.value)}
-                      placeholder="변경값을 입력해주세요"
-                    />
-                    <Button
-                      width={'80px'}
-                      height={'35px'}
-                      fontSize={'14px'}
-                      $margin={'0 0 0 5px'}
-                      cursor
-                      $filled
-                      $success
-                      onClick={(e) => openFormula(e)}
-                    >
-                      수식
-                    </Button>
-                  </InputWrapper>
-                  <Button
-                    $filled
-                    cursor
-                    disabled={changeButtonDisabled}
-                    onClick={() => onChangeInfo()}
-                  >
-                    <span>
-                      바꾸기 <MdPublishedWithChanges />
-                    </span>
-                  </Button>
-                </ButtonWrapper>
-              </PositionWrapper>
-            }
-          />
-        </Container>
+                  )}
 
-        <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>
+                  <Button
+                    width={'80px'}
+                    height={'35px'}
+                    fontSize={'14px'}
+                    $margin={'0 0 0 5px'}
+                    cursor
+                    $filled
+                    $success
+                    onClick={() => {
+                      openFormula('first_area_test');
+                    }}
+                  >
+                    수식
+                  </Button>
+                </InputWrapper>
+
+                <Button
+                  $filled
+                  cursor
+                  disabled={buttonDisabled}
+                  onClick={() => onSearchList()}
+                >
+                  <span>
+                    찾기 <IoSearch />
+                  </span>
+                </Button>
+              </ButtonWrapper>
+            </PositionWrapper>
+          }
+          item2={
+            <QuizListWrapper>
+              <Title>
+                <span className="title_top">
+                  <span className="point_text">STEP2</span> 문항 선택
+                </span>
+              </Title>
+              {/*TODO : 데이터 확인 */}
+              {questionList.length ? (
+                <>
+                  <QuizList
+                    questionList={questionList}
+                    $height={`calc(100vh - 220px)`}
+                    showTitle
+                    showCheckBox
+                    showViewAllButton
+                    setCheckedList={setCheckedList}
+                  />
+                  <ButtonWrapper className="pagination">
+                    <PaginationBox
+                      itemsCountPerPage={
+                        searchCategoryData?.data.data.pagination
+                          .pageUnit as number
+                      }
+                      totalItemsCount={
+                        searchCategoryData?.data.data.pagination
+                          .totalCount as number
+                      }
+                    />
+                  </ButtonWrapper>
+                </>
+              ) : (
+                <ValueNoneWrapper>
+                  {searchValue.length < 1 && !IsSearchOn && (
+                    <ValueNone
+                      textOnly
+                      info={'STEP1 찾을 내용을 입력해주세요'}
+                    />
+                  )}
+                  {IsSearchOn && (
+                    <ValueNone textOnly info={'데이터가 없습니다'} />
+                  )}
+                </ValueNoneWrapper>
+              )}
+            </QuizListWrapper>
+          }
+          item3Width={400}
+          item3={
+            <PositionWrapper>
+              <Title>
+                <span className="title_top">
+                  <span className="point_text">STEP3</span> 바꿀 내용 입력
+                </span>
+              </Title>
+              {checkedList.length ? (
+                <>
+                  <ScrollWrapper>
+                    <PerfectScrollbar>
+                      <ChangeInfoWrapper>
+                        <p className="info_total">
+                          선택한 문항 총 {checkedList.length} 건
+                        </p>
+                        <div className="info_box">
+                          {checkedList.length && (
+                            <p>
+                              총
+                              <span className="strong">
+                                {checkedList.length}
+                              </span>
+                              건
+                            </p>
+                          )}
+                          {searchValue && (
+                            <p>
+                              <span className="strong">{searchValue}</span>
+                              를(을)
+                            </p>
+                          )}
+                          {changeValue && (
+                            <p>
+                              <span className="strong">{changeValue}</span>로
+                              변경 하시겠습니까?
+                            </p>
+                          )}
+                        </div>
+                      </ChangeInfoWrapper>
+                    </PerfectScrollbar>
+                  </ScrollWrapper>
+                </>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
+                </ValueNoneWrapper>
+              )}
+              <ButtonWrapper>
+                <InputWrapper>
+                  {/* <textarea
+                    className="second_area_test"
+                    style={{
+                      display: 'inline-block',
+                    }}
+                    // onChange={(e) => setEqChangeText(e.target.value)}
+                  ></textarea>
+                  <input
+                    type="text"
+                    minLength={2}
+                    maxLength={20}
+                    value={changeValue}
+                    className="second_area_test"
+                    onChange={(e) => setChangeValue(e.target.value)}
+                    placeholder="변경값을 입력해주세요"
+                  /> */}
+                  <div
+                    ref={(el) => {
+                      if (el && el.innerHTML !== changeValue) {
+                        el.innerHTML = changeValue;
+                      }
+                      changeDivRef.current = el;
+                    }}
+                    className="second_area_test"
+                    contentEditable
+                    onInput={handleChangeValueChange}
+                    style={{
+                      minHeight: '35px',
+                      padding: '5px 10px',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                      outline: 'none',
+                      width: 'calc(100% - 85px)',
+                      overflowWrap: 'break-word',
+                    }}
+                  />
+                  {changeValue === '' && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '21px',
+                        left: '25px',
+                        color: '#999',
+                        pointerEvents: 'none',
+                        width: 'calc(100% - 125px)',
+                        height: '20px',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <span>변경값을 입력해주세요(두글자 이상)</span>
+                    </span>
+                  )}
+
+                  <Button
+                    width={'80px'}
+                    height={'35px'}
+                    fontSize={'14px'}
+                    $margin={'0 0 0 5px'}
+                    cursor
+                    $filled
+                    $success
+                    onClick={() => openFormula('second_area_test')}
+                  >
+                    수식
+                  </Button>
+                </InputWrapper>
+                <Button
+                  $filled
+                  cursor
+                  disabled={changeButtonDisabled}
+                  onClick={() => onChangeInfo()}
+                >
+                  <span>
+                    바꾸기 <MdPublishedWithChanges />
+                  </span>
+                </Button>
+              </ButtonWrapper>
+            </PositionWrapper>
+          }
+        />
+      </Container>
+
+      {/* 수식 입력창 영역 */}
+      <div className="itex_editor_container">
         <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
             <div id="data_viewer_body">
@@ -1362,7 +1452,7 @@ export function ContentInformationChange() {
                     data-bs-trigger="hover"
                     title="지우기"
                   >
-                    {/* <TrashIcon /> */}
+                    <TrashIcon />
                   </button>
                   <button
                     type="button"
@@ -1375,7 +1465,7 @@ export function ContentInformationChange() {
                     title="왼쪽으로 회전"
                     disabled={true}
                   >
-                    {/* <ArrowCounterclockwiseIcon /> */}
+                    <ArrowCounterclockwiseIcon />
                   </button>
                   <button
                     type="button"
@@ -1388,7 +1478,7 @@ export function ContentInformationChange() {
                     title="오른쪽으로 회전"
                     disabled={true}
                   >
-                    {/* <ArrowClockwiseIcon /> */}
+                    <ArrowClockwiseIcon />
                   </button>
                   <button
                     type="button"
@@ -1400,8 +1490,7 @@ export function ContentInformationChange() {
                     title="이전 페이지"
                     disabled={true}
                   >
-                    {' '}
-                    {/* <ChevronLeftIcon /> */}
+                    <ChevronLeftIcon />
                   </button>
                   <button
                     type="button"
@@ -1413,7 +1502,7 @@ export function ContentInformationChange() {
                     title="다음 페이지"
                     disabled={true}
                   >
-                    {/* <ChevronRightIcon /> */}
+                    <ChevronRightIcon />
                   </button>
                   <div className="pdf_page_show pdf_page_hidden">
                     <input
@@ -1437,7 +1526,7 @@ export function ContentInformationChange() {
                     title="모바일 환경에서 에디터 창으로 이동합니다."
                     style={{ display: 'none' }}
                   >
-                    {/* <BoxArrowInUpRightIcon /> */}
+                    <BoxArrowInUpRightIcon />
                   </button>
                   <button
                     type="button"
@@ -1448,7 +1537,7 @@ export function ContentInformationChange() {
                     title="변환 내역"
                     style={{ display: 'none' }}
                   >
-                    {/* <BarCharLineIcon /> */}
+                    <BarCharLineIcon />
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                       <span className="itex_obj_count">0</span>
                       <span className="visually-hidden"></span>
@@ -1484,7 +1573,7 @@ export function ContentInformationChange() {
                     title="크롭 해제"
                     aria-label="Close"
                   >
-                    {/* <CloseIcon /> */}
+                    <CloseIcon />
                   </button>
                 </div>
               </div>
@@ -1503,8 +1592,11 @@ export function ContentInformationChange() {
               {/* <button id="exam_change">변경</button> */}
               <button
                 id="exam_save_all"
-                onClick={() => {
-                  // saveDataHandler()
+                onClick={async () => {
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-expect-error
+                  const gggg = await window.saveHmlData();
+                  console.log(gggg);
                 }}
               >
                 저장
@@ -1516,7 +1608,7 @@ export function ContentInformationChange() {
 
         <div className="tools_wrap eq_config_hidden">
           <div id="editor_container"></div>
-          <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>{' '}
+          <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>
           <div id="itexhml_board"></div>
           <div id="modal_block">
             <div className="sk-cube-grid">
@@ -1539,7 +1631,7 @@ export function ContentInformationChange() {
           style={{ display: 'none' }}
         />
       </div>
-    </div>
+    </>
   );
 }
 const Container = styled.div`
