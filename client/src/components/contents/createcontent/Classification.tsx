@@ -32,6 +32,7 @@ import {
   ItemTreeType,
   QuizCategory,
   QuizCategoryList,
+  QuizClassificationData,
   QuizListType,
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -56,18 +57,9 @@ type UnitClassificationType =
   | ItemTreeIdxListType
   | RadioStateType[]
   | QuizCategoryList
-  | ClassificationStateType
+  | QuizClassificationData
   | QuizCategory
   | [];
-
-interface ClassificationStateType {
-  quizCodeList: string[];
-  categoryList: {
-    itemTreeKey?: QuizCategory;
-    itemTreeIdxList?: number[];
-    quizCategory?: QuizCategory;
-  }[];
-}
 
 type CheckedItemType = {
   [key: string]: string;
@@ -566,6 +558,7 @@ export function Classification({
     }
   };
 
+  // 교과정보 추가
   const saveCheckItems = () => {
     console.log(
       'radioEtc1Check,radioEtc2Check',
@@ -816,6 +809,7 @@ export function Classification({
       return {
         itemTreeKey: mergedItemTreeKey,
         itemTreeIdxList,
+        quizCategory: {},
       };
     });
 
@@ -828,9 +822,9 @@ export function Classification({
     console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
 
     const categoryListArr = sortedArr();
-    console.log('categoryList 들어가야할 목록', categoryListArr);
+    console.log('categoryList 들어가야할 목록------', categoryListArr);
 
-    const data: ClassificationStateType = {
+    const data: QuizClassificationData = {
       quizCodeList: checkedList,
       categoryList: categoryListArr,
     };
@@ -839,9 +833,9 @@ export function Classification({
   };
 
   // 분류 바꾸기 (등록) api
-  const putClassification = async (data: ClassificationStateType) => {
+  const putClassification = async (data: QuizClassificationData) => {
     const res = await classificationInstance.put(`/v1/item/quiz`, data);
-    console.log('putClassification', res);
+    console.log('데이터 최종 등록 후 리턴값', res);
     return res;
   };
 

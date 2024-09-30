@@ -14,6 +14,8 @@ import {
   EditorDataType,
   ItemCategoryType,
   QuestionClassListType,
+  QuizCategory,
+  QuizCategoryList,
   QuizItemListType,
   QuizListType,
   QuizType,
@@ -52,24 +54,19 @@ export function ContentEdit({
     [],
   );
   const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
-  //셀렉트 값
-  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
-  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
-  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
-  const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
 
   // 선택된 리스트 아이템 데이터
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
+  const [quizIdx, setQuizIdx] = useState<number[]>([]);
 
   // 수정시 체크리스트 값 가져오기
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
 
-    console.log(
-      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
-      storedQuizList,
-    );
+    // console.log(
+    //   '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+    //   storedQuizList,
+    // );
 
     if (storedQuizList) {
       setParsedStoredQuizList(JSON.parse(storedQuizList));
@@ -79,6 +76,29 @@ export function ContentEdit({
       return;
     }
   }, []);
+
+  //셀렉트 값
+  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
+  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
+  const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
+  const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
+
+  // 리스트 선택시 기존값 셋팅
+  useEffect(() => {
+    if (onItemClickData) {
+      const quizCategory = onItemClickData.quizCategoryList[0].quizCategory;
+
+      // 값이 존재하면 상태값을 업데이트
+      if (quizCategory) {
+        setSelectedSubject(quizCategory.교과 || '');
+        setSelectedCourse(quizCategory.과목 || '');
+        setSelectedQuestionType(quizCategory.문항타입 || '');
+        setSelectedDifficulty(quizCategory.난이도 || '');
+        setSelectedSource(quizCategory.sources || []);
+      }
+    }
+  }, [onItemClickData]);
 
   // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
   const getQuiz = async () => {
@@ -110,13 +130,13 @@ export function ContentEdit({
   // 에디터에서 데이터 가져올시
   useEffect(() => {
     if (editorData) {
-      console.log(editorData);
+      // console.log(editorData, 'editorData--------');
       const itemDataList: QuizItemListType = [];
       let sort = 1;
 
       Object.keys(editorData).forEach((key) => {
         const value = editorData[key];
-        console.log('value----', value);
+        // console.log('value----', value);
         if (Array.isArray(value) && value.length > 0) {
           let type = key.replace('tag_', '').replace('tl_', '').toUpperCase();
 
@@ -153,7 +173,7 @@ export function ContentEdit({
   }, [editorData]);
 
   useEffect(() => {
-    console.log('quizItemList', quizItemList);
+    // console.log('quizItemList', quizItemList);
     //문항 리스트에 추가
     if (quizItemList.length > 0) {
       setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
@@ -161,12 +181,16 @@ export function ContentEdit({
   }, [quizItemList]);
 
   useEffect(() => {
-    console.log('quizItemArrList', quizItemArrList);
+    // console.log('quizItemArrList', quizItemArrList);
+    // console.log('quizIdx', quizIdx);
+
     // 등록될 값
-    const newQuestionList = quizItemArrList.map((quizItems) => ({
-      commandCode: 0,
-      quizIdx: null,
-      articleList: [],
+    const newQuestionList = quizItemArrList.map((quizItems, idx) => ({
+      commandCode: 1,
+      quizIdx: quizIdx[idx] as number, //문항 idx
+      articleList: [
+        //에디터 이미지 값
+      ],
       quizItemList: quizItems,
       quizClassList: quizClassList,
     }));
@@ -180,6 +204,48 @@ export function ContentEdit({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
+    //카테고리 값
+    console.log('onItemClickData카테고리', onItemClickData?.quizCategoryList);
+
+    // 특정 필드를 제외하는 유틸리티 함수
+    const omitFields = (quizCategory: QuizCategory): QuizCategory => {
+      const { sources, 과목, 교과, 난이도, 문항타입, ...rest } = quizCategory;
+      return rest; // 나머지 필드만 반환
+    };
+
+    // 카테고리 값을 매핑하는 함수
+    const mapQuizCategoryList = (
+      quizCategoryList: QuizCategoryList[] | undefined,
+    ): { type: string; quizCategory: QuizCategory }[] => {
+      if (quizCategoryList && Array.isArray(quizCategoryList)) {
+        const items = quizCategoryList.map((item) => {
+          if (item.quizCategory && typeof item.quizCategory === 'object') {
+            // 특정 필드 제외 후 새로운 객체 구성
+            const newQuizCategory = omitFields(item.quizCategory);
+            return {
+              type: 'CATEGORY',
+              quizCategory: newQuizCategory,
+            };
+          }
+          // item.quizCategory가 비어있을 경우 기본값 설정
+          return {
+            type: 'CATEGORY',
+            quizCategory: {},
+          };
+        });
+        return items;
+      }
+      return [
+        {
+          type: 'CATEGORY',
+          quizCategory: {},
+        },
+      ];
+    };
+
+    // 카테고리 매핑
+    const category = mapQuizCategoryList(onItemClickData?.quizCategoryList);
+    // console.log('매핑된 카테고리값 ----', category);
 
     const quizClassList: QuestionClassListType = [
       {
@@ -192,6 +258,7 @@ export function ContentEdit({
           문항타입: selectedQuestionType,
         },
       },
+      ...category,
     ];
 
     // 필수 메타값 추가 및 변경
@@ -202,6 +269,7 @@ export function ContentEdit({
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
+    onItemClickData,
   ]);
 
   useEffect(() => {
@@ -228,7 +296,7 @@ export function ContentEdit({
     onSuccess: (response) => {
       openToastifyAlert({
         type: 'success',
-        text: `문항이 추가 되었습니다 ${response.data.data.quiz.idx}`,
+        text: `문항이 수정 되었습니다 ${response.data.data.quiz.idx}`,
       });
       // 추가된 문항의 idx값을 배열에 넣기 전체리스트에서 idx값으로 찾아온뒤 필수 메타값넣고 등록
     },
@@ -406,7 +474,7 @@ export function ContentEdit({
     if (data) {
       const combinedContent = data.map((item) => item.content).join(' ');
 
-      console.log('onItemClickData 선택된 아이템------------', combinedContent);
+      // console.log('onItemClickData 선택된 아이템------------', combinedContent);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -422,6 +490,34 @@ export function ContentEdit({
       // @ts-expect-error
       window.tinymce.activeEditor.setContent('');
     }
+
+    // 선택된 문항의 idx 값 가져오기
+    const idx = onItemClickData?.idx as number | undefined;
+
+    // idx 값이 존재하고 중복되지 않았을 경우에만 추가
+    if (idx !== undefined && !quizIdx.includes(idx)) {
+      setQuizIdx((prevQuizIdx) => [...prevQuizIdx, idx]);
+    }
+  }, [onItemClickData]);
+
+  const quizCategory = useMemo(() => {
+    if (onItemClickData) {
+      const category = onItemClickData.quizCategoryList?.[0]?.quizCategory;
+      return {
+        교과: category?.교과 || '',
+        과목: category?.과목 || '',
+        문항타입: category?.문항타입 || '',
+        난이도: category?.난이도 || '',
+        sources: category?.sources || [],
+      };
+    }
+    return {
+      교과: '',
+      과목: '',
+      문항타입: '',
+      난이도: '',
+      sources: [],
+    };
   }, [onItemClickData]);
 
   // 문항 추가버튼 disable 처리
@@ -470,7 +566,9 @@ export function ContentEdit({
                           heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={categoryTitles[6]?.code}
+                          defaultValue={
+                            quizCategory.교과 || categoryTitles[6]?.code
+                          }
                           key={categoryTitles[6]?.code}
                           options={categoriesE[0]}
                           onSelect={(event) => selectCategoryOption(event)}
@@ -487,7 +585,9 @@ export function ContentEdit({
                           heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={categoryTitles[7]?.code}
+                          defaultValue={
+                            quizCategory.과목 || categoryTitles[7]?.code
+                          }
                           key={categoryTitles[7]?.code}
                           options={categoriesE[1]}
                           onSelect={(event) => selectCategoryOption(event)}
@@ -515,6 +615,10 @@ export function ContentEdit({
                         groupsDataF={groupsDataF}
                         groupsDataG={groupsDataG}
                         groupsDataH={groupsDataH}
+                        quizCategory={
+                          quizCategory.sources && quizCategory.sources
+                        }
+                        onItemClickData={onItemClickData}
                       />
                     )}
                 </SourceOptionWrapper>
@@ -534,7 +638,7 @@ export function ContentEdit({
                           $positionTop
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={'문항타입'}
+                          defaultValue={quizCategory.문항타입 || '문항타입'}
                           key={'문항타입'}
                           options={categoriesE[3]}
                           onSelect={(event) => selectCategoryOption(event)}
@@ -556,7 +660,7 @@ export function ContentEdit({
                           $positionTop
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={'난이도'}
+                          defaultValue={quizCategory.난이도 || '난이도'}
                           key={'난이도'}
                           options={categoriesE[4]}
                           onSelect={(event) => selectCategoryOption(event)}

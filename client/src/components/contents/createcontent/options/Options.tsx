@@ -19,12 +19,14 @@ export function Options({
   titleIdx,
   listItem,
   onOptionChange,
+  initList,
 }: {
   titleIdx: string;
   listItem: ItemCategoryType;
   onOptionChange: React.Dispatch<
     React.SetStateAction<{ titleIdx: string; name: string; value: string }>
   >;
+  initList?: any;
 }) {
   const { openModal } = useModal();
   const [startDate, setStartDate] = useState<string>('');
@@ -35,6 +37,36 @@ export function Options({
     cityIdx: number;
     schoolName: string;
   }>({ cityIdx: 0, schoolName: '' });
+
+  // 특정 키가 listItem.name과 일치하는 값 찾기
+  const initValue = useMemo(() => {
+    if (initList && listItem.name in initList) {
+      return initList[listItem.name];
+    }
+    return '';
+  }, [initList, listItem.name]);
+
+  // initList에서 가져온 초기값으로 DOM 요소 상태 설정
+  useEffect(() => {
+    if (initValue) {
+      switch (listItem.type) {
+        case 'INPUT':
+          setInputValue(initValue);
+          break;
+        case 'DATEPICKER':
+          setStartDate(initValue);
+          break;
+        case 'MODAL':
+          setSchoolNameValue({ ...schoolNameValue, schoolName: initValue });
+          break;
+        case 'SELECT':
+          setSelected(initValue);
+          break;
+        default:
+          break;
+      }
+    }
+  }, [initValue]);
 
   const modalData = {
     title: '',

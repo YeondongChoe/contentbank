@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Alert } from '../../../../components/molecules';
-import { ItemCategoryType } from '../../../../types';
+import { ItemCategoryType, QuizListType } from '../../../../types';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 
@@ -24,6 +24,8 @@ interface Props {
   groupsDataG: string;
   groupsDataH: string;
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
+  quizCategory?: any[];
+  onItemClickData?: QuizListType;
 }
 
 export function OptionList({
@@ -33,6 +35,8 @@ export function OptionList({
   groupsDataG,
   groupsDataH,
   setSelectedSource,
+  quizCategory,
+  onItemClickData,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -157,12 +161,6 @@ export function OptionList({
     }
   };
 
-  useEffect(() => {
-    Object.keys(selectedValues).forEach((key) => {
-      listSwitch(selectedValues[Number(key)], Number(key));
-    });
-  }, [selectedValues]);
-
   const addSourceOptions = () => {
     // console.log('출처 카테고리 추가 API');
     setCount(count + 1);
@@ -272,6 +270,83 @@ export function OptionList({
     setSelectedSource(restructuredData);
   }, [sourceArr]);
 
+  const [titleArr, setTitleArr] = useState<string[]>([]);
+  useEffect(() => {
+    console.log('quizCategory---', quizCategory);
+    setSourceOptions([]);
+
+    if (quizCategory) {
+      // 기존 출처값 배열을
+      // 객체내 출처키의 값이 해당하는 값들을 각기
+      const titleArr = quizCategory.map((el) => el.출처);
+      setTitleArr(titleArr);
+      console.log('titleArr -----', categoryTitles[16]?.name, titleArr);
+      const arr = [];
+      for (let i = 0; i < titleArr.length; i++) {
+        arr.push(quizCategory[i].출처);
+
+        if (i == 0) {
+          setOptionsList1({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 1) {
+          setOptionsList2({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 2) {
+          setOptionsList3({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 3) {
+          setOptionsList4({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+        if (i == 4) {
+          setOptionsList5({
+            name: titleArr[i],
+            categories: quizCategory[i],
+          });
+        }
+      }
+
+      // console.log('해당 순번에 들어갈 출처리스트', arr);
+      setSelectedValues(arr);
+    }
+  }, [onItemClickData]); // 체크된 값이 변할때
+
+  useEffect(() => {
+    //버튼
+    setCount(count + titleArr.length);
+    if (sourceOptions.length < 5) {
+      const arr = [];
+      for (let i = 0; i < titleArr.length; i++) {
+        arr.push(i);
+      }
+      setSourceOptions([...sourceOptions, ...arr]);
+    }
+
+    if (sourceOptions.length >= 5) {
+      //셀렉트 선택시에만 추가 가능하도록 초기화
+      setDisabled(true);
+    }
+  }, [titleArr]);
+
+  useEffect(() => {
+    Object.keys(selectedValues).forEach((key) => {
+      listSwitch(selectedValues[Number(key)], Number(key));
+    });
+  }, [selectedValues]);
+
+  console.log('=--------------selectedValues', selectedValues);
+
   return (
     <Container>
       {categoryTitles &&
@@ -315,7 +390,11 @@ export function OptionList({
                     $positionTop
                     width={'110px'}
                     height={'30px'}
-                    defaultValue={categoryTitles[16]?.name}
+                    defaultValue={
+                      titleArr.length
+                        ? titleArr[index]
+                        : categoryTitles[16]?.name
+                    }
                     key={categoryTitles[16]?.name}
                     options={categoriesE}
                     onSelect={(
@@ -334,6 +413,7 @@ export function OptionList({
                         listItem={category}
                         key={`${category?.name} optionsdepth${idx}`}
                         onOptionChange={setSourceValue}
+                        initList={quizCategory && quizCategory[index]}
                       />
                     ),
                   )}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { IoMdArrowDropup, IoMdArrowDropdown } from 'react-icons/io';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
@@ -32,6 +32,7 @@ import {
   ItemTreeType,
   QuizCategory,
   QuizCategoryList,
+  QuizClassificationData,
   QuizListType,
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
@@ -75,8 +76,10 @@ type CheckedItemType = {
 
 export function ClassificationEdit({
   setTabView,
+  type,
 }: {
   setTabView: React.Dispatch<React.SetStateAction<string>>;
+  type: string;
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -752,6 +755,8 @@ export function ClassificationEdit({
             });
           }
 
+          // 라디오 배열값 초기화
+          setRadioButtonList([]);
           return newClassification;
         }
         return null; // 조건을 만족하지 않는 경우 null 반환
@@ -765,7 +770,7 @@ export function ClassificationEdit({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       setUnitClassificationList((prevList) => [
-        ...prevList,
+        // ...prevList,
         ...newClassificationLists,
       ]);
     } else {
@@ -1091,10 +1096,73 @@ export function ClassificationEdit({
 
   useEffect(() => {}, [questionList]);
 
+  const sortedArr = () => {
+    console.log('아이템트리키 들어가야할 목록', unitClassificationList);
+    const arr = unitClassificationList.map((classification) => {
+      const itemTreeKey = classification.reduce(
+        (acc: Record<string, string | string[]>, curr) => {
+          if ('key' in curr && curr.title) {
+            if (curr.key === '행동요소1' || curr.key === '행동요소2') {
+              // 행동요소1 또는 행동요소2인 경우 배열로 처리
+              if (acc[curr.key]) {
+                // 이미 해당 키가 존재하는 경우 배열에 추가
+                (acc[curr.key] as string[]).push(curr.title);
+              } else {
+                // 새로 배열을 생성하여 추가
+                acc[curr.key] = [curr.title];
+              }
+            } else {
+              // 일반적인 키 처리
+              acc[curr.key] = curr.title;
+            }
+          } else if (typeof curr === 'object' && !('itemTreeIdxList' in curr)) {
+            // checkedItems 객체 병합
+            Object.assign(acc, curr);
+          }
+          return acc;
+        },
+        {} as Record<string, string | string[]>,
+      );
+
+      const itemTreeIdxList =
+        classification.find(
+          (item): item is ItemTreeIdxListType => 'itemTreeIdxList' in item,
+        )?.itemTreeIdxList || [];
+
+      // 등록시 앞쪽에서 등록한 필수 메타값도 함께 등록
+      const requiredMetacategory =
+        sortedList[sortedList.length - 1].quizCategoryList[0].quizCategory;
+
+      console.log('itemTreeKey------', itemTreeKey);
+      console.log('requiredMetacategory------', requiredMetacategory);
+      const mergedItemTreeKey = {
+        ...itemTreeKey,
+        ...requiredMetacategory,
+      };
+      return {
+        itemTreeKey: mergedItemTreeKey,
+        itemTreeIdxList,
+        quizCategory: {},
+      };
+    });
+
+    return arr;
+  };
+
   // 분류 등록 버튼
   const onSubmit = () => {
     // 최종적으로 전송 될 데이터
     console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
+    const categoryListArr = sortedArr();
+    console.log('categoryList 들어가야할 목록------', categoryListArr);
+
+    const data: QuizClassificationData = {
+      quizCodeList: checkedList,
+      categoryList: categoryListArr,
+    };
+
+    console.log('최종 전송 데이터 형태', data);
+    mutateChangeClassification(data);
   };
 
   // 교과정보 추가버튼 disable 처리
@@ -1195,6 +1263,9 @@ export function ClassificationEdit({
 
   // 탭바뀔 때 에디터
   useEffect(() => {}, [setTabView]);
+  useEffect(() => {
+    console.log('type', type);
+  }, []);
 
   return (
     <Container>
@@ -1647,7 +1718,7 @@ export function ClassificationEdit({
             width={'calc(50% - 5px)'}
             onClick={() => onSubmit()}
           >
-            저장
+            {type === 'copyedit' ? '등록' : '수정'}
           </Button>
         </SubmitButtonWrapper>
       </BorderWrapper>
