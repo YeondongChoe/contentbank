@@ -138,6 +138,7 @@ export function ContentInformationChange() {
   const [IsSearchOn, setIsSearchOn] = useState(false);
 
   const searchDivRef = useRef<HTMLDivElement | null>(null);
+  const changeDivRef = useRef<HTMLDivElement | null>(null);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -794,8 +795,6 @@ export function ContentInformationChange() {
   // @ts-expect-error
   window.editorType_s = true;
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  const [eqText, setEqText] = useState<string | null>(null);
-  const [eqChangeText, setEqChangeText] = useState<string | null>(null);
 
   useEffect(() => {
     const initialScripts = [
@@ -903,20 +902,17 @@ export function ContentInformationChange() {
     window.openEQ(state);
   };
 
-  useEffect(() => {
-    console.log('텍스트 내용 ----- ', eqText, eqChangeText);
-  }, [eqText, eqChangeText]);
-
-  // useEffect(() => {
-  //   if (searchDivRef.current) {
-  //     searchDivRef.current.innerHTML = searchValue;
-  //   }
-  // }, [searchValue]);
-
   const handleSearchValueChange = (e: React.FormEvent<HTMLDivElement>) => {
     const newValue = e.currentTarget.innerHTML;
     if (newValue !== searchValue) {
       setSearchValue(newValue);
+    }
+  };
+
+  const handleChangeValueChange = (e: React.FormEvent<HTMLDivElement>) => {
+    const newValue = e.currentTarget.innerHTML;
+    if (newValue !== changeValue) {
+      setChangeValue(newValue);
     }
   };
 
@@ -1160,22 +1156,6 @@ export function ContentInformationChange() {
               </ScrollWrapper>
               <ButtonWrapper>
                 <InputWrapper>
-                  {/*<textarea*/}
-                  {/*  className="first_area_test"*/}
-                  {/*  style={{*/}
-                  {/*    display: 'inline-block',*/}
-                  {/*  }}*/}
-                  {/*  // onChange={(e) => setEqText(e.target.value)}*/}
-                  {/*></textarea>*/}
-                  {/*<span className="first_area_test"></span>*/}
-                  {/*<input*/}
-                  {/*  type="text"*/}
-                  {/*  minLength={2}*/}
-                  {/*  maxLength={20}*/}
-                  {/*  value={`${searchValue}`}*/}
-                  {/*  onChange={(e) => setSearchValue(e.target.value)}*/}
-                  {/*  placeholder={`${`찾을값을 입력해주세요(두글자 이상)`}`}*/}
-                  {/*/>*/}
                   <div
                     ref={(el) => {
                       if (el && el.innerHTML !== searchValue) {
@@ -1197,17 +1177,22 @@ export function ContentInformationChange() {
                     }}
                   />
                   {searchValue === '' && (
-                    <div
+                    <span
                       style={{
                         position: 'absolute',
-                        top: '5px',
-                        left: '10px',
+                        top: '21px',
+                        left: '25px',
                         color: '#999',
                         pointerEvents: 'none',
+                        width: 'calc(100% - 125px)',
+                        height: '20px',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
                       }}
                     >
-                      찾을값을 입력해주세요(두글자 이상)
-                    </div>
+                      <span>찾을값을 입력해주세요(두글자 이상)</span>
+                    </span>
                   )}
 
                   <Button
@@ -1335,7 +1320,7 @@ export function ContentInformationChange() {
               )}
               <ButtonWrapper>
                 <InputWrapper>
-                  <textarea
+                  {/* <textarea
                     className="second_area_test"
                     style={{
                       display: 'inline-block',
@@ -1350,7 +1335,46 @@ export function ContentInformationChange() {
                     className="second_area_test"
                     onChange={(e) => setChangeValue(e.target.value)}
                     placeholder="변경값을 입력해주세요"
+                  /> */}
+                  <div
+                    ref={(el) => {
+                      if (el && el.innerHTML !== changeValue) {
+                        el.innerHTML = changeValue;
+                      }
+                      changeDivRef.current = el;
+                    }}
+                    className="second_area_test"
+                    contentEditable
+                    onInput={handleChangeValueChange}
+                    style={{
+                      minHeight: '35px',
+                      padding: '5px 10px',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                      outline: 'none',
+                      width: 'calc(100% - 85px)',
+                      overflowWrap: 'break-word',
+                    }}
                   />
+                  {changeValue === '' && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '21px',
+                        left: '25px',
+                        color: '#999',
+                        pointerEvents: 'none',
+                        width: 'calc(100% - 125px)',
+                        height: '20px',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <span>변경값을 입력해주세요(두글자 이상)</span>
+                    </span>
+                  )}
+
                   <Button
                     width={'80px'}
                     height={'35px'}
