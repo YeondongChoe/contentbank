@@ -86,9 +86,9 @@ export function Company() {
   //담당자 연락처
   const [phoneNumberValue, setPhoneNumberValue] = useState('');
   //주소1
-  const [address1Value, setAddress1Value] = useState('');
+  const [daumaddressValue, setDaumAddressValue] = useState('');
   //주소2 상세주소
-  const [address2Value, setAddress2Value] = useState('');
+  const [detailaddressValue, setDetailAddressValue] = useState('');
   //이메일
   const [emailValue, setEmailValue] = useState('');
   //업종업태(대분류)
@@ -122,6 +122,7 @@ export function Company() {
   //메뉴 체크박스
   const [menuAllChecked, setMenuAllChecked] = useState(false);
 
+  //접근 메뉴 설정
   // useEffect를 사용하여 accessMenuList의 제작 상태 값이 변경될 때마다 검사
   useEffect(() => {
     // 'QE', 'WE'에 해당하는 항목 중 하나라도 체크되지 않은 것이 있는지 확인
@@ -272,21 +273,15 @@ export function Company() {
     companyInfoRefetch();
   }, [idxValue]);
 
-  // 주소 검색 기능 함수
-  const filterAddressSearchValue = () => {
-    companyListRefetch();
-  };
-
-  const filterAddressSearchValueEnter = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    // if (event.key === 'Enter') {
-    //   companyListRefetch();
-    // }
-    if (event.key === 'Backspace') {
-      setSearchValue('');
-      companyListRefetch();
-    }
+  // 다음 주소 검색 API 호출
+  const openDaumPostcode = () => {
+    new (window as any).daum.Postcode({
+      oncomplete: function (data: any) {
+        // data 타입도 any로 명시
+        const fullAddress = data.address;
+        setDaumAddressValue(fullAddress);
+      },
+    }).open();
   };
 
   //기업 상세 정보 받아 온 후 상태관리 저장
@@ -308,8 +303,8 @@ export function Company() {
         companyInfoData?.data.data.companyRecord.businessRegistrationNumber,
       );
       setPhoneNumberValue(companyInfoData?.data.data.companyRecord.phoneNumber);
-      setAddress1Value(companyInfoData?.data.data.companyRecord.address1);
-      setAddress2Value(companyInfoData?.data.data.companyRecord.address2);
+      setDaumAddressValue(companyInfoData?.data.data.companyRecord.address1);
+      setDetailAddressValue(companyInfoData?.data.data.companyRecord.address2);
       setEmailValue(companyInfoData?.data.data.companyRecord.email);
       setLargeItemValue(companyInfoData?.data.data.companyRecord.largeItem);
       setDetailItemValue(companyInfoData?.data.data.companyRecord.detailItem);
@@ -526,8 +521,8 @@ export function Company() {
       setRepresentativePhoneNumberValue('');
       setBusinessRegistrationNumberValue('');
       setPhoneNumberValue('');
-      setAddress1Value('');
-      setAddress2Value('');
+      setDaumAddressValue('');
+      setDetailAddressValue('');
       setEmailValue('');
       setLargeItemValue('');
       setDetailItemValue('');
@@ -545,8 +540,8 @@ export function Company() {
         representativeName: representativeNameValue,
         representativePhoneNumber: representativePhoneNumberValue,
         businessRegistrationNumber: businessRegistrationNumberValue,
-        address1: address1Value,
-        address2: address2Value,
+        address1: daumaddressValue,
+        address2: detailaddressValue,
         phoneNumber: phoneNumberValue,
         email: emailValue,
         largeItemCode: largeItemCodeValue,
@@ -562,8 +557,8 @@ export function Company() {
         representativeName: representativeNameValue,
         representativePhoneNumber: representativePhoneNumberValue,
         businessRegistrationNumber: businessRegistrationNumberValue,
-        address1: address1Value,
-        address2: address2Value,
+        address1: daumaddressValue,
+        address2: detailaddressValue,
         phoneNumber: phoneNumberValue,
         email: emailValue,
         largeItemCode: largeItemCodeValue,
@@ -603,8 +598,8 @@ export function Company() {
       setRepresentativePhoneNumberValue('');
       setBusinessRegistrationNumberValue('');
       setPhoneNumberValue('');
-      setAddress1Value('');
-      setAddress2Value('');
+      setDaumAddressValue('');
+      setDetailAddressValue('');
       setEmailValue('');
       setLargeItemCodeValue('');
       setLargeItemValue('');
@@ -912,15 +907,13 @@ export function Company() {
           />
 
           <Search
-            value={searchValue} // 수정해야함
+            value={daumaddressValue} // 수정해야함
             width="240px"
             height="35px"
-            onClick={() => filterAddressSearchValue()}
-            onKeyDown={(e) => {
-              filterAddressSearchValueEnter(e);
-            }}
+            onClick={openDaumPostcode}
+            onKeyDown={() => {}}
             onChange={(e) => {
-              setAddress1Value(e.target.value);
+              setDaumAddressValue(e.target.value);
             }}
             placeholder="주소 검색"
           />
@@ -935,8 +928,8 @@ export function Company() {
             type="text"
             placeholder="상세 주소"
             borderradius="5px"
-            value={address2Value}
-            onChange={(e) => setAddress2Value(e.target.value)}
+            value={detailaddressValue}
+            onChange={(e) => setDetailAddressValue(e.target.value)}
             maxLength={20}
           />
         </InputWrapper>
@@ -1080,19 +1073,23 @@ export function Company() {
                 ></input>
                 <Label value={'콘텐츠 제작'} />
               </ModalCheckboxWrapper>
-              {accessMenuList.slice(0, 2).map((menu) => (
-                <ModalCheckboxWrapper
-                  className="padding"
-                  key={`${menu.menuCode} - ${menu.menuName}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={menu.isUse}
-                    onChange={() => accessMenuCheckChange(menu.menuCode)}
-                  ></input>
-                  <Label value={menu.menuName} />
-                </ModalCheckboxWrapper>
-              ))}
+              {accessMenuList
+                .filter(
+                  (menu) => menu.menuCode === 'QE' || menu.menuCode === 'WE',
+                )
+                .map((menu) => (
+                  <ModalCheckboxWrapper
+                    className="padding"
+                    key={`${menu.menuCode}-${menu.menuName}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={menu.isUse}
+                      onChange={() => accessMenuCheckChange(menu.menuCode)}
+                    />
+                    <Label value={menu.menuName} />
+                  </ModalCheckboxWrapper>
+                ))}
               <ModalCheckboxWrapper>
                 <input
                   type="checkbox"
@@ -1101,19 +1098,26 @@ export function Company() {
                 ></input>
                 <Label value={'콘텐츠 관리'} />
               </ModalCheckboxWrapper>
-              {accessMenuList.slice(2, 5).map((menu) => (
-                <ModalCheckboxWrapper
-                  className="padding"
-                  key={`${menu.menuCode} - ${menu.menuName}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={menu.isUse}
-                    onChange={() => accessMenuCheckChange(menu.menuCode)}
-                  ></input>
-                  <Label value={menu.menuName} />
-                </ModalCheckboxWrapper>
-              ))}
+              {accessMenuList
+                .filter(
+                  (menu) =>
+                    menu.menuCode === 'QM' ||
+                    menu.menuCode === 'RM' ||
+                    menu.menuCode === 'IM',
+                )
+                .map((menu) => (
+                  <ModalCheckboxWrapper
+                    className="padding"
+                    key={`${menu.menuCode}-${menu.menuName}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={menu.isUse}
+                      onChange={() => accessMenuCheckChange(menu.menuCode)}
+                    />
+                    <Label value={menu.menuName} />
+                  </ModalCheckboxWrapper>
+                ))}
               <ModalCheckboxWrapper>
                 <input
                   type="checkbox"
@@ -1122,21 +1126,30 @@ export function Company() {
                 ></input>
                 <Label value={'운영 관리'} />
               </ModalCheckboxWrapper>
-              {accessMenuList.slice(5, 12).map((menu) => (
-                <ModalCheckboxWrapper
-                  className="padding"
-                  key={`${menu.menuCode} - ${menu.menuName}`}
-                  $disable={menu.isLock}
-                >
-                  <input
-                    type="checkbox"
-                    checked={menu.isUse}
-                    disabled={menu.isLock}
-                    onChange={() => accessMenuCheckChange(menu.menuCode)}
-                  ></input>
-                  <Label value={menu.menuName} />
-                </ModalCheckboxWrapper>
-              ))}
+              {accessMenuList
+                .filter(
+                  (menu) =>
+                    menu.menuCode === 'AM' ||
+                    menu.menuCode === 'PM' ||
+                    menu.menuCode === 'PSM' ||
+                    menu.menuCode === 'MIM' ||
+                    menu.menuCode === 'LOM' ||
+                    menu.menuCode === 'STM',
+                )
+                .map((menu) => (
+                  <ModalCheckboxWrapper
+                    className="padding"
+                    key={`${menu.menuCode}-${menu.menuName}`}
+                    $disable={menu.isLock}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={menu.isUse}
+                      onChange={() => accessMenuCheckChange(menu.menuCode)}
+                    />
+                    <Label value={menu.menuName} />
+                  </ModalCheckboxWrapper>
+                ))}
               <ModalCheckboxWrapper>
                 <input
                   type="checkbox"
@@ -1145,19 +1158,23 @@ export function Company() {
                 ></input>
                 <Label value={'메뉴 관리'} />
               </ModalCheckboxWrapper>
-              {accessMenuList.slice(12, 14).map((menu) => (
-                <ModalCheckboxWrapper
-                  className="padding"
-                  key={`${menu.menuCode} - ${menu.menuName}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={menu.isUse}
-                    onChange={() => accessMenuCheckChange(menu.menuCode)}
-                  ></input>
-                  <Label value={menu.menuName} />
-                </ModalCheckboxWrapper>
-              ))}
+              {accessMenuList
+                .filter(
+                  (menu) => menu.menuCode === 'CCC' || menu.menuCode === 'CMC',
+                )
+                .map((menu) => (
+                  <ModalCheckboxWrapper
+                    className="padding"
+                    key={`${menu.menuCode}-${menu.menuName}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={menu.isUse}
+                      onChange={() => accessMenuCheckChange(menu.menuCode)}
+                    />
+                    <Label value={menu.menuName} />
+                  </ModalCheckboxWrapper>
+                ))}
             </ModalBody>
           </ModalBodyWrapper>
           <ModalButtonWrapper>

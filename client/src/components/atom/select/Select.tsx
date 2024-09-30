@@ -211,7 +211,8 @@ const ScrollWrapper = styled.div<{ $heightScroll?: string }>`
   overflow-y: auto;
   width: 100%;
   border-radius: 5px;
-  ${({ $heightScroll }) => ($heightScroll ? `height: ${$heightScroll}` : '')};
+  ${({ $heightScroll }) =>
+    $heightScroll ? `max-height: ${$heightScroll}` : ''};
 `;
 
 const SelectOptionsList = styled.div<{

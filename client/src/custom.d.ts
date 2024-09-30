@@ -13,3 +13,8 @@ declare module '*.png' {
   const value: string;
   export default value;
 }
+
+// 다음 지도 API
+interface Window {
+  daum: any;
+}
