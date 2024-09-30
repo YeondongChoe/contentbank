@@ -135,7 +135,7 @@ export type EditorDataType = {
 
 export type AddQuestionListType = {
   commandCode: number;
-  quizIdx: null;
+  quizIdx: number | null;
   articleList: never[];
   quizItemList: QuizItemListType;
   quizClassList: QuestionClassListType;
@@ -145,3 +145,55 @@ export type QuestionClassListType = {
   type: string;
   quizCategory: QuizCategory;
 }[];
+
+type QuizCategoryClassType = {
+  문항타입: string;
+  sources?: Source[] | any[];
+  출판년도: string;
+  난이도?: string;
+};
+
+export type CategoryDetailType = {
+  유형: string;
+  대단원: string;
+  소단원: string;
+  중단원: string;
+};
+
+export type QuizCategoryListType = {
+  학년: string;
+  교육과정: string;
+  학교급: string;
+  과목: string;
+  교과: string;
+  학기: string;
+  행동요소1: string[];
+  행동요소2: string[];
+  categories: CategoryDetailType[];
+};
+
+export type CategoryQuiz = {
+  type: 'CATEGORY';
+  quizCategory: QuizCategoryListType;
+};
+export type ClassQuiz = {
+  type: 'CLASS';
+  quizCategory: QuizCategoryClassType;
+};
+
+// 전체 퀴즈 리스트 타입 선언
+export type QuizClassListType = (ClassQuiz | CategoryQuiz)[];
+
+// 분류 수정
+export type QuizClassificationData = {
+  quizCodeList: string[];
+  categoryList: CategoryItem[];
+};
+// categoryList 아이템 타입 정의
+type CategoryItem = {
+  itemTreeKey?: QuizCategory;
+  itemTreeIdxList: number[];
+  quizCategory?: {
+    [key: string]: string | number | string[] | undefined;
+  };
+};
