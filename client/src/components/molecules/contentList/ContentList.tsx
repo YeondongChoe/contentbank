@@ -11,7 +11,6 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
-import { quizService } from '../../../api/axios';
 import {
   Button,
   DropDown,
@@ -26,7 +25,8 @@ import {
   openToastifyAlert,
   PDFModal,
   Tooltip,
-} from '../../../components';
+} from '../..';
+import { quizService } from '../../../api/axios';
 import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
@@ -83,9 +83,9 @@ export function ContentList({
     },
     {
       key: 'ListTable/DropDownList복제 후 수정',
-      title: '복제 후 수정',
+      title: '수정 후 복제',
       onClick: () => {
-        openCreateEditWindow();
+        openCreateCopyEditWindow();
         setShowDropDown(false);
       },
     },
@@ -99,6 +99,16 @@ export function ContentList({
       name: 'createcontentmain',
       url: '/createcontentmain',
       queryParams: { state: 'edit' },
+    });
+  };
+
+  // 문항 복제후 수정 윈도우 열기
+  const openCreateCopyEditWindow = () => {
+    saveLocalData();
+    windowOpenHandler({
+      name: 'createcontentmain',
+      url: '/createcontentmain',
+      queryParams: { state: 'copyedit' },
     });
   };
 

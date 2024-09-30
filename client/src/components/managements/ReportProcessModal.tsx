@@ -5,15 +5,10 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { styled } from 'styled-components';
 
 import { quizService } from '../../api/axios';
-import {
-  Button,
-  Label,
-  Select,
-  openToastifyAlert,
-} from '../../components/atom';
-import { Alert } from '../../components/molecules';
 import { useModal } from '../../hooks';
+import { Button, Label, Select, openToastifyAlert } from '../atom';
 import { COLOR } from '../constants';
+import { Alert } from '../molecules';
 
 type ReportProcessType = {
   registorReport?: boolean;
