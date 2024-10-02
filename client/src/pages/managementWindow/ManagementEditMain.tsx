@@ -103,10 +103,12 @@ export function ManagementEditMain() {
           fontSize="13px"
           $filled
           cursor
+          $margin="0 0 10px 0"
         >
-          문항 일괄 편집
+          문항 편집 이력
         </Button>
       </ButtonWrapper>
+
       <ContentInformationChange />
     </Container>
   );
