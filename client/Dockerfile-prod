@@ -12,7 +12,7 @@ RUN npm cache clean --force
 RUN npm install
 
 # 개발 모드에서 프로젝트 빌드
-RUN npm run build --verbose
+RUN npm run build:dev --verbose
 
 # 디스크 공간을 확보하기 위해 node_modules 및 npm 캐시 제거
 RUN rm -rf node_modules
