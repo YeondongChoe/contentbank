@@ -107,11 +107,11 @@ export function Authority() {
     useState<PermissionInput[]>(defaultPermissions);
   const queryClient = useQueryClient();
 
-  // 권한 리스트 불러오기 api
+  // 권한 리스트 불러오기 api 기업코드 변경해줘야함
   const { data: authorityListData, refetch: authorityListDataRefetch } =
     useQuery({
-      queryKey: ['get-authorityList'],
-      queryFn: getAuthorityList,
+      queryKey: ['get-authorityList', '1'],
+      queryFn: ({ queryKey }) => getAuthorityList(queryKey[1]),
       meta: {
         errorMessage: 'get-authorityList 에러 메세지',
       },

@@ -29,8 +29,10 @@ import {
 export function RegisterModal({
   memberList,
   refetch,
+  idxValue,
 }: {
   memberList?: MemberType[];
+  idxValue: string;
   refetch: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
@@ -57,6 +59,7 @@ export function RegisterModal({
   const Name = watch('name');
   const Id = watch('id');
   const Comment = commentValue;
+  const IdxValue = idxValue;
   // 정규식 조건
   const isRegexp = idRegex.test(Id);
 
@@ -68,6 +71,7 @@ export function RegisterModal({
     if (memberList && Name !== '') {
       const idDuplicate = memberList.filter((el) => el.id == Id);
       const isOn = Boolean(idDuplicate.length);
+
       setIsDuplicate(isOn);
 
       if (!isRegexp || isOn) {
@@ -77,6 +81,11 @@ export function RegisterModal({
         setIsIdError(false);
         setIdErrorMessage('');
       }
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '이름을 작성해주세요',
+      });
     }
   };
 
@@ -148,14 +157,14 @@ export function RegisterModal({
       return;
     }
 
-    onCreateAccount({ Id, Name, selectedCode, Comment });
+    onCreateAccount({ Id, Name, selectedCode, Comment, IdxValue });
     //버튼 disable 처리
   };
 
   // 권한 불러오기 api
   const { data: authorityData, isFetching } = useQuery({
-    queryKey: ['get-authorityList'],
-    queryFn: getAuthorityList,
+    queryKey: ['get-authorityList', IdxValue],
+    queryFn: ({ queryKey }) => getAuthorityList(queryKey[1]),
     meta: {
       errorMessage: 'get-authorityList 에러 메세지',
     },
