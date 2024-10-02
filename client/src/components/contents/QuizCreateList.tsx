@@ -404,6 +404,7 @@ export function QuizCreateList() {
                 options={categoriesE[2]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedSource}
+                heightScroll={'300px'}
               />
             )}
             {/* 교육과정 학교급 학년 학기 */}
@@ -418,6 +419,7 @@ export function QuizCreateList() {
                 options={categoryList[0]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedCurriculum}
+                heightScroll={'300px'}
               />
             )}
             {categoryList && categoryTitles[1] && (
@@ -431,6 +433,7 @@ export function QuizCreateList() {
                 options={categoryList[1]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedLevel}
+                heightScroll={'300px'}
               />
             )}
             {categoryList && categoryTitles[2] && (
@@ -444,6 +447,7 @@ export function QuizCreateList() {
                 options={categoryList[2]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedGrade}
+                heightScroll={'300px'}
               />
             )}
             {categoryList && categoryTitles[3] && (
@@ -457,6 +461,7 @@ export function QuizCreateList() {
                 options={categoryList[3]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedSemester}
+                heightScroll={'300px'}
               />
             )}
             {/* 교과 */}
@@ -471,6 +476,7 @@ export function QuizCreateList() {
                 options={categoriesE[0]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedSubject}
+                heightScroll={'300px'}
               />
             )}
             {/* 과목 */}
@@ -485,6 +491,7 @@ export function QuizCreateList() {
                 options={categoriesE[1]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedCourse}
+                heightScroll={'300px'}
               />
             )}
             {/* 문항타입 */}
@@ -499,6 +506,7 @@ export function QuizCreateList() {
                 options={categoriesE[3]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedQuestionType}
+                heightScroll={'300px'}
               />
             )}
             <CommonDate
