@@ -92,7 +92,6 @@ export function QuizCreateList() {
       );
       return res.data.data;
     }
-    // console.log(`getQuiz 결과값`, res.data.data);
   };
 
   const {
