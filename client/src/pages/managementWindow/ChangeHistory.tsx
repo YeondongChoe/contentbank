@@ -141,7 +141,7 @@ export function ChangeHistory() {
           {selectCategory.map((el) => (
             <Select
               isnormalizedOptions
-              width={'150px'}
+              width={'200px'}
               defaultValue={el.label}
               key={el.label}
               options={el.options}
@@ -150,7 +150,7 @@ export function ChangeHistory() {
           ))}
         </SelectWrapper>
 
-        <Search
+        {/* <Search
           value={searchValue}
           onClick={() => filterSearchValue()}
           onKeyDown={(e) => {
@@ -160,7 +160,7 @@ export function ChangeHistory() {
           placeholder="변경사항,담당자 검색"
           width={'50%'}
           height="40px"
-        />
+        /> */}
       </InputWrapper>
 
       {!isLoading ? (
@@ -211,9 +211,9 @@ export function ChangeHistory() {
                   </List>
                 </>
               ) : (
-                <>
+                <ValueNoneWrapper>
                   <ValueNone />
-                </>
+                </ValueNoneWrapper>
               )}
             </PerfectScrollbar>
           </ScrollWrapper>
@@ -281,6 +281,9 @@ const LoaderWrapper = styled.div`
   width: 100%;
   padding-top: 30px;
   padding-left: calc(50% - 35px);
+`;
+const ValueNoneWrapper = styled.div`
+  padding: 100px 0;
 `;
 const ListWrapper = styled.div`
   padding: 10px;
