@@ -215,15 +215,17 @@ export function ContentCategoryChange() {
       setIsCategoryLoaded(true);
 
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/${id}`).catch((error) => {
-          // console.log(error);
-          if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
-            setRefreshTokenCalled(true);
-            postRefreshToken().then(() => {
-              setRefreshTokenCalled(false);
-            });
-          }
-        }),
+        classificationInstance
+          .get(`/v1/category/class/${id}`)
+          .catch((error) => {
+            // console.log(error);
+            if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
+              setRefreshTokenCalled(true);
+              postRefreshToken().then(() => {
+                setRefreshTokenCalled(false);
+              });
+            }
+          }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
