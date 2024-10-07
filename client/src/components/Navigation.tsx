@@ -499,7 +499,7 @@ export function Navigation() {
               </strong>
               {decodingInfo?.permissionList &&
               // 문항 제작
-              decodingInfo?.permissionList.QE.isEdit ? (
+              decodingInfo?.permissionList.QE?.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-create/quiz'} id="nav-link">
                     <svg
@@ -546,7 +546,7 @@ export function Navigation() {
               )}
               {decodingInfo?.permissionList &&
               // 학습지 제작
-              decodingInfo?.permissionList.WE.isEdit ? (
+              decodingInfo?.permissionList.WE?.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-create/exam'}>
                     <svg
@@ -615,7 +615,7 @@ export function Navigation() {
               </strong>
               {decodingInfo?.permissionList &&
               // 문항 관리
-              decodingInfo?.permissionList.QM.isEdit ? (
+              decodingInfo?.permissionList.QM?.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-manage/quiz'}>
                     <svg
@@ -731,7 +731,7 @@ export function Navigation() {
 
               {decodingInfo?.permissionList &&
               // 회원 관리
-              decodingInfo?.permissionList.AM.isManage ? (
+              decodingInfo?.permissionList.AM?.isManage ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/operation-manage/member'}>
                     <svg
@@ -778,7 +778,7 @@ export function Navigation() {
               )}
               {decodingInfo?.permissionList &&
               // 권한 관리
-              decodingInfo?.permissionList.PM.isManage ? (
+              decodingInfo?.permissionList.PM?.isManage ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/operation-manage/authority'}>
                     <svg
