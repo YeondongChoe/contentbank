@@ -13,9 +13,11 @@ type PaginationBoxProps = {
   totalItemsCount: number;
   onClick?: () => void;
   onChange?: (e: any) => void;
+  $margin?: string;
 };
 
 export function PaginationBox({
+  $margin,
   itemsCountPerPage,
   totalItemsCount,
 }: PaginationBoxProps) {
@@ -32,7 +34,7 @@ export function PaginationBox({
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper $margin={$margin}>
       <Pagination
         activePage={page}
         itemsCountPerPage={itemsCountPerPage} // 한페이지에서 보일 아이템 갯수
@@ -48,7 +50,8 @@ export function PaginationBox({
   );
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $margin?: string }>`
+  margin: ${({ $margin }) => $margin || '0px'};
   .pagination {
     display: flex;
     justify-content: center;

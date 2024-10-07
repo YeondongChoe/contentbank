@@ -5,8 +5,6 @@ import { styled } from 'styled-components';
 
 import { COLOR } from '../../constants';
 
-import { ListItem } from './ListItem';
-
 type ListProps = {
   // onClick: () => void;
   // onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;

@@ -11,7 +11,7 @@ export function DropdownWithCheckbox({
 }: {
   width?: string;
   options: string[];
-  selectedList: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedList: (selectedItems: string[]) => void;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);

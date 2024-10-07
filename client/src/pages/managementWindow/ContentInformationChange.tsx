@@ -10,16 +10,13 @@ import styled from 'styled-components';
 
 import { classificationInstance, quizService } from '../../api/axios';
 import {
-  Accordion,
   Button,
-  ButtonFormatRadio,
-  DepthBlock,
+  CheckBoxI,
   DropdownWithCheckbox,
-  Loader,
+  EditListItem,
+  List,
   PaginationBox,
-  ResizeLayout,
   ValueNone,
-  openToastifyAlert,
 } from '../../components';
 import { COLOR } from '../../components/constants';
 import ArrowClockwiseIcon from '../../components/contents/createcontent/editer/components/icons/ArrowClockwiseIcon';
@@ -32,36 +29,121 @@ import CloseIcon from '../../components/contents/createcontent/editer/components
 import TrashIcon from '../../components/contents/createcontent/editer/components/icons/TrashIcon';
 import { QuizList } from '../../components/contents/createcontent/list';
 import { pageAtom } from '../../store/utilAtom';
-import {
-  ItemCategoryType,
-  ItemTreeListType,
-  ItemTreeType,
-  PaginationType,
-  QuizListType,
-} from '../../types';
+import { QuizListType } from '../../types';
+
+interface PairState {
+  selectedItems1: string[];
+  selectedItems2: string[];
+  includeType: 'includeOne' | 'includeAll';
+}
 
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-
+  const [checkList, setCheckList] = useState<number[]>([]); // 문항 체크
   const [searchValue, setSearchValue] = useState<string>('');
   const [changeValue, setChangeValue] = useState<string>('');
-  const [checkedList, setCheckedList] = useState<string[]>([]);
 
   const searchDivRef = useRef<HTMLDivElement | null>(null);
   const changeDivRef = useRef<HTMLDivElement | null>(null);
   // 드롭박스 셀렉팅 값
+  const [components, setComponents] = useState<PairState[]>([
+    { selectedItems1: [], selectedItems2: [], includeType: 'includeOne' },
+  ]);
   const [selectedItems1, setSelectedItems1] = useState<string[]>([]);
   const [selectedItems2, setSelectedItems2] = useState<string[]>([]);
-  const [selectedItems3, setSelectedItems3] = useState<string[]>([]);
-  const [selectedItems4, setSelectedItems4] = useState<string[]>([]);
   const [includeType1, setIncludeType1] = useState<'includeOne' | 'includeAll'>(
     'includeOne',
   );
-  const [includeType2, setIncludeType2] = useState<'includeOne' | 'includeAll'>(
-    'includeOne',
-  );
 
+  // 검색 api
+  // setQuestionList(list); // 검색 이후 리스트 값
+  // 임시 전체 퀴즈 리스트
+  const getQuiz = async () => {
+    const res = await quizService.get(
+      `/v1/quiz?pageIndex=${page}&pageUnit=${8}`,
+    );
+    return res.data.data;
+  };
+
+  const { data: quizData, refetch: quizDataRefetch } = useQuery({
+    queryKey: ['get-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-quizList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    console.log('quizData-----', quizData);
+    if (quizData) setQuestionList(quizData.quizList);
+  }, [quizData]);
+
+  // 데이터 변경시 리랜더링
+  useEffect(() => {
+    quizDataRefetch();
+  }, [page]);
+
+  // 새로운 컴포넌트 쌍을 추가하는 함수
+  const addComponentSet = () => {
+    if (components.length < 19) {
+      setComponents([
+        ...components,
+        { selectedItems1: [], selectedItems2: [], includeType: 'includeOne' },
+      ]);
+    }
+  };
+
+  // 컴포넌트 쌍을 삭제하는 함수
+  const removeComponentSet = (index: number) => {
+    setComponents(components.filter((_, i) => i !== index));
+  };
+
+  // 선택된 항목을 업데이트하는 함수
+  const updateSelectedItems1 = (index: number, selectedItems: string[]) => {
+    const updatedComponents = [...components];
+    updatedComponents[index].selectedItems1 = selectedItems;
+    setComponents(updatedComponents);
+  };
+
+  const updateSelectedItems2 = (index: number, selectedItems: string[]) => {
+    const updatedComponents = [...components];
+    updatedComponents[index].selectedItems2 = selectedItems;
+    setComponents(updatedComponents);
+  };
+
+  // SwitchButton 상태 업데이트 함수
+  const updateIncludeType = (
+    index: number,
+    type: 'includeOne' | 'includeAll',
+  ) => {
+    const updatedComponents = [...components];
+    updatedComponents[index].includeType = type;
+    setComponents(updatedComponents);
+  };
+
+  // 체크박스 설정
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.checked);
+    if (e.target.checked) {
+      setCheckList(questionList.map((item: QuizListType) => item.idx));
+    } else {
+      setCheckList([]);
+    }
+  };
+  const handleButtonCheck = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: number,
+  ) => {
+    const target = e.currentTarget.childNodes[0].childNodes[0].childNodes[0]
+      .childNodes[0].childNodes[0] as HTMLInputElement;
+
+    if (!target.checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
+    }
+  };
   const submitSave = () => {
     // saveHandler();
     // 이미지 데이터 저장
@@ -218,16 +300,24 @@ export function ContentInformationChange() {
 
   useEffect(() => {
     // 드롭다운 리스트 값
-    console.log('드롭다운 리스트 값', selectedItems1);
-  }, [selectedItems1]);
+    console.log('드롭다운 리스트 값', components);
+  }, [components, selectedItems1, selectedItems2, includeType1]);
 
   const buttonDisabled = useMemo(() => {
-    if (searchValue.length > 1 && selectedItems1.length > 0) {
+    if (
+      // searchValue.length > 1 &&
+      selectedItems1.length > 0 &&
+      selectedItems2.length > 0
+    ) {
       return false;
     } else {
       return true;
     }
-  }, [changeValue, selectedItems1]);
+  }, [selectedItems1, selectedItems2]);
+
+  useEffect(() => {
+    console.log('questionList/----------*', questionList);
+  }, [questionList]);
 
   return (
     <>
@@ -236,12 +326,11 @@ export function ContentInformationChange() {
           <Title>
             <span className="title_top">검색 조건</span>
           </Title>
-
-          <ScrollWrapper>
+          <ScrollWrapper className="height_500">
             <PerfectScrollbar>
               <DropdownWithCheckboxWrapper>
                 <DropdownWithCheckbox
-                  width={'120px'}
+                  width={'140px'}
                   selectedList={setSelectedItems1}
                   options={[
                     'lisdsad sadasdsa dsadsada dsa t1',
@@ -281,50 +370,68 @@ export function ContentInformationChange() {
                 </SwitchButton>
               </SwitchContainer>
 
-              <DropdownWithCheckboxWrapper>
-                <DropdownWithCheckbox
-                  width={'120px'}
-                  selectedList={setSelectedItems3}
-                  options={[
-                    'lisdsad sadasdsa dsadsada dsa t1',
-                    'list2',
-                    'list3',
-                    'list4',
-                    'list5',
-                    'list6',
-                  ]}
-                />
-                <span>이(가)</span>
-                <DropdownWithCheckbox
-                  width={'200px'}
-                  selectedList={setSelectedItems4}
-                  options={[
-                    'lisdsad sadasdsa dsadsada dsa t1',
-                    'list2',
-                    'list3',
-                    'list4',
-                    'list5',
-                    'list6',
-                  ]}
-                />
-              </DropdownWithCheckboxWrapper>
-              <SwitchContainer>
-                <SwitchButton
-                  isSelected={includeType2 === 'includeOne'}
-                  onClick={() => setIncludeType2('includeOne')}
-                >
-                  하나 이상 포함
-                </SwitchButton>
-                <SwitchButton
-                  isSelected={includeType2 === 'includeAll'}
-                  onClick={() => setIncludeType2('includeAll')}
-                >
-                  모두 포함
-                </SwitchButton>
-              </SwitchContainer>
+              {components.map((component, index) => (
+                <ComponentSet key={index}>
+                  <DropdownWithCheckboxWrapper>
+                    <DropdownWithCheckbox
+                      width={'120px'}
+                      selectedList={(selectedItems: string[]) =>
+                        updateSelectedItems1(index, selectedItems)
+                      }
+                      options={[
+                        'lisdsad sadasdsa dsadsada dsa t1',
+                        'list2',
+                        'list3',
+                        'list4',
+                        'list5',
+                        'list6',
+                      ]}
+                    />
+                    <span>이(가)</span>
+                    <DropdownWithCheckbox
+                      width={'200px'}
+                      selectedList={(selectedItems: string[]) =>
+                        updateSelectedItems2(index, selectedItems)
+                      }
+                      options={[
+                        'lisdsad',
+                        'list2',
+                        'list3',
+                        'list4',
+                        'list5',
+                        'list6',
+                      ]}
+                    />
+                  </DropdownWithCheckboxWrapper>
+
+                  <SwitchContainer>
+                    <SwitchButton
+                      isSelected={component.includeType === 'includeOne'}
+                      onClick={() => updateIncludeType(index, 'includeOne')}
+                    >
+                      하나 이상 포함
+                    </SwitchButton>
+                    <SwitchButton
+                      isSelected={component.includeType === 'includeAll'}
+                      onClick={() => updateIncludeType(index, 'includeAll')}
+                    >
+                      모두 포함
+                    </SwitchButton>
+                  </SwitchContainer>
+
+                  {/* 삭제 버튼 */}
+                  <RemoveButton onClick={() => removeComponentSet(index)}>
+                    -
+                  </RemoveButton>
+                </ComponentSet>
+              ))}
             </PerfectScrollbar>
           </ScrollWrapper>
+
           <ButtonWrapper>
+            {/* 컴포넌트 쌍 추가 버튼 */}
+            <AddButton onClick={addComponentSet}>+ 검색 조건 추가</AddButton>
+
             <InputWrapper>
               <div
                 ref={(el) => {
@@ -381,6 +488,63 @@ export function ContentInformationChange() {
               </Button>
             </InputWrapper>
 
+            <InfoText>
+              {searchValue === '' &&
+              selectedItems1.length == 0 &&
+              selectedItems2.length == 0 ? (
+                <span className="placeholder">
+                  {/* 검색조건을 입력해주세요 */}
+                </span>
+              ) : (
+                <span>
+                  {selectedItems1.map((item1, idx1) => (
+                    <span key={`item1-${idx1}`}>
+                      &apos;{item1}&apos;
+                      {idx1 < selectedItems1.length - 1 && ', '}
+                    </span>
+                  ))}
+                  <span> 이 </span>
+                  {selectedItems2.map((item2, idx2) => (
+                    <span key={`item2-${idx2}`}>
+                      &apos;{item2}&apos;
+                      {idx2 < selectedItems2.length - 1 && ', '}
+                    </span>
+                  ))}
+                  <span>
+                    {includeType1 === 'includeAll'
+                      ? '모두를 포함하고'
+                      : '하나 이상을 포함하고'}
+                  </span>
+                  <br />
+                  {components.map((el, idx) => (
+                    <span key={`info-${idx}`}>
+                      {el.selectedItems1.map((item1, idx1) => (
+                        <span key={`item1-${idx1}`}>
+                          &apos;{item1}&apos;
+                          {idx1 < el.selectedItems1.length - 1 && ', '}
+                        </span>
+                      ))}
+                      <span> 이 </span>
+                      {el.selectedItems2.map((item2, idx2) => (
+                        <span key={`item2-${idx2}`}>
+                          &apos;{item2}&apos;
+                          {idx2 < el.selectedItems2.length - 1 && ', '}
+                        </span>
+                      ))}
+                      <span>
+                        {el.includeType === 'includeAll'
+                          ? '모두를 포함하고'
+                          : '하나 이상을 포함하고'}
+                      </span>
+                      <br />
+                    </span>
+                  ))}
+                  {searchValue && (
+                    <span>검색어가 &apos;{searchValue}&apos;인 문항</span>
+                  )}
+                </span>
+              )}
+            </InfoText>
             <Button
               $filled
               cursor
@@ -395,44 +559,108 @@ export function ContentInformationChange() {
         </PositionWrapper>
 
         <PositionWrapper className="width">
-          {/* <Title>
-            <span className="title_top">바꿀 내용 입력</span>
-          </Title> */}
-          {checkedList.length ? (
+          {questionList.length ? (
             <>
-              <ScrollWrapper>
+              <p className="top_info">
+                <span>
+                  <CheckBoxI
+                    $margin={'0 5px 0 0'}
+                    onChange={(e) => handleAllCheck(e)}
+                    checked={
+                      checkList.length === questionList.length ? true : false
+                    }
+                    id={'all check'}
+                    value={'all check'}
+                  />
+                  총 {checkList.length}건 전체 선택
+                </span>
+                <span>검수완료(활성화)된 문항만 검색됩니다.</span>
+              </p>
+              <ScrollWrapper className="height">
                 <PerfectScrollbar>
-                  <ChangeInfoWrapper>
-                    <p className="info_total">
-                      선택한 문항 총 {checkedList.length} 건
-                    </p>
-                    <div className="info_box">
-                      {checkedList.length && (
-                        <p>
-                          총<span className="strong">{checkedList.length}</span>
-                          건
-                        </p>
-                      )}
-                      {searchValue && (
-                        <p>
-                          <span className="strong">{searchValue}</span>
-                          를(을)
-                        </p>
-                      )}
-                      {changeValue && (
-                        <p>
-                          <span className="strong">{changeValue}</span>로 변경
-                          하시겠습니까?
-                        </p>
-                      )}
-                    </div>
-                  </ChangeInfoWrapper>
+                  <ListWrapper>
+                    {questionList.map((item: QuizListType) => (
+                      <EditListItem
+                        key={item.code}
+                        isChecked={checkList.includes(item.idx)}
+                        onClick={(e) => handleButtonCheck(e, item.idx)}
+                      >
+                        <ContentsWrapper>
+                          <ContentsBox>
+                            <CheckBoxI
+                              id={item.code}
+                              value={item.idx}
+                              $margin={`0 5px 0 0`}
+                              checked={checkList.includes(item.idx)}
+                              readOnly
+                              width="15px"
+                            />
+                            <p className="flex_line size_12">
+                              {item.quizCategoryList.map(
+                                (categoryItem, categoryIdx) => {
+                                  const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                  return (
+                                    <span
+                                      key={`category-${item.idx}-${categoryIdx}`}
+                                    >
+                                      {/* "*유형"에 해당하는 값 */}
+
+                                      <span>{`${quizCategory.대유형 ? quizCategory.대유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                      <span>{`${quizCategory.중유형 ? quizCategory.중유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                      <span>{`${quizCategory.소유형 ? quizCategory.소유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                      <span>{`${quizCategory.유형 ? quizCategory.유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                    </span>
+                                  );
+                                },
+                              )}
+                            </p>
+                          </ContentsBox>
+                          <ContentsBox>
+                            <p className="flex_line size_12">
+                              {item.quizCategoryList.map(
+                                (categoryItem, categoryIdx) => {
+                                  const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                  return (
+                                    <span
+                                      key={`category-${item.idx}-${categoryIdx}`}
+                                    >
+                                      {quizCategory &&
+                                        quizCategory.sources &&
+                                        quizCategory.sources.length > 0 &&
+                                        quizCategory.sources.map((el, idx) => (
+                                          <span key={`${el.출처}-${idx}`}>
+                                            {`${el.출처} `}
+                                            {/* {idx <
+                                            quizCategory.sources.length - 1
+                                              ? ', '
+                                              : ''} */}
+                                          </span>
+                                        ))}
+                                    </span>
+                                  );
+                                },
+                              )}
+                            </p>
+                          </ContentsBox>
+                        </ContentsWrapper>
+                      </EditListItem>
+                    ))}
+                  </ListWrapper>
                 </PerfectScrollbar>
               </ScrollWrapper>
+              {quizData.pagination && (
+                <PaginationBox
+                  itemsCountPerPage={8}
+                  totalItemsCount={quizData.pagination.totalCount}
+                  $margin={'0 0 20px 0'}
+                />
+              )}
             </>
           ) : (
             <ValueNoneWrapper>
-              <ValueNone textOnly info={'STEP2 문항을 선택해주세요'} />
+              <ValueNone textOnly info={'검색 조건을 입력해주세요'} />
             </ValueNoneWrapper>
           )}
         </PositionWrapper>
@@ -678,6 +906,7 @@ const PositionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 20px;
+  margin: 0 5px;
 
   &.width_400 {
     min-width: 400px;
@@ -685,6 +914,15 @@ const PositionWrapper = styled.div`
   }
   &.width {
     flex: 1 0 0;
+    min-height: 500px;
+    background-color: ${COLOR.LIGHT_GRAY};
+  }
+
+  .top_info {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 `;
 const Title = styled.div`
@@ -704,31 +942,40 @@ const Title = styled.div`
 
 const ScrollWrapper = styled.div`
   overflow-y: auto;
-  height: calc(100vh - 280px);
   width: 100%;
   background-color: ${COLOR.LIGHT_GRAY};
 
-  .line {
-    border-top: 1px solid ${COLOR.BORDER_GRAY};
-    margin: 10px 0;
+  &.height_500 {
+    height: calc(100vh - 500px);
   }
 
-  .meta_accordion_select {
-    padding: 20px;
+  &.height {
+    height: calc(100vh - 280px);
   }
-  .meta_accordion_select {
-    strong {
-      display: flex;
-      font-size: 15px;
-      margin-bottom: 5px;
-    }
+
+  .flex_line {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
   }
+  .size_12 {
+    font-size: 12px;
+  }
+`;
+const ContentsBox = styled.div`
+  display: flex;
+`;
+
+const ContentsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   width: 100%;
   border: 1px solid ${COLOR.BORDER_GRAY};
   border-radius: 5px;
@@ -748,14 +995,7 @@ const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* background-color: #fff;
-  box-shadow:
-    rgba(0, 17, 255, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-  position: sticky;
-  bottom: 0;
-  right: 0;
-  left: 0; */
+  margin-bottom: 20px;
 
   .pagination {
     padding-bottom: 12px;
@@ -767,6 +1007,7 @@ const DropdownWithCheckboxWrapper = styled.div`
   flex-wrap: nowrap;
   align-items: center;
   padding: 10px;
+  padding-left: 15px;
   span {
     font-size: 13px;
     padding: 5px;
@@ -791,52 +1032,58 @@ const SwitchButton = styled.button<{ isSelected: boolean }>`
   font-size: 14px;
   font-weight: bold;
 `;
+
+const ComponentSet = styled.div`
+  position: relative;
+  margin-left: 20px;
+`;
+
+const AddButton = styled.button`
+  margin: 10px 0;
+  padding: 10px 20px;
+  color: ${COLOR.PRIMARY};
+  border: 1px dotted ${COLOR.PRIMARY};
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: transparent;
+`;
+const InfoText = styled.p`
+  padding: 10px;
+  width: 400px;
+  margin: 0 auto;
+  border: 1px dashed #aaa;
+  margin-bottom: 10px;
+  .placeholder {
+    color: #aaa;
+  }
+`;
+
+const RemoveButton = styled.button`
+  position: absolute;
+  top: 20px;
+  left: -10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+`;
+
 const ValueNoneWrapper = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
   display: flex;
   height: 100%;
 `;
-const ChangeInfoWrapper = styled.div`
+
+const ListWrapper = styled.ul`
   display: flex;
+  align-items: center;
   flex-direction: column;
-  height: 100%;
-  position: relative;
-  .info_total {
-    color: #fff;
-    font-weight: bold;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-    background-color: ${COLOR.FONT_NAVI};
-  }
-  .info_box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 16px;
-    width: 100%;
-    text-align: center;
-    color: ${COLOR.SECONDARY};
-    /* font-weight: bold; */
-    position: absolute;
-    top: calc(50% - 60px);
-    padding: 20px;
-
-    p {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      padding: 2px;
-    }
-  }
-
-  .strong {
-    background-color: ${COLOR.FONT_NAVI};
-    color: #fff;
-    padding: 2px;
-  }
+  padding: 10px;
 `;
-
 const LoaderWrapper = styled.div`
   display: flex;
   width: 100%;
