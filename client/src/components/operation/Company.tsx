@@ -1355,7 +1355,7 @@ export function Company() {
     <Container>
       <Wrapper>
         <TitleWrapper>
-          <Title>기업 관리</Title>
+          <Title>기업 관리ㅋㅋㅋ</Title>
         </TitleWrapper>
         <MainWrapper>
           <SettingWrapper>
