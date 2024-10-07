@@ -23,7 +23,6 @@ import {
   AuthorityPage,
   FirstLoginPage,
   LoginPage,
-  ManagementsTreePage,
   MemberPage,
   MypagePage,
   QuizManagementListPage,
@@ -133,10 +132,6 @@ const router = createBrowserRouter([
       {
         path: '/managementeditmain',
         element: <ManagementEditMain />,
-      },
-      {
-        path: '/content-manage/classify',
-        element: <ManagementsTreePage />,
       },
       {
         path: '/content-manage/metainfo',
