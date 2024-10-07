@@ -79,7 +79,7 @@ export function Navigation() {
               </strong>
               {decodingInfo?.permissionList &&
               // 문항 제작
-              decodingInfo?.permissionList.QE.isEdit ? (
+              decodingInfo?.permissionList.QE?.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-create/quiz'}>
                     <svg
@@ -126,7 +126,7 @@ export function Navigation() {
               )}
               {decodingInfo?.permissionList &&
               // 학습지 제작
-              decodingInfo?.permissionList.WE.isEdit ? (
+              decodingInfo?.permissionList.WE?.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-create/exam'}>
                     <svg
@@ -194,7 +194,7 @@ export function Navigation() {
               </strong>
               {decodingInfo?.permissionList &&
               // 문항 관리
-              decodingInfo?.permissionList.QM.isEdit ? (
+              decodingInfo?.permissionList.QM?.isEdit ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/content-manage/quiz'}>
                     <svg
@@ -272,26 +272,6 @@ export function Navigation() {
                 </button>
               )}
 
-              {/* 문항 정보 트리 구조 */}
-              <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 13 17"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M3.0625 4.81818V13.7273H9.25M3.0625 8.63636H9.25M1 1H5.125V4.81818H1V1ZM9.25 7.36364H12V9.90909H9.25V7.36364ZM9.25 12.4545H12V15H9.25V12.4545Z"
-                      stroke="white"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                  <span>문항 정보 트리 구조</span>
-                </Link>
-              </button>
-
               {/* 신고문항 */}
               <button type="button" onClick={(e) => clickLink(e)}>
                 <Link to={'/content-manage/classify'}>
@@ -327,7 +307,7 @@ export function Navigation() {
 
               {decodingInfo?.permissionList &&
               // 회원 관리
-              decodingInfo?.permissionList.AM.isManage ? (
+              decodingInfo?.permissionList.AM?.isManage ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/operation-manage/member'}>
                     <svg
@@ -374,7 +354,7 @@ export function Navigation() {
               )}
               {decodingInfo?.permissionList &&
               // 권한 관리
-              decodingInfo?.permissionList.PM.isManage ? (
+              decodingInfo?.permissionList.PM?.isManage ? (
                 <button type="button" onClick={(e) => clickLink(e)}>
                   <Link to={'/operation-manage/authority'}>
                     <svg
@@ -712,24 +692,6 @@ export function Navigation() {
                   </Link>
                 </button>
               )}
-              <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 13 17"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M3.0625 4.81818V13.7273H9.25M3.0625 8.63636H9.25M1 1H5.125V4.81818H1V1ZM9.25 7.36364H12V9.90909H9.25V7.36364ZM9.25 12.4545H12V15H9.25V12.4545Z"
-                      stroke="white"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                  <span style={{ display: 'none' }}>문항 정보 트리 구조</span>
-                </Link>
-              </button>
 
               {/* 신고문항 */}
               <button type="button" onClick={(e) => clickLink(e)}>
