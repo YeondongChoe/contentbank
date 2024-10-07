@@ -84,6 +84,7 @@ type PermissionOutput = {
 export const putChangeAuthority = async (data: {
   name: string;
   code: string;
+  companyIdx: number;
   permissionList: PermissionOutput[];
 }) => {
   const res = await userInstance.put(`/v1/authority`, data);
@@ -94,6 +95,7 @@ export const putChangeAuthority = async (data: {
 // 선택된 권한 생성하기 api
 export const postCreateAuthority = async (data: {
   name: string;
+  companyIdx: number;
   permissionList: PermissionOutput[];
 }) => {
   const res = await userInstance.post(`/v1/authority`, data);
