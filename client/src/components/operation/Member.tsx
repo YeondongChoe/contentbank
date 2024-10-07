@@ -47,6 +47,8 @@ export function Member() {
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [totalMemberList, setTotalMemberList] = useState<MemberType[]>([]);
   const [totalCount, setTotalCount] = useState<number>(1);
+  //기업 idx로 수정해야함
+  const [idxValue, setIdxValue] = useState<string>('1');
 
   // 유저 리스트 불러오기 api
   const isUseFilter = useMemo(() => {
@@ -90,7 +92,7 @@ export function Member() {
   // 아이디 중복 확인 && 토탈 유저 수
   const { data: totalData, refetch: totalDataRefetch } = useQuery({
     queryKey: ['get-memberlist-total'],
-    queryFn: () => getUserListTotal({ totalCount }),
+    queryFn: () => getUserListTotal({ totalCount, idxValue }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
@@ -117,7 +119,13 @@ export function Member() {
     setCheckList([]);
     openModal({
       title: '',
-      content: <RegisterModal memberList={totalMemberList} refetch={refetch} />,
+      content: (
+        <RegisterModal
+          memberList={totalMemberList}
+          refetch={refetch}
+          idxValue={''}
+        />
+      ),
     });
   };
 
@@ -126,6 +134,7 @@ export function Member() {
     event: React.MouseEvent<HTMLButtonElement>,
     accountIdx: number,
     userKey: string,
+    companyIdx: number,
   ) => {
     event.stopPropagation();
     // console.log(accountIdx, 'accountIdx');
@@ -137,6 +146,7 @@ export function Member() {
       content: (
         <EditModal
           accountIdx={accountIdx}
+          companyIdx={companyIdx}
           userKey={userKey}
           refetch={refetch}
         />
@@ -154,7 +164,7 @@ export function Member() {
   // 활성화/비활성화 데이터 전송
   const submitChangeUse = () => {
     // console.log('checkList :', checkList);
-    mutateChangeUse(checkList);
+    mutateChangeUse({ isUse: false, checkList });
     setIsAlertOpen(false);
   };
 
@@ -433,7 +443,12 @@ export function Member() {
                           cursor
                           $border
                           onClick={(e) =>
-                            openEditModal(e, list.idx, list.userKey)
+                            openEditModal(
+                              e,
+                              list.idx,
+                              list.userKey,
+                              list.companyIdx,
+                            )
                           }
                         >
                           상세 수정
