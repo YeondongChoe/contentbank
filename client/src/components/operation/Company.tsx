@@ -2,8 +2,6 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
-import { opacity } from 'html2canvas/dist/types/css/property-descriptors/opacity';
 import { BiToggleRight } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -23,6 +21,7 @@ import {
   PaginationBox,
 } from '..';
 import { userInstance } from '../../api/axios';
+import { getUserListTotal } from '../../api/user';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { postRefreshToken } from '../../utils/tokenHandler';
@@ -61,7 +60,7 @@ export function Company() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [onSearch, setOnSearch] = useState<boolean>(false);
   //기업리스트 idx값
-  const [idxValue, setIdxValue] = useState<string | null>(null);
+  const [idxValue, setIdxValue] = useState<string>('1');
   //선택한 idx값
   const [selectedIdxValue, setSelectedIdxValue] = useState<string | null>(null);
   //탭
@@ -75,6 +74,9 @@ export function Company() {
   const [languageValue, setLanguageValue] = useState('한국어(KO)');
   //기업 식별자
   const [corporateIdentifierValue, setCorporateIdentifierValue] = useState('');
+  //기업 식별자 중복확인 통과
+  const [isDuplicateCorporateIdentifier, setIsDuplicateCorporateIdentifier] =
+    useState(false);
   //대표자명
   const [representativeNameValue, setRepresentativeNameValue] = useState('');
   //대표자 연락처
@@ -107,6 +109,7 @@ export function Company() {
   const [companyAccountList, setCompanyAccountList] = useState<
     companyAccountListProps[]
   >([]);
+  const [totalCount, setTotalCount] = useState<number>(1);
   //접근 메뉴 팝업 여기
   const [isModalOpen, setIsModalOpen] = useState(false);
   //접근 메뉴 리스트
@@ -220,7 +223,7 @@ export function Company() {
       errorMessage: 'get-companyList 에러 메세지',
     },
   });
-
+  console.log(companyListData);
   useEffect(() => {
     if (companyListData) {
       setCompanyList(companyListData.data.data.list);
@@ -248,7 +251,7 @@ export function Company() {
 
   // 기업 상세 정보 불러오기 api
   const getCompanyInfo = async () => {
-    if (idxValue === null) {
+    if (idxValue === '') {
       return null;
     } else {
       const res = await userInstance.get(`/v1/company/${idxValue}`);
@@ -257,11 +260,7 @@ export function Company() {
     }
   };
 
-  const {
-    //isLoading,
-    data: companyInfoData,
-    refetch: companyInfoRefetch,
-  } = useQuery({
+  const { data: companyInfoData, refetch: companyInfoRefetch } = useQuery({
     queryKey: ['get-companyInfo'],
     queryFn: getCompanyInfo,
     meta: {
@@ -318,17 +317,14 @@ export function Company() {
     return res;
   };
 
-  const {
-    //isLoading,
-    data: companyIndustryData,
-    refetch: companyIndustryRefetch,
-  } = useQuery({
-    queryKey: ['get-companyIndustry'],
-    queryFn: getCompanyIndustry,
-    meta: {
-      errorMessage: 'get-companyIndustry 에러 메세지',
-    },
-  });
+  const { data: companyIndustryData, refetch: companyIndustryRefetch } =
+    useQuery({
+      queryKey: ['get-companyIndustry'],
+      queryFn: getCompanyIndustry,
+      meta: {
+        errorMessage: 'get-companyIndustry 에러 메세지',
+      },
+    });
 
   useEffect(() => {
     setIndustryList(companyIndustryData?.data.data.largeItemList);
@@ -347,17 +343,14 @@ export function Company() {
     }
   };
 
-  const {
-    //isLoading,
-    data: companyIndustryCodeData,
-    refetch: companyIndustryCodeRefetch,
-  } = useQuery({
-    queryKey: ['get-companyIndustryCode'],
-    queryFn: getCompanyIndustryCode,
-    meta: {
-      errorMessage: 'get-companyIndustryCode 에러 메세지',
-    },
-  });
+  const { data: companyIndustryCodeData, refetch: companyIndustryCodeRefetch } =
+    useQuery({
+      queryKey: ['get-companyIndustryCode'],
+      queryFn: getCompanyIndustryCode,
+      meta: {
+        errorMessage: 'get-companyIndustryCode 에러 메세지',
+      },
+    });
 
   useEffect(() => {
     companyIndustryCodeRefetch();
@@ -376,29 +369,46 @@ export function Company() {
     return res;
   };
 
-  const {
-    //isLoading,
-    data: companyAccountData,
-    refetch: companyAccountRefetch,
-  } = useQuery({
-    queryKey: ['get-companyAccount'],
-    queryFn: getCompanyAccount,
-    meta: {
-      errorMessage: 'get-companyAccount 에러 메세지',
+  const { data: companyAccountData, refetch: companyAccountRefetch } = useQuery(
+    {
+      queryKey: ['get-companyAccount'],
+      queryFn: getCompanyAccount,
+      meta: {
+        errorMessage: 'get-companyAccount 에러 메세지',
+      },
+      enabled: !idxValue && idxValue !== '',
     },
-    enabled: !idxValue && idxValue !== null,
-  });
+  );
 
+  useEffect(() => {
+    if (companyAccountData) {
+      setCompanyAccountList(companyAccountData?.data.data.list);
+      //계정 리스트 불러올때마다 토탈카운트 변경
+      setTotalCount(companyAccountData?.data.data.pagination?.totalCount);
+    }
+  }, [companyAccountData]);
+
+  //기업 변경될때마다 or 페이지 변경마다 계정리스트 재호출
   useEffect(() => {
     if (idxValue) {
       companyAccountRefetch();
     }
   }, [idxValue, page]);
+
+  // 아이디 중복 확인 && 토탈 유저 수
+  const { data: totalData, refetch: totalDataRefetch } = useQuery({
+    queryKey: ['get-memberlist-total'],
+    queryFn: () => getUserListTotal({ totalCount, idxValue }),
+    meta: {
+      errorMessage: 'get-memberlist 에러 메세지',
+    },
+    enabled: !!companyAccountData,
+  });
+
+  //기업 변경될때마다 기업의 보유 계정 수가 변경되며 그때마다 토탈 계정 정보 api 재호출
   useEffect(() => {
-    if (companyAccountData) {
-      setCompanyAccountList(companyAccountData?.data.data.list);
-    }
-  }, [companyAccountData]);
+    if (totalCount) totalDataRefetch();
+  }, [totalCount]);
 
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
@@ -407,8 +417,9 @@ export function Company() {
       title: '',
       content: (
         <RegisterModal
-          // memberList={totalMemberList}
-          refetch={companyListRefetch}
+          memberList={totalData?.data.data.list}
+          refetch={companyAccountRefetch}
+          idxValue={idxValue}
         />
       ),
     });
@@ -431,7 +442,6 @@ export function Company() {
     meta: {
       errorMessage: 'get-companyAccessMenu 에러 메세지',
     },
-    //enabled: !idxValue,
   });
 
   useEffect(() => {
@@ -513,7 +523,7 @@ export function Company() {
 
   //초기화
   useEffect(() => {
-    if (idxValue === null) {
+    if (idxValue === '') {
       setNameValue('');
       setLanguageValue('');
       setCorporateIdentifierValue('');
@@ -532,7 +542,7 @@ export function Company() {
   //기업 생성/ 수정 api
   const postNewCompany = async () => {
     //생성일 때
-    if (idxValue === null) {
+    if (idxValue === '') {
       const data: any = {
         name: nameValue,
         languageCode: 'KO',
@@ -612,13 +622,30 @@ export function Company() {
 
   //기업 생성
   const submitCreateCompany = () => {
-    //기업명, 기업 식별자, 대표자명
+    //기업명, 기업 식별자, 식별자 중복확인, 대표자명
     // !languageValue || 언어코드 빠진상황
-    if (!nameValue || !corporateIdentifierValue || !representativeNameValue) {
-      openToastifyAlert({
-        type: 'error',
-        text: '필수 항목을 선택해 주세요.',
-      });
+    if (
+      !nameValue ||
+      !corporateIdentifierValue ||
+      isDuplicateCorporateIdentifier === false ||
+      !representativeNameValue
+    ) {
+      if (
+        nameValue &&
+        corporateIdentifierValue &&
+        representativeNameValue &&
+        isDuplicateCorporateIdentifier === false
+      ) {
+        openToastifyAlert({
+          type: 'error',
+          text: '기업 식별자 중복확인 해주세요.',
+        });
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '필수 항목을 선택해 주세요.',
+        });
+      }
     } else {
       postNewCompanyData();
     }
@@ -636,6 +663,47 @@ export function Company() {
       postNewCompanyData();
     }
   };
+
+  //기업 중복 확인 api
+  const postCompanyCheck = async () => {
+    const data: any = {
+      corporateIdentifier: corporateIdentifierValue,
+    };
+    //서버로 생성 요청
+    return await userInstance.post(`/v1/company/check`, data);
+  };
+
+  const { mutate: postCompanyCheckData } = useMutation({
+    mutationFn: postCompanyCheck,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      if (response.data.data.isDuplicate === true) {
+        openToastifyAlert({
+          type: 'error',
+          text: '사용하실 수 없는 식별자 입니다.',
+        });
+        //중복확인 실패
+        setIsDuplicateCorporateIdentifier(false);
+      } else {
+        openToastifyAlert({
+          type: 'success',
+          text: '사용하실 수 있는 식별자 입니다.',
+        });
+        //중복확인 성공
+        setIsDuplicateCorporateIdentifier(true);
+      }
+    },
+  });
 
   //기업 삭제
   const [isDeleteCompany, setIsDeleteCompany] = useState(false);
@@ -666,8 +734,47 @@ export function Company() {
         text: '삭제 되었습니다.',
       });
       companyListRefetch();
+      setIdxValue('');
+      setSelectedIdxValue('');
     },
   });
+  //계정 활성화 비활성화
+  const patchChangeAccount = async (isUse: boolean, idxList: number[]) => {
+    const data = {
+      //값을 바꾸기 위해 기존과 반대값으로 전달
+      isUse: !isUse,
+      idxList: idxList,
+    };
+
+    return await userInstance.patch(`/v1/account/change-use`, data);
+  };
+
+  const { mutate: patchChangeAcconut } = useMutation({
+    mutationFn: ({ isUse, idxList }: { isUse: boolean; idxList: number[] }) =>
+      patchChangeAccount(isUse, idxList),
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: '변경 되었습니다.',
+      });
+      companyAccountRefetch();
+    },
+  });
+
+  const toggleChangeAccount = (isUse: boolean, idx: number) => {
+    patchChangeAcconut({ isUse, idxList: [idx] });
+  };
 
   //접근 메뉴 업데이트 api
   const putAccessMenu = async () => {
@@ -730,7 +837,7 @@ export function Company() {
             maxLength={20}
           />
         </InputWrapper>
-        {idxValue !== null && (
+        {idxValue !== '' && (
           <InputWrapper>
             <Label
               value={'기업코드'}
@@ -757,7 +864,7 @@ export function Company() {
 
         <InputWrapper>
           <Label
-            value={idxValue !== null ? '언어코드' : '언어코드*'}
+            value={idxValue !== '' ? '언어코드' : '언어코드*'}
             width="110px"
             bold
             fontSize="14px"
@@ -772,12 +879,15 @@ export function Company() {
             isnormalizedOptions
             //options={SelectDummy.languageList}
             setSelectedValue={setLanguageValue}
-            disabled={idxValue !== null}
+            disabled={idxValue !== ''}
           />
         </InputWrapper>
+        {idxValue === '' && (
+          <Discription>*언어코드는 최초 설정 후 변경이 불가합니다.</Discription>
+        )}
         <InputWrapper>
           <Label
-            value={idxValue !== null ? '기업 식별자' : '기업 식별자*'}
+            value={idxValue !== '' ? '기업 식별자' : '기업 식별자*'}
             width="110px"
             bold
             fontSize="14px"
@@ -785,7 +895,7 @@ export function Company() {
             flexEnd
           />
           <Input
-            width="500px"
+            width={idxValue !== '' ? '500px' : '370px'}
             height="35px"
             padding="10px"
             border="normal"
@@ -795,11 +905,40 @@ export function Company() {
             placeholder="계정을 구분할 수 있는 식별자를 입력해주세요"
             borderradius="5px"
             value={corporateIdentifierValue}
-            onChange={(e) => setCorporateIdentifierValue(e.target.value)}
+            onChange={(e) => {
+              setCorporateIdentifierValue(e.target.value);
+              setIsDuplicateCorporateIdentifier(false);
+            }}
             maxLength={20}
-            disabled={idxValue !== null}
+            disabled={idxValue !== ''}
           />
+          {idxValue === '' && (
+            <Button
+              buttonType="button"
+              onClick={() => postCompanyCheckData()}
+              $padding="10px"
+              height={'35px'}
+              width={'120px'}
+              fontSize="13px"
+              $filled
+              cursor
+              disabled={!corporateIdentifierValue}
+            >
+              <span>중복확인</span>
+            </Button>
+          )}
         </InputWrapper>
+        {idxValue === '' && (
+          <Discription>
+            *해당 기업 계정임을 구분할 수 있는 식별자를 입력힙니다. 예)dr
+            입력시, 해당 기업 계정언 `dr-`를 계정 앞에 부여합니다.
+          </Discription>
+        )}
+        {idxValue === '' && (
+          <Discription>
+            *기업 식별자는 최초 설정 후 변경이 불가합니다.
+          </Discription>
+        )}
         <InputWrapper>
           <Label
             value={'대표자명*'}
@@ -1013,7 +1152,7 @@ export function Company() {
                     {account.name}({account.id})
                     <span className="tag">{account.authorityName}</span>
                   </span>
-                  {isActivate ? (
+                  {account.isUse ? (
                     <span className="iconWrapper">
                       <span className="title">활성화</span>
                       <BiToggleRight
@@ -1023,7 +1162,9 @@ export function Company() {
                           cursor: 'pointer',
                           fill: `${COLOR.PRIMARY}`,
                         }}
-                        onClick={activateToggle}
+                        onClick={() =>
+                          toggleChangeAccount(account.isUse, account.idx)
+                        }
                       ></BiToggleRight>
                     </span>
                   ) : (
@@ -1036,7 +1177,9 @@ export function Company() {
                           cursor: 'pointer',
                           fill: `${COLOR.FONT_GRAY}`,
                         }}
-                        onClick={activateToggle}
+                        onClick={() =>
+                          toggleChangeAccount(account.isUse, account.idx)
+                        }
                       ></BiToggleRight>
                     </span>
                   )}
@@ -1253,7 +1396,7 @@ export function Company() {
                     </ContentList>
                   );
                 })}
-                {idxValue === null && (
+                {idxValue === '' && (
                   <Content $isSelected={true}>
                     <div className={'title'}>
                       {nameValue || '기업명을 입력해주세요'}
@@ -1274,11 +1417,11 @@ export function Company() {
                 setTabVeiw={setTabVeiw}
                 onClickTab={changeTab}
               />
-              {idxValue !== null && tabVeiw === '기업 관리' && (
+              {idxValue !== '' && tabVeiw === '기업 관리' && (
                 <Button
                   buttonType="button"
                   onClick={() => {
-                    setIdxValue(null);
+                    setIdxValue('');
                   }}
                   $padding="10px"
                   height={'34px'}
@@ -1313,6 +1456,7 @@ export function Company() {
                     fontSize="14px"
                     $filled
                     cursor
+                    disabled={!idxValue}
                   >
                     <span>아이디 만들기</span>
                   </Button>
@@ -1325,7 +1469,7 @@ export function Company() {
                 <Button
                   buttonType="button"
                   onClick={() => {
-                    if (idxValue !== null) {
+                    if (idxValue !== '') {
                       submitEditCompany();
                     } else {
                       submitCreateCompany();
@@ -1340,7 +1484,7 @@ export function Company() {
                 >
                   <span>저장</span>
                 </Button>
-                {idxValue === null ? (
+                {idxValue === '' ? (
                   <Button
                     buttonType="button"
                     onClick={() => {
@@ -1557,6 +1701,11 @@ const InputWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+`;
+const Discription = styled.p`
+  padding-left: 120px;
+  color: ${COLOR.FONT_GRAY};
+  font-size: 12px;
 `;
 const ItemLayout = styled.span`
   width: 100%;

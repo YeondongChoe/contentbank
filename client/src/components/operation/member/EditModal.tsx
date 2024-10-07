@@ -29,10 +29,12 @@ import { Alert } from '../../molecules/alert/Alert';
 export function EditModal({
   accountIdx,
   userKey,
+  companyIdx,
   refetch,
 }: {
   accountIdx: number;
   userKey: string;
+  companyIdx: number;
   refetch: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
@@ -114,12 +116,14 @@ export function EditModal({
         Comment,
         authorityCode,
         memberDatas?.isLock,
+        companyIdx,
       );
       const userInfo = {
         name: Name as string,
         authorityCode: selectedCode,
         note: Comment as string,
         isUseNot: memberDatas?.isLock ? 'Y' : 'N',
+        companyIdx: companyIdx,
       };
       mutateChangeUserInfo({ accountIdx, userInfo });
     }
@@ -159,8 +163,8 @@ export function EditModal({
 
   // 권한 셀렉트 불러오기 api
   const { data: authorityListData } = useQuery({
-    queryKey: ['get-authorityList'],
-    queryFn: getAuthorityList,
+    queryKey: ['get-authorityList', companyIdx.toString()],
+    queryFn: ({ queryKey }) => getAuthorityList(queryKey[1]),
     meta: {
       errorMessage: 'get-authorityList 에러 메세지',
     },
@@ -338,6 +342,7 @@ export function EditModal({
                       setSelectedValue={setAuthorityCode}
                       setSelectedCode={setSelectedCode}
                       options={authorityList}
+                      isnormalizedOptions
                     />
                   </SelectWrapper>
                 )}

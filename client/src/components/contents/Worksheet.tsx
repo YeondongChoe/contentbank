@@ -141,7 +141,7 @@ export function Worksheet() {
     const typeIds = typeList.split(',');
     try {
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/${id}`),
+        classificationInstance.get(`/v1/category/class/${id}`),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
