@@ -1,36 +1,129 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
+import { classificationInstance } from '../../../api/axios';
 import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
-import { Button, Icon, Loader, Switch, ValueNone } from '../../atom';
+import { ItemCategoryType } from '../../../types';
+import { postRefreshToken } from '../../../utils/tokenHandler';
+import {
+  Button,
+  Icon,
+  Loader,
+  Switch,
+  ValueNone,
+  openToastifyAlert,
+} from '../../atom';
 
 import { TagsModal } from './modal';
 
 export function CategroyManagement() {
   const { openModal } = useModal();
-  const [categoryList, setCategoryList] = useState(['교육과정', '교과']);
+  const [categoryList, setCategoryList] = useState<ItemCategoryType[]>([]);
   const [tagsList, setTagsList] = useState([
     '분류1',
     '분류7777777',
     '분류분류분류분류분류분류분류분류분류분류',
   ]);
-  const [newTagsList, setNewTagsList] = useState<string[]>([]);
+
   const [isAdd, setIsAdd] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<number | null>(null);
-  const [tagInputValue, setTagInputValue] = useState<string>('');
-  const [switchOn, setSwitchOn] = useState<boolean>(false);
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+
   const [activeAdd, setActiveAdd] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
+  const [switchOn, setSwitchOn] = useState<boolean>(false);
+  const [type, setType] = useState<string>('태그 선택');
+  const [typeIndex, setTypeIndex] = useState<number>(0);
+  const [tagInputValue, setTagInputValue] = useState<string>('');
+  const [newTagsList, setNewTagsList] = useState<string[]>([]);
+  const [autoTag, setAutoTag] = useState<string>('없음');
+  const [autoTageIndex, setAutoTagIndex] = useState<number>(0);
+
+  //  카테고리 불러오기 api
+  const getCategory = async () => {
+    const res = await classificationInstance.get(`/v1/category`);
+    //console.log(res);
+    return res;
+  };
+  const { data: categoryListData, isLoading: isCategoryLoading } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (categoryListData) {
+      setCategoryList(categoryListData.data.data.categoryItemList);
+    }
+  }, [categoryListData]);
+
+  //접근 메뉴 업데이트 api
+  const putCategory = async () => {
+    //서버로 생성 요청
+    const data = {
+      itemIdx: 1,
+      name: name,
+      type:
+        type === '태그 선택'
+          ? 'SELECT'
+          : type === '텍스트 입력'
+            ? 'INPUT '
+            : type === '날짜 선택'
+              ? 'DATEPICKER'
+              : type === '숫자 입력'
+                ? 'INPUT_INT'
+                : '',
+      autoNum:
+        autoTag === '없음'
+          ? 'NONE'
+          : autoTag === '숫자(1,2,3)'
+            ? 'NUMBER'
+            : autoTag === '로마숫자(I, II, III)'
+              ? 'ROMAN_NUMBER'
+              : autoTag === '영문(a,b,c)'
+                ? 'LETTER'
+                : '',
+      classList: newTagsList,
+      isUse: switchOn,
+    };
+    return await classificationInstance.put(`/v1/category`, data);
+  };
+
+  const { mutate: putCategoryData } = useMutation({
+    mutationFn: putCategory,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+    },
+  });
 
   const openAddCategory = () => {
     setIsAdd(!isAdd);
+    setType('태그 선택');
+    setTypeIndex(0);
+    setAutoTag('없음');
+    setAutoTagIndex(0);
   };
 
   const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,28 +220,31 @@ export function CategroyManagement() {
             </SubTitle>
             <AuthorityListWrapper>
               {/* TODO : 데이터 들어올시 */}
-              {/* {categoryListData && ( */}
-              <>
-                {categoryList.length > 0 ? (
-                  <>
-                    {categoryList.map((el) => (
-                      <AuthorityWrapper key={`${el}`} onClick={() => {}}>
-                        <AuthorityName onClick={() => {}}>
-                          <span className="ellipsis">{el}</span>
-                        </AuthorityName>
-                        <DeleteIconWrapper>
-                          <BiSolidTrashAlt onClick={() => {}} />
-                        </DeleteIconWrapper>
-                      </AuthorityWrapper>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    <ValueNone textOnly info="등록된 권한이 없습니다" />
-                  </>
-                )}
-              </>
-              {/* )} */}
+              {categoryListData && (
+                <>
+                  {categoryList.length > 0 ? (
+                    <>
+                      {categoryList.map((el, i) => (
+                        <AuthorityWrapper
+                          key={`${el} - ${i}`}
+                          onClick={() => {}}
+                        >
+                          <AuthorityName onClick={() => {}}>
+                            <span className="ellipsis">{el.name}</span>
+                          </AuthorityName>
+                          <DeleteIconWrapper>
+                            <BiSolidTrashAlt onClick={() => {}} />
+                          </DeleteIconWrapper>
+                        </AuthorityWrapper>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <ValueNone textOnly info="등록된 권한이 없습니다" />
+                    </>
+                  )}
+                </>
+              )}
               {/* {changeAuthorityisPending ||
 				(createAuthorityIsPending && <Loader />)} */}
             </AuthorityListWrapper>
@@ -191,7 +287,7 @@ export function CategroyManagement() {
                 <span className="input_label">활성화 여부</span>
                 <div className="button_wrap">
                   <Switch
-                    ison={switchOn}
+                    $ison={switchOn}
                     onClick={() => {
                       setSwitchOn(!switchOn);
                     }}
@@ -207,10 +303,13 @@ export function CategroyManagement() {
                 <div className="button_wrap">
                   {inputTypeBtnArr.map((type, index) => (
                     <button
-                      key={`입력 타입 : ${type}`}
+                      key={`입력 타입 : ${type} - ${index}`}
                       type="button"
-                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
-                      onClick={() => setActiveIndex(index)}
+                      className={`value_button ${typeIndex == index ? 'on' : ''}`}
+                      onClick={() => {
+                        setTypeIndex(index);
+                        setType(type);
+                      }}
                     >
                       {type}
                     </button>
@@ -278,10 +377,13 @@ export function CategroyManagement() {
                 <div className="button_wrap">
                   {tagNumberingBtnArr.map((numbering, index) => (
                     <button
-                      key={`태그 자동 넘버링 : ${numbering}`}
+                      key={`태그 자동 넘버링 : ${numbering} - ${index}`}
                       type="button"
-                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
-                      onClick={() => setActiveIndex(index)}
+                      className={`value_button ${autoTageIndex == index ? 'on' : ''}`}
+                      onClick={() => {
+                        setAutoTagIndex(index);
+                        setAutoTag(numbering);
+                      }}
                     >
                       {numbering}
                     </button>
@@ -311,7 +413,7 @@ export function CategroyManagement() {
                 <span className="input_label">활성화 여부</span>
                 <div className="button_wrap">
                   <Switch
-                    ison={switchOn}
+                    $ison={switchOn}
                     onClick={() => {
                       setSwitchOn(!switchOn);
                     }}
@@ -332,10 +434,13 @@ export function CategroyManagement() {
                 <div className="button_wrap">
                   {inputTypeBtnArr.map((type, index) => (
                     <button
-                      key={`입력 타입 : ${type}`}
+                      key={`입력 타입 : ${type} - ${index}`}
                       type="button"
-                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
-                      onClick={() => setActiveIndex(index)}
+                      className={`value_button ${typeIndex == index ? 'on' : ''}`}
+                      onClick={() => {
+                        setTypeIndex(index);
+                        setType(type);
+                      }}
                     >
                       {type}
                     </button>
@@ -415,10 +520,13 @@ export function CategroyManagement() {
                 <div className="button_wrap">
                   {tagNumberingBtnArr.map((numbering, index) => (
                     <button
-                      key={`태그 자동 넘버링 : ${numbering}`}
+                      key={`태그 자동 넘버링 : ${numbering} - ${index}`}
                       type="button"
-                      className={`value_button ${activeIndex == index ? 'on' : ''}`}
-                      onClick={() => setActiveIndex(index)}
+                      className={`value_button ${autoTageIndex == index ? 'on' : ''}`}
+                      onClick={() => {
+                        setAutoTagIndex(index);
+                        setAutoTag(numbering);
+                      }}
                     >
                       {numbering}
                     </button>
@@ -434,7 +542,14 @@ export function CategroyManagement() {
         )}
         <ButtonWrapper className="position_right">
           <div className="display gap">
-            <Button height={'35px'} width={'130px'} $filled onClick={() => {}}>
+            <Button
+              height={'35px'}
+              width={'130px'}
+              $filled
+              onClick={() => {
+                putCategoryData();
+              }}
+            >
               저장
             </Button>
             {isAdd && (
@@ -502,7 +617,7 @@ const SubTitle = styled.span`
     display: block;
     font-size: 12px;
     font-weight: 400;
-    color: #6f6f6f;
+    color: ${COLOR.FONT_GRAY};
   }
 `;
 

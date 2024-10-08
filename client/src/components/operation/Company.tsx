@@ -208,7 +208,7 @@ export function Company() {
     const res = await userInstance.get(
       !onSearch ? `/v1/company` : `/v1/company?searchKeyword=${searchValue}`,
     );
-    // console.log(`getCompanyList 결과값`, res);
+    console.log(`getCompanyList 결과값`, res);
     return res;
   };
 
@@ -223,7 +223,7 @@ export function Company() {
       errorMessage: 'get-companyList 에러 메세지',
     },
   });
-  console.log(companyListData);
+
   useEffect(() => {
     if (companyListData) {
       setCompanyList(companyListData.data.data.list);
@@ -806,10 +806,6 @@ export function Company() {
     },
   });
 
-  const activateToggle = () => {
-    setIsActivate(!isActivate);
-  };
-
   const renderCompanyInputFields = () => {
     return (
       <InputContainer>
@@ -1138,60 +1134,70 @@ export function Company() {
   const renderAccountInputFields = () => {
     return (
       <>
-        <List margin={`10px 0`}>
-          {companyAccountList.map((account) => (
-            <ListItem
-              isChecked={false}
-              height="80px"
-              $padding="10px"
-              key={`${account.name} - ${account.id}`}
-            >
-              <ItemLayout>
-                <div>
-                  <span className="title">
-                    {account.name}({account.id})
-                    <span className="tag">{account.authorityName}</span>
-                  </span>
-                  {account.isUse ? (
-                    <span className="iconWrapper">
-                      <span className="title">활성화</span>
-                      <BiToggleRight
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          cursor: 'pointer',
-                          fill: `${COLOR.PRIMARY}`,
-                        }}
-                        onClick={() =>
-                          toggleChangeAccount(account.isUse, account.idx)
-                        }
-                      ></BiToggleRight>
-                    </span>
-                  ) : (
-                    <span className="iconWrapperDeactivated">
-                      <span className="title">비활성화</span>
-                      <BiToggleRight
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          cursor: 'pointer',
-                          fill: `${COLOR.FONT_GRAY}`,
-                        }}
-                        onClick={() =>
-                          toggleChangeAccount(account.isUse, account.idx)
-                        }
-                      ></BiToggleRight>
-                    </span>
-                  )}
-                </div>
-              </ItemLayout>
-            </ListItem>
-          ))}
-        </List>
-        <PaginationBox
-          itemsCountPerPage={companyAccountData?.data.data.pagination.pageUnit}
-          totalItemsCount={companyAccountData?.data.data.pagination.totalCount}
-        />
+        {idxValue !== '' ? (
+          <>
+            <List margin={`10px 0`}>
+              {companyAccountList.map((account) => (
+                <ListItem
+                  isChecked={false}
+                  height="80px"
+                  $padding="10px"
+                  key={`${account.name} - ${account.id}`}
+                >
+                  <ItemLayout>
+                    <div>
+                      <span className="title">
+                        {account.name}({account.id})
+                        <span className="tag">{account.authorityName}</span>
+                      </span>
+                      {account.isUse ? (
+                        <span className="iconWrapper">
+                          <span className="title">활성화</span>
+                          <BiToggleRight
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              cursor: 'pointer',
+                              fill: `${COLOR.PRIMARY}`,
+                            }}
+                            onClick={() =>
+                              toggleChangeAccount(account.isUse, account.idx)
+                            }
+                          ></BiToggleRight>
+                        </span>
+                      ) : (
+                        <span className="iconWrapperDeactivated">
+                          <span className="title">비활성화</span>
+                          <BiToggleRight
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              cursor: 'pointer',
+                              fill: `${COLOR.FONT_GRAY}`,
+                            }}
+                            onClick={() =>
+                              toggleChangeAccount(account.isUse, account.idx)
+                            }
+                          ></BiToggleRight>
+                        </span>
+                      )}
+                    </div>
+                  </ItemLayout>
+                </ListItem>
+              ))}
+            </List>
+            <PaginationBox
+              itemsCountPerPage={
+                companyAccountData?.data.data.pagination.pageUnit
+              }
+              totalItemsCount={
+                companyAccountData?.data.data.pagination.totalCount
+              }
+            />
+          </>
+        ) : (
+          <Blank>기업을 선택해주세요</Blank>
+        )}
       </>
     );
   };
@@ -1328,7 +1334,6 @@ export function Company() {
               height={'34px'}
               width={'100px'}
               fontSize="14px"
-              $normal
               cursor
             >
               <span>취소</span>
@@ -1360,7 +1365,7 @@ export function Company() {
         <MainWrapper>
           <SettingWrapper>
             <div>
-              <Label value={'기업 리스트'} width="100%" bold fontSize="20px" />
+              <Label value={'기업 리스트'} width="100%" bold fontSize="16px" />
               <PageDescription>
                 그룹을 선택하여 기업을 관리할 수 있습니다.
               </PageDescription>
@@ -1422,6 +1427,7 @@ export function Company() {
                   buttonType="button"
                   onClick={() => {
                     setIdxValue('');
+                    setSelectedIdxValue('');
                   }}
                   $padding="10px"
                   height={'34px'}
@@ -1444,6 +1450,7 @@ export function Company() {
                     fontSize="14px"
                     $normal
                     cursor
+                    disabled={!idxValue}
                   >
                     <span>접근 메뉴 설정</span>
                   </Button>
@@ -1494,7 +1501,6 @@ export function Company() {
                     height={'35px'}
                     width={'120px'}
                     fontSize="13px"
-                    $normal
                     cursor
                   >
                     <span>취소</span>
@@ -1539,6 +1545,178 @@ export function Company() {
   );
 }
 
+const Container = styled.div`
+  padding: 40px;
+  width: 100%;
+  height: 100%;
+`;
+const Wrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+`;
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
+`;
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: 800;
+`;
+const MainWrapper = styled.div`
+  width: 100%;
+  min-height: 700px;
+  display: flex;
+  gap: 10px;
+`;
+const SettingWrapper = styled.div`
+  width: 40%;
+  background-color: ${COLOR.LIGHT_GRAY};
+  padding: 10px;
+`;
+const PageDescription = styled.p`
+  font-size: 12px;
+  color: ${COLOR.FONT_GRAY};
+  font-weight: 400;
+  padding-bottom: 10px;
+`;
+const ContentListWrapper = styled.div`
+  max-height: 530px; /* 컨테이너의 최대 높이 설정 */
+  overflow-y: auto; /* 수직 스크롤바 표시 */
+`;
+const ContentList = styled.li`
+  background-color: white;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-bottom: 5px;
+
+  &:first-child {
+    margin-top: 10px;
+  }
+`;
+const Content = styled.div<{ $isSelected: boolean }>`
+  font-size: 14px;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  ${({ $isSelected }) =>
+    $isSelected
+      ? `color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`
+      : 'none'};
+
+  .title {
+    display: flex;
+    justify-content: center;
+  }
+  &:hover {
+    background-color: ${COLOR.SELECT_BLUE};
+    color: white;
+  }
+`;
+const ListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+  padding: 10px;
+  background-color: ${COLOR.LIGHT_GRAY};
+`;
+const TabWrapper = styled.div`
+  width: 100%;
+  padding: 10px 0px 20px 0;
+  display: flex;
+  justify-content: space-between;
+`;
+const TabButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: end;
+  gap: 10px;
+`;
+const InputContainer = styled.div`
+  width: 100%;
+  height: 640px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: white;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+const Discription = styled.p`
+  padding-left: 120px;
+  color: ${COLOR.FONT_GRAY};
+  font-size: 12px;
+`;
+const ItemLayout = styled.span`
+  width: 100%;
+
+  div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  .title {
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: 16px;
+  }
+  .tag {
+    padding: 0 10px;
+    font-weight: 600;
+    color: ${COLOR.FONT_GRAY};
+    font-size: 16px;
+  }
+  .iconWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: ${COLOR.PRIMARY};
+  }
+  .iconWrapperDeactivated {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: ${COLOR.FONT_GRAY};
+  }
+`;
+const Blank = styled.div`
+  width: 100%;
+  height: 200px;
+  background-color: white;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ButtonWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: end;
+  padding-top: 10px;
+  gap: 10px;
+`;
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+`;
 const ModalContainer = styled.div`
   width: 400px;
   background-color: white;
@@ -1588,177 +1766,4 @@ const ModalButtonWrapper = styled.div`
   justify-content: flex-end;
   gap: 5px;
   padding: 10px 12px;
-`;
-
-const Container = styled.div`
-  padding: 40px;
-  width: 100%;
-  height: 100%;
-`;
-const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-`;
-const TitleWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 20px;
-`;
-const Title = styled.div`
-  font-size: 24px;
-  font-weight: 800;
-`;
-const MainWrapper = styled.div`
-  width: 100%;
-  min-height: 700px;
-  display: flex;
-  gap: 10px;
-`;
-const SettingWrapper = styled.div`
-  width: 40%;
-  border: 1px solid ${COLOR.BORDER_POPUP};
-  border-radius: 15px;
-  padding: 10px;
-`;
-const PageDescription = styled.p`
-  font-size: 12px;
-  color: ${COLOR.FONT_GRAY};
-  font-weight: bold;
-  padding-bottom: 10px;
-`;
-const ContentListWrapper = styled.div`
-  max-height: 530px; /* 컨테이너의 최대 높이 설정 */
-  overflow-y: auto; /* 수직 스크롤바 표시 */
-`;
-const ContentList = styled.li`
-  border-top: 1px solid ${COLOR.BORDER_GRAY};
-  border-left: 1px solid ${COLOR.BORDER_GRAY};
-  border-right: 1px solid ${COLOR.BORDER_GRAY};
-  &:first-child {
-    margin-top: 10px;
-  }
-  &:last-child {
-    border-bottom: 1px solid ${COLOR.BORDER_GRAY};
-  }
-`;
-const Content = styled.div<{ $isSelected: boolean }>`
-  font-size: 14px;
-  display: flex;
-  justify-content: space-around;
-  //gap: 10px;
-  padding: 10px 0;
-  ${({ $isSelected }) =>
-    $isSelected
-      ? `color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`
-      : 'none'};
-
-  .title {
-    display: flex;
-    justify-content: center;
-  }
-`;
-const SelectWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 5px;
-  padding-bottom: 10px;
-  .btn_title {
-    padding-right: 5px;
-  }
-`;
-const ListWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 60%;
-  border-radius: 15px;
-  padding: 10px;
-  border: 1px solid ${COLOR.BORDER_POPUP};
-`;
-const TabWrapper = styled.div`
-  width: 100%;
-  padding: 10px 0px 20px 0;
-  display: flex;
-  justify-content: space-between;
-`;
-const TabButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: end;
-  gap: 10px;
-`;
-const InputContainer = styled.div`
-  width: 100%;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-const InputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-const Discription = styled.p`
-  padding-left: 120px;
-  color: ${COLOR.FONT_GRAY};
-  font-size: 12px;
-`;
-const ItemLayout = styled.span`
-  width: 100%;
-
-  div {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-  }
-  .title {
-    font-weight: 600;
-    margin-bottom: 2px;
-    font-size: 16px;
-  }
-  .tag {
-    padding: 0 10px;
-    font-weight: 600;
-    color: ${COLOR.FONT_GRAY};
-    font-size: 16px;
-  }
-  .iconWrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    color: ${COLOR.PRIMARY};
-  }
-  .iconWrapperDeactivated {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    color: ${COLOR.FONT_GRAY};
-  }
-`;
-const ButtonWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: end;
-  gap: 10px;
-`;
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
 `;

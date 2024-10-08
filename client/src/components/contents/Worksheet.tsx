@@ -30,6 +30,7 @@ export function Worksheet() {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
+  console.log(categoryTitles);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   // 셀렉트
