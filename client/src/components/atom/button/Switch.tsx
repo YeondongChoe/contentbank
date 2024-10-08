@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components';
 import { COLOR } from '../../../components/constants';
 
 type SwitchProps = {
-  ison: boolean;
+  $ison: boolean;
   onClick: () => void;
   marginRight?: number;
   marginLeft?: number;
@@ -16,11 +16,11 @@ type SwitchProps = {
 type ComponentProps = {
   marginRight?: number;
   marginLeft?: number;
-  ison: boolean;
+  $ison: boolean;
 };
 
 export const Switch = ({
-  ison,
+  $ison,
   onClick,
   marginRight,
   marginLeft,
@@ -31,7 +31,7 @@ export const Switch = ({
         onClick={onClick}
         marginRight={marginRight}
         marginLeft={marginLeft}
-        ison={ison}
+        $ison={$ison}
       >
         <div className="circle"></div>
       </ToggleBtn>
@@ -51,8 +51,8 @@ const ToggleBtn = styled.button<ComponentProps>`
   border-radius: 22px;
   border: none;
   cursor: pointer;
-  background-color: ${({ ison }) =>
-    ison === false ? '#ededed;' : `${COLOR.PRIMARY}`};
+  background-color: ${({ $ison }) =>
+    $ison === false ? '#ededed;' : `${COLOR.PRIMARY}`};
   position: relative;
   top: -5px;
   transition: all 0.5s ease-in-out;
@@ -67,8 +67,8 @@ const ToggleBtn = styled.button<ComponentProps>`
     top: 1px;
     left: 1px;
     transition: all 0.5s ease-in-out;
-    ${({ ison }) =>
-      ison === true &&
+    ${({ $ison }) =>
+      $ison === true &&
       css`
         top: 1px;
         left: 20px;
