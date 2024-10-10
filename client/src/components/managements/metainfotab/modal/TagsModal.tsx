@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 
@@ -7,21 +7,33 @@ import { Search } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
 
 export function TagsModal({ tags }: { tags: string[] }) {
-  const [tagsList, setTagsList] = useState([
-    '분류1',
-    '분류2',
-    '분류3',
-    '분류4',
-    '분류5',
-    '분류6',
-    '분류7777777',
-    '분류분류분류분류분류분류분류분류분류분류',
-  ]);
+  const [tagsList, setTagsList] = useState<string[]>(tags);
+  const [searchValue, setSearchValue] = useState<string | null>(null);
   const { closeModal } = useModal();
+
+  //검색어에 따른 태그리스트 필터
+  useEffect(() => {
+    if (searchValue) {
+      const filteredList = tags.filter(
+        (tag) => tag.toLowerCase().includes(searchValue.toLowerCase()), // 검색어와 일치하는 태그 필터링
+      );
+      setTagsList(filteredList);
+    } else {
+      // 검색어가 없으면 전체 태그 리스트를 다시 설정
+      setTagsList(tags);
+    }
+  }, [searchValue, tags]);
+
   return (
     <Container>
       <Title>태그</Title>
-      <Search value={''} onChange={() => {}} onKeyDown={() => {}} />
+      <Search
+        value={searchValue as string}
+        onChange={(e) => {
+          setSearchValue(e.target.value);
+        }}
+        onKeyDown={() => {}}
+      />
       <ButtonWrapper>
         {tagsList.map((tag) => (
           <button
@@ -41,6 +53,7 @@ export function TagsModal({ tags }: { tags: string[] }) {
 const Container = styled.div`
   max-width: 700px;
   min-width: 600px;
+  min-height: 450px;
   padding: 0 30px;
   padding-bottom: 30px;
 `;
@@ -59,6 +72,8 @@ const ButtonWrapper = styled.div`
   flex-wrap: wrap;
   gap: 5px;
   padding-top: 15px;
+  max-height: 400px;
+  overflow-y: auto;
 
   .value_button {
     border: 1px solid #ddd;
