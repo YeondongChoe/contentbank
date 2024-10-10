@@ -134,6 +134,7 @@ const router = createBrowserRouter([
         path: '/managementeditmain',
         element: <ManagementEditMain />,
       },
+      //임시로 만들어둔 페이지 준비중인 페이지입니다.
       {
         path: '/content-manage/classify',
         element: <ManagementsTreePage />,
