@@ -635,11 +635,11 @@ export function ContentInformationChange() {
     },
   });
 
-  // 리스트의 텍스트값 변경값으로 바꾸기
+  // 리스트의 텍스트값 변경값으로 바꾸기 //
   const onChangeInfo = () => {
-    console.log('searchValue --- ', searchValue);
-    console.log('changeValue --- ', changeValue);
-    console.log('checkedList --- ', checkedList);
+    console.log('searchValue ---8 ', searchValue);
+    console.log('changeValue ---8 ', changeValue);
+    console.log('checkedList ---8 ', checkedList);
 
     const idxList = questionList
       .filter((el) => checkedList.includes(el.code))
