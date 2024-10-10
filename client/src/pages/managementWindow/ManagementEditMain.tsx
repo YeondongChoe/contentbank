@@ -109,7 +109,12 @@ export function ManagementEditMain() {
         </Button>
       </ButtonWrapper>
 
-      <ContentInformationChange />
+      {/* MathJax가 로드된 후에만 ContentInformationChange 컴포넌트를 렌더링 */}
+      {isMathJaxLoaded ? (
+        <ContentInformationChange />
+      ) : (
+        <p>수식을 렌더링할 준비 중입니다...</p>
+      )}
     </Container>
   );
 }

@@ -41,54 +41,6 @@ interface PairState {
   includeType: 'includeOne' | 'includeAll';
 }
 
-const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
-  if (window.MathJax) {
-    setLoaded(true);
-    return;
-  }
-
-  (window as any).MathJax = {
-    startup: {
-      ready: () => {
-        const { MathJax } = window as any;
-        MathJax.startup.defaultReady();
-        console.log('MathJax is loaded, version: ', MathJax.version);
-        setLoaded(true);
-      },
-    },
-    tex: {
-      inlineMath: [['\\(', '\\)']],
-    },
-    svg: {
-      scale: 1.0,
-      fontCache: 'local',
-      minScale: 0.1,
-    },
-    options: {
-      renderActions: {
-        addMenu: [
-          /* ... */
-        ],
-      },
-      menuOptions: {
-        settings: {},
-      },
-    },
-  };
-
-  const script = document.createElement('script');
-  script.id = 'MathJax-script';
-  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
-  script.async = true;
-  script.onload = () => {
-    setLoaded(true);
-  };
-  script.onerror = () => {
-    console.error('Failed to load MathJax.');
-  };
-  document.head.appendChild(script);
-};
-
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -334,6 +286,7 @@ export function ContentInformationChange() {
         <EditModal
           sortedQuizList={sortedQuizList}
           searchedValue={searchValue}
+          openFormula={openFormula}
           // refetch={refetch}
         />
       ),
@@ -352,19 +305,6 @@ export function ContentInformationChange() {
 
   // 해당  문항찾기
   const onSearchList = () => {
-    // console.log(
-    //   'selected',
-    //   radio1depthCheck,
-    //   radio2depthCheck,
-    //   radio3depthCheck,
-    //   radio4depthCheck,
-    //   radio5depthCheck,
-    //   radio6depthCheck,
-    //   radio7depthCheck,
-    // );
-    // console.log('checkedDepthList', checkedDepthList);
-    // searchCategoryDataMutate();
-
     if (searchDivRef.current) {
       const divContent = searchDivRef.current.innerHTML;
       setSearchValue(divContent);
@@ -1427,7 +1367,6 @@ const ButtonEditWrapper = styled.div`
 const ButtonApplyWrapper = styled.div`
   display: flex;
   flex-direction: row-reverse;
-  margin: 20px 0;
   align-items: center;
 `;
 
@@ -1534,7 +1473,7 @@ const HalfWrapper = styled.div`
     background-color: rgba(0, 0, 0, 0.5);
   } */
   padding: 20px;
-  height: 54%;
+  height: 50%;
 `;
 const LoaderWrapper = styled.div`
   display: flex;
