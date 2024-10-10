@@ -46,8 +46,17 @@ export function ContentInformationChange() {
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<number[]>([]); // 문항 체크
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
+
+  const [editQuizList, setEditQuizList] = useState<QuizListType[]>([]);
+  const [coppyQuizList, setCoppyQuizList] = useState<QuizListType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [changeValue, setChangeValue] = useState<string>('');
+  const [changeValue, setChangeValue] = useState<{
+    tag: any[];
+    changeValue: string;
+  }>({
+    tag: [],
+    changeValue: '',
+  });
 
   const searchDivRef = useRef<HTMLDivElement | null>(null);
   const changeDivRef = useRef<HTMLDivElement | null>(null);
@@ -89,6 +98,8 @@ export function ContentInformationChange() {
   // 데이터 변경시 리랜더링
   useEffect(() => {
     quizDataRefetch();
+
+    setCheckList([]);
   }, [page]);
 
   // 새로운 컴포넌트 쌍을 추가하는 함수
@@ -277,8 +288,7 @@ export function ContentInformationChange() {
   /* 상세정보 수정 모달 열기 */
   const openEditModal = () => {
     // console.log(accountIdx, 'accountIdx');
-    //모달 열릴시 체크리스트 초기화
-    setCheckList([]);
+
     // getUser(accountIdx);
     openModal({
       title: '',
@@ -287,6 +297,7 @@ export function ContentInformationChange() {
           sortedQuizList={sortedQuizList}
           searchedValue={searchValue}
           openFormula={openFormula}
+          change={setChangeValue}
           // refetch={refetch}
         />
       ),
@@ -296,11 +307,14 @@ export function ContentInformationChange() {
   const editSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
 
-    // if (state == '수정') {
-    openEditModal();
-    // }
-    // if (state == '복제') {
-    // }
+    if (state == '수정') {
+      openEditModal();
+      setEditQuizList(sortedQuizList);
+    }
+    if (state == '복제') {
+      openEditModal();
+      setCoppyQuizList(sortedQuizList);
+    }
   };
 
   // 해당  문항찾기
@@ -314,7 +328,7 @@ export function ContentInformationChange() {
     }
   };
 
-  useEffect(() => {}, [searchValue]);
+  useEffect(() => {}, [searchValue, changeValue]);
 
   useEffect(() => {
     // 드롭다운 리스트 값
@@ -333,6 +347,17 @@ export function ContentInformationChange() {
     }
   }, [selectedItems1, selectedItems2]);
 
+  const buttonSubmitDisabled = useMemo(() => {
+    if (
+      changeValue.changeValue !== '' ||
+      (changeValue.tag && changeValue.tag.length > 0)
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [changeValue, changeValue?.changeValue, changeValue?.tag]);
+
   useEffect(() => {
     console.log('questionList/----------*', questionList);
   }, [questionList]);
@@ -345,8 +370,9 @@ export function ContentInformationChange() {
   }, [checkList]);
 
   useEffect(() => {
-    setCheckList([]);
-  }, [page]);
+    setEditQuizList(sortedQuizList);
+    setCoppyQuizList(sortedQuizList);
+  }, [sortedQuizList]);
 
   return (
     <>
@@ -661,6 +687,12 @@ export function ContentInformationChange() {
                         // disabled={true}
                         onClick={() => {
                           setState(null);
+                          // 초기화
+                          setCheckList([]);
+                          setChangeValue({
+                            tag: [],
+                            changeValue: '',
+                          });
                         }}
                       >
                         {`${state} 취소`}
@@ -750,11 +782,11 @@ export function ContentInformationChange() {
                 {state === '수정' && (
                   <PerfectScrollbar>
                     <ListWrapper>
-                      {sortedQuizList.map((item: QuizListType) => (
+                      {editQuizList.map((item: QuizListType) => (
                         <EditListItem
                           key={item.code}
                           isChecked={checkList.includes(item.idx)}
-                          onClick={(e) => handleButtonCheck(e, item.idx)}
+                          // onClick={(e) => handleButtonCheck(e, item.idx)}
                         >
                           <ContentsWrapper>
                             <ContentsBox>
@@ -831,7 +863,7 @@ export function ContentInformationChange() {
                           <EditListItem
                             key={item.code}
                             isChecked={checkList.includes(item.idx)}
-                            onClick={(e) => handleButtonCheck(e, item.idx)}
+                            // onClick={(e) => handleButtonCheck(e, item.idx)}
                           >
                             <ContentsWrapper>
                               <ContentsBox>
@@ -899,14 +931,14 @@ export function ContentInformationChange() {
                         ))}
                       </ListWrapper>
                     </PerfectScrollbar>
-                    <p>복제된 문항 총 {`${sortedQuizList.length}`}건</p>
+                    <p>복제된 문항 총 {`${coppyQuizList.length}`}건</p>
                     <PerfectScrollbar>
                       <ListWrapper>
-                        {sortedQuizList.map((item: QuizListType) => (
+                        {coppyQuizList.map((item: QuizListType) => (
                           <EditListItem
                             key={item.code}
                             isChecked={checkList.includes(item.idx)}
-                            onClick={(e) => handleButtonCheck(e, item.idx)}
+                            // onClick={(e) => handleButtonCheck(e, item.idx)}
                           >
                             <ContentsWrapper>
                               <ContentsBox>
@@ -992,9 +1024,10 @@ export function ContentInformationChange() {
                 <ButtonApplyWrapper>
                   <Button
                     $filled
-                    disabled={true}
+                    disabled={buttonSubmitDisabled}
                     width="80px"
                     height="40px"
+                    $margin="0 0 20px 10px"
                     onClick={() => {}}
                   >
                     적용
@@ -1002,8 +1035,8 @@ export function ContentInformationChange() {
                   <p>
                     {`${
                       state == '수정'
-                        ? `총 ${sortedQuizList.length}문항 변경된 내용으로`
-                        : `복제된 총 ${sortedQuizList.length}문항 변경된 내용으로`
+                        ? `총 ${editQuizList.length}문항 변경된 내용으로`
+                        : `복제된 총 ${coppyQuizList.length}문항 변경된 내용으로`
                     }`}
                   </p>
                 </ButtonApplyWrapper>

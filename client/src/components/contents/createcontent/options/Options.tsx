@@ -24,7 +24,11 @@ export function Options({
   titleIdx: string;
   listItem: ItemCategoryType;
   onOptionChange: React.Dispatch<
-    React.SetStateAction<{ titleIdx: string; name: string; value: string }>
+    React.SetStateAction<{
+      titleIdx: string;
+      name: string;
+      value: string | number;
+    }>
   >;
   initList?: any;
 }) {
@@ -32,7 +36,7 @@ export function Options({
   const [startDate, setStartDate] = useState<string>('');
   const [selected, setSelected] = useState<string>('');
   const [content, setContent] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string | number>('');
   const [schoolNameValue, setSchoolNameValue] = useState<{
     cityIdx: number;
     schoolName: string;
@@ -150,7 +154,10 @@ export function Options({
             placeholder={`${listItem.name}`}
             value={inputValue}
             onChange={(e) => {
-              setInputValue(e.target.value);
+              const value = listItem.name.includes('페이지')
+                ? Number(e.target.value)
+                : e.target.value;
+              setInputValue(value as number | string); // 숫자 또는 텍스트 값으로 처리
             }}
           />
         )}

@@ -28,15 +28,19 @@ export function EditModal({
   sortedQuizList,
   searchedValue,
   openFormula,
+  change,
 }: {
   sortedQuizList: QuizListType[];
   searchedValue: string;
   openFormula: (state: unknown) => void;
+  change: React.Dispatch<any>;
 }) {
   const { closeModal } = useModal();
 
   const [errorMessage, setErrorMessage] = useState('');
   const [changeValue, setChangeValue] = useState<string>('');
+  const [tagMapping, setTagMapping] = useState([]);
+  const [tagCheckList, setTagCheckList] = useState([]);
   const searchEditDivRef = useRef<HTMLDivElement | null>(null);
 
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
@@ -46,8 +50,10 @@ export function EditModal({
   };
 
   // 변경 버튼
-  const submitEdit = () => {
+  const changeEdit = () => {
     onSearchList();
+
+    closeModal();
   };
 
   const onSearchList = () => {
@@ -65,6 +71,15 @@ export function EditModal({
     }
   };
 
+  useEffect(() => {}, [tagMapping]); // 태그 맵 데이터 불러와서 보여주기
+
+  useEffect(() => {
+    change({
+      tag: tagCheckList,
+      changeValue: changeValue,
+    });
+  }, [changeValue, tagCheckList]);
+
   return (
     <Container>
       <AlertBar
@@ -77,10 +92,19 @@ export function EditModal({
       <Title>문항 수정</Title>
       <p className="sub_title">총 {sortedQuizList.length}문항에 대해</p>
       <p>변경할 분류</p>
-      <TagMappingList></TagMappingList>
+      <TagMappingList>
+        {tagMapping.map((el) => (
+          <></>
+        ))}
+      </TagMappingList>
       <p>
         변경할 내용 (현재 검색어 :
-        <span dangerouslySetInnerHTML={{ __html: searchedValue }}></span>)
+        {searchedValue.length ? (
+          <span dangerouslySetInnerHTML={{ __html: searchedValue }}></span>
+        ) : (
+          '없음'
+        )}
+        )
       </p>
       <InputWrapper>
         <div
@@ -146,7 +170,7 @@ export function EditModal({
         >
           취소
         </Button>
-        <Button $filled onClick={() => submitEdit()}>
+        <Button $filled onClick={() => changeEdit()}>
           확인
         </Button>
       </ButtonWrapper>
