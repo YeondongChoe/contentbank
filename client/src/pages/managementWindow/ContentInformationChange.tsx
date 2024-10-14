@@ -900,10 +900,34 @@ export function ContentInformationChange() {
   }, []);
 
   //수식 입력기
-  const openFormula = (state: unknown) => {
+  // const openFormula = (state: unknown) => {
+  //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //   // @ts-expect-error
+  //   window.openEQ(state);
+  // };
+  const openFormula = (state: string) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     window.openEQ(state);
+
+    // Hide placeholder immediately when opening formula
+    if (state === 'first_area_test') {
+      setShowplaceholder(false);
+    } else if (state === 'second_area_test') {
+      setShowplaceholder2(false);
+    }
+
+    setTimeout(() => {
+      const element = document.querySelector(`.${state}`) as HTMLElement;
+      if (element) {
+        const newValue = element.innerHTML;
+        if (state === 'first_area_test') {
+          setSearchValue(newValue);
+        } else if (state === 'second_area_test') {
+          setChangeValue(newValue);
+        }
+      }
+    }, 100);
   };
   const handleSearchValueChange = (e: React.FormEvent<HTMLDivElement>) => {
     const newValue = e.currentTarget.innerHTML;
