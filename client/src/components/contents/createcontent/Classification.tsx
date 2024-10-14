@@ -346,10 +346,12 @@ export function Classification({
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
     const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    console.log('두번째 뎁스`````', itemIdx);
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
+    console.log('두번째 뎁스`````', pidx);
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -378,7 +380,7 @@ export function Classification({
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -409,7 +411,7 @@ export function Classification({
     console.log('row--------------4-------');
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       console.log('4-------', res?.data.data.categoryClassList);
       setNextList3depth(res?.data.data.categoryClassList);
@@ -1517,7 +1519,7 @@ export function Classification({
 
                         {radio1depthCheck?.code !== '' &&
                           selected1depth !== '' &&
-                          [categoryItems[1]].map((item) => (
+                          [categoryItems[41]].map((item) => (
                             <div
                               className={`2depth`}
                               id={`${item.name}`}
@@ -1537,7 +1539,7 @@ export function Classification({
 
                         {radio2depthCheck?.code !== '' &&
                           selected2depth !== '' &&
-                          [categoryItems[2]].map((item) => (
+                          [categoryItems[1]].map((item) => (
                             <div
                               className={`3depth`}
                               id={`${item.name}`}
@@ -1556,7 +1558,7 @@ export function Classification({
                           ))}
                         {radio3depthCheck?.code !== '' &&
                           selected3depth !== '' &&
-                          [categoryItems[3]].map((item) => (
+                          [categoryItems[2]].map((item) => (
                             <div
                               className={`4depth`}
                               id={`${item.name}`}

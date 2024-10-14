@@ -332,7 +332,7 @@ export function ContentInformationChange() {
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -361,7 +361,7 @@ export function ContentInformationChange() {
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -390,7 +390,7 @@ export function ContentInformationChange() {
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
@@ -993,7 +993,7 @@ export function ContentInformationChange() {
                           </div>
                         ))}
                         {/* 학교급 */}
-                        {[categoryItems[1]].map((item) => (
+                        {[categoryItems[41]].map((item) => (
                           <div
                             className={`2depth`}
                             id={`${item.name}`}
@@ -1011,7 +1011,7 @@ export function ContentInformationChange() {
                           </div>
                         ))}
                         {/* 학년 */}
-                        {[categoryItems[2]].map((item) => (
+                        {[categoryItems[1]].map((item) => (
                           <div
                             className={`3depth`}
                             id={`${item.name}`}
@@ -1029,7 +1029,7 @@ export function ContentInformationChange() {
                           </div>
                         ))}
                         {/* 학기 */}
-                        {[categoryItems[3]].map((item) => (
+                        {[categoryItems[2]].map((item) => (
                           <div
                             className={`4depth`}
                             id={`${item.name}`}
