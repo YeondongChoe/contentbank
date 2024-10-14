@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
+import { useQuery, useMutation } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
+import { classificationInstance } from '../../../api/axios';
 import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
@@ -12,7 +14,16 @@ import { Button, Icon } from '../../atom';
 
 import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
 
+type GroupListProps = {
+  codes: string;
+  idx: number;
+  name: string;
+  nameList: string;
+  typeList: string;
+};
+
 export function GroupManagement() {
+  const [groupList, setGroupList] = useState<GroupListProps[]>([]);
   const [isTitleEdit, setIsTitleEdit] = useState(false);
   const [tagInputValue, setTagInputValue] = useState<string>('');
   const { openModal } = useModal();
@@ -48,6 +59,30 @@ export function GroupManagement() {
     });
   };
 
+  //카테고리 그룹 리스트 불러오기 api
+  const getCategoryGroup = async () => {
+    const res = await classificationInstance.get(`/v1/category/group`);
+    console.log(res);
+    return res;
+  };
+  const {
+    data: categoryGroupData,
+    isLoading: isCategoryGroupLoading,
+    refetch: categoryGroupRefetch,
+  } = useQuery({
+    queryKey: ['get-categoryGroup'],
+    queryFn: getCategoryGroup,
+    meta: {
+      errorMessage: 'get-categoryGroup 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (categoryGroupData) {
+      setGroupList(categoryGroupData.data.data.groupList);
+    }
+  }, [categoryGroupData]);
+
   return (
     <Container>
       <SubTitle>
@@ -69,88 +104,92 @@ export function GroupManagement() {
 
       <ScrollWrapper>
         <PerfectScrollbar>
-          <GroupList>
-            <li>
-              <span className="list_top">
-                {isTitleEdit ? (
-                  <span className="list_title ">
-                    <input
-                      value={tagInputValue}
-                      onChange={(e) => setTagInputValue(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      className="edit_button"
-                      onClick={() => titleEditHandler()}
-                    >
-                      저장
-                    </button>
-                    <button
-                      type="button"
-                      className="edit_cancel"
-                      onClick={() => {
-                        setIsTitleEdit(false);
-                        setTagInputValue('');
-                      }}
-                    >
-                      취소
-                    </button>
-                  </span>
-                ) : (
-                  <span className="list_title">
-                    <strong>listtitle1</strong>
-                    <button type="button" onClick={() => setIsTitleEdit(true)}>
-                      수정
-                    </button>
-                  </span>
-                )}
+          {groupList.map((list) => (
+            <GroupList key={`${list.idx} - ${list.name}`}>
+              <li>
+                <span className="list_top">
+                  {isTitleEdit ? (
+                    <span className="list_title ">
+                      <input
+                        value={tagInputValue}
+                        onChange={(e) => setTagInputValue(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="edit_button"
+                        onClick={() => titleEditHandler()}
+                      >
+                        저장
+                      </button>
+                      <button
+                        type="button"
+                        className="edit_cancel"
+                        onClick={() => {
+                          setIsTitleEdit(false);
+                          setTagInputValue('');
+                        }}
+                      >
+                        취소
+                      </button>
+                    </span>
+                  ) : (
+                    <span className="list_title">
+                      <strong>{list.name}</strong>
+                      <button
+                        type="button"
+                        onClick={() => setIsTitleEdit(true)}
+                      >
+                        수정
+                      </button>
+                    </span>
+                  )}
 
-                <span className="list_link_box">
-                  <span className="linktree">{`${`link>link>link 1건`}`}</span>
+                  <span className="list_link_box">
+                    <span className="linktree">{`${`link>link>link 1건`}`}</span>
+                    <button
+                      className="link_button"
+                      onClick={() => openScreenPathModal()}
+                    >
+                      <Icon
+                        src={`/images/icon/link_off.svg`}
+                        width={'20px'}
+                        height={'20px'}
+                      />
+                    </button>
+                  </span>
+                </span>
+                <span className="list_body">
+                  <span className="category_title">
+                    카테고리
+                    <span className="sub">{`(${list.nameList.length}개)`}</span>
+                  </span>
+                  <ul className="category_list">
+                    {/* //TODO : 데이터 맵 */}
+                    <li>{list.nameList}</li>
+                    <li>
+                      <button
+                        type="button"
+                        className="category_add_button"
+                        onClick={openCategoryAddModal}
+                      >
+                        + 카테고리 추가
+                      </button>
+                    </li>
+                  </ul>
+                </span>
+                <span className="list_bottom">
                   <button
-                    className="link_button"
-                    onClick={() => openScreenPathModal()}
+                    className="mapping_button"
+                    type="button"
+                    onClick={() => openTagMappingWindow()}
                   >
-                    <Icon
-                      src={`/images/icon/link_off.svg`}
-                      width={'20px'}
-                      height={'20px'}
-                    />
+                    태그 매핑
                   </button>
+                  <span className="list_info">{`${'매핑이란, 연관있는 태그 간의 상하관계를 적용하는 행위를 말합니다. 예) 과일 > 키위 > 그린키위 '}`}</span>
                 </span>
-              </span>
-              <span className="list_body">
-                <span className="category_title">
-                  카테고리
-                  <span className="sub">{`(${0}개)`}</span>
-                </span>
-                <ul className="category_list">
-                  {/* //TODO : 데이터 맵 */}
-                  <li>dsa</li>
-
-                  <li>
-                    <button
-                      type="button"
-                      className="category_add_button"
-                      onClick={openCategoryAddModal}
-                    >
-                      + 카테고리 추가
-                    </button>
-                  </li>
-                </ul>
-              </span>
-              <span className="list_bottom">
-                <button
-                  className="mapping_button"
-                  type="button"
-                  onClick={() => openTagMappingWindow()}
-                >
-                  태그 매핑
-                </button>
-                <span className="list_info">{`${'매핑이란, 연관있는 태그 간의 상하관계를 적용하는 행위를 말합니다. 예) 과일 > 키위 > 그린키위 '}`}</span>
-              </span>
-            </li>
-          </GroupList>
+              </li>
+            </GroupList>
+          ))}
         </PerfectScrollbar>
       </ScrollWrapper>
       <Modal />

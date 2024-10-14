@@ -9,6 +9,7 @@ type SwitchProps = {
   onClick: () => void;
   marginRight?: number;
   marginLeft?: number;
+  marginTop?: number;
   toggle?: boolean;
   className?: string;
 };
@@ -16,6 +17,7 @@ type SwitchProps = {
 type ComponentProps = {
   marginRight?: number;
   marginLeft?: number;
+  $marginTop?: number;
   $ison: boolean;
 };
 
@@ -24,6 +26,7 @@ export const Switch = ({
   onClick,
   marginRight,
   marginLeft,
+  marginTop,
 }: SwitchProps) => {
   return (
     <Wrapper>
@@ -31,6 +34,7 @@ export const Switch = ({
         onClick={onClick}
         marginRight={marginRight}
         marginLeft={marginLeft}
+        $marginTop={marginTop}
         $ison={$ison}
       >
         <div className="circle"></div>
@@ -46,6 +50,7 @@ const Wrapper = styled.div`
 const ToggleBtn = styled.button<ComponentProps>`
   ${({ marginRight }) => (marginRight ? `margin-right:${marginRight}px` : '')};
   ${({ marginLeft }) => (marginLeft ? `margin-left:${marginLeft}px` : '')};
+  ${({ $marginTop }) => ($marginTop ? `margin-top:${$marginTop}px` : '')};
   width: 42px;
   height: 22px;
   border-radius: 22px;

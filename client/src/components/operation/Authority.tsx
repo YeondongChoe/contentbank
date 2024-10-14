@@ -67,9 +67,9 @@ export const defaultPermissions = [
     checked: false,
     menuCode: 'isManageOperationChecked',
   },
-  { key: 'AM_isEdit', checked: false, menuCode: 'AM_isEdit' },
+  { key: 'AM_isEdit', checked: true, menuCode: 'AM_isEdit' },
   { key: 'AM_isManage', checked: false, menuCode: 'AM_isManage' },
-  { key: 'PM_isEdit', checked: false, menuCode: 'PM_isEdit' },
+  { key: 'PM_isEdit', checked: true, menuCode: 'PM_isEdit' },
   { key: 'PM_isManage', checked: false, menuCode: 'PM_isManage' },
   { key: 'PSM_isEdit', checked: false, menuCode: 'PSM_isEdit' },
   { key: 'PSM_isManage', checked: false, menuCode: 'PSM_isManage' },
@@ -1173,7 +1173,7 @@ export function Authority() {
                               id={'AM_isEdit'}
                               value={16}
                               // onChange={(e) => handleChecked(e)}
-                              // checked={checkList[16].checked}
+                              checked={checkList[16].checked}
                               disabled
                             />
                           </label>
@@ -1202,7 +1202,7 @@ export function Authority() {
                               id={'PM_isEdit'}
                               value={18}
                               // onChange={(e) => handleChecked(e)}
-                              // checked={checkList[16].checked}
+                              checked={checkList[18].checked}
                               disabled
                             />
                           </label>
@@ -1709,7 +1709,7 @@ export function Authority() {
                           id={'AM_isEdit'}
                           value={16}
                           // onChange={(e) => handleChecked(e)}
-                          // checked={checkList[16].checked}
+                          checked={checkList[16].checked}
                           disabled
                         />
                       </label>
@@ -1738,7 +1738,7 @@ export function Authority() {
                           id={'PM_isEdit'}
                           value={18}
                           // onChange={(e) => handleChecked(e)}
-                          // checked={checkList[16].checked}
+                          checked={checkList[18].checked}
                           disabled
                         />
                       </label>

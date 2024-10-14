@@ -35,15 +35,15 @@ export function MetaInfo() {
   const changeTab = () => {};
 
   // 배경 클릭시 체크리스트 초기화
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (e.target?.toString().includes('Div')) {
-        console.log('background div');
-      }
-    };
-    window.addEventListener('click', handleClick);
-    return () => window.removeEventListener('click', handleClick);
-  }, [backgroundRef]);
+  // useEffect(() => {
+  //   const handleClick = (e: MouseEvent) => {
+  //     if (e.target?.toString().includes('Div')) {
+  //       console.log('background div');
+  //     }
+  //   };
+  //   window.addEventListener('click', handleClick);
+  //   return () => window.removeEventListener('click', handleClick);
+  // }, [backgroundRef]);
 
   return (
     <Container ref={backgroundRef}>
