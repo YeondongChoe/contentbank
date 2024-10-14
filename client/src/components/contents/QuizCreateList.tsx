@@ -184,7 +184,7 @@ export function QuizCreateList() {
     }
   };
   useEffect(() => {
-    // console.log('categoryList', categoryList);
+    console.log('categoryList', categoryList);
   }, [categoryList]);
 
   //셀렉트 초기화
