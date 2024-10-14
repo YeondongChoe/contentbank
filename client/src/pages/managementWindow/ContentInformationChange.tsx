@@ -123,7 +123,9 @@ export function ContentInformationChange() {
   ]);
 
   const [searchValue, setSearchValue] = useState<string>('');
+  const [showplaceholder, setShowplaceholder] = useState<boolean>(true);
   const [changeValue, setChangeValue] = useState<string>('');
+  const [showplaceholder2, setShowplaceholder2] = useState<boolean>(true);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
 
@@ -903,7 +905,6 @@ export function ContentInformationChange() {
     // @ts-expect-error
     window.openEQ(state);
   };
-
   const handleSearchValueChange = (e: React.FormEvent<HTMLDivElement>) => {
     const newValue = e.currentTarget.innerHTML;
     if (newValue !== searchValue) {
@@ -917,6 +918,30 @@ export function ContentInformationChange() {
       setChangeValue(newValue);
     }
   };
+  useEffect(() => {
+    console.log('searchValue------------', searchValue);
+    if (searchValue.length > 0) {
+      setShowplaceholder(false);
+    } else {
+      setShowplaceholder(true);
+    }
+    if (changeValue.length > 0) {
+      setShowplaceholder2(false);
+    } else {
+      setShowplaceholder2(true);
+    }
+    console.log(
+      'searchDivRef.current?.childNodes ------------',
+      searchDivRef.current?.childNodes,
+    );
+  }, [
+    searchValue,
+    changeValue,
+    searchDivRef.current?.childNodes,
+    changeDivRef.current?.childNodes,
+  ]);
+
+  useEffect(() => {}, [showplaceholder]);
 
   return (
     <>
@@ -1178,7 +1203,7 @@ export function ContentInformationChange() {
                       overflowWrap: 'break-word',
                     }}
                   />
-                  {searchValue === '' && (
+                  {showplaceholder && (
                     <span
                       style={{
                         position: 'absolute',
@@ -1358,7 +1383,7 @@ export function ContentInformationChange() {
                       overflowWrap: 'break-word',
                     }}
                   />
-                  {changeValue === '' && (
+                  {showplaceholder2 && (
                     <span
                       style={{
                         position: 'absolute',
