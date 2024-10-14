@@ -205,6 +205,7 @@ export function ClassificationEdit({
 
   // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (typeList: string) => {
+    console.log('------typeList-----------', typeList);
     const typeIds = typeList.split(',');
     try {
       const requests = typeIds.map((id) =>
@@ -227,13 +228,17 @@ export function ClassificationEdit({
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
     const itemId =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
+    console.log('depth-----,itemId----------', depth, itemId);
+    console.log(
+      'e.currentTarget.className----------',
+      e.currentTarget.className,
+    );
 
     switch (depth) {
       case '1depth':

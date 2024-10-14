@@ -932,7 +932,7 @@ export function ContentInformationChange() {
     }
     console.log(
       'searchDivRef.current?.childNodes ------------',
-      searchDivRef.current?.childNodes,
+      searchDivRef.current?.childNodes[0]?.childNodes,
     );
   }, [
     searchValue,
@@ -941,7 +941,7 @@ export function ContentInformationChange() {
     changeDivRef.current?.childNodes,
   ]);
 
-  useEffect(() => {}, [showplaceholder]);
+  useEffect(() => {}, [showplaceholder, showplaceholder2]);
 
   return (
     <>
@@ -1187,6 +1187,7 @@ export function ContentInformationChange() {
                     ref={(el) => {
                       if (el && el.innerHTML !== searchValue) {
                         el.innerHTML = searchValue;
+                        setShowplaceholder(false);
                       }
                       searchDivRef.current = el;
                     }}
