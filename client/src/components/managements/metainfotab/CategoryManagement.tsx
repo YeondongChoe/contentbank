@@ -14,7 +14,6 @@ import { ItemCategoryType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
   Button,
-  Icon,
   Loader,
   Switch,
   ValueNone,
@@ -22,12 +21,6 @@ import {
 } from '../../atom';
 
 import { TagsModal } from './modal';
-
-type TagsListProps = {
-  classIdx: number;
-  className: string;
-  classCode: string;
-};
 
 export function CategroyManagement() {
   const { openModal } = useModal();
@@ -62,7 +55,7 @@ export function CategroyManagement() {
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
 
-  //  카테고리 불러오기 api
+  //카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
     //console.log(res);
@@ -168,8 +161,6 @@ export function CategroyManagement() {
       setTagsList(
         categoryInfoData.data.data.classes.map((el: any) => el.className),
       );
-      //setType(categoryInfoData.data.data.type);
-      //setAutoTag(categoryInfoData.data.data.autoNum);
     }
   }, [categoryInfoData]);
 
