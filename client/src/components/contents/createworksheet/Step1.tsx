@@ -3527,7 +3527,7 @@ export function Step1() {
       <Wrapper>
         <TitleWrapper>
           <Title>
-            <Span>STEP 1.</Span> 학습지 종류 및 범위 선택
+            <Span>STEP 1..</Span> 학습지 종류 및 범위 선택
           </Title>
         </TitleWrapper>
         <MainWrapper>
