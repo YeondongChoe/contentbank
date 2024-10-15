@@ -4,4 +4,4 @@ Dockerfile-prod
 .git
 .gitignore
 .dockerignore
-.env
+# .env
