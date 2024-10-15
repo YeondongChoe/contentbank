@@ -462,7 +462,10 @@ export function MetaRadioSelect({
       itemTreeKeyList,
     );
 
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    const data = {
+      itemTreeKeyList: [itemTreeKeyList],
+    };
+    const res = await classificationInstance.post('/v1/item', data);
     console.log('classificationInstance 응답 : ***바꿀 분류***', res);
     return res;
   };

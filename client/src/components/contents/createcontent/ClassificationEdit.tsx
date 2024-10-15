@@ -930,8 +930,10 @@ export function ClassificationEdit({
       '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
       itemTreeKeyList,
     );
-
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    const data = {
+      itemTreeKeyList: [itemTreeKeyList],
+    };
+    const res = await classificationInstance.post('/v1/item', data);
     console.log('classificationInstance 응답:', res);
     return res;
   };
