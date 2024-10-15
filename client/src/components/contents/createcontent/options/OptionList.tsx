@@ -26,6 +26,7 @@ interface Props {
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
   quizCategory?: any[];
   onItemClickData?: QuizListType;
+  selectedValue?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function OptionList({
@@ -37,6 +38,7 @@ export function OptionList({
   setSelectedSource,
   quizCategory,
   onItemClickData,
+  selectedValue,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -214,7 +216,12 @@ export function OptionList({
 
   useEffect(() => {
     console.log('selected', selected);
+    if (selectedValue) {
+      selectedValue(selected);
+    }
   }, [selected]);
+
+  useEffect(() => {}, [selectedValue]);
 
   useEffect(() => {
     console.log('sourceValue', sourceValue);

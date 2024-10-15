@@ -64,6 +64,7 @@ export function ContentCreating({
   const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
     [],
   ); //출처
+  const [selected, setSelected] = useState<string>('');
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -445,6 +446,9 @@ export function ContentCreating({
   }, [postQuizData]);
   useEffect(() => {}, [quizList]);
   useEffect(() => {}, [questionList]);
+  useEffect(() => {
+    console.log('selected--------출처 선택부분', selected);
+  }, [selected]);
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -452,13 +456,13 @@ export function ContentCreating({
       selectedSubject !== '' &&
       selectedCourse !== '' &&
       selectedQuestionType !== '' &&
-      selectedSource.length > 0
+      selected !== ''
     ) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedSource]);
+  }, [selectedSubject, selectedCourse, selectedQuestionType, selected]);
 
   return (
     <Container>
@@ -537,6 +541,7 @@ export function ContentCreating({
                         groupsDataF={groupsDataF}
                         groupsDataG={groupsDataG}
                         groupsDataH={groupsDataH}
+                        selectedValue={setSelected}
                       />
                     )}
                 </SourceOptionWrapper>
