@@ -234,6 +234,9 @@ export function ContentCreating({
     //출처
     console.log('selectedSource 출처', selectedSource);
 
+    if (selectedSource.length == 0 && selected.length > 0) {
+      setSelectedSource([{ 0: selected }]);
+    }
     const quizClassList: QuestionClassListType = [
       {
         type: 'CLASS',
