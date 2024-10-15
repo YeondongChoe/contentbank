@@ -916,19 +916,20 @@ export function ClassificationEdit({
       radio4depthCheck,
     ];
 
-    const keyValuePairs = categoryItems.reduce<Record<string, string>>(
-      (acc, item, index) => {
-        const depthCheck = depthChecks[index];
-        if (depthCheck) {
-          acc[item.name] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
-        }
-        return acc;
-      },
-      {},
-    );
+    // itemTreeKeyList 객체를 빈 객체로 초기화
+    const itemTreeKeyList: CheckedItemType = {};
 
-    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList :', itemTreeKeyList);
+    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
+    depthChecks.forEach((depthCheck) => {
+      if (depthCheck && depthCheck.code && depthCheck.title) {
+        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
+      }
+    });
+
+    console.log(
+      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
+      itemTreeKeyList,
+    );
 
     const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
     console.log('classificationInstance 응답:', res);
