@@ -11,13 +11,7 @@ import { styled } from 'styled-components';
 import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { contentQuotient } from '../../../store/utilAtom';
 import { ItemQuestionType } from '../../../types/ItemQuestionType';
-import {
-  ContentWithScore,
-  QuizList,
-  LastArticle,
-  QuizItemList,
-  QuizCategoryList,
-} from '../../../types/WorkbookType';
+import { ContentWithScore, QuizList } from '../../../types/WorkbookType';
 import { Button, Select, CheckBoxI, Icon } from '../../atom';
 import { COLOR } from '../../constants';
 import { MathViewer } from '../../mathViewer/MathViewer';
