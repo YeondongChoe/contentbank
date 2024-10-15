@@ -14,33 +14,40 @@ import ImageIcon from './icons/ImageIcon';
 import PdfIcon from './icons/PdfIcon';
 import TrashIcon from './icons/TrashIcon';
 
+// 동적 스크립트 로딩 함수
 const dynamicallyLoadScripts = (
-  scripts: string | any[],
-  callback: { (): void; (): void; (): void },
+  scriptUrls: any[],
+  callback: { (): Promise<void>; (): void; (): void },
 ) => {
-  const loadScript = (index: number) => {
-    if (index >= scripts.length) {
-      callback();
-      return;
-    }
+  const promises = scriptUrls.map((url) => {
+    return new Promise((resolve, reject) => {
+      // 스크립트가 이미 존재하는지 확인
+      if (document.querySelector(`script[src="${url}"]`)) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        resolve(); // 이미 로드된 경우 건너뜀
+        return;
+      }
 
-    const src = scripts[index];
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = true;
-    script.onload = () => {
-      loadScript(index + 1);
-    };
-    script.onerror = () => {
-      console.error(`Failed to load script: ${src}`);
-      loadScript(index + 1);
-    };
-    document.body.appendChild(script);
-  };
+      // 존재하지 않는 경우 새로 로드
+      const script = document.createElement('script');
+      script.src = url;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error(`Failed to load script ${url}`));
+      document.body.appendChild(script);
+    });
+  });
 
-  loadScript(0);
+  Promise.all(promises)
+    .then(() => {
+      if (callback) callback();
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 };
-
 const Type3 = ({ saveHandler }: { saveHandler?: () => any }) => {
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
@@ -71,22 +78,36 @@ const Type3 = ({ saveHandler }: { saveHandler?: () => any }) => {
     '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
   ];
 
-  const initComponent = () => {
-    dynamicallyLoadScripts(initialScripts, () => {
+  const initComponent = async () => {
+    dynamicallyLoadScripts([...initialScripts], async () => {
       console.log('Initial scripts loaded');
-      dynamicallyLoadScripts(subsequentScripts, () => {
-        console.log('Subsequent scripts loaded');
-        if (ocrIframeContainer.current) {
-          const iframe = document.createElement('iframe');
-          iframe.width = '0';
-          iframe.height = '0';
-          iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
-          iframe.frameBorder = '0';
-          iframe.scrolling = 'no';
-          iframe.id = 'itex_frame_area';
-          ocrIframeContainer.current.appendChild(iframe);
+      const checkTinyMCEReady = () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if (window.tinymce) {
+          console.log('tinymce loaded successfully');
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          dynamicallyLoadScripts([...subsequentScripts], () => {
+            console.log('Subsequent scripts loaded');
+
+            if (ocrIframeContainer.current) {
+              const iframe = document.createElement('iframe');
+              iframe.width = '0';
+              iframe.height = '0';
+              iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
+              iframe.frameBorder = '0';
+              iframe.scrolling = 'no';
+              iframe.id = 'itex_frame_area';
+              ocrIframeContainer.current.appendChild(iframe);
+            }
+          });
+        } else {
+          setTimeout(checkTinyMCEReady, 50);
         }
-      });
+      };
+
+      checkTinyMCEReady();
     });
   };
 

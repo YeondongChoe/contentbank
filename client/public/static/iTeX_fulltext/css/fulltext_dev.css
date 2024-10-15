@@ -92,7 +92,7 @@ p {
 }
 .qnai_trans_form {
   position: fixed;
-  z-index: 99;
+	z-index:9999999999;
   display: none;
   opacity: 0.8;
 }
