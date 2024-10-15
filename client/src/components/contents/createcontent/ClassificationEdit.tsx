@@ -205,6 +205,7 @@ export function ClassificationEdit({
 
   // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (typeList: string) => {
+    console.log('------typeList-----------', typeList);
     const typeIds = typeList.split(',');
     try {
       const requests = typeIds.map((id) =>
@@ -227,13 +228,17 @@ export function ClassificationEdit({
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
     const itemId =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
+    console.log('depth-----,itemId----------', depth, itemId);
+    console.log(
+      'e.currentTarget.className----------',
+      e.currentTarget.className,
+    );
 
     switch (depth) {
       case '1depth':
@@ -790,7 +795,7 @@ export function ClassificationEdit({
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -819,7 +824,7 @@ export function ClassificationEdit({
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -850,7 +855,7 @@ export function ClassificationEdit({
     console.log('row--------------4-------');
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       console.log('4-------', res?.data.data.categoryClassList);
       setNextList3depth(res?.data.data.categoryClassList);
@@ -1411,7 +1416,7 @@ export function ClassificationEdit({
 
                         {radio1depthCheck?.code !== '' &&
                           selected1depth !== '' &&
-                          [categoryItems[1]].map((item) => (
+                          [categoryItems[41]].map((item) => (
                             <div
                               className={`2depth`}
                               id={`${item.name}`}
@@ -1431,7 +1436,7 @@ export function ClassificationEdit({
 
                         {radio2depthCheck?.code !== '' &&
                           selected2depth !== '' &&
-                          [categoryItems[2]].map((item) => (
+                          [categoryItems[1]].map((item) => (
                             <div
                               className={`3depth`}
                               id={`${item.name}`}
@@ -1450,7 +1455,7 @@ export function ClassificationEdit({
                           ))}
                         {radio3depthCheck?.code !== '' &&
                           selected3depth !== '' &&
-                          [categoryItems[3]].map((item) => (
+                          [categoryItems[2]].map((item) => (
                             <div
                               className={`4depth`}
                               id={`${item.name}`}

@@ -47,6 +47,7 @@ export function ContentInformationChange() {
   const [checkList, setCheckList] = useState<number[]>([]); // 문항 체크
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [showplaceholder, setShowplaceholder] = useState<boolean>(true);
   const [changeValue, setChangeValue] = useState<string>('');
 
   const searchDivRef = useRef<HTMLDivElement | null>(null);

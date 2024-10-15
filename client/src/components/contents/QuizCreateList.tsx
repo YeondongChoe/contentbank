@@ -92,7 +92,6 @@ export function QuizCreateList() {
       );
       return res.data.data;
     }
-    // console.log(`getQuiz 결과값`, res.data.data);
   };
 
   const {
@@ -185,7 +184,7 @@ export function QuizCreateList() {
     }
   };
   useEffect(() => {
-    // console.log('categoryList', categoryList);
+    console.log('categoryList', categoryList);
   }, [categoryList]);
 
   //셀렉트 초기화

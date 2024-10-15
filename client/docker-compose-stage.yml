@@ -3,17 +3,16 @@ version: "3.7"
 services:
   react-app:
     container_name: contentsbank
-    build:
-      context: .
-      dockerfile: Dockerfile-dev
+    image: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+#    build:
+#      context: .
+#      dockerfile: Dockerfile-stage
     volumes:
       - ".:/app"
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=stage
 
 # 커맨드라인에서 빌드 및 실행
 # docker-compose up -d --build
-
-

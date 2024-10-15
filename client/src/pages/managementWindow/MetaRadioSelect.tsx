@@ -311,7 +311,7 @@ export function MetaRadioSelect({
     const pidx = radio1depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextChangeList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -337,7 +337,7 @@ export function MetaRadioSelect({
     const pidx = radio2depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextChangeList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -362,7 +362,7 @@ export function MetaRadioSelect({
     const pidx = radio3depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextChangeList3depth(res?.data.data.categoryClassList);
       return res.data;
@@ -700,7 +700,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 학교급 */}
-                  {[categoryItems[1]].map((item) => (
+                  {[categoryItems[41]].map((item) => (
                     <div
                       className={`2depth-change`}
                       id={`${item.name}`}
@@ -718,7 +718,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 학년 */}
-                  {[categoryItems[2]].map((item) => (
+                  {[categoryItems[1]].map((item) => (
                     <div
                       className={`3depth-change`}
                       id={`${item.name}`}
@@ -736,7 +736,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 학기 */}
-                  {[categoryItems[3]].map((item) => (
+                  {[categoryItems[2]].map((item) => (
                     <div
                       className={`4depth-change`}
                       id={`${item.name}`}
