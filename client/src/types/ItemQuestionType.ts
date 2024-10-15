@@ -57,6 +57,7 @@ export type QuizListType = {
 };
 
 export type QuizCategoryList = {
+  type?: 'CATEGORY' | 'CLASS';
   quizCategory: QuizCategory;
 };
 
@@ -75,7 +76,7 @@ export type Source = {
   교재명?: string;
   교재페이지?: string;
   교재번호?: string;
-  출판년도?: string;
+  출판년도?: string | number;
   내신형식?: string;
   학교명?: string;
   학사일정?: string;
@@ -149,7 +150,7 @@ export type QuestionClassListType = {
 type QuizCategoryClassType = {
   문항타입: string;
   sources?: Source[] | any[];
-  출판년도: string;
+  출판년도?: string;
   난이도?: string;
 };
 

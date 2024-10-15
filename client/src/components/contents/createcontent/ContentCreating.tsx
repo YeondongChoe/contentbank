@@ -67,7 +67,7 @@ export function ContentCreating({
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
-    console.log('editorData', editorData?.tag_group);
+    console.log('에디터에서 데이터 가져올시 editorData', editorData?.tag_group);
 
     if (editorData) {
       const itemDataList: QuizItemListType = [];

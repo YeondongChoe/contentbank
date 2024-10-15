@@ -77,7 +77,7 @@ export function OptionList({
   const [sourceValue, setSourceValue] = useState<{
     titleIdx: string;
     name: string;
-    value: string;
+    value: string | number;
   }>({ titleIdx: '', name: '', value: '' });
 
   const getCategoryListFromString = (data: string) => {
