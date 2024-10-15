@@ -5,7 +5,7 @@ var dream_server_url = 'http://43.201.205.140:40030'; //로컬 테스트
 // 업로드 이미지 URL
 // var uploaded_img_url = 'https://itex-dev-image.s3.ap-northeast-2.amazonaws.com';
 // var uploaded_img_url = 'https://210.124.177.35:40102/file-service'; // 서버 주소
-var uploaded_img_url = 'https://web-stage.olympiad.ac/'; // 서버 주소
+var uploaded_img_url = 'https://web-stage.olympiad.ac/file-service'; // 서버 주소
 // var uploaded_img_url = 'http://localhost:5050';
 
 // 데이터 로드 화면 탭 개수 설정
