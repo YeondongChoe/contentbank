@@ -759,7 +759,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 교과 */}
-                  {[categoryItems[6]].map((item) => (
+                  {[categoryItems[5]].map((item) => (
                     <div
                       className={`5depth-change`}
                       id={`${item.name}`}
@@ -777,7 +777,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 과목 */}
-                  {[categoryItems[7]].map((item) => (
+                  {[categoryItems[6]].map((item) => (
                     <div
                       className={`6depth-change`}
                       id={`${item.name}`}

@@ -246,7 +246,7 @@ export function QuizManagementList() {
       value !== categoryTitles[1]?.code ||
       value !== categoryTitles[2]?.code ||
       value !== categoryTitles[3]?.code ||
-      value !== categoryTitles[6]?.code ||
+      value !== categoryTitles[5]?.code ||
       value !== categoryTitles[7]?.code ||
       value !== categoryTitles[40]?.code ||
       value !== '오픈여부'
@@ -288,7 +288,7 @@ export function QuizManagementList() {
       case categoryTitles[3]?.code:
         setSelectedSemester('');
         break;
-      case categoryTitles[6]?.code:
+      case categoryTitles[5]?.code:
         setSelectedSubject('');
         break;
       case categoryTitles[7]?.code:
@@ -497,14 +497,14 @@ export function QuizManagementList() {
               />
             )}
             {/* 교과 */}
-            {categoriesE && categoryTitles[6] && (
+            {categoriesE && categoryTitles[5] && (
               <Select
                 onDefaultSelect={() =>
-                  handleDefaultSelect(categoryTitles[6]?.code)
+                  handleDefaultSelect(categoryTitles[5]?.code)
                 }
                 width={'130px'}
-                defaultValue={categoryTitles[6]?.code}
-                key={categoryTitles[6]?.code}
+                defaultValue={categoryTitles[5]?.code}
+                key={categoryTitles[5]?.code}
                 options={categoriesE[0]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedSubject}

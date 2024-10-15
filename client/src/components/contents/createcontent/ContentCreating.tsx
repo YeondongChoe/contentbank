@@ -414,10 +414,10 @@ export function ContentCreating({
       setSelectedCourse('');
     }
     switch (defaultValue) {
-      case categoryTitles[6]?.code:
+      case categoryTitles[5]?.code:
         setSelectedSubject('');
         break;
-      case categoryTitles[7]?.code:
+      case categoryTitles[6]?.code:
         setSelectedCourse('');
         break;
 
@@ -483,6 +483,23 @@ export function ContentCreating({
                   <li>
                     <SelectWrapper>
                       {/* 교과 */}
+                      {categoriesE && categoryTitles[5] && (
+                        <Select
+                          onDefaultSelect={() =>
+                            handleDefaultSelect(categoryTitles[5]?.code)
+                          }
+                          // $positionTop
+                          heightScroll={'150px'}
+                          width={'110px'}
+                          height={'30px'}
+                          defaultValue={categoryTitles[5]?.code}
+                          key={categoryTitles[5]?.code}
+                          options={categoriesE[0]}
+                          onSelect={(event) => selectCategoryOption(event)}
+                          setSelectedValue={setSelectedSubject}
+                        />
+                      )}
+                      {/* 과목 */}
                       {categoriesE && categoryTitles[6] && (
                         <Select
                           onDefaultSelect={() =>
@@ -494,23 +511,6 @@ export function ContentCreating({
                           height={'30px'}
                           defaultValue={categoryTitles[6]?.code}
                           key={categoryTitles[6]?.code}
-                          options={categoriesE[0]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedSubject}
-                        />
-                      )}
-                      {/* 과목 */}
-                      {categoriesE && categoryTitles[7] && (
-                        <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[7]?.code)
-                          }
-                          // $positionTop
-                          heightScroll={'150px'}
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={categoryTitles[7]?.code}
-                          key={categoryTitles[7]?.code}
                           options={categoriesE[1]}
                           onSelect={(event) => selectCategoryOption(event)}
                           setSelectedValue={setSelectedCourse}

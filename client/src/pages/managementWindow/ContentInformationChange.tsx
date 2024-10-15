@@ -588,6 +588,7 @@ export function ContentInformationChange() {
       radio5depthCheck, //TODO : api 에 키값 추가될시 주석 해제
       radio6depthCheck,
     ];
+    console.log('categoryItems', categoryItems);
 
     const itemTreeKey = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
       if (curr.key && curr.title) {
@@ -1078,7 +1079,7 @@ export function ContentInformationChange() {
                           </div>
                         ))}
                         {/* 교과 */}
-                        {[categoryItems[6]].map((item) => (
+                        {[categoryItems[5]].map((item) => (
                           <div
                             className={`5depth`}
                             id={`${item.name}`}
@@ -1096,7 +1097,7 @@ export function ContentInformationChange() {
                           </div>
                         ))}
                         {/* 과목 */}
-                        {[categoryItems[7]].map((item) => (
+                        {[categoryItems[6]].map((item) => (
                           <div
                             className={`6depth`}
                             id={`${item.name}`}

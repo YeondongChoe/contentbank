@@ -832,7 +832,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 교과 */}
-                      {[categoryItems[6]].map((item) => (
+                      {[categoryItems[5]].map((item) => (
                         <div
                           className={`5depth`}
                           id={`${item.name}`}
@@ -850,7 +850,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 과목 */}
-                      {[categoryItems[7]].map((item) => (
+                      {[categoryItems[6]].map((item) => (
                         <div
                           className={`6depth`}
                           id={`${item.name}`}
