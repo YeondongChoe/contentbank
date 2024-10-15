@@ -252,13 +252,18 @@ export function PDFModal({ list }: PDFModalProps) {
                                   className="row"
                                 >
                                   {[
-                                    'TITLE',
+                                    'BIG',
+                                    'TEXT',
                                     'QUESTION',
+                                    'SMALL',
                                     'EXAMPLE',
+                                    'CHOICES',
                                     'ANSWER',
-                                    'TIP',
                                     'COMMENTARY',
                                     'HINT',
+                                    'CONCEPT',
+                                    'TITLE',
+                                    'TIP',
                                   ].includes(el?.type) &&
                                     el?.content && (
                                       <MathViewer
