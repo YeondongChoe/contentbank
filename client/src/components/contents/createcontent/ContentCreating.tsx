@@ -64,7 +64,11 @@ export function ContentCreating({
   const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
     [],
   ); //출처
-  const [selected, setSelected] = useState<string>('');
+  const [selectedList, setSelectedList] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -233,9 +237,10 @@ export function ContentCreating({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
+    console.log('selected--------출처 선택부분', selectedList);
 
-    if (selectedSource.length == 0 && selected.length > 0) {
-      setSelectedSource([{ 0: selected }]);
+    if (selectedSource.length == 0 && selectedList.length > 0) {
+      setSelectedSource([{ 0: selectedList }]);
     }
     const quizClassList: QuestionClassListType = [
       {
@@ -262,6 +267,7 @@ export function ContentCreating({
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
+    selectedList,
   ]);
 
   useEffect(() => {
@@ -449,9 +455,6 @@ export function ContentCreating({
   }, [postQuizData]);
   useEffect(() => {}, [quizList]);
   useEffect(() => {}, [questionList]);
-  useEffect(() => {
-    console.log('selected--------출처 선택부분', selected);
-  }, [selected]);
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -459,13 +462,13 @@ export function ContentCreating({
       selectedSubject !== '' &&
       selectedCourse !== '' &&
       selectedQuestionType !== '' &&
-      selected !== ''
+      selectedList.length > 0
     ) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType, selected]);
+  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedList]);
 
   return (
     <Container>
@@ -544,7 +547,7 @@ export function ContentCreating({
                         groupsDataF={groupsDataF}
                         groupsDataG={groupsDataG}
                         groupsDataH={groupsDataH}
-                        selectedValue={setSelected}
+                        selectedValue={setSelectedList}
                       />
                     )}
                 </SourceOptionWrapper>

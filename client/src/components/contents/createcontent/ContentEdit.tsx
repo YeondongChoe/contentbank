@@ -83,7 +83,11 @@ export function ContentEdit({
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
-  const [selected, setSelected] = useState<string>('');
+  const [selectedList, setSelectedList] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
 
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
@@ -271,6 +275,7 @@ export function ContentEdit({
     selectedSource,
     selectedDifficulty,
     onItemClickData,
+    selectedList,
   ]);
 
   useEffect(() => {
@@ -520,9 +525,6 @@ export function ContentEdit({
       sources: [],
     };
   }, [onItemClickData]);
-  useEffect(() => {
-    console.log('selected--------출처 선택부분', selected);
-  }, [selected]);
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -530,13 +532,13 @@ export function ContentEdit({
       selectedSubject !== '' &&
       selectedCourse !== '' &&
       selectedQuestionType !== '' &&
-      selected !== ''
+      selectedList.length > 0
     ) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType, selected]);
+  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedList]);
 
   return (
     <Container>
@@ -623,7 +625,7 @@ export function ContentEdit({
                           quizCategory.sources && quizCategory.sources
                         }
                         onItemClickData={onItemClickData}
-                        selectedValue={setSelected}
+                        selectedValue={setSelectedList}
                       />
                     )}
                 </SourceOptionWrapper>

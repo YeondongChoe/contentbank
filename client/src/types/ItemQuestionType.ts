@@ -89,9 +89,9 @@ export type Source = {
   기출일시?: string;
 };
 export type Categorie = {
-  대유형?: string; // 1뎁스
-  중유형?: string;
-  소유형?: string;
+  대단원?: string; // 1뎁스
+  중단원?: string;
+  소단원?: string;
   유형?: string; // 4뎁스
 };
 
@@ -104,14 +104,11 @@ export type QuizCategory = {
   난이도?: string;
   학교급?: string;
   문항타입?: string;
-  대단원?: string;
-  소단원?: string;
-  중단원?: string;
   행동요소1?: string[];
   행동요소2?: string[];
-  대유형?: string; // 1뎁스
-  중유형?: string;
-  소유형?: string;
+  대단원?: string; // 1뎁스
+  중단원?: string;
+  소단원?: string;
   유형?: string; // 4뎁스
   sources?: Source[] | any[];
   categories?: Categorie[] | any[];

@@ -26,7 +26,13 @@ interface Props {
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
   quizCategory?: any[];
   onItemClickData?: QuizListType;
-  selectedValue?: React.Dispatch<React.SetStateAction<string>>;
+  selectedValue?: React.Dispatch<
+    React.SetStateAction<
+      {
+        [key: number]: string;
+      }[]
+    >
+  >;
 }
 
 export function OptionList({
@@ -216,8 +222,17 @@ export function OptionList({
 
   useEffect(() => {
     console.log('selected', selected);
-    if (selectedValue) {
-      selectedValue(selected);
+    if (selected && selectedValue) {
+      selectedValue((prevValues) => {
+        const isDuplicate = Object.values(prevValues).some((item) =>
+          Object.values(item).includes(selected),
+        );
+        // 중복이 아닐 경우에만 새로운 값을 추가
+        if (!isDuplicate) {
+          return [...prevValues, { [count]: selected }];
+        }
+        return prevValues;
+      });
     }
   }, [selected]);
 

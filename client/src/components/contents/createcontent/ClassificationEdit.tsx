@@ -450,11 +450,11 @@ export function ClassificationEdit({
     const getTypeKey = (level: number): string => {
       switch (level) {
         case 1:
-          return '대유형';
+          return '대단원';
         case 2:
-          return '중유형';
+          return '중단원';
         case 3:
-          return '소유형';
+          return '소단원';
         case 4:
           return '유형';
         default:
