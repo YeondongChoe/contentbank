@@ -140,6 +140,11 @@ export function Step2() {
   const [isQuizType, setIsQuizType] = useState<boolean>(false);
   const [itemType, setItemType] = useState<number>();
 
+  const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+  const [categoryNameList, setCategoryNameList] = useState<string>('');
+  console.log(categoryNameList);
+  console.log(categoryTypeList);
+
   useEffect(() => {
     if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
   }, [getEditData]);
@@ -830,7 +835,7 @@ export function Step2() {
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
-    return response.data.data.typeList;
+    return response.data.data;
   };
   const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
     queryKey: ['get-category-groups-A'],
@@ -841,10 +846,24 @@ export function Step2() {
     },
   });
   useEffect(() => {
-    if (isRangeSetting && groupsData) {
-      fetchCategoryItems(groupsData, setCategoryList);
+    if (isRangeSetting && categoryTypeList) {
+      fetchCategoryItems(categoryTypeList, setCategoryList);
     }
-  }, [groupsData, isRangeSetting]);
+  }, [categoryTypeList, isRangeSetting]);
+
+  //groupsData값 들어왔을때 typeList 관리
+  useEffect(() => {
+    if (groupsData) {
+      setCategoryTypeList(groupsData.typeList);
+    }
+  }, [groupsData]);
+
+  //groupsData값 들어왔을때 nameList 관리
+  useEffect(() => {
+    if (groupsData) {
+      setCategoryNameList(groupsData.nameList);
+    }
+  }, [groupsData]);
 
   // 카테고리의 그룹 유형 조회 (출처)
   const getCategoryGroupsE = async () => {
@@ -1051,7 +1070,8 @@ export function Step2() {
   /* 선택된 유형에따라 항목 조회 */
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
-    const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[1];
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
@@ -1076,7 +1096,8 @@ export function Step2() {
 
   //2뎁스 선택시 3뎁스 설정되게
   const getNextList2 = async () => {
-    const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[2];
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
@@ -1101,7 +1122,8 @@ export function Step2() {
 
   //3뎁스 선택시 4뎁스 설정되게
   const getNextList3 = async () => {
-    const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[3];
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
@@ -1225,11 +1247,13 @@ export function Step2() {
       radio4depthCheck,
     ];
 
-    const keyValuePairs = categoryItems.reduce<Record<string, string>>(
+    //서버로 부터 받은 nameList에 맞게 서버에 요청
+    const groupsArray = categoryNameList.split(',');
+    const keyValuePairs = groupsArray.reduce<Record<string, string>>(
       (acc, item, index) => {
         const depthCheck = depthChecks[index];
         if (depthCheck) {
-          acc[item.name] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
+          acc[item] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
         }
         return acc;
       },
@@ -2544,7 +2568,7 @@ export function Step2() {
                                           {unitClassificationList.map(
                                             (el, idx) => (
                                               <IconButtonWrapper
-                                                key={`${el} idx`}
+                                                key={`${el} ${idx}`}
                                               >
                                                 <IconButton
                                                   width={`calc(100% - 25px)`}
@@ -2599,14 +2623,16 @@ export function Step2() {
                                     {categoryItems[0] && categoryList && (
                                       <>
                                         {/* 교육과정 */}
-                                        {[categoryItems[0]].map((item) => (
+                                        {
                                           <div
                                             className={`1depth`}
-                                            id={`${item.name}`}
-                                            key={`selected1depth ${item.idx}`}
+                                            id={categoryNameList.split(',')[0]}
+                                            key={`selected1depth ${categoryNameList.split(',')[0]}`}
                                           >
                                             <ButtonFormatRadio
-                                              titleText={`${item.name}`}
+                                              titleText={
+                                                categoryNameList.split(',')[0]
+                                              }
                                               list={categoryList[0]}
                                               selected={selected1depth}
                                               onChange={(e) =>
@@ -2617,19 +2643,24 @@ export function Step2() {
                                               $margin={`10px 0 0 0`}
                                             />
                                           </div>
-                                        ))}
+                                        }
                                         {/* 학교급 */}
                                         {radio1depthCheck.code !== '' &&
-                                          selected1depth !== '' &&
-                                          [categoryItems[1]].map((item) => (
+                                          selected1depth !== '' && (
                                             <div
                                               className={`2depth`}
-                                              id={`${item.name}`}
-                                              key={`selected2depth ${item.idx}`}
+                                              id={
+                                                categoryNameList.split(',')[1]
+                                              }
+                                              key={`selected2depth ${categoryNameList.split(',')[1]}`}
                                             >
                                               <ButtonFormatRadio
-                                                branchValue={`${item.name}`}
-                                                titleText={`${item.name}`}
+                                                branchValue={
+                                                  categoryNameList.split(',')[1]
+                                                }
+                                                titleText={
+                                                  categoryNameList.split(',')[1]
+                                                }
                                                 list={nextList1depth}
                                                 selected={selected2depth}
                                                 onChange={(e) =>
@@ -2639,19 +2670,24 @@ export function Step2() {
                                                 checkedInput={radio2depthCheck}
                                               />
                                             </div>
-                                          ))}
+                                          )}
                                         {/* 학년 */}
                                         {radio2depthCheck.code !== '' &&
-                                          selected2depth !== '' &&
-                                          [categoryItems[2]].map((item) => (
+                                          selected2depth !== '' && (
                                             <div
                                               className={`3depth`}
-                                              id={`${item.name}`}
-                                              key={`selected3depth ${item.idx}`}
+                                              id={
+                                                categoryNameList.split(',')[2]
+                                              }
+                                              key={`selected3depth ${categoryNameList.split(',')[2]}`}
                                             >
                                               <ButtonFormatRadio
-                                                branchValue={`${item.name}`}
-                                                titleText={`${item.name}`}
+                                                branchValue={
+                                                  categoryNameList.split(',')[2]
+                                                }
+                                                titleText={
+                                                  categoryNameList.split(',')[2]
+                                                }
                                                 list={nextList2depth}
                                                 selected={selected3depth}
                                                 onChange={(e) =>
@@ -2661,19 +2697,24 @@ export function Step2() {
                                                 checkedInput={radio3depthCheck}
                                               />
                                             </div>
-                                          ))}
+                                          )}
                                         {/* 학기 */}
                                         {radio3depthCheck.code !== '' &&
-                                          selected3depth !== '' &&
-                                          [categoryItems[3]].map((item) => (
+                                          selected3depth !== '' && (
                                             <div
                                               className={`4depth`}
-                                              id={`${item.name}`}
-                                              key={`selected4depth ${item.idx}`}
+                                              id={
+                                                categoryNameList.split(',')[3]
+                                              }
+                                              key={`selected4depth ${categoryNameList.split(',')[3]}`}
                                             >
                                               <ButtonFormatRadio
-                                                branchValue={`${item.name}`}
-                                                titleText={`${item.name}`}
+                                                branchValue={
+                                                  categoryNameList.split(',')[3]
+                                                }
+                                                titleText={
+                                                  categoryNameList.split(',')[3]
+                                                }
                                                 list={nextList3depth}
                                                 selected={selected4depth}
                                                 onChange={(e) =>
@@ -2683,19 +2724,24 @@ export function Step2() {
                                                 checkedInput={radio4depthCheck}
                                               />
                                             </div>
-                                          ))}
+                                          )}
                                         {/* 교과 */}
                                         {radio4depthCheck.code !== '' &&
-                                          selected4depth !== '' &&
-                                          [categoryItems[6]].map((item) => (
+                                          selected4depth !== '' && (
                                             <div
                                               className={`5depth`}
-                                              id={`${item.name}`}
-                                              key={`selected5depth ${item.idx}`}
+                                              id={
+                                                categoryNameList.split(',')[4]
+                                              }
+                                              key={`selected5depth ${categoryNameList.split(',')[4]}`}
                                             >
                                               <ButtonFormatRadio
-                                                branchValue={`${item.name}`}
-                                                titleText={`${item.name}`}
+                                                branchValue={
+                                                  categoryNameList.split(',')[4]
+                                                }
+                                                titleText={
+                                                  categoryNameList.split(',')[4]
+                                                }
                                                 list={nextList4depth}
                                                 selected={selected5depth}
                                                 onChange={(e) =>
@@ -2705,20 +2751,25 @@ export function Step2() {
                                                 checkedInput={radio5depthCheck}
                                               />
                                             </div>
-                                          ))}
+                                          )}
                                         {/* 과목 */}
                                         {radio5depthCheck.code !== '' &&
-                                          selected5depth !== '' &&
-                                          [categoryItems[7]].map((item) => (
+                                          selected5depth !== '' && (
                                             <div
                                               className={`6depth`}
-                                              id={`${item.name}`}
-                                              key={`selected6depth ${item.idx}`}
+                                              id={
+                                                categoryNameList.split(',')[5]
+                                              }
+                                              key={`selected6depth ${categoryNameList.split(',')[5]}`}
                                             >
                                               <ButtonFormatRadio
                                                 overFlow
-                                                branchValue={`${item.name}`}
-                                                titleText={`${item.name}`}
+                                                branchValue={
+                                                  categoryNameList.split(',')[5]
+                                                }
+                                                titleText={
+                                                  categoryNameList.split(',')[5]
+                                                }
                                                 list={nextList5depth}
                                                 selected={selected6depth}
                                                 onChange={(e) =>
@@ -2728,7 +2779,7 @@ export function Step2() {
                                                 checkedInput={radio6depthCheck}
                                               />
                                             </div>
-                                          ))}
+                                          )}
                                       </>
                                     )}
 

@@ -1,30 +1,29 @@
-import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+const dynamicallyLoadScripts = (scripts, callback) => {
+  if (scripts.length === 0) {
+    if (callback) callback();
+    return;
+  }
 
-import { quizService } from '../../../../../api/axios';
-import { openToastifyAlert } from '../../../../../components';
+  const src = scripts.shift();
+  const script = document.createElement('script');
+  script.src = src;
+  script.async = true;
+  script.onload = () => {
+    // console.log(`${src} loaded successfully`);
+    dynamicallyLoadScripts(scripts, callback);
+  };
+  script.onerror = () => {
+    console.error(`Failed to load script: ${src}`);
+    dynamicallyLoadScripts(scripts, callback);
+  };
+  document.body.appendChild(script);
+};
 
-import ArrowClockwiseIcon from './icons/ArrowClockwiseIcon';
-import ArrowCounterclockwiseIcon from './icons/ArrowCounterclockwiseIcon';
-import BarCharLineIcon from './icons/BarCharLineIcon';
-import BoxArrowInUpRightIcon from './icons/BoxArrowInUpRightIcon';
-import ChevronLeftIcon from './icons/ChevronLeftIcon';
-import ChevronRightIcon from './icons/ChevronRightIcon';
-import CloseIcon from './icons/CloseIcon';
-import DocumentIcon from './icons/DocumentIcon';
-import TrashIcon from './icons/TrashIcon';
-
-interface QuizItem {
-  type: string;
-  content: string;
-  sort: number;
-}
-
-const Type2 = () => {
-  const ocrIframeContainer = useRef<HTMLDivElement>(null);
-  const [quizItemList, setQuizItemList] = useState<QuizItem[]>([]); // 대량등록
+const MathEditor = () => {
+  const ocrIframeContainer = useRef(null);
+  window.editorType_s = true;
 
   useEffect(() => {
     const initialScripts = [
@@ -37,147 +36,100 @@ const Type2 = () => {
       '/static/iTeX_fulltext/js/bootstrap.bundle.min.js',
       '/static/iTeX_fulltext/js/sort-list.js',
       '/static/dream_ui/js/dream_setting.js',
-    ];
-
-    const subsequentScripts = [
       '/static/iTeX_EQ/js/itex_total_eq_origin_32.js',
+    ];
+    const subsequentScripts = [
       '/static/dream_ui/js/init_setting.js',
       '/static/iTeX_EQ/js/itexLoader.js',
-      '/static/iTeX_fulltext/js/dream_function.js',
       '/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71',
       '/static/dream_ui/js/data_view_area.js',
       '/static/dream_ui/js/frame_controller.js',
       '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12',
       '/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1',
       '/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87',
+      '/static/iTeX_fulltext/js/dream_function.js',
       '/static/iTeX_fulltext/js/hmlupload.js?v=0.1',
       '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
     ];
 
-    // 동적 스크립트 로딩 함수
-    const dynamicallyLoadScripts = (
-      scriptUrls: any[],
-      callback: { (): Promise<void>; (): void; (): void },
-    ) => {
-      const promises = scriptUrls.map((url) => {
-        return new Promise((resolve, reject) => {
-          // 스크립트가 이미 존재하는지 확인
-          if (document.querySelector(`script[src="${url}"]`)) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            resolve(); // 이미 로드된 경우 건너뜀
-            return;
-          }
-
-          // 존재하지 않는 경우 새로 로드
-          const script = document.createElement('script');
-          script.src = url;
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          script.onload = () => resolve();
-          script.onerror = () =>
-            reject(new Error(`Failed to load script ${url}`));
-          document.body.appendChild(script);
-        });
-      });
-
-      Promise.all(promises)
-        .then(() => {
-          if (callback) callback();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    };
-
     const initComponent = async () => {
       dynamicallyLoadScripts([...initialScripts], async () => {
         console.log('Initial scripts loaded');
-        const checkTinyMCEReady = () => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          if (window.tinymce) {
-            console.log('tinymce loaded successfully');
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            dynamicallyLoadScripts([...subsequentScripts], () => {
-              console.log('Subsequent scripts loaded');
 
-              if (ocrIframeContainer.current) {
-                const iframe = document.createElement('iframe');
-                iframe.width = '0';
-                iframe.height = '0';
-                iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
-                iframe.frameBorder = '0';
-                iframe.scrolling = 'no';
-                iframe.id = 'itex_frame_area';
-                ocrIframeContainer.current.appendChild(iframe);
-              }
-            });
-          } else {
-            setTimeout(checkTinyMCEReady, 50);
-          }
-        };
+        // const html = await fetchHtmlContent();
+        // setHtmlContent(html);
 
-        checkTinyMCEReady();
+        setTimeout(() => {
+          dynamicallyLoadScripts([...subsequentScripts], () => {
+            // console.log("Subsequent scripts loaded");
+            // Add the iframe after the subsequent scripts are loaded
+            if (ocrIframeContainer.current) {
+              const iframe = document.createElement('iframe');
+              iframe.width = '0';
+              iframe.height = '0';
+              iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
+              iframe.frameBorder = '0';
+              iframe.scrolling = 'no';
+              iframe.id = 'itex_frame_area';
+              ocrIframeContainer.current.appendChild(iframe);
+            }
+          });
+        }, 0);
       });
     };
 
     initComponent();
   }, []);
-
-  const saveHandler = async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const data = await window.saveHmlData();
-    console.log('data------------', data);
-
-    setQuizItemList(data);
+  // =============== 테스트 영역 ========================
+  const handleEditorOpen = (node_name) => {
+    window.openEQ(node_name);
   };
-
-  const postQuiz = async () => {
-    const data = {
-      commandCode: 0,
-      quizList: quizItemList,
-    };
-
-    console.log('최종적으로 등록될 데이터------------', data);
-
-    return await quizService.post(`/v1/quiz/upload`, data);
-  };
-
-  const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
-    mutationFn: postQuiz,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: context.response.data.message,
-      });
-    },
-    onSuccess: (response) => {
-      openToastifyAlert({
-        type: 'success',
-        text: `문항들이 추가 되었습니다`,
-      });
-    },
-  });
-
-  useEffect(() => {
-    if (quizItemList.length) postQuizDataMutate();
-  }, [quizItemList]);
-
-  useEffect(() => {
-    if (postQuizData) {
-      console.log('postQuizData', postQuizData);
-    }
-  }, [postQuizData]);
+  // =============== 테스트 영역 ========================
 
   return (
-    <>
+    <div>
+      {/* ================== 테스트 영역 ================= */}
+      <button
+        style={{ margin: '10px' }}
+        onClick={() => {
+          handleEditorOpen('first_area_test');
+        }}
+      >
+        에디터 오픈 1
+      </button>
+      <button
+        onClick={() => {
+          handleEditorOpen('second_area_test');
+        }}
+      >
+        에디터 오픈 2
+      </button>
+      <button
+        onClick={() => {
+          handleEditorOpen('third_area_test');
+        }}
+      >
+        에디터오픈3
+      </button>
+      <h1>first</h1>
+      <div
+        className="first_area_test"
+        style={{ height: '100px', width: '300px', border: '1px solid red' }}
+      ></div>
+      <h1>second</h1>
+      <div
+        className="second_area_test"
+        style={{ height: '100px', width: '300px', border: '1px solid orange' }}
+      ></div>
+      <h1>third</h1>
+      <div
+        contentEditable
+        className="third_area_test"
+        style={{ height: '100px', width: '300px', border: '1px solid orange' }}
+      ></div>
+      {/* ================== 테스트 영역 ================= */}
       <div className="itex_editor_container">
-        <div id="first" className="resizeable">
+        <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
             <div id="data_viewer_body">
               <div className="trans_area h-100">
@@ -188,14 +140,12 @@ const Type2 = () => {
                 <button id="pasteButton" className="hml_copy_btn">
                   붙여넣기
                 </button>
-                <div className="origin_img_area hml_multi">
+                <div className="origin_img_area h-100 hml_multi">
                   <div className="itex_ocrimg_area" style={{ width: '100%' }}>
                     <img id="itex_main_img" alt="" />
                   </div>
                   <div className="itex-drag-area multi">
-                    <div className="icon">
-                      <DocumentIcon />
-                    </div>
+                    <div className="icon">{/* <DocumentIcon /> */}</div>
                     <input
                       id="upload_file"
                       className="hml_multi"
@@ -225,7 +175,7 @@ const Type2 = () => {
                     data-bs-trigger="hover"
                     title="지우기"
                   >
-                    <TrashIcon />
+                    {/* <TrashIcon /> */}
                   </button>
                   <button
                     type="button"
@@ -236,9 +186,9 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="왼쪽으로 회전"
-                    disabled
+                    disabled={true}
                   >
-                    <ArrowCounterclockwiseIcon />
+                    {/* <ArrowCounterclockwiseIcon /> */}
                   </button>
                   <button
                     type="button"
@@ -249,9 +199,9 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="오른쪽으로 회전"
-                    disabled
+                    disabled={true}
                   >
-                    <ArrowClockwiseIcon />
+                    {/* <ArrowClockwiseIcon /> */}
                   </button>
                   <button
                     type="button"
@@ -261,10 +211,10 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="이전 페이지"
-                    disabled
+                    disabled={true}
                   >
                     {' '}
-                    <ChevronLeftIcon />
+                    {/* <ChevronLeftIcon /> */}
                   </button>
                   <button
                     type="button"
@@ -274,9 +224,9 @@ const Type2 = () => {
                     data-bs-placement="top"
                     data-bs-trigger="hover"
                     title="다음 페이지"
-                    disabled
+                    disabled={true}
                   >
-                    <ChevronRightIcon />
+                    {/* <ChevronRightIcon /> */}
                   </button>
                   <div className="pdf_page_show pdf_page_hidden">
                     <input
@@ -300,7 +250,7 @@ const Type2 = () => {
                     title="모바일 환경에서 에디터 창으로 이동합니다."
                     style={{ display: 'none' }}
                   >
-                    <BoxArrowInUpRightIcon />
+                    {/* <BoxArrowInUpRightIcon /> */}
                   </button>
                   <button
                     type="button"
@@ -311,7 +261,7 @@ const Type2 = () => {
                     title="변환 내역"
                     style={{ display: 'none' }}
                   >
-                    <BarCharLineIcon />
+                    {/* <BarCharLineIcon /> */}
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                       <span className="itex_obj_count">0</span>
                       <span className="visually-hidden"></span>
@@ -347,7 +297,7 @@ const Type2 = () => {
                     title="크롭 해제"
                     aria-label="Close"
                   >
-                    <CloseIcon />
+                    {/* <CloseIcon /> */}
                   </button>
                 </div>
               </div>
@@ -359,12 +309,18 @@ const Type2 = () => {
             {'>'}
           </button>
         </div>
-        <div id="second" className="resizeable">
-          <div className="col-lg-4 p-0 tiny_wrap type2">
+        <div id="second" className="resizeable" style={{ display: 'none' }}>
+          <div className="col-lg-4 p-0 tiny_wrap">
             <textarea id="tinyeditor"></textarea>
             <div className="save_exam_btn_wrap">
-              <button id="exam_change">변경</button>
-              <button id="exam_save_all" onClick={saveHandler}>
+              {/* <button id="exam_change">변경</button> */}
+              <button
+                id="exam_save_all"
+                onClick={async () => {
+                  const gggg = await window.saveHmlData();
+                  console.log(gggg);
+                }}
+              >
                 저장
               </button>
             </div>
@@ -397,8 +353,8 @@ const Type2 = () => {
           style={{ display: 'none' }}
         />
       </div>
-    </>
+    </div>
   );
 };
 
-export default Type2;
+export default MathEditor;

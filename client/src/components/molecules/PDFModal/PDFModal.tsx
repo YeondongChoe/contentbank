@@ -137,8 +137,9 @@ export function PDFModal({ list }: PDFModalProps) {
                                 <span>
                                   <span className="title">대 분 류:</span>
                                   {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.대단원
+                                    item.quizCategoryList[0]?.quizCategory?.대단원.split(
+                                      '^^^',
+                                    )[0]
                                   }
                                 </span>
                               )}
@@ -147,8 +148,9 @@ export function PDFModal({ list }: PDFModalProps) {
                                 <span>
                                   <span className="title">소 분 류:</span>
                                   {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.소단원
+                                    item.quizCategoryList[0]?.quizCategory?.소단원.split(
+                                      '^^^',
+                                    )[0]
                                   }
                                 </span>
                               )}
@@ -252,13 +254,18 @@ export function PDFModal({ list }: PDFModalProps) {
                                   className="row"
                                 >
                                   {[
-                                    'TITLE',
+                                    'BIG',
+                                    'TEXT',
                                     'QUESTION',
+                                    'SMALL',
                                     'EXAMPLE',
+                                    'CHOICES',
                                     'ANSWER',
-                                    'TIP',
                                     'COMMENTARY',
                                     'HINT',
+                                    'CONCEPT',
+                                    'TITLE',
+                                    'TIP',
                                   ].includes(el?.type) &&
                                     el?.content && (
                                       <MathViewer

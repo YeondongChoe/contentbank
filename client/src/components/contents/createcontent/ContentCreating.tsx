@@ -64,6 +64,11 @@ export function ContentCreating({
   const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
     [],
   ); //출처
+  const [selectedList, setSelectedList] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -232,7 +237,11 @@ export function ContentCreating({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
+    console.log('selected--------출처 선택부분', selectedList);
 
+    if (selectedSource.length == 0 && selectedList.length > 0) {
+      setSelectedSource([{ 0: selectedList }]);
+    }
     const quizClassList: QuestionClassListType = [
       {
         type: 'CLASS',
@@ -258,6 +267,7 @@ export function ContentCreating({
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
+    selectedList,
   ]);
 
   useEffect(() => {
@@ -414,10 +424,10 @@ export function ContentCreating({
       setSelectedCourse('');
     }
     switch (defaultValue) {
-      case categoryTitles[6]?.code:
+      case categoryTitles[5]?.code:
         setSelectedSubject('');
         break;
-      case categoryTitles[7]?.code:
+      case categoryTitles[6]?.code:
         setSelectedCourse('');
         break;
 
@@ -452,13 +462,13 @@ export function ContentCreating({
       selectedSubject !== '' &&
       selectedCourse !== '' &&
       selectedQuestionType !== '' &&
-      selectedSource.length > 0
+      selectedList.length > 0
     ) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedSource]);
+  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedList]);
 
   return (
     <Container>
@@ -483,6 +493,23 @@ export function ContentCreating({
                   <li>
                     <SelectWrapper>
                       {/* 교과 */}
+                      {categoriesE && categoryTitles[5] && (
+                        <Select
+                          onDefaultSelect={() =>
+                            handleDefaultSelect(categoryTitles[5]?.code)
+                          }
+                          // $positionTop
+                          heightScroll={'150px'}
+                          width={'110px'}
+                          height={'30px'}
+                          defaultValue={categoryTitles[5]?.code}
+                          key={categoryTitles[5]?.code}
+                          options={categoriesE[0]}
+                          onSelect={(event) => selectCategoryOption(event)}
+                          setSelectedValue={setSelectedSubject}
+                        />
+                      )}
+                      {/* 과목 */}
                       {categoriesE && categoryTitles[6] && (
                         <Select
                           onDefaultSelect={() =>
@@ -494,23 +521,6 @@ export function ContentCreating({
                           height={'30px'}
                           defaultValue={categoryTitles[6]?.code}
                           key={categoryTitles[6]?.code}
-                          options={categoriesE[0]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedSubject}
-                        />
-                      )}
-                      {/* 과목 */}
-                      {categoriesE && categoryTitles[7] && (
-                        <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[7]?.code)
-                          }
-                          // $positionTop
-                          heightScroll={'150px'}
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={categoryTitles[7]?.code}
-                          key={categoryTitles[7]?.code}
                           options={categoriesE[1]}
                           onSelect={(event) => selectCategoryOption(event)}
                           setSelectedValue={setSelectedCourse}
@@ -537,6 +547,7 @@ export function ContentCreating({
                         groupsDataF={groupsDataF}
                         groupsDataG={groupsDataG}
                         groupsDataH={groupsDataH}
+                        selectedValue={setSelectedList}
                       />
                     )}
                 </SourceOptionWrapper>

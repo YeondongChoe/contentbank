@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 // 업로드 다운로드 요청 url
 var dream_server_url = 'http://43.201.205.140:40030'; //로컬 테스트
+// var dream_server_url = 'http://210.124.177.36:5050'; //로컬 테스트
 
 // 업로드 이미지 URL
 <<<<<<< HEAD
