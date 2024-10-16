@@ -105,6 +105,13 @@ export function ChangePassword({
     },
   });
 
+  // useEffect(() => {
+  //   if (passwordDataInit && getAuthorityCookie('accessToken')) {
+  //     console.log('getAuthorityCookie', getAuthorityCookie('accessToken'));
+  //     console.log('passwordDataInit', passwordDataInit);
+  //     navigate(`/content-create/quiz`);
+  //   }
+  // }, []);
   const submitPasswordInit = (password: string) => {
     const auth = { code: code, password: password, passwordConfirm: password };
     changePasswordInit(auth);
