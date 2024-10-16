@@ -243,12 +243,12 @@ export function QuizManagementList() {
     if (
       value !== categoryTitles[16]?.code ||
       value !== categoryTitles[0]?.code ||
+      value !== categoryTitles[41]?.code ||
       value !== categoryTitles[1]?.code ||
       value !== categoryTitles[2]?.code ||
-      value !== categoryTitles[3]?.code ||
+      value !== categoryTitles[5]?.code ||
       value !== categoryTitles[6]?.code ||
-      value !== categoryTitles[7]?.code ||
-      value !== categoryTitles[40]?.code ||
+      value !== categoryTitles[38]?.code ||
       value !== '오픈여부'
     ) {
       setOnSearch(true);
@@ -279,22 +279,22 @@ export function QuizManagementList() {
       case categoryTitles[0]?.code:
         setSelectedCurriculum('');
         break;
-      case categoryTitles[1]?.code:
+      case categoryTitles[41]?.code:
         setSelectedLevel('');
         break;
-      case categoryTitles[2]?.code:
+      case categoryTitles[1]?.code:
         setSelectedGrade('');
         break;
-      case categoryTitles[3]?.code:
+      case categoryTitles[2]?.code:
         setSelectedSemester('');
         break;
-      case categoryTitles[6]?.code:
+      case categoryTitles[5]?.code:
         setSelectedSubject('');
         break;
-      case categoryTitles[7]?.code:
+      case categoryTitles[6]?.code:
         setSelectedCourse('');
         break;
-      case categoryTitles[40]?.code:
+      case categoryTitles[38]?.code:
         setSelectedQuestionType('');
         break;
       case '오픈여부':
@@ -442,6 +442,7 @@ export function QuizManagementList() {
                 options={categoriesE[2]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedSource}
+                heightScroll={'300px'}
               />
             )}
             {categoryList && categoryTitles[0] && (
@@ -455,6 +456,21 @@ export function QuizManagementList() {
                 options={categoryList[0]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedCurriculum}
+                heightScroll={'300px'}
+              />
+            )}
+            {categoryList && categoryTitles[41] && (
+              <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[41]?.code)
+                }
+                width={'130px'}
+                defaultValue={categoryTitles[41]?.code}
+                key={categoryTitles[41]?.code}
+                options={categoryList[1]}
+                onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedLevel}
+                heightScroll={'300px'}
               />
             )}
             {categoryList && categoryTitles[1] && (
@@ -465,9 +481,10 @@ export function QuizManagementList() {
                 width={'130px'}
                 defaultValue={categoryTitles[1]?.code}
                 key={categoryTitles[1]?.code}
-                options={categoryList[1]}
+                options={categoryList[2]}
                 onSelect={(event) => selectCategoryOption(event)}
-                setSelectedValue={setSelectedLevel}
+                setSelectedValue={setSelectedGrade}
+                heightScroll={'300px'}
               />
             )}
             {categoryList && categoryTitles[2] && (
@@ -478,25 +495,28 @@ export function QuizManagementList() {
                 width={'130px'}
                 defaultValue={categoryTitles[2]?.code}
                 key={categoryTitles[2]?.code}
-                options={categoryList[2]}
-                onSelect={(event) => selectCategoryOption(event)}
-                setSelectedValue={setSelectedGrade}
-              />
-            )}
-            {categoryList && categoryTitles[3] && (
-              <Select
-                onDefaultSelect={() =>
-                  handleDefaultSelect(categoryTitles[3]?.code)
-                }
-                width={'130px'}
-                defaultValue={categoryTitles[3]?.code}
-                key={categoryTitles[3]?.code}
                 options={categoryList[3]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedSemester}
+                heightScroll={'300px'}
               />
             )}
             {/* 교과 */}
+            {categoriesE && categoryTitles[5] && (
+              <Select
+                onDefaultSelect={() =>
+                  handleDefaultSelect(categoryTitles[5]?.code)
+                }
+                width={'130px'}
+                defaultValue={categoryTitles[5]?.code}
+                key={categoryTitles[5]?.code}
+                options={categoriesE[0]}
+                onSelect={(event) => selectCategoryOption(event)}
+                setSelectedValue={setSelectedSubject}
+                heightScroll={'300px'}
+              />
+            )}
+            {/* 과목 */}
             {categoriesE && categoryTitles[6] && (
               <Select
                 onDefaultSelect={() =>
@@ -505,37 +525,25 @@ export function QuizManagementList() {
                 width={'130px'}
                 defaultValue={categoryTitles[6]?.code}
                 key={categoryTitles[6]?.code}
-                options={categoriesE[0]}
-                onSelect={(event) => selectCategoryOption(event)}
-                setSelectedValue={setSelectedSubject}
-              />
-            )}
-            {/* 과목 */}
-            {categoriesE && categoryTitles[7] && (
-              <Select
-                onDefaultSelect={() =>
-                  handleDefaultSelect(categoryTitles[7]?.code)
-                }
-                width={'130px'}
-                defaultValue={categoryTitles[7]?.code}
-                key={categoryTitles[7]?.code}
                 options={categoriesE[1]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedCourse}
+                heightScroll={'300px'}
               />
             )}
             {/* 문항타입 */}
-            {categoriesE && categoryTitles[40] && (
+            {categoriesE && categoryTitles[38] && (
               <Select
                 onDefaultSelect={() =>
-                  handleDefaultSelect(categoryTitles[40]?.code)
+                  handleDefaultSelect(categoryTitles[38]?.code)
                 }
                 width={'130px'}
-                defaultValue={categoryTitles[40]?.code}
-                key={categoryTitles[40]?.code}
+                defaultValue={categoryTitles[38]?.code}
+                key={categoryTitles[38]?.code}
                 options={categoriesE[3]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedQuestionType}
+                heightScroll={'300px'}
               />
             )}
             <CommonDate

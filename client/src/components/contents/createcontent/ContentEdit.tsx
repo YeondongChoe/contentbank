@@ -83,19 +83,26 @@ export function ContentEdit({
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
+  const [selectedList, setSelectedList] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
 
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
     if (onItemClickData) {
-      const quizCategory = onItemClickData.quizCategoryList[0].quizCategory;
+      const quizCategory = onItemClickData?.quizCategoryList[0]?.quizCategory;
+
+      console.log('quizCategory-------------', quizCategory);
 
       // 값이 존재하면 상태값을 업데이트
       if (quizCategory) {
-        setSelectedSubject(quizCategory.교과 || '');
-        setSelectedCourse(quizCategory.과목 || '');
-        setSelectedQuestionType(quizCategory.문항타입 || '');
-        setSelectedDifficulty(quizCategory.난이도 || '');
-        setSelectedSource(quizCategory.sources || []);
+        setSelectedSubject(quizCategory?.교과 || '');
+        setSelectedCourse(quizCategory?.과목 || '');
+        setSelectedQuestionType(quizCategory?.문항타입 || '');
+        setSelectedDifficulty(quizCategory?.난이도 || '');
+        setSelectedSource(quizCategory?.sources || []);
       }
     }
   }, [onItemClickData]);
@@ -270,6 +277,7 @@ export function ContentEdit({
     selectedSource,
     selectedDifficulty,
     onItemClickData,
+    selectedList,
   ]);
 
   useEffect(() => {
@@ -425,10 +433,10 @@ export function ContentEdit({
       setSelectedCourse('');
     }
     switch (defaultValue) {
-      case categoryTitles[6]?.code:
+      case categoryTitles[5]?.code:
         setSelectedSubject('');
         break;
-      case categoryTitles[7]?.code:
+      case categoryTitles[6]?.code:
         setSelectedCourse('');
         break;
 
@@ -526,13 +534,13 @@ export function ContentEdit({
       selectedSubject !== '' &&
       selectedCourse !== '' &&
       selectedQuestionType !== '' &&
-      selectedSource.length > 0
+      selectedList.length > 0
     ) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedSource]);
+  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedList]);
 
   return (
     <Container>
@@ -549,128 +557,137 @@ export function ContentEdit({
             </EditWrapper>
 
             <BackgroundWrapper>
-              <SelectListWrapper>
-                <strong>
-                  과목<span>*</span>
-                </strong>
-                <SelectList>
-                  <li>
-                    <SelectWrapper>
-                      {/* 교과 */}
-                      {categoriesE && categoryTitles[6] && (
-                        <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[6]?.code)
-                          }
-                          // $positionTop
-                          heightScroll={'150px'}
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={
-                            quizCategory.교과 || categoryTitles[6]?.code
-                          }
-                          key={categoryTitles[6]?.code}
-                          options={categoriesE[0]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedSubject}
-                        />
-                      )}
-                      {/* 과목 */}
-                      {categoriesE && categoryTitles[7] && (
-                        <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[7]?.code)
-                          }
-                          // $positionTop
-                          heightScroll={'150px'}
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={
-                            quizCategory.과목 || categoryTitles[7]?.code
-                          }
-                          key={categoryTitles[7]?.code}
-                          options={categoriesE[1]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedCourse}
-                        />
-                      )}
-                    </SelectWrapper>
-                  </li>
-                </SelectList>
-              </SelectListWrapper>
-              <SelectListWrapper>
-                <strong>
-                  출처<span>*</span>
-                </strong>
-                <SourceOptionWrapper>
-                  {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {groupsDataF &&
-                    groupsDataG &&
-                    groupsDataH &&
-                    categoryTitles && (
-                      <OptionList
-                        setSelectedSource={setSelectedSource}
-                        categoryTitles={categoryTitles}
-                        categoriesE={categoriesE[2]}
-                        groupsDataF={groupsDataF}
-                        groupsDataG={groupsDataG}
-                        groupsDataH={groupsDataH}
-                        quizCategory={
-                          quizCategory.sources && quizCategory.sources
-                        }
-                        onItemClickData={onItemClickData}
-                      />
-                    )}
-                </SourceOptionWrapper>
-              </SelectListWrapper>
-              <SelectListWrapper>
-                <strong>
-                  문항타입<span>*</span>
-                </strong>
-                <SelectList>
-                  <li>
-                    <SelectWrapper>
-                      {categoriesE && categoryTitles[40] && (
-                        <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect('문항타입')
-                          }
-                          $positionTop
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={quizCategory.문항타입 || '문항타입'}
-                          key={'문항타입'}
-                          options={categoriesE[3]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedQuestionType}
-                        />
-                      )}
-                    </SelectWrapper>
-                  </li>
-                </SelectList>
-              </SelectListWrapper>
-              <SelectListWrapper>
-                <strong>난이도</strong>
-                <SelectList>
-                  <li>
-                    <SelectWrapper>
-                      {categoriesE && categoryTitles[41] && (
-                        <Select
-                          onDefaultSelect={() => handleDefaultSelect('난이도')}
-                          $positionTop
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={quizCategory.난이도 || '난이도'}
-                          key={'난이도'}
-                          options={categoriesE[4]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedDifficulty}
-                        />
-                      )}
-                    </SelectWrapper>
-                  </li>
-                </SelectList>
-              </SelectListWrapper>
+              {quizCategory && (
+                <>
+                  <SelectListWrapper>
+                    <strong>
+                      과목<span>*</span>
+                    </strong>
+                    <SelectList>
+                      <li>
+                        <SelectWrapper>
+                          {/* 교과 */}
+                          {categoriesE && categoryTitles[5] && (
+                            <Select
+                              onDefaultSelect={() =>
+                                handleDefaultSelect(categoryTitles[5]?.code)
+                              }
+                              // $positionTop
+                              heightScroll={'150px'}
+                              width={'110px'}
+                              height={'30px'}
+                              defaultValue={
+                                quizCategory?.교과 || categoryTitles[5]?.code
+                              }
+                              key={categoryTitles[5]?.code}
+                              options={categoriesE[0]}
+                              onSelect={(event) => selectCategoryOption(event)}
+                              setSelectedValue={setSelectedSubject}
+                            />
+                          )}
+                          {/* 과목 */}
+                          {categoriesE && categoryTitles[6] && (
+                            <Select
+                              onDefaultSelect={() =>
+                                handleDefaultSelect(categoryTitles[6]?.code)
+                              }
+                              // $positionTop
+                              heightScroll={'150px'}
+                              width={'110px'}
+                              height={'30px'}
+                              defaultValue={
+                                quizCategory?.과목 || categoryTitles[6]?.code
+                              }
+                              key={categoryTitles[6]?.code}
+                              options={categoriesE[1]}
+                              onSelect={(event) => selectCategoryOption(event)}
+                              setSelectedValue={setSelectedCourse}
+                            />
+                          )}
+                        </SelectWrapper>
+                      </li>
+                    </SelectList>
+                  </SelectListWrapper>
+                  <SelectListWrapper>
+                    <strong>
+                      출처<span>*</span>
+                    </strong>
+                    <SourceOptionWrapper>
+                      {/* 옵션 리스트 셀렉트 컴포넌트 */}
+                      {groupsDataF &&
+                        groupsDataG &&
+                        groupsDataH &&
+                        categoryTitles && (
+                          <OptionList
+                            setSelectedSource={setSelectedSource}
+                            categoryTitles={categoryTitles}
+                            categoriesE={categoriesE[2]}
+                            groupsDataF={groupsDataF}
+                            groupsDataG={groupsDataG}
+                            groupsDataH={groupsDataH}
+                            quizCategory={
+                              quizCategory.sources && quizCategory.sources
+                            }
+                            onItemClickData={onItemClickData}
+                            selectedValue={setSelectedList}
+                          />
+                        )}
+                    </SourceOptionWrapper>
+                  </SelectListWrapper>
+                  <SelectListWrapper>
+                    <strong>
+                      문항타입<span>*</span>
+                    </strong>
+                    <SelectList>
+                      <li>
+                        <SelectWrapper>
+                          {categoriesE && categoryTitles[40] && (
+                            <Select
+                              onDefaultSelect={() =>
+                                handleDefaultSelect('문항타입')
+                              }
+                              $positionTop
+                              width={'110px'}
+                              height={'30px'}
+                              defaultValue={
+                                quizCategory?.문항타입 || '문항타입'
+                              }
+                              key={'문항타입'}
+                              options={categoriesE[3]}
+                              onSelect={(event) => selectCategoryOption(event)}
+                              setSelectedValue={setSelectedQuestionType}
+                            />
+                          )}
+                        </SelectWrapper>
+                      </li>
+                    </SelectList>
+                  </SelectListWrapper>
+                  <SelectListWrapper>
+                    <strong>난이도</strong>
+                    <SelectList>
+                      <li>
+                        <SelectWrapper>
+                          {categoriesE && categoryTitles[41] && (
+                            <Select
+                              onDefaultSelect={() =>
+                                handleDefaultSelect('난이도')
+                              }
+                              $positionTop
+                              width={'110px'}
+                              height={'30px'}
+                              defaultValue={quizCategory?.난이도 || '난이도'}
+                              key={'난이도'}
+                              options={categoriesE[4]}
+                              onSelect={(event) => selectCategoryOption(event)}
+                              setSelectedValue={setSelectedDifficulty}
+                            />
+                          )}
+                        </SelectWrapper>
+                      </li>
+                    </SelectList>
+                  </SelectListWrapper>
+                </>
+              )}
             </BackgroundWrapper>
           </PerfectScrollbar>
         </EditContainerWrapper>
