@@ -38,7 +38,7 @@ export function QuizPreview() {
 
   useEffect(() => {
     console.log('quizData----------, ', quizData);
-    if (quizData.quizList) {
+    if (quizData && quizData.quizList) {
       setSortedList(quizData.quizList[0]);
     }
   }, [quizData]);
