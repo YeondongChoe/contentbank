@@ -294,7 +294,7 @@ export function OptionList({
 
   const [titleArr, setTitleArr] = useState<string[]>([]);
   useEffect(() => {
-    console.log('quizCategory---', quizCategory);
+    console.log('quizCategory---기존 출처값', quizCategory);
     setSourceOptions([]);
 
     if (quizCategory) {

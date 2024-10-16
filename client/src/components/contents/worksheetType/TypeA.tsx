@@ -20,6 +20,7 @@ type TypeAProps = {
   newInitialItems: QuizList[];
   answerCommentary: string;
   multiLevel: string;
+  line: number;
 };
 
 type PageType = { leftArray: QuizList[]; rightArray: QuizList[] }[];
@@ -36,6 +37,7 @@ export const TypeA = ({
   newInitialItems,
   answerCommentary,
   multiLevel,
+  line,
 }: TypeAProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
@@ -73,8 +75,8 @@ export const TypeA = ({
     if (multiLevel === '2단') {
       switch (assign) {
         case '최대':
-          leftMaxItems = Infinity;
-          rightMaxItems = Infinity;
+          leftMaxItems = line === 0 ? Infinity : 6;
+          rightMaxItems = line === 0 ? Infinity : 6;
           break;
         case '2문제':
           leftMaxItems = 1;
@@ -89,8 +91,8 @@ export const TypeA = ({
           rightMaxItems = 3;
           break;
         default:
-          leftMaxItems = Infinity; // Default behavior, unlimited items
-          rightMaxItems = Infinity;
+          leftMaxItems = line === 0 ? Infinity : 6; // Default behavior, unlimited items
+          rightMaxItems = line === 0 ? Infinity : 6;
           break;
       }
     } else if (multiLevel === '1단') {
@@ -120,6 +122,7 @@ export const TypeA = ({
 
     let leftItemCount = 0;
     let rightItemCount = 0;
+    console.log('items', items);
 
     items.forEach((item) => {
       if (
@@ -130,14 +133,19 @@ export const TypeA = ({
         currentPage.leftArray.push(item);
         leftHeight += item.height;
         leftItemCount++;
-        if (leftHeight + item.height > 1200 || leftItemCount >= leftMaxItems) {
+        if (
+          leftHeight + item.height + 200 > 1200 ||
+          leftItemCount >= leftMaxItems
+        ) {
           leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
         }
+        //console.log('왼쪽이 다 찼을 때 leftFull', leftFull);
       } else if (
         !rightFull &&
         rightItemCount < rightMaxItems &&
-        rightHeight + item.height <= 1200
+        rightHeight + item.height + 200 <= 1200
       ) {
+        //console.log('오른쪽이 다 찼을 때 leftFull', leftFull);
         currentPage.rightArray.push(item);
         rightHeight += item.height;
         rightItemCount++;

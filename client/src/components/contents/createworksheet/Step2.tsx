@@ -2370,7 +2370,9 @@ export function Step2() {
                                   isFavorite={item.isFavorite}
                                   data={item}
                                   index={item.idx}
-                                  title={quizCategory?.유형 || 'N/A'}
+                                  title={
+                                    quizCategory?.유형?.split('^^^')[0] || 'N/A'
+                                  }
                                   category={quizCategoryType}
                                   quizNum={item.num}
                                   selectedCardIndex={selectedCardIndex}
@@ -2493,7 +2495,8 @@ export function Step2() {
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="title">
-                                        {quizCategory?.유형 || 'N/A'}
+                                        {quizCategory?.유형.split('^^^')[0] ||
+                                          'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="icon">
@@ -3115,7 +3118,10 @@ export function Step2() {
                                         isFavorite={item.isFavorite}
                                         data={item}
                                         index={item.idx}
-                                        title={quizCategory?.유형 || 'N/A'}
+                                        title={
+                                          quizCategory?.유형?.split('^^^')[0] ||
+                                          'N/A'
+                                        }
                                         category={quizCategoryType}
                                         quizNum={item.num}
                                         selectedCardIndex={selectedCardIndex}
@@ -3217,7 +3223,10 @@ export function Step2() {
                                         isNewQuiz={true}
                                         data={item}
                                         index={item.idx}
-                                        title={quizCategory?.유형 || 'N/A'}
+                                        title={
+                                          quizCategory?.유형?.split('^^^')[0] ||
+                                          'N/A'
+                                        }
                                         category={quizCategoryType}
                                         quizNum={item.num}
                                         isFavorite={item.isFavorite}
@@ -3364,7 +3373,10 @@ export function Step2() {
                                     data={dragItem}
                                     quizNum={dragItem.num}
                                     itemIndex={itemIndex}
-                                    title={quizCategory?.유형 || 'N/A'}
+                                    title={
+                                      quizCategory?.유형?.split('^^^')[0] ||
+                                      'N/A'
+                                    }
                                     index={dragItem.idx}
                                     selectedCardIndex={selectedCardIndex}
                                     onSelectCard={setSelectedCardIndex}
