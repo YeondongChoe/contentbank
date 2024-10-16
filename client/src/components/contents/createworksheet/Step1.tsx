@@ -3296,7 +3296,6 @@ export function Step1() {
     const buttonOption = [
       { value: 1, label: '선택안함' },
       { value: 2, label: '균등 배점' },
-      { value: 3, label: '선택 초기화' },
     ];
 
     return (
@@ -3313,9 +3312,6 @@ export function Step1() {
               if (button.value === 2) {
                 openEqualScoreSettingModal();
               }
-              if (button.value === 3) {
-                selectExamReset();
-              }
             }}
             $padding="10px"
             height={'34px'}
@@ -3327,6 +3323,18 @@ export function Step1() {
             <span>{button.label}</span>
           </Button>
         ))}
+        <Button
+          buttonType="button"
+          onClick={() => selectExamReset()}
+          $padding="10px"
+          height={'34px'}
+          width={'100%'}
+          fontSize="14px"
+          $normal
+          $filled
+        >
+          <span>선택 초기화</span>
+        </Button>
       </MockExamSummaryWrapper>
     );
   };
