@@ -238,7 +238,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         leftFull = false;
         rightFull = false;
         currentPage.leftArray.push(item);
-        leftTotalHeight += item.height;
+        leftTotalHeight += item.height + 200;
         leftItemCount++;
       }
     });
