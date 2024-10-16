@@ -179,7 +179,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightItemCount = 0;
     //console.log('items:', items);
     items.forEach((item) => {
-      const maxHeight = type === 'A' ? 740 : 900;
+      const maxHeight = type === 'A' ? 740 : 830;
       //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
       //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
@@ -354,7 +354,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperA
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '1' &&
                                             assign === '4' &&
@@ -390,7 +390,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleA>
-                                              |{quizCategory?.유형}|
+                                              |
+                                              {
+                                                quizCategory?.유형?.split(
+                                                  '^^^',
+                                                )[0]
+                                              }
+                                              |
                                             </ContentTitleA>
                                           )}
                                           <EachMathViewerA>
@@ -442,7 +448,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperA
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '2' &&
                                             assign === '4' &&
@@ -463,7 +469,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleA>
-                                              |{quizCategory?.유형}|
+                                              |
+                                              {
+                                                quizCategory?.유형?.split(
+                                                  '^^^',
+                                                )[0]
+                                              }
+                                              |
                                             </ContentTitleA>
                                           )}
                                           <EachMathViewerA>
@@ -595,9 +607,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperA
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '1' &&
                                               assign === '4' &&
@@ -677,9 +689,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperA
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '2' &&
                                               assign === '4' &&
@@ -820,7 +832,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperB
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '1' &&
                                             assign === '4' &&
@@ -856,7 +868,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleB>
-                                              |{quizCategory?.유형}|
+                                              |
+                                              {
+                                                quizCategory?.유형?.split(
+                                                  '^^^',
+                                                )[0]
+                                              }
+                                              |
                                             </ContentTitleB>
                                           )}
                                           <EachMathViewerB>
@@ -905,7 +923,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperB
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '2' &&
                                             assign === '4' &&
@@ -926,7 +944,13 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleB>
-                                              |{quizCategory?.유형}|
+                                              |
+                                              {
+                                                quizCategory?.유형?.split(
+                                                  '^^^',
+                                                )[0]
+                                              }
+                                              |
                                             </ContentTitleB>
                                           )}
                                           <EachMathViewerB>
@@ -1044,9 +1068,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperB
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '1' &&
                                               assign === '4' &&
@@ -1123,9 +1147,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperB
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '2' &&
                                               assign === '4' &&
@@ -1381,9 +1405,9 @@ const WorksheetBodyRightA = styled.div`
   flex-direction: column;
 `;
 //각 아이템
-const MathViewerWrapperA = styled.div<{ height?: number; padding: string }>`
+const MathViewerWrapperA = styled.div<{ padding: string }>`
   width: 400px;
-  height: ${({ height }) => `${height}px`};
+  //height: 100%;
   padding: ${({ padding }) => `${padding}`};
   margin-bottom: 40px;
   font-size: 12px;
@@ -1568,9 +1592,8 @@ const WorksheetBodyRightB = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const MathViewerWrapperB = styled.div<{ height: number; padding: string }>`
+const MathViewerWrapperB = styled.div<{ padding: string }>`
   width: 400px;
-  height: ${({ height }) => `${height}px`};
   padding: ${({ padding }) => `${padding}`};
   margin-bottom: 40px;
   font-size: 12px;
