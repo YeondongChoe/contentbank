@@ -60,6 +60,18 @@ export function OptionList({
     [key: number]: string;
   }>({});
 
+  const [sourceSortedValue, setSourceSortedValue] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
+
+  const [totalSource, setTotalSource] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
+
   const [optionsList1, setOptionsList1] = useState<CategoryList>({
     name: '',
     categories: [],
@@ -180,7 +192,7 @@ export function OptionList({
   };
   useEffect(() => {}, [disabled]);
 
-  //얼럿
+  //출처 삭제 얼럿
   const openUpdateAlert = (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
@@ -192,11 +204,19 @@ export function OptionList({
   const removeSourceOptions = (target: EventTarget, index: number) => {
     const id = (target as HTMLElement).parentElement?.parentElement?.id;
     const arr = sourceOptions.filter((el) => el !== Number(id));
+
+    console.log('출처 - 버튼눌러 삭제 후 배열', id);
+    console.log('출처 - 버튼눌러 삭제 후 배열', arr);
     setSourceOptions(arr);
 
     const newSelectedValues = { ...selectedValues };
     delete newSelectedValues[index];
     setSelectedValues(newSelectedValues);
+
+    // totalSource에서 삭제
+    const updatedTotalSource = totalSource.filter((_, idx) => idx !== index);
+    console.log('totalSource - 삭제 후 배열', updatedTotalSource);
+    setTotalSource(updatedTotalSource);
 
     setIsAlertOpen(false);
     setCurrentRemoveIndex(null);
@@ -229,6 +249,7 @@ export function OptionList({
         );
         // 중복이 아닐 경우에만 새로운 값을 추가
         if (!isDuplicate) {
+          setSourceSortedValue([...prevValues, { [count]: selected }]);
           return [...prevValues, { [count]: selected }];
         }
         return prevValues;
@@ -239,7 +260,7 @@ export function OptionList({
   useEffect(() => {}, [selectedValue]);
 
   useEffect(() => {
-    console.log('sourceValue', sourceValue);
+    console.log('sourceValue 출처=----------', sourceValue);
 
     // sourceValue의 객체 요소 중 하나라도 키값이 빈 문자열이 아닐 때
     if (
@@ -271,6 +292,7 @@ export function OptionList({
   }, [sourceValue]);
 
   useEffect(() => {
+    console.log('sourceArr-----담겨진 출처 배열', sourceArr);
     // 서버로 전송할 데이터 구조로 재구성
     const restructuredData = sourceArr.reduce((acc, curr) => {
       const { titleIdx, name, value } = curr;
@@ -287,10 +309,39 @@ export function OptionList({
 
       return acc;
     }, []);
+    console.log('restructuredData------', restructuredData);
 
-    // console.log('restructuredData', restructuredData);
-    setSelectedSource(restructuredData);
-  }, [sourceArr]);
+    // console.log('sourceSortedValue------', sourceSortedValue);
+    // 출처 1뎁스도 포함시키는 로직
+    const addSource = sourceSortedValue
+      .map((source) => {
+        const key = Object.keys(source)[0];
+        const value = source[Number(key)];
+
+        const isDuplicate = restructuredData.some(
+          (item: { [s: string]: unknown } | ArrayLike<unknown>) =>
+            Object.values(item).includes(value),
+        );
+
+        if (!isDuplicate) {
+          return { 출처: value };
+        }
+        return null;
+      })
+      .filter(Boolean); // null 값 제거;
+    // console.log('addSource------', addSource);
+    console.log('1뎁스와 전체 출처 합친 배열 --------', [
+      ...restructuredData,
+      ...addSource,
+    ]);
+
+    setTotalSource([...restructuredData, ...addSource]);
+  }, [sourceArr, sourceSortedValue]);
+
+  useEffect(() => {
+    // 최종적으로 서버에 전송될 출처
+    setSelectedSource(totalSource);
+  }, [totalSource]);
 
   const [titleArr, setTitleArr] = useState<string[]>([]);
   useEffect(() => {
@@ -360,30 +411,6 @@ export function OptionList({
       setDisabled(true);
     }
   }, [titleArr]);
-
-  useEffect(() => {
-    Object.keys(selectedValues).forEach((key) => {
-      listSwitch(selectedValues[Number(key)], Number(key));
-    });
-  }, [selectedValues]);
-
-  useEffect(() => {
-    console.log('selected', selected);
-    if (selected && selectedValue) {
-      selectedValue((prevValues) => {
-        const isDuplicate = Object.values(prevValues).some((item) =>
-          Object.values(item).includes(selected),
-        );
-        // 중복이 아닐 경우에만 새로운 값을 추가
-        if (!isDuplicate) {
-          return [...prevValues, { [count]: selected }];
-        }
-        return prevValues;
-      });
-    }
-  }, [selected]);
-
-  useEffect(() => {}, [selectedValue]);
 
   return (
     <Container>

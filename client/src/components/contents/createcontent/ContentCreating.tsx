@@ -26,7 +26,7 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
-type SelectedValueType = string | { [key: string]: any };
+type SelectedValueType = string | { [key: string]: string };
 
 type SelectedValuesType = { [key: number]: SelectedValueType };
 
@@ -237,11 +237,7 @@ export function ContentCreating({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
-    console.log('selected--------출처 선택부분', selectedList);
 
-    if (selectedSource.length == 0 && selectedList.length > 0) {
-      setSelectedSource([{ 0: selectedList }]);
-    }
     const quizClassList: QuestionClassListType = [
       {
         type: 'CLASS',
@@ -264,10 +260,10 @@ export function ContentCreating({
   }, [
     selectedSubject,
     selectedCourse,
+    setSelectedSource,
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
-    selectedList,
   ]);
 
   useEffect(() => {
