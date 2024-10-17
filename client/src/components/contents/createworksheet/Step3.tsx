@@ -48,6 +48,8 @@ export function Step3() {
     window.close();
   };
 
+  console.log('newInitialItems', newInitialItems);
+
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
@@ -136,7 +138,8 @@ export function Step3() {
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
   const [contentAuthor, setContentAuthor] = useState('');
-
+  //문제풀이
+  const [line, setLine] = useState<number>(0);
   const [tag, setTag] = useState<string>('');
   const selectTag = (newValue: string) => {
     setTag(newValue);
@@ -144,6 +147,40 @@ export function Step3() {
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
     '문제만',
   );
+
+  // 높이가 측정된 값을 다시 문항의 키값으로 추가
+  useEffect(() => {
+    if (answerCommentary === '문제+해설같이') {
+      const itemsWithHeight = initialItems.map(
+        (item: QuizList, index: number) => ({
+          ...item,
+          height: 400,
+        }),
+      );
+      setNewInitialItems(itemsWithHeight);
+    }
+  }, [answerCommentary]);
+
+  useEffect(() => {
+    const measureHeights = () => {
+      if (measureRef.current) {
+        const heights = Array.from(measureRef.current.children).map((child) => {
+          const childElement = child as HTMLElement;
+          const height = childElement.offsetHeight;
+
+          return height;
+        });
+
+        setItemHeights(heights);
+        originalHeightsRef.current = heights;
+      }
+    };
+
+    if (answerCommentary !== '문제+해설같이') {
+      measureHeights();
+    }
+  }, [answerCommentary]);
+
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
     setNewInitialItems([]);
@@ -328,7 +365,7 @@ export function Step3() {
       };
     }
   }, [isComplete]);
-  const [line, setLine] = useState<number>(0);
+
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
@@ -342,7 +379,6 @@ export function Step3() {
       );
     }
   };
-  console.log(line);
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
   useEffect(() => {
@@ -913,6 +949,7 @@ export function Step3() {
                 newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
+                line={line}
               ></TypeB>
             </WorksheetTemplateTypeWrapper>
           )}
