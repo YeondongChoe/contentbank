@@ -241,7 +241,7 @@ export function QuizManagementList() {
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
     if (
-      value !== categoryTitles[16]?.code ||
+      value !== categoryTitles[15]?.code ||
       value !== categoryTitles[0]?.code ||
       value !== categoryTitles[41]?.code ||
       value !== categoryTitles[1]?.code ||
@@ -273,7 +273,7 @@ export function QuizManagementList() {
       setSearchKeywordValue('');
     }
     switch (defaultValue) {
-      case categoryTitles[16]?.code:
+      case categoryTitles[15]?.code:
         setSelectedSource('');
         break;
       case categoryTitles[0]?.code:
@@ -431,14 +431,14 @@ export function QuizManagementList() {
           {/* 리스트 셀렉트 */}
           <SelectWrapper>
             {/* 출처 */}
-            {categoriesE && categoryTitles[16] && (
+            {categoriesE && categoryTitles[15] && (
               <Select
                 onDefaultSelect={() =>
-                  handleDefaultSelect(categoryTitles[16]?.code)
+                  handleDefaultSelect(categoryTitles[15]?.code)
                 }
                 width={'130px'}
-                defaultValue={categoryTitles[16]?.code}
-                key={categoryTitles[16]?.code}
+                defaultValue={categoryTitles[15]?.code}
+                key={categoryTitles[15]?.code}
                 options={categoriesE[2]}
                 onSelect={(event) => selectCategoryOption(event)}
                 setSelectedValue={setSelectedSource}

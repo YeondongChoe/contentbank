@@ -302,7 +302,7 @@ export function OptionList({
       // 객체내 출처키의 값이 해당하는 값들을 각기
       const titleArr = quizCategory.map((el) => el.출처);
       setTitleArr(titleArr);
-      console.log('titleArr -----', categoryTitles[16]?.name, titleArr);
+      console.log('titleArr -----', categoryTitles[15]?.name, titleArr);
       const arr = [];
       for (let i = 0; i < titleArr.length; i++) {
         arr.push(quizCategory[i].출처);
@@ -431,9 +431,9 @@ export function OptionList({
                     defaultValue={
                       titleArr.length
                         ? titleArr[index]
-                        : categoryTitles[16]?.name
+                        : categoryTitles[15]?.name
                     }
-                    key={categoryTitles[16]?.name}
+                    key={categoryTitles[15]?.name}
                     options={categoriesE}
                     onSelect={(
                       event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
