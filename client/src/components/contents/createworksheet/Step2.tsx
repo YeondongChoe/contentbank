@@ -142,8 +142,6 @@ export function Step2() {
 
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
   const [categoryNameList, setCategoryNameList] = useState<string>('');
-  console.log(categoryNameList);
-  console.log(categoryTypeList);
 
   useEffect(() => {
     if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
