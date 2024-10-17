@@ -342,7 +342,6 @@ export function Step3() {
       );
     }
   };
-  console.log(line);
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
   useEffect(() => {
