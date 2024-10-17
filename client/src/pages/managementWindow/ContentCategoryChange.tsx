@@ -491,7 +491,6 @@ export function ContentCategoryChange() {
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
     const depthChecks = [
-    const depthChecks = [
       radio1depthCheck,
       radio2depthCheck,
       radio3depthCheck,
@@ -834,7 +833,6 @@ export function ContentCategoryChange() {
                       ))}
                       {/* 교과 */}
                       {[categoryItems[5]].map((item) => (
-                      {[categoryItems[5]].map((item) => (
                         <div
                           className={`5depth`}
                           id={`${item.name}`}
@@ -852,7 +850,6 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 과목 */}
-                      {[categoryItems[6]].map((item) => (
                       {[categoryItems[6]].map((item) => (
                         <div
                           className={`6depth`}

@@ -439,7 +439,6 @@ export function MetaRadioSelect({
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
     const depthChecks = [
-    const depthChecks = [
       radio1depthChangeCheck,
       radio2depthChangeCheck,
       radio3depthChangeCheck,

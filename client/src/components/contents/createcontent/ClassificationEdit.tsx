@@ -451,12 +451,9 @@ export function ClassificationEdit({
       switch (level) {
         case 1:
           return '대단원';
-          return '대단원';
         case 2:
           return '중단원';
-          return '중단원';
         case 3:
-          return '소단원';
           return '소단원';
         case 4:
           return '유형';
@@ -936,26 +933,6 @@ export function ClassificationEdit({
       itemTreeKeyList: [itemTreeKeyList],
     };
     const res = await classificationInstance.post('/v1/item', data);
-
-    // itemTreeKeyList 객체를 빈 객체로 초기화
-    const itemTreeKeyList: CheckedItemType = {};
-
-    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
-    depthChecks.forEach((depthCheck) => {
-      if (depthCheck && depthCheck.code && depthCheck.title) {
-        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
-      }
-    });
-
-    console.log(
-      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
-      itemTreeKeyList,
-    );
-    const data = {
-      itemTreeKeyList: [itemTreeKeyList],
-    };
-    const res = await classificationInstance.post('/v1/item', data);
-    console.log('classificationInstance 응답:', res);
     return res;
   };
 
