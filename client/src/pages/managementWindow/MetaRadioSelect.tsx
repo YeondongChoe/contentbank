@@ -439,6 +439,7 @@ export function MetaRadioSelect({
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
     const depthChecks = [
+    const depthChecks = [
       radio1depthChangeCheck,
       radio2depthChangeCheck,
       radio3depthChangeCheck,
@@ -756,7 +757,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 교과 */}
-                  {[categoryItems[6]].map((item) => (
+                  {[categoryItems[5]].map((item) => (
                     <div
                       className={`5depth-change`}
                       id={`${item.name}`}
@@ -774,7 +775,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 과목 */}
-                  {[categoryItems[7]].map((item) => (
+                  {[categoryItems[6]].map((item) => (
                     <div
                       className={`6depth-change`}
                       id={`${item.name}`}

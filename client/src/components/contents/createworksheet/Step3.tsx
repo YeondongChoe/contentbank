@@ -328,7 +328,7 @@ export function Step3() {
       };
     }
   }, [isComplete]);
-
+  const [line, setLine] = useState<number>(0);
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
@@ -336,11 +336,13 @@ export function Step3() {
     const linesMatch = newValue.match(/^(\d+)줄$/);
     if (linesMatch) {
       const lines = parseInt(linesMatch[1], 10); // '1줄'에서 1을 추출하여 숫자로 변환
+      setLine(lines);
       setItemHeights(
         originalHeightsRef.current.map((height) => height + 50 * lines),
       );
     }
   };
+  console.log(line);
 
   //문항 번호가 포함된 데이타가 저장되면 가상 돔에 그려 높이 측정
   useEffect(() => {
@@ -893,6 +895,7 @@ export function Step3() {
                 newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
+                line={line}
               ></TypeA>
             </WorksheetTemplateTypeWrapper>
           )}

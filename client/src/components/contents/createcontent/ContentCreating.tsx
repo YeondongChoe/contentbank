@@ -237,7 +237,11 @@ export function ContentCreating({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
+    console.log('selected--------출처 선택부분', selectedList);
 
+    if (selectedSource.length == 0 && selectedList.length > 0) {
+      setSelectedSource([{ 0: selectedList }]);
+    }
     const quizClassList: QuestionClassListType = [
       {
         type: 'CLASS',
@@ -263,6 +267,7 @@ export function ContentCreating({
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
+    selectedList,
   ]);
 
   useEffect(() => {

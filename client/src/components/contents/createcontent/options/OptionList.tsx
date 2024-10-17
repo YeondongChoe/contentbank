@@ -222,7 +222,21 @@ export function OptionList({
 
   useEffect(() => {
     console.log('selected', selected);
+    if (selected && selectedValue) {
+      selectedValue((prevValues) => {
+        const isDuplicate = Object.values(prevValues).some((item) =>
+          Object.values(item).includes(selected),
+        );
+        // 중복이 아닐 경우에만 새로운 값을 추가
+        if (!isDuplicate) {
+          return [...prevValues, { [count]: selected }];
+        }
+        return prevValues;
+      });
+    }
   }, [selected]);
+
+  useEffect(() => {}, [selectedValue]);
 
   useEffect(() => {
     console.log('sourceValue', sourceValue);
@@ -280,7 +294,7 @@ export function OptionList({
 
   const [titleArr, setTitleArr] = useState<string[]>([]);
   useEffect(() => {
-    console.log('quizCategory---', quizCategory);
+    console.log('quizCategory---기존 출처값', quizCategory);
     setSourceOptions([]);
 
     if (quizCategory) {

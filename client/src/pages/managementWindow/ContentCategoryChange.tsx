@@ -491,6 +491,7 @@ export function ContentCategoryChange() {
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
     const depthChecks = [
+    const depthChecks = [
       radio1depthCheck,
       radio2depthCheck,
       radio3depthCheck,
@@ -499,6 +500,7 @@ export function ContentCategoryChange() {
       radio6depthCheck,
       // radio7depthCheck,
     ];
+
     // itemTreeKeyList 객체를 빈 객체로 초기화
     const itemTreeKeyList: ItemTreeKeyType = {};
 
@@ -517,6 +519,7 @@ export function ContentCategoryChange() {
       itemTreeKeyList: [itemTreeKeyList],
     };
     const res = await classificationInstance.post('/v1/item', data);
+    // console.log('classificationInstance 응답:', res);
     return res;
   };
 
@@ -831,6 +834,7 @@ export function ContentCategoryChange() {
                       ))}
                       {/* 교과 */}
                       {[categoryItems[5]].map((item) => (
+                      {[categoryItems[5]].map((item) => (
                         <div
                           className={`5depth`}
                           id={`${item.name}`}
@@ -848,6 +852,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 과목 */}
+                      {[categoryItems[6]].map((item) => (
                       {[categoryItems[6]].map((item) => (
                         <div
                           className={`6depth`}

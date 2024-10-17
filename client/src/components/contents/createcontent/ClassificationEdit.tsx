@@ -205,6 +205,7 @@ export function ClassificationEdit({
 
   // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (typeList: string) => {
+    console.log('------typeList-----------', typeList);
     const typeIds = typeList.split(',');
     try {
       const requests = typeIds.map((id) =>
@@ -227,13 +228,17 @@ export function ClassificationEdit({
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.currentTarget.className);
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
     const itemId =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
+    console.log('depth-----,itemId----------', depth, itemId);
+    console.log(
+      'e.currentTarget.className----------',
+      e.currentTarget.className,
+    );
 
     switch (depth) {
       case '1depth':
@@ -446,9 +451,12 @@ export function ClassificationEdit({
       switch (level) {
         case 1:
           return '대단원';
+          return '대단원';
         case 2:
           return '중단원';
+          return '중단원';
         case 3:
+          return '소단원';
           return '소단원';
         case 4:
           return '유형';
@@ -910,6 +918,25 @@ export function ClassificationEdit({
       radio3depthCheck,
       radio4depthCheck,
     ];
+    // itemTreeKeyList 객체를 빈 객체로 초기화
+    const itemTreeKeyList: CheckedItemType = {};
+
+    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
+    depthChecks.forEach((depthCheck) => {
+      if (depthCheck && depthCheck.code && depthCheck.title) {
+        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
+      }
+    });
+
+    console.log(
+      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
+      itemTreeKeyList,
+    );
+    const data = {
+      itemTreeKeyList: [itemTreeKeyList],
+    };
+    const res = await classificationInstance.post('/v1/item', data);
+
     // itemTreeKeyList 객체를 빈 객체로 초기화
     const itemTreeKeyList: CheckedItemType = {};
 

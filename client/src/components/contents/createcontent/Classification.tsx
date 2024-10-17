@@ -346,7 +346,9 @@ export function Classification({
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
     const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    console.log('두번째 뎁스`````', itemIdx);
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
+    console.log('두번째 뎁스`````', pidx);
     try {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx - 1}/${pidx}`,
@@ -463,7 +465,7 @@ export function Classification({
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const postCategoryItemTree = async () => {
-    const depthChecks = [
+    const depthChecks: RadioStateType[] = [
       radio1depthCheck,
       radio2depthCheck,
       radio3depthCheck,
