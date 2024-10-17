@@ -151,15 +151,13 @@ export function Step3() {
   // 높이가 측정된 값을 다시 문항의 키값으로 추가
   useEffect(() => {
     if (answerCommentary === '문제+해설같이') {
-      const itemsWithHeight = initialItems.map(
-        (item: QuizList, index: number) => ({
-          ...item,
-          height: 400,
-        }),
-      );
+      const itemsWithHeight = initialItems.map((item: QuizList) => ({
+        ...item,
+        height: 400,
+      }));
       setNewInitialItems(itemsWithHeight);
     }
-  }, [answerCommentary]);
+  }, [answerCommentary, initialItems]);
 
   useEffect(() => {
     const measureHeights = () => {
