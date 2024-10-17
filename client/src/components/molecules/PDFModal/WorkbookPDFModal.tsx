@@ -179,7 +179,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightItemCount = 0;
     //console.log('items:', items);
     items.forEach((item) => {
-      const maxHeight = type === 'A' ? 740 : 830;
+      const maxHeight = type === 'A' ? 740 : 800;
+      const extraLeftHeight = type === 'A' ? 350 : 100;
+      const extraRightHeight = type === 'A' ? 120 : 150;
       //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
       //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
@@ -216,12 +218,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       } else if (
         rightFull === true &&
         leftFull === false &&
-        rightTotalHeight + 200 < maxHeight &&
+        rightTotalHeight < maxHeight &&
         rightItemCount + 1 <= rightMaxItems
       ) {
         currentPage.rightArray.push(item);
         //console.log('if문 안 currentPage.rightArray:', currentPage.rightArray);
-        rightTotalHeight += item.height;
+        rightTotalHeight += item.height + extraRightHeight;
         //console.log('if문 안 item.height:', item.height);
         //console.log('if문 안 rightTotalHeight:', rightTotalHeight);
         rightItemCount++;
@@ -231,14 +233,14 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         //console.log('다음페이지 만들기');
         pages.push(currentPage);
         currentPage = { leftArray: [], rightArray: [] };
-        leftTotalHeight = 0;
+        leftTotalHeight = 0 + extraLeftHeight;
         rightTotalHeight = 0;
         leftItemCount = 0;
         rightItemCount = 0;
         leftFull = false;
         rightFull = false;
         currentPage.leftArray.push(item);
-        leftTotalHeight += item.height + 200;
+        leftTotalHeight += item.height;
         leftItemCount++;
       }
     });

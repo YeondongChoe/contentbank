@@ -143,14 +143,14 @@ export const TypeA = ({
       } else if (
         !rightFull &&
         rightItemCount < rightMaxItems &&
-        rightHeight + item.height + 200 <= 1200
+        rightHeight + item.height <= 1200
       ) {
         //console.log('오른쪽이 다 찼을 때 leftFull', leftFull);
         currentPage.rightArray.push(item);
         rightHeight += item.height;
         rightItemCount++;
         if (
-          rightHeight + item.height > 1200 ||
+          rightHeight + item.height + 200 > 1200 ||
           rightItemCount >= rightMaxItems
         ) {
           rightFull = true; // 오른쪽 배열이 가득 찼음을 표시

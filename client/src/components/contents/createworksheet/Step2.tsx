@@ -1245,6 +1245,8 @@ export function Step2() {
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
     ];
 
     //서버로 부터 받은 nameList에 맞게 서버에 요청
