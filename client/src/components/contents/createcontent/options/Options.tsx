@@ -24,7 +24,11 @@ export function Options({
   titleIdx: string;
   listItem: ItemCategoryType;
   onOptionChange: React.Dispatch<
-    React.SetStateAction<{ titleIdx: string; name: string; value: string }>
+    React.SetStateAction<{
+      titleIdx: string;
+      name: string;
+      value: string | number;
+    }>
   >;
   initList?: any;
 }) {
@@ -32,7 +36,7 @@ export function Options({
   const [startDate, setStartDate] = useState<string>('');
   const [selected, setSelected] = useState<string>('');
   const [content, setContent] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string | number>('');
   const [schoolNameValue, setSchoolNameValue] = useState<{
     cityIdx: number;
     schoolName: string;
