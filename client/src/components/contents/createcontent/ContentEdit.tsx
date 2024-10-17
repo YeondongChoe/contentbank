@@ -533,14 +533,13 @@ export function ContentEdit({
     if (
       selectedSubject !== '' &&
       selectedCourse !== '' &&
-      selectedQuestionType !== '' &&
-      selectedList.length > 0
+      selectedQuestionType !== ''
     ) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedList]);
+  }, [selectedSubject, selectedCourse, selectedQuestionType]);
 
   return (
     <Container>
