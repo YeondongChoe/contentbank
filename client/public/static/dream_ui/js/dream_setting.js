@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 // 업로드 다운로드 요청 url
-var dream_server_url = 'http://43.201.205.140:40030'; //로컬 테스트
+var dream_server_url = 'http://43.201.205.140:40030'; // 아이택 주소 로컬 테스트용
+// var dream_server_url = 'http://43.201.205.140:40030'; // 드림원시스 노들 연결필요
 
 // 업로드 이미지 URL
 var uploaded_img_url = 'https://itex-dev-image.s3.ap-northeast-2.amazonaws.com';

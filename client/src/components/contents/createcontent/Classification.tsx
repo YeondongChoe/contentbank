@@ -470,21 +470,24 @@ export function Classification({
       radio4depthCheck,
     ];
 
-    const keyValuePairs = categoryItems.reduce<Record<string, string>>(
-      (acc, item, index) => {
-        const depthCheck = depthChecks[index];
-        if (depthCheck) {
-          acc[item.name] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
-        }
-        return acc;
-      },
-      {},
+    // itemTreeKeyList 객체를 빈 객체로 초기화
+    const itemTreeKeyList: CheckedItemType = {};
+
+    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
+    depthChecks.forEach((depthCheck) => {
+      if (depthCheck && depthCheck.code && depthCheck.title) {
+        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
+      }
+    });
+
+    console.log(
+      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
+      itemTreeKeyList,
     );
-
-    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList :', itemTreeKeyList);
-
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    const data = {
+      itemTreeKeyList: [itemTreeKeyList],
+    };
+    const res = await classificationInstance.post('/v1/item', data);
     console.log('classificationInstance 응답:', res);
     return res;
   };
@@ -924,11 +927,11 @@ export function Classification({
     const getTypeKey = (level: number): string => {
       switch (level) {
         case 1:
-          return '대유형';
+          return '대단원';
         case 2:
-          return '중유형';
+          return '중단원';
         case 3:
-          return '소유형';
+          return '소단원';
         case 4:
           return '유형';
         default:

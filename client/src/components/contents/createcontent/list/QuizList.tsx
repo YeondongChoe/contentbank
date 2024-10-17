@@ -132,19 +132,20 @@ export function QuizList({
   const openViewer = (code: string) => {
     const quiz = questionList.filter((el) => el.code === code);
     console.log('선택된 요소', quiz[0]);
+    console.log('선택된 요소', quiz[0].idx);
     const data: QuizListType = quiz[0];
     // data 객체의 속성들을 문자열로 변환
     const dataStringified: Record<string, string> = {
-      ...data,
+      // ...data,
       idx: data.idx.toString(),
-      isDelete: data.isDelete.toString(),
-      isUse: data.isUse.toString(),
-      isFavorite:
-        data.isFavorite !== undefined ? data.isFavorite.toString() : '',
-      lastArticle: JSON.stringify(data.lastArticle),
-      quizCategoryList: JSON.stringify(data.quizCategoryList),
-      quizItemList: data.quizItemList ? JSON.stringify(data.quizItemList) : '',
-      quizList: JSON.stringify(data.quizList),
+      // isDelete: data.isDelete.toString(),
+      // isUse: data.isUse.toString(),
+      // isFavorite:
+      //   data.isFavorite !== undefined ? data.isFavorite.toString() : '',
+      // lastArticle: JSON.stringify(data.lastArticle),
+      // quizCategoryList: JSON.stringify(data.quizCategoryList),
+      // quizItemList: data.quizItemList ? JSON.stringify(data.quizItemList) : '',
+      // quizList: JSON.stringify(data.quizList),
     };
     const queryString = new URLSearchParams(dataStringified).toString();
 
@@ -315,16 +316,15 @@ export function QuizList({
 
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.대단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
+                            `${dragItem.quizCategoryList[0].quizCategory.대단원.split('^^^')[0]} ,`}
+                        </span>
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.중단원.split('^^^')[0]} ,`}
                         </span>
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.소단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
-                        </span>
-
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
+                            `${dragItem.quizCategoryList[0].quizCategory.소단원.split('^^^')[0]} ,`}
                         </span>
 
                         {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
@@ -397,18 +397,18 @@ export function QuizList({
                           <span>
                             {dragItem.quizCategoryList[0]?.quizCategory
                               ?.대단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
+                              `${dragItem.quizCategoryList[0].quizCategory.대단원.split('^^^')[0]} ,`}
                           </span>
                           <span>
                             {dragItem.quizCategoryList[0]?.quizCategory
                               ?.소단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
+                              `${dragItem.quizCategoryList[0].quizCategory.소단원.split('^^^')[0]} ,`}
                           </span>
 
                           <span>
                             {dragItem.quizCategoryList[0]?.quizCategory
                               ?.중단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
+                              `${dragItem.quizCategoryList[0].quizCategory.중단원.split('^^^')[0]} ,`}
                           </span>
 
                           {dragItem.quizCategoryList[0]?.quizCategory

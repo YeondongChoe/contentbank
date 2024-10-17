@@ -187,9 +187,9 @@ export function ContentInformationChange() {
                 categories: [
                   {
                     유형: '유한집합의 원소의 개수',
-                    대유형: '집합과 자연수',
-                    소유형: '집합의 뜻',
-                    중유형: '집합',
+                    대단원: '집합과 자연수',
+                    소단원: '집합의 뜻',
+                    중단원: '집합',
                   },
                 ],
                 교육과정: '7차',
@@ -872,9 +872,9 @@ export function ContentInformationChange() {
                                             <span
                                               key={`category-${item.idx}-${categoryIdx}-${el}`}
                                             >
-                                              <span>{`${el.대유형 ? el.대유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.중유형 ? el.중유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.소유형 ? el.소유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                              <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                              <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                              <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
                                               <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
                                             </span>
                                           ))}
@@ -974,9 +974,9 @@ export function ContentInformationChange() {
                                             <span
                                               key={`category-${item.idx}-${categoryIdx}-${el}`}
                                             >
-                                              <span>{`${el.대유형 ? el.대유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.중유형 ? el.중유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.소유형 ? el.소유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                              <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                              <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                              <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
                                               <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
                                             </span>
                                           ))}
@@ -1058,9 +1058,9 @@ export function ContentInformationChange() {
                                                 <span
                                                   key={`category-${item.idx}-${categoryIdx}-${el}`}
                                                 >
-                                                  <span>{`${el.대유형 ? el.대유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.중유형 ? el.중유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.소유형 ? el.소유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                  <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                  <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                  <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
                                                   <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
                                                 </span>
                                               ),
@@ -1141,9 +1141,9 @@ export function ContentInformationChange() {
                                                 <span
                                                   key={`category-${item.idx}-${categoryIdx}-${el}`}
                                                 >
-                                                  <span>{`${el.대유형 ? el.대유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.중유형 ? el.중유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.소유형 ? el.소유형.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                  <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                  <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                  <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
                                                   <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
                                                 </span>
                                               ),

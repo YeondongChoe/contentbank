@@ -438,7 +438,7 @@ export function MetaRadioSelect({
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
-    const radioChecks = [
+    const depthChecks = [
       radio1depthChangeCheck,
       radio2depthChangeCheck,
       radio3depthChangeCheck,
@@ -446,22 +446,24 @@ export function MetaRadioSelect({
       radio5depthChangeCheck, //TODO : api 키값 추가되면 주석 해제
       radio6depthChangeCheck,
     ];
+    // itemTreeKeyList 객체를 빈 객체로 초기화
+    const itemTreeKeyList: ItemTreeKeyType = {};
 
-    const keyValuePairs = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
-      if (curr.key && curr.title) {
-        acc[curr.key] = curr.title;
+    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
+    depthChecks.forEach((depthCheck) => {
+      if (depthCheck && depthCheck.code && depthCheck.title) {
+        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
       }
-      return acc;
-    }, {});
+    });
 
-    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
     console.log(
-      'itemTreeKeyList 최종적으로 보내는 탭선택값: 바꿀 분류',
+      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
       itemTreeKeyList,
     );
-
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    console.log('classificationInstance 응답 : ***바꿀 분류***', res);
+    const data = {
+      itemTreeKeyList: [itemTreeKeyList],
+    };
+    const res = await classificationInstance.post('/v1/item', data);
     return res;
   };
 
