@@ -259,8 +259,8 @@ export function Step1() {
       setCategoryItems(categoryData.data.data.categoryItemList);
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
-  console.log('categoryData', categoryData);
-  console.log('categoryItems', categoryItems);
+  //console.log('categoryData', categoryData);
+  //console.log('categoryItems', categoryItems);
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {

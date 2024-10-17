@@ -42,7 +42,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [assign, setAssign] = useState<string>('');
   const [isDate, setIsDate] = useState<boolean>(false);
   const [isQuizType, setIsQuizType] = useState<boolean>(false);
-  const [itemType, setItemType] = useState<number>();
+  const [itemType, setItemType] = useState<number>(0);
 
   const getWorkbookData = async () => {
     const res = await workbookInstance.get(
@@ -177,11 +177,18 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
     let leftItemCount = 0;
     let rightItemCount = 0;
+    let extraLeftHeight = 0;
+    let extraRightHeight = 0;
     //console.log('items:', items);
+    if (itemType === 3) {
+      extraLeftHeight = type === 'A' ? 100 : 0;
+      extraRightHeight = type === 'A' ? 100 : 0;
+    } else {
+      extraLeftHeight = type === 'A' ? 250 : 250; //이미지 제대로 들어오면 다시 수정
+      extraRightHeight = type === 'A' ? 150 : 150; //이미지 제대로 들어오면 다시 수정
+    }
     items.forEach((item) => {
       const maxHeight = type === 'A' ? 740 : 800;
-      const extraLeftHeight = type === 'A' ? 350 : 100;
-      const extraRightHeight = type === 'A' ? 120 : 150;
       //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
       //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
@@ -192,7 +199,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       //console.log('leftFull:', leftFull);
       //console.log('rightFull:', rightFull);
       if (
-        leftTotalHeight + item.height < maxHeight &&
+        leftTotalHeight + item.height + extraLeftHeight < maxHeight &&
         leftItemCount < leftMaxItems
       ) {
         leftFull = true;
@@ -233,7 +240,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
         //console.log('다음페이지 만들기');
         pages.push(currentPage);
         currentPage = { leftArray: [], rightArray: [] };
-        leftTotalHeight = 0 + extraLeftHeight;
+        leftTotalHeight = 0;
         rightTotalHeight = 0;
         leftItemCount = 0;
         rightItemCount = 0;

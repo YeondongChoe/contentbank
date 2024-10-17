@@ -148,37 +148,6 @@ export function Step3() {
     '문제만',
   );
 
-  // 높이가 측정된 값을 다시 문항의 키값으로 추가
-  useEffect(() => {
-    if (answerCommentary === '문제+해설같이') {
-      const itemsWithHeight = initialItems.map((item: QuizList) => ({
-        ...item,
-        height: 400,
-      }));
-      setNewInitialItems(itemsWithHeight);
-    }
-  }, [answerCommentary, initialItems]);
-
-  useEffect(() => {
-    const measureHeights = () => {
-      if (measureRef.current) {
-        const heights = Array.from(measureRef.current.children).map((child) => {
-          const childElement = child as HTMLElement;
-          const height = childElement.offsetHeight;
-
-          return height;
-        });
-
-        setItemHeights(heights);
-        originalHeightsRef.current = heights;
-      }
-    };
-
-    if (answerCommentary !== '문제+해설같이') {
-      measureHeights();
-    }
-  }, [answerCommentary]);
-
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
     setNewInitialItems([]);
@@ -434,32 +403,35 @@ export function Step3() {
 
       // 0보다 큰 값만 필터링
       const filteredHeights = heights.filter((height) => height > 0);
+      const addHeight = filteredHeights.map((height) => height + 50);
+      const commentaryHeight = filteredHeights.map((height) => height + 200);
+      console.log(commentaryHeight);
 
       if (commentary === '문제만') {
         setCommentary('문제만');
         setItemQuestionHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '정답만') {
         setCommentary('정답만');
         setItemAnswerHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '문제+해설별도') {
         setCommentary('문제+해설별도');
         setItemQuestionHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '문제+해설같이') {
         setCommentary('문제+해설같이');
         setItemCommenteryHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, commentaryHeight];
           return newArray;
         });
       }
@@ -521,6 +493,7 @@ export function Step3() {
       setItemHeights(itemAnswerHeightArray);
     }
   }, [commentary, itemAnswerHeightArray]);
+  console.log('initialItems?.length', initialItems?.length);
 
   //commentary '문제+해설같이' 문항수 만큼 넣어주기
   useEffect(() => {
@@ -529,11 +502,15 @@ export function Step3() {
         0,
         initialItems?.length,
       );
+      console.log('sliceItemQuestion', sliceItemQuestion);
       const array = sliceItemQuestion.map((item) => item[0]);
+      console.log('array', array);
       setItemCommenteryHeightArray(array);
       originalHeightsRef.current = array;
     }
   }, [itemCommenteryHeight]);
+  console.log('itemCommenteryHeight', itemCommenteryHeight);
+  console.log('itemCommenteryHeightArray', itemCommenteryHeightArray);
   //commentary '문제+해설같이' 높이값 넣어주기
   useEffect(() => {
     if (commentary === '문제+해설같이') {
