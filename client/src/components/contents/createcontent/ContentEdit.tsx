@@ -625,7 +625,7 @@ export function ContentEdit({
                             groupsDataG={groupsDataG}
                             groupsDataH={groupsDataH}
                             quizCategory={
-                              quizCategory.sources && quizCategory.sources
+                              quizCategory?.sources && quizCategory?.sources
                             }
                             onItemClickData={onItemClickData}
                             selectedValue={setSelectedList}
