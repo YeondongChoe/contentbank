@@ -26,7 +26,7 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
-type SelectedValueType = string | { [key: string]: string };
+type SelectedValueType = string | { [key: string]: any };
 
 type SelectedValuesType = { [key: number]: SelectedValueType };
 
@@ -72,7 +72,7 @@ export function ContentCreating({
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
-    console.log('에디터에서 데이터 가져올시 editorData', editorData?.tag_group);
+    console.log('editorData', editorData?.tag_group);
 
     if (editorData) {
       const itemDataList: QuizItemListType = [];
@@ -237,33 +237,40 @@ export function ContentCreating({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
-
-    const quizClassList: QuestionClassListType = [
-      {
-        type: 'CLASS',
-        quizCategory: {
-          sources: selectedSource,
-          과목: selectedCourse,
-          교과: selectedSubject,
-          난이도: selectedDifficulty,
-          문항타입: selectedQuestionType,
+    // console.log('selected--------출처 선택부분', selectedList);
+    if (
+      selectedSource.length > 0 &&
+      selectedSubject &&
+      selectedCourse &&
+      selectedQuestionType
+    ) {
+      const quizClassList: QuestionClassListType = [
+        {
+          type: 'CLASS',
+          quizCategory: {
+            sources: selectedSource,
+            과목: selectedCourse,
+            교과: selectedSubject,
+            난이도: selectedDifficulty,
+            문항타입: selectedQuestionType,
+          },
         },
-      },
-      {
-        type: 'CATEGORY',
-        quizCategory: {},
-      },
-    ];
+        {
+          type: 'CATEGORY',
+          quizCategory: {},
+        },
+      ];
 
-    // 필수 메타값 추가 및 변경
-    setQuizClassList(quizClassList);
+      // 필수 메타값 추가 및 변경
+      setQuizClassList(quizClassList);
+    }
   }, [
     selectedSubject,
     selectedCourse,
-    setSelectedSource,
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
+    selectedList,
   ]);
 
   useEffect(() => {
