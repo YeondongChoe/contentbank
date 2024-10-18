@@ -237,30 +237,33 @@ export function ContentCreating({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
-    console.log('selected--------출처 선택부분', selectedList);
-
-    if (selectedSource.length == 0 && selectedList.length > 0) {
-      setSelectedSource([{ 0: selectedList }]);
-    }
-    const quizClassList: QuestionClassListType = [
-      {
-        type: 'CLASS',
-        quizCategory: {
-          sources: selectedSource,
-          과목: selectedCourse,
-          교과: selectedSubject,
-          난이도: selectedDifficulty,
-          문항타입: selectedQuestionType,
+    // console.log('selected--------출처 선택부분', selectedList);
+    if (
+      selectedSource.length > 0 &&
+      selectedSubject &&
+      selectedCourse &&
+      selectedQuestionType
+    ) {
+      const quizClassList: QuestionClassListType = [
+        {
+          type: 'CLASS',
+          quizCategory: {
+            sources: selectedSource,
+            과목: selectedCourse,
+            교과: selectedSubject,
+            난이도: selectedDifficulty,
+            문항타입: selectedQuestionType,
+          },
         },
-      },
-      {
-        type: 'CATEGORY',
-        quizCategory: {},
-      },
-    ];
+        {
+          type: 'CATEGORY',
+          quizCategory: {},
+        },
+      ];
 
-    // 필수 메타값 추가 및 변경
-    setQuizClassList(quizClassList);
+      // 필수 메타값 추가 및 변경
+      setQuizClassList(quizClassList);
+    }
   }, [
     selectedSubject,
     selectedCourse,
