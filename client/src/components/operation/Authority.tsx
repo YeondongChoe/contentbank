@@ -1414,7 +1414,6 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  max-width: 1000px;
 `;
 const ListWrapper = styled.div`
   display: flex;
