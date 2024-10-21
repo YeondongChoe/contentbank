@@ -60,6 +60,19 @@ export function OptionList({
     [key: number]: string;
   }>({});
 
+  const [sourceSortedValue, setSourceSortedValue] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
+
+  const [totalSource, setTotalSource] = useState<
+    {
+      [x: string]: any;
+      [key: number]: string;
+    }[]
+  >([]);
+
   const [optionsList1, setOptionsList1] = useState<CategoryList>({
     name: '',
     categories: [],
@@ -143,32 +156,6 @@ export function OptionList({
     }
   };
 
-  // 셀렉트 선택이후 셀렉트에 속한 자식 배열값 보여주기
-  const listSwitch = (value: string, index: number) => {
-    const list = lists.find((list) => list.name === value);
-    if (list) {
-      switch (index) {
-        case 0:
-          setOptionsList1(list);
-          break;
-        case 1:
-          setOptionsList2(list);
-          break;
-        case 2:
-          setOptionsList3(list);
-          break;
-        case 3:
-          setOptionsList4(list);
-          break;
-        case 4:
-          setOptionsList5(list);
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
   const addSourceOptions = () => {
     // console.log('출처 카테고리 추가 API');
     setCount(count + 1);
@@ -180,7 +167,7 @@ export function OptionList({
   };
   useEffect(() => {}, [disabled]);
 
-  //얼럿
+  //출처 삭제 얼럿
   const openUpdateAlert = (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
@@ -189,13 +176,38 @@ export function OptionList({
     setCurrentTarget(event.currentTarget);
     setIsAlertOpen(true);
   };
+
   const removeSourceOptions = (target: EventTarget, index: number) => {
     const id = (target as HTMLElement).parentElement?.parentElement?.id;
+    const titleValue = (
+      target as HTMLElement
+    ).parentElement?.parentElement?.innerText
+      ?.trim()
+      .toLowerCase();
     const arr = sourceOptions.filter((el) => el !== Number(id));
+
+    console.log('출처 - 버튼눌러 삭제 후 배열', id);
+
     setSourceOptions(arr);
 
-    const newSelectedValues = { ...selectedValues };
-    delete newSelectedValues[index];
+    const title = titleValue
+      ?.replace('기출일시', '')
+      .replace(/[^가-힣a-zA-Z0-9]/g, '')
+      .trim() as string;
+
+    console.log('추출된 타이틀 값:', title);
+    // selectedValues에서 title 값과 정확히 일치하는 항목을 필터링
+    const newSelectedValues = Object.fromEntries(
+      Object.entries(selectedValues).filter(([_, value]) => {
+        const normalizedValue = value.trim(); // 공백 제거한 값
+        const includesTitle = normalizedValue.includes(title); // title이 포함되어 있는지 확인
+        // console.log(
+        //   `비교 중: value='${normalizedValue}', title='${title}', includesTitle=${includesTitle}`,
+        // );
+        return !includesTitle;
+      }),
+    );
+
     setSelectedValues(newSelectedValues);
 
     setIsAlertOpen(false);
@@ -229,6 +241,7 @@ export function OptionList({
         );
         // 중복이 아닐 경우에만 새로운 값을 추가
         if (!isDuplicate) {
+          setSourceSortedValue([...prevValues, { [count]: selected }]);
           return [...prevValues, { [count]: selected }];
         }
         return prevValues;
@@ -236,10 +249,12 @@ export function OptionList({
     }
   }, [selected]);
 
-  useEffect(() => {}, [selectedValue]);
+  useEffect(() => {
+    console.log('sourceSortedValue 출처=----------', sourceSortedValue);
+  }, [selectedValue]);
 
   useEffect(() => {
-    console.log('sourceValue', sourceValue);
+    console.log('sourceValue 출처=----------', sourceValue);
 
     // sourceValue의 객체 요소 중 하나라도 키값이 빈 문자열이 아닐 때
     if (
@@ -271,6 +286,7 @@ export function OptionList({
   }, [sourceValue]);
 
   useEffect(() => {
+    console.log('sourceArr-----담겨진 출처 배열', sourceArr);
     // 서버로 전송할 데이터 구조로 재구성
     const restructuredData = sourceArr.reduce((acc, curr) => {
       const { titleIdx, name, value } = curr;
@@ -287,10 +303,83 @@ export function OptionList({
 
       return acc;
     }, []);
+    console.log('sourceSortedValue------', sourceSortedValue);
 
-    // console.log('restructuredData', restructuredData);
-    setSelectedSource(restructuredData);
-  }, [sourceArr]);
+    // 출처 1뎁스도 포함시키는 로직
+    const addSource = sourceSortedValue
+      .map((source) => {
+        const key = Object.keys(source)[0];
+        const value = source[Number(key)];
+
+        const isDuplicate = restructuredData.some(
+          (item: { [s: string]: unknown } | ArrayLike<unknown>) =>
+            Object.values(item).includes(value),
+        );
+
+        if (!isDuplicate) {
+          return { 출처: value };
+        }
+        return null;
+      })
+      .filter(Boolean); // null 값 제거;
+
+    console.log('[...restructuredData, ...addSource]------', [
+      ...restructuredData,
+      ...addSource,
+    ]);
+
+    // restructuredData와 addSource를 합친 후 출처가 undefined인 항목을 필터링
+    const finalData = [...restructuredData, ...addSource].filter(
+      (item) => item.출처 !== undefined,
+    );
+
+    // sourceSortedValue를 기준으로 다시 정렬
+    const sortedData = finalData.sort((a, b) => {
+      const indexA = sourceSortedValue.findIndex((item) =>
+        Object.values(item).includes(a['출처']),
+      );
+      const indexB = sourceSortedValue.findIndex((item) =>
+        Object.values(item).includes(b['출처']),
+      );
+      return indexA - indexB; // UI 순서에 맞춰 정렬
+    });
+
+    console.log('UI 순서에 맞게 정렬된 데이터 --------', sortedData);
+
+    setTotalSource(sortedData);
+  }, [sourceArr, sourceSortedValue]);
+
+  // useEffect(() => {},[sourceSortedValue])
+  console.log(
+    '출처 - 버튼눌러 삭제 후 배열 selectedValues',
+    selectedValues,
+    totalSource,
+  );
+
+  useEffect(() => {
+    // 최종적으로 서버에 전송될 출처
+    console.log('전체적으로 변경될때 담긴값 --------', totalSource);
+    console.log('실제 ui에 있는 출처 타이틀값 --------', selectedValues);
+    // 실제 ui에 있는 값만 보내지도록
+    // 토탈값조정
+    // selectedValues에서 값만 추출 (출처 타이틀 목록)
+    const selectedTitles = Object.values(selectedValues);
+    // console.log('selectedTitles --------', selectedTitles);
+
+    // totalSource에서 출처 값이 selectedTitles에 있는 항목만 필터링
+    const filteredTotalSource = totalSource.filter((source) => {
+      const sourceTitle = source.출처; // totalSource의 '출처' 값
+      // console.log('sourceTitle---', sourceTitle);
+
+      // selectedTitles에 sourceTitle이 포함되어 있는지 확인
+      return selectedTitles.some((selectedTitle) =>
+        sourceTitle.includes(selectedTitle),
+      );
+    });
+
+    console.log('최종적으로 필터링후 보내질값 --------', filteredTotalSource);
+    setSelectedSource(filteredTotalSource);
+  }, [totalSource, selectedValues]);
 
   const [titleArr, setTitleArr] = useState<string[]>([]);
   useEffect(() => {
@@ -302,7 +391,7 @@ export function OptionList({
       // 객체내 출처키의 값이 해당하는 값들을 각기
       const titleArr = quizCategory.map((el) => el.출처);
       setTitleArr(titleArr);
-      console.log('titleArr -----', categoryTitles[16]?.name, titleArr);
+      console.log('titleArr -----', categoryTitles[15]?.name, titleArr);
       const arr = [];
       for (let i = 0; i < titleArr.length; i++) {
         arr.push(quizCategory[i].출처);
@@ -355,19 +444,17 @@ export function OptionList({
       setSourceOptions([...sourceOptions, ...arr]);
     }
 
+    if (titleArr.length > 0) {
+      setDisabled(false);
+    }
+
     if (sourceOptions.length >= 5) {
       //셀렉트 선택시에만 추가 가능하도록 초기화
       setDisabled(true);
     }
+
+    //부모 셀렉트 값이 바뀔시
   }, [titleArr]);
-
-  useEffect(() => {
-    Object.keys(selectedValues).forEach((key) => {
-      listSwitch(selectedValues[Number(key)], Number(key));
-    });
-  }, [selectedValues]);
-
-  console.log('=--------------selectedValues', selectedValues);
 
   return (
     <Container>
@@ -415,9 +502,9 @@ export function OptionList({
                     defaultValue={
                       titleArr.length
                         ? titleArr[index]
-                        : categoryTitles[16]?.name
+                        : categoryTitles[15]?.name
                     }
-                    key={categoryTitles[16]?.name}
+                    key={categoryTitles[15]?.name}
                     options={categoriesE}
                     onSelect={(
                       event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -520,7 +607,7 @@ const SelectOptionsList = styled.ul<{
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1;
+  z-index: 9999999999;
   width: 100%;
   height: 100%;
   ${({ $positionTop }) =>

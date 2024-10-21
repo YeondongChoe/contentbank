@@ -48,6 +48,8 @@ export function Step3() {
     window.close();
   };
 
+  console.log('newInitialItems', newInitialItems);
+
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [workSheetIdx, setWorkSheetIdx] = useState<number>();
@@ -136,7 +138,8 @@ export function Step3() {
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
   const [contentAuthor, setContentAuthor] = useState('');
-
+  //문제풀이
+  const [line, setLine] = useState<number>(0);
   const [tag, setTag] = useState<string>('');
   const selectTag = (newValue: string) => {
     setTag(newValue);
@@ -144,6 +147,7 @@ export function Step3() {
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
     '문제만',
   );
+
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
     setNewInitialItems([]);
@@ -328,7 +332,7 @@ export function Step3() {
       };
     }
   }, [isComplete]);
-  const [line, setLine] = useState<number>(0);
+
   const selectListCategoryOption = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
@@ -399,32 +403,35 @@ export function Step3() {
 
       // 0보다 큰 값만 필터링
       const filteredHeights = heights.filter((height) => height > 0);
+      const addHeight = filteredHeights.map((height) => height + 50);
+      const commentaryHeight = filteredHeights.map((height) => height + 200);
+      console.log(commentaryHeight);
 
       if (commentary === '문제만') {
         setCommentary('문제만');
         setItemQuestionHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '정답만') {
         setCommentary('정답만');
         setItemAnswerHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '문제+해설별도') {
         setCommentary('문제+해설별도');
         setItemQuestionHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '문제+해설같이') {
         setCommentary('문제+해설같이');
         setItemCommenteryHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, commentaryHeight];
           return newArray;
         });
       }
@@ -486,6 +493,7 @@ export function Step3() {
       setItemHeights(itemAnswerHeightArray);
     }
   }, [commentary, itemAnswerHeightArray]);
+  console.log('initialItems?.length', initialItems?.length);
 
   //commentary '문제+해설같이' 문항수 만큼 넣어주기
   useEffect(() => {
@@ -494,11 +502,15 @@ export function Step3() {
         0,
         initialItems?.length,
       );
+      console.log('sliceItemQuestion', sliceItemQuestion);
       const array = sliceItemQuestion.map((item) => item[0]);
+      console.log('array', array);
       setItemCommenteryHeightArray(array);
       originalHeightsRef.current = array;
     }
   }, [itemCommenteryHeight]);
+  console.log('itemCommenteryHeight', itemCommenteryHeight);
+  console.log('itemCommenteryHeightArray', itemCommenteryHeightArray);
   //commentary '문제+해설같이' 높이값 넣어주기
   useEffect(() => {
     if (commentary === '문제+해설같이') {
@@ -826,7 +838,7 @@ export function Step3() {
             <FrontSpan onClick={goBackMainPopup}>STEP 2 -</FrontSpan>
             STEP 3
           </Span>
-          학습지 상세 편집
+          학습지 설정
         </Title>
       </TitleWrapper>
       <Wrapper>
@@ -912,6 +924,7 @@ export function Step3() {
                 newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
+                line={line}
               ></TypeB>
             </WorksheetTemplateTypeWrapper>
           )}

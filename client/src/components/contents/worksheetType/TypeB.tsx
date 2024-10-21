@@ -20,6 +20,7 @@ type TypeBProps = {
   newInitialItems: QuizList[];
   answerCommentary: string;
   multiLevel: string;
+  line: number;
 };
 
 type PageType = { leftArray: QuizList[]; rightArray: QuizList[] }[];
@@ -36,6 +37,7 @@ export const TypeB = ({
   newInitialItems,
   answerCommentary,
   multiLevel,
+  line,
 }: TypeBProps) => {
   const [quizItemList, setQuizItemList] = useState<QuizList[]>([]);
   const [pages, setPages] = useState<PageType>([]);
@@ -73,8 +75,8 @@ export const TypeB = ({
     if (multiLevel === '2단') {
       switch (assign) {
         case '최대':
-          leftMaxItems = Infinity;
-          rightMaxItems = Infinity;
+          leftMaxItems = line === 0 ? Infinity : 6;
+          rightMaxItems = line === 0 ? Infinity : 6;
           break;
         case '2문제':
           leftMaxItems = 1;
@@ -89,8 +91,8 @@ export const TypeB = ({
           rightMaxItems = 3;
           break;
         default:
-          leftMaxItems = Infinity; // Default behavior, unlimited items
-          rightMaxItems = Infinity;
+          leftMaxItems = line === 0 ? Infinity : 6; // Default behavior, unlimited items
+          rightMaxItems = line === 0 ? Infinity : 6;
           break;
       }
     } else if (multiLevel === '1단') {
@@ -120,6 +122,7 @@ export const TypeB = ({
 
     let leftItemCount = 0;
     let rightItemCount = 0;
+    const extraHeight = answerCommentary === '문제+해설같이' ? 0 : 200;
 
     items.forEach((item) => {
       if (
@@ -130,7 +133,10 @@ export const TypeB = ({
         currentPage.leftArray.push(item);
         leftHeight += item.height;
         leftItemCount++;
-        if (leftHeight + item.height > 1200 || leftItemCount >= leftMaxItems) {
+        if (
+          leftHeight + item.height + extraHeight > 1200 ||
+          leftItemCount >= leftMaxItems
+        ) {
           leftFull = true; // 왼쪽 배열이 가득 찼음을 표시
         }
       } else if (
@@ -142,7 +148,7 @@ export const TypeB = ({
         rightHeight += item.height;
         rightItemCount++;
         if (
-          rightHeight + item.height > 1200 ||
+          rightHeight + item.height + extraHeight > 1200 ||
           rightItemCount >= rightMaxItems
         ) {
           rightFull = true; // 오른쪽 배열이 가득 찼음을 표시
