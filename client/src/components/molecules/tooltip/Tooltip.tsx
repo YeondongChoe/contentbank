@@ -13,6 +13,7 @@ type TooltiptProps = {
   className?: string;
   arrowPosition?: string;
   ref?: React.RefObject<HTMLDivElement>;
+  top?: string;
 };
 
 export function Tooltip({
@@ -23,6 +24,7 @@ export function Tooltip({
   className,
   arrowPosition = 'left: 50%',
   ref,
+  top,
 }: TooltiptProps) {
   return (
     <Component
@@ -32,6 +34,7 @@ export function Tooltip({
       className={` ${className}`}
       arrowPosition={arrowPosition}
       ref={ref}
+      top={top}
     >
       <TooltipText>{children}</TooltipText>
     </Component>
@@ -43,6 +46,7 @@ type TooltiptStyleProps = {
   height?: string;
   $margin?: string;
   arrowPosition?: string;
+  top?: string;
 };
 
 const Component = styled.div<TooltiptStyleProps>`
@@ -51,7 +55,7 @@ const Component = styled.div<TooltiptStyleProps>`
   height: ${({ height }) => (height ? ` ${height}` : '100%')};
   margin: ${({ $margin }) => ($margin ? `${$margin}` : '0')};
   position: absolute;
-  top: 100%;
+  top: ${({ top }) => (top ? ` ${top}` : '100%')};
   bottom: auto;
   left: auto;
   right: auto;

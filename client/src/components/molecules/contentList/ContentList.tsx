@@ -256,6 +256,17 @@ export function ContentList({
 
   const openCreatePDFModal = () => {
     console.log('sortedList ---', sortedList);
+    // 선택 된 리스트중 미검수가 아닌것이 있을시 요청 불가
+    openModal({
+      title: '',
+      content: <PDFModal list={sortedList} />,
+    });
+    //모달 열릴시 체크리스트 초기화
+    setCheckList([]);
+  };
+
+  const openProcessListModal = () => {
+    console.log('sortedList ---', sortedList);
     openModal({
       title: '',
       content: <PDFModal list={sortedList} />,
@@ -390,6 +401,29 @@ export function ContentList({
                 fontSize="14px"
                 $borderRadius="7px"
                 $filled
+                onClick={() => openCreatePDFModal()}
+                disabled={isEnabled}
+                cursor
+              >
+                검수 요청
+              </Button>
+              <Button
+                width="130px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                onClick={() => openCreatePDFModal()}
+                disabled={isEnabled}
+                cursor
+              >
+                검수 요청 취소
+              </Button>
+              <Button
+                width="100px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                $filled
                 $normal
                 onClick={() => openCreatePDFModal()}
                 disabled={isEnabled}
@@ -498,7 +532,7 @@ export function ContentList({
               )}
               <ItemLayout>
                 <span
-                  className="width_80px tooltip_wrapper "
+                  className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -526,6 +560,7 @@ export function ContentList({
                   )}
 
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -546,7 +581,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_80px tooltip_wrapper "
+                  className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -573,6 +608,7 @@ export function ContentList({
                   )}
 
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -596,7 +632,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_60px tooltip_wrapper "
+                  className="width_60px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -622,6 +658,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -645,7 +682,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_50px tooltip_wrapper "
+                  className="width_50px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -671,6 +708,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -694,7 +732,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_60px tooltip_wrapper "
+                  className="width_60px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -720,6 +758,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -743,7 +782,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_60px tooltip_wrapper "
+                  className="width_60px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -769,6 +808,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -792,7 +832,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_80px tooltip_wrapper "
+                  className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -818,6 +858,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -841,7 +882,7 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_150px tooltip_wrapper "
+                  className="width_150px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
@@ -867,6 +908,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -890,11 +932,11 @@ export function ContentList({
                 </span>
                 <i className="line"></i>
                 <span
-                  className="width_60px tag_s tooltip_wrapper "
+                  className="tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <span></span>
+                  <strong className="title">문항타입</strong>
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length > 0 ? (
@@ -914,6 +956,7 @@ export function ContentList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
+                    top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -935,11 +978,43 @@ export function ContentList({
                   </Tooltip>
                 </span>
                 <i className="line"></i>
-                <span className="width_10">{item.createdBy} </span>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">당담자</strong>
+                  <span className="tag ellipsis">{item.createdBy}</span>
+                </span>
                 <i className="line"></i>
-                <span className="width_10">{item.createdAt}</span>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">등록일자</strong>
+                  <span className="tag ">{item.createdAt}</span>
+                </span>
                 <i className="line"></i>
-                <span className="width_5">
+                <span
+                  className="tooltip_wrapper item_wrapper"
+                  // onMouseOver={(e) => showTooltip(e)}
+                  // onMouseLeave={(e) => hideTooltip(e)}
+                >
+                  <strong className="title">상태(진행단계)</strong>
+                  {item.quizCategoryList ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList.length > 0 ? (
+                        item.quizCategoryList.map((item, idx) => (
+                          <span key={`문항타입 ${idx}`}>
+                            {item.quizCategory.문항타입 &&
+                            item.quizCategory.문항타입.length > 1
+                              ? `${item.quizCategory.문항타입}`
+                              : ``}
+                          </span>
+                        ))
+                      ) : (
+                        <span></span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="tag"></span>
+                  )}
+                </span>
+                <i className="line"></i>
+                <span className="width_5 item_wrapper tag_icon">
                   {item.isUse ? (
                     <Icon
                       width={`18px`}
@@ -1045,13 +1120,13 @@ const ItemLayout = styled.span`
   width: 100%;
   min-height: 40px;
   justify-content: space-around;
-  align-items: center;
+  align-items: self-start;
   flex-wrap: wrap;
 
-  .tooltip_wrapper {
+  .tooltip_wrapper item_wrapper {
     position: relative;
   }
-  > span {
+  .item_wrapper {
     display: flex;
     /* flex: 1 0 0; */
     justify-content: space-around;
@@ -1086,18 +1161,18 @@ const ItemLayout = styled.span`
     padding: 3px 5px;
     border-radius: 5px;
     background-color: ${COLOR.BORDER_GRAY};
+    margin-top: 5px;
   }
-  .tag_s {
-    font-weight: bold;
-    font-size: 12px;
-    padding: 2px;
-    border-radius: 5px;
-    background-color: ${COLOR.BORDER_GRAY};
+  .tag_icon {
+    display: flex;
+    align-self: center;
   }
   .line {
     width: 1px;
     height: 15px;
     background-color: ${COLOR.BORDER_GRAY};
+    display: flex;
+    align-self: center;
   }
   .width_5 {
     width: 5%;
@@ -1116,5 +1191,8 @@ const ItemLayout = styled.span`
   }
   .width_80px {
     width: 80px;
+  }
+  .width_150px {
+    width: 150px;
   }
 `;
