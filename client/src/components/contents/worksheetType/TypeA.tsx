@@ -123,7 +123,6 @@ export const TypeA = ({
 
     let leftItemCount = 0;
     let rightItemCount = 0;
-    console.log('items', items);
     const extraHeight = answerCommentary === '문제+해설같이' ? 0 : 200;
 
     items.forEach((item) => {

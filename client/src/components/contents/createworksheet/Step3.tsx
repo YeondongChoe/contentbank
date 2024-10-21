@@ -838,7 +838,7 @@ export function Step3() {
             <FrontSpan onClick={goBackMainPopup}>STEP 2 -</FrontSpan>
             STEP 3
           </Span>
-          학습지 상세 편집
+          학습지 설정
         </Title>
       </TitleWrapper>
       <Wrapper>
