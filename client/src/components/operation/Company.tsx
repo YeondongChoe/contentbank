@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { BiToggleRight } from 'react-icons/bi';
+import { BiToggleRight, BiSolidTrashAlt } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
@@ -1386,24 +1386,36 @@ export function Company() {
                 {companyList?.map((company, i) => {
                   const isSelected = selectedIdxValue === (1 + i).toString();
                   return (
-                    <ContentList key={`${company.idx} -${company.name}`}>
-                      <Content
-                        onClick={() => {
-                          setSelectedIdxValue((1 + i).toString());
-                          setIdxValue(company.idx);
-                        }}
-                        $isSelected={isSelected}
-                      >
-                        <div className={'title'}>
-                          {company.name}({company.accountCount})
-                        </div>
-                      </Content>
-                    </ContentList>
+                    <CompanyList key={`${company.idx} -${company.name}`}>
+                      <ContentList>
+                        <Content
+                          onClick={() => {
+                            setSelectedIdxValue((1 + i).toString());
+                            setIdxValue(company.idx);
+                          }}
+                          $isSelected={isSelected}
+                        >
+                          <div className="title">
+                            {company.name}({company.accountCount})
+                          </div>
+                        </Content>
+                      </ContentList>
+                      <DeleteIconWrapper>
+                        <BiSolidTrashAlt
+                          onClick={() => {
+                            clickDeleteCompany();
+                            //삭제할 카테고리 idx값 관리
+                            setIdxValue(company.idx);
+                            setSelectedIdxValue((1 + i).toString());
+                          }}
+                        />
+                      </DeleteIconWrapper>
+                    </CompanyList>
                   );
                 })}
                 {idxValue === '' && (
-                  <Content $isSelected={true}>
-                    <div className={'title'}>
+                  <Content className="add" $isSelected={true}>
+                    <div className="title">
                       {nameValue || '기업명을 입력해주세요'}
                     </div>
                   </Content>
@@ -1491,7 +1503,7 @@ export function Company() {
                 >
                   <span>저장</span>
                 </Button>
-                {idxValue === '' ? (
+                {idxValue === '' && (
                   <Button
                     buttonType="button"
                     onClick={() => {
@@ -1504,21 +1516,6 @@ export function Company() {
                     cursor
                   >
                     <span>취소</span>
-                  </Button>
-                ) : (
-                  <Button
-                    buttonType="button"
-                    onClick={() => {
-                      clickDeleteCompany();
-                    }}
-                    $padding="10px"
-                    height={'35px'}
-                    width={'120px'}
-                    fontSize="13px"
-                    $normal
-                    cursor
-                  >
-                    <span>삭제</span>
                   </Button>
                 )}
               </ButtonWrapper>
@@ -1569,7 +1566,7 @@ const MainWrapper = styled.div`
   width: 100%;
   min-height: 700px;
   display: flex;
-  gap: 10px;
+  gap: 20px;
 `;
 const SettingWrapper = styled.div`
   width: 40%;
@@ -1585,16 +1582,21 @@ const PageDescription = styled.p`
 const ContentListWrapper = styled.div`
   max-height: 530px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
+  margin-top: 10px;
+`;
+const CompanyList = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 const ContentList = styled.li`
+  width: 100%;
   background-color: white;
   border-radius: 5px;
   font-weight: bold;
   margin-bottom: 5px;
-
-  &:first-child {
-    margin-top: 10px;
-  }
+  margin-right: 8px;
 `;
 const Content = styled.div<{ $isSelected: boolean }>`
   font-size: 14px;
@@ -1605,14 +1607,36 @@ const Content = styled.div<{ $isSelected: boolean }>`
     $isSelected
       ? `color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`
       : 'none'};
+  background-color: ${({ className }) =>
+    className === 'add' ? 'white' : 'inherit'};
+  border-radius: 5px;
 
   .title {
     display: flex;
     justify-content: center;
   }
+
   &:hover {
     background-color: ${COLOR.SELECT_BLUE};
     color: white;
+    border-radius: 5px;
+  }
+`;
+const DeleteIconWrapper = styled.button`
+  font-size: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: ${COLOR.FONT_BLACK};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  /* background-color: transparent; */
+  &:hover {
+    background: ${COLOR.RED};
   }
 `;
 const ListWrapper = styled.div`

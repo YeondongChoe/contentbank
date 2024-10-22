@@ -142,8 +142,6 @@ export function Step2() {
 
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
   const [categoryNameList, setCategoryNameList] = useState<string>('');
-  console.log(categoryNameList);
-  console.log(categoryTypeList);
 
   useEffect(() => {
     if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
@@ -1245,6 +1243,8 @@ export function Step2() {
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
     ];
 
     //서버로 부터 받은 nameList에 맞게 서버에 요청
