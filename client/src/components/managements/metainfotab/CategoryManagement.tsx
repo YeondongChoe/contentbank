@@ -746,7 +746,7 @@ export function CategroyManagement() {
       {isDeleteCategory && (
         <Alert
           description="카테고리 삭제하시겠습니까?"
-          subDescription="카테고리를 삭제하시면, bla bla bra bra."
+          subDescription="카테고리를 삭제하시면, 현재 작동 안함."
           isAlertOpen={isDeleteCategory}
           action="삭제"
           onClose={() => setIsDeleteCategory(false)}
