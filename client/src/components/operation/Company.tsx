@@ -1607,17 +1607,19 @@ const Content = styled.div<{ $isSelected: boolean }>`
     $isSelected
       ? `color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`
       : 'none'};
+  background-color: ${({ className }) =>
+    className === 'add' ? 'white' : 'inherit'};
+  border-radius: 5px;
 
   .title {
     display: flex;
     justify-content: center;
   }
-  background-color: ${({ className }) =>
-    className === 'add' ? 'white' : 'inherit'};
 
   &:hover {
     background-color: ${COLOR.SELECT_BLUE};
     color: white;
+    border-radius: 5px;
   }
 `;
 const DeleteIconWrapper = styled.button`

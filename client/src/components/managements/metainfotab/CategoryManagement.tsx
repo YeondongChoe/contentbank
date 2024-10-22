@@ -977,6 +977,7 @@ const AuthorityName = styled.div<{ $isSelected: boolean }>`
   &:hover {
     background-color: ${COLOR.SELECT_BLUE};
     color: white;
+    border-radius: 5px;
   }
   /* > span {
     display: flex;
