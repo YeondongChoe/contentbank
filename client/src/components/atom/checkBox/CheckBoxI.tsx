@@ -26,6 +26,7 @@ type CheckboxProps = {
   width?: string;
   height?: string;
   readOnly?: boolean;
+  className?: string;
 };
 
 export const CheckBoxI = ({
@@ -48,6 +49,7 @@ export const CheckBoxI = ({
   disabled,
   width,
   height,
+  className,
   ...props
 }: CheckboxProps) => {
   return (
@@ -61,6 +63,7 @@ export const CheckBoxI = ({
       iconWidth={iconWidth}
       iconHeight={iconHeight}
       disabled={disabled}
+      className={className}
       onClick={() => onClick && onClick(value)}
       {...props}
     >

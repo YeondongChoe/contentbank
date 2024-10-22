@@ -14,7 +14,7 @@ interface DraggedItem {
 
 export const useDnD = ({ itemIndex, onMove, dragSectionName }: UseDnD) => {
   // useRef를 사용해 HTMLLIElement에 대한 참조를 생성
-  const ref = useRef<HTMLLIElement>(null);
+  const ref = useRef<any>(null);
 
   const [{ isDragging }, drag] = useDrag({
     type: dragSectionName,

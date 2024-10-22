@@ -1,14 +1,20 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import styled from 'styled-components';
 
 import { Button, CheckBoxI, Icon, Switch } from '../../../components/atom';
 import { Search } from '../../../components/molecules';
+import { COLOR } from '../../constants';
+import { useDnD } from '../../molecules/dragAndDrop';
+
 export function TagMapping() {
   const [tagList, setTagList] = useState<string[]>([]);
   const [mappingList, setMappingList] = useState<string[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
+  const [activeItem, setActiveItem] = useState<string | null>(null);
 
   useEffect(() => {
     setTagList(['전체', '수학', '영어']);
@@ -29,6 +35,17 @@ export function TagMapping() {
     }
   };
 
+  const handleTagClick = (item: string) => {
+    setActiveItem(activeItem === item ? null : item);
+  };
+
+  const moveTag = (dragIndex: number, hoverIndex: number) => {
+    const updatedList = [...mappingList];
+    const draggedItem = updatedList.splice(dragIndex, 1)[0];
+    updatedList.splice(hoverIndex, 0, draggedItem);
+    setMappingList(updatedList);
+  };
+
   useEffect(() => {}, [tagList]);
   useEffect(() => {
     console.log('checkList----------', checkList);
@@ -37,7 +54,7 @@ export function TagMapping() {
     <>
       <Container>
         <ListWrapper>
-          <strong className="title">카테고리 순서</strong>
+          <strong className="title">태그 선택</strong>
           <span className="sub_title">매핑할 태그를 선택해주세요.</span>
           <span className="border_tag">{`${'교과'}`}</span>
           <Search
@@ -85,22 +102,20 @@ export function TagMapping() {
               순서변경
             </Button>
           </ButtonWrapper>
-          <TagsWrappper className="height">
-            {mappingList.map((el, idx) => (
-              <Tags key={`${el} ${idx}`} className="gap">
-                <span>
-                  <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
-                </span>
-                <span className="category_title">{`${el}`}</span>
-                <span className="category_sub_title">{`${'교육 과정'}`}</span>
-                <TagsButtonWrapper>
-                  <span>활성화</span>
-                  <Switch $ison={true} onClick={() => {}}></Switch>
-                  <CheckBoxI id={''} value={undefined} />
-                </TagsButtonWrapper>
-              </Tags>
-            ))}
-          </TagsWrappper>
+          <DndProvider backend={HTML5Backend}>
+            <TagsWrappper className="height">
+              {mappingList.map((el, idx) => (
+                <DraggableItem
+                  key={`${el} ${idx}`}
+                  item={el}
+                  index={idx}
+                  activeItem={activeItem}
+                  handleTagClick={handleTagClick}
+                  moveTag={moveTag}
+                />
+              ))}
+            </TagsWrappper>
+          </DndProvider>
         </ListItemWrapper>
       </Container>
       <BottomButtonWrapper>
@@ -111,6 +126,54 @@ export function TagMapping() {
     </>
   );
 }
+interface DraggableItemProps {
+  item: string;
+  index: number;
+  activeItem: string | null;
+  handleTagClick: (item: string) => void;
+  moveTag: (dragIndex: number, hoverIndex: number) => void;
+}
+
+const DraggableItem: React.FC<DraggableItemProps> = ({
+  item,
+  index,
+  activeItem,
+  handleTagClick,
+  moveTag,
+}) => {
+  const { ref, isDragging } = useDnD({
+    itemIndex: index,
+    onMove: moveTag,
+    dragSectionName: 'TAG_SECTION',
+  });
+
+  return (
+    <>
+      <Tags
+        ref={ref}
+        className={`gap ${activeItem === item ? 'on' : ''}`} // item으로 비교
+        onClick={() => handleTagClick(item)}
+        style={{ opacity: isDragging ? 0.5 : 1 }}
+      >
+        <span>
+          <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
+        </span>
+        <span className="category_title">{item}</span>
+        <span className="category_sub_title">{'교육 과정'}</span>
+        <TagsButtonWrapper>
+          <span className="switch_title">활성화</span>
+          <Switch marginTop={5} $ison={true} onClick={() => {}}></Switch>
+          <CheckBoxI className={'side_bar'} id={''} value={undefined} />
+        </TagsButtonWrapper>
+      </Tags>
+      {activeItem === item && (
+        <InfoButtonWrapper>
+          + ‘태그 선택’에서 매핑할 태그를 선택해주세요.
+        </InfoButtonWrapper>
+      )}
+    </>
+  );
+};
 
 const Container = styled.div`
   width: 100%;
@@ -174,6 +237,7 @@ const Tags = styled.button`
   width: 100%;
   background-color: #fff;
   border: 1px solid #eaeaea;
+  border-radius: 5px;
   padding: 10px 15px;
   display: flex;
   align-items: center;
@@ -181,6 +245,9 @@ const Tags = styled.button`
 
   &.gap {
     gap: 15px;
+  }
+  &.on {
+    border-color: ${COLOR.PRIMARY};
   }
   .icon_wwrap {
     display: flex;
@@ -201,18 +268,47 @@ const TagsButtonWrapper = styled.div`
   position: absolute;
   right: 10px;
   top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
+  gap: 5px;
+  .switch_title {
+    font-size: 12px;
+    color: ${COLOR.PRIMARY};
+  }
+  .side_bar {
+    margin-left: 10px;
+    position: relative;
+  }
+  .side_bar::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 12px;
+    background-color: #aaa;
+    position: absolute;
+    top: 8px;
+    right: 25px;
+  }
 `;
 const ButtonWrapper = styled.div`
   display: flex;
   padding-bottom: 10px;
   justify-content: end;
 `;
+
+const InfoButtonWrapper = styled.div`
+  border: 1px dotted #aaa;
+  border-radius: 5px;
+  color: #aaa;
+  font-size: 14px;
+  padding: 20px;
+  margin-left: 20px;
+`;
 const BottomButtonWrapper = styled.div`
-  background-color: #eee;
   display: flex;
   justify-content: end;
   padding: 20px;
   margin: 20px;
+  background-color: #eee;
 `;
