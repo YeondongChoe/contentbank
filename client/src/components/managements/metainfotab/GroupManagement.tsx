@@ -149,7 +149,7 @@ export function GroupManagement() {
   //카테고리 그룹 리스트 불러오기 api
   const getCategoryGroup = async () => {
     const res = await classificationInstance.get(`/v1/category/group`);
-    console.log(res);
+    //console.log(res);
     return res;
   };
   const {
