@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
+import { includes } from 'lodash';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
@@ -9,26 +10,63 @@ import { COLOR } from '../../../../components/constants';
 import { Search } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
 
-export function CategoryAddModal({ category }: { category: string[] }) {
-  const { closeModal } = useModal();
-  const [tagsList, setTagsList] = useState([
-    '분류1',
-    '분류2',
-    '분류3',
-    '분류4',
-    '분류5',
-    '분류6',
-    '분류7777777',
-    '분류분류분류분류분류분류분류분류분류분류',
-  ]);
-  const [tags, setTags] = useState<string[]>([]);
+type CategoryListProps = {
+  idx: number;
+  name: string;
+};
 
-  const handleCategoryClick = (category: string) => {
-    setTags((prevSelected) =>
-      prevSelected.includes(category)
-        ? prevSelected.filter((c) => c !== category)
-        : [...prevSelected, category],
+type AddModalProps = {
+  categoryList: CategoryListProps[];
+  nameList: string[];
+  typeList: string;
+  onSave: (selectedTags: number[]) => void;
+};
+
+export function CategoryAddModal({
+  categoryList,
+  nameList,
+  typeList,
+  onSave,
+}: AddModalProps) {
+  const { closeModal } = useModal();
+  // 기존에 포함되어있는 카테고리는 필터링 해서 값을 저장
+  const [tagsList, setTagsList] = useState<CategoryListProps[]>(() => {
+    return categoryList.filter((el) => !nameList.includes(el.name));
+  });
+  //선택된 카테고리
+  const [tags, setTags] = useState<CategoryListProps[]>([]);
+  const [typeIdxList, setTypeIdxList] = useState<number[]>([]);
+  const [tagInputValue, setTagInputValue] = useState<string>('');
+
+  useEffect(() => {
+    if (typeList) {
+      const typeListArray = typeList.split(',').map(Number);
+      const numberArray = typeListArray.map((item) => Number(item));
+      setTypeIdxList(numberArray);
+    }
+  }, [typeList]);
+
+  const handleCategoryClick = (category: CategoryListProps) => {
+    setTags(
+      (prevSelected) =>
+        prevSelected.some((tag) => tag.idx === category.idx) // idx를 사용하여 선택 여부 판단
+          ? prevSelected.filter((c) => c.idx !== category.idx) // 선택된 항목 제거
+          : [...prevSelected, category], // 선택된 항목 추가
     );
+  };
+
+  const tagInputHandler = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    name: string,
+  ) => {
+    if (e.key === 'Enter') {
+      const newTagsList = tagsList.filter((el) => el.name.includes(name));
+      setTagsList(newTagsList);
+    }
+    //초기화
+    if (e.key === 'Backspace') {
+      setTagsList(categoryList.filter((el) => !nameList.includes(el.name)));
+    }
   };
 
   return (
@@ -37,9 +75,9 @@ export function CategoryAddModal({ category }: { category: string[] }) {
       <div className="search_wrap">
         <Search
           placeholder="카테고리를 검색해주세요."
-          value={''}
-          onChange={() => {}}
-          onKeyDown={() => {}}
+          value={tagInputValue}
+          onChange={(e) => setTagInputValue(e.target.value)}
+          onKeyDown={(e) => tagInputHandler(e, tagInputValue)}
         />
       </div>
       <ScrollWrapper>
@@ -47,11 +85,11 @@ export function CategoryAddModal({ category }: { category: string[] }) {
           <ListWrapper>
             {tagsList.map((tag) => (
               <button
-                key={tag}
-                className={`value_button ${tags.includes(tag) ? 'selected' : ''}`}
+                key={tag.idx}
+                className={`value_button ${tags.some((t) => t.idx === tag.idx) ? 'selected' : ''}`}
                 onClick={() => handleCategoryClick(tag)}
               >
-                {tag}
+                {tag.name}
               </button>
             ))}
           </ListWrapper>
@@ -60,7 +98,10 @@ export function CategoryAddModal({ category }: { category: string[] }) {
       <ButtonWrapper>
         <p>총 {tags.length}개의 카테고리 선택</p>
         <Button onClick={() => closeModal()}>취소</Button>
-        <Button onClick={() => {}} $filled>
+        <Button
+          onClick={() => onSave([...typeIdxList, ...tags.map((el) => el.idx)])}
+          $filled
+        >
           확인
         </Button>
       </ButtonWrapper>

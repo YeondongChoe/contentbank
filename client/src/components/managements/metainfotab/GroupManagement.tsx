@@ -9,8 +9,9 @@ import { classificationInstance } from '../../../api/axios';
 import { Modal } from '../../../components';
 import { COLOR } from '../../../components/constants';
 import { useModal } from '../../../hooks';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
-import { Button, Icon } from '../../atom';
+import { Button, Icon, openToastifyAlert } from '../../atom';
 
 import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
 
@@ -22,21 +23,78 @@ type GroupListProps = {
   typeList: string;
 };
 
+type TitleEditProps = {
+  [key: number]: boolean;
+};
+
+type CategoryListProps = {
+  idx: number;
+  name: string;
+};
+
 export function GroupManagement() {
   const [groupList, setGroupList] = useState<GroupListProps[]>([]);
-  const [isTitleEdit, setIsTitleEdit] = useState(false);
+  const [categoryList, setCategoryList] = useState<CategoryListProps[]>([]);
+  const [groupName, setGroupName] = useState<string>('');
+  const [groupIdx, setGroupIdx] = useState<number | null>(null);
+  const [nameList, setNameList] = useState<string>('');
+  const [typeList, setTypeList] = useState<string>('');
+  //서버로 요청하기 위해서 Idx로 변환
+  const [typeIdxList, setTypeIdxList] = useState<number[]>([]);
+  const [isTitleEdit, setIsTitleEdit] = useState<TitleEditProps>({});
   const [tagInputValue, setTagInputValue] = useState<string>('');
   const { openModal } = useModal();
+  const { closeModal } = useModal();
 
-  const titleEditHandler = () => {
-    // 등록 후 초기화
-    setTagInputValue('');
+  //typeList 들어왔을때 서버로 요청할 수 있는  형태로 변환 Number[]
+  useEffect(() => {
+    if (typeList) {
+      const typeListArray = typeList.split(',').map(Number);
+      const numberArray = typeListArray.map((item) => Number(item));
+      setTypeIdxList(numberArray);
+    }
+  }, [typeList]);
+
+  const titleEditHandler = (id: number) => {
+    updateGroupInfoData(typeIdxList);
+    setIsTitleEdit((prevState) => ({
+      ...prevState,
+      [id]: false, // Turn off edit mode after saving
+    }));
   };
+
+  const openToggleEdit = (id: number, typeList: string) => {
+    setIsTitleEdit(() => ({
+      [id]: true, // 선택된 항목만 true
+    }));
+    setTagInputValue('');
+    setGroupIdx(id);
+    setTypeList(typeList);
+  };
+
+  const closeToggleEdit = (id: number) => {
+    setIsTitleEdit(() => ({
+      [id]: false, // 선택된 항목만 false
+    }));
+    //초기화
+    setTagInputValue('');
+    setTypeList('');
+  };
+
   /*  모달 열기 */
-  const openCategoryAddModal = () => {
+  const openCategoryAddModal = (nameList: string, typeList: string) => {
+    setTypeList(typeList);
+    const process = nameList.split(',').map((el) => el);
     openModal({
       title: '',
-      content: <CategoryAddModal category={[]} />,
+      content: (
+        <CategoryAddModal
+          categoryList={categoryList}
+          nameList={process}
+          typeList={typeList}
+          onSave={(selectedTags) => updateGroupInfoData(selectedTags)}
+        />
+      ),
     });
   };
   const openScreenPathModal = () => {
@@ -48,7 +106,12 @@ export function GroupManagement() {
   const openCreateGroupModal = () => {
     openModal({
       title: '',
-      content: <CreateGroupModal />,
+      content: (
+        <CreateGroupModal
+          categoryList={categoryList}
+          categoryGroupRefetch={categoryGroupRefetch}
+        />
+      ),
     });
   };
   const openTagMappingWindow = () => {
@@ -58,6 +121,30 @@ export function GroupManagement() {
       // queryParams: { state: '' },
     });
   };
+
+  //카테고리 그룹 리스트 불러오기 api
+  const getCategory = async () => {
+    const res = await classificationInstance.get(`/v1/category/simple`);
+    console.log(res);
+    return res;
+  };
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    refetch: categoryRefetch,
+  } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (categoryData) {
+      setCategoryList(categoryData.data.data.categoryItemList);
+    }
+  }, [categoryData]);
 
   //카테고리 그룹 리스트 불러오기 api
   const getCategoryGroup = async () => {
@@ -82,6 +169,41 @@ export function GroupManagement() {
       setGroupList(categoryGroupData.data.data.groupList);
     }
   }, [categoryGroupData]);
+
+  //그룹 정보 업데이트 api
+  const updateGroupInfo = async (selectedTags: number[]) => {
+    const data = {
+      groupIdx: groupIdx,
+      name: tagInputValue,
+      types: selectedTags,
+    };
+    return await classificationInstance.put(`/v1/category/group`, data);
+  };
+  const { mutate: updateGroupInfoData } = useMutation({
+    mutationFn: updateGroupInfo,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      //그룹 리스트 재호출
+      categoryGroupRefetch();
+      setTagInputValue('');
+      closeModal();
+    },
+  });
 
   return (
     <Container>
@@ -108,7 +230,7 @@ export function GroupManagement() {
             <GroupList key={`${list.idx} - ${list.name}`}>
               <li>
                 <span className="list_top">
-                  {isTitleEdit ? (
+                  {isTitleEdit[list.idx] ? (
                     <span className="list_title ">
                       <input
                         value={tagInputValue}
@@ -117,7 +239,7 @@ export function GroupManagement() {
                       <button
                         type="button"
                         className="edit_button"
-                        onClick={() => titleEditHandler()}
+                        onClick={() => titleEditHandler(list.idx)}
                       >
                         저장
                       </button>
@@ -125,7 +247,7 @@ export function GroupManagement() {
                         type="button"
                         className="edit_cancel"
                         onClick={() => {
-                          setIsTitleEdit(false);
+                          closeToggleEdit(list.idx);
                           setTagInputValue('');
                         }}
                       >
@@ -137,7 +259,9 @@ export function GroupManagement() {
                       <strong>{list.name}</strong>
                       <button
                         type="button"
-                        onClick={() => setIsTitleEdit(true)}
+                        onClick={() => {
+                          openToggleEdit(list.idx, list.typeList);
+                        }}
                       >
                         수정
                       </button>
@@ -161,16 +285,19 @@ export function GroupManagement() {
                 <span className="list_body">
                   <span className="category_title">
                     카테고리
-                    <span className="sub">{`(${list.nameList.length}개)`}</span>
+                    <span className="sub">{`(${list.nameList.split(',').length}개)`}</span>
                   </span>
                   <ul className="category_list">
-                    {/* //TODO : 데이터 맵 */}
-                    <li>{list.nameList}</li>
+                    {list.nameList.split(',').map((name, i) => (
+                      <li key={i}>{name}</li>
+                    ))}
                     <li>
                       <button
                         type="button"
                         className="category_add_button"
-                        onClick={openCategoryAddModal}
+                        onClick={() => {
+                          openCategoryAddModal(list.nameList, list.typeList);
+                        }}
                       >
                         + 카테고리 추가
                       </button>
