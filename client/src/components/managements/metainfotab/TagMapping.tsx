@@ -151,7 +151,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
     <>
       <Tags
         ref={ref}
-        className={`gap ${activeItem === item ? 'on' : ''}`} // item으로 비교
+        className={`gap ${activeItem === item ? 'on' : ''}`}
         onClick={() => handleTagClick(item)}
         style={{ opacity: isDragging ? 0.5 : 1 }}
       >

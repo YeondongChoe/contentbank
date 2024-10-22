@@ -171,9 +171,15 @@ export function ReportProcessModal({
       <Alert
         top="calc(50% - 100px)"
         isAlertOpen={isAlertOpen}
-        description={'해당 문항을 신고하시겠습니까?'}
+        description={
+          registorReport
+            ? '해당 문항을 신고하시겠습니까?'
+            : '해당 문항을 처리하시겠습니까?'
+        }
         subDescription={
-          '신고 후 해당 문항은 리스트에서 사라지며, 취소는 불가합니다.'
+          registorReport
+            ? '신고 후 해당 문항은 리스트에서 사라지며, 취소는 불가합니다.'
+            : '처리 후 해당 문항은 리스트에서 사라지며, 취소는 불가합니다.'
         }
         action="확인"
         isWarning={true}
