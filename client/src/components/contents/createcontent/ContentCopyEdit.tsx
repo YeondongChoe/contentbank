@@ -82,6 +82,11 @@ export function ContentCopyEdit({
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
+  const [selectedList, setSelectedList] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
 
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {

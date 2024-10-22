@@ -915,7 +915,6 @@ export function ClassificationEdit({
       radio3depthCheck,
       radio4depthCheck,
     ];
-
     // itemTreeKeyList 객체를 빈 객체로 초기화
     const itemTreeKeyList: CheckedItemType = {};
 
@@ -934,7 +933,6 @@ export function ClassificationEdit({
       itemTreeKeyList: [itemTreeKeyList],
     };
     const res = await classificationInstance.post('/v1/item', data);
-    console.log('classificationInstance 응답:', res);
     return res;
   };
 

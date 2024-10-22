@@ -352,14 +352,14 @@ export function Worksheet() {
               setSelectedValue={setSelectedTag}
             />
           )}
-          {/* {categoriesE && categoryTitles[16] && (
+          {/* {categoriesE && categoryTitles[15] && (
             <Select
               onDefaultSelect={() =>
-                handleDefaultSelect(categoryTitles[16]?.code)
+                handleDefaultSelect(categoryTitles[15]?.code)
               }
               width={'130px'}
-              defaultValue={categoryTitles[16]?.code}
-              key={categoryTitles[16]?.code}
+              defaultValue={categoryTitles[15]?.code}
+              key={categoryTitles[15]?.code}
               options={categoriesE[2]}
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedSource}

@@ -446,7 +446,6 @@ export function MetaRadioSelect({
       radio5depthChangeCheck, //TODO : api 키값 추가되면 주석 해제
       radio6depthChangeCheck,
     ];
-
     // itemTreeKeyList 객체를 빈 객체로 초기화
     const itemTreeKeyList: ItemTreeKeyType = {};
 
@@ -461,12 +460,10 @@ export function MetaRadioSelect({
       '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
       itemTreeKeyList,
     );
-
     const data = {
       itemTreeKeyList: [itemTreeKeyList],
     };
     const res = await classificationInstance.post('/v1/item', data);
-    console.log('classificationInstance 응답 : ***바꿀 분류***', res);
     return res;
   };
 

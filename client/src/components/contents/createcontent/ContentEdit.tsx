@@ -88,13 +88,10 @@ export function ContentEdit({
       [key: number]: string;
     }[]
   >([]);
-
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
     if (onItemClickData) {
       const quizCategory = onItemClickData?.quizCategoryList[0]?.quizCategory;
-
-      console.log('quizCategory-------------', quizCategory);
 
       // 값이 존재하면 상태값을 업데이트
       if (quizCategory) {
@@ -277,6 +274,7 @@ export function ContentEdit({
     selectedSource,
     selectedDifficulty,
     onItemClickData,
+    selectedList,
     selectedList,
   ]);
 
