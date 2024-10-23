@@ -1557,6 +1557,7 @@ const TitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding-bottom: 20px;
+  //padding-left: 50px;
 `;
 const Title = styled.div`
   font-size: 24px;
@@ -1569,7 +1570,7 @@ const MainWrapper = styled.div`
   gap: 20px;
 `;
 const SettingWrapper = styled.div`
-  width: 40%;
+  min-width: 430px;
   background-color: ${COLOR.LIGHT_GRAY};
   padding: 10px;
 `;
@@ -1642,7 +1643,8 @@ const DeleteIconWrapper = styled.button`
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 60%;
+  flex: 1 0 0;
+  //width: 100%;
   padding: 10px;
   background-color: ${COLOR.LIGHT_GRAY};
 `;
