@@ -16,7 +16,7 @@ import { Button, Icon, openToastifyAlert } from '../../atom';
 import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
 
 type GroupListProps = {
-  codes: string;
+  code: string;
   idx: number;
   name: string;
   nameList: string;
@@ -35,7 +35,6 @@ type CategoryListProps = {
 export function GroupManagement() {
   const [groupList, setGroupList] = useState<GroupListProps[]>([]);
   const [categoryList, setCategoryList] = useState<CategoryListProps[]>([]);
-  const [groupName, setGroupName] = useState<string>('');
   const [groupIdx, setGroupIdx] = useState<number | null>(null);
   const [nameList, setNameList] = useState<string>('');
   const [typeList, setTypeList] = useState<string>('');
@@ -104,10 +103,10 @@ export function GroupManagement() {
       ),
     });
   };
-  const openScreenPathModal = () => {
+  const openScreenPathModal = (code: string) => {
     openModal({
       title: '',
-      content: <ScreenPathModal paths={[]} />,
+      content: <ScreenPathModal code={code} />,
     });
   };
   const openCreateGroupModal = () => {
@@ -132,7 +131,7 @@ export function GroupManagement() {
   //카테고리 그룹 리스트 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category/simple`);
-    console.log(res);
+    //console.log(res);
     return res;
   };
   const {
@@ -276,10 +275,12 @@ export function GroupManagement() {
                   )}
 
                   <span className="list_link_box">
-                    <span className="linktree">{`${`link>link>link 1건`}`}</span>
+                    <span className="linktree">화면설정경로</span>
                     <button
                       className="link_button"
-                      onClick={() => openScreenPathModal()}
+                      onClick={() => {
+                        openScreenPathModal(list.code);
+                      }}
                     >
                       <Icon
                         src={`/images/icon/link_off.svg`}

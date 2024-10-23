@@ -1,23 +1,81 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
-import { Button } from '../../../../components/atom';
+import { resourceServiceInstance } from '../../../../api/axios';
+import { Button, ValueNone } from '../../../../components/atom';
 import { COLOR } from '../../../../components/constants';
-import { Search } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
+import { windowOpenHandler } from '../../../../utils/windowHandler';
 
-export function ScreenPathModal({ paths }: { paths: string[] }) {
+type SettingDataProps = {
+  companyCode: string;
+  createdAt: string;
+  createdBy: string;
+  idx: number;
+  isUse: boolean;
+  lastModifiedAt: string;
+  lastModifiedBy: string;
+  name: string;
+  serviceType: string;
+  sort: number;
+  type: string;
+  url: string;
+  urlName: string;
+};
+
+type PathModalProps = {
+  code: string;
+};
+
+export function ScreenPathModal({ code }: PathModalProps) {
+  const [menuSetting, setMenuSetting] = useState<SettingDataProps[]>([]);
   const { closeModal } = useModal();
-  const [pathList, setTagsList] = useState([
-    '분류1 분류1 분류1 분류1 분류1분류1분류1',
-    '분류777777dsadsad dsadsaddsd dsa7',
-    '분류777777dsadsad dsadsadd dsa7',
-    '분류777777dsadsad dsadsadssd dsa7',
-    '분류분류분류분류분류분류분류분류분류분류',
-  ]);
+
+  //그룹 화면설정 정보 불러오기 api
+  const getMenuSetting = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/group?groupCode=${code}`,
+    );
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
+    queryKey: ['get-menuSetting'],
+    queryFn: getMenuSetting,
+    meta: {
+      errorMessage: 'get-menuSetting 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (code) {
+      menuSettingRefetch();
+    }
+  }, [code]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      setMenuSetting(menuSettingData.data.data.menuList);
+    }
+  }, [menuSettingData]);
+
+  // 설정 윈도우 열기
+  const openSettingWindow = (url: string) => {
+    windowOpenHandler({
+      name: 'step2',
+      url: `${url}`,
+      options:
+        'width=1600,height=965,top=Math.round(window.screen.height / 2 - windowHeight / 2),left=Math.round(window.screen.width / 2 - windowWidth / 2),toolbar=no,titlebar=no,scrollbars=no,status=no,location=no,menubar=no,frame=no',
+    });
+  };
 
   return (
     <Container>
@@ -26,14 +84,25 @@ export function ScreenPathModal({ paths }: { paths: string[] }) {
       <ScrollWrapper>
         <PerfectScrollbar>
           <ListWrapper>
-            {pathList.map((path, index) => (
-              <li key={path} className={`path_list`} onClick={() => {}}>
-                <span className="path_name">{`${index + 1}.${path}`}</span>
-                <button className="path_button" onClick={() => {}}>
-                  화면 설정으로 이동
-                </button>
-              </li>
-            ))}
+            {menuSetting.length > 0 ? (
+              <>
+                {menuSetting.map((path) => (
+                  <li key={path.idx} className={`path_list`}>
+                    <span className="path_name">{`${path.idx}.${path.name} > ${path.urlName}`}</span>
+                    <button
+                      className="path_button"
+                      onClick={() => openSettingWindow(path.url)}
+                    >
+                      화면 설정으로 이동
+                    </button>
+                  </li>
+                ))}
+              </>
+            ) : (
+              <ValueNoneWrapper>
+                <ValueNone info={`사용중인 화면이 없습니다`} />
+              </ValueNoneWrapper>
+            )}
           </ListWrapper>
         </PerfectScrollbar>
       </ScrollWrapper>
@@ -110,4 +179,9 @@ const ScrollWrapper = styled.div`
   max-height: 300px;
   overflow-y: auto;
   width: 100%;
+`;
+const ValueNoneWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;
