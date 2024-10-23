@@ -88,7 +88,7 @@ export function ScreenPathModal({ code }: PathModalProps) {
               <>
                 {menuSetting.map((path) => (
                   <li key={path.idx} className={`path_list`}>
-                    <span className="path_name">{`${path.idx}.${path.name} > ${path.urlName}`}</span>
+                    <span className="path_name">{`${path.idx}. ${path.type === 'VIEW' ? '콘텐츠 제작' : path.type === 'MANAGEMENT' ? '콘텐츠 관리' : ''} > ${path.name} > ${path.urlName}`}</span>
                     <button
                       className="path_button"
                       onClick={() => openSettingWindow(path.url)}
