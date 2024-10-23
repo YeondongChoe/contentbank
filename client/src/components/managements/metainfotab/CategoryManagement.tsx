@@ -979,12 +979,7 @@ const AuthorityName = styled.div<{ $isSelected: boolean }>`
     color: white;
     border-radius: 5px;
   }
-  /* > span {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-  .ellipsis {
+  /* .ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;

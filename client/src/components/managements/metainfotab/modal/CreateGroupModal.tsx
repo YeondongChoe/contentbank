@@ -147,8 +147,15 @@ export function CreateGroupModal({
       </ScrollWrapper>
       <ButtonWrapper>
         <p>총 {selectedCategories.length}개의 카테고리 선택</p>
-        <Button onClick={() => closeModal()}>취소</Button>
-        <Button onClick={() => postGroupData()} $filled>
+        <Button width="100px" height="40px" onClick={() => closeModal()}>
+          취소
+        </Button>
+        <Button
+          width="100px"
+          height="40px"
+          onClick={() => postGroupData()}
+          $filled
+        >
           확인
         </Button>
       </ButtonWrapper>
@@ -227,17 +234,13 @@ const ButtonWrapper = styled.div`
   padding: 20px;
   display: flex;
   align-items: center;
+  gap: 10px;
 
   p {
     flex: 1 1 0;
     font-size: 12px;
     font-weight: 700;
     color: ${COLOR.PRIMARY};
-  }
-  button {
-    margin-left: 10px;
-    width: 100px;
-    height: 40px;
   }
 `;
 const ScrollWrapper = styled.div`
