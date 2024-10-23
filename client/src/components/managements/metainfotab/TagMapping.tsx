@@ -10,11 +10,14 @@ import { Search } from '../../../components/molecules';
 import { COLOR } from '../../constants';
 import { useDnD } from '../../molecules/dragAndDrop';
 
+import { TagMappingInit } from './TagMappingInit';
+
 export function TagMapping() {
   const [tagList, setTagList] = useState<string[]>([]);
   const [mappingList, setMappingList] = useState<string[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [isInit, setIsInit] = useState<boolean>(false);
 
   useEffect(() => {
     setTagList(['전체', '수학', '영어']);
@@ -46,78 +49,86 @@ export function TagMapping() {
     setMappingList(updatedList);
   };
 
+  const goToInit = () => {
+    setIsInit(true);
+  };
+
   useEffect(() => {}, [tagList]);
   useEffect(() => {
     console.log('checkList----------', checkList);
   }, [checkList]);
   return (
     <>
-      <Container>
-        <ListWrapper>
-          <strong className="title">태그 선택</strong>
-          <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-          <span className="border_tag">{`${'교과'}`}</span>
-          <Search
-            placeholder="태그를 검색해주세요."
-            value={''}
-            onChange={() => {}}
-            onKeyDown={() => {}}
-            margin="0 0 5px 0"
-          />
-          <TagsWrappper>
-            {tagList.map((el, idx) => (
-              <Tags
-                key={`${el} ${idx}`}
-                onClick={(e) => handleButtonCheck(e, el)}
-              >
-                <span className="icon_wwrap">
-                  <CheckBoxI
-                    id={el}
-                    value={el}
-                    checked={checkList.includes(el)}
-                    readOnly
-                  />
-                </span>
-                <span>{`${el}`}</span>
-              </Tags>
-            ))}
-          </TagsWrappper>
-
-          <Button $filled onClick={() => {}} $margin="15px 0 0 0">
-            <span>{`${checkList.length}`}개의 태그 하위로 추가</span>
-          </Button>
-        </ListWrapper>
-        <ListItemWrapper>
-          <strong className="title">매핑</strong>
-          <ButtonWrapper>
-            <Button
-              width="200px"
-              height="35px"
-              onClick={() => {}}
-              $margin="0 10px 0 0"
-            >
-              최상위 태그 추가
-            </Button>
-            <Button width="150px" height="35px" onClick={() => {}}>
-              순서변경
-            </Button>
-          </ButtonWrapper>
-          <DndProvider backend={HTML5Backend}>
-            <TagsWrappper className="height">
-              {mappingList.map((el, idx) => (
-                <DraggableItem
+      {isInit ? (
+        <TagMappingInit />
+      ) : (
+        <Container>
+          <ListWrapper>
+            <strong className="title">태그 선택</strong>
+            <span className="sub_title">매핑할 태그를 선택해주세요.</span>
+            <span className="border_tag">{`${'교과'}`}</span>
+            <Search
+              placeholder="태그를 검색해주세요."
+              value={''}
+              onChange={() => {}}
+              onKeyDown={() => {}}
+              margin="0 0 5px 0"
+            />
+            <TagsWrappper>
+              {tagList.map((el, idx) => (
+                <Tags
                   key={`${el} ${idx}`}
-                  item={el}
-                  index={idx}
-                  activeItem={activeItem}
-                  handleTagClick={handleTagClick}
-                  moveTag={moveTag}
-                />
+                  onClick={(e) => handleButtonCheck(e, el)}
+                >
+                  <span className="icon_wwrap">
+                    <CheckBoxI
+                      id={el}
+                      value={el}
+                      checked={checkList.includes(el)}
+                      readOnly
+                    />
+                  </span>
+                  <span>{`${el}`}</span>
+                </Tags>
               ))}
             </TagsWrappper>
-          </DndProvider>
-        </ListItemWrapper>
-      </Container>
+
+            <Button $filled onClick={() => {}} $margin="15px 0 0 0">
+              <span>{`${checkList.length}`}개의 태그 하위로 추가</span>
+            </Button>
+          </ListWrapper>
+          <ListItemWrapper>
+            <strong className="title">매핑</strong>
+            <ButtonWrapper>
+              <Button
+                width="200px"
+                height="35px"
+                onClick={() => {}}
+                $margin="0 10px 0 0"
+              >
+                최상위 태그 추가
+              </Button>
+              <Button width="150px" height="35px" onClick={() => goToInit()}>
+                순서변경
+              </Button>
+            </ButtonWrapper>
+            <DndProvider backend={HTML5Backend}>
+              <TagsWrappper className="height">
+                {mappingList.map((el, idx) => (
+                  <DraggableItem
+                    key={`${el} ${idx}`}
+                    item={el}
+                    index={idx}
+                    activeItem={activeItem}
+                    handleTagClick={handleTagClick}
+                    moveTag={moveTag}
+                  />
+                ))}
+              </TagsWrappper>
+            </DndProvider>
+          </ListItemWrapper>
+        </Container>
+      )}
       <BottomButtonWrapper>
         <Button width="300px" $filled onClick={() => {}}>
           저장
@@ -182,7 +193,6 @@ const Container = styled.div`
   padding: 0 20px;
   .title {
     font-size: 20px;
-    padding-bottom: 10px;
   }
   .sub_title {
     color: #7d7d7d;
