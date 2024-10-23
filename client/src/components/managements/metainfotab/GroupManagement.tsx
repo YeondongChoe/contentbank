@@ -82,8 +82,15 @@ export function GroupManagement() {
   };
 
   /*  모달 열기 */
-  const openCategoryAddModal = (nameList: string, typeList: string) => {
+  const openCategoryAddModal = (
+    nameList: string,
+    typeList: string,
+    name: string,
+    idx: number,
+  ) => {
     setTypeList(typeList);
+    setNameList(name);
+    setGroupIdx(idx);
     const process = nameList.split(',').map((el) => el);
     openModal({
       title: '',
@@ -174,7 +181,7 @@ export function GroupManagement() {
   const updateGroupInfo = async (selectedTags: number[]) => {
     const data = {
       groupIdx: groupIdx,
-      name: tagInputValue,
+      name: tagInputValue || nameList,
       types: selectedTags,
     };
     return await classificationInstance.put(`/v1/category/group`, data);
@@ -296,7 +303,12 @@ export function GroupManagement() {
                         type="button"
                         className="category_add_button"
                         onClick={() => {
-                          openCategoryAddModal(list.nameList, list.typeList);
+                          openCategoryAddModal(
+                            list.nameList,
+                            list.typeList,
+                            list.name,
+                            list.idx,
+                          );
                         }}
                       >
                         + 카테고리 추가
