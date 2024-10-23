@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { resourceServiceInstance } from '../../../../api/axios';
 import { Button, ValueNone } from '../../../../components/atom';
 import { COLOR } from '../../../../components/constants';
-import { Search } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 
