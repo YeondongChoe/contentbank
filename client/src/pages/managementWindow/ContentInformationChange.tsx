@@ -53,6 +53,9 @@ export function ContentInformationChange() {
   const [editQuizList, setEditQuizList] = useState<QuizListType[]>([]);
   const [coppyQuizList, setCoppyQuizList] = useState<QuizListType[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [showplaceholder, setShowplaceholder] = useState<boolean>(true);
+  // const [changeValue, setChangeValue] = useState<string>('');
+  // const [showplaceholder2, setShowplaceholder2] = useState<boolean>(true);
   const [changeValue, setChangeValue] = useState<{
     tag: any[];
     changeValue: string;
@@ -412,6 +415,18 @@ export function ContentInformationChange() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     window.openEQ(state);
+    // if (state === 'first_area_test') {
+    //   setShowplaceholder(false);
+    // }
+    // setTimeout(() => {
+    //   const element = document.querySelector(`.${state}`) as HTMLElement;
+    //   if (element) {
+    //     const newValue = element.innerHTML;
+    //     if (state === 'first_area_test') {
+    //       setSearchValue(newValue);
+    //     }
+    //   }
+    // }, 100);
   };
 
   const handleSearchValueChange = (e: React.FormEvent<HTMLDivElement>) => {

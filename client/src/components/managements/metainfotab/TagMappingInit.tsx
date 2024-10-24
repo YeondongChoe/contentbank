@@ -9,26 +9,40 @@ import { Button, CheckBoxI, Icon } from '../../../components/atom';
 import { useDnD } from '../../molecules/dragAndDrop';
 
 export function TagMappingInit() {
-  const [tagList, setTagList] = useState<string[]>([]);
+  const [lists, setLists] = useState({
+    categoryList: [''],
+    mappingList: [''],
+  });
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [checkList, setCheckList] = useState<string[]>([]);
 
   useEffect(() => {
-    setTagList(['전체', '수학', '영어']);
+    setLists({
+      categoryList: ['전체', '수학', '영어'],
+      mappingList: ['11차', '10차', '9차', '8차'],
+    });
   }, []);
 
-  const moveTag = (dragIndex: number, hoverIndex: number) => {
-    console.log('드래그 인덱스:', dragIndex, '호버 인덱스:', hoverIndex);
-    const updatedList = [...tagList];
+  const moveTag = (
+    dragIndex: number,
+    hoverIndex: number,
+    listType: 'category' | 'mapping',
+  ) => {
+    const updatedList = [...lists[`${listType}List`]];
     const draggedItem = updatedList.splice(dragIndex, 1)[0];
     updatedList.splice(hoverIndex, 0, draggedItem);
-    setTagList(updatedList);
+
+    setLists((prev) => ({
+      ...prev,
+      [`${listType}List`]: updatedList,
+    }));
   };
+
   const handleTagClick = (item: string) => {
     setActiveItem(activeItem === item ? null : item);
   };
 
-  useEffect(() => {}, [tagList]);
+  useEffect(() => {}, [lists]);
   return (
     <Container>
       {/* 최초 진입 */}
@@ -37,21 +51,23 @@ export function TagMappingInit() {
         <span className="sub_title">매핑할 태그 간의 순서를 지정해주세요.</span>
         <DndProvider backend={HTML5Backend}>
           <TagsWrappper>
-            {tagList.map((el, idx) => (
+            {lists.categoryList.map((el, idx) => (
               <DraggableInitItem
                 key={`${el} ${idx}`}
                 item={el}
                 index={idx}
                 activeItem={activeItem}
                 handleTagClick={handleTagClick}
-                moveTag={moveTag}
+                moveTag={(dragIndex, hoverIndex) =>
+                  moveTag(dragIndex, hoverIndex, 'category')
+                }
               />
             ))}
           </TagsWrappper>
         </DndProvider>
 
         <Button $filled onClick={() => {}} $margin="15px 0 0 0">
-          <span>{`${checkList.length}`}개의 태그 하위로 추가</span>
+          <span>지금 순서로 매핑하기</span>
         </Button>
         <p className="sub_info">
           카테고리 순서 변경 시, 기존에 매핑된 정보가 초기화될 수 있습니다.
@@ -64,6 +80,22 @@ export function TagMappingInit() {
       </ListWrapper>
       <ListItemWrapper>
         <strong>매핑</strong>
+        <DndProvider backend={HTML5Backend}>
+          <TagsWrappper className="height">
+            {lists.mappingList.map((el, idx) => (
+              <DraggableInitItem
+                key={`${el} ${idx}`}
+                item={el}
+                index={idx}
+                activeItem={activeItem}
+                handleTagClick={handleTagClick}
+                moveTag={(dragIndex, hoverIndex) =>
+                  moveTag(dragIndex, hoverIndex, 'mapping')
+                }
+              />
+            ))}
+          </TagsWrappper>
+        </DndProvider>
       </ListItemWrapper>
     </Container>
   );

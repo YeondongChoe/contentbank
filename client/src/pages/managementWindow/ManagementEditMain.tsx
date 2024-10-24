@@ -93,7 +93,7 @@ export function ManagementEditMain() {
   return (
     <Container>
       <TitleWrapper>
-        <Title>메타정보 관리</Title>
+        <Title>문항 일괄 편집</Title>
       </TitleWrapper>
       <ButtonWrapper>
         <Button

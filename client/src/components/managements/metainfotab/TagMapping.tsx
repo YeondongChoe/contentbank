@@ -42,6 +42,8 @@ export function TagMapping() {
     setActiveItem(activeItem === item ? null : item);
   };
 
+  const addTags = () => {};
+
   const moveTag = (dragIndex: number, hoverIndex: number) => {
     const updatedList = [...mappingList];
     const draggedItem = updatedList.splice(dragIndex, 1)[0];
@@ -103,7 +105,7 @@ export function TagMapping() {
               <Button
                 width="200px"
                 height="35px"
-                onClick={() => {}}
+                onClick={() => addTags()}
                 $margin="0 10px 0 0"
               >
                 최상위 태그 추가
@@ -130,7 +132,13 @@ export function TagMapping() {
         </Container>
       )}
       <BottomButtonWrapper>
-        <Button width="300px" $filled onClick={() => {}}>
+        <Button
+          width="300px"
+          $filled
+          onClick={() => {
+            setIsInit(!isInit);
+          }}
+        >
           저장
         </Button>
       </BottomButtonWrapper>
