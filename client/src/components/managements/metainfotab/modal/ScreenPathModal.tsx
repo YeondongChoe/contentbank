@@ -9,30 +9,11 @@ import { resourceServiceInstance } from '../../../../api/axios';
 import { Button, ValueNone } from '../../../../components/atom';
 import { COLOR } from '../../../../components/constants';
 import { useModal } from '../../../../hooks';
+import { MenuDataType } from '../../../../types';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 
-type SettingDataProps = {
-  companyCode: string;
-  createdAt: string;
-  createdBy: string;
-  idx: number;
-  isUse: boolean;
-  lastModifiedAt: string;
-  lastModifiedBy: string;
-  name: string;
-  serviceType: string;
-  sort: number;
-  type: string;
-  url: string;
-  urlName: string;
-};
-
-type PathModalProps = {
-  code: string;
-};
-
-export function ScreenPathModal({ code }: PathModalProps) {
-  const [menuSetting, setMenuSetting] = useState<SettingDataProps[]>([]);
+export function ScreenPathModal({ code }: { code: string }) {
+  const [menuSetting, setMenuSetting] = useState<MenuDataType[]>([]);
   const { closeModal } = useModal();
 
   //그룹 화면설정 정보 불러오기 api
@@ -88,7 +69,7 @@ export function ScreenPathModal({ code }: PathModalProps) {
               <>
                 {menuSetting.map((path) => (
                   <li key={path.idx} className={`path_list`}>
-                    <span className="path_name">{`${path.idx}.${path.name} > ${path.urlName}`}</span>
+                    <span className="path_name">{`${path.idx}. ${path.type === 'VIEW' ? '콘텐츠 제작' : path.type === 'MANAGEMENT' ? '콘텐츠 관리' : ''} > ${path.name} > ${path.urlName}`}</span>
                     <button
                       className="path_button"
                       onClick={() => openSettingWindow(path.url)}

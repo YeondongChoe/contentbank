@@ -232,104 +232,107 @@ export function GroupManagement() {
 
       <ScrollWrapper>
         <PerfectScrollbar>
-          {groupList.map((list) => (
-            <GroupList key={`${list.idx} - ${list.name}`}>
-              <li>
-                <span className="list_top">
-                  {isTitleEdit[list.idx] ? (
-                    <span className="list_title ">
-                      <input
-                        value={tagInputValue}
-                        onChange={(e) => setTagInputValue(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        className="edit_button"
-                        onClick={() => titleEditHandler(list.idx)}
-                      >
-                        저장
-                      </button>
-                      <button
-                        type="button"
-                        className="edit_cancel"
-                        onClick={() => {
-                          closeToggleEdit(list.idx);
-                          setTagInputValue('');
-                        }}
-                      >
-                        취소
-                      </button>
-                    </span>
-                  ) : (
-                    <span className="list_title">
-                      <strong>{list.name}</strong>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          openToggleEdit(list.idx, list.typeList);
-                        }}
-                      >
-                        수정
-                      </button>
-                    </span>
-                  )}
+          {groupList
+            .slice()
+            .sort((a, b) => a.idx - b.idx)
+            .map((list) => (
+              <GroupList key={`${list.idx} - ${list.name}`}>
+                <li>
+                  <span className="list_top">
+                    {isTitleEdit[list.idx] ? (
+                      <span className="list_title ">
+                        <input
+                          value={tagInputValue}
+                          onChange={(e) => setTagInputValue(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="edit_button"
+                          onClick={() => titleEditHandler(list.idx)}
+                        >
+                          저장
+                        </button>
+                        <button
+                          type="button"
+                          className="edit_cancel"
+                          onClick={() => {
+                            closeToggleEdit(list.idx);
+                            setTagInputValue('');
+                          }}
+                        >
+                          취소
+                        </button>
+                      </span>
+                    ) : (
+                      <span className="list_title">
+                        <strong>{list.name}</strong>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            openToggleEdit(list.idx, list.typeList);
+                          }}
+                        >
+                          수정
+                        </button>
+                      </span>
+                    )}
 
-                  <span className="list_link_box">
-                    <span className="linktree">화면설정경로</span>
-                    <button
-                      className="link_button"
-                      onClick={() => {
-                        openScreenPathModal(list.code);
-                      }}
-                    >
-                      <Icon
-                        src={`/images/icon/link_off.svg`}
-                        width={'20px'}
-                        height={'20px'}
-                      />
-                    </button>
-                  </span>
-                </span>
-                <span className="list_body">
-                  <span className="category_title">
-                    카테고리
-                    <span className="sub">{`(${list.nameList.split(',').length}개)`}</span>
-                  </span>
-                  <ul className="category_list">
-                    {list.nameList.split(',').map((name, i) => (
-                      <li key={i}>{name}</li>
-                    ))}
-                    <li>
+                    <span className="list_link_box">
+                      <span className="linktree">화면설정경로</span>
                       <button
-                        type="button"
-                        className="category_add_button"
+                        className="link_button"
                         onClick={() => {
-                          openCategoryAddModal(
-                            list.nameList,
-                            list.typeList,
-                            list.name,
-                            list.idx,
-                          );
+                          openScreenPathModal(list.code);
                         }}
                       >
-                        + 카테고리 추가
+                        <Icon
+                          src={`/images/icon/link_off.svg`}
+                          width={'20px'}
+                          height={'20px'}
+                        />
                       </button>
-                    </li>
-                  </ul>
-                </span>
-                <span className="list_bottom">
-                  <button
-                    className="mapping_button"
-                    type="button"
-                    onClick={() => openTagMappingWindow()}
-                  >
-                    태그 매핑
-                  </button>
-                  <span className="list_info">{`${'매핑이란, 연관있는 태그 간의 상하관계를 적용하는 행위를 말합니다. 예) 과일 > 키위 > 그린키위 '}`}</span>
-                </span>
-              </li>
-            </GroupList>
-          ))}
+                    </span>
+                  </span>
+                  <span className="list_body">
+                    <span className="category_title">
+                      카테고리
+                      <span className="sub">{`(${list.nameList.split(',').length}개)`}</span>
+                    </span>
+                    <ul className="category_list">
+                      {list.nameList.split(',').map((name, i) => (
+                        <li key={i}>{name}</li>
+                      ))}
+                      <li>
+                        <button
+                          type="button"
+                          className="category_add_button"
+                          onClick={() => {
+                            openCategoryAddModal(
+                              list.nameList,
+                              list.typeList,
+                              list.name,
+                              list.idx,
+                            );
+                          }}
+                        >
+                          + 카테고리 추가
+                        </button>
+                      </li>
+                    </ul>
+                  </span>
+                  <span className="list_bottom">
+                    <button
+                      className="mapping_button"
+                      type="button"
+                      onClick={() => openTagMappingWindow()}
+                    >
+                      태그 매핑
+                    </button>
+                    <span className="list_info">{`${'매핑이란, 연관있는 태그 간의 상하관계를 적용하는 행위를 말합니다. 예) 과일 > 키위 > 그린키위 '}`}</span>
+                  </span>
+                </li>
+              </GroupList>
+            ))}
         </PerfectScrollbar>
       </ScrollWrapper>
       <Modal />

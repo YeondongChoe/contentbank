@@ -1,36 +1,35 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { resourceServiceInstance } from '../../api/axios';
 import { SettingList } from '../../components/molecules';
+import { MenuDataType } from '../../types';
 
 export function ManagingSetting() {
-  const dummyData = [
-    {
-      idx: 1,
-      tag: '문항',
-      name: '문항 리스트',
-      lastModifiedAt: '2024.06.01',
-      examiner: '김드림',
-      path: '/contentListManagementSetting',
+  const [menu, setMenu] = useState<MenuDataType[]>([]);
+
+  //그룹 화면설정 정보 불러오기 api
+  const getMenu = async () => {
+    const res = await resourceServiceInstance.get(`/v1/menu?type=MANAGEMENT`);
+    //console.log(res);
+    return res;
+  };
+  const { data: menuData } = useQuery({
+    queryKey: ['get-menu'],
+    queryFn: getMenu,
+    meta: {
+      errorMessage: 'get-menu 에러 메세지',
     },
-    {
-      idx: 2,
-      tag: '문항',
-      name: '문항 일괄편집',
-      lastModifiedAt: '2024.06.01',
-      examiner: '김드림',
-      path: '/contentEditingSetting',
-    },
-    {
-      idx: 3,
-      tag: '검수관리',
-      name: '검수관리 리스트',
-      lastModifiedAt: '2024.06.01',
-      examiner: '김드림',
-      path: '/inspectionManagementSetting',
-    },
-  ];
+  });
+
+  useEffect(() => {
+    if (menuData) {
+      setMenu(menuData.data.data.menuList);
+    }
+  }, [menuData]);
 
   return (
     <Container>
@@ -38,10 +37,9 @@ export function ManagingSetting() {
         <Title>콘텐츠 관리 설정</Title>
       </TitleWrapper>
       <SettingList
-        list={dummyData}
+        list={menu}
         totalCount={3}
-        //itemsCountPerPage={workbookList.pagination.pageUnit}
-        //tabVeiw={tabVeiw}
+        itemsCountPerPage={menuData?.data.data.pagination.pageUnit}
       ></SettingList>
     </Container>
   );
