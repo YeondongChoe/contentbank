@@ -9,30 +9,11 @@ import { resourceServiceInstance } from '../../../../api/axios';
 import { Button, ValueNone } from '../../../../components/atom';
 import { COLOR } from '../../../../components/constants';
 import { useModal } from '../../../../hooks';
+import { MenuDataType } from '../../../../types';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 
-type SettingDataProps = {
-  companyCode: string;
-  createdAt: string;
-  createdBy: string;
-  idx: number;
-  isUse: boolean;
-  lastModifiedAt: string;
-  lastModifiedBy: string;
-  name: string;
-  serviceType: string;
-  sort: number;
-  type: string;
-  url: string;
-  urlName: string;
-};
-
-type PathModalProps = {
-  code: string;
-};
-
-export function ScreenPathModal({ code }: PathModalProps) {
-  const [menuSetting, setMenuSetting] = useState<SettingDataProps[]>([]);
+export function ScreenPathModal({ code }: { code: string }) {
+  const [menuSetting, setMenuSetting] = useState<MenuDataType[]>([]);
   const { closeModal } = useModal();
 
   //그룹 화면설정 정보 불러오기 api
