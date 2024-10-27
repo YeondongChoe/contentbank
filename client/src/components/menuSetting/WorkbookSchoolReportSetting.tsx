@@ -302,9 +302,19 @@ export function WorkbookSchoolReportSetting() {
 
     fetchDataFromStorage();
 
-    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'sendMenuIdx') {
+        fetchDataFromStorage();
+      }
+    };
 
-    return () => clearTimeout(retryTimeout);
+    // storage 이벤트 리스너 추가
+    window.addEventListener('storage', handleStorageChange);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const whenDragEnd = (
