@@ -177,7 +177,6 @@ export function ContentClassificationSetting() {
     setPage(1);
   };
 
-  // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendMenuIdx');
@@ -198,9 +197,19 @@ export function ContentClassificationSetting() {
 
     fetchDataFromStorage();
 
-    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'sendMenuIdx') {
+        fetchDataFromStorage();
+      }
+    };
 
-    return () => clearTimeout(retryTimeout);
+    // storage 이벤트 리스너 추가
+    window.addEventListener('storage', handleStorageChange);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   //그룹 화면설정 정보 불러오기 api
