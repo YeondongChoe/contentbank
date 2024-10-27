@@ -289,39 +289,33 @@ export function ContentListSetting() {
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
 
   // 로컬 스토리지에서 데이터 가져오기
+  const fetchDataFromStorage = () => {
+    const data = localStorage.getItem('sendMenuIdx');
+    if (data) {
+      try {
+        const parsedData = JSON.parse(data);
+        setMenuIdx(parsedData.idx);
+      } catch (error) {
+        console.error('로컬 스토리지 sendData 파싱 에러:', error);
+      }
+    } else {
+      console.log('로컬 스토리지에 sendData가 없습니다.');
+    }
+  };
+
+  // storage 이벤트 리스너를 컴포넌트 바깥에서 설정
+  const handleStorageChange = (event: StorageEvent) => {
+    if (event.key === 'sendMenuIdx') {
+      fetchDataFromStorage();
+    }
+  };
+
+  // 이벤트 리스너를 앱 전체에서 한 번만 추가
+  window.addEventListener('storage', handleStorageChange);
+
   useEffect(() => {
-    const fetchDataFromStorage = () => {
-      const data = localStorage.getItem('sendMenuIdx');
-
-      if (data) {
-        try {
-          const parsedData = JSON.parse(data);
-          //console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
-          setMenuIdx(parsedData.idx);
-          //localStorage.removeItem('sendMenuIdx');
-        } catch (error) {
-          console.error('로컬 스토리지 sendData 파싱 에러:', error);
-        }
-      } else {
-        console.log('로컬 스토리지에 sendData가 없습니다.');
-      }
-    };
-
+    // 컴포넌트가 마운트될 때 한 번 실행
     fetchDataFromStorage();
-
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'sendMenuIdx') {
-        fetchDataFromStorage();
-      }
-    };
-
-    // storage 이벤트 리스너 추가
-    window.addEventListener('storage', handleStorageChange);
-
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
   }, []);
 
   const whenDragEnd = (
