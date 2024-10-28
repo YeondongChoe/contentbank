@@ -282,7 +282,7 @@ export function Navigation() {
 
               {/* 검수 관리 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/content-manage/inspection'}>
                   <GoCodescanCheckmark
                     style={{ width: '20px', height: '20px' }}
                   ></GoCodescanCheckmark>

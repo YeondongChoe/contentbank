@@ -40,6 +40,7 @@ import {
   ProcessPage,
   TagMappingPage,
   TagMappingInitPage,
+  InspectionPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -138,6 +139,10 @@ const router = createBrowserRouter([
       {
         path: '/content-manage/classify',
         element: <ManagementsTreePage />,
+      },
+      {
+        path: '/content-manage/inspection',
+        element: <InspectionPage />,
       },
       {
         path: '/content-manage/metainfo',
