@@ -282,7 +282,7 @@ export function GroupManagement() {
                       <button
                         className="link_button"
                         onClick={() => {
-                          openScreenPathModal(list.code);
+                          openScreenPathModal(list.codes);
                         }}
                       >
                         <Icon
@@ -324,7 +324,7 @@ export function GroupManagement() {
                     <button
                       className="mapping_button"
                       type="button"
-                      onClick={() => openTagMappingWindow()}
+                      onClick={() => openTagMappingWindow(list.idx)}
                     >
                       태그 매핑
                     </button>
