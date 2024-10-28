@@ -532,32 +532,22 @@ export function InspectionManagementSetting() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          //console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
+          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
           setMenuIdx(parsedData.idx);
           //localStorage.removeItem('sendMenuIdx');
         } catch (error) {
-          console.error('로컬 스토리지 sendData 파싱 에러:', error);
+          console.error('로컬 스토리지 sendMenuIdx 파싱 에러:', error);
         }
       } else {
-        console.log('로컬 스토리지에 sendData가 없습니다.');
+        console.log('로컬 스토리지에 sendMenuIdx 없습니다.');
       }
     };
 
     fetchDataFromStorage();
 
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'sendMenuIdx') {
-        fetchDataFromStorage();
-      }
-    };
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
 
-    // storage 이벤트 리스너 추가
-    window.addEventListener('storage', handleStorageChange);
-
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => clearTimeout(retryTimeout);
   }, []);
 
   const whenDragEnd = (
@@ -661,6 +651,7 @@ export function InspectionManagementSetting() {
     meta: {
       errorMessage: 'get-menuSetting 에러 메세지',
     },
+    enabled: menuIdx !== null,
   });
 
   useEffect(() => {
