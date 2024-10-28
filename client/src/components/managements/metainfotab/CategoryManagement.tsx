@@ -39,6 +39,8 @@ export function CategroyManagement() {
   const [tagsList, setTagsList] = useState<string[]>([]);
   const [autoTag, setAutoTag] = useState<string>('없음');
   const [autoTageIndex, setAutoTagIndex] = useState<number>(0);
+  //선택한 idx값
+  const [selectedIdxValue, setSelectedIdxValue] = useState<number | null>(null);
 
   const backgroundRef = useRef<HTMLDivElement>(null);
   // 배경 클릭시 태그 추가 초기화
@@ -355,34 +357,38 @@ export function CategroyManagement() {
               </span>
             </SubTitle>
             <AuthorityListWrapper>
-              {/* TODO : 데이터 들어올시 */}
               {categoryListData && (
                 <>
                   {categoryList.length > 0 ? (
                     <>
-                      {categoryList.map((el, i) => (
-                        <AuthorityWrapper
-                          key={`${el} - ${i}`}
-                          onClick={() => {}}
-                        >
-                          <AuthorityName
-                            onClick={() => {
-                              clickCategoryInfo(el.idx);
-                            }}
-                          >
-                            <span className="ellipsis">{el.name}</span>
-                          </AuthorityName>
-                          <DeleteIconWrapper>
-                            <BiSolidTrashAlt
-                              onClick={() => {
-                                clickDeleteCompany();
-                                //삭제할 카테고리 idx값 관리
-                                setCategoryIdx(el.idx);
-                              }}
-                            />
-                          </DeleteIconWrapper>
-                        </AuthorityWrapper>
-                      ))}
+                      {categoryList.map((el, i) => {
+                        const isSelected = selectedIdxValue === i;
+                        return (
+                          <CategoryList key={`${el} - ${i}`}>
+                            <AuthorityWrapper onClick={() => {}}>
+                              <AuthorityName
+                                $isSelected={isSelected}
+                                onClick={() => {
+                                  setSelectedIdxValue(i);
+                                  clickCategoryInfo(el.idx);
+                                }}
+                              >
+                                <div className="title">{el.name}</div>
+                              </AuthorityName>
+                            </AuthorityWrapper>
+                            <DeleteIconWrapper>
+                              <BiSolidTrashAlt
+                                onClick={() => {
+                                  clickDeleteCompany();
+                                  //삭제할 카테고리 idx값 관리
+                                  setCategoryIdx(el.idx);
+                                  setSelectedIdxValue(i);
+                                }}
+                              />
+                            </DeleteIconWrapper>
+                          </CategoryList>
+                        );
+                      })}
                     </>
                   ) : (
                     <>
@@ -740,7 +746,7 @@ export function CategroyManagement() {
       {isDeleteCategory && (
         <Alert
           description="카테고리 삭제하시겠습니까?"
-          subDescription="카테고리를 삭제하시면, bla bla bra bra."
+          subDescription="카테고리를 삭제하시면, 현재 작동 안함."
           isAlertOpen={isDeleteCategory}
           action="삭제"
           onClose={() => setIsDeleteCategory(false)}
@@ -936,58 +942,50 @@ const AuthorityListWrapper = styled.div`
   background-color: ${COLOR.LIGHT_GRAY};
   padding: 10px;
 `;
-
-const AuthorityWrapper = styled.div`
+const CategoryList = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 5px;
-  padding: 0 10px;
 `;
-const AuthorityName = styled.button`
+const AuthorityWrapper = styled.li`
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 8px 10px;
-  padding-right: 50px;
-  border-radius: 5px;
-  background-color: white;
-  border: none;
-  margin-right: 8px;
-  cursor: pointer;
   font-weight: bold;
-  position: relative;
+  margin-right: 8px;
+  margin-bottom: 5px;
+  background-color: white;
+  border-radius: 5px;
+`;
+const AuthorityName = styled.div<{ $isSelected: boolean }>`
+  width: 100%;
   font-size: 14px;
-  &::after {
-    content: '| 수정';
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  ${({ $isSelected }) =>
+    $isSelected
+      ? `color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`
+      : 'none'};
+
+  .title {
     display: flex;
-    font-size: 12px;
-    position: absolute;
-    right: 10px;
-    color: ${COLOR.SELECT_BLUE};
+    justify-content: center;
   }
 
   &:hover {
     background-color: ${COLOR.SELECT_BLUE};
     color: white;
-    &::after {
-      content: '| 수정';
-      color: ${COLOR.LIGHT_GRAY};
-    }
+    border-radius: 5px;
   }
-  > span {
-    display: flex;
-    text-align: left;
-    width: 100%;
-  }
-  .ellipsis {
+  /* .ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-  }
+  } */
 `;
 
 const DeleteIconWrapper = styled.button`

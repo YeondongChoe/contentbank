@@ -1,36 +1,108 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
+import { useQuery, useMutation } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
-import { Button } from '../../../../components/atom';
+import { classificationInstance } from '../../../../api/axios';
+import { Button, openToastifyAlert } from '../../../../components/atom';
 import { COLOR } from '../../../../components/constants';
 import { Search } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
+import { postRefreshToken } from '../../../../utils/tokenHandler';
 
-export function CreateGroupModal() {
+type CategoryListProps = {
+  idx: number;
+  name: string;
+};
+
+type CreateModalProps = {
+  categoryList: CategoryListProps[];
+  categoryGroupRefetch: () => void;
+};
+
+export function CreateGroupModal({
+  categoryList,
+  categoryGroupRefetch,
+}: CreateModalProps) {
   const { closeModal } = useModal();
-  const [categories, setCategories] = useState([
-    '분류1',
-    '분류2',
-    '분류3',
-    '분류4',
-    '분류5',
-  ]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categories, setCategories] =
+    useState<CategoryListProps[]>(categoryList);
+  const [selectedCategories, setSelectedCategories] = useState<
+    CategoryListProps[]
+  >([]);
   const [name, setName] = useState<string>('');
+  const [typeIdxList, setTypeIdxList] = useState<number[]>([]);
+  const [tagInputValue, setTagInputValue] = useState<string>('');
+
   const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategories((prevSelected) =>
-      prevSelected.includes(category)
-        ? prevSelected.filter((c) => c !== category)
-        : [...prevSelected, category],
+  const tagInputHandler = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    name: string,
+  ) => {
+    if (e.key === 'Enter') {
+      const newTagsList = categories.filter((el) => el.name.includes(name));
+      setCategories(newTagsList);
+    }
+    //초기화
+    if (e.key === 'Backspace') {
+      setCategories(categoryList);
+    }
+  };
+
+  const handleCategoryClick = (category: CategoryListProps) => {
+    setSelectedCategories(
+      (prevSelected) =>
+        prevSelected.some((tag) => tag.idx === category.idx) // idx를 사용하여 선택 여부 판단
+          ? prevSelected.filter((c) => c.idx !== category.idx) // 선택된 항목 제거
+          : [...prevSelected, category], // 선택된 항목 추가
     );
   };
+
+  useEffect(() => {
+    const processTypeIdx = selectedCategories.map((el) => el.idx);
+    if (selectedCategories) {
+      setTypeIdxList(processTypeIdx);
+    }
+  }, [selectedCategories]);
+
+  //그룹 생성api
+  const postGroup = async () => {
+    const data = {
+      name: name,
+      types: typeIdxList,
+    };
+    return await classificationInstance.post(`/v1/category/group`, data);
+  };
+  const { mutate: postGroupData } = useMutation({
+    mutationFn: postGroup,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      //그룹 리스트 재호출
+      categoryGroupRefetch();
+      setName('');
+      closeModal();
+    },
+  });
 
   return (
     <Container>
@@ -52,9 +124,9 @@ export function CreateGroupModal() {
         </strong>
         <Search
           placeholder="카테고리를 검색해주세요."
-          value={''}
-          onChange={() => {}}
-          onKeyDown={() => {}}
+          value={tagInputValue}
+          onChange={(e) => setTagInputValue(e.target.value)}
+          onKeyDown={(e) => tagInputHandler(e, tagInputValue)}
         />
       </div>
 
@@ -63,11 +135,11 @@ export function CreateGroupModal() {
           <ListWrapper>
             {categories.map((category) => (
               <button
-                key={category}
-                className={`value_button ${selectedCategories.includes(category) ? 'selected' : ''}`}
+                key={category.idx}
+                className={`value_button ${selectedCategories.some((t) => t.idx === category.idx) ? 'selected' : ''}`}
                 onClick={() => handleCategoryClick(category)}
               >
-                {category}
+                {category.name}
               </button>
             ))}
           </ListWrapper>
@@ -75,8 +147,15 @@ export function CreateGroupModal() {
       </ScrollWrapper>
       <ButtonWrapper>
         <p>총 {selectedCategories.length}개의 카테고리 선택</p>
-        <Button onClick={() => closeModal()}>취소</Button>
-        <Button onClick={() => {}} $filled>
+        <Button width="100px" height="40px" onClick={() => closeModal()}>
+          취소
+        </Button>
+        <Button
+          width="100px"
+          height="40px"
+          onClick={() => postGroupData()}
+          $filled
+        >
           확인
         </Button>
       </ButtonWrapper>
@@ -155,17 +234,13 @@ const ButtonWrapper = styled.div`
   padding: 20px;
   display: flex;
   align-items: center;
+  gap: 10px;
 
   p {
     flex: 1 1 0;
     font-size: 12px;
     font-weight: 700;
     color: ${COLOR.PRIMARY};
-  }
-  button {
-    margin-left: 10px;
-    width: 100px;
-    height: 40px;
   }
 `;
 const ScrollWrapper = styled.div`

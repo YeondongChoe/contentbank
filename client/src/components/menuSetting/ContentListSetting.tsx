@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { BsArrowsMove, BsEyeSlash, BsEye } from 'react-icons/bs';
 import { TbFilter, TbFilterOff } from 'react-icons/tb';
 import styled from 'styled-components';
 
+import { resourceServiceInstance } from '../../api/axios';
 import {
   List,
   ListItem,
@@ -13,9 +15,11 @@ import {
   Label,
   Button,
   Select,
+  openToastifyAlert,
 } from '../../components';
-import { SettingDnDWrapper } from '../../components/molecules';
-import { ItemCategoryType, QuizListType } from '../../types';
+import { SettingPageDnDWrapper } from '../../components/molecules';
+import { QuizListType, MenuDataListProps } from '../../types';
+import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
 export function ContentListSetting() {
@@ -279,236 +283,191 @@ export function ContentListSetting() {
       quizList: [],
     },
   ];
-  const CategoryDummy = [
-    {
-      idx: 1,
-      title: '출처',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '내신',
-        },
-        {
-          idx: 2,
-          name: '교재',
-        },
-        {
-          idx: 3,
-          name: '자체제작',
-        },
-      ],
-    },
-    {
-      idx: 2,
-      title: '교육과정',
-      isFilter: true,
-      isDisplay: true,
-      tag: '텍스트 입력',
-      option: [
-        {
-          idx: 1,
-          name: '6차',
-        },
-        {
-          idx: 2,
-          name: '8차',
-        },
-        {
-          idx: 3,
-          name: '11차',
-        },
-      ],
-    },
-    {
-      idx: 3,
-      title: '학교급',
-      isFilter: true,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '초등',
-        },
-        {
-          idx: 2,
-          name: '중등',
-        },
-        {
-          idx: 3,
-          name: '고등',
-        },
-      ],
-    },
-    {
-      idx: 4,
-      title: '학년',
-      isFilter: true,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '1학년',
-        },
-        {
-          idx: 2,
-          name: '2학년',
-        },
-        {
-          idx: 3,
-          name: '3학년',
-        },
-      ],
-    },
-    {
-      idx: 5,
-      title: '학기',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '1학기',
-        },
-        {
-          idx: 2,
-          name: '2학기',
-        },
-      ],
-    },
-    {
-      idx: 6,
-      title: '교과',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '수학',
-        },
-        {
-          idx: 2,
-          name: '영어',
-        },
-        {
-          idx: 3,
-          name: '국어',
-        },
-      ],
-    },
-    {
-      idx: 7,
-      title: '과목',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '교과수학',
-        },
-        {
-          idx: 2,
-          name: '교과영어',
-        },
-        {
-          idx: 3,
-          name: '교과국어',
-        },
-      ],
-    },
-    {
-      idx: 8,
-      title: '대단원',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-    },
-    {
-      idx: 9,
-      title: '중단원',
-      isFilter: false,
-      isDisplay: false,
-      tag: '태그 선택',
-    },
-    {
-      idx: 10,
-      title: '소단원',
-      isFilter: false,
-      isDisplay: false,
-      tag: '태그 선택',
-    },
-    {
-      idx: 11,
-      title: '문항타입',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-    },
-    {
-      idx: 12,
-      title: '담당자',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-    },
-    {
-      idx: 13,
-      title: '등록일자',
-      isFilter: false,
-      isDisplay: true,
-      tag: '날짜 선택',
-    },
-    {
-      idx: 14,
-      title: '오픈여부',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-    },
-  ];
-  const SelectDummy = {
-    tageClassList: [
-      {
-        idx: 1,
-        name: '연습문제',
-        code: '1',
-      },
-      {
-        idx: 2,
-        name: '일일테스트',
-        code: '2',
-      },
-      {
-        idx: 3,
-        name: '모의고사',
-        code: '3',
-      },
-      {
-        idx: 4,
-        name: '내신대비',
-        code: '4',
-      },
-      {
-        idx: 5,
-        name: '월말테스트',
-        code: '5',
-      },
-    ],
-  };
-  const [categoryList, setCategoryList] = useState<any[]>(CategoryDummy);
   const [isStartDnD, setIsStartDnd] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
+  const [menuIdx, setMenuIdx] = useState<number | null>(null);
+  const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
 
-  const whenDragEnd = (newList: any[]) => {
-    setCategoryList(newList);
+  // 로컬 스토리지에서 데이터 가져오기
+  useEffect(() => {
+    const fetchDataFromStorage = () => {
+      const data = localStorage.getItem('sendMenuIdx');
+
+      if (data) {
+        try {
+          const parsedData = JSON.parse(data);
+          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
+          setMenuIdx(parsedData.idx);
+          //localStorage.removeItem('sendMenuIdx');
+        } catch (error) {
+          console.error('로컬 스토리지 sendMenuIdx 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 sendMenuIdx 없습니다.');
+      }
+    };
+
+    fetchDataFromStorage();
+
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+
+    return () => clearTimeout(retryTimeout);
+  }, []);
+
+  const whenDragEnd = (
+    newList: {
+      name: string;
+      idx: number;
+      search: boolean;
+      view: boolean;
+      type: string;
+    }[],
+    selectedValue: string,
+  ) => {
+    // 1. newList의 name 속성을 추출하여 문자열로 변환
+    const newNamesString = newList.map((item) => item.name).join(',');
+    const newSearchString = newList
+      .map((item) => item.search.toString())
+      .join(',');
+    const newViewString = newList.map((item) => item.view.toString()).join(',');
+    const newTypeString = newList.map((item) => item.type).join(',');
+
+    // 2. menuDataList 업데이트
+    setMenuDataList((prev) =>
+      prev.map(
+        (item) =>
+          item.name === selectedValue
+            ? {
+                ...item,
+                nameList: newNamesString,
+                searchList: newSearchString,
+                viewList: newViewString,
+                typeList: newTypeString,
+              }
+            : item, // 기존 항목 유지
+      ),
+    );
   };
+
+  const toggleSearch = (idx: number, isSearch: boolean) => {
+    setMenuDataList((prev) => {
+      // 선택된 항목을 필터링
+      const filterList = prev.filter((el) => el.name === selectedValue);
+      if (filterList.length > 0) {
+        const searchList = filterList[0].searchList.split(',');
+
+        // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+        searchList[idx] = isSearch.toString();
+
+        // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+        const updatedSearchList = searchList.join(',');
+
+        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+        return prev.map((item) =>
+          item.name === selectedValue
+            ? { ...item, searchList: updatedSearchList }
+            : item,
+        );
+      }
+
+      return prev;
+    });
+  };
+
+  const toggleView = (idx: number, isView: boolean) => {
+    setMenuDataList((prev) => {
+      // 선택된 항목을 필터링
+      const filterList = prev.filter((el) => el.name === selectedValue);
+      if (filterList.length > 0) {
+        const viewList = filterList[0].viewList.split(',');
+
+        // idx 위치의 값을 isView 값을 문자열로 업데이트
+        viewList[idx] = isView.toString();
+
+        // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+        const updatedViewList = viewList.join(',');
+
+        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+        return prev.map((item) =>
+          item.name === selectedValue
+            ? { ...item, viewList: updatedViewList }
+            : item,
+        );
+      }
+
+      return prev;
+    });
+  };
+
+  //그룹 화면설정 정보 불러오기 api
+  const getMenuSetting = async () => {
+    const res = await resourceServiceInstance.get(`/v1/menu/${menuIdx}`);
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
+    queryKey: ['get-menuSetting'],
+    queryFn: getMenuSetting,
+    meta: {
+      errorMessage: 'get-menuSetting 에러 메세지',
+    },
+    enabled: menuIdx !== null,
+  });
+
+  useEffect(() => {
+    if (menuIdx) {
+      menuSettingRefetch();
+    }
+  }, [menuIdx]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      setMenuDataList(menuSettingData.data.data.detailList);
+    }
+  }, [menuSettingData]);
+
+  //그룹 정보 업데이트 api
+  const updateMenuInfo = async () => {
+    const filterData = menuDataList.filter((el) => el.name === selectedValue);
+    const data = {
+      detailIdx: filterData[0].detailIdx,
+      menuIdx: filterData[0].idx,
+      groupCode: filterData[0].code,
+      idxs: filterData[0].typeList,
+      names: filterData[0].nameList,
+      searchs: filterData[0].searchList,
+      views: filterData[0].viewList,
+    };
+    return await resourceServiceInstance.put(`/v1/menu`, data);
+  };
+  const { mutate: updateMenuInfoData } = useMutation({
+    mutationFn: updateMenuInfo,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      //그룹 리스트 재호출
+      menuSettingRefetch();
+    },
+  });
+
   return (
     <Container>
       <Wrapper>
@@ -529,13 +488,14 @@ export function ContentListSetting() {
                 fontSize="14px"
                 padding="10px 0 10px 5px"
               />
-              {SelectDummy && (
+              {menuDataList && (
                 <Select
                   width={'100%'}
-                  defaultValue="문항리스트"
+                  defaultValue="항목 선택"
                   key="문항리스트"
-                  options={SelectDummy.tageClassList}
+                  options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                   setSelectedValue={setSelectedValue}
+                  isnormalizedOptions
                 />
               )}
               <CategoryWrapper>
@@ -568,8 +528,9 @@ export function ContentListSetting() {
                 </IconWrapper>
               </CategoryWrapper>
               <ContentListWrapper>
-                <SettingDnDWrapper
-                  dragList={categoryList}
+                <SettingPageDnDWrapper
+                  dragList={menuDataList}
+                  selectedValue={selectedValue}
                   onDragging={() => {}}
                   onDragEnd={whenDragEnd}
                   dragSectionName={'문항리스트세팅'}
@@ -590,122 +551,91 @@ export function ContentListSetting() {
                               }}
                             ></BsArrowsMove>
                           </div>
-                          <div className={`title-${dragItem.isDisplay}`}>
-                            {dragItem.title}
-                            <div className="tag">{dragItem.tag}</div>
+                          {/* null값이 없어지면 className={`title-${dragItem.view} 로 수정해야함 */}
+                          <div className={`title-${true}`}>
+                            {dragItem.name}
+                            <div className="tag">태그선택</div>
                           </div>
-                          {dragItem.isFilter ? (
-                            <div className="icon">
-                              <TbFilter
-                                style={{
-                                  width: '20px',
-                                  height: '20px',
-                                  cursor: 'pointer',
-                                  stroke: `${COLOR.PRIMARY}`,
-                                }}
-                                onClick={() => {
-                                  setCategoryList((prevState) =>
-                                    prevState.map((category) => {
-                                      // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isFilter 상태를 변경
-                                      if (dragItem.title === category.title) {
-                                        return {
-                                          ...category,
-                                          isFilter: !category.isFilter, // 해당 옵션의 isFilter만 토글
-                                        };
-                                      }
-                                      return category; // 나머지 옵션은 그대로 유지
-                                    }),
-                                  );
-                                }}
-                              ></TbFilter>
-                            </div>
+                          {dragItem.search === undefined ? (
+                            <div>null</div>
                           ) : (
-                            <div className="icon">
-                              <TbFilterOff
-                                style={{
-                                  width: '20px',
-                                  height: '20px',
-                                  cursor: 'pointer',
-                                  stroke: `${COLOR.MUTE}`,
-                                }}
-                                onClick={() => {
-                                  setCategoryList((prevState) =>
-                                    prevState.map((category) => {
-                                      // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isFilter 상태를 변경
-                                      if (dragItem.title === category.title) {
-                                        return {
-                                          ...category,
-                                          isFilter: !category.isFilter, // 해당 옵션의 isFilter만 토글
-                                        };
-                                      }
-                                      return category; // 나머지 옵션은 그대로 유지
-                                    }),
-                                  );
-                                }}
-                              ></TbFilterOff>
-                            </div>
+                            <>
+                              {dragItem.search ? (
+                                <div className="icon">
+                                  <TbFilter
+                                    style={{
+                                      width: '20px',
+                                      height: '20px',
+                                      cursor: 'pointer',
+                                      stroke: `${COLOR.PRIMARY}`,
+                                    }}
+                                    onClick={() => {
+                                      toggleSearch(itemIndex, !dragItem.search);
+                                    }}
+                                  ></TbFilter>
+                                </div>
+                              ) : (
+                                <div className="icon">
+                                  <TbFilterOff
+                                    style={{
+                                      width: '20px',
+                                      height: '20px',
+                                      cursor: 'pointer',
+                                      stroke: `${COLOR.MUTE}`,
+                                    }}
+                                    onClick={() => {
+                                      toggleSearch(itemIndex, !dragItem.search);
+                                    }}
+                                  ></TbFilterOff>
+                                </div>
+                              )}
+                            </>
                           )}
-                          {dragItem.isDisplay ? (
-                            <div className="icon">
-                              <BsEye
-                                style={{
-                                  width: '20px',
-                                  height: '20px',
-                                  cursor: 'pointer',
-                                  fill: `${COLOR.PRIMARY}`,
-                                }}
-                                onClick={() => {
-                                  setCategoryList((prevState) =>
-                                    prevState.map((category) => {
-                                      // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isFilter 상태를 변경
-                                      if (dragItem.title === category.title) {
-                                        return {
-                                          ...category,
-                                          isDisplay: !category.isDisplay, // 해당 옵션의 isFilter만 토글
-                                        };
-                                      }
-                                      return category; // 나머지 옵션은 그대로 유지
-                                    }),
-                                  );
-                                }}
-                              ></BsEye>
-                            </div>
+                          {dragItem.view === undefined ? (
+                            <div>null</div>
                           ) : (
-                            <div className="icon">
-                              <BsEyeSlash
-                                style={{
-                                  width: '20px',
-                                  height: '20px',
-                                  cursor: 'pointer',
-                                  fill: `${COLOR.MUTE}`,
-                                }}
-                                onClick={() => {
-                                  setCategoryList((prevState) =>
-                                    prevState.map((category) => {
-                                      // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isFilter 상태를 변경
-                                      if (dragItem.title === category.title) {
-                                        return {
-                                          ...category,
-                                          isDisplay: !category.isDisplay, // 해당 옵션의 isFilter만 토글
-                                        };
-                                      }
-                                      return category; // 나머지 옵션은 그대로 유지
-                                    }),
-                                  );
-                                }}
-                              ></BsEyeSlash>
-                            </div>
+                            <>
+                              {dragItem.view ? (
+                                <div className="icon">
+                                  <BsEye
+                                    style={{
+                                      width: '20px',
+                                      height: '20px',
+                                      cursor: 'pointer',
+                                      fill: `${COLOR.PRIMARY}`,
+                                    }}
+                                    onClick={() => {
+                                      toggleView(itemIndex, !dragItem.view);
+                                    }}
+                                  ></BsEye>
+                                </div>
+                              ) : (
+                                <div className="icon">
+                                  <BsEyeSlash
+                                    style={{
+                                      width: '20px',
+                                      height: '20px',
+                                      cursor: 'pointer',
+                                      fill: `${COLOR.MUTE}`,
+                                    }}
+                                    onClick={() => {
+                                      toggleView(itemIndex, !dragItem.view);
+                                    }}
+                                  ></BsEyeSlash>
+                                </div>
+                              )}
+                            </>
                           )}
                         </Content>
                       </ContentList>
                     );
                   }}
-                </SettingDnDWrapper>
+                </SettingPageDnDWrapper>
               </ContentListWrapper>
               <Button
                 height={'40px'}
                 width={'100%'}
-                //onClick={openWindowCreateWorksheet}
+                onClick={() => updateMenuInfoData()}
                 fontSize="13px"
                 $margin="20px 0 0 0"
                 $filled
@@ -717,20 +647,29 @@ export function ContentListSetting() {
           </SettingWrapper>
           <ListWrapper>
             <SelectWrapper>
-              {categoryList.map((category) => {
-                if (category.isFilter) {
+              {menuDataList
+                .filter((el) => el.name === selectedValue)
+                .map((search) => {
+                  const nameList = search.nameList.split(',');
+                  const searchList = search.searchList
+                    .split(',')
+                    .map((item) => item.trim() === 'true');
+                  console.log(searchList);
                   return (
-                    <Select
-                      width={'130px'}
-                      defaultValue={category.title}
-                      key={category.title}
-                      isnormalizedOptions
-                      //options={category.option}
-                    />
+                    <>
+                      {nameList.map((el, idx) =>
+                        searchList[idx] ? (
+                          <Select
+                            key={idx}
+                            defaultValue={el}
+                            width="130px"
+                            isnormalizedOptions
+                          ></Select>
+                        ) : null,
+                      )}
+                    </>
                   );
-                }
-                return null; // displayedList가 false인 항목은 렌더링하지 않음
-              })}
+                })}
             </SelectWrapper>
             <List>
               {ContentListData.map((item: any) => (
@@ -1055,18 +994,15 @@ const TitleWrapper = styled.div`
 `;
 const Title = styled.div`
   font-size: 30px;
-  //font-weight: 800;
 `;
 const MainWrapper = styled.div`
   width: 100%;
-  //height: 760px;
   display: flex;
   gap: 10px;
 `;
 const SettingWrapper = styled.div`
   width: 30%;
-  border: 1px solid ${COLOR.BORDER_POPUP};
-  border-radius: 15px;
+  background-color: ${COLOR.LIGHT_GRAY};
   padding: 10px;
 `;
 const PageDescription = styled.p`
@@ -1088,12 +1024,12 @@ const IconWrapper = styled.div`
   }
 `;
 const ContentListWrapper = styled.div`
-  max-height: 530px; /* 컨테이너의 최대 높이 설정 */
+  max-height: 480px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
 `;
 const ContentList = styled.li`
-  padding: 0 10px;
   border-top: 1px solid ${COLOR.BORDER_GRAY};
+  background-color: white;
   &:last-child {
     border-bottom: 1px solid ${COLOR.BORDER_GRAY};
   }
@@ -1104,6 +1040,7 @@ const Content = styled.div`
   justify-content: space-around;
   gap: 10px;
   padding: 10px 0;
+
   .title-true {
     display: flex;
     justify-content: flex-start;
@@ -1145,9 +1082,8 @@ const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
-  border-radius: 15px;
+  background-color: ${COLOR.LIGHT_GRAY};
   padding: 10px;
-  border: 1px solid ${COLOR.BORDER_POPUP};
 `;
 const ItemLayout = styled.span`
   display: flex;
