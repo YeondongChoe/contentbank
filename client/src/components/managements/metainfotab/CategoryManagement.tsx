@@ -361,34 +361,37 @@ export function CategroyManagement() {
                 <>
                   {categoryList.length > 0 ? (
                     <>
-                      {categoryList.map((el, i) => {
-                        const isSelected = selectedIdxValue === i;
-                        return (
-                          <CategoryList key={`${el} - ${i}`}>
-                            <AuthorityWrapper onClick={() => {}}>
-                              <AuthorityName
-                                $isSelected={isSelected}
-                                onClick={() => {
-                                  setSelectedIdxValue(i);
-                                  clickCategoryInfo(el.idx);
-                                }}
-                              >
-                                <div className="title">{el.name}</div>
-                              </AuthorityName>
-                            </AuthorityWrapper>
-                            <DeleteIconWrapper>
-                              <BiSolidTrashAlt
-                                onClick={() => {
-                                  clickDeleteCompany();
-                                  //삭제할 카테고리 idx값 관리
-                                  setCategoryIdx(el.idx);
-                                  setSelectedIdxValue(i);
-                                }}
-                              />
-                            </DeleteIconWrapper>
-                          </CategoryList>
-                        );
-                      })}
+                      {categoryList
+                        .slice()
+                        .sort((a, b) => a.idx - b.idx)
+                        .map((el, i) => {
+                          const isSelected = selectedIdxValue === i;
+                          return (
+                            <CategoryList key={`${el} - ${i}`}>
+                              <AuthorityWrapper onClick={() => {}}>
+                                <AuthorityName
+                                  $isSelected={isSelected}
+                                  onClick={() => {
+                                    setSelectedIdxValue(i);
+                                    clickCategoryInfo(el.idx);
+                                  }}
+                                >
+                                  <div className="title">{el.name}</div>
+                                </AuthorityName>
+                              </AuthorityWrapper>
+                              <DeleteIconWrapper>
+                                <BiSolidTrashAlt
+                                  onClick={() => {
+                                    clickDeleteCompany();
+                                    //삭제할 카테고리 idx값 관리
+                                    setCategoryIdx(el.idx);
+                                    setSelectedIdxValue(i);
+                                  }}
+                                />
+                              </DeleteIconWrapper>
+                            </CategoryList>
+                          );
+                        })}
                     </>
                   ) : (
                     <>

@@ -24,4 +24,5 @@ export type MenuDataListProps = {
   searchList: string;
   typeList: string;
   viewList: string;
+  inputTypeList: string;
 };

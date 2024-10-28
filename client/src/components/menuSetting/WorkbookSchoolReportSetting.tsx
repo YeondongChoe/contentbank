@@ -16,270 +16,16 @@ import {
   openToastifyAlert,
 } from '../../components';
 import { SettingPageDnDWrapper } from '../../components/molecules';
-import { QuizListType, MenuDataListProps } from '../../types';
+import { MenuDataListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
-// TODO 그룹에 보여지는 데이타 확인 필요, 변경사항 저장
 export function WorkbookSchoolReportSetting() {
-  const ContentListData = [
-    {
-      idx: 1,
-      name: '드림 고등학교',
-      grade: '고1',
-      term: '1학기',
-      tag: '중간고사',
-      subject: '미적분',
-      year: '2024',
-      quizCount: '7',
-    },
-    {
-      idx: 2,
-      name: '드림 고등학교',
-      grade: '고3',
-      term: '2학기',
-      tag: '기말고사',
-      subject: '확률과 통계',
-      year: '2024',
-      quizCount: '9',
-    },
-    {
-      idx: 3,
-      name: '드림 고등학교',
-      grade: '중3',
-      term: '1학기',
-      tag: '중간고사',
-      subject: '수1',
-      year: '2024',
-      quizCount: '10',
-    },
-    {
-      idx: 4,
-      name: '드림 고등학교',
-      grade: '중3',
-      term: '1학기',
-      tag: '기말고사',
-      subject: '수2',
-      year: '2024',
-      quizCount: '3',
-    },
-    {
-      idx: 5,
-      name: '드림 고등학교',
-      grade: '초6',
-      term: '1학기',
-      tag: '중간고사',
-      subject: '샘',
-      year: '2024',
-      quizCount: '2',
-    },
-    {
-      idx: 6,
-      name: '드림 고등학교',
-      grade: '중3',
-      term: '1학기',
-      tag: '기말고사',
-      subject: '곱샘',
-      year: '2024',
-      quizCount: '1',
-    },
-    {
-      idx: 7,
-      name: '드림 고등학교',
-      grade: '고2',
-      term: '1학기',
-      tag: '중간고사',
-      subject: '적분',
-      year: '2024',
-      quizCount: '21',
-    },
-  ];
-  const CategoryDummy = [
-    {
-      idx: 1,
-      title: '학교명',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '내신',
-        },
-        {
-          idx: 2,
-          name: '교재',
-        },
-        {
-          idx: 3,
-          name: '자체제작',
-        },
-      ],
-    },
-    {
-      idx: 2,
-      title: '학교급',
-      isFilter: true,
-      isDisplay: true,
-      tag: '텍스트 입력',
-      option: [
-        {
-          idx: 1,
-          name: '6차',
-        },
-        {
-          idx: 2,
-          name: '8차',
-        },
-        {
-          idx: 3,
-          name: '11차',
-        },
-      ],
-    },
-    {
-      idx: 3,
-      title: '학년',
-      isFilter: true,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '초등',
-        },
-        {
-          idx: 2,
-          name: '중등',
-        },
-        {
-          idx: 3,
-          name: '고등',
-        },
-      ],
-    },
-    {
-      idx: 4,
-      title: '학기',
-      isFilter: true,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '1학년',
-        },
-        {
-          idx: 2,
-          name: '2학년',
-        },
-        {
-          idx: 3,
-          name: '3학년',
-        },
-      ],
-    },
-    {
-      idx: 5,
-      title: '학사일정',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '1학기',
-        },
-        {
-          idx: 2,
-          name: '2학기',
-        },
-      ],
-    },
-    {
-      idx: 6,
-      title: '교과',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '수학',
-        },
-        {
-          idx: 2,
-          name: '영어',
-        },
-        {
-          idx: 3,
-          name: '국어',
-        },
-      ],
-    },
-    {
-      idx: 7,
-      title: '과목',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-      option: [
-        {
-          idx: 1,
-          name: '교과수학',
-        },
-        {
-          idx: 2,
-          name: '교과영어',
-        },
-        {
-          idx: 3,
-          name: '교과국어',
-        },
-      ],
-    },
-    {
-      idx: 8,
-      title: '출제년도',
-      isFilter: false,
-      isDisplay: true,
-      tag: '태그 선택',
-    },
-  ];
-  const SelectDummy = {
-    tageClassList: [
-      {
-        idx: 1,
-        name: '연습문제',
-        code: '1',
-      },
-      {
-        idx: 2,
-        name: '일일테스트',
-        code: '2',
-      },
-      {
-        idx: 3,
-        name: '모의고사',
-        code: '3',
-      },
-      {
-        idx: 4,
-        name: '내신대비',
-        code: '4',
-      },
-      {
-        idx: 5,
-        name: '월말테스트',
-        code: '5',
-      },
-    ],
-  };
-  const [categoryList, setCategoryList] = useState<any[]>(CategoryDummy);
   const [isStartDnD, setIsStartDnd] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
+  const [detailIdx, setDetailIdx] = useState<string | null>(null);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -314,6 +60,7 @@ export function WorkbookSchoolReportSetting() {
       search: boolean;
       view: boolean;
       type: string;
+      input: string;
     }[],
     selectedValue: string,
   ) => {
@@ -322,6 +69,7 @@ export function WorkbookSchoolReportSetting() {
     const newSearchString = newList
       .map((item) => item.search.toString())
       .join(',');
+    const newInputTypeString = newList.map((item) => item.input).join(',');
     const newViewString = newList.map((item) => item.view.toString()).join(',');
     const newTypeString = newList.map((item) => item.type).join(',');
 
@@ -336,6 +84,7 @@ export function WorkbookSchoolReportSetting() {
                 searchList: newSearchString,
                 viewList: newViewString,
                 typeList: newTypeString,
+                inputTypeList: newInputTypeString,
               }
             : item, // 기존 항목 유지
       ),
@@ -417,9 +166,44 @@ export function WorkbookSchoolReportSetting() {
     }
   }, [menuIdx]);
 
+  //값을 받아왔을때 상태관리
   useEffect(() => {
     if (menuSettingData) {
-      setMenuDataList(menuSettingData.data.data.detailList);
+      const updatedData = menuSettingData.data.data.detailList.map(
+        (item: any) => {
+          const nameListArray = item.nameList?.split(',') || [];
+
+          const searchListArray = item.searchList
+            ? item.searchList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+
+          const viewListArray = item.viewList
+            ? item.viewList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+          const searchListString = searchListArray.join(',');
+          const viewListString = viewListArray.join(',');
+
+          return {
+            ...item,
+            searchList: searchListString,
+            viewList: viewListString,
+          };
+        },
+      );
+
+      setMenuDataList(updatedData);
+    }
+  }, [menuSettingData]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      const filterList = menuSettingData.data.data.detailList.filter(
+        (el: any) => el.isCheck === true,
+      );
+      const findName = filterList[0]?.name;
+      const detailIdx = filterList[0]?.detailIdx;
+      setSelectedValue(findName);
+      setDetailIdx(detailIdx);
     }
   }, [menuSettingData]);
 
@@ -427,13 +211,14 @@ export function WorkbookSchoolReportSetting() {
   const updateMenuInfo = async () => {
     const filterData = menuDataList.filter((el) => el.name === selectedValue);
     const data = {
-      detailIdx: filterData[0].detailIdx,
-      menuIdx: filterData[0].idx,
+      detailIdx: detailIdx ? detailIdx : 'null',
+      menuIdx: menuIdx,
       groupCode: filterData[0].code,
       idxs: filterData[0].typeList,
       names: filterData[0].nameList,
       searchs: filterData[0].searchList,
       views: filterData[0].viewList,
+      inputs: filterData[0].inputTypeList,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -484,7 +269,7 @@ export function WorkbookSchoolReportSetting() {
               {menuDataList && (
                 <Select
                   width={'100%'}
-                  defaultValue="항목 선택"
+                  defaultValue={selectedValue}
                   key="그룹리스트"
                   options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                   setSelectedValue={setSelectedValue}
@@ -544,79 +329,67 @@ export function WorkbookSchoolReportSetting() {
                               }}
                             ></BsArrowsMove>
                           </div>
-                          <div className={`title-${true}`}>
+                          <div className={`title-${dragItem.view}`}>
                             {dragItem.name}
-                            <div className="tag">태그선택</div>
+                            <div className="tag">{dragItem.input}</div>
                           </div>
-                          {dragItem.search === undefined ? (
-                            <div>null</div>
+                          {dragItem.search ? (
+                            <div className="icon">
+                              <TbFilter
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  stroke: `${COLOR.PRIMARY}`,
+                                }}
+                                onClick={() => {
+                                  toggleSearch(itemIndex, !dragItem.search);
+                                }}
+                              ></TbFilter>
+                            </div>
                           ) : (
-                            <>
-                              {dragItem.search ? (
-                                <div className="icon">
-                                  <TbFilter
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      stroke: `${COLOR.PRIMARY}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleSearch(itemIndex, !dragItem.search);
-                                    }}
-                                  ></TbFilter>
-                                </div>
-                              ) : (
-                                <div className="icon">
-                                  <TbFilterOff
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      stroke: `${COLOR.MUTE}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleSearch(itemIndex, !dragItem.search);
-                                    }}
-                                  ></TbFilterOff>
-                                </div>
-                              )}
-                            </>
+                            <div className="icon">
+                              <TbFilterOff
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  stroke: `${COLOR.MUTE}`,
+                                }}
+                                onClick={() => {
+                                  toggleSearch(itemIndex, !dragItem.search);
+                                }}
+                              ></TbFilterOff>
+                            </div>
                           )}
-                          {dragItem.view === undefined ? (
-                            <div>null</div>
+                          {dragItem.view ? (
+                            <div className="icon">
+                              <BsEye
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  fill: `${COLOR.PRIMARY}`,
+                                }}
+                                onClick={() => {
+                                  toggleView(itemIndex, !dragItem.view);
+                                }}
+                              ></BsEye>
+                            </div>
                           ) : (
-                            <>
-                              {dragItem.view ? (
-                                <div className="icon">
-                                  <BsEye
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      fill: `${COLOR.PRIMARY}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleView(itemIndex, !dragItem.view);
-                                    }}
-                                  ></BsEye>
-                                </div>
-                              ) : (
-                                <div className="icon">
-                                  <BsEyeSlash
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      fill: `${COLOR.MUTE}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleView(itemIndex, !dragItem.view);
-                                    }}
-                                  ></BsEyeSlash>
-                                </div>
-                              )}
-                            </>
+                            <div className="icon">
+                              <BsEyeSlash
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  fill: `${COLOR.MUTE}`,
+                                }}
+                                onClick={() => {
+                                  toggleView(itemIndex, !dragItem.view);
+                                }}
+                              ></BsEyeSlash>
+                            </div>
                           )}
                         </Content>
                       </ContentList>
@@ -638,64 +411,69 @@ export function WorkbookSchoolReportSetting() {
             </>
           </SettingWrapper>
           <ListWrapper>
-            {/* 데이터 들어왔을때 수정해야함 */}
             <SelectWrapper>
-              {categoryList.map((category) => {
-                if (category.isFilter) {
+              {menuDataList
+                .filter((el) => el.name === selectedValue)
+                .map((search) => {
+                  const nameList = search.nameList.split(',');
+                  const searchList = search.searchList
+                    .split(',')
+                    .map((item) => item.trim() === 'true');
                   return (
-                    <Select
-                      width={'130px'}
-                      defaultValue={category.title}
-                      key={category.title}
-                      isnormalizedOptions
-                      //options={category.option}
-                    />
+                    <>
+                      {nameList.map((el, idx) =>
+                        searchList[idx] ? (
+                          <Select
+                            key={idx}
+                            defaultValue={el}
+                            width="130px"
+                            isnormalizedOptions
+                          ></Select>
+                        ) : null,
+                      )}
+                    </>
                   );
-                }
-                return null; // displayedList가 false인 항목은 렌더링하지 않음
-              })}
+                })}
             </SelectWrapper>
             <List>
-              {ContentListData.map((item: any) => (
-                <ListItem key={item.code} isChecked={false} height={'100'}>
-                  <ItemLayout>
-                    <span>
-                      <strong className="title">학교명</strong>
-                      <span className="width_20">{item.name}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">학년</strong>
-                      <span className="width_20">{item.grade}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">학기</strong>
-                      <span className="width_20">{item.term}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">학사일정</strong>
-                      <span className="width_20">{item.tag}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">과목</strong>
-                      <span className="width_20">{item.subject}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">출제년도</strong>
-                      <span className="width_20">{item.year}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">문항수</strong>
-                      <span className="width_20">{item.quizcount}</span>
-                    </span>
-                  </ItemLayout>
-                </ListItem>
-              ))}
+              {menuDataList
+                .filter((list) => list.name === selectedValue)
+                .flatMap((item) => {
+                  const nameList = item.nameList?.split(',');
+                  const essentialList = item.viewList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+                  const array = 6;
+
+                  return Array.from({ length: array }).map((_, idx) => (
+                    <ListItem
+                      key={`${item.idx}-${idx}`}
+                      isChecked={false}
+                      height={'100px'}
+                    >
+                      <ItemLayout>
+                        {nameList.map((name, i) => (
+                          <>
+                            {essentialList[i] && (
+                              <>
+                                {i !== 0 && <i className="line"></i>}
+                                <span>
+                                  <strong className="title">{name}</strong>
+                                  <span className="width_20">정보</span>
+                                </span>
+                              </>
+                            )}
+                          </>
+                        ))}
+                        <i className="line"></i>
+                        <span>
+                          <strong className="title">문항수</strong>
+                          <span className="width_20">10</span>
+                        </span>
+                      </ItemLayout>
+                    </ListItem>
+                  ));
+                })}
             </List>
             <ListDescription>
               화면에 보이는 데이터는 예시로 구성된 데이터 입니다. 실제

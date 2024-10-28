@@ -18,275 +18,16 @@ import {
   openToastifyAlert,
 } from '../../components';
 import { SettingPageDnDWrapper } from '../../components/molecules';
-import { QuizListType, MenuDataListProps } from '../../types';
+import { MenuDataListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
 export function ContentListSetting() {
-  const ContentListData: QuizListType[] = [
-    {
-      code: '1',
-      createdAt: '2024.08.29',
-      createdBy: '김드림',
-      idx: 1,
-      isDelete: false,
-      isUse: true,
-      isFavorite: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '',
-        idx: 1,
-        originalName: '',
-        storedPath: '',
-        type: '',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      type: '',
-      userKey: '',
-      quizCategoryList: [
-        {
-          quizCategory: {
-            교육과정: '6차, 8차',
-            교과: '수학',
-            과목: '교과수학',
-            학년: 3,
-            학기: 1,
-            난이도: '',
-            학교급: '중둥',
-            문항타입: '객관식',
-            대단원: '소인수분해',
-            소단원: '',
-            중단원: '',
-            sources: [{ 출처: '내신' }],
-            categories: [],
-          },
-        },
-      ],
-      quizItemList: [],
-      quizList: [],
-    },
-    {
-      code: '2',
-      createdAt: '2024.08.29',
-      createdBy: '김드림',
-      idx: 2,
-      isDelete: false,
-      isUse: true,
-      isFavorite: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '',
-        idx: 2,
-        originalName: '',
-        storedPath: '',
-        type: '',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      type: '',
-      userKey: '',
-      quizCategoryList: [
-        {
-          quizCategory: {
-            교육과정: '6차, 8차',
-            교과: '수학',
-            과목: '교과수학',
-            학년: 3,
-            학기: 1,
-            난이도: '',
-            학교급: '고등',
-            문항타입: '객관식',
-            대단원: '소인수분해',
-            소단원: '',
-            중단원: '',
-            sources: [{ 출처: '교재' }],
-            categories: [],
-          },
-        },
-      ],
-      quizItemList: [],
-      quizList: [],
-    },
-    {
-      code: '3',
-      createdAt: '2024.08.29',
-      createdBy: '김드림',
-      idx: 3,
-      isDelete: false,
-      isUse: true,
-      isFavorite: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '',
-        idx: 3,
-        originalName: '',
-        storedPath: '',
-        type: '',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      type: '',
-      userKey: '',
-      quizCategoryList: [
-        {
-          quizCategory: {
-            교육과정: '6차, 8차',
-            교과: '수학',
-            과목: '교과수학',
-            학년: 3,
-            학기: 1,
-            난이도: '',
-            학교급: '중등',
-            문항타입: '객관식',
-            대단원: '소인수분해',
-            소단원: '',
-            중단원: '',
-            sources: [{ 출처: '자체제작, 기출' }],
-            categories: [],
-          },
-        },
-      ],
-      quizItemList: [],
-      quizList: [],
-    },
-    {
-      code: '4',
-      createdAt: '2024.08.29',
-      createdBy: '김드림',
-      idx: 4,
-      isDelete: false,
-      isUse: true,
-      isFavorite: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '',
-        idx: 4,
-        originalName: '',
-        storedPath: '',
-        type: '',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      type: '',
-      userKey: '',
-      quizCategoryList: [
-        {
-          quizCategory: {
-            교육과정: '6차, 8차',
-            교과: '수학',
-            과목: '교과수학',
-            학년: 3,
-            학기: 1,
-            난이도: '',
-            학교급: '중등',
-            문항타입: '객관식',
-            대단원: '소인수분해',
-            소단원: '',
-            중단원: '',
-            sources: [{ 출처: '내신, 기타' }],
-            categories: [],
-          },
-        },
-      ],
-      quizItemList: [],
-      quizList: [],
-    },
-    {
-      code: '5',
-      createdAt: '2024.08.29',
-      createdBy: '김드림',
-      idx: 5,
-      isDelete: false,
-      isUse: true,
-      isFavorite: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '',
-        idx: 5,
-        originalName: '',
-        storedPath: '',
-        type: '',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      type: '',
-      userKey: '',
-      quizCategoryList: [
-        {
-          quizCategory: {
-            교육과정: '6차, 8차',
-            교과: '수학',
-            과목: '교과수학',
-            학년: 3,
-            학기: 1,
-            난이도: '',
-            학교급: '고등',
-            문항타입: '객관식',
-            대단원: '소인수분해',
-            소단원: '',
-            중단원: '',
-            sources: [{ 출처: '교재' }],
-            categories: [],
-          },
-        },
-      ],
-      quizItemList: [],
-      quizList: [],
-    },
-    {
-      code: '6',
-      createdAt: '2024.08.29',
-      createdBy: '김드림',
-      idx: 6,
-      isDelete: false,
-      isUse: true,
-      isFavorite: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '',
-        idx: 6,
-        originalName: '',
-        storedPath: '',
-        type: '',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      type: '',
-      userKey: '',
-      quizCategoryList: [
-        {
-          quizCategory: {
-            교육과정: '6차, 8차',
-            교과: '수학',
-            과목: '교과수학',
-            학년: 3,
-            학기: 1,
-            난이도: '',
-            학교급: '중등',
-            문항타입: '객관식',
-            대단원: '소인수분해',
-            소단원: '',
-            중단원: '',
-            sources: [{ 출처: '교재' }],
-            categories: [],
-          },
-        },
-      ],
-      quizItemList: [],
-      quizList: [],
-    },
-  ];
   const [isStartDnD, setIsStartDnd] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
+  const [detailIdx, setDetailIdx] = useState<string | null>(null);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -296,7 +37,7 @@ export function ContentListSetting() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
+          //console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
           setMenuIdx(parsedData.idx);
           //localStorage.removeItem('sendMenuIdx');
         } catch (error) {
@@ -321,6 +62,7 @@ export function ContentListSetting() {
       search: boolean;
       view: boolean;
       type: string;
+      input: string;
     }[],
     selectedValue: string,
   ) => {
@@ -329,6 +71,7 @@ export function ContentListSetting() {
     const newSearchString = newList
       .map((item) => item.search.toString())
       .join(',');
+    const newInputTypeString = newList.map((item) => item.input).join(',');
     const newViewString = newList.map((item) => item.view.toString()).join(',');
     const newTypeString = newList.map((item) => item.type).join(',');
 
@@ -343,6 +86,7 @@ export function ContentListSetting() {
                 searchList: newSearchString,
                 viewList: newViewString,
                 typeList: newTypeString,
+                inputTypeList: newInputTypeString,
               }
             : item, // 기존 항목 유지
       ),
@@ -417,16 +161,51 @@ export function ContentListSetting() {
     },
     enabled: menuIdx !== null,
   });
-
+  //로컬스토리지에 저장된 idx 받아왔을 때 refetch
   useEffect(() => {
     if (menuIdx) {
       menuSettingRefetch();
     }
   }, [menuIdx]);
 
+  //값을 받아왔을때 상태관리
   useEffect(() => {
     if (menuSettingData) {
-      setMenuDataList(menuSettingData.data.data.detailList);
+      const updatedData = menuSettingData.data.data.detailList.map(
+        (item: any) => {
+          const nameListArray = item.nameList?.split(',') || [];
+
+          const searchListArray = item.searchList
+            ? item.searchList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+
+          const viewListArray = item.viewList
+            ? item.viewList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+          const searchListString = searchListArray.join(',');
+          const viewListString = viewListArray.join(',');
+
+          return {
+            ...item,
+            searchList: searchListString,
+            viewList: viewListString,
+          };
+        },
+      );
+
+      setMenuDataList(updatedData);
+    }
+  }, [menuSettingData]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      const filterList = menuSettingData.data.data.detailList.filter(
+        (el: any) => el.isCheck === true,
+      );
+      const findName = filterList[0]?.name;
+      const detailIdx = filterList[0]?.detailIdx;
+      setSelectedValue(findName);
+      setDetailIdx(detailIdx);
     }
   }, [menuSettingData]);
 
@@ -434,13 +213,14 @@ export function ContentListSetting() {
   const updateMenuInfo = async () => {
     const filterData = menuDataList.filter((el) => el.name === selectedValue);
     const data = {
-      detailIdx: filterData[0].detailIdx,
-      menuIdx: filterData[0].idx,
+      detailIdx: detailIdx ? detailIdx : 'null',
+      menuIdx: menuIdx,
       groupCode: filterData[0].code,
       idxs: filterData[0].typeList,
       names: filterData[0].nameList,
       searchs: filterData[0].searchList,
       views: filterData[0].viewList,
+      inputs: filterData[0].inputTypeList,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -491,8 +271,8 @@ export function ContentListSetting() {
               {menuDataList && (
                 <Select
                   width={'100%'}
-                  defaultValue="항목 선택"
-                  key="문항리스트"
+                  defaultValue={selectedValue}
+                  key="그룹리스트"
                   options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                   setSelectedValue={setSelectedValue}
                   isnormalizedOptions
@@ -551,80 +331,67 @@ export function ContentListSetting() {
                               }}
                             ></BsArrowsMove>
                           </div>
-                          {/* null값이 없어지면 className={`title-${dragItem.view} 로 수정해야함 */}
-                          <div className={`title-${true}`}>
+                          <div className={`title-${dragItem.view}`}>
                             {dragItem.name}
-                            <div className="tag">태그선택</div>
+                            <div className="tag">{dragItem.input}</div>
                           </div>
-                          {dragItem.search === undefined ? (
-                            <div>null</div>
+                          {dragItem.search ? (
+                            <div className="icon">
+                              <TbFilter
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  stroke: `${COLOR.PRIMARY}`,
+                                }}
+                                onClick={() => {
+                                  toggleSearch(itemIndex, !dragItem.search);
+                                }}
+                              ></TbFilter>
+                            </div>
                           ) : (
-                            <>
-                              {dragItem.search ? (
-                                <div className="icon">
-                                  <TbFilter
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      stroke: `${COLOR.PRIMARY}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleSearch(itemIndex, !dragItem.search);
-                                    }}
-                                  ></TbFilter>
-                                </div>
-                              ) : (
-                                <div className="icon">
-                                  <TbFilterOff
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      stroke: `${COLOR.MUTE}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleSearch(itemIndex, !dragItem.search);
-                                    }}
-                                  ></TbFilterOff>
-                                </div>
-                              )}
-                            </>
+                            <div className="icon">
+                              <TbFilterOff
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  stroke: `${COLOR.MUTE}`,
+                                }}
+                                onClick={() => {
+                                  toggleSearch(itemIndex, !dragItem.search);
+                                }}
+                              ></TbFilterOff>
+                            </div>
                           )}
-                          {dragItem.view === undefined ? (
-                            <div>null</div>
+                          {dragItem.view ? (
+                            <div className="icon">
+                              <BsEye
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  fill: `${COLOR.PRIMARY}`,
+                                }}
+                                onClick={() => {
+                                  toggleView(itemIndex, !dragItem.view);
+                                }}
+                              ></BsEye>
+                            </div>
                           ) : (
-                            <>
-                              {dragItem.view ? (
-                                <div className="icon">
-                                  <BsEye
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      fill: `${COLOR.PRIMARY}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleView(itemIndex, !dragItem.view);
-                                    }}
-                                  ></BsEye>
-                                </div>
-                              ) : (
-                                <div className="icon">
-                                  <BsEyeSlash
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      fill: `${COLOR.MUTE}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleView(itemIndex, !dragItem.view);
-                                    }}
-                                  ></BsEyeSlash>
-                                </div>
-                              )}
-                            </>
+                            <div className="icon">
+                              <BsEyeSlash
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  fill: `${COLOR.MUTE}`,
+                                }}
+                                onClick={() => {
+                                  toggleView(itemIndex, !dragItem.view);
+                                }}
+                              ></BsEyeSlash>
+                            </div>
                           )}
                         </Content>
                       </ContentList>
@@ -654,7 +421,6 @@ export function ContentListSetting() {
                   const searchList = search.searchList
                     .split(',')
                     .map((item) => item.trim() === 'true');
-                  console.log(searchList);
                   return (
                     <>
                       {nameList.map((el, idx) =>
@@ -672,298 +438,71 @@ export function ContentListSetting() {
                 })}
             </SelectWrapper>
             <List>
-              {ContentListData.map((item: any) => (
-                <ListItem key={item.code} isChecked={false} height={'100'}>
-                  <ItemLayout>
-                    <CheckBoxI
-                      id={item.code}
-                      value={item.idx}
-                      $margin={`0 5px 0 0`}
-                      readOnly
-                    />
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/favorites_off_B.svg`}
-                    />
-                    <span className="width_80px tooltip_wrapper ">
-                      <strong className="title">출처</strong>
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { sources: any[] } },
-                                idx: any,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory: ${idx}`}
-                                >
-                                  {el.quizCategory.sources
-                                    ? el.quizCategory.sources.map(
-                                        (el) =>
-                                          `${el.출처 ? `${el.출처}` : ''} ${el.문항번호 ? `${el.문항번호}` : ''} ${el.출제년도 ? `${el.출제년도}` : ''} ${el.교재속성 ? `${el.교재속성}` : ''} ${el.출판사 ? `${el.출판사}` : ''} ${el.시리즈 ? `${el.시리즈}` : ''} ${el.교재명 ? `${el.교재명}` : ''} ${el.교재페이지 ? `${el.교재페이지}` : ''} ${el.교재번호 ? `${el.교재번호}` : ''} ${el.출판년도 ? `${el.출판년도}` : ''} ${el.내신형식 ? `${el.내신형식}` : ''} ${el.학교명 ? `${el.학교명}` : ''} ${el.학사일정 ? `${el.학사일정}` : ''} ${el.내신페이지 ? `${el.내신페이지}` : ''} ${el.내신배점 ? `${el.내신배점}` : ''} ${el.기출속성 ? `${el.기출속성}` : ''} ${el.주관사 ? `${el.주관사}` : ''} ${el.기출명 ? `${el.기출명}` : ''} ${el.시행학제 ? `${el.시행학제}` : ''} ${el.시행학년 ? `${el.시행학년} 학년` : ''} ${el.시험지타입 ? `${el.시험지타입}` : ''} ${el.기출배점 ? `${el.기출배점}` : ''} ${el.기출일시 ? `${el.기출일시}` : ''} `,
-                                      )
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_80px tooltip_wrapper ">
-                      <strong className="title">교육과정</strong>
+              {menuDataList
+                .filter((list) => list.name === selectedValue)
+                .flatMap((item) => {
+                  const nameList = item.nameList?.split(',');
+                  const essentialList = item.viewList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+                  const array = 6;
 
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { 교육과정: any } },
-                                idx: number,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory:교육과정 ${idx}`}
-                                >
-                                  {el.quizCategory.교육과정
-                                    ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교육과정}`
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
+                  return Array.from({ length: array }).map((_, idx) => (
+                    <ListItem
+                      key={`${item.idx}-${idx}`}
+                      isChecked={false}
+                      height={'100px'}
+                    >
+                      <ItemLayout>
+                        <CheckBoxI
+                          id={item.code}
+                          value={item.idx}
+                          $margin={`0 5px 0 0`}
+                          readOnly
+                        />
+                        <Icon
+                          width={`18px`}
+                          $margin={'0 10px'}
+                          src={`/images/icon/favorites_off_B.svg`}
+                        />
+                        {nameList.map((name, i) => (
+                          <>
+                            {essentialList[i] && (
+                              <>
+                                <i className="line"></i>
+                                <div className="wrapper" key={i}>
+                                  <span className="width_80px tooltip_wrapper">
+                                    <strong className="title">{name}</strong>
+                                    <span className="tag ellipsis">
+                                      <span
+                                        key={`quizCategoryList quizCategory: ${i}`}
+                                      >
+                                        정보
+                                      </span>
+                                    </span>
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </>
+                        ))}
+                        <i className="line"></i>
+                        <span className="width_10">김드림</span>
+                        <i className="line"></i>
+                        <span className="width_10">2024.08.29</span>
+                        <i className="line"></i>
+                        <span className="width_5">
+                          <Icon
+                            width={`18px`}
+                            $margin={'0 10px'}
+                            src={`/images/icon/lock_open_off.svg`}
+                            disabled={true}
+                          />
                         </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_60px tooltip_wrapper ">
-                      <strong className="title">학교급</strong>
-
-                      {item.quizCategoryList ? (
-                        <span className=" tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { 학교급: any } },
-                                idx: number,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory:학교급 ${idx}`}
-                                >
-                                  {el.quizCategory.학교급
-                                    ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학교급}`
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_50px tooltip_wrapper ">
-                      <strong className="title">학년</strong>
-
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { 학년: any } },
-                                idx: number,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory:학년 ${idx}`}
-                                >
-                                  {el.quizCategory.학년
-                                    ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학년}`
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_60px tooltip_wrapper ">
-                      <strong className="title">학기</strong>
-
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { 학기: any } },
-                                idx: number,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory:학기 ${idx}`}
-                                >
-                                  {el.quizCategory.학기
-                                    ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학기}`
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_60px tooltip_wrapper ">
-                      <strong className="title">교과</strong>
-
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { 교과: any } },
-                                idx: number,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory:교과 ${idx}`}
-                                >
-                                  {el.quizCategory.교과
-                                    ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교과}`
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_80px tooltip_wrapper ">
-                      <strong className="title">과목</strong>
-
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { 과목: any } },
-                                idx: number,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory:과목 ${idx}`}
-                                >
-                                  {el.quizCategory.과목
-                                    ? `${idx != 0 ? ',' : ''} ${el.quizCategory.과목}`
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_150px tooltip_wrapper ">
-                      <strong className="title">대단원</strong>
-
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length !== 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                el: { quizCategory: { 대단원: any } },
-                                idx: number,
-                              ) => (
-                                <span
-                                  key={`quizCategoryList quizCategory:대단원 ${idx}`}
-                                >
-                                  {el.quizCategory.대단원
-                                    ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원.split('^^^')[0]}`
-                                    : ''}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_60px tag_s tooltip_wrapper ">
-                      <span></span>
-                      {item.quizCategoryList ? (
-                        <span className="tag ellipsis">
-                          {item.quizCategoryList.length > 0 ? (
-                            item.quizCategoryList.map(
-                              (
-                                item: {
-                                  quizCategory: { 문항타입: string | any[] };
-                                },
-                                idx: any,
-                              ) => (
-                                <span key={`문항타입 ${idx}`}>
-                                  {item.quizCategory.문항타입 &&
-                                  item.quizCategory.문항타입.length > 1
-                                    ? `${item.quizCategory.문항타입}`
-                                    : ``}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <span></span>
-                          )}
-                        </span>
-                      ) : (
-                        <span className="tag"></span>
-                      )}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_10">{item.createdBy} </span>
-                    <i className="line"></i>
-                    <span className="width_10">{item.createdAt}</span>
-                    <i className="line"></i>
-                    <span className="width_5">
-                      <Icon
-                        width={`18px`}
-                        $margin={'0 0 0 12px'}
-                        src={`/images/icon/lock_open_off.svg`}
-                        disabled={true}
-                      />
-                    </span>
-                  </ItemLayout>
-                </ListItem>
-              ))}
+                      </ItemLayout>
+                    </ListItem>
+                  ));
+                })}
             </List>
             <ListDescription>
               화면에 보이는 데이터는 예시로 구성된 데이터 입니다. 실제
@@ -1115,7 +654,9 @@ const ItemLayout = styled.span`
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
-
+  .wrapper {
+    display: flex;
+  }
   .title {
     width: 100%;
     font-weight: 600;

@@ -135,6 +135,7 @@ export function WorkbookClassificationSetting() {
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
+  const [detailIdx, setDetailIdx] = useState<string | null>(null);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -144,7 +145,7 @@ export function WorkbookClassificationSetting() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
+          //console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
           setMenuIdx(parsedData.idx);
           //localStorage.removeItem('sendMenuIdx');
         } catch (error) {
@@ -161,6 +162,31 @@ export function WorkbookClassificationSetting() {
 
     return () => clearTimeout(retryTimeout);
   }, []);
+
+  const toggleSearch = (idx: number, isSearch: boolean) => {
+    setMenuDataList((prev) => {
+      // 선택된 항목을 필터링
+      const filterList = prev.filter((el) => el.name === selectedValue);
+      if (filterList.length > 0) {
+        const searchList = filterList[0].searchList.split(',');
+
+        // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+        searchList[idx] = isSearch.toString();
+
+        // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+        const updatedSearchList = searchList.join(',');
+
+        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+        return prev.map((item) =>
+          item.name === selectedValue
+            ? { ...item, searchList: updatedSearchList }
+            : item,
+        );
+      }
+
+      return prev;
+    });
+  };
 
   //그룹 화면설정 정보 불러오기 api
   const getMenuSetting = async () => {
@@ -187,9 +213,44 @@ export function WorkbookClassificationSetting() {
     }
   }, [menuIdx]);
 
+  //값을 받아왔을때 상태관리
   useEffect(() => {
     if (menuSettingData) {
-      setMenuDataList(menuSettingData.data.data.detailList);
+      const updatedData = menuSettingData.data.data.detailList.map(
+        (item: any) => {
+          const nameListArray = item.nameList?.split(',') || [];
+
+          const searchListArray = item.searchList
+            ? item.searchList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+
+          const viewListArray = item.viewList
+            ? item.viewList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+          const searchListString = searchListArray.join(',');
+          const viewListString = viewListArray.join(',');
+
+          return {
+            ...item,
+            searchList: searchListString,
+            viewList: viewListString,
+          };
+        },
+      );
+
+      setMenuDataList(updatedData);
+    }
+  }, [menuSettingData]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      const filterList = menuSettingData.data.data.detailList.filter(
+        (el: any) => el.isCheck === true,
+      );
+      const findName = filterList[0]?.name;
+      const detailIdx = filterList[0]?.detailIdx;
+      setSelectedValue(findName);
+      setDetailIdx(detailIdx);
     }
   }, [menuSettingData]);
 
@@ -197,15 +258,14 @@ export function WorkbookClassificationSetting() {
   const updateMenuInfo = async () => {
     const filterData = menuDataList.filter((el) => el.name === selectedValue);
     const data = {
-      detailIdx: filterData[0].detailIdx,
-      menuIdx: filterData[0].idx,
+      detailIdx: detailIdx ? detailIdx : 'null',
+      menuIdx: menuIdx,
       groupCode: filterData[0].code,
       idxs: filterData[0].typeList,
       names: filterData[0].nameList,
-      searchs: 'true, true, true, true, true, true',
-      view: 'true, true, true, true, true, true',
-      //searchs: filterData[0].searchList,
-      //views: filterData[0].viewList,
+      searchs: filterData[0].searchList,
+      views: filterData[0].viewList,
+      inputs: filterData[0].inputTypeList,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -255,7 +315,7 @@ export function WorkbookClassificationSetting() {
             {menuDataList && (
               <Select
                 width={'100%'}
-                defaultValue="항목 선택"
+                defaultValue={selectedValue}
                 key="그룹리스트"
                 options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                 setSelectedValue={setSelectedValue}
@@ -292,15 +352,11 @@ export function WorkbookClassificationSetting() {
                         (el) => el.name === selectedValue,
                       );
                       const nameList = filterList[0]?.nameList?.split(',');
-                      const viewList = [true, true, false, true, true, true];
-                      const essentialList = [
-                        true,
-                        true,
-                        false,
-                        true,
-                        true,
-                        true,
-                      ];
+                      const inputTypeList =
+                        filterList[0]?.inputTypeList?.split(',');
+                      const essentialList = filterList[0]?.searchList
+                        ?.split(',')
+                        .map((item) => item.trim() === 'true');
 
                       // 필터링된 카테고리가 존재할 때만 option을 렌더링
                       if (nameList) {
@@ -309,7 +365,7 @@ export function WorkbookClassificationSetting() {
                             <Content>
                               <div className={`title-${true}`}>
                                 {item}
-                                <div className="tag">태그선택</div>
+                                <div className="tag">{inputTypeList[i]}</div>
                               </div>
                               <div className="icon">
                                 {essentialList[i] ? (
@@ -320,7 +376,9 @@ export function WorkbookClassificationSetting() {
                                       cursor: 'pointer',
                                       fill: `${COLOR.PRIMARY}`,
                                     }}
-                                    // onClick={() => {}}
+                                    onClick={() => {
+                                      toggleSearch(i, !essentialList[i]);
+                                    }}
                                   />
                                 ) : (
                                   <BiToggleLeft
@@ -330,7 +388,9 @@ export function WorkbookClassificationSetting() {
                                       cursor: 'pointer',
                                       fill: `${COLOR.MUTE}`,
                                     }}
-                                    // onClick={() => {}}
+                                    onClick={() => {
+                                      toggleSearch(i, !essentialList[i]);
+                                    }}
                                   />
                                 )}
                               </div>
@@ -367,74 +427,60 @@ export function WorkbookClassificationSetting() {
                     fontSize="20px"
                   />
                 </SubtitleWrapper>
-                {/* TODO: label value 바꿔야함 */}
-                <LabelWrapper>
-                  <LabelWithButton>
-                    <Label
-                      value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[0].isNecessary ? '교육과정*' : '교육과정'}`}
-                      width="80px"
-                      bold
-                      fontSize="14px"
-                    />
-                    <ButtonWrapper>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>10차</span>
-                      </Button>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>9차</span>
-                      </Button>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>8차</span>
-                      </Button>
-                    </ButtonWrapper>
-                  </LabelWithButton>
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[1].isNecessary ? '교과*' : '교과'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[2].isNecessary ? '과목*' : '과목'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[3].isNecessary ? '학교급*' : '학교급'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[4].isNecessary ? '학년*' : '학년'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[5].isNecessary ? '학기*' : '학기'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                </LabelWrapper>
-                <ButtonBoxWrapper>
+                {(() => {
+                  const filterList = menuDataList?.filter(
+                    (el) => el.name === selectedValue,
+                  );
+                  const nameList = filterList[0]?.nameList?.split(',');
+                  const essentialList = filterList[0]?.searchList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+                  if (nameList) {
+                    return (
+                      <LabelWrapper>
+                        {nameList.map((name, i) => (
+                          <LabelWithButton key={i}>
+                            <Label
+                              value={essentialList[i] ? `${name}*` : name}
+                              width="80px"
+                              bold
+                              fontSize="14px"
+                            />
+                            {i === 0 && (
+                              <ButtonWrapper>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>버튼</span>
+                                </Button>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>버튼</span>
+                                </Button>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>버튼</span>
+                                </Button>
+                              </ButtonWrapper>
+                            )}
+                          </LabelWithButton>
+                        ))}
+                      </LabelWrapper>
+                    );
+                  }
+                })()}
+                {/* <ButtonBoxWrapper>
                   <ButtonBox>
                     <div>
                       {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[6].isNecessary ? '대단원*' : '대단원'}`}
@@ -455,7 +501,7 @@ export function WorkbookClassificationSetting() {
                       {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[11].isNecessary ? '미세분류*' : '미세분류'}`}
                     </div>
                   </ButtonBox>
-                </ButtonBoxWrapper>
+                </ButtonBoxWrapper> */}
               </SelectWrapper>
               <ImgWrapper>
                 <img
@@ -583,10 +629,14 @@ const ImgWrapper = styled.div`
   width: 60%;
 `;
 const SelectWrapper = styled.div`
+  max-height: 708px; /* 컨테이너의 최대 높이 설정 */
+  overflow-y: auto; /* 수직 스크롤바 표시 */
   width: 60%;
   display: flex;
   flex-direction: column;
   border-right: 1px solid ${COLOR.BORDER_GRAY};
+  background-color: white;
+  margin: 10px 0 10px 10px;
 `;
 const SubtitleWrapper = styled.div`
   padding: 10px;
@@ -598,9 +648,7 @@ const LabelWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 30px 10px 0 10px;
-  margin: 0px 10px;
-  background-color: white;
+  padding: 30px 0 10px 10px;
 `;
 const LabelWithButton = styled.div`
   display: flex;
