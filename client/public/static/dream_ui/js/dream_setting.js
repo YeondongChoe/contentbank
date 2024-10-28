@@ -4,8 +4,8 @@ var dream_server_url = 'http://210.124.177.36:5050'; // 드림원시스 쪽 노�
 
 // 업로드 이미지 URL
 // var uploaded_img_url = 'https://itex-dev-image.s3.ap-northeast-2.amazonaws.com';
-var uploaded_img_url =
-  'https://contentbank20241017.s3.ap-northeast-2.amazonaws.com/webdev2test';
+// var uploaded_img_url =
+//   'https://contentbank20241017.s3.ap-northeast-2.amazonaws.com/webdev2test';
 
 // 데이터 로드 화면 탭 개수 설정
 var tabCount = 5;
