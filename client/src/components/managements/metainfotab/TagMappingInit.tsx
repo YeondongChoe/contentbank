@@ -1,26 +1,100 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Button, CheckBoxI, Icon } from '../../../components/atom';
+import { classificationInstance } from '../../../api/axios';
+import {
+  Button,
+  CheckBoxI,
+  Icon,
+  openToastifyAlert,
+} from '../../../components/atom';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { useDnD } from '../../molecules/dragAndDrop';
 
+import { GroupListProps } from './GroupManagement';
+
 export function TagMappingInit() {
-  const [lists, setLists] = useState({
-    categoryList: [''],
-    mappingList: [''],
-  });
+  const [categoryList, setCategoryList] = useState<string[]>([]);
+  const [mappingList, setMappingList] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
-  const [checkList, setCheckList] = useState<string[]>([]);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
 
   useEffect(() => {
-    setLists({
-      categoryList: ['전체', '수학', '영어'],
-      mappingList: ['11차', '10차', '9차', '8차'],
+    if (query.get('state')) {
+      console.log('query', query.get('state'));
+    }
+  }, []);
+
+  // Load category group data
+  const getCategoryGroup = async () => {
+    const res = await classificationInstance.get(`/v1/category/group`);
+    console.log(res);
+    return res;
+  };
+
+  const { data: categoryGroupData, isLoading: isCategoryGroupLoading } =
+    useQuery({
+      queryKey: ['get-categoryGroup'],
+      queryFn: getCategoryGroup,
+      meta: {
+        errorMessage: 'get-categoryGroup 에러 메세지',
+      },
     });
+
+  useEffect(() => {
+    if (categoryGroupData) {
+      const item = categoryGroupData.data.data.groupList.filter(
+        (el: GroupListProps) => el.idx === Number(query.get('state')),
+      );
+
+      console.log('item----', item[0]);
+    }
+  }, [categoryGroupData]);
+
+  // Update category group
+  const putCategoryGroup = async () => {
+    const data = {
+      groupIdx: 1,
+      name: '출처정보12',
+      types: [1, 2, 3],
+    };
+    const res = await classificationInstance.put(`/v1/category/group`, data);
+    console.log('putCategoryGroup', res);
+    return res;
+  };
+
+  const { data: categoryGroup, mutate: mutateCategoryGroup } = useMutation({
+    mutationFn: putCategoryGroup,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
+
+  // Initialize lists
+  useEffect(() => {
+    setCategoryList(['전체', '수학', '영어']);
+    setMappingList(['11차', '10차', '9차', '8차']);
   }, []);
 
   const moveTag = (
@@ -28,30 +102,30 @@ export function TagMappingInit() {
     hoverIndex: number,
     listType: 'category' | 'mapping',
   ) => {
-    const updatedList = [...lists[`${listType}List`]];
+    const updatedList =
+      listType === 'category' ? [...categoryList] : [...mappingList];
     const draggedItem = updatedList.splice(dragIndex, 1)[0];
     updatedList.splice(hoverIndex, 0, draggedItem);
 
-    setLists((prev) => ({
-      ...prev,
-      [`${listType}List`]: updatedList,
-    }));
+    if (listType === 'category') {
+      setCategoryList(updatedList);
+    } else {
+      setMappingList(updatedList);
+    }
   };
 
   const handleTagClick = (item: string) => {
     setActiveItem(activeItem === item ? null : item);
   };
 
-  useEffect(() => {}, [lists]);
   return (
     <Container>
-      {/* 최초 진입 */}
       <ListWrapper>
         <strong className="title">카테고리 순서</strong>
         <span className="sub_title">매핑할 태그 간의 순서를 지정해주세요.</span>
         <DndProvider backend={HTML5Backend}>
-          <TagsWrappper>
-            {lists.categoryList.map((el, idx) => (
+          <TagsWrapper>
+            {categoryList.map((el, idx) => (
               <DraggableInitItem
                 key={`${el} ${idx}`}
                 item={el}
@@ -63,7 +137,7 @@ export function TagMappingInit() {
                 }
               />
             ))}
-          </TagsWrappper>
+          </TagsWrapper>
         </DndProvider>
 
         <Button $filled onClick={() => {}} $margin="15px 0 0 0">
@@ -78,11 +152,12 @@ export function TagMappingInit() {
           이용해주세요.
         </p>
       </ListWrapper>
+
       <ListItemWrapper>
         <strong>매핑</strong>
         <DndProvider backend={HTML5Backend}>
-          <TagsWrappper className="height">
-            {lists.mappingList.map((el, idx) => (
+          <TagsWrapper className="height">
+            {mappingList.map((el, idx) => (
               <DraggableInitItem
                 key={`${el} ${idx}`}
                 item={el}
@@ -94,7 +169,7 @@ export function TagMappingInit() {
                 }
               />
             ))}
-          </TagsWrappper>
+          </TagsWrapper>
         </DndProvider>
       </ListItemWrapper>
     </Container>
@@ -126,11 +201,10 @@ const DraggableInitItem: React.FC<DraggableInitItemProps> = ({
     <Tags
       ref={ref}
       className={`gap ${activeItem === item ? 'on' : ''}`}
-      key={`${item} ${index}`}
       onClick={() => handleTagClick(item)}
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
-      <span className="icon_wwrap">
+      <span className="icon_wrap">
         <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
       </span>
       <span className="category_title">{item}</span>
@@ -163,7 +237,7 @@ const Container = styled.div`
   }
 `;
 
-const TagsWrappper = styled.div`
+const TagsWrapper = styled.div`
   border: 1px solid #eaeaea;
   background-color: #fff;
   min-width: 300px;

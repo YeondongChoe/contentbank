@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
@@ -13,8 +14,7 @@ import { windowOpenHandler } from '../../../utils/windowHandler';
 import { Button, Icon } from '../../atom';
 
 import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
-
-type GroupListProps = {
+export type GroupListProps = {
   codes: string;
   idx: number;
   name: string;
@@ -51,11 +51,11 @@ export function GroupManagement() {
       content: <CreateGroupModal />,
     });
   };
-  const openTagMappingWindow = () => {
+  const openTagMappingWindow = (id: number) => {
     windowOpenHandler({
       name: 'tagmapping',
       url: '/content-manage/tagmapping',
-      // queryParams: { state: '' },
+      queryParams: { state: `${id}` },
     });
   };
 
@@ -181,7 +181,7 @@ export function GroupManagement() {
                   <button
                     className="mapping_button"
                     type="button"
-                    onClick={() => openTagMappingWindow()}
+                    onClick={() => openTagMappingWindow(list.idx)}
                   >
                     태그 매핑
                   </button>

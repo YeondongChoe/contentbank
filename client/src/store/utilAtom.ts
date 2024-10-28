@@ -1,5 +1,6 @@
 import { atom } from 'recoil';
 
+import { GroupListProps } from '../components/managements/metainfotab';
 import { ContentWithScore } from '../types/WorkbookType';
 
 // 페이지네이션 공통아톰
@@ -41,4 +42,10 @@ export const isWorkbookCreatedAtom = atom({
 export const isEditWorkbookAtom = atom({
   key: 'isEditWorkbookAtom',
   default: 0,
+});
+
+//카테고리 선택 아톰
+export const groupItem = atom<GroupListProps[]>({
+  key: 'groupItem',
+  default: [],
 });
