@@ -427,10 +427,10 @@ export function ContentCopyEdit({
       setSelectedCourse('');
     }
     switch (defaultValue) {
-      case categoryTitles[5]?.code:
+      case '교과':
         setSelectedSubject('');
         break;
-      case categoryTitles[6]?.code:
+      case '과목':
         setSelectedCourse('');
         break;
 
@@ -554,38 +554,34 @@ export function ContentCopyEdit({
                       <li>
                         <SelectWrapper>
                           {/* 교과 */}
-                          {categoriesE && categoryTitles[5] && (
+                          {categoriesE && (
                             <Select
                               onDefaultSelect={() =>
-                                handleDefaultSelect(categoryTitles[5]?.code)
+                                handleDefaultSelect('교과')
                               }
                               // $positionTop
                               heightScroll={'150px'}
                               width={'110px'}
                               height={'30px'}
-                              defaultValue={
-                                quizCategory?.교과 || categoryTitles[5]?.code
-                              }
-                              key={categoryTitles[5]?.code}
+                              defaultValue={quizCategory?.교과 || '교과'}
+                              key={'교과'}
                               options={categoriesE[0]}
                               onSelect={(event) => selectCategoryOption(event)}
                               setSelectedValue={setSelectedSubject}
                             />
                           )}
                           {/* 과목 */}
-                          {categoriesE && categoryTitles[6] && (
+                          {categoriesE && (
                             <Select
                               onDefaultSelect={() =>
-                                handleDefaultSelect(categoryTitles[6]?.code)
+                                handleDefaultSelect('과목')
                               }
                               // $positionTop
                               heightScroll={'150px'}
                               width={'110px'}
                               height={'30px'}
-                              defaultValue={
-                                quizCategory?.과목 || categoryTitles[6]?.code
-                              }
-                              key={categoryTitles[6]?.code}
+                              defaultValue={quizCategory?.과목 || '과목'}
+                              key={'과목'}
                               options={categoriesE[1]}
                               onSelect={(event) => selectCategoryOption(event)}
                               setSelectedValue={setSelectedCourse}
@@ -627,7 +623,7 @@ export function ContentCopyEdit({
                     <SelectList>
                       <li>
                         <SelectWrapper>
-                          {categoriesE && categoryTitles[40] && (
+                          {categoriesE && (
                             <Select
                               onDefaultSelect={() =>
                                 handleDefaultSelect('문항타입')
@@ -653,7 +649,7 @@ export function ContentCopyEdit({
                     <SelectList>
                       <li>
                         <SelectWrapper>
-                          {categoriesE && categoryTitles[41] && (
+                          {categoriesE && (
                             <Select
                               onDefaultSelect={() =>
                                 handleDefaultSelect('난이도')

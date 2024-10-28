@@ -15,6 +15,7 @@ import {
   ContentEdit,
   ClassificationEdit,
   ContentCopyEdit,
+  ContentInspection,
 } from '../../components/contents/createcontent';
 
 export function CreateContentMain() {
@@ -106,6 +107,9 @@ export function CreateContentMain() {
           {query.get('state') === 'edit' && (
             <ContentEdit setTabView={setTabView} type={'edit'} />
           )}
+          {query.get('state') === 'inspection' && (
+            <ContentInspection setTabView={setTabView} type={'inspection'} />
+          )}
           {query.get('state') === 'copyedit' && (
             <ContentCopyEdit setTabView={setTabView} type={'copyedit'} />
           )}
@@ -127,7 +131,8 @@ export function CreateContentMain() {
       {tabView === '문항 분류' && (
         <ContentBox>
           {query.get('state') === 'edit' ||
-          query.get('state') === 'copyedit' ? (
+          query.get('state') === 'copyedit' ||
+          query.get('state') === 'inspection' ? (
             <ClassificationEdit
               setTabView={setTabView}
               type={query.get('state') as string}

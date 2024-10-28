@@ -427,10 +427,10 @@ export function ContentCreating({
       setSelectedCourse('');
     }
     switch (defaultValue) {
-      case categoryTitles[5]?.code:
+      case '교과':
         setSelectedSubject('');
         break;
-      case categoryTitles[6]?.code:
+      case '과목':
         setSelectedCourse('');
         break;
 
@@ -496,34 +496,30 @@ export function ContentCreating({
                   <li>
                     <SelectWrapper>
                       {/* 교과 */}
-                      {categoriesE && categoryTitles[5] && (
+                      {categoriesE && (
                         <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[5]?.code)
-                          }
+                          onDefaultSelect={() => handleDefaultSelect('교과')}
                           // $positionTop
                           heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={categoryTitles[5]?.code}
-                          key={categoryTitles[5]?.code}
+                          defaultValue={'교과'}
+                          key={'교과'}
                           options={categoriesE[0]}
                           onSelect={(event) => selectCategoryOption(event)}
                           setSelectedValue={setSelectedSubject}
                         />
                       )}
                       {/* 과목 */}
-                      {categoriesE && categoryTitles[6] && (
+                      {categoriesE && (
                         <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect(categoryTitles[6]?.code)
-                          }
+                          onDefaultSelect={() => handleDefaultSelect('과목')}
                           // $positionTop
                           heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
-                          defaultValue={categoryTitles[6]?.code}
-                          key={categoryTitles[6]?.code}
+                          defaultValue={'과목'}
+                          key={'과목'}
                           options={categoriesE[1]}
                           onSelect={(event) => selectCategoryOption(event)}
                           setSelectedValue={setSelectedCourse}
@@ -562,7 +558,7 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {categoriesE && categoryTitles[40] && (
+                      {categoriesE && (
                         <Select
                           onDefaultSelect={() =>
                             handleDefaultSelect('문항타입')
@@ -586,7 +582,7 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {categoriesE && categoryTitles[41] && (
+                      {categoriesE && (
                         <Select
                           onDefaultSelect={() => handleDefaultSelect('난이도')}
                           $positionTop

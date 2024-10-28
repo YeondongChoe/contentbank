@@ -71,23 +71,13 @@ export function InspectionList({
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  // 문항 수정 윈도우 열기
+  // 문항 검수/수정 윈도우 열기
   const openCreateEditWindow = () => {
     saveLocalData();
     windowOpenHandler({
       name: 'createcontentmain',
       url: '/createcontentmain',
-      queryParams: { state: 'edit' },
-    });
-  };
-
-  // 문항 복제후 수정 윈도우 열기
-  const openCreateCopyEditWindow = () => {
-    saveLocalData();
-    windowOpenHandler({
-      name: 'createcontentmain',
-      url: '/createcontentmain',
-      queryParams: { state: 'copyedit' },
+      queryParams: { state: 'inspection' },
     });
   };
 
@@ -332,7 +322,9 @@ export function InspectionList({
                 height="35px"
                 fontSize="14px"
                 $borderRadius="7px"
-                onClick={() => {}}
+                onClick={() => {
+                  openCreateEditWindow();
+                }}
                 $filled
                 disabled={isEnabled}
                 cursor

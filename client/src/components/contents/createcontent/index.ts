@@ -1,6 +1,7 @@
 export * from './Classification';
 export * from './ClassificationEdit';
 export * from './ContentEdit';
+export * from './ContentInspection';
 export * from './ContentCopyEdit';
 export * from './ContentCreating';
 export * from './ContentFileUpload';
