@@ -285,29 +285,10 @@ export function ContentListSetting() {
   ];
   const [isStartDnD, setIsStartDnd] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
-  const [menuIdx, setMenuIdx] = useState<number>(0);
+  const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
 
-  // // 로컬 스토리지에서 데이터 가져오기
-  // const fetchDataFromStorage = () => {
-  //   const data = localStorage.getItem('sendMenuIdx');
-  //   if (data) {
-  //     try {
-  //       const parsedData = JSON.parse(data);
-  //       setMenuIdx(parsedData.idx);
-  //     } catch (error) {
-  //       console.error('로컬 스토리지 sendData 파싱 에러:', error);
-  //     }
-  //   } else {
-  //     console.log('로컬 스토리지에 sendData가 없습니다.');
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // 컴포넌트가 마운트될 때 한 번 실행
-  //   fetchDataFromStorage();
-  // }, []);
-
+  // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendMenuIdx');
@@ -328,7 +309,7 @@ export function ContentListSetting() {
 
     fetchDataFromStorage();
 
-    const retryTimeout = setTimeout(fetchDataFromStorage, 1000); // 3초 후에 다시 시도
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
 
     return () => clearTimeout(retryTimeout);
   }, []);
@@ -434,7 +415,7 @@ export function ContentListSetting() {
     meta: {
       errorMessage: 'get-menuSetting 에러 메세지',
     },
-    enabled: menuIdx !== 0,
+    enabled: menuIdx !== null,
   });
 
   useEffect(() => {
