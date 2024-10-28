@@ -27,6 +27,7 @@ import {
   Tooltip,
 } from '../..';
 import { quizService } from '../../../api/axios';
+import { ProcessListModal } from '../../../components/managements/process';
 import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
@@ -269,7 +270,7 @@ export function ContentList({
     console.log('sortedList ---', sortedList);
     openModal({
       title: '',
-      content: <PDFModal list={sortedList} />,
+      content: <ProcessListModal list={sortedList} />,
     });
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
@@ -401,7 +402,7 @@ export function ContentList({
                 fontSize="14px"
                 $borderRadius="7px"
                 $filled
-                onClick={() => openCreatePDFModal()}
+                onClick={() => openProcessListModal()}
                 disabled={isEnabled}
                 cursor
               >
@@ -412,7 +413,7 @@ export function ContentList({
                 height="35px"
                 fontSize="14px"
                 $borderRadius="7px"
-                onClick={() => openCreatePDFModal()}
+                onClick={() => {}}
                 disabled={isEnabled}
                 cursor
               >
