@@ -70,6 +70,16 @@ export function CreateGroupModal({
     }
   }, [selectedCategories]);
 
+  const clickSave = () => {
+    if (name === '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '그룹 명을 입력해주세요',
+      });
+    } else {
+      postGroupData();
+    }
+  };
   //그룹 생성api
   const postGroup = async () => {
     const data = {
@@ -150,12 +160,7 @@ export function CreateGroupModal({
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
         </Button>
-        <Button
-          width="100px"
-          height="40px"
-          onClick={() => postGroupData()}
-          $filled
-        >
+        <Button width="100px" height="40px" onClick={() => clickSave()} $filled>
           확인
         </Button>
       </ButtonWrapper>

@@ -36,7 +36,7 @@ export function GroupManagement() {
   const [groupList, setGroupList] = useState<GroupListProps[]>([]);
   const [categoryList, setCategoryList] = useState<CategoryListProps[]>([]);
   const [groupIdx, setGroupIdx] = useState<number | null>(null);
-  const [nameList, setNameList] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [typeList, setTypeList] = useState<string>('');
   //서버로 요청하기 위해서 Idx로 변환
   const [typeIdxList, setTypeIdxList] = useState<number[]>([]);
@@ -55,7 +55,7 @@ export function GroupManagement() {
   }, [typeList]);
 
   const titleEditHandler = (id: number) => {
-    updateGroupInfoData(typeIdxList);
+    clickSave(typeIdxList);
     setIsTitleEdit((prevState) => ({
       ...prevState,
       [id]: false, // Turn off edit mode after saving
@@ -82,15 +82,17 @@ export function GroupManagement() {
 
   /*  모달 열기 */
   const openCategoryAddModal = (
-    nameList: string,
+    //이미 저장된 카테고리 이름
+    categoryNameList: string,
     typeList: string,
+    //카테고리 이름
     name: string,
     idx: number,
   ) => {
     setTypeList(typeList);
-    setNameList(name);
+    setName(name);
     setGroupIdx(idx);
-    const process = nameList.split(',').map((el) => el);
+    const process = categoryNameList.split(',').map((el) => el);
     openModal({
       title: '',
       content: (
@@ -98,7 +100,7 @@ export function GroupManagement() {
           categoryList={categoryList}
           nameList={process}
           typeList={typeList}
-          onSave={(selectedTags) => updateGroupInfoData(selectedTags)}
+          onSave={(selectedTags) => clickSave(selectedTags)}
         />
       ),
     });
@@ -176,11 +178,24 @@ export function GroupManagement() {
     }
   }, [categoryGroupData]);
 
+  console.log(name);
+  console.log(tagInputValue);
+  const clickSave = (numberList: number[]) => {
+    if (name === '' && tagInputValue === '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '그룹 명을 입력해주세요',
+      });
+      return; // name이 비어 있으면 함수 종료
+    } else {
+      updateGroupInfoData(numberList);
+    }
+  };
   //그룹 정보 업데이트 api
   const updateGroupInfo = async (selectedTags: number[]) => {
     const data = {
       groupIdx: groupIdx,
-      name: tagInputValue || nameList,
+      name: tagInputValue || name,
       types: selectedTags,
     };
     return await classificationInstance.put(`/v1/category/group`, data);

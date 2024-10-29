@@ -1383,36 +1383,39 @@ export function Company() {
                 placeholder="검색어를 입력해주세요."
               />
               <ContentListWrapper>
-                {companyList?.map((company, i) => {
-                  const isSelected = selectedIdxValue === (1 + i).toString();
-                  return (
-                    <CompanyList key={`${company.idx} -${company.name}`}>
-                      <ContentList>
-                        <Content
-                          onClick={() => {
-                            setSelectedIdxValue((1 + i).toString());
-                            setIdxValue(company.idx);
-                          }}
-                          $isSelected={isSelected}
-                        >
-                          <div className="title">
-                            {company.name}({company.accountCount})
-                          </div>
-                        </Content>
-                      </ContentList>
-                      <DeleteIconWrapper>
-                        <BiSolidTrashAlt
-                          onClick={() => {
-                            clickDeleteCompany();
-                            //삭제할 카테고리 idx값 관리
-                            setIdxValue(company.idx);
-                            setSelectedIdxValue((1 + i).toString());
-                          }}
-                        />
-                      </DeleteIconWrapper>
-                    </CompanyList>
-                  );
-                })}
+                {companyList
+                  ?.slice()
+                  .sort((a, b) => a.idx - b.idx)
+                  .map((company, i) => {
+                    const isSelected = selectedIdxValue === (1 + i).toString();
+                    return (
+                      <CompanyList key={`${company.idx} -${company.name}`}>
+                        <ContentList>
+                          <Content
+                            onClick={() => {
+                              setSelectedIdxValue((1 + i).toString());
+                              setIdxValue(company.idx);
+                            }}
+                            $isSelected={isSelected}
+                          >
+                            <div className="title">
+                              {company.name}({company.accountCount})
+                            </div>
+                          </Content>
+                        </ContentList>
+                        <DeleteIconWrapper>
+                          <BiSolidTrashAlt
+                            onClick={() => {
+                              clickDeleteCompany();
+                              //삭제할 카테고리 idx값 관리
+                              setIdxValue(company.idx);
+                              setSelectedIdxValue((1 + i).toString());
+                            }}
+                          />
+                        </DeleteIconWrapper>
+                      </CompanyList>
+                    );
+                  })}
                 {idxValue === '' && (
                   <Content className="add" $isSelected={true}>
                     <div className="title">

@@ -16,6 +16,7 @@ type MenuDataListProps = {
   searchList: string;
   typeList: string;
   viewList: string;
+  inputTypeList: string;
 };
 
 interface SettingDnDWrapperType {
@@ -66,6 +67,7 @@ export const SettingPageDnDWrapper = ({
       search: boolean;
       view: boolean;
       type: string;
+      input: string;
     }[]
   >([]); // 현재 항목의 상태 관리
 
@@ -73,7 +75,8 @@ export const SettingPageDnDWrapper = ({
     const filteredArray = dragList.filter((el) => el.name === selectedValue);
     const nameListArray = filteredArray[0]?.nameList?.split(',') || [];
     const typeListArray = filteredArray[0]?.typeList?.split(',') || [];
-
+    const inputTypeListArray =
+      filteredArray[0]?.inputTypeList?.split(',') || [];
     const searchListArray = filteredArray[0]?.searchList?.split(',') || [];
     const viewListArray = filteredArray[0]?.viewList?.split(',') || [];
     const searchListBooleans = searchListArray.map(
@@ -91,6 +94,7 @@ export const SettingPageDnDWrapper = ({
           search: searchListBooleans[index],
           view: viewListBooleans[index],
           type: typeListArray[index],
+          input: inputTypeListArray[index],
         })),
       );
     }
