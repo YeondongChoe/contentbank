@@ -292,7 +292,6 @@ export function RegisterModal({
                     />
                   )}
                 />
-
                 <Button
                   buttonType="button"
                   $margin={'0 0 0 10px'}
@@ -310,6 +309,21 @@ export function RegisterModal({
               </ButtonWrapper>
             </InputWrapper>
             <InputWrapper>
+              <Label width="130px" fontSize="15px" value="기업" />
+              <SelectWrapper>
+                <Select
+                  width="100%"
+                  padding="5px 0px 0px 0px"
+                  defaultValue={'권한을 선택하세요'}
+                  onClick={() => setIsAuthorityError(false)}
+                  options={authoritySelectList}
+                  setSelectedValue={setSelectedAuthority}
+                  setSelectedCode={setSelectedCode}
+                  heightScroll="150px"
+                />
+              </SelectWrapper>
+            </InputWrapper>
+            <InputWrapper>
               {isAuthorityError ? (
                 <Label
                   width="130px"
@@ -320,7 +334,6 @@ export function RegisterModal({
               ) : (
                 <Label width="130px" fontSize="15px" value="* 권한" />
               )}
-
               <Controller
                 control={control}
                 name="authority"
@@ -339,12 +352,10 @@ export function RegisterModal({
                   </SelectWrapper>
                 )}
               />
-
               {isAuthorityError && (
                 <ErrorMessage>{AuthorityErrorMessage}</ErrorMessage>
               )}
             </InputWrapper>
-
             <InputWrapper>
               <Label width="130px" fontSize="15px" value="비고" />
               <Textarea

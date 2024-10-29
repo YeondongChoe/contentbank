@@ -173,68 +173,84 @@ export function CategroyManagement() {
     setIsAdd(false);
   };
 
+  console.log(name);
+  console.log(typeof name);
+
+  const clickSaveButton = () => {
+    if (name === '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '카테고리 명을 입력해주세요',
+      });
+      return; // name이 비어 있으면 함수 종료
+    } else {
+      updateCategoryData();
+    }
+  };
   //접근 메뉴 업데이트 api
   const updateCategory = async () => {
     const newTagsList = tagsList.map((tag) => {
       return { name: tag };
     });
+
+    const addData = {
+      name: name,
+      type:
+        type === '태그 선택'
+          ? 'SELECT'
+          : type === '텍스트 입력'
+            ? 'INPUT '
+            : type === '날짜 선택'
+              ? 'DATEPICKER'
+              : type === '숫자 입력'
+                ? 'INPUT_INT'
+                : '',
+      autoNum:
+        autoTag === '없음'
+          ? 'NONE'
+          : autoTag === '숫자(1,2,3)'
+            ? 'NUMBER'
+            : autoTag === '로마숫자(I, II, III)'
+              ? 'ROMAN_NUMBER'
+              : autoTag === '영문(a,b,c)'
+                ? 'LETTER'
+                : '',
+      classList: newTagsList,
+      isUse: switchOn,
+    };
+
+    const data = {
+      itemIdx: categoryIdx,
+      name: name,
+      type:
+        type === '태그 선택'
+          ? 'SELECT'
+          : type === '텍스트 입력'
+            ? 'INPUT '
+            : type === '날짜 선택'
+              ? 'DATEPICKER'
+              : type === '숫자 입력'
+                ? 'INPUT_INT'
+                : '',
+      autoNum:
+        autoTag === '없음'
+          ? 'NONE'
+          : autoTag === '숫자(1,2,3)'
+            ? 'NUMBER'
+            : autoTag === '로마숫자(I, II, III)'
+              ? 'ROMAN_NUMBER'
+              : autoTag === '영문(a,b,c)'
+                ? 'LETTER'
+                : '',
+      classList: newTagsList,
+      isUse: switchOn,
+    };
+
     if (isAdd) {
-      const data = {
-        name: name,
-        type:
-          type === '태그 선택'
-            ? 'SELECT'
-            : type === '텍스트 입력'
-              ? 'INPUT '
-              : type === '날짜 선택'
-                ? 'DATEPICKER'
-                : type === '숫자 입력'
-                  ? 'INPUT_INT'
-                  : '',
-        autoNum:
-          autoTag === '없음'
-            ? 'NONE'
-            : autoTag === '숫자(1,2,3)'
-              ? 'NUMBER'
-              : autoTag === '로마숫자(I, II, III)'
-                ? 'ROMAN_NUMBER'
-                : autoTag === '영문(a,b,c)'
-                  ? 'LETTER'
-                  : '',
-        classList: newTagsList,
-        isUse: switchOn,
-      };
-      return await classificationInstance.post(`/v1/category`, data);
+      return await classificationInstance.post(`/v1/category`, addData);
     } else {
-      const data = {
-        itemIdx: categoryIdx,
-        name: name,
-        type:
-          type === '태그 선택'
-            ? 'SELECT'
-            : type === '텍스트 입력'
-              ? 'INPUT '
-              : type === '날짜 선택'
-                ? 'DATEPICKER'
-                : type === '숫자 입력'
-                  ? 'INPUT_INT'
-                  : '',
-        autoNum:
-          autoTag === '없음'
-            ? 'NONE'
-            : autoTag === '숫자(1,2,3)'
-              ? 'NUMBER'
-              : autoTag === '로마숫자(I, II, III)'
-                ? 'ROMAN_NUMBER'
-                : autoTag === '영문(a,b,c)'
-                  ? 'LETTER'
-                  : '',
-        classList: newTagsList,
-        isUse: switchOn,
-      };
       return await classificationInstance.put(`/v1/category`, data);
     }
-    //서버로 생성 요청
   };
   const { mutate: updateCategoryData } = useMutation({
     mutationFn: updateCategory,
@@ -434,7 +450,7 @@ export function CategroyManagement() {
                 <input
                   type="text"
                   placeholder="카테고리명을 입력해주세요"
-                  value={name}
+                  value={name as string}
                   onChange={(e) => changeName(e)}
                 />
               </div>
@@ -568,7 +584,7 @@ export function CategroyManagement() {
                 <input
                   type="text"
                   placeholder="카테고리명을 입력해주세요"
-                  value={name}
+                  value={name as string}
                   onChange={(e) => changeName(e)}
                 />
               </div>
@@ -727,7 +743,7 @@ export function CategroyManagement() {
               width={'130px'}
               $filled
               onClick={() => {
-                updateCategoryData();
+                clickSaveButton();
               }}
             >
               저장
