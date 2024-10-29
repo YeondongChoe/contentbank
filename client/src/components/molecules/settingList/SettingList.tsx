@@ -39,42 +39,45 @@ export function SettingList({
       <Total> Total : {totalCount ? totalCount : 0}</Total>
       <ListWrapper>
         <List margin={`10px 0`}>
-          {list.map((item: any) => {
-            const formattedDate = item.lastModifiedAt
-              .split(' ')[0]
-              .replace(/-/g, '.');
-            return (
-              <ListItem
-                height="80px"
-                key={`${item.tag}-${item.name}`}
-                isChecked={false}
-              >
-                <ItemLayout>
-                  <span className="width_5">{item.idx}</span>
-                  <i className="line"></i>
-                  <span className="width_10">{item.name}</span>
-                  <i className="line"></i>
-                  <span className="width_40">{item.urlName}</span>
-                  <i className="line"></i>
-                  <span className="width_10">{formattedDate}</span>
-                  <i className="line"></i>
-                  <span className="width_5">{item.lastModifiedBy}</span>
-                  <i className="line"></i>
-                  <span className="width_5">
-                    <SettingButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openSettingWindow(item.url);
-                        saveLocalData(item.idx);
-                      }}
-                    >
-                      설정
-                    </SettingButton>
-                  </span>
-                </ItemLayout>
-              </ListItem>
-            );
-          })}
+          {list
+            ?.slice()
+            .sort((a, b) => a.idx - b.idx)
+            .map((item: any) => {
+              const formattedDate = item.lastModifiedAt
+                .split(' ')[0]
+                .replace(/-/g, '.');
+              return (
+                <ListItem
+                  height="80px"
+                  key={`${item.tag}-${item.name}`}
+                  isChecked={false}
+                >
+                  <ItemLayout>
+                    <span className="width_5">{item.idx}</span>
+                    <i className="line"></i>
+                    <span className="width_10">{item.name}</span>
+                    <i className="line"></i>
+                    <span className="width_40">{item.urlName}</span>
+                    <i className="line"></i>
+                    <span className="width_10">{formattedDate}</span>
+                    <i className="line"></i>
+                    <span className="width_5">{item.lastModifiedBy}</span>
+                    <i className="line"></i>
+                    <span className="width_5">
+                      <SettingButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openSettingWindow(item.url);
+                          saveLocalData(item.idx);
+                        }}
+                      >
+                        설정
+                      </SettingButton>
+                    </span>
+                  </ItemLayout>
+                </ListItem>
+              );
+            })}
         </List>
       </ListWrapper>
       <PaginationBox

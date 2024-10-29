@@ -14,27 +14,6 @@ import { MenuDataListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
-type Option = {
-  idx: number;
-  title: string;
-  isNecessary: boolean;
-  isDisplay: boolean;
-  tag: string;
-};
-
-type TagClass = {
-  idx: number;
-  name: string;
-  code: string;
-  option?: Option[];
-};
-
-type CategoryDummyType = {
-  tageClassList: TagClass[];
-  additionalInformationList: TagClass[];
-};
-
-// TODO 추가정보 값, api로 부터 필수값여부 설정에 대한 부분 안보내고 있음, 변경사항 저장
 export function ContentClassificationSetting() {
   const menuList = [
     {
@@ -46,133 +25,13 @@ export function ContentClassificationSetting() {
       value: '추가정보',
     },
   ];
-  const CategoryDummy: CategoryDummyType[] = [
-    {
-      tageClassList: [
-        {
-          idx: 1,
-          name: '단원분류',
-          code: '1',
-          option: [
-            {
-              idx: 1,
-              title: '교육과정',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '교과',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 3,
-              title: '과목',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 4,
-              title: '학교급',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 5,
-              title: '학년',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 6,
-              title: '학기',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 7,
-              title: '대단원',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 8,
-              title: '중단원',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 9,
-              title: '소단원',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 10,
-              title: '유형',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 11,
-              title: '세분류',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 12,
-              title: '미세분류',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-          ],
-        },
-      ],
-      additionalInformationList: [
-        {
-          idx: 1,
-          name: '추가정보',
-          code: '1',
-          option: [
-            {
-              idx: 1,
-              title: '행동요소1',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '행동요소2',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-          ],
-        },
-      ],
-    },
-  ];
-  const [categoryList, setCategoryList] =
-    useState<CategoryDummyType[]>(CategoryDummy);
   const [tabVeiw, setTabVeiw] = useState<string>('단원분류'); //태그가 없어서 탭에 따라 카테고리 노출
   const [page, setPage] = useRecoilState(pageAtom);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
+  const [detailIdx, setDetailIdx] = useState<string | null>(null);
+
   const changeTab = () => {
     setPage(1);
   };
@@ -184,7 +43,7 @@ export function ContentClassificationSetting() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
+          //console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
           setMenuIdx(parsedData.idx);
           //localStorage.removeItem('sendMenuIdx');
         } catch (error) {
@@ -201,6 +60,56 @@ export function ContentClassificationSetting() {
 
     return () => clearTimeout(retryTimeout);
   }, []);
+
+  const toggleSearch = (idx: number, isSearch: boolean) => {
+    setMenuDataList((prev) => {
+      // 선택된 항목을 필터링
+      const filterList = prev.filter((el) => el.name === selectedValue);
+      if (filterList.length > 0) {
+        const searchList = filterList[0].searchList.split(',');
+
+        // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+        searchList[idx] = isSearch.toString();
+
+        // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+        const updatedSearchList = searchList.join(',');
+
+        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+        return prev.map((item) =>
+          item.name === selectedValue
+            ? { ...item, searchList: updatedSearchList }
+            : item,
+        );
+      }
+
+      return prev;
+    });
+  };
+
+  const toggleView = (idx: number, isView: boolean) => {
+    setMenuDataList((prev) => {
+      // 선택된 항목을 필터링
+      const filterList = prev.filter((el) => el.name === selectedValue);
+      if (filterList.length > 0) {
+        const viewList = filterList[0].viewList.split(',');
+
+        // idx 위치의 값을 isView 값을 문자열로 업데이트
+        viewList[idx] = isView.toString();
+
+        // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+        const updatedViewList = viewList.join(',');
+
+        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+        return prev.map((item) =>
+          item.name === selectedValue
+            ? { ...item, viewList: updatedViewList }
+            : item,
+        );
+      }
+
+      return prev;
+    });
+  };
 
   //그룹 화면설정 정보 불러오기 api
   const getMenuSetting = async () => {
@@ -227,9 +136,44 @@ export function ContentClassificationSetting() {
     }
   }, [menuIdx]);
 
+  //값을 받아왔을때 상태관리
   useEffect(() => {
     if (menuSettingData) {
-      setMenuDataList(menuSettingData.data.data.detailList);
+      const updatedData = menuSettingData.data.data.detailList.map(
+        (item: any) => {
+          const nameListArray = item.nameList?.split(',') || [];
+
+          const searchListArray = item.searchList
+            ? item.searchList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+
+          const viewListArray = item.viewList
+            ? item.viewList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+          const searchListString = searchListArray.join(',');
+          const viewListString = viewListArray.join(',');
+
+          return {
+            ...item,
+            searchList: searchListString,
+            viewList: viewListString,
+          };
+        },
+      );
+
+      setMenuDataList(updatedData);
+    }
+  }, [menuSettingData]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      const filterList = menuSettingData.data.data.detailList.filter(
+        (el: any) => el.isCheck === true,
+      );
+      const findName = filterList[0]?.name;
+      const detailIdx = filterList[0]?.detailIdx;
+      setSelectedValue(findName);
+      setDetailIdx(detailIdx);
     }
   }, [menuSettingData]);
 
@@ -237,15 +181,14 @@ export function ContentClassificationSetting() {
   const updateMenuInfo = async () => {
     const filterData = menuDataList.filter((el) => el.name === selectedValue);
     const data = {
-      detailIdx: filterData[0].detailIdx,
-      menuIdx: filterData[0].idx,
+      detailIdx: detailIdx ? detailIdx : 'null',
+      menuIdx: menuIdx,
       groupCode: filterData[0].code,
       idxs: filterData[0].typeList,
       names: filterData[0].nameList,
-      searchs: 'true, true, true, true, true, true',
-      view: 'true, true, true, true, true, true',
-      //searchs: filterData[0].searchList,
-      //views: filterData[0].viewList,
+      searchs: filterData[0].searchList,
+      views: filterData[0].viewList,
+      inputs: filterData[0].inputTypeList,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -307,11 +250,12 @@ export function ContentClassificationSetting() {
               {menuDataList && (
                 <Select
                   width={'100%'}
-                  defaultValue="항목 선택"
+                  defaultValue={selectedValue}
                   key="그룹리스트"
                   options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                   setSelectedValue={setSelectedValue}
                   isnormalizedOptions
+                  heightScroll="400px"
                 />
               )}
               {tabVeiw === '단원분류' && (
@@ -345,34 +289,28 @@ export function ContentClassificationSetting() {
                             (el) => el.name === selectedValue,
                           );
                           const nameList = filterList[0]?.nameList?.split(',');
-                          const viewList = [
-                            true,
-                            true,
-                            false,
-                            true,
-                            true,
-                            true,
-                          ];
-                          const essentialList = [
-                            true,
-                            true,
-                            false,
-                            true,
-                            true,
-                            true,
-                          ];
+                          const inputTypeList =
+                            filterList[0]?.inputTypeList?.split(',');
+                          const searchList = filterList[0]?.searchList
+                            ?.split(',')
+                            .map((item) => item.trim() === 'true');
+                          const viewList = filterList[0]?.viewList
+                            ?.split(',')
+                            .map((item) => item.trim() === 'true');
 
                           // 필터링된 카테고리가 존재할 때만 option을 렌더링
                           if (nameList) {
                             return nameList.map((item, i) => (
                               <ContentList key={i}>
                                 <Content>
-                                  <div className={`title-${true}`}>
+                                  <div className={`title-${viewList[i]}`}>
                                     {item}
-                                    <div className="tag">태그선택</div>
+                                    <div className="tag">
+                                      {inputTypeList[i]}
+                                    </div>
                                   </div>
                                   <div className="icon">
-                                    {essentialList[i] ? (
+                                    {searchList[i] ? (
                                       <BiToggleRight
                                         style={{
                                           width: '20px',
@@ -380,7 +318,9 @@ export function ContentClassificationSetting() {
                                           cursor: 'pointer',
                                           fill: `${COLOR.PRIMARY}`,
                                         }}
-                                        // onClick={() => {}}
+                                        onClick={() => {
+                                          toggleSearch(i, !searchList[i]);
+                                        }}
                                       />
                                     ) : (
                                       <BiToggleLeft
@@ -390,7 +330,9 @@ export function ContentClassificationSetting() {
                                           cursor: 'pointer',
                                           fill: `${COLOR.MUTE}`,
                                         }}
-                                        // onClick={() => {}}
+                                        onClick={() => {
+                                          toggleSearch(i, !searchList[i]);
+                                        }}
                                       />
                                     )}
                                   </div>
@@ -569,19 +511,17 @@ export function ContentClassificationSetting() {
                       </>
                     )}
                   </ContentListWrapper>
-                  <AdditionalButtonWrapper>
-                    <Button
-                      height={'40px'}
-                      width={'100%'}
-                      onClick={() => updateMenuInfoData()}
-                      fontSize="13px"
-                      $margin="20px 0 0 0"
-                      $filled
-                      cursor
-                    >
-                      변경사항 저장
-                    </Button>
-                  </AdditionalButtonWrapper>
+                  <Button
+                    height={'40px'}
+                    width={'100%'}
+                    onClick={() => updateMenuInfoData()}
+                    fontSize="13px"
+                    $margin="20px 0 0 0"
+                    $filled
+                    cursor
+                  >
+                    변경사항 저장
+                  </Button>
                 </>
               )}
             </>
@@ -610,73 +550,60 @@ export function ContentClassificationSetting() {
                   />
                 </SubtitleWrapper>
                 {/* TODO: label value 바꿔야함 */}
-                <LabelWrapper>
-                  <LabelWithButton>
-                    <Label
-                      value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[0].isNecessary ? '교육과정*' : '교육과정'}`}
-                      width="80px"
-                      bold
-                      fontSize="14px"
-                    />
-                    <ButtonWrapper>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>10차</span>
-                      </Button>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>9차</span>
-                      </Button>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>8차</span>
-                      </Button>
-                    </ButtonWrapper>
-                  </LabelWithButton>
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[1].isNecessary ? '교과*' : '교과'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[2].isNecessary ? '과목*' : '과목'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[3].isNecessary ? '학교급*' : '학교급'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[4].isNecessary ? '학년*' : '학년'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                  <Label
-                    value={`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[5].isNecessary ? '학기*' : '학기'}`}
-                    width="100%"
-                    bold
-                    fontSize="14px"
-                  />
-                </LabelWrapper>
-                <ButtonBox>
+                {(() => {
+                  const filterList = menuDataList?.filter(
+                    (el) => el.name === selectedValue,
+                  );
+                  const nameList = filterList[0]?.nameList?.split(',');
+                  const essentialList = filterList[0]?.searchList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+                  if (nameList) {
+                    return (
+                      <LabelWrapper>
+                        {nameList.map((name, i) => (
+                          <LabelWithButton key={i}>
+                            <Label
+                              value={essentialList[i] ? `${name}*` : name}
+                              width="80px"
+                              bold
+                              fontSize="14px"
+                            />
+                            {i === 0 && (
+                              <ButtonWrapper>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>버튼</span>
+                                </Button>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>버튼</span>
+                                </Button>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>버튼</span>
+                                </Button>
+                              </ButtonWrapper>
+                            )}
+                          </LabelWithButton>
+                        ))}
+                      </LabelWrapper>
+                    );
+                  }
+                })()}
+                {/* <ButtonBox>
                   <div>
                     {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[6].isNecessary ? '대단원*' : '대단원'}`}
                   </div>
@@ -695,7 +622,7 @@ export function ContentClassificationSetting() {
                   <div>
                     {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[11].isNecessary ? '미세분류*' : '미세분류'}`}
                   </div>
-                </ButtonBox>
+                </ButtonBox> */}
                 <Label
                   value={'추가정보'}
                   width="100%"
@@ -705,12 +632,12 @@ export function ContentClassificationSetting() {
                 />
                 <LabelWrapper>
                   <LabelWithButton>
-                    <Label
+                    {/* <Label
                       value={`${categoryList[0].additionalInformationList[0].option && categoryList[0].additionalInformationList[0].option[0].isNecessary ? '행동요소1*' : '행동요소1'}`}
                       width="80px"
                       bold
                       fontSize="14px"
-                    />
+                    /> */}
                     <ButtonWrapper>
                       <Button
                         width="90px"
@@ -741,12 +668,12 @@ export function ContentClassificationSetting() {
                 </LabelWrapper>
                 <LabelWrapper>
                   <LabelWithButton>
-                    <Label
+                    {/* <Label
                       value={`${categoryList[0].additionalInformationList[0].option && categoryList[0].additionalInformationList[0].option[1].isNecessary ? '행동요소2*' : '행동요소2'}`}
                       width="80px"
                       bold
                       fontSize="14px"
-                    />
+                    /> */}
                     <ButtonWrapper>
                       <Button
                         width="90px"
@@ -897,6 +824,8 @@ const SubtitleWrapper = styled.div`
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
 const LabelWrapper = styled.div`
+  max-height: 510px; /* 컨테이너의 최대 높이 설정 */
+  overflow-y: auto; /* 수직 스크롤바 표시 */
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -946,9 +875,4 @@ const ListDescription = styled.p`
   color: ${COLOR.PRIMARY};
   font-weight: bold;
   padding: 10px;
-`;
-const AdditionalButtonWrapper = styled.div`
-  display: flex;
-  height: 475px;
-  align-items: flex-end;
 `;

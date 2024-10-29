@@ -668,13 +668,6 @@ const ItemLayout = styled.span`
     border-radius: 5px;
     background-color: ${COLOR.BORDER_GRAY};
   }
-  .tag_s {
-    font-weight: bold;
-    font-size: 12px;
-    padding: 2px;
-    border-radius: 5px;
-    background-color: ${COLOR.BORDER_GRAY};
-  }
   .line {
     width: 1px;
     height: 15px;

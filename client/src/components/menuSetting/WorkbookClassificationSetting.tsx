@@ -12,126 +12,7 @@ import { MenuDataListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
-type Option = {
-  idx: number;
-  title: string;
-  isNecessary: boolean;
-  isDisplay: boolean;
-  tag: string;
-};
-
-type TagClass = {
-  idx: number;
-  name: string;
-  code: string;
-  option?: Option[];
-};
-
-type CategoryDummyType = {
-  tageClassList: TagClass[];
-};
-
-// TODO 그룹데이타가 이상함, api로 부터 필수값여부 설정에 대한 부분 안보내고 있음, 변경사항 저장
 export function WorkbookClassificationSetting() {
-  const CategoryDummy: CategoryDummyType[] = [
-    {
-      tageClassList: [
-        {
-          idx: 1,
-          name: '단원분류',
-          code: '1',
-          option: [
-            {
-              idx: 1,
-              title: '교육과정',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 2,
-              title: '교과',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 3,
-              title: '과목',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 4,
-              title: '학교급',
-              isNecessary: true,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 5,
-              title: '학년',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 6,
-              title: '학기',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 7,
-              title: '대단원',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 8,
-              title: '중단원',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 9,
-              title: '소단원',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 10,
-              title: '유형',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 11,
-              title: '세분류',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-            {
-              idx: 12,
-              title: '미세분류',
-              isNecessary: false,
-              isDisplay: true,
-              tag: '태그 선택',
-            },
-          ],
-        },
-      ],
-    },
-  ];
-  const [categoryList, setCategoryList] =
-    useState<CategoryDummyType[]>(CategoryDummy);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
@@ -320,6 +201,7 @@ export function WorkbookClassificationSetting() {
                 options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                 setSelectedValue={setSelectedValue}
                 isnormalizedOptions
+                heightScroll="400px"
               />
             )}
             <>
@@ -354,7 +236,7 @@ export function WorkbookClassificationSetting() {
                       const nameList = filterList[0]?.nameList?.split(',');
                       const inputTypeList =
                         filterList[0]?.inputTypeList?.split(',');
-                      const essentialList = filterList[0]?.searchList
+                      const searchList = filterList[0]?.searchList
                         ?.split(',')
                         .map((item) => item.trim() === 'true');
 
@@ -363,12 +245,12 @@ export function WorkbookClassificationSetting() {
                         return nameList.map((item, i) => (
                           <ContentList key={i}>
                             <Content>
-                              <div className={`title-${true}`}>
+                              <div className={`title-${searchList[i]}`}>
                                 {item}
                                 <div className="tag">{inputTypeList[i]}</div>
                               </div>
                               <div className="icon">
-                                {essentialList[i] ? (
+                                {searchList[i] ? (
                                   <BiToggleRight
                                     style={{
                                       width: '20px',
@@ -377,7 +259,7 @@ export function WorkbookClassificationSetting() {
                                       fill: `${COLOR.PRIMARY}`,
                                     }}
                                     onClick={() => {
-                                      toggleSearch(i, !essentialList[i]);
+                                      toggleSearch(i, !searchList[i]);
                                     }}
                                   />
                                 ) : (
@@ -389,7 +271,7 @@ export function WorkbookClassificationSetting() {
                                       fill: `${COLOR.MUTE}`,
                                     }}
                                     onClick={() => {
-                                      toggleSearch(i, !essentialList[i]);
+                                      toggleSearch(i, !searchList[i]);
                                     }}
                                   />
                                 )}

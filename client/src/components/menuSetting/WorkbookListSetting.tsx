@@ -24,245 +24,27 @@ import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 import { SettingPageDnDWrapper } from '../molecules';
 
-type CategoryDummyType = {
-  idx: number;
-  title: string;
-  isFilter: boolean;
-  isDisplay: boolean;
-};
-
-// TODO api로 부터 카테고리값에 대한 부분 안보내고 있음, 변경사항 저장
 export function WorkbookListSetting() {
-  const WorkbookListData: WorksheetListType[] = [
+  const DummyData = [
     {
-      code: '1',
-      createdAt: '2024-04-01',
-      createdBy: '',
-      examiner: '홍길동',
-      grade: '중1',
+      code: 'A',
+      detailIdx: '1',
       idx: 1,
-      isAutoGrade: true,
-      isDelete: false,
-      isFavorite: false,
-      isUse: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '.pdf',
-        idx: 1,
-        originalName: '',
-        storedPath: '/usr/share/nginx/html/CB',
-        type: 'PDF',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      name: '드림원학원 내신대비 TEST',
-      quizCnt: 0,
-      tag: '연습문제',
-      userKey: '',
-    },
-    {
-      code: '2',
-      createdAt: '2024-04-01',
-      createdBy: '',
-      examiner: '홍길동',
-      grade: '성인',
-      idx: 2,
-      isAutoGrade: true,
-      isDelete: false,
-      isFavorite: false,
-      isUse: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '.pdf',
-        idx: 1,
-        originalName: '',
-        storedPath: '/usr/share/nginx/html/CB',
-        type: 'PDF',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      name: '드림원학원 내신대비 TEST',
-      quizCnt: 0,
-      tag: '내신대비',
-      userKey: '',
-    },
-    {
-      code: '3',
-      createdAt: '2024-04-01',
-      createdBy: '',
-      examiner: '홍길동',
-      grade: '고1',
-      idx: 3,
-      isAutoGrade: true,
-      isDelete: false,
-      isFavorite: false,
-      isUse: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '.pdf',
-        idx: 3,
-        originalName: '',
-        storedPath: '/usr/share/nginx/html/CB',
-        type: 'PDF',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      name: '드림원학원 내신대비 TEST',
-      quizCnt: 0,
-      tag: '연습문제',
-      userKey: '',
-    },
-    {
-      code: '4',
-      createdAt: '2024-04-01',
-      createdBy: '',
-      examiner: '홍길동',
-      grade: '초3',
-      idx: 4,
-      isAutoGrade: true,
-      isDelete: false,
-      isFavorite: false,
-      isUse: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '.pdf',
-        idx: 4,
-        originalName: '',
-        storedPath: '/usr/share/nginx/html/CB',
-        type: 'PDF',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      name: '드림원학원 내신대비 TEST',
-      quizCnt: 0,
-      tag: '모의고사',
-      userKey: '',
-    },
-    {
-      code: '5',
-      createdAt: '2024-04-01',
-      createdBy: '',
-      examiner: '홍길동',
-      grade: '성인',
-      idx: 5,
-      isAutoGrade: true,
-      isDelete: false,
-      isFavorite: false,
-      isUse: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '.pdf',
-        idx: 5,
-        originalName: '',
-        storedPath: '/usr/share/nginx/html/CB',
-        type: 'PDF',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      name: '드림원학원 내신대비 TEST',
-      quizCnt: 0,
-      tag: '연습문제',
-      userKey: '',
-    },
-    {
-      code: '6',
-      createdAt: '2024-04-01',
-      createdBy: '',
-      examiner: '홍길동',
-      grade: '고1',
-      idx: 6,
-      isAutoGrade: true,
-      isDelete: false,
-      isFavorite: false,
-      isUse: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '.pdf',
-        idx: 6,
-        originalName: '',
-        storedPath: '/usr/share/nginx/html/CB',
-        type: 'PDF',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      name: '드림원학원 내신대비 TEST',
-      quizCnt: 0,
-      tag: '일일TEST',
-      userKey: '',
-    },
-    {
-      code: '7',
-      createdAt: '2024-04-01',
-      createdBy: '',
-      examiner: '홍길동',
-      grade: '고1',
-      idx: 7,
-      isAutoGrade: true,
-      isDelete: false,
-      isFavorite: false,
-      isUse: false,
-      lastArticle: {
-        createdAt: '',
-        createdBy: '',
-        extension: '.pdf',
-        idx: 7,
-        originalName: '',
-        storedPath: '/usr/share/nginx/html/CB',
-        type: 'PDF',
-      },
-      lastModifiedAt: '',
-      lastModifiedBy: '',
-      name: '드림원학원 내신대비 TEST',
-      quizCnt: 0,
-      tag: '연습문제',
-      userKey: '',
+      inputTypeList: 'SELECT,SELECT,INPUT,SELECT,SELECT',
+      isCheck: true,
+      name: '더미',
+      nameList: '대상학년,태그,학습지명,등록일,작성자',
+      searchList: 'true,true,false,true,true',
+      typeList: '1,2,3,4,5',
+      viewList: 'true,true,true,true,true',
     },
   ];
-  const CategoryDummy: CategoryDummyType[] = [
-    {
-      idx: 1,
-      title: '대상학년',
-      isFilter: false,
-      isDisplay: true,
-    },
-    {
-      idx: 2,
-      title: '태그',
-      isFilter: true,
-      isDisplay: true,
-    },
-    {
-      idx: 3,
-      title: '학습지명',
-      isFilter: true,
-      isDisplay: true,
-    },
-    {
-      idx: 4,
-      title: '등록일',
-      isFilter: true,
-      isDisplay: true,
-    },
-    {
-      idx: 5,
-      title: '작성자',
-      isFilter: false,
-      isDisplay: true,
-    },
-  ];
-  const [categoryList, setCategoryList] = useState<any[]>(CategoryDummy);
   const [isStartDnD, setIsStartDnd] = useState(false);
-  const [selectedValue, setSelectedValue] =
-    useState<string>('"단원카테고리조회'); //태그
+  const [selectedValue, setSelectedValue] = useState<string>('더미'); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
-
+  const [detailIdx, setDetailIdx] = useState<string | null>(null);
+  const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
@@ -271,7 +53,7 @@ export function WorkbookListSetting() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
+          //console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
           setMenuIdx(parsedData.idx);
           //localStorage.removeItem('sendMenuIdx');
         } catch (error) {
@@ -296,6 +78,7 @@ export function WorkbookListSetting() {
       search: boolean;
       view: boolean;
       type: string;
+      input: string;
     }[],
     selectedValue: string,
   ) => {
@@ -304,74 +87,145 @@ export function WorkbookListSetting() {
     const newSearchString = newList
       .map((item) => item.search.toString())
       .join(',');
+    const newInputTypeString = newList.map((item) => item.input).join(',');
     const newViewString = newList.map((item) => item.view.toString()).join(',');
     const newTypeString = newList.map((item) => item.type).join(',');
 
     // 2. menuDataList 업데이트
-    setMenuDataList((prev) =>
-      prev.map(
-        (item) =>
-          item.name === selectedValue
-            ? {
-                ...item,
-                nameList: newNamesString,
-                searchList: newSearchString,
-                viewList: newViewString,
-                typeList: newTypeString,
-              }
-            : item, // 기존 항목 유지
-      ),
-    );
+    if (selectedValue === '더미') {
+      setDummyData((prev) =>
+        prev.map(
+          (item) =>
+            item.name === selectedValue
+              ? {
+                  ...item,
+                  nameList: newNamesString,
+                  searchList: newSearchString,
+                  viewList: newViewString,
+                  typeList: newTypeString,
+                  inputTypeList: newInputTypeString,
+                }
+              : item, // 기존 항목 유지
+        ),
+      );
+    } else {
+      setMenuDataList((prev) =>
+        prev.map(
+          (item) =>
+            item.name === selectedValue
+              ? {
+                  ...item,
+                  nameList: newNamesString,
+                  searchList: newSearchString,
+                  viewList: newViewString,
+                  typeList: newTypeString,
+                  inputTypeList: newInputTypeString,
+                }
+              : item, // 기존 항목 유지
+        ),
+      );
+    }
   };
 
   const toggleSearch = (idx: number, isSearch: boolean) => {
-    setMenuDataList((prev) => {
-      // 선택된 항목을 필터링
-      const filterList = prev.filter((el) => el.name === selectedValue);
-      if (filterList.length > 0) {
-        const searchList = filterList[0].searchList.split(',');
+    //console.log(selectedValue);
+    if (selectedValue === '더미') {
+      setDummyData((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const searchList = filterList[0].searchList.split(',');
 
-        // idx 위치의 값을 isSearch 값을 문자열로 업데이트
-        searchList[idx] = isSearch.toString();
+          // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+          searchList[idx] = isSearch.toString();
 
-        // 업데이트된 searchList 배열을 문자열로 변환하여 할당
-        const updatedSearchList = searchList.join(',');
+          // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+          const updatedSearchList = searchList.join(',');
 
-        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
-        return prev.map((item) =>
-          item.name === selectedValue
-            ? { ...item, searchList: updatedSearchList }
-            : item,
-        );
-      }
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, searchList: updatedSearchList }
+              : item,
+          );
+        }
 
-      return prev;
-    });
+        return prev;
+      });
+    } else {
+      setMenuDataList((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const searchList = filterList[0].searchList.split(',');
+
+          // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+          searchList[idx] = isSearch.toString();
+
+          // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+          const updatedSearchList = searchList.join(',');
+
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, searchList: updatedSearchList }
+              : item,
+          );
+        }
+
+        return prev;
+      });
+    }
   };
 
   const toggleView = (idx: number, isView: boolean) => {
-    setMenuDataList((prev) => {
-      // 선택된 항목을 필터링
-      const filterList = prev.filter((el) => el.name === selectedValue);
-      if (filterList.length > 0) {
-        const viewList = filterList[0].viewList.split(',');
+    if (selectedValue === '더미') {
+      setDummyData((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const viewList = filterList[0].viewList.split(',');
 
-        // idx 위치의 값을 isView 값을 문자열로 업데이트
-        viewList[idx] = isView.toString();
+          // idx 위치의 값을 isView 값을 문자열로 업데이트
+          viewList[idx] = isView.toString();
 
-        // 업데이트된 viewList 배열을 문자열로 변환하여 할당
-        const updatedViewList = viewList.join(',');
+          // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+          const updatedViewList = viewList.join(',');
 
-        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
-        return prev.map((item) =>
-          item.name === selectedValue
-            ? { ...item, viewList: updatedViewList }
-            : item,
-        );
-      }
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, viewList: updatedViewList }
+              : item,
+          );
+        }
 
-      return prev;
-    });
+        return prev;
+      });
+    } else {
+      setMenuDataList((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const viewList = filterList[0].viewList.split(',');
+
+          // idx 위치의 값을 isView 값을 문자열로 업데이트
+          viewList[idx] = isView.toString();
+
+          // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+          const updatedViewList = viewList.join(',');
+
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, viewList: updatedViewList }
+              : item,
+          );
+        }
+
+        return prev;
+      });
+    }
   };
 
   //그룹 화면설정 정보 불러오기 api
@@ -399,23 +253,62 @@ export function WorkbookListSetting() {
     }
   }, [menuIdx]);
 
+  //값을 받아왔을때 상태관리
   useEffect(() => {
     if (menuSettingData) {
-      setMenuDataList(menuSettingData.data.data.detailList);
+      const updatedData = menuSettingData.data.data.detailList.map(
+        (item: any) => {
+          const nameListArray = item.nameList?.split(',') || [];
+
+          const searchListArray = item.searchList
+            ? item.searchList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+
+          const viewListArray = item.viewList
+            ? item.viewList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+          const searchListString = searchListArray.join(',');
+          const viewListString = viewListArray.join(',');
+
+          return {
+            ...item,
+            searchList: searchListString,
+            viewList: viewListString,
+          };
+        },
+      );
+
+      setMenuDataList(updatedData);
+    }
+  }, [menuSettingData]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      const filterList = menuSettingData.data.data.detailList.filter(
+        (el: any) => el.isCheck === true,
+      );
+      const findName = filterList[0]?.name;
+      const detailIdx = filterList[0]?.detailIdx;
+      setSelectedValue(findName === undefined ? '더미' : findName);
+      setDetailIdx(detailIdx);
     }
   }, [menuSettingData]);
 
   //그룹 정보 업데이트 api
   const updateMenuInfo = async () => {
-    const filterData = menuDataList.filter((el) => el.name === selectedValue);
+    const filterData =
+      selectedValue === '더미'
+        ? dummyData.filter((el) => el.name === selectedValue)
+        : menuDataList.filter((el) => el.name === selectedValue);
     const data = {
-      detailIdx: filterData[0].detailIdx,
-      menuIdx: filterData[0].idx,
-      groupCode: filterData[0].code,
+      detailIdx: detailIdx ? detailIdx : 'null',
+      menuIdx: menuIdx,
+      groupCode: selectedValue === '더미' ? null : filterData[0].code,
       idxs: filterData[0].typeList,
       names: filterData[0].nameList,
       searchs: filterData[0].searchList,
       views: filterData[0].viewList,
+      inputs: filterData[0].inputTypeList,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -438,8 +331,6 @@ export function WorkbookListSetting() {
         type: 'success',
         text: '저장되었습니다.',
       });
-      //그룹 리스트 재호출
-      menuSettingRefetch();
     },
   });
 
@@ -487,8 +378,10 @@ export function WorkbookListSetting() {
               </CategoryWrapper>
               <ContentListWrapper>
                 <SettingPageDnDWrapper
-                  dragList={menuDataList}
-                  selectedValue={selectedValue}
+                  dragList={selectedValue === '더미' ? dummyData : menuDataList}
+                  selectedValue={
+                    selectedValue === '더미' ? '더미' : selectedValue
+                  }
                   onDragging={() => {}}
                   onDragEnd={whenDragEnd}
                   dragSectionName={'문항리스트세팅'}
@@ -509,80 +402,67 @@ export function WorkbookListSetting() {
                               }}
                             ></BsArrowsMove>
                           </div>
-                          {/* null값이 없어지면 className={`title-${dragItem.view} 로 수정해야함 */}
-                          <div className={`title-${true}`}>
+                          <div className={`title-${dragItem.view}`}>
                             {dragItem.name}
-                            <div className="tag">태그선택</div>
+                            <div className="tag">{dragItem.input}</div>
                           </div>
-                          {dragItem.search === undefined ? (
-                            <div>null</div>
+                          {dragItem.search ? (
+                            <div className="icon">
+                              <TbFilter
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  stroke: `${COLOR.PRIMARY}`,
+                                }}
+                                onClick={() => {
+                                  toggleSearch(itemIndex, !dragItem.search);
+                                }}
+                              ></TbFilter>
+                            </div>
                           ) : (
-                            <>
-                              {dragItem.search ? (
-                                <div className="icon">
-                                  <TbFilter
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      stroke: `${COLOR.PRIMARY}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleSearch(itemIndex, !dragItem.search);
-                                    }}
-                                  ></TbFilter>
-                                </div>
-                              ) : (
-                                <div className="icon">
-                                  <TbFilterOff
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      stroke: `${COLOR.MUTE}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleSearch(itemIndex, !dragItem.search);
-                                    }}
-                                  ></TbFilterOff>
-                                </div>
-                              )}
-                            </>
+                            <div className="icon">
+                              <TbFilterOff
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  stroke: `${COLOR.MUTE}`,
+                                }}
+                                onClick={() => {
+                                  toggleSearch(itemIndex, !dragItem.search);
+                                }}
+                              ></TbFilterOff>
+                            </div>
                           )}
-                          {dragItem.view === undefined ? (
-                            <div>null</div>
+                          {dragItem.view ? (
+                            <div className="icon">
+                              <BsEye
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  fill: `${COLOR.PRIMARY}`,
+                                }}
+                                onClick={() => {
+                                  toggleView(itemIndex, !dragItem.view);
+                                }}
+                              ></BsEye>
+                            </div>
                           ) : (
-                            <>
-                              {dragItem.view ? (
-                                <div className="icon">
-                                  <BsEye
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      fill: `${COLOR.PRIMARY}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleView(itemIndex, !dragItem.view);
-                                    }}
-                                  ></BsEye>
-                                </div>
-                              ) : (
-                                <div className="icon">
-                                  <BsEyeSlash
-                                    style={{
-                                      width: '20px',
-                                      height: '20px',
-                                      cursor: 'pointer',
-                                      fill: `${COLOR.MUTE}`,
-                                    }}
-                                    onClick={() => {
-                                      toggleView(itemIndex, !dragItem.view);
-                                    }}
-                                  ></BsEyeSlash>
-                                </div>
-                              )}
-                            </>
+                            <div className="icon">
+                              <BsEyeSlash
+                                style={{
+                                  width: '20px',
+                                  height: '20px',
+                                  cursor: 'pointer',
+                                  fill: `${COLOR.MUTE}`,
+                                }}
+                                onClick={() => {
+                                  toggleView(itemIndex, !dragItem.view);
+                                }}
+                              ></BsEyeSlash>
+                            </div>
                           )}
                         </Content>
                       </ContentList>
@@ -605,91 +485,105 @@ export function WorkbookListSetting() {
           </SettingWrapper>
           <ListWrapper>
             <SelectWrapper>
-              {menuDataList
-                .filter((el) => el.name === selectedValue)
-                .map((search) => {
-                  const nameList = search.nameList.split(',');
-                  const searchList = search.searchList
-                    .split(',')
-                    .map((item) => item.trim() === 'true');
-                  console.log(searchList);
-                  return (
-                    <>
-                      {nameList.map((el, idx) =>
-                        searchList[idx] ? (
-                          <Select
-                            key={idx}
-                            defaultValue={el}
-                            width="130px"
-                            isnormalizedOptions
-                          ></Select>
-                        ) : null,
-                      )}
-                    </>
-                  );
-                })}
+              {(() => {
+                const dataList =
+                  selectedValue === '더미' ? dummyData : menuDataList;
+                return dataList
+                  .filter((el) => el.name === selectedValue)
+                  .map((search) => {
+                    const nameList = search.nameList.split(',');
+                    const searchList = search.searchList
+                      .split(',')
+                      .map((item) => item.trim() === 'true');
+
+                    return (
+                      <>
+                        {nameList.map((el, idx) =>
+                          searchList[idx] ? (
+                            <Select
+                              key={idx}
+                              defaultValue={el}
+                              width="130px"
+                              isnormalizedOptions
+                            ></Select>
+                          ) : null,
+                        )}
+                      </>
+                    );
+                  });
+              })()}
             </SelectWrapper>
             <List>
-              {WorkbookListData.map((item: any) => (
-                <ListItem key={item.code} isChecked={false} height={'100'}>
-                  <ItemLayout>
-                    <CheckBoxI
-                      id={item.code}
-                      value={item.idx}
-                      $margin={`0 5px 0 0`}
-                      readOnly
-                    />
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/favorites_off_B.svg`}
-                    />
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">대상학년</strong>
-                      <span className="width_20">{item.grade}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">태그</strong>
-                      <span className="width_20">{item.tag}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">학습지명</strong>
-                      <span className="width_20">{item.name}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">등록일</strong>
-                      <span className="width_20">{item.createdAt}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">작성자</strong>
-                      <span className="width_20">{item.examiner}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>
-                      <strong className="title">미리보기</strong>
-                      <span className="width_20">
-                        <LuFileSearch2
-                          style={{ fontSize: '22px', cursor: 'pointer' }}
+              {(selectedValue === '더미' ? dummyData : menuDataList)
+                .filter((list) => list.name === selectedValue)
+                .flatMap((item) => {
+                  const nameList = item.nameList?.split(',');
+                  const essentialList = item.viewList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+                  const array = 6;
+
+                  return Array.from({ length: array }).map((_, idx) => (
+                    <ListItem
+                      key={`${item.idx}-${idx}`}
+                      isChecked={false}
+                      height={'100px'}
+                    >
+                      <ItemLayout>
+                        <CheckBoxI
+                          id={item.code}
+                          value={item.idx}
+                          $margin={`0 5px 0 0`}
+                          readOnly
                         />
-                      </span>
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_5 tooltip_wrapper ">
-                      <strong className="title">설정</strong>
-                      <span className="width_20">
-                        <SlOptionsVertical
-                          style={{ fontSize: '16px', cursor: 'pointer' }}
+                        <Icon
+                          width={`18px`}
+                          $margin={'0 10px'}
+                          src={`/images/icon/favorites_off_B.svg`}
                         />
-                      </span>
-                    </span>
-                  </ItemLayout>
-                </ListItem>
-              ))}
+                        {nameList.map((name, i) => (
+                          <>
+                            {essentialList[i] && (
+                              <>
+                                <i className="line"></i>
+                                <div className="wrapper" key={i}>
+                                  <span className="width_80px tooltip_wrapper">
+                                    <strong className="title">{name}</strong>
+                                    <span className="ellipsis">
+                                      <span
+                                        key={`quizCategoryList quizCategory: ${i}`}
+                                      >
+                                        정보
+                                      </span>
+                                    </span>
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </>
+                        ))}
+                        <i className="line"></i>
+                        <span>
+                          <strong className="title">미리보기</strong>
+                          <span className="width_20">
+                            <LuFileSearch2
+                              style={{ fontSize: '22px', cursor: 'pointer' }}
+                            />
+                          </span>
+                        </span>
+                        <i className="line"></i>
+                        <span className="width_5 tooltip_wrapper ">
+                          <strong className="title">설정</strong>
+                          <span className="width_20">
+                            <SlOptionsVertical
+                              style={{ fontSize: '16px', cursor: 'pointer' }}
+                            />
+                          </span>
+                        </span>
+                      </ItemLayout>
+                    </ListItem>
+                  ));
+                })}
             </List>
             <ListDescription>
               화면에 보이는 데이터는 예시로 구성된 데이터 입니다. 실제
@@ -819,12 +713,30 @@ const ItemLayout = styled.span`
   align-items: center;
   flex-wrap: wrap;
 
+  .tooltip_wrapper {
+    position: relative;
+  }
+
   > span {
     display: flex;
     /* flex: 1 0 0; */
     justify-content: space-around;
     flex-wrap: wrap;
     word-break: break-all;
+    min-width: 30px;
+    max-width: 150px;
+    font-weight: normal;
+  }
+  /* 두줄 이상 ellipsis 처리  */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .wrapper {
+    display: flex;
   }
   .title {
     width: 100%;
