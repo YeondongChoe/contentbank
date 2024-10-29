@@ -173,9 +173,6 @@ export function CategroyManagement() {
     setIsAdd(false);
   };
 
-  console.log(name);
-  console.log(typeof name);
-
   const clickSaveButton = () => {
     if (name === '') {
       openToastifyAlert({
@@ -395,7 +392,7 @@ export function CategroyManagement() {
                                   <div className="title">{el.name}</div>
                                 </AuthorityName>
                               </AuthorityWrapper>
-                              <DeleteIconWrapper>
+                              {/* <DeleteIconWrapper>
                                 <BiSolidTrashAlt
                                   onClick={() => {
                                     clickDeleteCompany();
@@ -404,7 +401,7 @@ export function CategroyManagement() {
                                     setSelectedIdxValue(i);
                                   }}
                                 />
-                              </DeleteIconWrapper>
+                              </DeleteIconWrapper> */}
                             </CategoryList>
                           );
                         })}
@@ -785,12 +782,12 @@ const Container = styled.div`
 `;
 const CategoryListWrapper = styled.div`
   display: flex;
-  width: calc(40% - 20px);
+  min-width: 430px;
 `;
 const CategoryManageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1 1 0;
+  flex: 1 0 0;
   background-color: ${COLOR.LIGHT_GRAY};
 `;
 

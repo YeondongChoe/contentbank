@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
@@ -53,13 +52,22 @@ export function GroupManagement() {
       setTypeIdxList(numberArray);
     }
   }, [typeList]);
-
   const titleEditHandler = (id: number) => {
-    clickSave(typeIdxList);
-    setIsTitleEdit((prevState) => ({
-      ...prevState,
-      [id]: false, // Turn off edit mode after saving
-    }));
+    //중복되지 않을 경우 등록 가능
+    const isSavedName = groupList.some((el) => el.name !== tagInputValue);
+    if (!isSavedName) {
+      openToastifyAlert({
+        type: 'error',
+        text: '이미 등록된 그룹명입니다.',
+      });
+      setTypeIdxList([]);
+    } else {
+      clickSave(typeIdxList);
+      setIsTitleEdit((prevState) => ({
+        ...prevState,
+        [id]: false,
+      }));
+    }
   };
 
   const openToggleEdit = (id: number, typeList: string) => {
@@ -67,6 +75,7 @@ export function GroupManagement() {
       [id]: true, // 선택된 항목만 true
     }));
     setTagInputValue('');
+    setName('');
     setGroupIdx(id);
     setTypeList(typeList);
   };
@@ -78,6 +87,7 @@ export function GroupManagement() {
     //초기화
     setTagInputValue('');
     setTypeList('');
+    setTypeIdxList([]);
   };
 
   /*  모달 열기 */
@@ -117,6 +127,7 @@ export function GroupManagement() {
       content: (
         <CreateGroupModal
           categoryList={categoryList}
+          groupList={groupList}
           categoryGroupRefetch={categoryGroupRefetch}
         />
       ),
@@ -177,22 +188,29 @@ export function GroupManagement() {
       setGroupList(categoryGroupData.data.data.groupList);
     }
   }, [categoryGroupData]);
-
-  console.log(name);
-  console.log(tagInputValue);
   const clickSave = (numberList: number[]) => {
-    if (name === '' && tagInputValue === '') {
+    console.log(numberList);
+    if (numberList.length > 20) {
       openToastifyAlert({
         type: 'error',
-        text: '그룹 명을 입력해주세요',
+        text: '최대 20개까지 추가 가능합니다',
       });
-      return; // name이 비어 있으면 함수 종료
     } else {
-      updateGroupInfoData(numberList);
+      if (name === '' && tagInputValue === '') {
+        openToastifyAlert({
+          type: 'error',
+          text: '그룹명을 입력해주세요',
+        });
+        setTypeIdxList([]);
+        return; // name이 비어 있으면 함수 종료
+      } else {
+        updateGroupInfoData(numberList);
+      }
     }
   };
   //그룹 정보 업데이트 api
   const updateGroupInfo = async (selectedTags: number[]) => {
+    console.log(selectedTags);
     const data = {
       groupIdx: groupIdx,
       name: tagInputValue || name,
@@ -222,6 +240,9 @@ export function GroupManagement() {
       //그룹 리스트 재호출
       categoryGroupRefetch();
       setTagInputValue('');
+      setTypeList('');
+      setTypeIdxList([]);
+      setName('');
       closeModal();
     },
   });
@@ -272,7 +293,6 @@ export function GroupManagement() {
                           className="edit_cancel"
                           onClick={() => {
                             closeToggleEdit(list.idx);
-                            setTagInputValue('');
                           }}
                         >
                           취소

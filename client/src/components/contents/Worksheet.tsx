@@ -336,6 +336,7 @@ export function Worksheet() {
             setTabVeiw={setTabVeiw}
             $margin={'10px 0'}
             onClickTab={changeTab}
+            lineStyle
           />
         </HeadWrapper>
         <SelectWrapper>
@@ -463,7 +464,7 @@ export function Worksheet() {
 }
 
 const Container = styled.div`
-  padding: 40px 80px;
+  padding: 40px;
   width: 100%;
 `;
 const TitleWrapper = styled.div`

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { filter } from 'lodash';
 import { BsEyeSlash, BsEye } from 'react-icons/bs';
 import styled from 'styled-components';
 
@@ -14,20 +13,18 @@ import { MenuDataListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
-// TODO 왼쪽 그룹 리스트와 카테고리 확인 필요, 변경사항 저장
-export function ContentEditingSetting() {
-  type selectProps = {
-    idx: number;
-    name: string;
-    isNecessary: boolean;
-    isDisplay: boolean;
-    tag: string;
-  };
+type selectProps = {
+  idx: number;
+  name: string;
+  isView: boolean;
+};
 
+export function ContentEditingSetting() {
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
   const [nameList, setNameList] = useState<selectProps[]>([]);
+  const [detailIdx, setDetailIdx] = useState<string | null>(null);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
@@ -37,7 +34,7 @@ export function ContentEditingSetting() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
+          //console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
           setMenuIdx(parsedData.idx);
           //localStorage.removeItem('sendMenuIdx');
         } catch (error) {
@@ -54,6 +51,31 @@ export function ContentEditingSetting() {
 
     return () => clearTimeout(retryTimeout);
   }, []);
+
+  const toggleView = (idx: number, isView: boolean) => {
+    setMenuDataList((prev) => {
+      // 선택된 항목을 필터링
+      const filterList = prev.filter((el) => el.name === selectedValue);
+      if (filterList.length > 0) {
+        const viewList = filterList[0].viewList.split(',');
+
+        // idx 위치의 값을 isView 값을 문자열로 업데이트
+        viewList[idx] = isView.toString();
+
+        // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+        const updatedViewList = viewList.join(',');
+
+        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+        return prev.map((item) =>
+          item.name === selectedValue
+            ? { ...item, viewList: updatedViewList }
+            : item,
+        );
+      }
+
+      return prev;
+    });
+  };
 
   //그룹 화면설정 정보 불러오기 api
   const getMenuSetting = async () => {
@@ -80,9 +102,44 @@ export function ContentEditingSetting() {
     }
   }, [menuIdx]);
 
+  //값을 받아왔을때 상태관리
   useEffect(() => {
     if (menuSettingData) {
-      setMenuDataList(menuSettingData.data.data.detailList);
+      const updatedData = menuSettingData.data.data.detailList.map(
+        (item: any) => {
+          const nameListArray = item.nameList?.split(',') || [];
+
+          const searchListArray = item.searchList
+            ? item.searchList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+
+          const viewListArray = item.viewList
+            ? item.viewList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+          const searchListString = searchListArray.join(',');
+          const viewListString = viewListArray.join(',');
+
+          return {
+            ...item,
+            searchList: searchListString,
+            viewList: viewListString,
+          };
+        },
+      );
+
+      setMenuDataList(updatedData);
+    }
+  }, [menuSettingData]);
+
+  useEffect(() => {
+    if (menuSettingData) {
+      const filterList = menuSettingData.data.data.detailList.filter(
+        (el: any) => el.isCheck === true,
+      );
+      const findName = filterList[0]?.name;
+      const detailIdx = filterList[0]?.detailIdx;
+      setSelectedValue(findName);
+      setDetailIdx(detailIdx);
     }
   }, [menuSettingData]);
 
@@ -90,15 +147,14 @@ export function ContentEditingSetting() {
   const updateMenuInfo = async () => {
     const filterData = menuDataList.filter((el) => el.name === selectedValue);
     const data = {
-      detailIdx: filterData[0].detailIdx,
-      menuIdx: filterData[0].idx,
+      detailIdx: detailIdx ? detailIdx : 'null',
+      menuIdx: menuIdx,
       groupCode: filterData[0].code,
       idxs: filterData[0].typeList,
       names: filterData[0].nameList,
-      searchs: 'true, true, true, true, true, true',
-      view: 'true, true, true, true, true, true',
-      //searchs: filterData[0].searchList,
-      //views: filterData[0].viewList,
+      searchs: filterData[0].searchList,
+      views: filterData[0].viewList,
+      inputs: filterData[0].inputTypeList,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -125,25 +181,28 @@ export function ContentEditingSetting() {
       menuSettingRefetch();
     },
   });
-
+  console.log('menuDataList', menuDataList);
   //그룹 선택 값에 따라 검색조건 값 변경
   useEffect(() => {
-    if (selectedValue) {
+    if (menuDataList) {
       const filteredList = menuDataList.filter(
         (el) => el.name === selectedValue,
       );
       const nameArray = filteredList[0]?.nameList?.split(',') || [];
+      const viewList =
+        filteredList[0]?.viewList
+          ?.split(',')
+          .map((item) => item.trim() === 'true') || [];
 
       const formattedNameList = nameArray.map((name, index) => ({
         idx: index,
         name: name.trim(),
-        isNecessary: false, // 기본 값으로 설정
-        isDisplay: true, // 기본 값으로 설정
-        tag: '', // 기본 값으로 설정
+        isView: viewList[index],
       }));
       setNameList(formattedNameList);
     }
-  }, [selectedValue]);
+  }, [menuDataList]);
+  console.log('nameList', nameList);
 
   return (
     <Container>
@@ -167,11 +226,12 @@ export function ContentEditingSetting() {
             {menuDataList && (
               <Select
                 width={'100%'}
-                defaultValue="항목 선택"
+                defaultValue={selectedValue}
                 key="그룹리스트"
                 options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                 setSelectedValue={setSelectedValue}
                 isnormalizedOptions
+                heightScroll="400px"
               />
             )}
             <CategoryDescription>
@@ -211,15 +271,20 @@ export function ContentEditingSetting() {
                         (el) => el.name === selectedValue,
                       );
                       const nameList = filterList[0]?.nameList?.split(',');
-                      const viewList = [true, true, false, true, true, true];
+                      const inputTypeList =
+                        filterList[0]?.inputTypeList?.split(',');
+                      const viewList = filterList[0]?.viewList
+                        ?.split(',')
+                        .map((item) => item.trim() === 'true');
+
                       // 필터링된 카테고리가 존재할 때만 option을 렌더링
                       if (nameList) {
                         return nameList.map((item, i) => (
                           <ContentList key={i}>
                             <Content>
-                              <div className={`title-${true}`}>
+                              <div className={`title-${viewList[i]}`}>
                                 {item}
-                                <div className="tag">태그선택</div>
+                                <div className="tag">{inputTypeList[i]}</div>
                               </div>
                               <div className="icon">
                                 {viewList[i] ? (
@@ -230,7 +295,9 @@ export function ContentEditingSetting() {
                                       cursor: 'pointer',
                                       fill: `${COLOR.PRIMARY}`,
                                     }}
-                                    // onClick={() => {}}
+                                    onClick={() => {
+                                      toggleView(i, !viewList[i]);
+                                    }}
                                   />
                                 ) : (
                                   <BsEyeSlash
@@ -239,7 +306,9 @@ export function ContentEditingSetting() {
                                       height: '20px',
                                       cursor: 'pointer',
                                       fill: `${COLOR.MUTE}`,
-                                      // onClick={() => {}}
+                                    }}
+                                    onClick={() => {
+                                      toggleView(i, !viewList[i]);
                                     }}
                                   />
                                 )}
@@ -280,21 +349,21 @@ export function ContentEditingSetting() {
                     <span>설정</span>
                   </Button>
                 </SubtitleWrapper>
-                {/* 왼쪽에 선택 값에 맞게 수정해줘야함 */}
                 <SelectBox>
-                  <Select
-                    width="140px"
-                    defaultValue="교육과정"
-                    key="교육과정"
-                    options={nameList}
-                    // options={
-                    //   categoryList[0].tageClassList[0].option &&
-                    //   categoryList[0].tageClassList[0].option.filter(
-                    //     (optionItem) => optionItem.isDisplay,
-                    //   )
-                    // }
-                    isnormalizedOptions
-                  />
+                  {(() => {
+                    const options = nameList
+                      .filter((item) => item.isView)
+                      .map((item) => ({ name: item.name, code: item.idx }));
+                    return (
+                      <Select
+                        width="140px"
+                        defaultValue={options[0]?.name || '카테고리'}
+                        key={options[0]?.name}
+                        options={options}
+                        isnormalizedOptions
+                      />
+                    );
+                  })()}
                   <And>이(가)</And>
                   <Select
                     width="200px"
