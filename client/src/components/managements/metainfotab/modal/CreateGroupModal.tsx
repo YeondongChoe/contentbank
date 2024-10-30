@@ -11,6 +11,7 @@ import { COLOR } from '../../../../components/constants';
 import { Search } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
 import { postRefreshToken } from '../../../../utils/tokenHandler';
+import { GroupListProps } from '../GroupManagement';
 
 type CategoryListProps = {
   idx: number;
@@ -20,11 +21,13 @@ type CategoryListProps = {
 type CreateModalProps = {
   categoryList: CategoryListProps[];
   categoryGroupRefetch: () => void;
+  groupList: GroupListProps[];
 };
 
 export function CreateGroupModal({
   categoryList,
   categoryGroupRefetch,
+  groupList,
 }: CreateModalProps) {
   const { closeModal } = useModal();
   const [categories, setCategories] =
@@ -70,6 +73,25 @@ export function CreateGroupModal({
     }
   }, [selectedCategories]);
 
+  const clickSave = () => {
+    const isSavedName = groupList.some((el) => el.name === name);
+    if (name !== '' && !isSavedName) {
+      postGroupData();
+    } else {
+      if (name === '' && !isSavedName) {
+        openToastifyAlert({
+          type: 'error',
+          text: '그룹명을 입력해주세요',
+        });
+      }
+      if (name !== '' && isSavedName) {
+        openToastifyAlert({
+          type: 'error',
+          text: '이미 등록된 그룹명입니다.',
+        });
+      }
+    }
+  };
   //그룹 생성api
   const postGroup = async () => {
     const data = {
@@ -150,12 +172,7 @@ export function CreateGroupModal({
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
         </Button>
-        <Button
-          width="100px"
-          height="40px"
-          onClick={() => postGroupData()}
-          $filled
-        >
+        <Button width="100px" height="40px" onClick={() => clickSave()} $filled>
           확인
         </Button>
       </ButtonWrapper>

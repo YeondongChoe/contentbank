@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
@@ -36,7 +35,7 @@ export function GroupManagement() {
   const [groupList, setGroupList] = useState<GroupListProps[]>([]);
   const [categoryList, setCategoryList] = useState<CategoryListProps[]>([]);
   const [groupIdx, setGroupIdx] = useState<number | null>(null);
-  const [nameList, setNameList] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [typeList, setTypeList] = useState<string>('');
   //서버로 요청하기 위해서 Idx로 변환
   const [typeIdxList, setTypeIdxList] = useState<number[]>([]);
@@ -53,13 +52,22 @@ export function GroupManagement() {
       setTypeIdxList(numberArray);
     }
   }, [typeList]);
-
   const titleEditHandler = (id: number) => {
-    updateGroupInfoData(typeIdxList);
-    setIsTitleEdit((prevState) => ({
-      ...prevState,
-      [id]: false, // Turn off edit mode after saving
-    }));
+    //중복되지 않을 경우 등록 가능
+    const isSavedName = groupList.some((el) => el.name !== tagInputValue);
+    if (!isSavedName) {
+      openToastifyAlert({
+        type: 'error',
+        text: '이미 등록된 그룹명입니다.',
+      });
+      setTypeIdxList([]);
+    } else {
+      clickSave(typeIdxList);
+      setIsTitleEdit((prevState) => ({
+        ...prevState,
+        [id]: false,
+      }));
+    }
   };
 
   const openToggleEdit = (id: number, typeList: string) => {
@@ -67,6 +75,7 @@ export function GroupManagement() {
       [id]: true, // 선택된 항목만 true
     }));
     setTagInputValue('');
+    setName('');
     setGroupIdx(id);
     setTypeList(typeList);
   };
@@ -78,19 +87,22 @@ export function GroupManagement() {
     //초기화
     setTagInputValue('');
     setTypeList('');
+    setTypeIdxList([]);
   };
 
   /*  모달 열기 */
   const openCategoryAddModal = (
-    nameList: string,
+    //이미 저장된 카테고리 이름
+    categoryNameList: string,
     typeList: string,
+    //카테고리 이름
     name: string,
     idx: number,
   ) => {
     setTypeList(typeList);
-    setNameList(name);
+    setName(name);
     setGroupIdx(idx);
-    const process = nameList.split(',').map((el) => el);
+    const process = categoryNameList.split(',').map((el) => el);
     openModal({
       title: '',
       content: (
@@ -98,7 +110,7 @@ export function GroupManagement() {
           categoryList={categoryList}
           nameList={process}
           typeList={typeList}
-          onSave={(selectedTags) => updateGroupInfoData(selectedTags)}
+          onSave={(selectedTags) => clickSave(selectedTags)}
         />
       ),
     });
@@ -115,6 +127,7 @@ export function GroupManagement() {
       content: (
         <CreateGroupModal
           categoryList={categoryList}
+          groupList={groupList}
           categoryGroupRefetch={categoryGroupRefetch}
         />
       ),
@@ -175,12 +188,32 @@ export function GroupManagement() {
       setGroupList(categoryGroupData.data.data.groupList);
     }
   }, [categoryGroupData]);
-
+  const clickSave = (numberList: number[]) => {
+    console.log(numberList);
+    if (numberList.length > 20) {
+      openToastifyAlert({
+        type: 'error',
+        text: '최대 20개까지 추가 가능합니다',
+      });
+    } else {
+      if (name === '' && tagInputValue === '') {
+        openToastifyAlert({
+          type: 'error',
+          text: '그룹명을 입력해주세요',
+        });
+        setTypeIdxList([]);
+        return; // name이 비어 있으면 함수 종료
+      } else {
+        updateGroupInfoData(numberList);
+      }
+    }
+  };
   //그룹 정보 업데이트 api
   const updateGroupInfo = async (selectedTags: number[]) => {
+    console.log(selectedTags);
     const data = {
       groupIdx: groupIdx,
-      name: tagInputValue || nameList,
+      name: tagInputValue || name,
       types: selectedTags,
     };
     return await classificationInstance.put(`/v1/category/group`, data);
@@ -207,6 +240,9 @@ export function GroupManagement() {
       //그룹 리스트 재호출
       categoryGroupRefetch();
       setTagInputValue('');
+      setTypeList('');
+      setTypeIdxList([]);
+      setName('');
       closeModal();
     },
   });
@@ -257,7 +293,6 @@ export function GroupManagement() {
                           className="edit_cancel"
                           onClick={() => {
                             closeToggleEdit(list.idx);
-                            setTagInputValue('');
                           }}
                         >
                           취소

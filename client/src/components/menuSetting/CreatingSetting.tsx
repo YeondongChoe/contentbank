@@ -38,7 +38,7 @@ export function CreatingSetting() {
       </TitleWrapper>
       <SettingList
         list={menu}
-        totalCount={7}
+        totalCount={menuData?.data.data.pagination.totalCount}
         itemsCountPerPage={menuData?.data.data.pagination.pageUnit}
       ></SettingList>
     </Container>
