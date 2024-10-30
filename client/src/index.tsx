@@ -19,6 +19,7 @@ import {
   InspectionManagementSetting,
   ContentEditingSetting,
 } from './components';
+import { ContentInspection } from './components/contents/createcontent';
 import {
   AuthorityPage,
   FirstLoginPage,
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: '/createcontentmain',
         element: <CreateContentMain />,
+      },
+      {
+        path: '/inspection',
+        element: <ContentInspection setTabView={() => {}} type={''} />,
       },
       {
         path: '/change-history',

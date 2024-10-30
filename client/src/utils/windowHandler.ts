@@ -10,6 +10,7 @@ export const windowOpenHandler = ({
   $height = 800,
   $width = 1400,
   queryParams = {},
+  openExtraWindow = false,
 }: {
   name?: string;
   url: string;
@@ -17,6 +18,7 @@ export const windowOpenHandler = ({
   $width?: number;
   $height?: number;
   queryParams?: { [key: string]: any };
+  openExtraWindow?: boolean;
   // sendData?: unknown;
 }) => {
   const windowWidth = $width;
@@ -46,6 +48,15 @@ export const windowOpenHandler = ({
         newWindow.localStorage.setItem('quizList', parentQuizList);
       }
     };
+
+    // If openExtraWindow is true, open another window with the same URL
+    if (openExtraWindow) {
+      window.open(
+        finalUrl,
+        `${name}_extra`,
+        options ? options : `${defaultOption}`,
+      );
+    }
   } else {
     console.error('Failed to open new window');
   }

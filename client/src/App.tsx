@@ -118,6 +118,7 @@ export function App() {
           location.pathname !== '/workbookCSATSetting' &&
           location.pathname !== '/contentListManagementSetting' &&
           location.pathname !== '/contentEditingSetting' &&
+          location.pathname !== '/inspection' &&
           location.pathname !== '/inspectionManagementSetting' && (
             <Navigation />
           )}
@@ -143,6 +144,7 @@ export function App() {
             location.pathname !== '/workbookCSATSetting' &&
             location.pathname !== '/contentListManagementSetting' &&
             location.pathname !== '/contentEditingSetting' &&
+            location.pathname !== '/inspection' &&
             location.pathname !== '/inspectionManagementSetting' && <Header />}
           <BodyWrapper>
             <ToastifyAlert />

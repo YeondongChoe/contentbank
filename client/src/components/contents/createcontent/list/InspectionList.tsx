@@ -17,6 +17,7 @@ export function InspectionList({
   $height,
   showCheckBox,
   showViewAllButton,
+  showEditButton,
   fontBold,
   setCheckedList,
   isDataColor,
@@ -28,6 +29,7 @@ export function InspectionList({
   showTitle?: boolean;
   showCheckBox?: boolean;
   showViewAllButton?: boolean;
+  showEditButton?: boolean;
   $height?: string;
   fontBold?: boolean;
   setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
@@ -191,6 +193,11 @@ export function InspectionList({
   useEffect(() => {
     setQuestionList(initialQuestionList);
   }, [initialQuestionList]);
+
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = () => {
+    window.localStorage.setItem('quizList', JSON.stringify(quizList));
+  };
 
   useEffect(() => {
     // setQuestionList()
@@ -453,6 +460,31 @@ export function InspectionList({
                           onClick={() => openViewer(dragItem.code)}
                         >
                           전체보기
+                          <Icon
+                            $margin={'0 0 0 2px'}
+                            width={`10px`}
+                            src={`/images/icon/view_arrow.svg`}
+                            disabled={true}
+                          />
+                        </button>
+                      </ViewAllButton>
+                    )}
+
+                    {showEditButton && (
+                      <ViewAllButton>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            saveLocalData();
+                            windowOpenHandler({
+                              name: 'createcontentmain',
+                              url: '/createcontentmain',
+                              queryParams: { state: 'edit' },
+                              // openExtraWindow: true,
+                            });
+                          }}
+                        >
+                          수정
                           <Icon
                             $margin={'0 0 0 2px'}
                             width={`10px`}

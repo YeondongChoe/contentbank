@@ -23,7 +23,7 @@ import { QuizListType, QuizType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
-import { QuizList } from './list';
+import { InspectionList, QuizList } from './list';
 import { InspectionModal } from './modal';
 
 export function ContentInspection({
@@ -108,14 +108,22 @@ export function ContentInspection({
           <Title>문항 데이터</Title>
           <ContentList>
             {dataFetched && (
-              <QuizList
-                questionList={quizList}
-                $height={`calc(100vh - 550px)`}
-                showViewAllButton
-                onItemClick={setOnItemClickData}
-                setCheckedList={setCheckedList}
-                arrowPosition={`0`}
-              />
+              <>
+                <InspectionList
+                  questionList={quizList}
+                  $height={`calc(100vh - 550px)`}
+                  showEditButton
+                  onItemClick={setOnItemClickData}
+                  setCheckedList={setCheckedList}
+                />
+                <InspectionList
+                  questionList={quizList}
+                  $height={`calc(100vh - 550px)`}
+                  showViewAllButton
+                  onItemClick={setOnItemClickData}
+                  setCheckedList={setCheckedList}
+                />
+              </>
             )}
             {!dataFetched && <Loader />}
           </ContentList>

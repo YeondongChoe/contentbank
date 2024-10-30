@@ -62,8 +62,12 @@ export function QuizReportList() {
       callback: () => {},
     });
   };
-
+  // 로컬스토리지에 보낼데이터 저장
+  const saveLocalData = () => {
+    window.localStorage.setItem('quizList', JSON.stringify(reportList));
+  };
   const openCreateEditWindow = () => {
+    saveLocalData();
     windowOpenHandler({
       name: 'createcontentmain',
       url: '/createcontentmain',

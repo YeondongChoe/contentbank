@@ -64,8 +64,6 @@ export function InspectionList({
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<number[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -75,8 +73,8 @@ export function InspectionList({
   const openCreateEditWindow = () => {
     saveLocalData();
     windowOpenHandler({
-      name: 'createcontentmain',
-      url: '/createcontentmain',
+      name: 'inspection',
+      url: '/inspection',
       queryParams: { state: 'inspection' },
     });
   };
@@ -102,7 +100,7 @@ export function InspectionList({
     const target = e.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
     if (!target.checked) {
-      setCheckList((prev) => [...prev, id]);
+      setCheckList([id]);
     } else {
       setCheckList(checkList.filter((el) => el !== id));
     }
@@ -174,16 +172,6 @@ export function InspectionList({
     setCheckList([]);
   };
 
-  const openProcessListModal = () => {
-    console.log('sortedList ---', sortedList);
-    openModal({
-      title: '',
-      content: <ProcessListModal list={sortedList} />,
-    });
-    //모달 열릴시 체크리스트 초기화
-    setCheckList([]);
-  };
-
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -219,14 +207,6 @@ export function InspectionList({
       setCheckList([]);
     }
   }, [deleteQuizIsSuccess]);
-
-  // 알림창 상태
-  const openSubmitAlert = () => {
-    setIsAlertOpen(true);
-  };
-  const closeSubmitAlert = () => {
-    setIsAlertOpen(false);
-  };
 
   // 초기화
   useEffect(() => {
@@ -287,21 +267,11 @@ export function InspectionList({
 
   return (
     <>
-      <Total> Total : {totalCount ? totalCount : 0}</Total>
       <ListButtonWrapper>
         <InputWrapper>
           <ButtonWrapper>
             <CheckBoxWrapper>
-              <CheckBoxI
-                $margin={'0 5px 0 0'}
-                onChange={(e) => handleAllCheck(e)}
-                checked={
-                  checkList.length === questionList.length ? true : false
-                }
-                id={'all check'}
-                value={'all check'}
-              />
-              <span className="title_top">전체선택</span>
+              <Total> Total : {totalCount ? totalCount : 0}</Total>
             </CheckBoxWrapper>
             <ActionButtonWrapper>
               <Button
@@ -407,7 +377,7 @@ export function InspectionList({
                   )}
 
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -455,7 +425,7 @@ export function InspectionList({
                   )}
 
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -505,7 +475,7 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -555,7 +525,7 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -605,7 +575,7 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -655,7 +625,7 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -705,7 +675,7 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -755,7 +725,7 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
@@ -803,7 +773,7 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                   <Tooltip
-                    top={'100px'}
+                    top={'90px'}
                     arrowPosition={`left: calc(50% - 10px)`}
                     width={'130px'}
                     ref={tooltipRef}
