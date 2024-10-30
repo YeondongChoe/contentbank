@@ -23,6 +23,7 @@ export function QuizList({
   isHasMeta,
   onItemClick,
   setIsCheck,
+  arrowPosition = `left: calc(50% - 25px)`,
 }: {
   questionList: QuizListType[] | [];
   showTitle?: boolean;
@@ -35,6 +36,7 @@ export function QuizList({
   isHasMeta?: boolean;
   onItemClick?: (item: QuizListType) => void;
   setIsCheck?: React.Dispatch<React.SetStateAction<boolean>>;
+  arrowPosition?: string;
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -361,7 +363,8 @@ export function QuizList({
                       </span>
 
                       <Tooltip
-                        arrowPosition={`left: calc(50% - 25px)`}
+                        arrowPosition={arrowPosition}
+                        // arrowPosition={`left: calc(50% - 25px)`}
                         width={'100%'}
                         ref={tooltipRef}
                       >

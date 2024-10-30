@@ -85,21 +85,22 @@ export function CreateContentMain() {
               />
             </BackButtonWrapper>
           )}
-          {query.get('state') !== 'uploadhtml' && (
-            <TabMenu
-              length={3}
-              menu={menuList}
-              selected={tabView}
-              width={'350px'}
-              setTabVeiw={setTabView}
-              onClickTab={() => {
-                if (tabView !== 'DT & Editing') {
-                  // 페이지 진입시 에디터 라이브러리 정적파일 불러오기위한 리로딩
-                  window.location.reload();
-                }
-              }}
-            />
-          )}
+          {query.get('state') !== 'uploadhtml' ||
+            (query.get('state') === 'inspection' && (
+              <TabMenu
+                length={3}
+                menu={menuList}
+                selected={tabView}
+                width={'350px'}
+                setTabVeiw={setTabView}
+                onClickTab={() => {
+                  if (tabView !== 'DT & Editing') {
+                    // 페이지 진입시 에디터 라이브러리 정적파일 불러오기위한 리로딩
+                    window.location.reload();
+                  }
+                }}
+              />
+            ))}
         </TapMenuWrapper>
       </ButtonWrapper>
       {tabView === 'DT & Editing' && (
@@ -128,11 +129,11 @@ export function CreateContentMain() {
           )}
         </ContentBox>
       )}
+
       {tabView === '문항 분류' && (
         <ContentBox>
           {query.get('state') === 'edit' ||
-          query.get('state') === 'copyedit' ||
-          query.get('state') === 'inspection' ? (
+          query.get('state') === 'copyedit' ? (
             <ClassificationEdit
               setTabView={setTabView}
               type={query.get('state') as string}
