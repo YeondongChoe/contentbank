@@ -7,6 +7,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
+  Alert,
   Button,
   Loader,
   MathViewer,
@@ -16,12 +17,14 @@ import {
   ValueNone,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
+import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { QuizListType, QuizType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { QuizList } from './list';
+import { InspectionModal } from './modal';
 
 export function ContentInspection({
   setTabView,
@@ -30,6 +33,7 @@ export function ContentInspection({
   setTabView: React.Dispatch<React.SetStateAction<string>>;
   type: string;
 }) {
+  const { openModal } = useModal();
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
     QuizListType[]
@@ -40,6 +44,10 @@ export function ContentInspection({
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
 
   const [dataFetched, setDataFetched] = useState(false);
+  // alert
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [inspectionArea, setInspectionArea] = useState<string>('');
+  const [inspectionReason, setInspectionReason] = useState<string>('');
 
   // 수정시 체크리스트 값 가져오기
   useEffect(() => {
@@ -91,18 +99,7 @@ export function ContentInspection({
     console.log('onItemClickData------------', onItemClickData);
   }, [checkedList]);
 
-  // 문항 추가버튼 disable 처리
-  // const addButtonBool = useMemo(() => {
-  //   if (
-  //     selectedSubject !== '' &&
-  //     selectedCourse !== '' &&
-  //     selectedQuestionType !== ''
-  //   ) {
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }, [selectedSubject, selectedCourse, selectedQuestionType]);
+  useEffect(() => {}, [inspectionArea, inspectionReason]);
 
   return (
     <Container>
@@ -165,21 +162,134 @@ export function ContentInspection({
         <ContentListWrapper className="flex_1">
           <Title>프로세스</Title>
           <ListBoxWrapper>
-            <ListBox></ListBox>
-            <ListBox></ListBox>
-            <ListBox></ListBox>
-            <ListBox></ListBox>
+            <ListBox>
+              <strong className="title">제작</strong>
+              <PerfectScrollbar>
+                <ul className="name_list">
+                  <li>
+                    <button className="active">
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button>
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button>
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button>
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button>
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button>
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button>
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                </ul>
+              </PerfectScrollbar>
+            </ListBox>
+            <ListBox>
+              <strong className="title">검수</strong>
+              <PerfectScrollbar>
+                <ul className="name_list">
+                  <li>
+                    <button
+                      onClick={() => {
+                        setInspectionArea(`검수의견`);
+                        setInspectionReason(`편집단계에서 추가 분류 요청`);
+                        setIsAlertOpen(true);
+                      }}
+                    >
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag red">{`ghdr`}</span>
+                    </button>
+                  </li>
+                </ul>
+              </PerfectScrollbar>
+            </ListBox>
+            <ListBox>
+              <strong className="title">편집</strong>
+              <PerfectScrollbar>
+                <ul className="name_list">
+                  <li>
+                    <button>
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag">{`ghdr`}</span>
+                    </button>
+                  </li>
+                </ul>
+              </PerfectScrollbar>
+            </ListBox>
+            <ListBox>
+              <strong className="title">검수</strong>
+              <PerfectScrollbar>
+                <ul className="name_list">
+                  <li>
+                    <button
+                      onClick={() => {
+                        setInspectionArea(`반려사유`);
+                        setInspectionReason(
+                          `두줄 이상일경우 편집단계에서 추가 분류 요청, 두줄 이상일경우 편집단계에서 추가 분류 요청, 두줄 이상일경우 편집단계에서 추가 분류 요청`,
+                        );
+                        setIsAlertOpen(true);
+                      }}
+                    >
+                      <span className="name">{`ghdrlf`}</span>
+                      <span className="tag blue">{`ghdr`}</span>
+                    </button>
+                  </li>
+                </ul>
+              </PerfectScrollbar>
+            </ListBox>
           </ListBoxWrapper>
         </ContentListWrapper>
         <Modal />
+
+        <Alert
+          top={`50%`}
+          isAlertOpen={isAlertOpen}
+          description={`${inspectionArea}`}
+          subDescription={`${inspectionReason}`}
+          notice
+          bold="800"
+          onClose={() => setIsAlertOpen(false)}
+        />
       </ContentsWrapper>
       <BorderWrapper>
         <SubmitButtonWrapper>
           <Button
             buttonType="button"
-            // disabled={addButtonBool}
-            // onClick={() => submitSave()}
-            // width={'calc(50% - 5px)'}
+            onClick={() => {
+              openModal({
+                title: '',
+                content: (
+                  <InspectionModal type={'보류'} item={onItemClickData} />
+                ),
+              });
+            }}
             $margin={'0 10px 0 0'}
             cursor
           >
@@ -187,9 +297,14 @@ export function ContentInspection({
           </Button>
           <Button
             buttonType="button"
-            // disabled={addButtonBool}
-            // onClick={() => submitSave()}
-            // width={'calc(50% - 5px)'}
+            onClick={() => {
+              openModal({
+                title: '',
+                content: (
+                  <InspectionModal type={'반려'} item={onItemClickData} />
+                ),
+              });
+            }}
             $margin={'0 10px 0 0'}
             $filled
             $warning
@@ -199,9 +314,14 @@ export function ContentInspection({
           </Button>
           <Button
             buttonType="button"
-            // disabled={addButtonBool}
-            // onClick={() => submitSave()}
-            // width={'calc(50% - 5px)'}
+            onClick={() => {
+              openModal({
+                title: '',
+                content: (
+                  <InspectionModal type={'승인'} item={onItemClickData} />
+                ),
+              });
+            }}
             $margin={'0 10px 0 0'}
             $filled
             cursor
@@ -260,9 +380,11 @@ const ContentListWrapper = styled.div`
   border: 1px solid ${COLOR.BORDER_BLUE};
   height: 400px;
   overflow: hidden;
+
   &.flex_1 {
     width: 100%;
     display: flex;
+    flex-direction: column;
   }
 `;
 const ContentList = styled.div`
@@ -278,10 +400,76 @@ const ContentList = styled.div`
 const ListBoxWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
+  padding: 10px 20px;
 `;
 const ListBox = styled.div`
   background-color: #eee;
+  width: 25%;
+  height: 320px;
+  position: relative;
+  padding-bottom: 10px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    transform: translateY(-50%) rotate(-90deg);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #aaa;
+  }
+
+  &:last-child::after {
+    display: none;
+  }
+
+  .title {
+    display: flex;
+    padding: 10px;
+  }
+  .scrollbar-container {
+    height: calc(100% - 50px);
+  }
+  .name_list {
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px;
+    gap: 10px;
+  }
+
+  .name_list button {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #eaeaea;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+  .name_list button.active {
+    border: 1px solid ${COLOR.PRIMARY};
+  }
+  .name_list button .name {
+    display: flex;
+    padding-bottom: 10px;
+  }
+  .name_list button .tag {
+    display: flex;
+    font-size: 13px;
+    color: ${COLOR.FONT_GRAY};
+  }
+  .name_list button .tag.blue {
+    display: flex;
+    font-size: 13px;
+    color: ${COLOR.PRIMARY};
+  }
+  .name_list button .tag.red {
+    display: flex;
+    font-size: 13px;
+    color: ${COLOR.ERROR};
+  }
 `;
 
 const BorderWrapper = styled.div`
