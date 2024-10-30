@@ -116,13 +116,13 @@ export function ContentInspection({
                   onItemClick={setOnItemClickData}
                   setCheckedList={setCheckedList}
                 />
-                <InspectionList
+                {/* <InspectionList
                   questionList={quizList}
                   $height={`calc(100vh - 550px)`}
                   showViewAllButton
                   onItemClick={setOnItemClickData}
                   setCheckedList={setCheckedList}
-                />
+                /> */}
               </>
             )}
             {!dataFetched && <Loader />}
@@ -386,7 +386,7 @@ const MathViewerWrapper = styled.div`
 const ContentListWrapper = styled.div`
   width: 50%;
   border: 1px solid ${COLOR.BORDER_BLUE};
-  height: 400px;
+  height: 500px;
   overflow: hidden;
 
   &.flex_1 {

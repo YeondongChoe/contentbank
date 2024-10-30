@@ -484,7 +484,7 @@ export function InspectionList({
                             });
                           }}
                         >
-                          수정
+                          편집하기
                           <Icon
                             $margin={'0 0 0 2px'}
                             width={`10px`}
