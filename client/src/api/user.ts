@@ -138,7 +138,7 @@ export const getUserListTotal = async ({
     `/v1/account?&pageIndex=${1}&pageUnit=${totalCount}&searchCondition=${idxValue}
 		`,
   );
-  console.log(res);
+  //console.log(res);
   return res;
 };
 

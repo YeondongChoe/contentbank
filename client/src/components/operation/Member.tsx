@@ -71,6 +71,7 @@ export function Member() {
   });
   // data 디렉토리
   const memberList = memberListData?.data.data;
+  console.log(memberList);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -124,6 +125,7 @@ export function Member() {
           memberList={totalMemberList}
           refetch={refetch}
           idxValue={''}
+          companyName=""
         />
       ),
     });
