@@ -19,7 +19,7 @@ import {
   openToastifyAlert,
 } from '..';
 import { resourceServiceInstance } from '../../api/axios';
-import { WorksheetListType, MenuDataListProps } from '../../types';
+import { MenuDataListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 import { SettingPageDnDWrapper } from '../molecules';
@@ -34,9 +34,9 @@ export function WorkbookListSetting() {
       isCheck: true,
       name: '더미',
       nameList: '대상학년,태그,학습지명,등록일,작성자',
-      searchList: 'true,true,false,true,true',
+      searchList: 'false,false,false,false,false',
       typeList: '1,2,3,4,5',
-      viewList: 'true,true,true,true,true',
+      viewList: 'false,false,false,false,false',
     },
   ];
   const [isStartDnD, setIsStartDnd] = useState(false);
@@ -46,6 +46,7 @@ export function WorkbookListSetting() {
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
   const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
   // 로컬 스토리지에서 데이터 가져오기
+  console.log(selectedValue);
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendMenuIdx');
@@ -128,7 +129,6 @@ export function WorkbookListSetting() {
   };
 
   const toggleSearch = (idx: number, isSearch: boolean) => {
-    //console.log(selectedValue);
     if (selectedValue === '더미') {
       setDummyData((prev) => {
         // 선택된 항목을 필터링
@@ -332,6 +332,8 @@ export function WorkbookListSetting() {
         type: 'success',
         text: '저장되었습니다.',
       });
+      //리스트 재 호출
+      menuSettingRefetch();
     },
   });
 
@@ -489,6 +491,7 @@ export function WorkbookListSetting() {
               {(() => {
                 const dataList =
                   selectedValue === '더미' ? dummyData : menuDataList;
+                console.log(dataList);
                 return dataList
                   .filter((el) => el.name === selectedValue)
                   .map((search) => {
@@ -519,10 +522,11 @@ export function WorkbookListSetting() {
                 .filter((list) => list.name === selectedValue)
                 .flatMap((item) => {
                   const nameList = item.nameList?.split(',');
+                  console.log(nameList);
                   const essentialList = item.viewList
                     ?.split(',')
                     .map((item) => item.trim() === 'true');
-                  const array = 6;
+                  const array = 1;
 
                   return Array.from({ length: array }).map((_, idx) => (
                     <ListItem

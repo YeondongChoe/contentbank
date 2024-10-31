@@ -460,7 +460,7 @@ const IconWrapper = styled.div`
   }
 `;
 const ContentListWrapper = styled.div`
-  max-height: 480px; /* 컨테이너의 최대 높이 설정 */
+  max-height: 493px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
 `;
 const ContentList = styled.li`
@@ -514,7 +514,6 @@ const ClassificationWrapper = styled.div`
   display: flex;
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
-
 const SelectWrapper = styled.div`
   width: 40%;
   display: flex;

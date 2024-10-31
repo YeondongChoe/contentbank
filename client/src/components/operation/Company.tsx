@@ -173,8 +173,6 @@ export function Company() {
     setIsModalOpen(!isModalOpen);
   };
 
-  //계정 활성화 여부
-  const [isActivate, setIsActivate] = useState(false);
   //탭
   const changeTab = () => {
     setPage(1);
@@ -189,19 +187,6 @@ export function Company() {
       value: '계정 관리',
     },
   ];
-  //언어코드 하드코딩
-  const SelectDummy = {
-    languageList: [
-      {
-        name: '한국어(KO)',
-        code: '1',
-      },
-      {
-        name: '영어(EN)',
-        code: '2',
-      },
-    ],
-  };
 
   // 기업 리스트 불러오기 api
   const getCompanyList = async () => {
@@ -420,6 +405,7 @@ export function Company() {
           memberList={totalData?.data.data.list}
           refetch={companyAccountRefetch}
           idxValue={idxValue}
+          companyName={nameValue}
         />
       ),
     });
