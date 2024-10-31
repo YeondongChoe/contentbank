@@ -276,6 +276,7 @@ export function ContentListSetting() {
                   options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                   setSelectedValue={setSelectedValue}
                   isnormalizedOptions
+                  heightScroll="400px"
                 />
               )}
               <CategoryWrapper>
