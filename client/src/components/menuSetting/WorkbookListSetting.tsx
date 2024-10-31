@@ -309,6 +309,7 @@ export function WorkbookListSetting() {
       searchs: filterData[0].searchList,
       views: filterData[0].viewList,
       inputs: filterData[0].inputTypeList,
+      isExtra: false,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };

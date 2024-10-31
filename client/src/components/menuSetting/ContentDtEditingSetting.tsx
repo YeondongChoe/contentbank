@@ -624,7 +624,6 @@ export function ContentDtEditingSetting() {
             <SelectWrapper>
               <SelectBox>
                 <Label value={'출처'} width="100%" bold fontSize="17px" />
-                {/* selectedValue와 일치하는 필터된 카테고리 찾기 */}
                 {menuDataList
                   .filter((el) => el.name === selectedValue)
                   .map((search) => {
@@ -653,7 +652,6 @@ export function ContentDtEditingSetting() {
               </SelectBox>
               <SelectBox>
                 <Label value={'추가정보'} width="100%" bold fontSize="17px" />
-                {/* selectedValue가 추가정보인 카테고리 찾기 */}
                 {menuExtraDataList
                   .filter((el) => el.name === '추가정보')
                   .map((search) => {

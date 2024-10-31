@@ -155,6 +155,7 @@ export function ContentEditingSetting() {
       searchs: filterData[0].searchList,
       views: filterData[0].viewList,
       inputs: filterData[0].inputTypeList,
+      isExtra: false,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -181,7 +182,7 @@ export function ContentEditingSetting() {
       menuSettingRefetch();
     },
   });
-  console.log('menuDataList', menuDataList);
+
   //그룹 선택 값에 따라 검색조건 값 변경
   useEffect(() => {
     if (menuDataList) {
@@ -202,7 +203,6 @@ export function ContentEditingSetting() {
       setNameList(formattedNameList);
     }
   }, [menuDataList]);
-  console.log('nameList', nameList);
 
   return (
     <Container>
