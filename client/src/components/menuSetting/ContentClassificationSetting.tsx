@@ -30,7 +30,11 @@ export function ContentClassificationSetting() {
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
+  const [menuExtraDataList, setMenuExtraDataList] = useState<
+    MenuDataListProps[]
+  >([]);
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
+  const [detailExtraIdx, setDetailExtraIdx] = useState<string | null>(null);
 
   const changeTab = () => {
     setPage(1);
@@ -78,31 +82,6 @@ export function ContentClassificationSetting() {
         return prev.map((item) =>
           item.name === selectedValue
             ? { ...item, searchList: updatedSearchList }
-            : item,
-        );
-      }
-
-      return prev;
-    });
-  };
-
-  const toggleView = (idx: number, isView: boolean) => {
-    setMenuDataList((prev) => {
-      // 선택된 항목을 필터링
-      const filterList = prev.filter((el) => el.name === selectedValue);
-      if (filterList.length > 0) {
-        const viewList = filterList[0].viewList.split(',');
-
-        // idx 위치의 값을 isView 값을 문자열로 업데이트
-        viewList[idx] = isView.toString();
-
-        // 업데이트된 viewList 배열을 문자열로 변환하여 할당
-        const updatedViewList = viewList.join(',');
-
-        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
-        return prev.map((item) =>
-          item.name === selectedValue
-            ? { ...item, viewList: updatedViewList }
             : item,
         );
       }
@@ -177,20 +156,125 @@ export function ContentClassificationSetting() {
     }
   }, [menuSettingData]);
 
+  //그룹 화면설정 정보 불러오기 api
+  const getMenuExtraSetting = async () => {
+    const res = await resourceServiceInstance.get(`/v1/menu/extra/${menuIdx}`);
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: menuSettingExtraData,
+    isLoading: isMenuSettingExtraLoading,
+    refetch: menuSettingExtraRefetch,
+  } = useQuery({
+    queryKey: ['get-menuExtraSetting'],
+    queryFn: getMenuExtraSetting,
+    meta: {
+      errorMessage: 'get-menuExtraSetting 에러 메세지',
+    },
+    enabled: menuIdx !== null,
+  });
+
+  //추가정보 값을 받아왔을때 상태관리
+  useEffect(() => {
+    if (menuSettingExtraData) {
+      const updatedData = menuSettingExtraData.data.data.detailList.map(
+        (item: any) => {
+          const nameListArray = item.nameList?.split(',') || [];
+
+          const searchListArray = item.searchList
+            ? item.searchList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+
+          const viewListArray = item.viewList
+            ? item.viewList.split(',').map((el: any) => el === 'true')
+            : Array(nameListArray.length).fill(false);
+          const searchListString = searchListArray.join(',');
+          const viewListString = viewListArray.join(',');
+
+          return {
+            ...item,
+            searchList: searchListString,
+            viewList: viewListString,
+          };
+        },
+      );
+
+      setMenuExtraDataList(updatedData);
+    }
+  }, [menuSettingExtraData]);
+
+  useEffect(() => {
+    if (menuSettingExtraData) {
+      const filterList = menuSettingExtraData.data.data.detailList.filter(
+        (el: any) => el.isCheck === true,
+      );
+      const detailIdx = filterList[0]?.detailIdx;
+      setDetailExtraIdx(detailIdx);
+    }
+  }, [menuSettingExtraData]);
+
+  const toggleExtraSearch = (idx: number, isSearch: boolean) => {
+    setMenuExtraDataList((prev) => {
+      // 선택된 항목을 필터링
+      const filterList = prev.filter((el) => el.name === '추가정보');
+      console.log(filterList);
+      if (filterList.length > 0) {
+        const searchList = filterList[0].searchList.split(',');
+        console.log(searchList);
+
+        // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+        searchList[idx] = isSearch.toString();
+
+        // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+        const updatedSearchList = searchList.join(',');
+        console.log(updatedSearchList);
+
+        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+        return prev.map((item) =>
+          item.name === '추가정보'
+            ? { ...item, searchList: updatedSearchList }
+            : item,
+        );
+      }
+
+      return prev;
+    });
+  };
+
   //그룹 정보 업데이트 api
   const updateMenuInfo = async () => {
-    const filterData = menuDataList.filter((el) => el.name === selectedValue);
-    const data = {
-      detailIdx: detailIdx ? detailIdx : 'null',
-      menuIdx: menuIdx,
-      groupCode: filterData[0].code,
-      idxs: filterData[0].typeList,
-      names: filterData[0].nameList,
-      searchs: filterData[0].searchList,
-      views: filterData[0].viewList,
-      inputs: filterData[0].inputTypeList,
-    };
-    return await resourceServiceInstance.put(`/v1/menu`, data);
+    if (tabVeiw === '단원분류') {
+      const filterData = menuDataList.filter((el) => el.name === selectedValue);
+      const data = {
+        detailIdx: detailIdx ? detailIdx : 'null',
+        menuIdx: menuIdx,
+        groupCode: filterData[0].code,
+        idxs: filterData[0].typeList,
+        names: filterData[0].nameList,
+        searchs: filterData[0].searchList,
+        views: filterData[0].viewList,
+        inputs: filterData[0].inputTypeList,
+        isExtra: false,
+      };
+      return await resourceServiceInstance.put(`/v1/menu`, data);
+    } else {
+      const filterData = menuExtraDataList.filter(
+        (el) => el.name === '추가정보',
+      );
+      const data = {
+        detailIdx: detailExtraIdx ? detailExtraIdx : 'null',
+        menuIdx: menuIdx,
+        groupCode: filterData[0].code,
+        idxs: filterData[0].typeList,
+        names: filterData[0].nameList,
+        searchs: filterData[0].searchList,
+        views: filterData[0].viewList,
+        inputs: filterData[0].inputTypeList,
+        isExtra: true,
+      };
+      return await resourceServiceInstance.put(`/v1/menu`, data);
+    }
   };
   const { mutate: updateMenuInfoData } = useMutation({
     mutationFn: updateMenuInfo,
@@ -213,6 +297,8 @@ export function ContentClassificationSetting() {
       });
       //그룹 리스트 재호출
       menuSettingRefetch();
+      //추가정보 리스트 재호출
+      menuSettingExtraRefetch();
     },
   });
 
@@ -240,26 +326,29 @@ export function ContentClassificationSetting() {
               <PageDescription>
                 리스트에 노출되는 필터의 순서를 변경합니다.
               </PageDescription>
-              <Label
-                value={'그룹'}
-                width="100%"
-                bold
-                fontSize="14px"
-                padding="10px 0 10px 5px"
-              />
-              {menuDataList && (
-                <Select
-                  width={'100%'}
-                  defaultValue={selectedValue}
-                  key="그룹리스트"
-                  options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
-                  setSelectedValue={setSelectedValue}
-                  isnormalizedOptions
-                  heightScroll="400px"
-                />
-              )}
+
               {tabVeiw === '단원분류' && (
                 <>
+                  <Label
+                    value={'그룹'}
+                    width="100%"
+                    bold
+                    fontSize="14px"
+                    padding="10px 0 10px 5px"
+                  />
+                  {menuDataList && (
+                    <Select
+                      width={'100%'}
+                      defaultValue={selectedValue}
+                      key="그룹리스트"
+                      options={menuDataList
+                        .slice()
+                        .sort((a, b) => a.idx - b.idx)}
+                      setSelectedValue={setSelectedValue}
+                      isnormalizedOptions
+                      heightScroll="400px"
+                    />
+                  )}
                   <CategoryWrapper>
                     <Label
                       value={'카테고리'}
@@ -283,7 +372,6 @@ export function ContentClassificationSetting() {
                   <ContentListWrapper>
                     {menuDataList && (
                       <>
-                        {/* selectedValue와 일치하는 필터된 카테고리 찾기 */}
                         {(() => {
                           const filterList = menuDataList?.filter(
                             (el) => el.name === selectedValue,
@@ -294,16 +382,13 @@ export function ContentClassificationSetting() {
                           const searchList = filterList[0]?.searchList
                             ?.split(',')
                             .map((item) => item.trim() === 'true');
-                          const viewList = filterList[0]?.viewList
-                            ?.split(',')
-                            .map((item) => item.trim() === 'true');
 
                           // 필터링된 카테고리가 존재할 때만 option을 렌더링
                           if (nameList) {
                             return nameList.map((item, i) => (
                               <ContentList key={i}>
                                 <Content>
-                                  <div className={`title-${viewList[i]}`}>
+                                  <div className={`title-${true}`}>
                                     {item}
                                     <div className="tag">
                                       {inputTypeList[i]}
@@ -380,134 +465,62 @@ export function ContentClassificationSetting() {
                     </IconWrapper>
                   </CategoryWrapper>
                   <ContentListWrapper>
-                    {menuDataList && (
+                    {menuExtraDataList && (
                       <>
-                        {/* selectedValue와 일치하는 필터된 카테고리 찾기 */}
-                        {/* {(() => {
-                          const filteredCategory =
-                            categoryList[0].additionalInformationList.find(
-                              (item: TagClass) => item.name === tabVeiw,
-                            );
+                        {(() => {
+                          const filterList = menuExtraDataList?.filter(
+                            (el) => el.name === '추가정보',
+                          );
+                          const nameList = filterList[0]?.nameList?.split(',');
+                          const inputTypeList =
+                            filterList[0]?.inputTypeList?.split(',');
+                          const searchList = filterList[0]?.searchList
+                            ?.split(',')
+                            .map((item) => item.trim() === 'true');
 
                           // 필터링된 카테고리가 존재할 때만 option을 렌더링
-                          if (filteredCategory) {
-                            return filteredCategory.option?.map(
-                              (category: Option, i: number) => (
-                                <ContentList key={i}>
-                                  <Content>
-                                    <div
-                                      className={`title-${category.isDisplay}`}
-                                    >
-                                      {category.title}
-                                      <div className="tag">{category.tag}</div>
+                          if (nameList) {
+                            return nameList.map((item, i) => (
+                              <ContentList key={i}>
+                                <Content>
+                                  <div className={`title-${true}`}>
+                                    {item}
+                                    <div className="tag">
+                                      {inputTypeList[i]}
                                     </div>
-                                    {category.isNecessary ? (
-                                      <div className="icon">
-                                        <BiToggleRight
-                                          style={{
-                                            width: '20px',
-                                            height: '20px',
-                                            cursor: 'pointer',
-                                            fill: `${COLOR.PRIMARY}`,
-                                          }}
-                                          onClick={() => {
-                                            setCategoryList((prevState) =>
-                                              prevState.map((catListItem) => {
-                                                // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isFilter 상태를 변경
-                                                const updatedTageClassList =
-                                                  catListItem.additionalInformationList?.map(
-                                                    (tagClass) => {
-                                                      const updatedOptions =
-                                                        tagClass.option?.map(
-                                                          (optionItem) => {
-                                                            if (
-                                                              optionItem.title ===
-                                                              category.title
-                                                            ) {
-                                                              return {
-                                                                ...optionItem,
-                                                                isNecessary:
-                                                                  !optionItem.isNecessary, // 해당 옵션의 isFilter만 토글
-                                                              };
-                                                            }
-                                                            return optionItem; // 나머지 옵션은 그대로 유지
-                                                          },
-                                                        );
-
-                                                      return {
-                                                        ...tagClass,
-                                                        option: updatedOptions, // 변경된 옵션 배열로 업데이트
-                                                      };
-                                                    },
-                                                  );
-
-                                                return {
-                                                  ...catListItem,
-                                                  additionalInformationList:
-                                                    updatedTageClassList, // 업데이트된 tageClassList로 교체
-                                                };
-                                              }),
-                                            );
-                                          }}
-                                        />
-                                      </div>
+                                  </div>
+                                  <div className="icon">
+                                    {searchList[i] ? (
+                                      <BiToggleRight
+                                        style={{
+                                          width: '20px',
+                                          height: '20px',
+                                          cursor: 'pointer',
+                                          fill: `${COLOR.PRIMARY}`,
+                                        }}
+                                        onClick={() => {
+                                          toggleExtraSearch(i, !searchList[i]);
+                                        }}
+                                      />
                                     ) : (
-                                      <div className="icon">
-                                        <BiToggleRight
-                                          style={{
-                                            width: '20px',
-                                            height: '20px',
-                                            cursor: 'pointer',
-                                            fill: `${COLOR.FONT_GRAY}`,
-                                          }}
-                                          onClick={() => {
-                                            setCategoryList((prevState) =>
-                                              prevState.map((catListItem) => {
-                                                // 현재 tageClassList를 순회하며 title에 맞는 option을 찾아 isFilter 상태를 변경
-                                                const updatedTageClassList =
-                                                  catListItem.additionalInformationList?.map(
-                                                    (tagClass) => {
-                                                      const updatedOptions =
-                                                        tagClass.option?.map(
-                                                          (optionItem) => {
-                                                            if (
-                                                              optionItem.title ===
-                                                              category.title
-                                                            ) {
-                                                              return {
-                                                                ...optionItem,
-                                                                isNecessary:
-                                                                  !optionItem.isNecessary, // 해당 옵션의 isFilter만 토글
-                                                              };
-                                                            }
-                                                            return optionItem; // 나머지 옵션은 그대로 유지
-                                                          },
-                                                        );
-
-                                                      return {
-                                                        ...tagClass,
-                                                        option: updatedOptions, // 변경된 옵션 배열로 업데이트
-                                                      };
-                                                    },
-                                                  );
-
-                                                return {
-                                                  ...catListItem,
-                                                  additionalInformationList:
-                                                    updatedTageClassList, // 업데이트된 tageClassList로 교체
-                                                };
-                                              }),
-                                            );
-                                          }}
-                                        />
-                                      </div>
+                                      <BiToggleLeft
+                                        style={{
+                                          width: '20px',
+                                          height: '20px',
+                                          cursor: 'pointer',
+                                          fill: `${COLOR.MUTE}`,
+                                        }}
+                                        onClick={() => {
+                                          toggleExtraSearch(i, !searchList[i]);
+                                        }}
+                                      />
                                     )}
-                                  </Content>
-                                </ContentList>
-                              ),
-                            );
+                                  </div>
+                                </Content>
+                              </ContentList>
+                            ));
                           }
-                        })()} */}
+                        })()}
                       </>
                     )}
                   </ContentListWrapper>
@@ -533,8 +546,6 @@ export function ContentClassificationSetting() {
                   src={Image}
                   alt="editer"
                   style={{
-                    borderTopLeftRadius: '15px',
-                    borderTopRightRadius: '15px',
                     padding: '10px',
                   }}
                 />
@@ -549,7 +560,6 @@ export function ContentClassificationSetting() {
                     fontSize="20px"
                   />
                 </SubtitleWrapper>
-                {/* TODO: label value 바꿔야함 */}
                 {(() => {
                   const filterList = menuDataList?.filter(
                     (el) => el.name === selectedValue,
@@ -603,26 +613,6 @@ export function ContentClassificationSetting() {
                     );
                   }
                 })()}
-                {/* <ButtonBox>
-                  <div>
-                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[6].isNecessary ? '대단원*' : '대단원'}`}
-                  </div>
-                  <div>
-                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[7].isNecessary ? '중단원*' : '중단원'}`}
-                  </div>
-                  <div>
-                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[8].isNecessary ? '소단원*' : '소단원'}`}
-                  </div>
-                  <div>
-                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[9].isNecessary ? '유형*' : '유형'}`}
-                  </div>
-                  <div>
-                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[10].isNecessary ? '세분류*' : '세분류'}`}
-                  </div>
-                  <div>
-                    {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[11].isNecessary ? '미세분류*' : '미세분류'}`}
-                  </div>
-                </ButtonBox> */}
                 <Label
                   value={'추가정보'}
                   width="100%"
@@ -630,62 +620,71 @@ export function ContentClassificationSetting() {
                   bold
                   fontSize="20px"
                 />
-                <LabelWrapper>
-                  <LabelWithButton>
-                    {/* <Label
-                      value={`${categoryList[0].additionalInformationList[0].option && categoryList[0].additionalInformationList[0].option[0].isNecessary ? '행동요소1*' : '행동요소1'}`}
-                      width="80px"
-                      bold
-                      fontSize="14px"
-                    /> */}
-                    <ButtonWrapper>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>계산</span>
-                      </Button>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>이해</span>
-                      </Button>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>추론</span>
-                      </Button>
-                    </ButtonWrapper>
-                  </LabelWithButton>
-                </LabelWrapper>
-                <LabelWrapper>
-                  <LabelWithButton>
-                    {/* <Label
-                      value={`${categoryList[0].additionalInformationList[0].option && categoryList[0].additionalInformationList[0].option[1].isNecessary ? '행동요소2*' : '행동요소2'}`}
-                      width="80px"
-                      bold
-                      fontSize="14px"
-                    /> */}
-                    <ButtonWrapper>
-                      <Button
-                        width="90px"
-                        height="30px"
-                        $normal
-                        fontSize="14px"
-                      >
-                        <span>문제해결</span>
-                      </Button>
-                    </ButtonWrapper>
-                  </LabelWithButton>
-                </LabelWrapper>
+                {(() => {
+                  const filterList = menuExtraDataList?.filter(
+                    (el) => el.name === '추가정보',
+                  );
+                  const nameList = filterList[0]?.nameList?.split(',');
+                  const essentialList = filterList[0]?.searchList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+                  if (nameList) {
+                    return (
+                      <LabelWrapper>
+                        {nameList.map((name, i) => (
+                          <LabelWithButton key={i}>
+                            <Label
+                              value={essentialList[i] ? `${name}*` : name}
+                              width="80px"
+                              bold
+                              fontSize="14px"
+                            />
+                            {i === 0 && (
+                              <ButtonWrapper>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>계산</span>
+                                </Button>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>이해</span>
+                                </Button>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>추론</span>
+                                </Button>
+                              </ButtonWrapper>
+                            )}
+                            {i === 1 && (
+                              <ButtonWrapper>
+                                <Button
+                                  width="90px"
+                                  height="30px"
+                                  $normal
+                                  fontSize="14px"
+                                >
+                                  <span>문제해결</span>
+                                </Button>
+                              </ButtonWrapper>
+                            )}
+                          </LabelWithButton>
+                        ))}
+                      </LabelWrapper>
+                    );
+                  }
+                })()}
               </SelectWrapper>
             </ClassificationWrapper>
             <ListDescription>
@@ -727,6 +726,7 @@ const SettingWrapper = styled.div`
   width: 30%;
   background-color: ${COLOR.LIGHT_GRAY};
   padding: 10px;
+  min-height: 809px;
 `;
 const TabWrapper = styled.div`
   width: 100%;
@@ -753,7 +753,7 @@ const IconWrapper = styled.div`
   }
 `;
 const ContentListWrapper = styled.div`
-  max-height: 480px; /* 컨테이너의 최대 높이 설정 */
+  max-height: 483px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
 `;
 const ContentList = styled.li`
@@ -824,12 +824,19 @@ const SubtitleWrapper = styled.div`
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
 const LabelWrapper = styled.div`
-  max-height: 510px; /* 컨테이너의 최대 높이 설정 */
+  min-height: 550px;
+  max-height: 550px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+
+  &:last-child {
+    border-bottom: none;
+    min-height: 0;
+  }
 `;
 const LabelWithButton = styled.div`
   display: flex;

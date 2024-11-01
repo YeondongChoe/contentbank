@@ -147,6 +147,7 @@ export function WorkbookClassificationSetting() {
       searchs: filterData[0].searchList,
       views: filterData[0].viewList,
       inputs: filterData[0].inputTypeList,
+      isExtra: false,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -362,28 +363,6 @@ export function WorkbookClassificationSetting() {
                     );
                   }
                 })()}
-                {/* <ButtonBoxWrapper>
-                  <ButtonBox>
-                    <div>
-                      {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[6].isNecessary ? '대단원*' : '대단원'}`}
-                    </div>
-                    <div>
-                      {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[7].isNecessary ? '중단원*' : '중단원'}`}
-                    </div>
-                    <div>
-                      {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[8].isNecessary ? '소단원*' : '소단원'}`}
-                    </div>
-                    <div>
-                      {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[9].isNecessary ? '유형*' : '유형'}`}
-                    </div>
-                    <div>
-                      {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[10].isNecessary ? '세분류*' : '세분류'}`}
-                    </div>
-                    <div>
-                      {`${categoryList[0].tageClassList[0].option && categoryList[0].tageClassList[0].option[11].isNecessary ? '미세분류*' : '미세분류'}`}
-                    </div>
-                  </ButtonBox>
-                </ButtonBoxWrapper> */}
               </SelectWrapper>
               <ImgWrapper>
                 <img
@@ -456,7 +435,7 @@ const IconWrapper = styled.div`
   }
 `;
 const ContentListWrapper = styled.div`
-  max-height: 480px; /* 컨테이너의 최대 높이 설정 */
+  max-height: 500px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
 `;
 const ContentList = styled.li`

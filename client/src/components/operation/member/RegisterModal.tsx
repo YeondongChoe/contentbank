@@ -26,17 +26,21 @@ import {
   Select,
 } from '../../atom';
 
-export function RegisterModal({
-  memberList,
-  refetch,
-  idxValue,
-}: {
+type RegisterModalProps = {
   memberList?: MemberType[];
   idxValue: string;
+  companyName?: string;
   refetch: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
-}) {
+};
+
+export function RegisterModal({
+  memberList,
+  idxValue,
+  companyName,
+  refetch,
+}: RegisterModalProps) {
   const { closeModal } = useModal();
 
   const [isIdError, setIsIdError] = useState(false);
@@ -197,6 +201,18 @@ export function RegisterModal({
     }
   }, [isFetching]);
 
+  //클릭 복사 함수
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText('drmath@369')
+      .then(() => {
+        alert('초기 비밀번호가 복사되었습니다!');
+      })
+      .catch((error) => {
+        console.error('복사 실패:', error);
+      });
+  };
+
   return (
     <Container>
       <Title>회원 아이디 만들기</Title>
@@ -261,35 +277,38 @@ export function RegisterModal({
                   name="id"
                   defaultValue=""
                   render={({ field }) => (
-                    <Input
-                      type="text"
-                      placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
-                      value={field.value}
-                      width={`100%`}
-                      height="38px"
-                      fontSize="16px"
-                      placeholderSize="12px"
-                      margin="0px 0px 10px 0px"
-                      border="black"
-                      maxLength={10}
-                      minLength={2}
-                      onChange={field.onChange}
-                      onClick={() => {
-                        setIsIdError(false);
-                        setIsDuplicate(true);
-                      }}
-                      errorMessage={isIdError && idErrorMessage}
-                      successMessage={
-                        Id &&
-                        !isDuplicate &&
-                        isRegexp &&
-                        '사용가능한 아이디 입니다'
-                      }
-                      className={
-                        Id && !isDuplicate && isRegexp ? 'success' : ''
-                      }
-                      borderbottom={isIdError}
-                    />
+                    <>
+                      <IdentifyInput>dr-</IdentifyInput>
+                      <Input
+                        type="text"
+                        placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
+                        value={field.value}
+                        width={`100%`}
+                        height="38px"
+                        fontSize="16px"
+                        placeholderSize="12px"
+                        margin="0px 0px 10px 0px"
+                        border="black"
+                        maxLength={10}
+                        minLength={2}
+                        onChange={field.onChange}
+                        onClick={() => {
+                          setIsIdError(false);
+                          setIsDuplicate(true);
+                        }}
+                        errorMessage={isIdError && idErrorMessage}
+                        successMessage={
+                          Id &&
+                          !isDuplicate &&
+                          isRegexp &&
+                          '사용가능한 아이디 입니다'
+                        }
+                        className={
+                          Id && !isDuplicate && isRegexp ? 'success' : ''
+                        }
+                        borderbottom={isIdError}
+                      />
+                    </>
                   )}
                 />
                 <Button
@@ -314,12 +333,9 @@ export function RegisterModal({
                 <Select
                   width="100%"
                   padding="5px 0px 0px 0px"
-                  defaultValue={'권한을 선택하세요'}
-                  onClick={() => setIsAuthorityError(false)}
-                  options={authoritySelectList}
-                  setSelectedValue={setSelectedAuthority}
-                  setSelectedCode={setSelectedCode}
-                  heightScroll="150px"
+                  defaultValue={companyName}
+                  isnormalizedOptions
+                  disabled
                 />
               </SelectWrapper>
             </InputWrapper>
@@ -376,7 +392,7 @@ export function RegisterModal({
                   $filled
                   $success
                 >
-                  <span>drmath@369</span>
+                  <span onClick={handleCopy}>drmath@369</span>
                 </Button>
                 입니다.
               </Notice>
@@ -445,6 +461,15 @@ const InputWrapper = styled.div`
   div:has(input) {
     width: calc(100% - 130px);
   }
+`;
+const IdentifyInput = styled.div`
+  width: 40px;
+  height: 38px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
 const ButtonWrapper = styled.div`
   display: flex;

@@ -221,6 +221,7 @@ export function InspectionManagementSetting() {
       searchs: filterData[0].searchList,
       views: filterData[0].viewList,
       inputs: filterData[0].inputTypeList,
+      isExtra: false,
     };
     return await resourceServiceInstance.put(`/v1/menu`, data);
   };
@@ -276,6 +277,7 @@ export function InspectionManagementSetting() {
                   options={menuDataList.slice().sort((a, b) => a.idx - b.idx)}
                   setSelectedValue={setSelectedValue}
                   isnormalizedOptions
+                  heightScroll="400px"
                 />
               )}
               <CategoryWrapper>
@@ -567,7 +569,7 @@ const IconWrapper = styled.div`
   }
 `;
 const ContentListWrapper = styled.div`
-  max-height: 480px; /* 컨테이너의 최대 높이 설정 */
+  max-height: 485px; /* 컨테이너의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤바 표시 */
 `;
 const ContentList = styled.li`
