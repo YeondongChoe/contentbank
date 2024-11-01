@@ -6,11 +6,14 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import styled from 'styled-components';
 
 import { Button, CheckBoxI, Icon, Switch } from '../../../components/atom';
-import { Search } from '../../../components/molecules';
+import { ListItem, Search } from '../../../components/molecules';
 import { COLOR } from '../../constants';
 import { useDnD } from '../../molecules/dragAndDrop';
 
 import { TagMappingInit } from './TagMappingInit';
+
+// Sample tags to search
+const sampleTags = ['교과', '수학', '과학', '영어', '역사', '물리', '화학'];
 
 export function TagMapping() {
   const [tagList, setTagList] = useState<string[]>([]);
@@ -18,6 +21,41 @@ export function TagMapping() {
   const [checkList, setCheckList] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [isInit, setIsInit] = useState<boolean>(false);
+
+  // 검색
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [filteredTags, setFilteredTags] = useState<string[]>(sampleTags);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagCheckList, setTagCheckList] = useState<string[]>([]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchValue(value);
+
+    if (value) {
+      setFilteredTags(sampleTags.filter((tag) => tag.includes(value)));
+    } else {
+      setFilteredTags(sampleTags);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log(event.key);
+  };
+
+  const handleAddTag = () => {
+    if (searchValue && !sampleTags.includes(searchValue)) {
+      // Add the new tag logic here
+      alert(`"${searchValue}" 태그가 추가되었습니다!`);
+      setSearchValue('');
+    }
+  };
+
+  const handleToggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  };
 
   useEffect(() => {
     setTagList(['전체', '수학', '영어']);
@@ -35,6 +73,20 @@ export function TagMapping() {
       setCheckList((prev) => [...prev, value]);
     } else {
       setCheckList(checkList.filter((el) => el !== value));
+    }
+  };
+
+  const handleTagButtonCheck = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    value: string,
+  ) => {
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+    // console.log('target-------------', target);
+    if (!target.checked) {
+      setTagCheckList((prev) => [...prev, value]);
+    } else {
+      setTagCheckList(tagCheckList.filter((el) => el !== value));
     }
   };
 
@@ -59,6 +111,7 @@ export function TagMapping() {
   useEffect(() => {
     console.log('checkList----------', checkList);
   }, [checkList]);
+  useEffect(() => {}, [searchValue]);
   return (
     <>
       {isInit ? (
@@ -69,13 +122,57 @@ export function TagMapping() {
             <strong className="title">태그 선택</strong>
             <span className="sub_title">매핑할 태그를 선택해주세요.</span>
             <span className="border_tag">{`${'교과'}`}</span>
-            <Search
-              placeholder="태그를 검색해주세요."
-              value={''}
-              onChange={() => {}}
-              onKeyDown={() => {}}
-              margin="0 0 5px 0"
-            />
+            <DropdownWrapper>
+              <Search
+                placeholder="태그를 검색해주세요."
+                value={searchValue}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                margin="0 0 5px 0"
+              />
+              {/* 검색 후 드롭다운 리스트 */}
+              {searchValue ? (
+                filteredTags.length > 0 ? (
+                  <Dropdown>
+                    <DropdownTagList>
+                      {filteredTags.map((tag, index) => (
+                        <ListItem
+                          key={index}
+                          $padding={'5px'}
+                          $margin={'0'}
+                          isChecked={tagCheckList.includes(tag)}
+                          onClick={(e) => handleTagButtonCheck(e, tag)}
+                        >
+                          <CheckBoxI
+                            id={tag}
+                            value={tag}
+                            $margin={`0 5px 0 0`}
+                            checked={tagCheckList.includes(tag)}
+                            readOnly
+                          />
+                          <span>{tag}</span>
+                        </ListItem>
+                      ))}
+                    </DropdownTagList>
+                  </Dropdown>
+                ) : (
+                  <Dropdown>
+                    <span className="info">없는 태그 입니다.</span>
+
+                    <Button
+                      $border
+                      fontSize="13px"
+                      onClick={handleAddTag}
+                      $margin="0 10px 10px 10px"
+                      width="clac(100% - 10px)"
+                    >
+                      <span>{`"${searchValue}"`} 태그를 신규태그로 추가</span>
+                    </Button>
+                  </Dropdown>
+                )
+              ) : null}
+            </DropdownWrapper>
+
             <TagsWrappper>
               {tagList.map((el, idx) => (
                 <Tags
@@ -329,4 +426,34 @@ const BottomButtonWrapper = styled.div`
   padding: 20px;
   margin: 20px;
   background-color: #eee;
+`;
+
+const Dropdown = styled.div`
+  position: absolute;
+  top: 30px;
+  background: white;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  border-radius: 0 0 5px 5px;
+  z-index: 1;
+  max-height: 150px;
+  overflow-y: auto;
+  width: 300px;
+
+  .info {
+    padding: 10px 20px;
+    display: flex;
+    font-size: 13px;
+    color: ${COLOR.FONT_GRAY};
+    padding-bottom: 10px;
+  }
+`;
+
+const DropdownWrapper = styled.div`
+  position: relative;
+`;
+
+const DropdownTagList = styled.div`
+  padding: 10px;
+
+  cursor: pointer;
 `;
