@@ -130,6 +130,8 @@ export function MetaRadioSelect({
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
 
+  const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
@@ -163,7 +165,7 @@ export function MetaRadioSelect({
   // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A');
-    return response.data.data.typeList;
+    return response.data.data;
   };
   const {
     data: groupsData,
@@ -179,8 +181,15 @@ export function MetaRadioSelect({
   });
 
   useEffect(() => {
+    if (categoryTypeList) {
+      fetchCategoryItems(categoryTypeList, setCategoryList);
+    }
+  }, [categoryTypeList]);
+
+  //groupsData값 들어왔을때 typeList 관리
+  useEffect(() => {
     if (groupsData) {
-      fetchCategoryItems(groupsData, setCategoryList);
+      setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
 
@@ -307,11 +316,12 @@ export function MetaRadioSelect({
   /* 선택된 유형에따라 항목 조회 */
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
-    const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[1];
     const pidx = radio1depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       setNextChangeList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -333,11 +343,12 @@ export function MetaRadioSelect({
 
   //2뎁스 선택시 3뎁스 설정되게
   const getNextList2 = async () => {
-    const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[2];
     const pidx = radio2depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       setNextChangeList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -358,11 +369,12 @@ export function MetaRadioSelect({
 
   //3뎁스 선택시 4뎁스 설정되게
   const getNextList3 = async () => {
-    const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[3];
     const pidx = radio3depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       setNextChangeList3depth(res?.data.data.categoryClassList);
       return res.data;

@@ -358,6 +358,7 @@ export function QuizCreateList() {
         setTabVeiw={setTabVeiw}
         $margin={'10px 0'}
         onClickTab={changeTab}
+        lineStyle
       />
       {isLoading && (
         <LoaderWrapper>

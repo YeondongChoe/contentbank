@@ -144,6 +144,10 @@ export function Classification({
   const [checkedItems, setCheckedItems] = useState<CheckedItemType[]>([]);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
+  const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
@@ -176,7 +180,7 @@ export function Classification({
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A');
-    return response.data.data.typeList;
+    return response.data.data;
   };
   const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
     queryKey: ['get-category-groups-A'],
@@ -187,30 +191,47 @@ export function Classification({
     },
   });
   useEffect(() => {
+    if (categoryTypeList) {
+      fetchCategoryItems(categoryTypeList, setCategoryList);
+    }
+  }, [categoryTypeList]);
+
+  //groupsData값 들어왔을때 typeList 관리
+  useEffect(() => {
     if (groupsData) {
-      fetchCategoryItems(groupsData);
+      setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
 
-  // 카테고리의 그룹 아이템 조회
-  const fetchCategoryItems = async (typeList: string) => {
+  // 카테고리의 그룹 유형 조회
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
     const typeIds = typeList.split(',');
     try {
+      setIsCategoryLoaded(true);
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
+        classificationInstance
+          .get(`/v1/category/class/${id}`)
+          .catch((error) => {
+            console.log(error);
+            if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
+              setRefreshTokenCalled(true);
+              postRefreshToken().then(() => {
+                setRefreshTokenCalled(false);
+              });
+            }
+          }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      setCategoryList(itemsList);
-    } catch (error: any) {
-      console.log('error--------------', error.response.data.code);
-
-      if (error.response?.data?.code == 'GE-002')
-        postRefreshToken().then(() => {
-          groupsDataRefetch();
-        });
+      // console.log('itemsList', itemsList);
+      setCategory(itemsList);
+    } finally {
+      setIsCategoryLoaded(false);
     }
   };
 
@@ -345,13 +366,13 @@ export function Classification({
   /* 선택된 유형에따라 항목 조회 */
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
-    const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
-    console.log('두번째 뎁스`````', itemIdx);
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[1];
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
     console.log('두번째 뎁스`````', pidx);
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -376,11 +397,12 @@ export function Classification({
 
   //2뎁스 선택시 3뎁스 설정되게
   const getNextList2 = async () => {
-    const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[2];
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -406,12 +428,13 @@ export function Classification({
 
   //3뎁스 선택시 4뎁스 설정되게
   const getNextList3 = async () => {
-    const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[3];
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
     console.log('row--------------4-------');
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       console.log('4-------', res?.data.data.categoryClassList);
       setNextList3depth(res?.data.data.categoryClassList);
@@ -1380,244 +1403,179 @@ export function Classification({
 
   return (
     <Container>
-      <ResizeLayoutWrapper>
-        <ResizeLayout
-          height={'calc(100vh - 100px)'}
-          column={'3rd'}
-          item1Width={300}
-          item1={
-            <QuizList
-              questionList={questionList}
-              showTitle
-              showCheckBox
-              fontBold
-              setCheckedList={setCheckedList}
-              isDataColor
-              setIsCheck={setIsChecked}
-            />
-          }
-          item2={
-            <ScrollWrapper>
-              <PerfectScrollbar>
-                <ViewerWrapper>
-                  <Title>
-                    <span className="title_top">문항뷰어</span>
-                  </Title>
-                  <MathViewerWrapper>
-                    {sortedList.length > 0 ? (
-                      <>
-                        {sortedQuizList &&
-                        sortedQuizList[clickIdx]?.quizItemList ? (
-                          sortedList[clickIdx]?.quizItemList?.map((el) => (
-                            <div key={`${el?.code} quizItemList sortedList`}>
-                              {[
-                                'BIG',
-                                'TEXT',
-                                'QUESTION',
-                                'SMALL',
-                                'EXAMPLE',
-                                'CHOICES',
-                                'ANSWER',
-                                'COMMENTARY',
-                                'HINT',
-                                'CONCEPT',
-                                'TITLE',
-                                'TIP',
-                              ].includes(el?.type) &&
-                                el?.content && (
-                                  <MathViewer data={el.content}></MathViewer>
-                                )}
-                            </div>
-                          ))
-                        ) : (
-                          <>
-                            <ValueNone
-                              info="등록된 데이터가 없습니다"
-                              textOnly
-                            />
-                          </>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <ValueNone info="문항을 선택해 주세요" textOnly />
-                      </>
-                    )}
-                  </MathViewerWrapper>
-                </ViewerWrapper>
-              </PerfectScrollbar>
-            </ScrollWrapper>
-          }
-          item3Width={600}
-          item3={
-            <ScrollWrapper>
-              <PerfectScrollbar id="scrollTopWrapper">
-                <Title>
-                  <span className="title_top">문항단원분류</span>
-                </Title>
-                {/* 추가된 단원분류 리스트 최대5개 저장 */}
-                <UnitClassifications>
-                  {unitClassificationList.length > 0 ? (
-                    <>
-                      {unitClassificationList.map((el, idx) => (
-                        <IconButtonWrapper key={`${el} idx`}>
-                          <IconButton
-                            width={`calc(100% - 25px)`}
-                            fontSize="14px"
-                            height="35px"
-                            textAlign="left"
-                            $padding="0 50px 0 10px"
-                            onClick={() => changeUnitClassification(idx)}
-                          >
-                            <span>
-                              {el
-                                .filter(
-                                  (item): item is RadioStateType =>
-                                    'title' in item,
-                                )
-                                .map((item) => `${item.title} / `)}
-                            </span>
-                          </IconButton>
-
-                          <Icon
-                            onClick={() => deleteUnitClassification(idx)}
-                            $margin={'0 0 0 2px'}
-                            width={`15px`}
-                            src={`/images/icon/icoclose.svg`}
-                          />
-                        </IconButtonWrapper>
-                      ))}
-                    </>
-                  ) : (
-                    <p className="info">
-                      교과정보는 최대 5개 까지 저장 가능합니다
-                    </p>
-                  )}
-                </UnitClassifications>
-
-                {/* 교육과정 라디오 버튼 부분 */}
-                {/* 체크박스에 선택된 리스트없을시 안보이게 */}
-                {sortedList.length > 0 ? (
+      <LayoutBodyWrapper>
+        <LayoutWrapper className="auto">
+          {/* MyResponsiveWrapper  */}
+        </LayoutWrapper>
+        <LayoutWrapper>
+          <ScrollWrapper>
+            <PerfectScrollbar id="scrollTopWrapper">
+              <Title>
+                <span className="title_top">문항단원분류</span>
+              </Title>
+              {/* 추가된 단원분류 리스트 최대5개 저장 */}
+              <UnitClassifications>
+                {unitClassificationList.length > 0 ? (
                   <>
-                    {categoryItems[0] && categoryList && (
-                      <>
-                        {[categoryItems[0]].map((item) => (
+                    {unitClassificationList.map((el, idx) => (
+                      <IconButtonWrapper key={`${el} idx`}>
+                        <IconButton
+                          width={`calc(100% - 25px)`}
+                          fontSize="14px"
+                          height="35px"
+                          textAlign="left"
+                          $padding="0 50px 0 10px"
+                          onClick={() => changeUnitClassification(idx)}
+                        >
+                          <span>
+                            {el
+                              .filter(
+                                (item): item is RadioStateType =>
+                                  'title' in item,
+                              )
+                              .map((item) => `${item.title} / `)}
+                          </span>
+                        </IconButton>
+
+                        <Icon
+                          onClick={() => deleteUnitClassification(idx)}
+                          $margin={'0 0 0 2px'}
+                          width={`15px`}
+                          src={`/images/icon/icoclose.svg`}
+                        />
+                      </IconButtonWrapper>
+                    ))}
+                  </>
+                ) : (
+                  <p className="info">
+                    교과정보는 최대 5개 까지 저장 가능합니다
+                  </p>
+                )}
+              </UnitClassifications>
+
+              {/* 교육과정 라디오 버튼 부분 */}
+              {/* 체크박스에 선택된 리스트없을시 안보이게 */}
+              {sortedList.length > 0 ? (
+                <>
+                  {categoryItems[0] && categoryList && (
+                    <>
+                      {[categoryItems[0]].map((item) => (
+                        <div
+                          className={`1depth`}
+                          id={`${item.name}`}
+                          key={`selected1depth ${item.idx}`}
+                        >
+                          <ButtonFormatRadio
+                            branchValue={`${item.name}`}
+                            titleText={`${item.name}`}
+                            list={categoryList[0]}
+                            selected={selected1depth}
+                            onChange={(e) => handleRadioCheck(e)}
+                            // defaultChecked={}
+                            checkedInput={radio1depthCheck}
+                            $margin={`10px 0 0 0`}
+                          />
+                        </div>
+                      ))}
+
+                      {radio1depthCheck?.code !== '' &&
+                        selected1depth !== '' &&
+                        [categoryItems[41]].map((item) => (
                           <div
-                            className={`1depth`}
+                            className={`2depth`}
                             id={`${item.name}`}
-                            key={`selected1depth ${item.idx}`}
+                            key={`selected2depth ${item.idx}`}
                           >
                             <ButtonFormatRadio
                               branchValue={`${item.name}`}
                               titleText={`${item.name}`}
-                              list={categoryList[0]}
-                              selected={selected1depth}
+                              list={nextList1depth}
+                              selected={selected2depth}
                               onChange={(e) => handleRadioCheck(e)}
                               // defaultChecked={}
-                              checkedInput={radio1depthCheck}
-                              $margin={`10px 0 0 0`}
+                              checkedInput={radio2depthCheck}
                             />
                           </div>
                         ))}
 
-                        {radio1depthCheck?.code !== '' &&
-                          selected1depth !== '' &&
-                          [categoryItems[41]].map((item) => (
-                            <div
-                              className={`2depth`}
-                              id={`${item.name}`}
-                              key={`selected2depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList1depth}
-                                selected={selected2depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio2depthCheck}
-                              />
-                            </div>
-                          ))}
+                      {radio2depthCheck?.code !== '' &&
+                        selected2depth !== '' &&
+                        [categoryItems[1]].map((item) => (
+                          <div
+                            className={`3depth`}
+                            id={`${item.name}`}
+                            key={`selected3depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList2depth}
+                              selected={selected3depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio3depthCheck}
+                            />
+                          </div>
+                        ))}
+                      {radio3depthCheck?.code !== '' &&
+                        selected3depth !== '' &&
+                        [categoryItems[2]].map((item) => (
+                          <div
+                            className={`4depth`}
+                            id={`${item.name}`}
+                            key={`selected4depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList3depth}
+                              selected={selected4depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio4depthCheck}
+                            />
+                          </div>
+                        ))}
+                    </>
+                  )}
+                </>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone info="문항을 선택해 주세요" textOnly />
+                </ValueNoneWrapper>
+              )}
 
-                        {radio2depthCheck?.code !== '' &&
-                          selected2depth !== '' &&
-                          [categoryItems[1]].map((item) => (
-                            <div
-                              className={`3depth`}
-                              id={`${item.name}`}
-                              key={`selected3depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList2depth}
-                                selected={selected3depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio3depthCheck}
-                              />
-                            </div>
-                          ))}
-                        {radio3depthCheck?.code !== '' &&
-                          selected3depth !== '' &&
-                          [categoryItems[2]].map((item) => (
-                            <div
-                              className={`4depth`}
-                              id={`${item.name}`}
-                              key={`selected4depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList3depth}
-                                selected={selected4depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio4depthCheck}
-                              />
-                            </div>
-                          ))}
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <ValueNoneWrapper>
-                    <ValueNone info="문항을 선택해 주세요" textOnly />
-                  </ValueNoneWrapper>
-                )}
+              <p className="line"></p>
 
-                <p className="line"></p>
-
-                {/* 교과정보 아코디언 리스트  */}
-                {radio1depthCheck?.code !== '' &&
-                radio2depthCheck?.code !== '' &&
-                radio3depthCheck?.code !== '' &&
-                radio4depthCheck?.code !== '' &&
-                selected1depth !== '' &&
-                selected2depth !== '' &&
-                selected3depth !== '' ? (
-                  <AccordionWrapper>
-                    <Accordion
-                      defaultChecked={isModifying}
-                      title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                      id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                    >
-                      <RowListWrapper>
-                        <Search
-                          height={'30px'}
-                          value={searchValue}
-                          onClick={(e) => filterSearchValue(e)}
-                          onKeyDown={(e) => filterSearchValueEnter(e)}
-                          onChange={(e) => {
-                            setSearchValue(e.target.value);
-                          }}
-                          placeholder="검색어를 입력해주세요.(두글자 이상)"
-                          maxLength={20}
-                        />
-                        {searchValue.length > 1 && (
-                          <p className="line bottom_text">
-                            {`총 
+              {/* 교과정보 아코디언 리스트  */}
+              {radio1depthCheck?.code !== '' &&
+              radio2depthCheck?.code !== '' &&
+              radio3depthCheck?.code !== '' &&
+              radio4depthCheck?.code !== '' &&
+              selected1depth !== '' &&
+              selected2depth !== '' &&
+              selected3depth !== '' ? (
+                <AccordionWrapper>
+                  <Accordion
+                    defaultChecked={isModifying}
+                    title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                    id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                  >
+                    <RowListWrapper>
+                      <Search
+                        height={'30px'}
+                        value={searchValue}
+                        onClick={(e) => filterSearchValue(e)}
+                        onKeyDown={(e) => filterSearchValueEnter(e)}
+                        onChange={(e) => {
+                          setSearchValue(e.target.value);
+                        }}
+                        placeholder="검색어를 입력해주세요.(두글자 이상)"
+                        maxLength={20}
+                      />
+                      {searchValue.length > 1 && (
+                        <p className="line bottom_text">
+                          {`총 
 															${
                                 categoryItemTreeData && itemTree.length
                                   ? itemTree.reduce(
@@ -1631,185 +1589,183 @@ export function Classification({
                                   : 0
                               } 
 															건`}
-                            <ArrowButtonWrapper>
-                              <button onClick={() => prevHighlight()}>
-                                <IoMdArrowDropup />
-                              </button>
-                              <button onClick={() => nextHighlight()}>
-                                <IoMdArrowDropdown />
-                              </button>
-                            </ArrowButtonWrapper>
-                          </p>
-                        )}
-                        {isPending && (
-                          <LoaderWrapper>
-                            <Loader width="50px" />
-                          </LoaderWrapper>
-                        )}
-                        <DepthBlockScrollWrapper>
-                          <PerfectScrollbar>
-                            {categoryItemTreeData ? (
-                              <>
-                                {itemTree.length ? (
-                                  <div ref={contentRef} className="content">
-                                    {searchValue.length > 0 ? (
-                                      <>
-                                        {itemTree.map((el) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                branchValue={`${item.name}`}
-                                                highlightText={highlightText}
-                                                defaultChecked
-                                                key={`depthList${item?.idx} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item?.idx}
-                                                name={item.name}
-                                                value={item?.idx}
-                                                level={item?.level}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                    item?.level,
-                                                    item.name,
-                                                    findItemByIdx,
-                                                    findChildItems,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                                searchValue={searchValue}
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </>
-                                    ) : (
-                                      <>
-                                        {itemTree.map((el) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                branchValue={`${item.name}`}
-                                                defaultChecked
-                                                key={`depthList${item?.idx} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item?.code}
-                                                name={item.name}
-                                                value={item?.idx}
-                                                level={item?.level}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                    item?.level,
-                                                    item.name,
-                                                    findItemByIdx,
-                                                    findChildItems,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                                searchValue={searchValue}
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <ValueNone
-                                    textOnly
-                                    info="등록된 데이터가 없습니다"
-                                  />
-                                )}
-                              </>
-                            ) : (
-                              <Loader />
-                            )}
-                          </PerfectScrollbar>
-                        </DepthBlockScrollWrapper>
-                      </RowListWrapper>
-                    </Accordion>
-
-                    <Accordion
-                      title={'추가정보'}
-                      id={'추가정보'}
-                      $margin={'4px 0 0 0 '}
-                      defaultChecked={isModifying}
-                    >
-                      <RowListWrapper>
-                        {categoryAddInfoList ? (
-                          <>
-                            {[categoryItems[4]].map((item) => (
-                              <div
-                                id={`${item.name}`}
-                                className={`etc1`}
-                                key={`etc1 ${item.idx}`}
-                              >
-                                <ButtonFormatMultiRadio
-                                  titleText={`${item.name}`}
-                                  list={categoryAddInfoList[0]}
-                                  selected={selectedCategoryEtc1}
-                                  onChange={(e) => handleMultiRadioCheck(e)}
-                                  checkedInputs={radioEtc1Check}
-                                  branchValue={`etc1`}
+                          <ArrowButtonWrapper>
+                            <button onClick={() => prevHighlight()}>
+                              <IoMdArrowDropup />
+                            </button>
+                            <button onClick={() => nextHighlight()}>
+                              <IoMdArrowDropdown />
+                            </button>
+                          </ArrowButtonWrapper>
+                        </p>
+                      )}
+                      {isPending && (
+                        <LoaderWrapper>
+                          <Loader width="50px" />
+                        </LoaderWrapper>
+                      )}
+                      <DepthBlockScrollWrapper>
+                        <PerfectScrollbar>
+                          {categoryItemTreeData ? (
+                            <>
+                              {itemTree.length ? (
+                                <div ref={contentRef} className="content">
+                                  {searchValue.length > 0 ? (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              branchValue={`${item.name}`}
+                                              highlightText={highlightText}
+                                              defaultChecked
+                                              key={`depthList${item?.idx} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item?.idx}
+                                              name={item.name}
+                                              value={item?.idx}
+                                              level={item?.level}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                  item?.level,
+                                                  item.name,
+                                                  findItemByIdx,
+                                                  findChildItems,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                              searchValue={searchValue}
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              branchValue={`${item.name}`}
+                                              defaultChecked
+                                              key={`depthList${item?.idx} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item?.code}
+                                              name={item.name}
+                                              value={item?.idx}
+                                              level={item?.level}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                  item?.level,
+                                                  item.name,
+                                                  findItemByIdx,
+                                                  findChildItems,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                              searchValue={searchValue}
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  )}
+                                </div>
+                              ) : (
+                                <ValueNone
+                                  textOnly
+                                  info="등록된 데이터가 없습니다"
                                 />
-                              </div>
-                            ))}
-                            {[categoryItems[5]].map((item) => (
-                              <div
-                                id={`${item.name}`}
-                                className={`etc2`}
-                                key={`etc2 ${item.idx}`}
-                              >
-                                <ButtonFormatMultiRadio
-                                  titleText={`${item.name}`}
-                                  list={categoryAddInfoList[1]}
-                                  selected={selectedCategoryEtc2}
-                                  onChange={(e) => handleMultiRadioCheck(e)}
-                                  checkedInputs={radioEtc2Check}
-                                  branchValue={`etc2`}
-                                />
-                              </div>
-                            ))}
-                          </>
-                        ) : (
-                          <ValueNone textOnly info="등록된 데이터가 없습니다" />
-                        )}
-                      </RowListWrapper>
-                    </Accordion>
-                  </AccordionWrapper>
-                ) : (
-                  <ValueNoneWrapper>
-                    <ValueNone
-                      textOnly
-                      info="교육과정, 학교급, 학년, 학기를 선택해주세요"
-                    />
-                  </ValueNoneWrapper>
-                )}
-              </PerfectScrollbar>
-            </ScrollWrapper>
-          }
-        />
-      </ResizeLayoutWrapper>
+                              )}
+                            </>
+                          ) : (
+                            <Loader />
+                          )}
+                        </PerfectScrollbar>
+                      </DepthBlockScrollWrapper>
+                    </RowListWrapper>
+                  </Accordion>
 
+                  <Accordion
+                    title={'추가정보'}
+                    id={'추가정보'}
+                    $margin={'4px 0 0 0 '}
+                    defaultChecked={isModifying}
+                  >
+                    <RowListWrapper>
+                      {categoryAddInfoList ? (
+                        <>
+                          {[categoryItems[4]].map((item) => (
+                            <div
+                              id={`${item.name}`}
+                              className={`etc1`}
+                              key={`etc1 ${item.idx}`}
+                            >
+                              <ButtonFormatMultiRadio
+                                titleText={`${item.name}`}
+                                list={categoryAddInfoList[0]}
+                                selected={selectedCategoryEtc1}
+                                onChange={(e) => handleMultiRadioCheck(e)}
+                                checkedInputs={radioEtc1Check}
+                                branchValue={`etc1`}
+                              />
+                            </div>
+                          ))}
+                          {[categoryItems[5]].map((item) => (
+                            <div
+                              id={`${item.name}`}
+                              className={`etc2`}
+                              key={`etc2 ${item.idx}`}
+                            >
+                              <ButtonFormatMultiRadio
+                                titleText={`${item.name}`}
+                                list={categoryAddInfoList[1]}
+                                selected={selectedCategoryEtc2}
+                                onChange={(e) => handleMultiRadioCheck(e)}
+                                checkedInputs={radioEtc2Check}
+                                branchValue={`etc2`}
+                              />
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <ValueNone textOnly info="등록된 데이터가 없습니다" />
+                      )}
+                    </RowListWrapper>
+                  </Accordion>
+                </AccordionWrapper>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone
+                    textOnly
+                    info="교육과정, 학교급, 학년, 학기를 선택해주세요"
+                  />
+                </ValueNoneWrapper>
+              )}
+            </PerfectScrollbar>
+          </ScrollWrapper>
+        </LayoutWrapper>
+      </LayoutBodyWrapper>
       <BorderWrapper>
         <SubmitButtonWrapper>
           <Button
@@ -1840,10 +1796,15 @@ export function Classification({
 const Container = styled.div`
   position: relative;
 `;
-const ResizeLayoutWrapper = styled.div`
-  border: 1px solid ${COLOR.BORDER_BLUE};
-  border-top: none;
-  height: calc(100vh - 100px);
+const LayoutBodyWrapper = styled.div`
+  display: flex;
+`;
+const LayoutWrapper = styled.div`
+  min-width: 400px;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  &.auto {
+    flex: 1 0 0;
+  }
 `;
 const ScrollWrapper = styled.div`
   overflow-y: auto;
@@ -1878,18 +1839,7 @@ const Title = styled.div`
     font-weight: bold;
   }
 `;
-const IconWrapper = styled.div`
-  .icon_button {
-    padding: 5px;
-    border: none;
-    font-size: 13px;
-    font-weight: bold;
-    color: ${COLOR.SECONDARY};
-    background-color: transparent;
-    cursor: pointer;
-    color: ${COLOR.PRIMARY};
-  }
-`;
+
 const IconButtonWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -1921,10 +1871,7 @@ const RowListWrapper = styled.div`
 const ValueNoneWrapper = styled.div`
   display: flex;
 `;
-const ViewerWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+
 const BorderWrapper = styled.div`
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   position: sticky;
@@ -1948,23 +1895,6 @@ const LoaderWrapper = styled.div`
   width: 100%;
   padding-bottom: 50px;
   padding-left: calc(50% - 35px);
-`;
-const MathViewerWrapper = styled.div`
-  padding: 20px;
-
-  p > img {
-    width: 100% !important;
-    height: auto !important;
-  }
-
-  div > img {
-    width: 100% !important;
-    height: auto !important;
-  }
-  table {
-    width: inherit !important;
-    height: auto !important;
-  }
 `;
 
 const ArrowButtonWrapper = styled.span`
