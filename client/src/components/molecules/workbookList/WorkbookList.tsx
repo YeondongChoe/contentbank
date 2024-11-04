@@ -281,7 +281,7 @@ export function WorkbookList({
         <List margin={`10px 0`}>
           {list.map((item: WorksheetListType) => (
             <ListItem
-              height="80px"
+              height="90px"
               key={item.code as string}
               isChecked={checkList.includes(item.code)}
               onClick={(e) => handleButtonCheck(e, item.code)}
@@ -296,7 +296,7 @@ export function WorkbookList({
               {item.isFavorite ? (
                 <Icon
                   width={`18px`}
-                  $margin={'0 0 0 12px'}
+                  $margin={'0 0 0 10px'}
                   src={`/images/icon/favorites_on.svg`}
                   onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
                   cursor
@@ -304,7 +304,7 @@ export function WorkbookList({
               ) : (
                 <Icon
                   width={`18px`}
-                  $margin={'0 0 0 12px'}
+                  $margin={'0 0 0 10px'}
                   src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
                   onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
                   cursor
@@ -312,23 +312,33 @@ export function WorkbookList({
               )}
               <ItemLayout>
                 <i className="line"></i>
-                <span>{item.grade}</span>
-                <i className="line"></i>
-                <span>
-                  {(item.tag === 'DAILY_TEST' && '일일테스트') ||
-                    (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
-                    (item.tag === 'EXERCISES' && '연습문제') ||
-                    (item.tag === 'PRACTICE_TEST' && '모의고사') ||
-                    (item.tag === 'TEST_PREP' && '내신대비')}
+                <span className="width_80px item_wrapper">
+                  <span className="ellipsis">{item.grade}</span>
                 </span>
                 <i className="line"></i>
-                <span className="width_20">{item.name}</span>
+                <span className="width_80px item_wrapper">
+                  <span className="ellipsis">
+                    {(item.tag === 'DAILY_TEST' && '일일테스트') ||
+                      (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
+                      (item.tag === 'EXERCISES' && '연습문제') ||
+                      (item.tag === 'PRACTICE_TEST' && '모의고사') ||
+                      (item.tag === 'TEST_PREP' && '내신대비')}
+                  </span>
+                </span>
                 <i className="line"></i>
-                <span className="width_20">{item.createdAt}</span>
+                <span className="width_150px item_wrapper">
+                  <span className="ellipsis">{item.name}</span>
+                </span>
                 <i className="line"></i>
-                <span className="width_5">{item.examiner}</span>
+                <span className="width_150px item_wrapper">
+                  <span className="ellipsis">{item.createdAt}</span>
+                </span>
                 <i className="line"></i>
-                <span className="width_5">
+                <span className="width_80px item_wrapper">
+                  <span className="ellipsis">{item.examiner}</span>
+                </span>
+                <i className="line"></i>
+                <span className="width_20px item_wrapper">
                   <LuFileSearch2
                     style={{ fontSize: '22px', cursor: 'pointer' }}
                     onClick={(e) => {
@@ -338,7 +348,7 @@ export function WorkbookList({
                   />
                 </span>
                 <i className="line"></i>
-                <span className="width_5">
+                <span className="width_20px item_wrapper">
                   <SettingButton
                     type="button"
                     onClick={(e) => openSettingList(e)}
@@ -468,12 +478,44 @@ const ItemLayout = styled.span`
   align-items: center;
   flex-wrap: wrap;
 
-  > span {
+  .tooltip_wrapper item_wrapper {
+    position: relative;
+  }
+  .item_wrapper {
     display: flex;
     /* flex: 1 0 0; */
     justify-content: space-around;
     flex-wrap: wrap;
     word-break: break-all;
+    min-width: 30px;
+    max-width: 150px;
+    font-weight: normal;
+  }
+
+  /* 두줄 이상 ellipsis 처리  */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .title {
+    width: 100%;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .tag {
+    margin: 0 5px;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: ${COLOR.BORDER_GRAY};
+    margin-top: 5px;
+  }
+  .tag_icon {
+    display: flex;
+    align-self: center;
   }
   .line {
     width: 1px;
@@ -489,8 +531,14 @@ const ItemLayout = styled.span`
   .width_20px {
     width: 20px;
   }
+  .width_80px {
+    width: 80px;
+  }
   .width_50 {
     width: 50%;
+  }
+  .width_150px {
+    width: 150px;
   }
 `;
 
@@ -549,3 +597,11 @@ const SettingList = styled.ul`
     }
   }
 `;
+
+// > span {
+//   display: flex;
+//   /* flex: 1 0 0; */
+//   justify-content: space-around;
+//   flex-wrap: wrap;
+//   word-break: break-all;
+// }
