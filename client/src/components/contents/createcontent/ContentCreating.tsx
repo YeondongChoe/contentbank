@@ -57,8 +57,8 @@ export function ContentCreating({
   );
   const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
   //셀렉트 값
-  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
-  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
+  // const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
+  // const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
@@ -231,8 +231,8 @@ export function ContentCreating({
   }, [quizItemArrList]);
 
   useEffect(() => {
-    console.log('selectedSubject 교과', selectedSubject);
-    console.log('selectedCourse 과목', selectedCourse);
+    // console.log('selectedSubject 교과', selectedSubject);
+    // console.log('selectedCourse 과목', selectedCourse);
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
@@ -240,8 +240,8 @@ export function ContentCreating({
     // console.log('selected--------출처 선택부분', selectedList);
     if (
       selectedSource.length > 0 &&
-      selectedSubject &&
-      selectedCourse &&
+      // selectedSubject &&
+      // selectedCourse &&
       selectedQuestionType
     ) {
       const quizClassList: QuestionClassListType = [
@@ -249,15 +249,11 @@ export function ContentCreating({
           type: 'CLASS',
           quizCategory: {
             sources: selectedSource,
-            과목: selectedCourse,
-            교과: selectedSubject,
+            // 과목: selectedCourse,
+            // 교과: selectedSubject,
             난이도: selectedDifficulty,
             문항타입: selectedQuestionType,
           },
-        },
-        {
-          type: 'CATEGORY',
-          quizCategory: {},
         },
       ];
 
@@ -265,8 +261,8 @@ export function ContentCreating({
       setQuizClassList(quizClassList);
     }
   }, [
-    selectedSubject,
-    selectedCourse,
+    // selectedSubject,
+    // selectedCourse,
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
@@ -421,23 +417,7 @@ export function ContentCreating({
   };
 
   // 셀렉트 초기화
-  const handleDefaultSelect = (defaultValue?: string) => {
-    if (defaultValue == 'all') {
-      setSelectedSubject('');
-      setSelectedCourse('');
-    }
-    switch (defaultValue) {
-      case '교과':
-        setSelectedSubject('');
-        break;
-      case '과목':
-        setSelectedCourse('');
-        break;
-
-      default:
-        break;
-    }
-  };
+  const handleDefaultSelect = (defaultValue?: string) => {};
   const submitSave = () => {
     saveHandler();
     // 이미지 데이터 저장
@@ -461,17 +441,12 @@ export function ContentCreating({
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
-    if (
-      selectedSubject !== '' &&
-      selectedCourse !== '' &&
-      selectedQuestionType !== '' &&
-      selectedList.length > 0
-    ) {
+    if (selectedQuestionType !== '' && selectedList.length > 0) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType, selectedList]);
+  }, [selectedQuestionType, selectedList]);
 
   return (
     <Container>
@@ -488,18 +463,16 @@ export function ContentCreating({
             </EditWrapper>
 
             <BackgroundWrapper>
-              <SelectListWrapper>
+              {/* <SelectListWrapper>
                 <strong>
                   과목<span>*</span>
                 </strong>
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {/* 교과 */}
                       {categoriesE && (
                         <Select
                           onDefaultSelect={() => handleDefaultSelect('교과')}
-                          // $positionTop
                           heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
@@ -510,11 +483,9 @@ export function ContentCreating({
                           setSelectedValue={setSelectedSubject}
                         />
                       )}
-                      {/* 과목 */}
                       {categoriesE && (
                         <Select
                           onDefaultSelect={() => handleDefaultSelect('과목')}
-                          // $positionTop
                           heightScroll={'150px'}
                           width={'110px'}
                           height={'30px'}
@@ -528,7 +499,7 @@ export function ContentCreating({
                     </SelectWrapper>
                   </li>
                 </SelectList>
-              </SelectListWrapper>
+              </SelectListWrapper> */}
               <SelectListWrapper>
                 <strong>
                   출처<span>*</span>
@@ -551,6 +522,8 @@ export function ContentCreating({
                     )}
                 </SourceOptionWrapper>
               </SelectListWrapper>
+            </BackgroundWrapper>
+            <BackgroundWrapper className="bottom">
               <SelectListWrapper>
                 <strong>
                   문항타입<span>*</span>
@@ -668,7 +641,11 @@ const EditWrapper = styled.div`
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
-  margin-bottom: 70px;
+  margin-bottom: 10px;
+
+  &.bottom {
+    margin-bottom: 70px;
+  }
 `;
 const SelectListWrapper = styled.div`
   display: flex;

@@ -78,8 +78,8 @@ export function ContentEdit({
   }, []);
 
   //셀렉트 값
-  const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
-  const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
+  // const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
+  // const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
@@ -95,8 +95,8 @@ export function ContentEdit({
 
       // 값이 존재하면 상태값을 업데이트
       if (quizCategory) {
-        setSelectedSubject(quizCategory?.교과 || '');
-        setSelectedCourse(quizCategory?.과목 || '');
+        // setSelectedSubject(quizCategory?.교과 || '');
+        // setSelectedCourse(quizCategory?.과목 || '');
         setSelectedQuestionType(quizCategory?.문항타입 || '');
         setSelectedDifficulty(quizCategory?.난이도 || '');
         setSelectedSource(quizCategory?.sources || []);
@@ -202,8 +202,8 @@ export function ContentEdit({
   }, [quizItemArrList]);
 
   useEffect(() => {
-    console.log('selectedSubject 교과', selectedSubject);
-    console.log('selectedCourse 과목', selectedCourse);
+    // console.log('selectedSubject 교과', selectedSubject);
+    // console.log('selectedCourse 과목', selectedCourse);
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
@@ -256,8 +256,8 @@ export function ContentEdit({
         type: 'CLASS',
         quizCategory: {
           sources: selectedSource,
-          과목: selectedCourse,
-          교과: selectedSubject,
+          // 과목: selectedCourse,
+          // 교과: selectedSubject,
           난이도: selectedDifficulty,
           문항타입: selectedQuestionType,
         },
@@ -268,8 +268,8 @@ export function ContentEdit({
     // 필수 메타값 추가 및 변경
     setQuizClassList(quizClassList);
   }, [
-    selectedSubject,
-    selectedCourse,
+    // selectedSubject,
+    // selectedCourse,
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
@@ -426,29 +426,28 @@ export function ContentEdit({
 
   // 셀렉트 초기화
   const handleDefaultSelect = (defaultValue?: string) => {
-    if (defaultValue == 'all') {
-      setSelectedSubject('');
-      setSelectedCourse('');
-    }
-    switch (defaultValue) {
-      case '교과':
-        setSelectedSubject('');
-        break;
-      case '과목':
-        setSelectedCourse('');
-        break;
-
-      default:
-        break;
-    }
+    // if (defaultValue == 'all') {
+    //   setSelectedSubject('');
+    //   setSelectedCourse('');
+    // }
+    // switch (defaultValue) {
+    //   case '교과':
+    //     setSelectedSubject('');
+    //     break;
+    //   case '과목':
+    //     setSelectedCourse('');
+    //     break;
+    //   default:
+    //     break;
+    // }
   };
   const submitSave = () => {
     // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
     // console.log('신규 등록된 문항 리스트 get 요청 API');
 
     // 등록 api
-    console.log('selectedSubject 교과', selectedSubject);
-    console.log('selectedCourse 과목', selectedCourse);
+    // console.log('selectedSubject 교과', selectedSubject);
+    // console.log('selectedCourse 과목', selectedCourse);
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
@@ -529,15 +528,15 @@ export function ContentEdit({
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (
-      selectedSubject !== '' &&
-      selectedCourse !== '' &&
+      // selectedSubject !== '' &&
+      // selectedCourse !== '' &&
       selectedQuestionType !== ''
     ) {
       return false;
     } else {
       return true;
     }
-  }, [selectedSubject, selectedCourse, selectedQuestionType]);
+  }, [selectedQuestionType]);
 
   return (
     <Container>
@@ -553,54 +552,9 @@ export function ContentEdit({
               />
             </EditWrapper>
 
-            <BackgroundWrapper>
-              {quizCategory && (
-                <>
-                  <SelectListWrapper>
-                    <strong>
-                      과목<span>*</span>
-                    </strong>
-                    <SelectList>
-                      <li>
-                        <SelectWrapper>
-                          {/* 교과 */}
-                          {categoriesE && (
-                            <Select
-                              onDefaultSelect={() =>
-                                handleDefaultSelect('교과')
-                              }
-                              // $positionTop
-                              heightScroll={'150px'}
-                              width={'110px'}
-                              height={'30px'}
-                              defaultValue={quizCategory?.교과 || '교과'}
-                              key={'교과'}
-                              options={categoriesE[0]}
-                              onSelect={(event) => selectCategoryOption(event)}
-                              setSelectedValue={setSelectedSubject}
-                            />
-                          )}
-                          {/* 과목 */}
-                          {categoriesE && (
-                            <Select
-                              onDefaultSelect={() =>
-                                handleDefaultSelect('과목')
-                              }
-                              // $positionTop
-                              heightScroll={'150px'}
-                              width={'110px'}
-                              height={'30px'}
-                              defaultValue={quizCategory?.과목 || '과목'}
-                              key={'과목'}
-                              options={categoriesE[1]}
-                              onSelect={(event) => selectCategoryOption(event)}
-                              setSelectedValue={setSelectedCourse}
-                            />
-                          )}
-                        </SelectWrapper>
-                      </li>
-                    </SelectList>
-                  </SelectListWrapper>
+            {quizCategory && (
+              <>
+                <BackgroundWrapper>
                   <SelectListWrapper>
                     <strong>
                       출처<span>*</span>
@@ -627,6 +581,8 @@ export function ContentEdit({
                         )}
                     </SourceOptionWrapper>
                   </SelectListWrapper>
+                </BackgroundWrapper>
+                <BackgroundWrapper className="bottom">
                   <SelectListWrapper>
                     <strong>
                       문항타입<span>*</span>
@@ -679,9 +635,9 @@ export function ContentEdit({
                       </li>
                     </SelectList>
                   </SelectListWrapper>
-                </>
-              )}
-            </BackgroundWrapper>
+                </BackgroundWrapper>
+              </>
+            )}
           </PerfectScrollbar>
         </EditContainerWrapper>
 
@@ -754,7 +710,11 @@ const EditWrapper = styled.div`
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
-  margin-bottom: 70px;
+  margin-bottom: 10px;
+
+  &.bottom {
+    margin-bottom: 70px;
+  }
 `;
 const SelectListWrapper = styled.div`
   display: flex;
