@@ -159,100 +159,87 @@ export function ProcessAddModal() {
 
   return (
     <Container>
-      <Title>작업자 추가</Title>
-      <TabWrapper>
-        <TabMenu
-          length={2}
-          menu={menuList}
-          width={'450px'}
-          lineStyle
-          selected={tabVeiw}
-          setTabVeiw={setTabVeiw}
-          onClickTab={changeTab}
-        />
-      </TabWrapper>
-      <Search
-        value={searchValue}
-        width={`calc(100% - 40px)`}
-        height="35px"
-        margin="0 20px"
-        onClick={() => filterSearchValue()}
-        onKeyDown={(e) => filterSearchValueEnter(e)}
-        onChange={(e) => {
-          setSearchValue(e.target.value);
-        }}
-        placeholder="이름, 아이디, 권한을 검색해주세요"
-        maxLength={20}
-        minLength={2}
-      />
-      {/* <Input
-        width={`calc(100% - 40px)`}
-        height="35px"
-        padding="10px"
-        margin="0 20px"
-        border="normal"
-        placeholderSize="14px"
-        fontSize="14px"
-        type="text"
-        placeholder="이름, 아이디, 권한을 검색해주세요"
-        borderradius="5px"
-        value={nameValue}
-        onChange={(e) => setNameValue(e.target.value)}
-        maxLength={20}
-      /> */}
-      {!isLoading &&
-      memberListData &&
-      totalMemberList &&
-      memberList.list.length !== 0 ? (
-        <>
-          <List margin={`10px 0`}>
-            {memberList.list.map((list: MemberType) => (
-              <ListItem
-                key={list.userKey as string}
-                isChecked={checkList.includes(list.idx)}
-                onClick={(e) => handleButtonCheck(e, list.idx)}
-              >
-                <CheckBoxI
-                  id={list.userKey}
-                  value={list.idx}
-                  $margin={`0 5px 0 0`}
-                  checked={checkList.includes(list.idx)}
-                  readOnly
-                />
-                <ItemLayout>
-                  <span>{list.name} </span>
-                  <i className="line"></i>
-                  <span>{list.id} </span>
-                  <i className="line"></i>
-                  <span>
-                    <span className="tag">{list.authorityName}</span>
-                  </span>
-                  <i className="line"></i>
-                  <span>{list.createdAt}</span>
-                </ItemLayout>
-              </ListItem>
-            ))}
-          </List>
-          <PaginationBox
-            itemsCountPerPage={memberList.pagination.pageUnit}
-            totalItemsCount={memberList.pagination.totalCount}
+      <Wrapper>
+        <Title>작업자 추가</Title>
+        <TabWrapper>
+          <TabMenu
+            length={2}
+            menu={menuList}
+            width={'450px'}
+            lineStyle
+            selected={tabVeiw}
+            setTabVeiw={setTabVeiw}
+            onClickTab={changeTab}
           />
-        </>
-      ) : (
-        <>
-          {searchKeywordValue ? (
-            <ValueNoneWrapper>
-              <ValueNone
-                info={`${searchKeywordValue} (으)로 검색결과 데이터가 없습니다`}
-              />
-            </ValueNoneWrapper>
-          ) : (
-            <ValueNoneWrapper>
-              <ValueNone info={`등록된 데이터가 없습니다`} />
-            </ValueNoneWrapper>
-          )}
-        </>
-      )}
+        </TabWrapper>
+        <Search
+          value={searchValue}
+          width={`calc(100% - 40px)`}
+          height="35px"
+          margin="0 20px"
+          onClick={() => filterSearchValue()}
+          onKeyDown={(e) => filterSearchValueEnter(e)}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+          }}
+          placeholder="이름, 아이디, 권한을 검색해주세요"
+          maxLength={20}
+          minLength={2}
+        />
+        {!isLoading &&
+        memberListData &&
+        totalMemberList &&
+        memberList.list.length !== 0 ? (
+          <ListWrapper>
+            <List margin={`10px 0`}>
+              {memberList.list.map((list: MemberType) => (
+                <ListItem
+                  key={list.userKey as string}
+                  isChecked={checkList.includes(list.idx)}
+                  onClick={(e) => handleButtonCheck(e, list.idx)}
+                >
+                  <CheckBoxI
+                    id={list.userKey}
+                    value={list.idx}
+                    $margin={`0 5px 0 0`}
+                    checked={checkList.includes(list.idx)}
+                    readOnly
+                  />
+                  <ItemLayout>
+                    <span>{list.name} </span>
+                    <i className="line"></i>
+                    <span>{list.id} </span>
+                    <i className="line"></i>
+                    <span>
+                      <span className="tag">{list.authorityName}</span>
+                    </span>
+                    <i className="line"></i>
+                    <span>{list.createdAt}</span>
+                  </ItemLayout>
+                </ListItem>
+              ))}
+            </List>
+            <PaginationBox
+              itemsCountPerPage={memberList.pagination.pageUnit}
+              totalItemsCount={memberList.pagination.totalCount}
+            />
+          </ListWrapper>
+        ) : (
+          <>
+            {searchKeywordValue ? (
+              <ValueNoneWrapper>
+                <ValueNone
+                  info={`${searchKeywordValue} (으)로 검색결과 데이터가 없습니다`}
+                />
+              </ValueNoneWrapper>
+            ) : (
+              <ValueNoneWrapper>
+                <ValueNone info={`등록된 데이터가 없습니다`} />
+              </ValueNoneWrapper>
+            )}
+          </>
+        )}
+      </Wrapper>
       <ButtonWrapper>
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
@@ -276,10 +263,14 @@ export function ProcessAddModal() {
 const Container = styled.div`
   max-width: 700px;
   min-width: 600px;
-  //height: 800px;
+  min-height: 850px;
   overflow: hidden;
   border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
+const Wrapper = styled.div``;
 const Title = styled.strong`
   font-size: 20px;
   width: 100%;
@@ -289,7 +280,6 @@ const Title = styled.strong`
   padding: 0 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
-  //margin-bottom: 10px;
 `;
 const TabWrapper = styled.div`
   width: 100%;
@@ -298,9 +288,8 @@ const TabWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-const CheckBoxWrapper = styled.div`
-  display: flex;
-  align-items: center;
+const ListWrapper = styled.div`
+  padding: 0 20px;
 `;
 const ItemLayout = styled.span`
   display: flex;
@@ -325,7 +314,6 @@ const ValueNoneWrapper = styled.div`
   padding: 50px;
   margin-top: 10px;
 `;
-
 const ButtonWrapper = styled.div`
   background-color: #f1f1f1;
   padding: 10px 20px;
