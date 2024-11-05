@@ -483,7 +483,7 @@ export function ContentCreating({
                           setSelectedValue={setSelectedSubject}
                         />
                       )}
-                      {categoriesE && (
+                      {categoriesE && ( //
                         <Select
                           onDefaultSelect={() => handleDefaultSelect('과목')}
                           heightScroll={'150px'}
