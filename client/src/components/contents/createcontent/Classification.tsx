@@ -14,6 +14,7 @@ import {
   Loader,
   MathViewer,
   ResizeLayout,
+  Select,
   ValueNone,
   openToastifyAlert,
 } from '../..';
@@ -25,6 +26,10 @@ import {
   DepthBlock,
   Search,
 } from '../../../components/molecules';
+import {
+  MyResponsiveWrapper,
+  MyStaticWrapper,
+} from '../../../components/molecules/sortBox/Masonry';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
   ItemCategoryType,
@@ -39,6 +44,8 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { QuizList } from './list';
+
+// import { MyResponsiveWrapper, MyStaticWrapper } from '.';
 
 interface RadioStateType {
   title: string;
@@ -1401,11 +1408,57 @@ export function Classification({
   // 탭바뀔 때 에디터
   useEffect(() => {}, [setTabView]);
 
+  //리스트 솔팅 정렬
+  // const columnsCount = useMemo(() => {
+  //   return 1;
+  // }, []);
+  const [columnsCount, setColumnsCount] = useState<number>(3);
+  const [itemHeight, setItemHeight] = useState<string | undefined>(undefined);
+  useEffect(() => {}, [columnsCount]);
   return (
     <Container>
       <LayoutBodyWrapper>
         <LayoutWrapper className="auto">
-          {/* MyResponsiveWrapper  */}
+          <TopButtonWrapper>
+            <Select></Select>
+            <ButtonWrapper>
+              <button
+                onClick={() => {
+                  setColumnsCount(3);
+                  setItemHeight('300px');
+                }}
+              >
+                작게보기
+              </button>
+              <button
+                onClick={() => {
+                  setColumnsCount(2);
+                  setItemHeight(undefined);
+                }}
+              >
+                크게보기
+              </button>
+              <button
+                onClick={() => {
+                  setColumnsCount(1);
+                  setItemHeight(undefined);
+                }}
+              >
+                맞춤보기
+              </button>
+            </ButtonWrapper>
+          </TopButtonWrapper>
+          <ScrollWrapper className="items_height">
+            <PerfectScrollbar>
+              <MyStaticWrapper columnsCount={columnsCount}>
+                {Array.from({ length: 20 }).map((_, index) => (
+                  <ItemWrapper key={index} height={itemHeight}>
+                    div dsa dsa dsadsad dsa {index + 1}
+                  </ItemWrapper>
+                ))}
+              </MyStaticWrapper>
+            </PerfectScrollbar>
+          </ScrollWrapper>
         </LayoutWrapper>
         <LayoutWrapper>
           <ScrollWrapper>
@@ -1800,7 +1853,7 @@ const LayoutBodyWrapper = styled.div`
   display: flex;
 `;
 const LayoutWrapper = styled.div`
-  min-width: 400px;
+  width: 400px;
   border: 1px solid ${COLOR.BORDER_GRAY};
   &.auto {
     flex: 1 0 0;
@@ -1821,6 +1874,11 @@ const ScrollWrapper = styled.div`
       font-size: 13px;
       padding-bottom: 2px;
     }
+  }
+
+  &.items_height {
+    margin-top: 5px;
+    height: calc(100vh - 150px);
   }
 `;
 const DepthBlockScrollWrapper = styled.div`
@@ -1905,4 +1963,17 @@ const ArrowButtonWrapper = styled.span`
     background-color: transparent;
     border: none;
   }
+`;
+
+const ItemWrapper = styled.div<{ height?: string }>`
+  padding: 20px;
+  border: 1px solid red;
+  height: ${({ height }) => height || 'auto'};
+`;
+const TopButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
 `;
