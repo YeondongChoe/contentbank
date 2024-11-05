@@ -42,6 +42,15 @@ export function CategroyManagement() {
   //선택한 idx값
   const [selectedIdxValue, setSelectedIdxValue] = useState<number | null>(null);
 
+  // 태그 추가 클릭시 인풋으로 포커스
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (activeAdd && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [activeAdd]);
+
   const backgroundRef = useRef<HTMLDivElement>(null);
   // 배경 클릭시 태그 추가 초기화
   useEffect(() => {
@@ -492,6 +501,7 @@ export function CategroyManagement() {
                     <span className={`active_add ${''}`}>
                       <input
                         className={`tag_add_input ${''}`}
+                        ref={inputRef}
                         onKeyDown={(e) => tagInputHandler(e)}
                         onChange={(e) => setTagInputValue(e.target.value)}
                         //value={tagInputValue}
@@ -510,7 +520,15 @@ export function CategroyManagement() {
                   {/* 앞쪽으로 버튼 배열 추가 */}
                   {tagsList.map((tag, index) => (
                     <React.Fragment key={`태그 ${index}: ${tag}`}>
-                      {isEdit === index ? (
+                      <button
+                        type="button"
+                        className={`value_button ${tag}`}
+                        onClick={() => tagButtonHandler(index)}
+                      >
+                        {tag}
+                      </button>
+                      {/* 태그 수정 삭제 가능한 코드 */}
+                      {/* {isEdit === index ? (
                         <span className={`active_add ${''}`}>
                           <input
                             className={`tag_add_input ${''}`}
@@ -519,7 +537,6 @@ export function CategroyManagement() {
                             value={tagInputValue}
                             placeholder="태그명"
                           />
-
                           <button
                             type="button"
                             onClick={() => {
@@ -538,7 +555,7 @@ export function CategroyManagement() {
                         >
                           {tag}
                         </button>
-                      )}
+                      )} */}
                     </React.Fragment>
                   ))}
 
@@ -596,15 +613,20 @@ export function CategroyManagement() {
                     }}
                   />
                   <span className="sub_text">
-                    카테고리 사용 여부를 설정합니다. 비활성화 시, 화면 노출이
+                    카테고리 사용 여부를 설정합니다. 비활성화 시, 그룹추가가
                     제한됩니다.
                   </span>
                 </div>
               </div>
               <div className="input_wrap">
                 <span className="input_label">그룹</span>
-                {/* TODO : 그룹 데이터 */}
-                <input type="text" readOnly value={'업체정보'} />
+                <input
+                  type="text"
+                  readOnly
+                  disabled
+                  value={'업체정보'}
+                  style={{ opacity: 0.5 }}
+                />
               </div>
               <div className="input_wrap">
                 <span className="input_label">입력 타입</span>
@@ -635,6 +657,7 @@ export function CategroyManagement() {
                     <span className={`active_add ${''}`}>
                       <input
                         //className={`tag_add_input ${''}`}
+                        ref={inputRef}
                         onKeyDown={(e) => tagInputHandler(e)}
                         onChange={(e) => setTagInputValue(e.target.value)}
                         //value={tagInputValue}
@@ -648,7 +671,7 @@ export function CategroyManagement() {
                       className={`add_button`}
                       onClick={() => {
                         setActiveAdd(!activeAdd);
-                        setIsEdit(null);
+                        //setIsEdit(null);
                       }}
                     >
                       +추가
@@ -657,7 +680,18 @@ export function CategroyManagement() {
                   {/* 앞쪽으로 버튼 배열 추가 */}
                   {tagsList.map((tag, index) => (
                     <React.Fragment key={`태그 ${index}: ${tag}`}>
-                      {isEdit === index ? (
+                      <button
+                        type="button"
+                        className={`value_button ${tag}`}
+                        onClick={() => {
+                          tagButtonHandler(index);
+                          setActiveAdd(false);
+                        }}
+                      >
+                        {tag}
+                      </button>
+                      {/* 태그 수정 삭제 가능한 코드 */}
+                      {/* {isEdit === index ? (
                         <span className={`active_add ${''}`}>
                           <input
                             className={`tag_add_input ${''}`}
@@ -688,7 +722,7 @@ export function CategroyManagement() {
                         >
                           {tag}
                         </button>
-                      )}
+                      )} */}
                     </React.Fragment>
                   ))}
                 </div>
@@ -893,8 +927,8 @@ const FormBox = styled.div`
 
   .active_add {
     border: 1px solid ${COLOR.PRIMARY};
-    padding: 2px 10px;
-    padding-right: 20px;
+    //padding: 2px 10px;
+    //padding-right: 20px;
     border-radius: 5px;
     position: relative;
   }
