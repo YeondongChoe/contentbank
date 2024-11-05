@@ -18,21 +18,3 @@ declare module '*.png' {
 interface Window {
   daum: any;
 }
-
-// src/react-beautiful-dnd.d.ts
-declare module 'react-beautiful-dnd' {
-  import * as React from 'react';
-
-  export interface DraggableProps {
-    draggableId: string;
-    index: number;
-  }
-
-  export interface DroppableProps {
-    droppableId: string;
-  }
-
-  export const DragDropContext: React.FC<{ onDragEnd: (result: any) => void }>;
-  export const Droppable: React.FC<DroppableProps>;
-  export const Draggable: React.FC<DraggableProps>;
-}
