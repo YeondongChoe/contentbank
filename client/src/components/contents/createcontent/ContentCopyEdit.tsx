@@ -91,16 +91,46 @@ export function ContentCopyEdit({
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
     if (onItemClickData) {
-      const quizCategory = onItemClickData?.quizCategoryList[0]?.quizCategory;
+      const quizCategoryList = onItemClickData?.quizCategoryList;
+
+      console.log('quizCategoryList-------------', quizCategoryList);
+
+      let foundSources: any[] = [];
+      let foundQuestionType = '';
+      let foundDifficulty = '';
 
       // 값이 존재하면 상태값을 업데이트
-      if (quizCategory) {
-        // setSelectedSubject(quizCategory?.교과 || '');
-        // setSelectedCourse(quizCategory?.과목 || '');
-        setSelectedQuestionType(quizCategory?.문항타입 || '');
-        setSelectedDifficulty(quizCategory?.난이도 || '');
-        setSelectedSource(quizCategory?.sources || []);
-      }
+      quizCategoryList.forEach((item) => {
+        const quizCategory = item?.quizCategory;
+
+        console.log(
+          '값이 존재하면 상태값을 업데이트quizCategory -------',
+          quizCategory,
+        );
+
+        if (quizCategory) {
+          if (quizCategory.sources && Array.isArray(quizCategory.sources)) {
+            foundSources = [...foundSources, ...quizCategory.sources];
+          }
+          if (quizCategory.문항타입 && !foundQuestionType) {
+            foundQuestionType = quizCategory.문항타입;
+          }
+          if (quizCategory.난이도 && !foundDifficulty) {
+            foundDifficulty = quizCategory.난이도;
+          }
+        }
+      });
+
+      console.log(
+        '값이 존재하면 상태값을 업데이트 최종 -------',
+        foundQuestionType,
+        foundDifficulty,
+        foundSources,
+      );
+
+      setSelectedQuestionType(foundQuestionType);
+      setSelectedDifficulty(foundDifficulty);
+      setSelectedSource(foundSources);
     }
   }, [onItemClickData]);
 
@@ -211,7 +241,7 @@ export function ContentCopyEdit({
 
     // 특정 필드를 제외하는 유틸리티 함수
     const omitFields = (quizCategory: QuizCategory): QuizCategory => {
-      const { sources, 과목, 교과, 난이도, 문항타입, ...rest } = quizCategory;
+      const { sources, 난이도, 문항타입, ...rest } = quizCategory;
       return rest; // 나머지 필드만 반환
     };
 
@@ -220,51 +250,66 @@ export function ContentCopyEdit({
       quizCategoryList: QuizCategoryList[] | undefined,
     ): { type: string; quizCategory: QuizCategory }[] => {
       if (quizCategoryList && Array.isArray(quizCategoryList)) {
-        const items = quizCategoryList.map((item) => {
-          if (item.quizCategory && typeof item.quizCategory === 'object') {
-            // 특정 필드 제외 후 새로운 객체 구성
-            const newQuizCategory = omitFields(item.quizCategory);
-            return {
-              type: 'CATEGORY',
-              quizCategory: newQuizCategory,
-            };
-          }
-          // item.quizCategory가 비어있을 경우 기본값 설정
-          return {
-            type: 'CATEGORY',
-            quizCategory: {},
-          };
-        });
-        return items;
+        return quizCategoryList
+          .map((item) => {
+            if (item.quizCategory && typeof item.quizCategory === 'object') {
+              const newQuizCategory = omitFields(item.quizCategory);
+              // Return the item only if it has valid keys
+              if (Object.keys(newQuizCategory).length > 0) {
+                return {
+                  type: 'CATEGORY',
+                  quizCategory: newQuizCategory,
+                };
+              }
+            }
+            // Instead of returning null, return undefined
+            return undefined; // This will be filtered out
+          })
+          .filter(
+            (item): item is { type: string; quizCategory: QuizCategory } =>
+              item !== undefined,
+          ); // Filter out undefined entries
       }
-      return [
-        {
-          type: 'CATEGORY',
-          quizCategory: {},
-        },
-      ];
+      return []; // Return an empty array if input is not valid
     };
 
     // 카테고리 매핑
     const category = mapQuizCategoryList(onItemClickData?.quizCategoryList);
     console.log('매핑된 카테고리값 ----', category);
 
+    // 최종 quizClassList 구성
     const quizClassList: QuestionClassListType = [
       {
         type: 'CLASS',
         quizCategory: {
           sources: selectedSource,
-          // 과목: selectedCourse,
-          // 교과: selectedSubject,
           난이도: selectedDifficulty,
           문항타입: selectedQuestionType,
         },
       },
-      ...category,
+      ...category.filter(
+        (cat) => cat.quizCategory && Object.keys(cat.quizCategory).length > 0,
+      ), // 추가된 카테고리도 유효한 경우에만 추가
     ];
 
+    // 빈 객체 또는 빈 배열이 아닌 경우에만 quizClassList에 추가
+    const filteredQuizClassList = quizClassList.filter((item) => {
+      // item이 null이 아닌 경우, 객체가 비어있지 않거나 배열이 비어있지 않은 경우
+      if (item) {
+        // Type assertion to inform TypeScript of the expected types
+        if (typeof item === 'object') {
+          return Object.keys(item).length > 0; // Check if the object is not empty
+        }
+        // if (Array.isArray(item)) {
+        //   return item.length > 0; // Check if the array is not empty
+        // }
+      }
+      return false; // Return false for any other cases
+    });
+
+    console.log('최종적으로 담길 quizClassList ----', filteredQuizClassList);
     // 필수 메타값 추가 및 변경
-    setQuizClassList(quizClassList);
+    setQuizClassList(filteredQuizClassList);
   }, [
     // selectedSubject,
     // selectedCourse,
@@ -495,14 +540,34 @@ export function ContentCopyEdit({
 
   const quizCategory = useMemo(() => {
     if (onItemClickData) {
-      const category = onItemClickData.quizCategoryList?.[0]?.quizCategory;
-      return {
-        교과: category?.교과 || '',
-        과목: category?.과목 || '',
-        문항타입: category?.문항타입 || '',
-        난이도: category?.난이도 || '',
-        sources: category?.sources || [],
-      };
+      const categories =
+        onItemClickData.quizCategoryList?.map((item) => item.quizCategory) ||
+        [];
+
+      // 필터링하여 존재하는 값을 찾아 반환
+      const validCategory = categories.reduce(
+        (acc, category) => {
+          if (category) {
+            acc.교과 = category.교과 || acc.교과;
+            acc.과목 = category.과목 || acc.과목;
+            acc.문항타입 = category.문항타입 || acc.문항타입;
+            acc.난이도 = category.난이도 || acc.난이도;
+            acc.sources = category.sources?.length
+              ? category.sources
+              : acc.sources;
+          }
+          return acc;
+        },
+        {
+          교과: '',
+          과목: '',
+          문항타입: '',
+          난이도: '',
+          sources: [],
+        },
+      );
+
+      return validCategory;
     }
     return {
       교과: '',
