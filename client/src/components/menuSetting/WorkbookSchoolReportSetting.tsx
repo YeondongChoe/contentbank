@@ -511,6 +511,7 @@ const MainWrapper = styled.div`
   width: 100%;
   display: flex;
   gap: 10px;
+  min-height: 750px;
 `;
 const SettingWrapper = styled.div`
   width: 30%;

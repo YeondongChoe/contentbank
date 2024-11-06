@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { BsArrowsMove, BsEyeSlash, BsEye } from 'react-icons/bs';
+import { GrPlan } from 'react-icons/gr';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { SlOptionsVertical } from 'react-icons/sl';
 import { TbFilter, TbFilterOff } from 'react-icons/tb';
@@ -16,6 +17,9 @@ import {
   Label,
   Button,
   Select,
+  Search,
+  CommonDate,
+  IconButton,
   openToastifyAlert,
 } from '..';
 import { resourceServiceInstance } from '../../api/axios';
@@ -30,7 +34,7 @@ export function WorkbookListSetting() {
       code: 'A',
       detailIdx: '1',
       idx: 1,
-      inputTypeList: 'SELECT,SELECT,INPUT,SELECT,SELECT',
+      inputTypeList: 'INPUT,SELECT,INPUT,DATEPICKER,INPUT',
       isCheck: true,
       name: '더미',
       nameList: '대상학년,태그,학습지명,등록일,작성자',
@@ -46,7 +50,7 @@ export function WorkbookListSetting() {
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
   const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
   // 로컬 스토리지에서 데이터 가져오기
-  console.log(selectedValue);
+
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendMenuIdx');
@@ -491,7 +495,6 @@ export function WorkbookListSetting() {
               {(() => {
                 const dataList =
                   selectedValue === '더미' ? dummyData : menuDataList;
-                console.log(dataList);
                 return dataList
                   .filter((el) => el.name === selectedValue)
                   .map((search) => {
@@ -502,16 +505,113 @@ export function WorkbookListSetting() {
 
                     return (
                       <>
-                        {nameList.map((el, idx) =>
-                          searchList[idx] ? (
-                            <Select
-                              key={idx}
-                              defaultValue={el}
-                              width="130px"
-                              isnormalizedOptions
-                            ></Select>
-                          ) : null,
-                        )}
+                        {nameList.map((el, idx) => {
+                          if (el === '태그') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Select
+                                    key={idx}
+                                    defaultValue={el}
+                                    width="130px"
+                                    isnormalizedOptions
+                                  ></Select>
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '대상학년') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Search
+                                    value={''}
+                                    width="150px"
+                                    height="40px"
+                                    onClick={() => {}}
+                                    onKeyDown={() => {}}
+                                    onChange={() => {}}
+                                    placeholder={`${el} 검색`}
+                                  />
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '학습지명') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Search
+                                    value={''}
+                                    width="150px"
+                                    height="40px"
+                                    onClick={() => {}}
+                                    onKeyDown={() => {}}
+                                    onChange={() => {}}
+                                    placeholder={`${el} 검색`}
+                                  />
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '작성자') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Search
+                                    value={''}
+                                    width="150px"
+                                    height="40px"
+                                    onClick={() => {}}
+                                    onKeyDown={() => {}}
+                                    onChange={() => {}}
+                                    placeholder={`${el} 검색`}
+                                  />
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '등록일') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <>
+                                    <CommonDate
+                                      setDate={() => {}}
+                                      $button={
+                                        <IconButton
+                                          width="125px"
+                                          height="40px"
+                                          fontSize="14px"
+                                          onClick={() => {}}
+                                        >
+                                          <span className="btn_title">
+                                            시작일
+                                          </span>
+                                          <GrPlan />
+                                        </IconButton>
+                                      }
+                                    />
+                                    <span> ~ </span>
+                                    <CommonDate
+                                      setDate={() => {}}
+                                      minDate={''}
+                                      $button={
+                                        <IconButton
+                                          width="125px"
+                                          height="40px"
+                                          fontSize="14px"
+                                          onClick={() => {}}
+                                        >
+                                          <span className="btn_title">
+                                            종료일
+                                          </span>
+                                          <GrPlan />
+                                        </IconButton>
+                                      }
+                                    />
+                                  </>
+                                ) : null}
+                              </>
+                            );
+                          }
+                        })}
                       </>
                     );
                   });
@@ -522,7 +622,6 @@ export function WorkbookListSetting() {
                 .filter((list) => list.name === selectedValue)
                 .flatMap((item) => {
                   const nameList = item.nameList?.split(',');
-                  console.log(nameList);
                   const essentialList = item.viewList
                     ?.split(',')
                     .map((item) => item.trim() === 'true');
@@ -624,6 +723,7 @@ const MainWrapper = styled.div`
   width: 100%;
   display: flex;
   gap: 10px;
+  min-height: 750px;
 `;
 const SettingWrapper = styled.div`
   width: 30%;
