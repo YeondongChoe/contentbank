@@ -1,17 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  RefetchOptions,
-  QueryObserverResult,
-} from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
-import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import { workbookInstance } from '../../../api/axios';
@@ -31,7 +23,6 @@ import {
 } from '../../../components';
 import { selectedListProps } from '../../../components/contents/Worksheet';
 import { useModal } from '../../../hooks';
-import { isEditWorkbookAtom } from '../../../store/utilAtom';
 import { WorksheetListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
@@ -132,6 +123,9 @@ export function WorkbookList({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       setIsDeleteWorkbook(false);

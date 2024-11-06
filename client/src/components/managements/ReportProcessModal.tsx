@@ -6,6 +6,7 @@ import { styled } from 'styled-components';
 
 import { quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
+import { postRefreshToken } from '../../utils/tokenHandler';
 import { Button, Label, Select, openToastifyAlert } from '../atom';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules';
@@ -70,6 +71,9 @@ export function ReportProcessModal({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response) => {
       openToastifyAlert({
@@ -84,8 +88,6 @@ export function ReportProcessModal({
     const value = event.currentTarget.value;
     setContent(value);
   };
-
-  console.log(content);
   const submitReportProcess = () => {
     const data = {
       reportType: registorReport ? 'REPORT' : 'ANSWER',
@@ -101,7 +103,6 @@ export function ReportProcessModal({
     } else {
       postReportQuizData(data);
     }
-
     //해당 신고내역에 처리된 상태 보내기
   };
 

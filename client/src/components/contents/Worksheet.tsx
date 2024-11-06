@@ -43,7 +43,6 @@ export function Worksheet() {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
-  console.log(categoryTitles);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   // 셀렉트
   const [selectedTag, setSelectedTag] = useState<string>(''); //태그

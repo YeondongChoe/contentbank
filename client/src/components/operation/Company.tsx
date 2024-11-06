@@ -712,6 +712,9 @@ export function Company() {
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       setIsDeleteCompany(false);

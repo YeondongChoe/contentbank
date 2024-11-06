@@ -111,6 +111,9 @@ export function CategroyManagement() {
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       setIsDeleteCategory(false);
