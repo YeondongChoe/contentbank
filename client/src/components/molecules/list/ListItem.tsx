@@ -75,7 +75,6 @@ const Component = styled.li<ListItemStyleProps>`
   margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
   display: flex;
   flex-wrap: wrap;
-  width: 100%;
   border: 1px solid ${COLOR.BORDER_GRAY};
   border-radius: 10px;
   margin-bottom: ${({ $marginBottom }) =>

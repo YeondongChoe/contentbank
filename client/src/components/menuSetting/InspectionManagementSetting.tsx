@@ -439,6 +439,57 @@ export function InspectionManagementSetting() {
                   );
                 })}
             </SelectWrapper>
+            <List margin={`10px 0 5px 0`} height="none">
+              {menuDataList
+                .filter((list) => list.name === selectedValue)
+                .flatMap((item) => {
+                  const nameList = item.nameList?.split(',');
+                  const essentialList = item.viewList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+
+                  return (
+                    <ListItem isChecked={false} columnTitle>
+                      <ItemLayout>
+                        <CheckBoxI
+                          id={''}
+                          value={''}
+                          $margin={`0 5px 0 0`}
+                          readOnly
+                        />
+                        {nameList.map((name, i) => (
+                          <>
+                            {essentialList[i] && (
+                              <>
+                                <i className="line"></i>
+                                <span>
+                                  <strong>{name}</strong>
+                                </span>
+                              </>
+                            )}
+                          </>
+                        ))}
+                        <i className="line"></i>
+                        <span>
+                          <strong>담당자</strong>
+                        </span>
+                        <i className="line"></i>
+                        <span>
+                          <strong>등록일자</strong>
+                        </span>
+                        <i className="line"></i>
+                        <span>
+                          <strong>프로세스(단계)</strong>
+                        </span>
+                        <i className="line"></i>
+                        <span>
+                          <strong>상태</strong>
+                        </span>
+                      </ItemLayout>
+                    </ListItem>
+                  );
+                })}
+            </List>
             <List>
               {menuDataList
                 .filter((list) => list.name === selectedValue)
@@ -447,7 +498,7 @@ export function InspectionManagementSetting() {
                   const essentialList = item.viewList
                     ?.split(',')
                     .map((item) => item.trim() === 'true');
-                  const array = 6;
+                  const array = 5;
 
                   return Array.from({ length: array }).map((_, idx) => (
                     <ListItem
@@ -462,49 +513,28 @@ export function InspectionManagementSetting() {
                           $margin={`0 5px 0 0`}
                           readOnly
                         />
-                        <Icon
-                          width={`18px`}
-                          $margin={'0 10px'}
-                          src={`/images/icon/favorites_off_B.svg`}
-                        />
                         {nameList.map((name, i) => (
                           <>
                             {essentialList[i] && (
                               <>
                                 <i className="line"></i>
-                                <div className="wrapper" key={i}>
-                                  <span className="width_80px tooltip_wrapper">
-                                    <strong className="title">{name}</strong>
-                                    <span className="tag ellipsis">
-                                      <span
-                                        key={`quizCategoryList quizCategory: ${i}`}
-                                      >
-                                        정보
-                                      </span>
-                                    </span>
-                                  </span>
-                                </div>
+                                <span>
+                                  <span>정보</span>
+                                </span>
                               </>
                             )}
                           </>
                         ))}
                         <i className="line"></i>
-                        <span className="width_5">김드림</span>
+                        <span>김드림</span>
                         <i className="line"></i>
-                        <span className="width_10">2024.08.29</span>
+                        <span>2024.08.29</span>
                         <i className="line"></i>
-                        <span className="width_5">
-                          <Icon
-                            width={`18px`}
-                            $margin={'0 10px'}
-                            src={`/images/icon/lock_open_off.svg`}
-                            disabled={true}
-                          />
+                        <span>
+                          수학 알바1<br></br>(검수)
                         </span>
                         <i className="line"></i>
-                        <span className="width_10">수학 알바1(검수)</span>
-                        <i className="line"></i>
-                        <span className="width_5">보류</span>
+                        <span>보류</span>
                       </ItemLayout>
                     </ListItem>
                   ));
@@ -633,23 +663,12 @@ const ListWrapper = styled.div`
 const ItemLayout = styled.span`
   display: flex;
   width: 100%;
-  min-height: 40px;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
 
   .tooltip_wrapper {
     position: relative;
-  }
-  > span {
-    display: flex;
-    /* flex: 1 0 0; */
-    justify-content: space-around;
-    flex-wrap: wrap;
-    word-break: break-all;
-    min-width: 30px;
-    max-width: 150px;
-    font-weight: normal;
   }
 
   /* 두줄 이상 ellipsis 처리  */

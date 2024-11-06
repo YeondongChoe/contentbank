@@ -617,6 +617,55 @@ export function WorkbookListSetting() {
                   });
               })()}
             </SelectWrapper>
+            <List height="none">
+              {(selectedValue === '더미' ? dummyData : menuDataList)
+                .filter((list) => list.name === selectedValue)
+                .flatMap((item) => {
+                  const nameList = item.nameList?.split(',');
+                  const essentialList = item.viewList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+
+                  return (
+                    <ListItem isChecked={false} columnTitle>
+                      <ItemLayout>
+                        <CheckBoxI
+                          id={''}
+                          value={''}
+                          $margin={`0 5px 0 0`}
+                          checked={false}
+                          readOnly
+                        />
+                        <Icon
+                          width={`18px`}
+                          $margin={'0 10px'}
+                          src={`/images/icon/favorites_off_B.svg`}
+                        />
+                        {nameList.map((name, i) => (
+                          <>
+                            {essentialList[i] && (
+                              <>
+                                <i className="line"></i>
+                                <span>
+                                  <strong>{name}</strong>
+                                </span>
+                              </>
+                            )}
+                          </>
+                        ))}
+                        <i className="line"></i>
+                        <span>
+                          <strong>미리보기</strong>
+                        </span>
+                        <i className="line"></i>
+                        <span>
+                          <strong>설정</strong>
+                        </span>
+                      </ItemLayout>
+                    </ListItem>
+                  );
+                })}
+            </List>
             <List>
               {(selectedValue === '더미' ? dummyData : menuDataList)
                 .filter((list) => list.name === selectedValue)
@@ -625,7 +674,7 @@ export function WorkbookListSetting() {
                   const essentialList = item.viewList
                     ?.split(',')
                     .map((item) => item.trim() === 'true');
-                  const array = 1;
+                  const array = 5;
 
                   return Array.from({ length: array }).map((_, idx) => (
                     <ListItem
@@ -650,39 +699,26 @@ export function WorkbookListSetting() {
                             {essentialList[i] && (
                               <>
                                 <i className="line"></i>
-                                <div className="wrapper" key={i}>
-                                  <span className="width_80px tooltip_wrapper">
-                                    <strong className="title">{name}</strong>
-                                    <span className="ellipsis">
-                                      <span
-                                        key={`quizCategoryList quizCategory: ${i}`}
-                                      >
-                                        정보
-                                      </span>
-                                    </span>
-                                  </span>
-                                </div>
+                                <span>
+                                  <span>정보</span>
+                                </span>
                               </>
                             )}
                           </>
                         ))}
                         <i className="line"></i>
                         <span>
-                          <strong className="title">미리보기</strong>
-                          <span className="width_20">
+                          <span>
                             <LuFileSearch2
                               style={{ fontSize: '22px', cursor: 'pointer' }}
                             />
                           </span>
                         </span>
                         <i className="line"></i>
-                        <span className="width_5 tooltip_wrapper ">
-                          <strong className="title">설정</strong>
-                          <span className="width_20">
-                            <SlOptionsVertical
-                              style={{ fontSize: '16px', cursor: 'pointer' }}
-                            />
-                          </span>
+                        <span>
+                          <SlOptionsVertical
+                            style={{ fontSize: '16px', cursor: 'pointer' }}
+                          />
                         </span>
                       </ItemLayout>
                     </ListItem>
@@ -813,7 +849,6 @@ const ListWrapper = styled.div`
 const ItemLayout = styled.span`
   display: flex;
   width: 100%;
-  min-height: 40px;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
@@ -822,16 +857,6 @@ const ItemLayout = styled.span`
     position: relative;
   }
 
-  > span {
-    display: flex;
-    /* flex: 1 0 0; */
-    justify-content: space-around;
-    flex-wrap: wrap;
-    word-break: break-all;
-    min-width: 30px;
-    max-width: 150px;
-    font-weight: normal;
-  }
   /* 두줄 이상 ellipsis 처리  */
   .ellipsis {
     overflow: hidden;
@@ -861,6 +886,9 @@ const ItemLayout = styled.span`
   }
   .width_20px {
     width: 20px;
+  }
+  .width_40px {
+    width: 40px;
   }
   .width_50 {
     width: 50%;

@@ -244,7 +244,7 @@ export function WorkbookList({
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>
-      <List margin={`10px 0 5px 0`}>
+      <List margin={`10px 0 5px 0`} height="none">
         <ListItem isChecked={false} columnTitle marginBottom="0px">
           <CheckBoxI
             id={''}
@@ -269,7 +269,7 @@ export function WorkbookList({
                 return (
                   <>
                     <span key={list.name} className="width_80px item_wrapper">
-                      {list.name}
+                      <strong>{list.name}</strong>
                     </span>
                     <i className="line"></i>
                   </>
@@ -281,7 +281,7 @@ export function WorkbookList({
                 return (
                   <>
                     <span key={list.name} className="width_150px item_wrapper">
-                      {list.name}
+                      <strong>{list.name}</strong>
                     </span>
                     <i className="line"></i>
                   </>
@@ -289,9 +289,13 @@ export function WorkbookList({
               }
               return null;
             })}
-            <span className="width_80px item_wrapper">미리보기</span>
+            <span className="width_80px item_wrapper">
+              <strong>미리보기</strong>
+            </span>
             <i className="line"></i>
-            <span className="width_20px item_wrapper">설정</span>
+            <span className="width_20px item_wrapper">
+              <strong>설정</strong>
+            </span>
           </ItemLayout>
         </ListItem>
       </List>
