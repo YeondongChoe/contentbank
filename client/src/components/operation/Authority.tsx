@@ -67,9 +67,9 @@ export const defaultPermissions = [
     checked: false,
     menuCode: 'isManageOperationChecked',
   },
-  { key: 'AM_isEdit', checked: true, menuCode: 'AM_isEdit' },
+  { key: 'AM_isEdit', checked: false, menuCode: 'AM_isEdit' },
   { key: 'AM_isManage', checked: false, menuCode: 'AM_isManage' },
-  { key: 'PM_isEdit', checked: true, menuCode: 'PM_isEdit' },
+  { key: 'PM_isEdit', checked: false, menuCode: 'PM_isEdit' },
   { key: 'PM_isManage', checked: false, menuCode: 'PM_isManage' },
   { key: 'PSM_isEdit', checked: false, menuCode: 'PSM_isEdit' },
   { key: 'PSM_isManage', checked: false, menuCode: 'PSM_isManage' },
@@ -1230,8 +1230,9 @@ export function Authority() {
                               name={'PSM_isEdit'}
                               id={'PSM_isEdit'}
                               value={20}
-                              onChange={(e) => handleChecked(e)}
+                              //onChange={(e) => handleChecked(e)}
                               checked={checkList[20].checked}
+                              disabled
                             />
                           </label>
                         </td>
@@ -1243,7 +1244,7 @@ export function Authority() {
                               id={'PSM_isManage'}
                               value={21}
                               onChange={(e) => handleChecked(e)}
-                              disabled={!checkList[20].checked}
+                              //disabled={!checkList[20].checked}
                               checked={checkList[21].checked}
                             />
                           </label>
@@ -1258,8 +1259,9 @@ export function Authority() {
                               name={'COM_isEdit'}
                               id={'COM_isEdit'}
                               value={22}
-                              onChange={(e) => handleChecked(e)}
+                              //onChange={(e) => handleChecked(e)}
                               checked={checkList[22].checked}
+                              disabled
                             />
                           </label>
                         </td>
@@ -1271,7 +1273,7 @@ export function Authority() {
                               id={'COM_isManage'}
                               value={23}
                               onChange={(e) => handleChecked(e)}
-                              disabled={!checkList[22].checked}
+                              //disabled={!checkList[22].checked}
                               checked={checkList[23].checked}
                             />
                           </label>
@@ -1286,8 +1288,9 @@ export function Authority() {
                               name={'MIM_isEdit'}
                               id={'MIM_isEdit'}
                               value={24}
-                              onChange={(e) => handleChecked(e)}
+                              //onChange={(e) => handleChecked(e)}
                               checked={checkList[24].checked}
+                              disabled
                             />
                           </label>
                         </td>
@@ -1299,7 +1302,7 @@ export function Authority() {
                               id={'MIM_isManage'}
                               value={25}
                               onChange={(e) => handleChecked(e)}
-                              disabled={!checkList[24].checked}
+                              //disabled={!checkList[24].checked}
                               checked={checkList[25].checked}
                             />
                           </label>
@@ -1314,8 +1317,9 @@ export function Authority() {
                               name={'LOM_isEdit'}
                               id={'LOM_isEdit'}
                               value={26}
-                              onChange={(e) => handleChecked(e)}
+                              //onChange={(e) => handleChecked(e)}
                               checked={checkList[26].checked}
+                              disabled
                             />
                           </label>
                         </td>
@@ -1327,7 +1331,7 @@ export function Authority() {
                               id={'LOM_isManage'}
                               value={27}
                               onChange={(e) => handleChecked(e)}
-                              disabled={!checkList[26].checked}
+                              //disabled={!checkList[26].checked}
                               checked={checkList[27].checked}
                             />
                           </label>
@@ -1342,8 +1346,9 @@ export function Authority() {
                               name={'STM_isEdit'}
                               id={'STM_isEdit'}
                               value={28}
-                              onChange={(e) => handleChecked(e)}
+                              //onChange={(e) => handleChecked(e)}
                               checked={checkList[28].checked}
+                              disabled
                             />
                           </label>
                         </td>
@@ -1355,7 +1360,7 @@ export function Authority() {
                               id={'STM_isManage'}
                               value={29}
                               onChange={(e) => handleChecked(e)}
-                              disabled={!checkList[28].checked}
+                              //disabled={!checkList[28].checked}
                               checked={checkList[29].checked}
                             />
                           </label>
@@ -1401,8 +1406,9 @@ export function Authority() {
                               name={'CCC_isEdit'}
                               id={'CCC_isEdit'}
                               value={32}
-                              onChange={(e) => handleChecked(e)}
+                              //onChange={(e) => handleChecked(e)}
                               checked={checkList[32].checked}
+                              disabled
                             />
                           </label>
                         </td>
@@ -1415,7 +1421,7 @@ export function Authority() {
                               value={33}
                               onChange={(e) => handleChecked(e)}
                               checked={checkList[33].checked}
-                              disabled={!checkList[32].checked}
+                              //disabled={!checkList[32].checked}
                             />
                           </label>
                         </td>
@@ -1431,6 +1437,7 @@ export function Authority() {
                               value={34}
                               onChange={(e) => handleChecked(e)}
                               checked={checkList[34].checked}
+                              disabled
                             />
                           </label>
                         </td>
@@ -1443,7 +1450,7 @@ export function Authority() {
                               value={35}
                               onChange={(e) => handleChecked(e)}
                               checked={checkList[35].checked}
-                              disabled={!checkList[34].checked}
+                              //disabled={!checkList[34].checked}
                             />
                           </label>
                         </td>
@@ -1766,8 +1773,9 @@ export function Authority() {
                           name={'PSM_isEdit'}
                           id={'PSM_isEdit'}
                           value={20}
-                          onChange={(e) => handleChecked(e)}
+                          //onChange={(e) => handleChecked(e)}
                           checked={checkList[20].checked}
+                          disabled
                         />
                       </label>
                     </td>
@@ -1779,7 +1787,7 @@ export function Authority() {
                           id={'PSM_isManage'}
                           value={21}
                           onChange={(e) => handleChecked(e)}
-                          disabled={!checkList[20].checked}
+                          //disabled={!checkList[20].checked}
                           checked={checkList[21].checked}
                         />
                       </label>
@@ -1794,8 +1802,9 @@ export function Authority() {
                           name={'COM_isEdit'}
                           id={'COM_isEdit'}
                           value={22}
-                          onChange={(e) => handleChecked(e)}
+                          //onChange={(e) => handleChecked(e)}
                           checked={checkList[22].checked}
+                          disabled
                         />
                       </label>
                     </td>
@@ -1807,7 +1816,7 @@ export function Authority() {
                           id={'COM_isManage'}
                           value={23}
                           onChange={(e) => handleChecked(e)}
-                          disabled={!checkList[22].checked}
+                          //disabled={!checkList[22].checked}
                           checked={checkList[23].checked}
                         />
                       </label>
@@ -1822,8 +1831,9 @@ export function Authority() {
                           name={'MIM_isEdit'}
                           id={'MIM_isEdit'}
                           value={24}
-                          onChange={(e) => handleChecked(e)}
+                          //onChange={(e) => handleChecked(e)}
                           checked={checkList[24].checked}
+                          disabled
                         />
                       </label>
                     </td>
@@ -1835,7 +1845,7 @@ export function Authority() {
                           id={'MIM_isManage'}
                           value={25}
                           onChange={(e) => handleChecked(e)}
-                          disabled={!checkList[24].checked}
+                          //disabled={!checkList[24].checked}
                           checked={checkList[25].checked}
                         />
                       </label>
@@ -1850,8 +1860,9 @@ export function Authority() {
                           name={'LOM_isEdit'}
                           id={'LOM_isEdit'}
                           value={26}
-                          onChange={(e) => handleChecked(e)}
+                          //onChange={(e) => handleChecked(e)}
                           checked={checkList[26].checked}
+                          disabled
                         />
                       </label>
                     </td>
@@ -1863,7 +1874,7 @@ export function Authority() {
                           id={'LOM_isManage'}
                           value={27}
                           onChange={(e) => handleChecked(e)}
-                          disabled={!checkList[26].checked}
+                          //disabled={!checkList[26].checked}
                           checked={checkList[27].checked}
                         />
                       </label>
@@ -1878,8 +1889,9 @@ export function Authority() {
                           name={'STM_isEdit'}
                           id={'STM_isEdit'}
                           value={28}
-                          onChange={(e) => handleChecked(e)}
+                          //onChange={(e) => handleChecked(e)}
                           checked={checkList[28].checked}
+                          disabled
                         />
                       </label>
                     </td>
@@ -1891,7 +1903,7 @@ export function Authority() {
                           id={'STM_isManage'}
                           value={29}
                           onChange={(e) => handleChecked(e)}
-                          disabled={!checkList[28].checked}
+                          //disabled={!checkList[28].checked}
                           checked={checkList[29].checked}
                         />
                       </label>
@@ -1937,8 +1949,9 @@ export function Authority() {
                           name={'CCC_isEdit'}
                           id={'CCC_isEdit'}
                           value={32}
-                          onChange={(e) => handleChecked(e)}
+                          //onChange={(e) => handleChecked(e)}
                           checked={checkList[32].checked}
+                          disabled
                         />
                       </label>
                     </td>
@@ -1951,7 +1964,7 @@ export function Authority() {
                           value={33}
                           onChange={(e) => handleChecked(e)}
                           checked={checkList[33].checked}
-                          disabled={!checkList[32].checked}
+                          //disabled={!checkList[32].checked}
                         />
                       </label>
                     </td>
@@ -1965,8 +1978,9 @@ export function Authority() {
                           name={'CMC_isEdit'}
                           id={'CMC_isEdit'}
                           value={34}
-                          onChange={(e) => handleChecked(e)}
+                          //onChange={(e) => handleChecked(e)}
                           checked={checkList[34].checked}
+                          disabled
                         />
                       </label>
                     </td>
@@ -1979,7 +1993,7 @@ export function Authority() {
                           value={35}
                           onChange={(e) => handleChecked(e)}
                           checked={checkList[35].checked}
-                          disabled={!checkList[34].checked}
+                          //disabled={!checkList[34].checked}
                         />
                       </label>
                     </td>
