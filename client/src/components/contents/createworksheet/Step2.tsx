@@ -1262,7 +1262,7 @@ export function Step2() {
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
 
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    const res = await classificationInstance.post('/v2/item', itemTreeKeyList);
     return res;
   };
 
