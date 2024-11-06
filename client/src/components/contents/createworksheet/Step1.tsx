@@ -3559,6 +3559,31 @@ export function Step1() {
       </Button>
     ));
   };
+
+  // TODO 문항 뷰어 넣어주기
+  // const renderPreviousExamContentView = () => {
+  //   const buttonOption = [
+  //     { value: 0, label: '학교내신' },
+  //     { value: 1, label: '전국시험' },
+  //   ];
+
+  //   return buttonOption.map((button) => (
+  //     <Button
+  //       key={button.value}
+  //       buttonType="button"
+  //       onClick={() => selectPreviousExamMenu(button.value)}
+  //       $padding="10px"
+  //       height={'35px'}
+  //       width={'100%'}
+  //       fontSize="14px"
+  //       $normal={previousExamMenu !== button.value}
+  //       $filled={previousExamMenu === button.value}
+  //       cursor
+  //     >
+  //       <span>{button.label}</span>
+  //     </Button>
+  //   ));
+  // };
   const selectArrange = [
     {
       idx: 0,
