@@ -32,12 +32,6 @@ export const contentQuotient = atom<ContentWithScore[]>({
   default: [],
 });
 
-//학습지 생성 여부 아톰
-export const isWorkbookCreatedAtom = atom({
-  key: 'isWorkbookCreatedAtom',
-  default: false,
-});
-
 //학습지 수정 아톰
 export const isEditWorkbookAtom = atom({
   key: 'isEditWorkbookAtom',

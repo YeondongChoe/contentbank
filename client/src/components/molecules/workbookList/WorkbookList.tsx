@@ -1,17 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  RefetchOptions,
-  QueryObserverResult,
-} from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
-import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import { workbookInstance } from '../../../api/axios';
@@ -29,8 +21,8 @@ import {
   openToastifyAlert,
   PaginationBox,
 } from '../../../components';
+import { selectedListProps } from '../../../components/contents/Worksheet';
 import { useModal } from '../../../hooks';
-import { isEditWorkbookAtom } from '../../../store/utilAtom';
 import { WorksheetListType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
@@ -44,6 +36,7 @@ type ContentListProps = {
   ondeleteClick?: () => void;
   totalCount?: number;
   itemsCountPerPage?: number;
+  selectedList: selectedListProps[];
 };
 
 export function WorkbookList({
@@ -53,12 +46,15 @@ export function WorkbookList({
   ondeleteClick,
   itemsCountPerPage,
   totalCount,
+  selectedList,
 }: ContentListProps) {
   const queryClient = useQueryClient();
   const { openModal } = useModal();
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [workbookIdx, setWorkbookIdx] = useState<number>(0);
+  const [isEditWorkbook, setIsEditWorkbook] = useState<boolean>(false);
 
   const openSettingList = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -94,9 +90,6 @@ export function WorkbookList({
     }
   };
 
-  const [workbookIdx, setWorkbookIdx] = useState<number>(0);
-  const [isEditWorkbook, setIsEditWorkbook] = useState<boolean>(false);
-
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
@@ -130,6 +123,9 @@ export function WorkbookList({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       setIsDeleteWorkbook(false);
@@ -243,9 +239,62 @@ export function WorkbookList({
     setCheckList([]);
   };
 
+  console.log(selectedList);
+
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>
+      <List margin={`10px 0 5px 0`}>
+        <ListItem isChecked={false} columnTitle marginBottom="0px">
+          <CheckBoxI
+            id={''}
+            value={''}
+            $margin={`0 5px 0 0`}
+            checked={false}
+            readOnly
+          />
+          <Icon
+            width={`18px`}
+            $margin={'0 0 0 10px'}
+            src={`/images/icon/favorites_off_B.svg`}
+            onClick={() => {}}
+            cursor
+          />
+          <ItemLayout>
+            {selectedList.map((list) => {
+              if (
+                ['태그', '대상학년', '작성자'].includes(list.name) &&
+                list.view === true
+              ) {
+                return (
+                  <>
+                    <span key={list.name} className="width_80px item_wrapper">
+                      {list.name}
+                    </span>
+                    <i className="line"></i>
+                  </>
+                );
+              } else if (
+                ['학습지명', '등록일'].includes(list.name) &&
+                list.view === true
+              ) {
+                return (
+                  <>
+                    <span key={list.name} className="width_150px item_wrapper">
+                      {list.name}
+                    </span>
+                    <i className="line"></i>
+                  </>
+                );
+              }
+              return null;
+            })}
+            <span className="width_80px item_wrapper">미리보기</span>
+            <i className="line"></i>
+            <span className="width_20px item_wrapper">설정</span>
+          </ItemLayout>
+        </ListItem>
+      </List>
       <ListButtonWrapper>
         {/* <InputWrapper>
               <ButtonWrapper>
@@ -311,33 +360,60 @@ export function WorkbookList({
                 />
               )}
               <ItemLayout>
-                <i className="line"></i>
-                <span className="width_80px item_wrapper">
-                  <span className="ellipsis">{item.grade}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_80px item_wrapper">
-                  <span className="ellipsis">
-                    {(item.tag === 'DAILY_TEST' && '일일테스트') ||
-                      (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
-                      (item.tag === 'EXERCISES' && '연습문제') ||
-                      (item.tag === 'PRACTICE_TEST' && '모의고사') ||
-                      (item.tag === 'TEST_PREP' && '내신대비')}
-                  </span>
-                </span>
-                <i className="line"></i>
-                <span className="width_150px item_wrapper">
-                  <span className="ellipsis">{item.name}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_150px item_wrapper">
-                  <span className="ellipsis">{item.createdAt}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_80px item_wrapper">
-                  <span className="ellipsis">{item.examiner}</span>
-                </span>
-                <i className="line"></i>
+                {selectedList.map((list) => {
+                  if (list.name === '태그' && list.view === true) {
+                    return (
+                      <>
+                        <span className="width_80px item_wrapper">
+                          <span className="ellipsis">
+                            {(item.tag === 'DAILY_TEST' && '일일테스트') ||
+                              (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
+                              (item.tag === 'EXERCISES' && '연습문제') ||
+                              (item.tag === 'PRACTICE_TEST' && '모의고사') ||
+                              (item.tag === 'TEST_PREP' && '내신대비')}
+                          </span>
+                        </span>
+                        <i className="line"></i>
+                      </>
+                    );
+                  } else if (list.name === '대상학년' && list.view === true) {
+                    return (
+                      <>
+                        <span className="width_80px item_wrapper">
+                          <span className="ellipsis">{item.grade}</span>
+                        </span>
+                        <i className="line"></i>
+                      </>
+                    );
+                  } else if (list.name === '작성자' && list.view === true) {
+                    return (
+                      <>
+                        <span className="width_80px item_wrapper">
+                          <span className="ellipsis">{item.examiner}</span>
+                        </span>
+                        <i className="line"></i>
+                      </>
+                    );
+                  } else if (list.name === '학습지명' && list.view === true) {
+                    return (
+                      <>
+                        <span className="width_150px item_wrapper">
+                          <span className="ellipsis">{item.name}</span>
+                        </span>
+                        <i className="line"></i>
+                      </>
+                    );
+                  } else if (list.name === '등록일' && list.view === true) {
+                    return (
+                      <>
+                        <span className="width_150px item_wrapper">
+                          <span className="ellipsis">{item.createdAt}</span>
+                        </span>
+                        <i className="line"></i>
+                      </>
+                    );
+                  }
+                })}
                 <span className="width_20px item_wrapper">
                   <LuFileSearch2
                     style={{ fontSize: '22px', cursor: 'pointer' }}
@@ -440,7 +516,6 @@ const InputWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
 `;
-
 const Total = styled.span`
   display: inline-block;
   text-align: right;
@@ -464,7 +539,6 @@ const CheckBoxWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
-
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
