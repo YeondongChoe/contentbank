@@ -9,6 +9,7 @@ import styled from 'styled-components';
 
 import {
   Button,
+  CheckBoxI,
   Icon,
   IconButton,
   Loader,
@@ -1409,51 +1410,160 @@ export function Classification({
   useEffect(() => {}, [setTabView]);
 
   //리스트 솔팅 정렬
-  // const columnsCount = useMemo(() => {
-  //   return 1;
-  // }, []);
   const [columnsCount, setColumnsCount] = useState<number>(3);
-  const [itemHeight, setItemHeight] = useState<string | undefined>(undefined);
-  useEffect(() => {}, [columnsCount]);
+  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
+  useEffect(() => {}, [columnsCount, itemHeight]);
+
+  //셀렉트 데이터
+  const [content, setContent] = useState<string[]>([]);
+  const [topSelect, setTopSelect] = useState<string>('문제만 보기');
+  const sortArr = [
+    {
+      idx: '대발문 + 지문 + 문제',
+      label: '대발문 + 지문 + 문제',
+      code: '대발문 + 지문 + 문제',
+      value: '대발문 + 지문 + 문제',
+      name: '대발문 + 지문 + 문제',
+    },
+    {
+      idx: '문제 + 정답 + 해설',
+      label: '문제 + 정답 + 해설',
+      code: '문제 + 정답 + 해설',
+      value: '문제 + 정답 + 해설',
+      name: '문제 + 정답 + 해설',
+    },
+    {
+      idx: '대발문 + 지문 + 문제 + 정답 + 해설',
+      label: '대발문 + 지문 + 문제 + 정답 + 해설',
+      code: '대발문 + 지문 + 문제 + 정답 + 해설',
+      value: '대발문 + 지문 + 문제 + 정답 + 해설',
+      name: '대발문 + 지문 + 문제 + 정답 + 해설',
+    },
+  ];
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const value = event.currentTarget.value;
+    setContent((prevContent) => [...prevContent, value]);
+  };
+  useEffect(() => {
+    console.log('셀렉트 값', topSelect);
+  }, [topSelect]);
+
+  // 체크박스 설정
+  const [checkList, setCheckList] = useState<number[]>([]);
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.checked);
+
+    if (e.target.checked) {
+      setCheckList(questionList.map((item, index) => index as number)); //
+    } else {
+      setCheckList([]);
+    }
+  };
+  const handleSingleCheckIcon = (checked: boolean, idx: number) => {
+    if (checked) {
+      setCheckList((prev) => [...prev, idx]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== idx));
+    }
+
+    setIsChecked(checked);
+  };
+
   return (
     <Container>
       <LayoutBodyWrapper>
         <LayoutWrapper className="auto">
           <TopButtonWrapper>
-            <Select></Select>
+            <div>
+              <CheckBoxI
+                $margin={'0 5px 0 0'}
+                onChange={(e) => handleAllCheck(e)}
+                checked={
+                  checkList.length === questionList.length ? true : false
+                }
+                // checked={true}
+                id={'all check'}
+                value={'all check'}
+              />
+              <span className={`title_top`}>총 {`${0} 건`} 전체선택</span>
+            </div>
+            <p>총 22건 중 5건 분류없음</p>
+          </TopButtonWrapper>
+          <TopButtonWrapper>
+            <Select
+              width={'250px'}
+              defaultValue={'문제만 보기'}
+              key={'문제만 보기'}
+              options={sortArr}
+              onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setTopSelect}
+            />
             <ButtonWrapper>
               <button
                 onClick={() => {
                   setColumnsCount(3);
-                  setItemHeight('300px');
+                  setItemHeight('250px');
                 }}
+                className={`button ${columnsCount == 3 ? 'on' : ''} `}
               >
-                작게보기
-              </button>
-              <button
-                onClick={() => {
-                  setColumnsCount(2);
-                  setItemHeight(undefined);
-                }}
-              >
-                크게보기
+                {/* 작게보기 */}
+                <Icon
+                  width={`20px`}
+                  src={`/images/icon/sorting_default_view.svg`}
+                />
               </button>
               <button
                 onClick={() => {
                   setColumnsCount(1);
                   setItemHeight(undefined);
                 }}
+                className={`button ${columnsCount == 1 ? 'on' : ''}`}
               >
-                맞춤보기
+                {/* 크게보기 */}
+                <Icon
+                  width={`20px`}
+                  src={`/images/icon/sorting_larger_view.svg`}
+                />
+              </button>
+              <button
+                onClick={() => {
+                  setColumnsCount(2);
+                  setItemHeight(undefined);
+                }}
+                className={`button ${columnsCount == 2 ? 'on' : ''}`}
+              >
+                {/* 맞춤보기  */}
+                <Icon
+                  width={`20px`}
+                  src={`/images/icon/sorting_custom_view.svg`}
+                />
               </button>
             </ButtonWrapper>
           </TopButtonWrapper>
           <ScrollWrapper className="items_height">
             <PerfectScrollbar>
-              <MyStaticWrapper columnsCount={columnsCount}>
+              <MyStaticWrapper columnsCount={columnsCount} padding="5px">
                 {Array.from({ length: 20 }).map((_, index) => (
                   <ItemWrapper key={index} height={itemHeight}>
-                    div dsa dsa dsadsad dsa {index + 1}
+                    <TopButtonWrapper>
+                      <div>
+                        <CheckBoxI
+                          $margin={'0 5px 0 0'}
+                          onChange={(e) =>
+                            handleSingleCheckIcon(e.target.checked, index)
+                          }
+                          checked={checkList.includes(index) ? true : false}
+                          id={index.toString()}
+                          value={index}
+                        />
+                        <span className={`title_top`}>{`${0} 건`}</span>
+                      </div>
+                      <span className="tag">{`${'wnrhks'}`}</span>
+                    </TopButtonWrapper>
+                    <div className="quiz_wrap">
+                      div dsa dsa d0sadsad dsa {index + 1}
+                    </div>
+                    <div className="class_wrap">{`${'qnsfb sodud dsa dsad '}`}</div>
                   </ItemWrapper>
                 ))}
               </MyStaticWrapper>
@@ -1863,8 +1973,7 @@ const ScrollWrapper = styled.div`
   overflow-y: auto;
   height: calc(100vh - 100px);
   width: 100%;
-  background-color: ${COLOR.LIGHT_GRAY};
-
+  border-top: 1px solid #d1d1d1;
   .line {
     border-bottom: 1px solid ${COLOR.BORDER_GRAY};
     padding: 5px 0;
@@ -1966,14 +2075,34 @@ const ArrowButtonWrapper = styled.span`
 `;
 
 const ItemWrapper = styled.div<{ height?: string }>`
-  padding: 20px;
-  border: 1px solid red;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
   height: ${({ height }) => height || 'auto'};
+  margin: 5px;
+  overflow: auto;
 `;
 const TopButtonWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  padding: 10px;
+  /* padding-top: 15px; */
 `;
 const ButtonWrapper = styled.div`
   display: flex;
+  gap: 5px;
+
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background-color: transparent;
+
+    &.on {
+      background-color: ${COLOR.IS_HAVE_DATA};
+    }
+  }
 `;

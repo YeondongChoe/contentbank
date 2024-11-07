@@ -17,26 +17,39 @@ import {
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { useDnD } from '../../molecules/dragAndDrop';
 
-import { GroupListProps } from './GroupManagement';
-
 export function TagMappingInit() {
-  const [categoryList, setCategoryList] = useState<string[]>([]);
+  const [categoryList, setCategoryList] = useState<
+    { type: string; name: string }[]
+  >([]);
   const [mappingList, setMappingList] = useState<string[]>([]);
-  const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [groupIdx, setGgroupIdx] = useState<number>();
+  const [groupName, setGgroupName] = useState<string>();
+  const [groupData, setGroupData] = useState<{
+    groupIdx: number | undefined;
+    name: string | undefined;
+    types: number[];
+  } | null>(null);
+
+  const [activeItem, setActiveItem] = useState<{
+    name: string;
+    type: string;
+  } | null>(null);
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-
+  const typeKey = query.get('state');
   useEffect(() => {
     if (query.get('state')) {
       console.log('query', query.get('state'));
     }
   }, []);
 
-  // Load category group data
+  //카테고리 그룹 리스트 불러오기 api
   const getCategoryGroup = async () => {
-    const res = await classificationInstance.get(`/v1/category/group`);
-    console.log(res);
-    return res;
+    const res = await classificationInstance.get(
+      `/v1/category/group/${typeKey}`,
+    );
+    console.log(res.data.data);
+    return res.data.data;
   };
 
   const { data: categoryGroupData, isLoading: isCategoryGroupLoading } =
@@ -50,21 +63,31 @@ export function TagMappingInit() {
 
   useEffect(() => {
     if (categoryGroupData) {
-      const item = categoryGroupData.data.data.groupList.filter(
-        (el: GroupListProps) => el.idx === Number(query.get('state')),
+      console.log('가져온 카테고리 ----', categoryGroupData);
+      const item = categoryGroupData;
+      const { nameList, typeList, idx, name } = item;
+      const names = nameList ? nameList.split(',') : [];
+      const types = typeList ? typeList.split(',') : [];
+
+      const newCategoryList = names.map(
+        (name: any, index: string | number) => ({
+          name,
+          type: types[index] || '',
+        }),
       );
 
-      console.log('item----', item[0]);
+      setCategoryList(newCategoryList);
+      setGgroupIdx(idx);
+      setGgroupName(name);
     }
   }, [categoryGroupData]);
 
-  // Update category group
-  const putCategoryGroup = async () => {
-    const data = {
-      groupIdx: 1,
-      name: '출처정보12',
-      types: [1, 2, 3],
-    };
+  // 카테고리 순서 변경 api
+  const putCategoryGroup = async (data: {
+    groupIdx: number | undefined;
+    name: string | undefined;
+    types: number[];
+  }) => {
     const res = await classificationInstance.put(`/v1/category/group`, data);
     console.log('putCategoryGroup', res);
     return res;
@@ -77,7 +100,7 @@ export function TagMappingInit() {
     }) => {
       openToastifyAlert({
         type: 'error',
-        text: context.response.data.message,
+        text: `${context.response.data.message}`,
       });
       if (context.response.data.code == 'GE-002') {
         postRefreshToken();
@@ -86,37 +109,64 @@ export function TagMappingInit() {
     onSuccess: (response: { data: { message: string } }) => {
       openToastifyAlert({
         type: 'success',
-        text: response.data.message,
+        text: `${response.data.message ? response.data.message : '순서가 변경되었습니다'}`,
       });
     },
   });
 
-  // Initialize lists
   useEffect(() => {
-    setCategoryList(['전체', '수학', '영어']);
-    setMappingList(['11차', '10차', '9차', '8차']);
-  }, []);
+    console.log('카테고리 변경 ----- ', categoryList);
+    //최종 순서 데이터
+    const sortList = categoryList.map((item) => Number(item.type));
+    console.log('sortList ---------- ', sortList);
+    const data = {
+      groupIdx: groupIdx,
+      name: groupName,
+      types: sortList,
+    };
+    setGroupData(data);
+  }, [categoryList, groupIdx, groupName]);
+
+  const submitMapping = () => {
+    if (groupData) mutateCategoryGroup(groupData);
+  };
 
   const moveTag = (
     dragIndex: number,
     hoverIndex: number,
     listType: 'category' | 'mapping',
   ) => {
-    const updatedList =
-      listType === 'category' ? [...categoryList] : [...mappingList];
+    const updatedList = [...categoryList];
+    // listType === 'category' ? [...categoryList] : [...mappingList];
     const draggedItem = updatedList.splice(dragIndex, 1)[0];
     updatedList.splice(hoverIndex, 0, draggedItem);
 
     if (listType === 'category') {
       setCategoryList(updatedList);
     } else {
-      setMappingList(updatedList);
+      // setMappingList(updatedList);
     }
   };
 
-  const handleTagClick = (item: string) => {
+  const handleTagClick = (item: { name: string; type: string }) => {
     setActiveItem(activeItem === item ? null : item);
+
+    console.log('click item ----- ', item);
+
+    const groupIdx = item.type;
+    const getCategoryMap = async () => {
+      const res = await classificationInstance.get(
+        `/v1/category/map/${groupIdx}`,
+      );
+      console.log('선택된 idx에 따른 항목 조회 ----- ', res);
+      console.log('선택된 idx에 따른 항목 조회 ----- ', res.data.dat?.mapList);
+      setMappingList(res.data.dat?.mapList);
+    };
+
+    getCategoryMap();
   };
+
+  //
 
   return (
     <Container>
@@ -127,7 +177,7 @@ export function TagMappingInit() {
           <TagsWrapper>
             {categoryList.map((el, idx) => (
               <DraggableInitItem
-                key={`${el} ${idx}`}
+                key={`${el.name} ${el.type}`}
                 item={el}
                 index={idx}
                 activeItem={activeItem}
@@ -140,7 +190,7 @@ export function TagMappingInit() {
           </TagsWrapper>
         </DndProvider>
 
-        <Button $filled onClick={() => {}} $margin="15px 0 0 0">
+        <Button $filled onClick={() => submitMapping()} $margin="15px 0 0 0">
           <span>지금 순서로 매핑하기</span>
         </Button>
         <p className="sub_info">
@@ -156,7 +206,7 @@ export function TagMappingInit() {
       <ListItemWrapper>
         <strong>매핑</strong>
         <DndProvider backend={HTML5Backend}>
-          <TagsWrapper className="height">
+          {/* <TagsWrapper className="height">
             {mappingList.map((el, idx) => (
               <DraggableInitItem
                 key={`${el} ${idx}`}
@@ -169,7 +219,7 @@ export function TagMappingInit() {
                 }
               />
             ))}
-          </TagsWrapper>
+          </TagsWrapper> */}
         </DndProvider>
       </ListItemWrapper>
     </Container>
@@ -177,10 +227,10 @@ export function TagMappingInit() {
 }
 
 interface DraggableInitItemProps {
-  item: string;
+  item: { name: string; type: string };
   index: number;
-  activeItem: string | null;
-  handleTagClick: (item: string) => void;
+  activeItem: { name: string; type: string } | null;
+  handleTagClick: (item: { name: string; type: string }) => void;
   moveTag: (dragIndex: number, hoverIndex: number) => void;
 }
 
@@ -207,8 +257,8 @@ const DraggableInitItem: React.FC<DraggableInitItemProps> = ({
       <span className="icon_wrap">
         <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
       </span>
-      <span className="category_title">{item}</span>
-      <span className="category_sub_title end">{'교육 과정'}</span>
+      <span className="category_title">{item.name}</span>
+      <span className="category_sub_title end">{`${0}개의 태그`}</span>
     </Tags>
   );
 };

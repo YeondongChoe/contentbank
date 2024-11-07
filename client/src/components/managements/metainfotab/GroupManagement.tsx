@@ -15,7 +15,7 @@ import { Button, Icon, openToastifyAlert } from '../../atom';
 
 import { CategoryAddModal, CreateGroupModal, ScreenPathModal } from './modal';
 export type GroupListProps = {
-  codes: string;
+  code: string;
   idx: number;
   name: string;
   nameList: string;
@@ -133,11 +133,12 @@ export function GroupManagement() {
       ),
     });
   };
-  const openTagMappingWindow = (id: number) => {
+  const openTagMappingWindow = (code: string) => {
+    console.log('code ------ ', code);
     windowOpenHandler({
       name: 'tagmapping',
       url: '/content-manage/tagmapping',
-      queryParams: { state: `${id}` },
+      queryParams: { state: `${code}` },
     });
   };
 
@@ -188,6 +189,7 @@ export function GroupManagement() {
       setGroupList(categoryGroupData.data.data.groupList);
     }
   }, [categoryGroupData]);
+  console.log('groupList ------------- ', groupList);
   const clickSave = (numberList: number[]) => {
     console.log(numberList);
     if (numberList.length > 20) {
@@ -317,7 +319,7 @@ export function GroupManagement() {
                       <button
                         className="link_button"
                         onClick={() => {
-                          openScreenPathModal(list.codes);
+                          openScreenPathModal(list.code);
                         }}
                       >
                         <Icon
@@ -359,7 +361,7 @@ export function GroupManagement() {
                     <button
                       className="mapping_button"
                       type="button"
-                      onClick={() => openTagMappingWindow(list.idx)}
+                      onClick={() => openTagMappingWindow(list.code)}
                     >
                       태그 매핑
                     </button>
