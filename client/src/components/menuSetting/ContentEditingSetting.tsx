@@ -3,12 +3,11 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { BsEyeSlash, BsEye } from 'react-icons/bs';
+import { TbCopy } from 'react-icons/tb';
 import styled from 'styled-components';
 
-import { Label, Button, Select, openToastifyAlert } from '..';
+import { Label, Button, Select, openToastifyAlert, CheckBoxI } from '..';
 import { resourceServiceInstance } from '../../api/axios';
-import Image from '../../assets/images/ContentEditing.png';
-import Image2 from '../../assets/images/ContentEditingSearch.png';
 import { MenuDataListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
@@ -345,9 +344,6 @@ export function ContentEditingSetting() {
                     bold
                     fontSize="16px"
                   />
-                  <Button width="80px" height="25px" fontSize="14px" $filled>
-                    <span>설정</span>
-                  </Button>
                 </SubtitleWrapper>
                 <SelectBox>
                   {(() => {
@@ -380,20 +376,88 @@ export function ContentEditingSetting() {
                     <span>모두 포함</span>
                   </Button>
                 </ButtonWrapper>
-                <Img2Wrapper>
-                  <img src={Image2} alt="search" style={{ width: '100%' }} />
-                </Img2Wrapper>
+                <AddButton>+ 검색 조건 추가</AddButton>
+                <InputWrapper>
+                  <div
+                    style={{
+                      minHeight: '35px',
+                      padding: '5px 10px',
+                      borderRadius: '4px',
+                      outline: 'none',
+                      width: 'calc(100% - 90px)',
+                      overflowWrap: 'break-word',
+                    }}
+                  />
+                  <Button
+                    width={'80px'}
+                    height={'35px'}
+                    fontSize={'14px'}
+                    $margin={'0 0 0 5px'}
+                    cursor
+                    $filled
+                    $success
+                    onClick={() => {}}
+                  >
+                    수식
+                  </Button>
+                </InputWrapper>
               </SelectWrapper>
-              <ImgWrapper>
-                <img
-                  src={Image}
-                  alt="editer"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
-              </ImgWrapper>
+              <CardListWrapper>
+                <CardButtonWrapper>
+                  <CheckIconWrapper>
+                    <CheckBoxI checked={true} id={''} value={''} />총 234건 전체
+                    선택
+                  </CheckIconWrapper>
+                  <ButtonEditWrapper>
+                    <Button $border width="100px" height="30px" fontSize="14px">
+                      문항 수정
+                    </Button>
+                    <Button width="100px" height="30px" fontSize="14px">
+                      수정 취소
+                    </Button>
+                  </ButtonEditWrapper>
+                </CardButtonWrapper>
+                <CardList>
+                  <CardWrapper>
+                    <Card>
+                      <CardTitle>
+                        <CheckBoxI
+                          id={''}
+                          value={''}
+                          $margin={`0 5px 0 0`}
+                          checked={true}
+                          readOnly
+                          width="15px"
+                        />
+                        <p>
+                          자료의 조건/자료의 표현/평균 알아보기/평균을 구하는
+                          문제
+                        </p>
+                      </CardTitle>
+                      <CardContext>
+                        1. 평균을 구하는 문제에서 다음의 부채꼴을 보고...
+                        부채꼴에 있는 도형을 고르고... 부채표 영역에 들어갈
+                        알맞은 값을 구하시오. 중복..
+                      </CardContext>
+                      <CardContentTypeWrapper>
+                        <ContentType>기출(휘문고)</ContentType>
+                        <ContentCategoryWrapper>
+                          <ContentCategory>#11차 #12차 #13차</ContentCategory>
+                          <ContentCategory>#수학</ContentCategory>
+                          <ContentCategory>#초등 1학년 1학기</ContentCategory>
+                        </ContentCategoryWrapper>
+                      </CardContentTypeWrapper>
+                    </Card>
+                    <PreviewWrapper>
+                      <PreviewIconWrapper>
+                        <TbCopy size={20}></TbCopy>
+                      </PreviewIconWrapper>
+                      <p>문항</p>
+                      <p>상세보기</p>
+                    </PreviewWrapper>
+                  </CardWrapper>
+                </CardList>
+              </CardListWrapper>
             </ClassificationWrapper>
             <ListDescription>
               화면에 보이는 데이터는 예시로 구성된 데이터 입니다. 실제
@@ -540,13 +604,111 @@ const ButtonWrapper = styled.div`
   padding: 10px 0;
   gap: 5px;
 `;
-const Img2Wrapper = styled.div`
-  height: 100%;
-  padding-top: 133px;
+const AddButton = styled.button`
+  margin: 0 20px;
+  margin-top: 200px;
+  padding: 10px 20px;
+  color: ${COLOR.PRIMARY};
+  border: 1px dotted ${COLOR.PRIMARY};
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: transparent;
 `;
-const ImgWrapper = styled.div`
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin: 10px 20px;
+  width: calc(100% - 40px);
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  border-radius: 5px;
+  padding: 5px;
+  position: relative;
+  background-color: white;
+`;
+const CardListWrapper = styled.div`
   width: 60%;
+  padding: 10px;
+  min-height: 687px;
 `;
+const CardButtonWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+const CheckIconWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+`;
+const ButtonEditWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const CardList = styled.ul`
+  padding-top: 10px;
+`;
+const CardWrapper = styled.div`
+  display: flex;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  background-color: white;
+  border-radius: 5px;
+`;
+const Card = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+const CardTitle = styled.div`
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  p {
+    font-size: 12px;
+  }
+`;
+const CardContext = styled.p`
+  font-size: 14px;
+  padding: 0 20px;
+`;
+const CardContentTypeWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  padding-bottom: 10px;
+`;
+const ContentType = styled.p`
+  font-size: 12px;
+  font-weight: bold;
+  color: ${COLOR.FONT_GRAY};
+`;
+const ContentCategoryWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const ContentCategory = styled.p`
+  font-size: 12px;
+  font-weight: bold;
+  color: ${COLOR.FONT_GRAY};
+`;
+const PreviewWrapper = styled.div`
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-left: 1px solid ${COLOR.BORDER_GRAY};
+
+  p {
+    font-size: 11px;
+    display: flex;
+    justify-content: center;
+  }
+`;
+const PreviewIconWrapper = styled.div`
+  cursor: pointer;
+`;
+
 const ListDescription = styled.p`
   display: flex;
   justify-content: center;
