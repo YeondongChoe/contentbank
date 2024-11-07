@@ -1469,6 +1469,8 @@ export function Classification({
     setIsChecked(checked);
   };
 
+  // console.log();
+
   return (
     <Container>
       <LayoutBodyWrapper>
@@ -1543,27 +1545,52 @@ export function Classification({
           <ScrollWrapper className="items_height">
             <PerfectScrollbar>
               <MyStaticWrapper columnsCount={columnsCount} padding="5px">
-                {Array.from({ length: 20 }).map((_, index) => (
-                  <ItemWrapper key={index} height={itemHeight}>
+                {questionList.map((quiz, index) => (
+                  <ItemWrapper key={quiz.idx} height={itemHeight}>
                     <TopButtonWrapper>
                       <div>
                         <CheckBoxI
                           $margin={'0 5px 0 0'}
                           onChange={(e) =>
-                            handleSingleCheckIcon(e.target.checked, index)
+                            handleSingleCheckIcon(e.target.checked, quiz.idx)
                           }
-                          checked={checkList.includes(index) ? true : false}
-                          id={index.toString()}
-                          value={index}
+                          checked={checkList.includes(quiz.idx) ? true : false}
+                          id={quiz.idx.toString()}
+                          value={quiz.idx}
                         />
                         <span className={`title_top`}>{`${0} 건`}</span>
                       </div>
-                      <span className="tag">{`${'wnrhks'}`}</span>
+                      <span className="tag">{`${quiz.quizCategoryList.map(
+                        (item, idx) => {
+                          <span key={idx}>{item.quizCategory?.문항타입}</span>;
+                        },
+                      )}`}</span>
                     </TopButtonWrapper>
                     <div className="quiz_wrap">
-                      div dsa dsa d0sadsad dsa {index + 1}
+                      {quiz.quizItemList?.map((item) => (
+                        <span key={item.idx}>{item.content}</span>
+                      ))}
                     </div>
-                    <div className="class_wrap">{`${'qnsfb sodud dsa dsad '}`}</div>
+                    <div className="class_wrap">{`${
+                      quiz.quizCategoryList.some(
+                        (item) =>
+                          item.quizCategory && item.quizCategory.교육과정,
+                      ) ? (
+                        quiz.quizCategoryList.map((item, idx) => {
+                          <span key={idx}>
+                            {item.quizCategory?.교육과정}/
+                            {item.quizCategory?.과목}/{item.quizCategory?.교과}/
+                            {item.quizCategory?.학년}/{item.quizCategory?.학기}/
+                            {item.quizCategory?.대단원}/
+                            {item.quizCategory?.중단원}/
+                            {item.quizCategory?.소단원}/
+                            {item.quizCategory?.유형}
+                          </span>;
+                        })
+                      ) : (
+                        <span>(분류없음)</span>
+                      )
+                    }`}</div>
                   </ItemWrapper>
                 ))}
               </MyStaticWrapper>

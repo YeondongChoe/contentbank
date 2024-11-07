@@ -155,6 +155,10 @@ export function ClassificationEdit({
   const [checkedItems, setCheckedItems] = useState<CheckedItemType[]>([]);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
+  const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
@@ -187,7 +191,7 @@ export function ClassificationEdit({
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A');
-    return response.data.data.typeList;
+    return response.data.data;
   };
   const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
     queryKey: ['get-category-groups-A'],
@@ -198,31 +202,47 @@ export function ClassificationEdit({
     },
   });
   useEffect(() => {
+    if (categoryTypeList) {
+      fetchCategoryItems(categoryTypeList, setCategoryList);
+    }
+  }, [categoryTypeList]);
+
+  //groupsData값 들어왔을때 typeList 관리
+  useEffect(() => {
     if (groupsData) {
-      fetchCategoryItems(groupsData);
+      setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
 
   // 카테고리의 그룹 아이템 조회
-  const fetchCategoryItems = async (typeList: string) => {
-    console.log('------typeList-----------', typeList);
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
     const typeIds = typeList.split(',');
     try {
+      setIsCategoryLoaded(true);
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
+        classificationInstance
+          .get(`/v1/category/class/${id}`)
+          .catch((error) => {
+            console.log(error);
+            if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
+              setRefreshTokenCalled(true);
+              postRefreshToken().then(() => {
+                setRefreshTokenCalled(false);
+              });
+            }
+          }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      setCategoryList(itemsList);
-    } catch (error: any) {
-      console.log('error--------------', error.response.data.code);
-
-      if (error.response?.data?.code == 'GE-002')
-        postRefreshToken().then(() => {
-          groupsDataRefetch();
-        });
+      // console.log('itemsList', itemsList);
+      setCategory(itemsList);
+    } finally {
+      setIsCategoryLoaded(false);
     }
   };
 
@@ -791,11 +811,12 @@ export function ClassificationEdit({
   /* 선택된 유형에따라 항목 조회 */
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
-    const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[1];
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -820,11 +841,12 @@ export function ClassificationEdit({
 
   //2뎁스 선택시 3뎁스 설정되게
   const getNextList2 = async () => {
-    const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[2];
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -850,12 +872,13 @@ export function ClassificationEdit({
 
   //3뎁스 선택시 4뎁스 설정되게
   const getNextList3 = async () => {
-    const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[3];
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
     console.log('row--------------4-------');
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx - 1}/${pidx}`,
+        `/v1/category/${itemIdx}/${pidx}`,
       );
       console.log('4-------', res?.data.data.categoryClassList);
       setNextList3depth(res?.data.data.categoryClassList);
