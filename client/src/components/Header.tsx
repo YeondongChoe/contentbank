@@ -19,7 +19,7 @@ export function Header() {
     openNaviationBoolAtom,
   );
   const [isLogin, setIsLogin] = useState(true);
-  const [isAlert, setIsAlert] = useState(true);
+  const [isAlert, setIsAlert] = useState(false);
 
   const pageIndexValue = useRecoilValue(pageIndexAtom);
 
