@@ -69,6 +69,7 @@ export function Header() {
       });
     }
   }, [isSuccess]);
+
   return (
     <>
       <Container $isOpenNavigation={isOpenNavigation}>

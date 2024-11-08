@@ -499,17 +499,6 @@ export function WorkbookList({
   );
 }
 
-const IframeWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-`;
-const IframeButtonWrapper = styled.div`
-  width: 1100px;
-  display: flex;
-  justify-content: flex-end;
-`;
 const ListButtonWrapper = styled.div`
   display: flex;
   align-items: center;

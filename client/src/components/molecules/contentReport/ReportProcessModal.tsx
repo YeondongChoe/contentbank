@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { styled } from 'styled-components';
 
-import { quizService } from '../../api/axios';
-import { useModal } from '../../hooks';
-import { postRefreshToken } from '../../utils/tokenHandler';
-import { Button, Label, Select, openToastifyAlert } from '../atom';
-import { COLOR } from '../constants';
-import { Alert } from '../molecules';
+import { Alert } from '..';
+import { quizService } from '../../../api/axios';
+import { useModal } from '../../../hooks';
+import { postRefreshToken } from '../../../utils/tokenHandler';
+import { Button, Label, Select, openToastifyAlert } from '../../atom';
+import { COLOR } from '../../constants';
 
 type ReportProcessType = {
   registorReport?: boolean;
@@ -106,6 +106,56 @@ export function ReportProcessModal({
     //해당 신고내역에 처리된 상태 보내기
   };
 
+  const [images, setImages] = useState<Array<string | null>>([null]); // 초기 빈 ImgBox 1개
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // 파일 선택 트리거
+  const handleClick = (index: number) => {
+    fileInputRef.current?.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.dataset.index = String(index);
+    }
+  };
+  console.log(images);
+
+  // 이미지 파일 처리
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    const index = event.target.dataset.index;
+
+    if (file && index !== undefined) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImages((prevImages) => {
+          const updatedImages = [...prevImages];
+          updatedImages[parseInt(index, 10)] = reader.result as string;
+
+          // 새로운 빈 ImgBox 추가 (최대 5개 제한)
+          if (updatedImages.length < 5 && !updatedImages.includes(null)) {
+            updatedImages.push(null);
+          }
+
+          return updatedImages;
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 이미지 삭제 처리
+  const handleRemoveImage = (index: number) => {
+    setImages((prevImages) => {
+      const updatedImages = prevImages.filter((_, i) => i !== index); // 선택한 인덱스 제거
+
+      // 빈 ImgBox가 5개 미만일 때 추가
+      if (updatedImages.length < 5 && !updatedImages.includes(null)) {
+        updatedImages.push(null);
+      }
+
+      return updatedImages;
+    });
+  };
+
   return (
     <Container>
       <Title>{registorReport ? '문항 신고' : '처리완료 상태 등록'}</Title>
@@ -144,13 +194,52 @@ export function ReportProcessModal({
           />
         </div>
       </InputWrapper>
+      <ImgWrapper>
+        <LabelWrapper>
+          <Label width="100px" fontSize="15px" value={'이미지 첨부'} />
+          <p>이미지는 최대 5개까지 등록 가능합니다.(용량 500mb)</p>
+        </LabelWrapper>
+        <ImgBoxWrapper>
+          {images.map((imgSrc, index) => (
+            <ImgBox key={index} onClick={() => handleClick(index)}>
+              {imgSrc ? (
+                <>
+                  <img
+                    src={imgSrc}
+                    alt="uploaded"
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                  <CloseButton
+                    onClick={(e) => {
+                      e.stopPropagation(); // ImgBox 클릭 이벤트 방지
+                      handleRemoveImage(index);
+                    }}
+                  >
+                    X
+                  </CloseButton>
+                </>
+              ) : (
+                '+'
+              )}
+            </ImgBox>
+          ))}
+        </ImgBoxWrapper>
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          onChange={handleFileChange}
+        />
+      </ImgWrapper>
       <ButtonGroup>
         <Button
           buttonType="button"
           onClick={() => closeModal()}
           $padding="10px"
-          height={'40px'}
-          fontSize="16px"
+          width="70px"
+          height={'30px'}
+          fontSize="14px"
           $border
           cursor
         >
@@ -160,8 +249,9 @@ export function ReportProcessModal({
           buttonType="button"
           onClick={() => setIsAlertOpen(true)}
           $padding="10px"
-          height={'40px'}
-          fontSize="16px"
+          width="70px"
+          height={'30px'}
+          fontSize="14px"
           $filled
           cursor
         >
@@ -192,10 +282,8 @@ export function ReportProcessModal({
 }
 
 const Container = styled.div`
-  padding: 0 40px;
-  padding-bottom: 40px;
   width: 100%;
-  min-width: 400px;
+  min-width: 600px;
 `;
 const Title = styled.strong`
   font-size: 22px;
@@ -203,17 +291,13 @@ const Title = styled.strong`
   display: block;
   font-weight: normal;
   text-align: center;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
 `;
-const ButtonGroup = styled.div`
-  display: flex;
-  width: 100%;
-  gap: 10px;
-`;
-
 const InputWrapper = styled.div`
   width: 100%;
-  padding: 10px 0;
+  padding: 10px 40px;
   display: flex;
   justify-content: space-between;
   position: relative;
@@ -223,7 +307,56 @@ const InputWrapper = styled.div`
     width: calc(100% - 100px);
   }
 `;
-
+const ImgWrapper = styled.div`
+  padding: 10px 40px;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding-bottom: 20px;
+`;
+const LabelWrapper = styled.div`
+  p {
+    width: 100px;
+    padding-right: 10px;
+    font-size: 10px;
+    color: ${COLOR.FONT_GRAY};
+  }
+`;
+const ImgBoxWrapper = styled.ul`
+  width: 440px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+`;
+const ImgBox = styled.div`
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  color: ${COLOR.FONT_GRAY};
+  cursor: pointer;
+`;
+const CloseButton = styled.div`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: gray;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+`;
 const Textarea = styled.textarea`
   width: 100%;
   height: 100px;
@@ -232,4 +365,12 @@ const Textarea = styled.textarea`
   padding: 10px;
   resize: none;
   border-radius: 5px;
+`;
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 10px;
+  background-color: ${COLOR.LIGHT_GRAY};
+  padding: 10px;
 `;

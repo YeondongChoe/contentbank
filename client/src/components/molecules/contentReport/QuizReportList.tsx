@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import {
@@ -14,45 +14,29 @@ import {
   Modal,
   ValueNone,
   PaginationBox,
-} from '..';
-import { quizService } from '../../api/axios';
-import { useModal } from '../../hooks';
-import { pageAtom } from '../../store/utilAtom';
-import { ReportData, Report } from '../../types';
-import { windowOpenHandler } from '../../utils/windowHandler';
-import { COLOR } from '../constants';
+} from '../..';
+import { quizService } from '../../../api/axios';
+import { useModal } from '../../../hooks';
+import { pageAtom } from '../../../store/utilAtom';
+import { ReportData, ReportType } from '../../../types';
+import { windowOpenHandler } from '../../../utils/windowHandler';
+import { COLOR } from '../../constants';
 
 import { ReportProcessModal } from './ReportProcessModal';
 
-export function QuizReportList() {
+type QuizReportListProps = {
+  list: ReportType[];
+  totalCount?: number;
+  itemsCountPerPage?: number;
+};
+
+export function QuizReportList({
+  list,
+  totalCount,
+  itemsCountPerPage,
+}: QuizReportListProps) {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
-  const [reportList, setReportList] = useState<Report[]>([]);
-
-  const getReportList = async () => {
-    const res = await quizService.get(`/v1/report`);
-    // console.log(`getReportList 결과값`, res);
-    return res.data;
-  };
-
-  const {
-    data: reportData,
-    isLoading,
-    refetch,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['get-reportList'],
-    queryFn: getReportList,
-    meta: {
-      errorMessage: 'get-reportList 에러 메세지',
-    },
-  });
-
-  useEffect(() => {
-    if (reportData) {
-      setReportList(reportData.data.reportList);
-    }
-  }, [reportData]);
 
   //신고리스트 처리완료 버튼
   const openReportProcess = (idx: number) => {
@@ -64,7 +48,7 @@ export function QuizReportList() {
   };
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = () => {
-    window.localStorage.setItem('quizList', JSON.stringify(reportList));
+    window.localStorage.setItem('quizList', JSON.stringify(list));
   };
   const openCreateEditWindow = () => {
     saveLocalData();
@@ -77,7 +61,7 @@ export function QuizReportList() {
 
   return (
     <>
-      <Total> Total : {reportData?.data.pagination.totalCount}</Total>
+      <Total> Total : {totalCount}</Total>
 
       <ListTitle>
         <strong className="width_30px">NO</strong>
@@ -97,9 +81,9 @@ export function QuizReportList() {
       <ScrollWrapper>
         <PerfectScrollbar>
           <>
-            {reportList.length > 0 ? (
+            {list.length > 0 ? (
               <List margin={`10px 0`} width="99%" noWrap={true}>
-                {reportList.map((item: Report) => (
+                {list.map((item: ReportType) => (
                   <ListItem
                     height={'fit-content'}
                     key={item.idx.toLocaleString()}
@@ -221,8 +205,8 @@ export function QuizReportList() {
         </PerfectScrollbar>
       </ScrollWrapper>
       <PaginationBox
-        itemsCountPerPage={reportData?.data.pagination.pageUnit as number}
-        totalItemsCount={reportData?.data.pagination.totalCount as number}
+        itemsCountPerPage={itemsCountPerPage as number}
+        totalItemsCount={totalCount as number}
       />
       <Modal />
     </>
@@ -238,12 +222,8 @@ const Total = styled.span`
 `;
 
 const ScrollWrapper = styled.div`
-  overflow-y: auto;
-  height: calc(100vh - 450px);
   width: 100%;
-  border-top: 1px solid ${COLOR.BORDER_GRAY};
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
-  /* margin-top: 5px; */
   padding: 0 15px;
   padding-bottom: 15px;
   background-color: #eee;
@@ -269,7 +249,6 @@ const ListTitle = styled.p`
   .line {
     width: 1px;
     height: 15px;
-    /* background-color: ${COLOR.BORDER_GRAY}; */
   }
 
   .width_30px {
@@ -289,7 +268,6 @@ const ItemLayout = styled.div`
     width: calc(100% / 13);
     padding: 0 5px;
     display: flex;
-    /* flex: 1 0 0; */
     justify-content: space-around;
     flex-wrap: wrap;
     word-break: break-all;
@@ -303,12 +281,6 @@ const ItemLayout = styled.div`
   .width_40px {
     width: 40px;
   }
-
-  /* .tag {
-    padding: 5px 15px;
-    background-color: ${COLOR.BORDER_GRAY};
-    border-radius: 20px;
-  } */
 `;
 const AccordionWrapper = styled.div`
   width: 100%;
@@ -355,4 +327,5 @@ const AccordionItemLayout = styled.div`
 
 const ValueNoneWrapper = styled.div`
   padding: 100px 0;
+  height: 550px;
 `;

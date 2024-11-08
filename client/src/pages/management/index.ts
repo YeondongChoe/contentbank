@@ -5,3 +5,4 @@ export * from './ProcessPage';
 export * from './TagMappingPage';
 export * from './TagMappingInitPage';
 export * from './InspectionPage';
+export * from './ReportPage';
