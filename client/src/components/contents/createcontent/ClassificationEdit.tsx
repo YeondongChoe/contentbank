@@ -1417,9 +1417,16 @@ export function ClassificationEdit({
                 {/* 체크박스에 선택된 리스트없을시 안보이게 */}
                 {sortedList.length > 0 ? (
                   <>
-                    {categoryItems[0] && categoryList && (
+                    {categoryList && (
                       <>
-                        {[categoryItems[0]].map((item) => (
+                        {[
+                          {
+                            idx: 0,
+                            name: '교육과정',
+                            code: '교육과정',
+                            type: 'SELECT',
+                          },
+                        ].map((item) => (
                           <div
                             className={`1depth`}
                             id={`${item.name}`}
@@ -1440,7 +1447,14 @@ export function ClassificationEdit({
 
                         {radio1depthCheck?.code !== '' &&
                           selected1depth !== '' &&
-                          [categoryItems[41]].map((item) => (
+                          [
+                            {
+                              idx: 0,
+                              name: '학교급',
+                              code: '학교급',
+                              type: 'SELECT',
+                            },
+                          ].map((item) => (
                             <div
                               className={`2depth`}
                               id={`${item.name}`}
@@ -1460,7 +1474,14 @@ export function ClassificationEdit({
 
                         {radio2depthCheck?.code !== '' &&
                           selected2depth !== '' &&
-                          [categoryItems[1]].map((item) => (
+                          [
+                            {
+                              idx: 0,
+                              name: '학년',
+                              code: '학년',
+                              type: 'SELECT',
+                            },
+                          ].map((item) => (
                             <div
                               className={`3depth`}
                               id={`${item.name}`}
@@ -1479,7 +1500,14 @@ export function ClassificationEdit({
                           ))}
                         {radio3depthCheck?.code !== '' &&
                           selected3depth !== '' &&
-                          [categoryItems[2]].map((item) => (
+                          [
+                            {
+                              idx: 0,
+                              name: '학기',
+                              code: '학기',
+                              type: 'SELECT',
+                            },
+                          ].map((item) => (
                             <div
                               className={`4depth`}
                               id={`${item.name}`}

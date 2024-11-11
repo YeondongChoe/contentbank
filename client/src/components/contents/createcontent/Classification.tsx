@@ -106,12 +106,27 @@ export function Classification({
     code: '',
     key: '',
   });
+  const [radio5depthCheck, setRadio5depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radio6depthCheck, setRadio6depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
   const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
   const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
   const [selected4depth, setSelected4depth] = useState<string>('');
+  // 교과 과목
+  const [selected5depth, setSelected5depth] = useState<string>('');
+  const [selected6depth, setSelected6depth] = useState<string>('');
   const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
     '',
   ]);
@@ -129,6 +144,12 @@ export function Classification({
   const [nextList3depth, setNextList3depth] = useState([
     { code: '', idx: 0, name: '' },
   ]);
+  const [nextList4depth, setNextList4depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList5depth, setNextList5depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
 
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
@@ -144,6 +165,7 @@ export function Classification({
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
+  const [categoryNameList, setCategoryNameList] = useState<string>('');
   const [categoryAddInfoList, setCategoryAddInfoList] = useState<
     ItemCategoryType[][]
   >([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -155,6 +177,7 @@ export function Classification({
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -177,11 +200,11 @@ export function Classification({
   });
   // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
   useEffect(() => {
-    // console.log(categoryData && categoryData);
+    if (categoryDataError) {
+      categoryDataRefetch();
+    }
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
-    } else if (categoryDataError) {
-      categoryDataRefetch();
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
 
@@ -210,6 +233,34 @@ export function Classification({
       setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
+  useEffect(() => {
+    if (groupsData) {
+      setCategoryNameList(groupsData.nameList);
+    }
+  }, [groupsData]);
+
+  // 카테고리의 그룹 유형 조회 (출처)
+  const getCategoryGroupsE = async () => {
+    const response = await classificationInstance.get('/v1/category/group/E');
+    return response.data.data.typeList;
+  };
+  const {
+    data: groupsEData,
+    refetch: groupsDataERefetch,
+    isFetching: groupsDataEIsFetching,
+  } = useQuery({
+    queryKey: ['get-category-groups-E'],
+    queryFn: getCategoryGroupsE,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-E 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsEData) {
+      fetchCategoryItems(groupsEData, setCategoriesE);
+    }
+  }, [groupsEData]);
 
   // 카테고리의 그룹 유형 조회
   const fetchCategoryItems = async (
@@ -289,6 +340,26 @@ export function Classification({
           code: e.currentTarget.className,
           key: itemId as string,
         });
+        break;
+      case '5depth':
+        setSelected5depth(e.currentTarget.value);
+        setRadio5depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      case '6depth':
+        setSelected6depth(e.currentTarget.value);
+        setRadio6depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      default:
         break;
     }
   };
@@ -467,31 +538,102 @@ export function Classification({
     enabled: radio3depthCheck?.code !== '',
   });
 
+  const setNextList = (idx: number) => {
+    //교과 과목 오픈여부 라디오 버튼 셋팅
+    if (categoriesE && idx == 4) {
+      setNextList4depth(categoriesE[0]);
+    }
+    if (categoriesE && idx == 5) {
+      setNextList5depth(categoriesE[1]);
+    }
+  };
+
+  useEffect(() => {
+    if (radio1depthCheck.code !== '') nextListData1Refetch();
+    if (radio2depthCheck.code !== '') nextListData2Refetch();
+    if (radio3depthCheck.code !== '') nextListData3Refetch();
+    if (radio4depthCheck.code !== '') setNextList(4);
+    if (radio5depthCheck.code !== '') setNextList(5);
+    if (radio6depthCheck.code !== '') setNextList(6);
+  }, [
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    radio4depthCheck,
+    radio5depthCheck,
+    radio6depthCheck,
+  ]);
+
   // 체크값 변경시 초기화
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio2depthCheck(reset);
+    setRadio3depthCheck(reset);
+    setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
     setSelected2depth('');
     setCheckedDepthList([]);
   }, [selected1depth]);
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio3depthCheck(reset);
+    setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
     setSelected3depth('');
     setCheckedDepthList([]);
-    setCheckedItems([]);
   }, [selected2depth]);
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
     setSelected4depth('');
-    setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
     setCheckedDepthList([]);
-    setCheckedItems([]);
+    setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [selected3depth]);
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
+    setSelected5depth('');
+    setCheckedDepthList([]);
+    setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected4depth]);
+  useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
+    setSelected6depth('');
+    setCheckedDepthList([]);
+    setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected5depth]);
+  useEffect(() => {
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
+    setSearchValue('');
+    setCheckedDepthList([]);
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
     setRadioEtc1Check([]);
     setRadioEtc2Check([]);
-    setCheckedDepthList([]);
-    setSearchValue('');
-    setCheckedItems([]);
-  }, [selected4depth]);
+  }, [selected6depth]);
 
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
@@ -501,27 +643,28 @@ export function Classification({
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
     ];
 
-    // itemTreeKeyList 객체를 빈 객체로 초기화
-    const itemTreeKeyList: CheckedItemType = {};
-
-    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
-    depthChecks.forEach((depthCheck) => {
-      if (depthCheck && depthCheck.code && depthCheck.title) {
-        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
-      }
-    });
-
-    console.log(
-      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
-      itemTreeKeyList,
+    //서버로 부터 받은 nameList에 맞게 서버에 요청
+    const groupsArray = categoryNameList.split(',');
+    const keyValuePairs = groupsArray.reduce<Record<string, string>>(
+      (acc, item, index) => {
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
+        }
+        return acc;
+      },
+      {},
     );
-    const data = {
-      itemTreeKeyList: [itemTreeKeyList],
-    };
-    const res = await classificationInstance.post('/v1/item', data);
-    console.log('classificationInstance 응답:', res);
+
+    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
+    //console.log('itemTreeKeyList', itemTreeKeyList);
+
+    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    // console.log('item', res);
     return res;
   };
 
@@ -549,10 +692,9 @@ export function Classification({
   });
 
   useEffect(() => {
-    console.log(radio4depthCheck);
-    if (selected4depth == '') return;
+    if (selected6depth == '') return;
     categoryItemTreeDataMutate();
-  }, [selected4depth]);
+  }, [selected6depth]);
 
   // 카테고리의 그룹 유형 조회 (추가정보)
   const getAddInfoGroups = async () => {
@@ -607,13 +749,15 @@ export function Classification({
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
       radioEtc1Check,
       radioEtc2Check,
       ...checkedItems,
     ];
 
     if (checkedDepthList.length > 0) {
-      newClassification.splice(4, 0, { itemTreeIdxList: checkedDepthList });
+      newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
     }
 
     if (unitClassificationList.length < 6) {
@@ -642,11 +786,13 @@ export function Classification({
   //분류 리스트 리셋
   const onResetList = () => {
     const reset = { title: '', checkValue: 0, code: '', key: '' };
-
+    const listReset = [{ code: '', idx: 0, name: '' }];
     setRadio1depthCheck(reset);
     setRadio2depthCheck(reset);
     setRadio3depthCheck(reset);
     setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
     setRadioEtc1Check([]);
     setRadioEtc2Check([]);
 
@@ -654,26 +800,18 @@ export function Classification({
     setSelected2depth('');
     setSelected3depth('');
     setSelected4depth('');
+    setSelected5depth('');
+    setSelected6depth('');
+    setNextList1depth(listReset);
+    setNextList2depth(listReset);
+    setNextList3depth(listReset);
+    setNextList4depth(listReset);
+    setNextList5depth(listReset);
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
     setCheckedDepthList([]);
     setCheckedItems([]);
   };
-
-  useEffect(() => {
-    if (radio1depthCheck?.code !== '') nextListData1Refetch();
-    if (radio2depthCheck?.code !== '') nextListData2Refetch();
-    if (radio3depthCheck?.code !== '') nextListData3Refetch();
-  }, [
-    radio1depthCheck,
-    radio2depthCheck,
-    radio3depthCheck,
-    selected1depth,
-    selected2depth,
-    selected3depth,
-    selected4depth,
-    isModifying,
-  ]);
 
   // 수정
   const changeUnitClassification = (idx: number) => {
@@ -682,6 +820,7 @@ export function Classification({
       '수정에서의 itemTree unitClassificationList',
       unitClassificationList[idx],
     );
+    onResetList();
     setSelectedClassification(unitClassificationList[idx]);
     setIsModifying(true);
   };
@@ -689,115 +828,74 @@ export function Classification({
   useEffect(() => {
     if (isModifying && selectedClassification.length > 0) {
       const classification = selectedClassification[0] as RadioStateType;
-      const matchingItem = categoryList[0].find(
-        (item) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('1뎁스----------updatedObject----', updatedObject);
-        // 체크 밸류값을 재설정
-        setSelected1depth(matchingItem.idx.toString());
-        setRadio1depthCheck(updatedObject);
-      }
-      // onDepths();
+      setSelected1depth(classification?.checkValue?.toString() || '');
+      setRadio1depthCheck(classification);
     }
   }, [isModifying, selectedClassification]);
-  // const onDepths = () => {
-  // 1뎁스이후 2뎁스 활성화
-  // };
+
   useEffect(() => {
     if (isModifying && selected1depth !== '') {
       const classification = selectedClassification[1] as RadioStateType;
-      const matchingItem = nextListData1?.data?.categoryClassList.find(
-        (item: { name: string }) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('2뎁스----------updatedObject----', updatedObject);
-        setSelected2depth(matchingItem.idx.toString());
-        setRadio2depthCheck(updatedObject);
-      }
+      setSelected2depth(classification?.checkValue?.toString() || '');
+      setRadio2depthCheck(classification);
     }
   }, [isModifying, selected1depth]);
+
   useEffect(() => {
     if (isModifying && selected2depth !== '') {
       const classification = selectedClassification[2] as RadioStateType;
-      const matchingItem = nextListData2?.data?.categoryClassList.find(
-        (item: { name: string }) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('3뎁스----------updatedObject----', updatedObject);
-        setSelected3depth(matchingItem.idx.toString());
-        setRadio3depthCheck(updatedObject);
-      }
+      setSelected3depth(classification?.checkValue?.toString() || '');
+      setRadio3depthCheck(classification);
     }
   }, [isModifying, selected2depth]);
+
   useEffect(() => {
     if (isModifying && selected3depth !== '') {
       const classification = selectedClassification[3] as RadioStateType;
-      const matchingItem = nextListData3?.data?.categoryClassList.find(
-        (item: { name: string }) => item.name === classification.title,
-      );
-      if (matchingItem) {
-        const updatedObject = {
-          ...classification,
-          checkValue: matchingItem.idx as number,
-        };
-        console.log('4뎁스----------updatedObject----', updatedObject);
-        setSelected4depth(matchingItem.idx.toString());
-        setRadio4depthCheck(updatedObject);
-      }
+      setSelected4depth(classification?.checkValue?.toString() || '');
+      setRadio4depthCheck(classification as RadioStateType);
     }
   }, [isModifying, selected3depth]);
-  useEffect(() => {
-    if (selected4depth !== '') {
-      const classification = selectedClassification[4] as ItemTreeIdxListType;
-      // idx 유형 리스트
-      console.log('수정시 idx 리스트 ----- ', classification);
-      if (classification?.itemTreeIdxList)
-        setCheckedDepthList(classification.itemTreeIdxList);
 
-      const classificationEtc1 = selectedClassification[5] as RadioStateType[];
+  useEffect(() => {
+    if (isModifying && selected4depth !== '') {
+      const classification = selectedClassification[4] as RadioStateType;
+      setSelected5depth(classification?.checkValue?.toString() || '');
+      setRadio5depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected4depth]);
+
+  useEffect(() => {
+    if (isModifying && selected5depth !== '') {
+      const classification = selectedClassification[5] as RadioStateType;
+      setSelected6depth(classification?.checkValue?.toString() || '');
+      setRadio6depthCheck(classification as RadioStateType);
+    }
+  }, [isModifying, selected5depth]);
+
+  useEffect(() => {
+    if (isModifying && selected6depth !== '') {
+      const classification = selectedClassification[6] as ItemTreeIdxListType;
+      setCheckedDepthList(classification.itemTreeIdxList);
+
+      const classificationEtc1 = selectedClassification[7] as RadioStateType[];
       // 저장되었던 행동 요소1
-      if (classificationEtc1) {
-        // const filteredArrayE1 = classificationEtc1.filter(
-        //   (item) => item.key === '행동요소1',
-        // );
-        // console.log(filteredArrayE1);
-        setSelectedCategoryEtc1(
-          classificationEtc1.map((el) => el.checkValue?.toString()),
-        );
-        setRadioEtc1Check(classificationEtc1);
-      }
-      const classificationEtc2 = selectedClassification[6] as RadioStateType[];
-      console.log(
-        '수정시 classificationEtc2 리스트 ----- ',
-        classificationEtc2,
+      setSelectedCategoryEtc1(
+        classificationEtc1.map((el) => el.checkValue?.toString()),
       );
-      // const filteredArrayE2 = classificationEtc2.filter(
-      //   (item) => item.key === '행동요소2',
-      // );
+      setRadioEtc1Check(classificationEtc1);
+
+      const classificationEtc2 = selectedClassification[8] as RadioStateType[];
       // 저장되었던 행동 요소2
-      if (classificationEtc2) {
-        setSelectedCategoryEtc2(
-          classificationEtc2.map((el) => el.checkValue?.toString()),
-        );
-        setRadioEtc2Check(classificationEtc2);
-      }
+      setSelectedCategoryEtc2(
+        classificationEtc2.map((el) => el.checkValue?.toString()),
+      );
+      setRadioEtc2Check(classificationEtc2);
+
       //초기화
       setIsModifying(false);
     }
-  }, [isModifying, selected4depth]);
+  }, [isModifying, selected6depth]);
 
   const sortedArr = () => {
     console.log('아이템트리키 들어가야할 목록', unitClassificationList);
@@ -1059,7 +1157,7 @@ export function Classification({
   };
 
   useEffect(() => {
-    // console.log('checkedList------------', checkedList);
+    console.log('checkedList------------', checkedList);
     setUnitClassificationList([]);
     sortList();
   }, [checkedList]);
@@ -1165,6 +1263,8 @@ export function Classification({
           '학교급',
           '학년',
           '학기',
+          '교과',
+          '과목',
           'itemTreeIdxList',
           '행동요소1',
           '행동요소2',
@@ -1449,21 +1549,20 @@ export function Classification({
   }, [topSelect]);
 
   // 체크박스 설정
-  const [checkList, setCheckList] = useState<number[]>([]);
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.currentTarget.checked);
 
     if (e.target.checked) {
-      setCheckList(questionList.map((item, index) => index as number)); //
+      setCheckedList(questionList.map((item) => item.code as string)); //
     } else {
-      setCheckList([]);
+      setCheckedList([]);
     }
   };
-  const handleSingleCheckIcon = (checked: boolean, idx: number) => {
+  const handleSingleCheckIcon = (checked: boolean, id: string) => {
     if (checked) {
-      setCheckList((prev) => [...prev, idx]);
+      setCheckedList((prev) => [...prev, id]);
     } else {
-      setCheckList(checkList.filter((el) => el !== idx));
+      setCheckedList(checkedList.filter((el) => el !== id));
     }
 
     setIsChecked(checked);
@@ -1481,7 +1580,7 @@ export function Classification({
                 $margin={'0 5px 0 0'}
                 onChange={(e) => handleAllCheck(e)}
                 checked={
-                  checkList.length === questionList.length ? true : false
+                  checkedList.length === questionList.length ? true : false
                 }
                 // checked={true}
                 id={'all check'}
@@ -1552,11 +1651,15 @@ export function Classification({
                         <CheckBoxI
                           $margin={'0 5px 0 0'}
                           onChange={(e) =>
-                            handleSingleCheckIcon(e.target.checked, quiz.idx)
+                            handleSingleCheckIcon(e.target.checked, quiz.code)
                           }
-                          checked={checkList.includes(quiz.idx) ? true : false}
-                          id={quiz.idx.toString()}
-                          value={quiz.idx}
+                          checked={
+                            checkedList.includes(quiz.code as string)
+                              ? true
+                              : false
+                          }
+                          id={quiz.code}
+                          value={quiz.code}
                         />
                         <span className={`title_top`}>{`${0} 건`}</span>
                       </div>
@@ -1647,9 +1750,16 @@ export function Classification({
               {/* 체크박스에 선택된 리스트없을시 안보이게 */}
               {sortedList.length > 0 ? (
                 <>
-                  {categoryItems[0] && categoryList && (
+                  {categoryList && (
                     <>
-                      {[categoryItems[0]].map((item) => (
+                      {[
+                        {
+                          idx: 0,
+                          name: '교육과정',
+                          code: '교육과정',
+                          type: 'SELECT',
+                        },
+                      ].map((item) => (
                         <div
                           className={`1depth`}
                           id={`${item.name}`}
@@ -1667,10 +1777,16 @@ export function Classification({
                           />
                         </div>
                       ))}
-
                       {radio1depthCheck?.code !== '' &&
                         selected1depth !== '' &&
-                        [categoryItems[41]].map((item) => (
+                        [
+                          {
+                            idx: 0,
+                            name: '학교급',
+                            code: '학교급',
+                            type: 'SELECT',
+                          },
+                        ].map((item) => (
                           <div
                             className={`2depth`}
                             id={`${item.name}`}
@@ -1690,7 +1806,14 @@ export function Classification({
 
                       {radio2depthCheck?.code !== '' &&
                         selected2depth !== '' &&
-                        [categoryItems[1]].map((item) => (
+                        [
+                          {
+                            idx: 0,
+                            name: '학년',
+                            code: '학년',
+                            type: 'SELECT',
+                          },
+                        ].map((item) => (
                           <div
                             className={`3depth`}
                             id={`${item.name}`}
@@ -1709,7 +1832,14 @@ export function Classification({
                         ))}
                       {radio3depthCheck?.code !== '' &&
                         selected3depth !== '' &&
-                        [categoryItems[2]].map((item) => (
+                        [
+                          {
+                            idx: 0,
+                            name: '학기',
+                            code: '학기',
+                            type: 'SELECT',
+                          },
+                        ].map((item) => (
                           <div
                             className={`4depth`}
                             id={`${item.name}`}
@@ -1726,6 +1856,45 @@ export function Classification({
                             />
                           </div>
                         ))}
+                      {/* 교과 */}
+                      {radio4depthCheck.code !== '' &&
+                        selected4depth !== '' && (
+                          <div
+                            className={`5depth`}
+                            id={categoryNameList.split(',')[4]}
+                            key={`selected5depth ${categoryNameList.split(',')[4]}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={categoryNameList.split(',')[4]}
+                              titleText={categoryNameList.split(',')[4]}
+                              list={nextList4depth}
+                              selected={selected5depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio5depthCheck}
+                            />
+                          </div>
+                        )}
+                      {/* 과목 */}
+                      {radio5depthCheck.code !== '' &&
+                        selected5depth !== '' && (
+                          <div
+                            className={`6depth`}
+                            id={categoryNameList.split(',')[5]}
+                            key={`selected6depth ${categoryNameList.split(',')[5]}`}
+                          >
+                            <ButtonFormatRadio
+                              overFlow
+                              branchValue={categoryNameList.split(',')[5]}
+                              titleText={categoryNameList.split(',')[5]}
+                              list={nextList5depth}
+                              selected={selected6depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio6depthCheck}
+                            />
+                          </div>
+                        )}
                     </>
                   )}
                 </>
