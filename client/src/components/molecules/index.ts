@@ -18,3 +18,4 @@ export * from './difficultyRate';
 export * from './depthBlockList';
 export * from './PDFModal';
 export * from './settingList';
+export * from './contentReport';

@@ -28,8 +28,7 @@ import { ItemCategoryType, QuestionTableType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
-
-import { QuizReportList } from './QuizReportList';
+import { QuizReportList } from '../molecules/contentReport/QuizReportList';
 
 export function Inspection() {
   const [page, setPage] = useRecoilState(pageAtom);

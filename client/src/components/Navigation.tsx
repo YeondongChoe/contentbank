@@ -274,7 +274,7 @@ export function Navigation() {
 
               {/* 신고문항 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/content-manage/report'}>
                   <LuSiren style={{ width: '20px', height: '20px' }}></LuSiren>
                   <span>신고 문항</span>
                 </Link>
@@ -695,7 +695,7 @@ export function Navigation() {
 
               {/* 신고문항 */}
               <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/content-manage/report'}>
                   <LuSiren
                     style={{ width: '20px', height: '20px', stroke: 'white' }}
                   ></LuSiren>

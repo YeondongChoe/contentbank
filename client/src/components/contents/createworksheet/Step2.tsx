@@ -48,7 +48,6 @@ import {
   quizService,
   workbookInstance,
 } from '../../../api/axios';
-import { ReportProcessModal } from '../../../components/managements/ReportProcessModal';
 import { useModal } from '../../../hooks';
 import { contentQuotient, pageAtom } from '../../../store/utilAtom';
 import {
@@ -67,6 +66,7 @@ import {
 } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
+import { ReportProcessModal } from '../../molecules/contentReport/ReportProcessModal';
 
 interface RadioStateType {
   title: string;
@@ -1262,7 +1262,7 @@ export function Step2() {
 
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
 
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    const res = await classificationInstance.post('/v2/item', itemTreeKeyList);
     return res;
   };
 

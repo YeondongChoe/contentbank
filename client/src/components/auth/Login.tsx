@@ -21,6 +21,7 @@ import {
   removeAuthorityCookie,
   setAuthorityCookie,
 } from '../../utils/cookies';
+import { postRefreshToken } from '../../utils/tokenHandler';
 
 export function Login() {
   const [accessTokenData, setAccessTokenData] = useState<string>('');
@@ -73,6 +74,9 @@ export function Login() {
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
       // console.log('loginPostData error', context.response.status);
     },
     onSuccess: (response: {

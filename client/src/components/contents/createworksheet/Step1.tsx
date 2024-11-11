@@ -30,6 +30,7 @@ import {
   SearchableSelect,
   List,
   ListItem,
+  CheckBoxI,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { pageAtom } from '../../../store/utilAtom';
@@ -742,7 +743,7 @@ export function Step1() {
     const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
     //console.log('itemTreeKeyList', itemTreeKeyList);
 
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    const res = await classificationInstance.post('/v2/item', itemTreeKeyList);
     // console.log('item', res);
     return res;
   };
@@ -1791,12 +1792,14 @@ export function Step1() {
   const [previousExamMenu, setPreviousExamMenu] = useState<number>(0);
   const selectPreviousExamMenu = (newValue: number) => {
     setPreviousExamMenu(newValue);
+    setPreviousExamYear(null);
   };
 
-  const [previousExamYear, setPreviousExamYear] = useState<number>(0);
+  const [previousExamYear, setPreviousExamYear] = useState<number | null>(null);
   const selectPreviousExamYear = (newValue: number) => {
     setPreviousExamYear(newValue);
   };
+  console.log(previousExamYear);
 
   //선택 초기화
   const selectExamReset = () => {
@@ -2560,7 +2563,7 @@ export function Step1() {
     setExamOption(null);
     //기출
     setPreviousExamMenu(0);
-    setPreviousExamYear(0);
+    setPreviousExamYear(null);
     setSelectedValue('');
   }, [tabVeiw]);
 
@@ -3519,6 +3522,20 @@ export function Step1() {
   };
 
   //기출
+  const [checkList, setCheckList] = useState<string[]>([]);
+  const handleButtonCheck = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+  ) => {
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+    if (!target.checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
+    }
+  };
+
   const renderPreviousExamMenuButtons = () => {
     const buttonOption = [
       { value: 0, label: '학교내신' },
@@ -3542,6 +3559,31 @@ export function Step1() {
       </Button>
     ));
   };
+
+  // TODO 문항 뷰어 넣어주기
+  // const renderPreviousExamContentView = () => {
+  //   const buttonOption = [
+  //     { value: 0, label: '학교내신' },
+  //     { value: 1, label: '전국시험' },
+  //   ];
+
+  //   return buttonOption.map((button) => (
+  //     <Button
+  //       key={button.value}
+  //       buttonType="button"
+  //       onClick={() => selectPreviousExamMenu(button.value)}
+  //       $padding="10px"
+  //       height={'35px'}
+  //       width={'100%'}
+  //       fontSize="14px"
+  //       $normal={previousExamMenu !== button.value}
+  //       $filled={previousExamMenu === button.value}
+  //       cursor
+  //     >
+  //       <span>{button.label}</span>
+  //     </Button>
+  //   ));
+  // };
   const selectArrange = [
     {
       idx: 0,
@@ -4310,10 +4352,62 @@ export function Step1() {
                         {'>'}
                       </ArrowButton>
                     </PreviousExamYearWrapper>
+                    {/* 데이터 들어오는거에 맞게 보여주기*/}
                     <PreviousExamListWrapper>
-                      <PreviousExamDefoultBox>
-                        학교명과 출제년도를 선택해주세요
-                      </PreviousExamDefoultBox>
+                      {previousExamYear === null ? (
+                        <PreviousExamDefoultBox>
+                          학교명과 출제년도를 선택해주세요
+                        </PreviousExamDefoultBox>
+                      ) : (
+                        <List margin={`10px 0`}>
+                          <ListItem
+                            key={''}
+                            isChecked={false}
+                            height={'70px'}
+                            //isChecked={checkList.includes(item.code)}
+                            //onClick={(e) => handleButtonCheck(e, item.code)}
+                          >
+                            <ItemLayout>
+                              <CheckBoxI
+                                id={''}
+                                value={''}
+                                $margin={`0 5px 0 0`}
+                                //id={item.code}
+                                //value={item.code}
+                                //checked={checkList.includes(item.code)}
+                                readOnly
+                              />
+                              <span className="width_150px item_wrapper">
+                                <span className="ellipsis">드림고등학교</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">3학년</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">2학기</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">중간고사</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">미적분</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">2024</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_20px item_wrapper">
+                                <span className="ellipsis">7</span>
+                              </span>
+                            </ItemLayout>
+                          </ListItem>
+                        </List>
+                      )}
                     </PreviousExamListWrapper>
                   </>
                 )}
@@ -4358,10 +4452,72 @@ export function Step1() {
                         {'>'}
                       </ArrowButton>
                     </PreviousExamYearWrapper>
+                    {/* 데이터 들어오는거에 맞게 보여주기*/}
                     <PreviousExamListWrapper>
-                      <PreviousExamDefoultBox>
-                        학교명과 출제년도를 선택해주세요
-                      </PreviousExamDefoultBox>
+                      {previousExamYear === null ? (
+                        <PreviousExamDefoultBox>
+                          학교명과 출제년도를 선택해주세요
+                        </PreviousExamDefoultBox>
+                      ) : (
+                        <List margin={`10px 0`}>
+                          <ListItem
+                            key={''}
+                            isChecked={false}
+                            height={'70px'}
+                            //isChecked={checkList.includes(item.code)}
+                            //onClick={(e) => handleButtonCheck(e, item.code)}
+                          >
+                            <ItemLayout>
+                              <CheckBoxI
+                                id={''}
+                                value={''}
+                                $margin={`0 5px 0 0`}
+                                //id={item.code}
+                                //value={item.code}
+                                //checked={checkList.includes(item.code)}
+                                readOnly
+                              />
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">학력평가</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_40px item_wrapper">
+                                <span className="ellipsis">중등</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_40px item_wrapper">
+                                <span className="ellipsis">학년</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_150px item_wrapper">
+                                <span className="ellipsis">
+                                  교육청 수학경시 대회
+                                </span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">서울교육청</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_80px item_wrapper">
+                                <span className="ellipsis">미적분</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_40px item_wrapper">
+                                <span className="ellipsis">A타입</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_40px item_wrapper">
+                                <span className="ellipsis">2014</span>
+                              </span>
+                              <i className="line"></i>
+                              <span className="width_20px item_wrapper">
+                                <span className="ellipsis">10</span>
+                              </span>
+                            </ItemLayout>
+                          </ListItem>
+                        </List>
+                      )}
                     </PreviousExamListWrapper>
                   </>
                 )}
@@ -5072,6 +5228,79 @@ const PreviousExamListWrapper = styled.div`
   border-top: 1px solid ${COLOR.BORDER_BLUE};
   margin-top: 10px;
   padding: 10px;
+`;
+const ItemLayout = styled.span`
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .tooltip_wrapper item_wrapper {
+    position: relative;
+  }
+  .item_wrapper {
+    display: flex;
+    /* flex: 1 0 0; */
+    justify-content: space-around;
+    flex-wrap: wrap;
+    word-break: break-all;
+    min-width: 30px;
+    max-width: 150px;
+    font-weight: normal;
+  }
+
+  /* 두줄 이상 ellipsis 처리  */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .title {
+    width: 100%;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .tag {
+    margin: 0 5px;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: ${COLOR.BORDER_GRAY};
+    margin-top: 5px;
+  }
+  .tag_icon {
+    display: flex;
+    align-self: center;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+  }
+  .width_5 {
+    width: 5%;
+  }
+  .width_10 {
+    width: 10%;
+  }
+  .width_20px {
+    width: 20px;
+  }
+  .width_40px {
+    width: 40px;
+  }
+  .width_80px {
+    width: 80px;
+  }
+  .width_50 {
+    width: 50%;
+  }
+  .width_150px {
+    width: 150px;
+  }
 `;
 const PreviousExamDefoultBox = styled.div`
   height: 150px;

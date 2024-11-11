@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { BsArrowsMove, BsEyeSlash, BsEye } from 'react-icons/bs';
+import { GrPlan } from 'react-icons/gr';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { SlOptionsVertical } from 'react-icons/sl';
 import { TbFilter, TbFilterOff } from 'react-icons/tb';
@@ -16,6 +17,9 @@ import {
   Label,
   Button,
   Select,
+  Search,
+  CommonDate,
+  IconButton,
   openToastifyAlert,
 } from '..';
 import { resourceServiceInstance } from '../../api/axios';
@@ -30,7 +34,7 @@ export function WorkbookListSetting() {
       code: 'A',
       detailIdx: '1',
       idx: 1,
-      inputTypeList: 'SELECT,SELECT,INPUT,SELECT,SELECT',
+      inputTypeList: 'INPUT,SELECT,INPUT,DATEPICKER,INPUT',
       isCheck: true,
       name: '더미',
       nameList: '대상학년,태그,학습지명,등록일,작성자',
@@ -46,7 +50,7 @@ export function WorkbookListSetting() {
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
   const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
   // 로컬 스토리지에서 데이터 가져오기
-  console.log(selectedValue);
+
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendMenuIdx');
@@ -491,7 +495,6 @@ export function WorkbookListSetting() {
               {(() => {
                 const dataList =
                   selectedValue === '더미' ? dummyData : menuDataList;
-                console.log(dataList);
                 return dataList
                   .filter((el) => el.name === selectedValue)
                   .map((search) => {
@@ -502,31 +505,176 @@ export function WorkbookListSetting() {
 
                     return (
                       <>
-                        {nameList.map((el, idx) =>
-                          searchList[idx] ? (
-                            <Select
-                              key={idx}
-                              defaultValue={el}
-                              width="130px"
-                              isnormalizedOptions
-                            ></Select>
-                          ) : null,
-                        )}
+                        {nameList.map((el, idx) => {
+                          if (el === '태그') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Select
+                                    key={idx}
+                                    defaultValue={el}
+                                    width="130px"
+                                    isnormalizedOptions
+                                  ></Select>
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '대상학년') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Search
+                                    value={''}
+                                    width="150px"
+                                    height="40px"
+                                    onClick={() => {}}
+                                    onKeyDown={() => {}}
+                                    onChange={() => {}}
+                                    placeholder={`${el} 검색`}
+                                  />
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '학습지명') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Search
+                                    value={''}
+                                    width="150px"
+                                    height="40px"
+                                    onClick={() => {}}
+                                    onKeyDown={() => {}}
+                                    onChange={() => {}}
+                                    placeholder={`${el} 검색`}
+                                  />
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '작성자') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <Search
+                                    value={''}
+                                    width="150px"
+                                    height="40px"
+                                    onClick={() => {}}
+                                    onKeyDown={() => {}}
+                                    onChange={() => {}}
+                                    placeholder={`${el} 검색`}
+                                  />
+                                ) : null}
+                              </>
+                            );
+                          } else if (el === '등록일') {
+                            return (
+                              <>
+                                {searchList[idx] ? (
+                                  <>
+                                    <CommonDate
+                                      setDate={() => {}}
+                                      $button={
+                                        <IconButton
+                                          width="125px"
+                                          height="40px"
+                                          fontSize="14px"
+                                          onClick={() => {}}
+                                        >
+                                          <span className="btn_title">
+                                            시작일
+                                          </span>
+                                          <GrPlan />
+                                        </IconButton>
+                                      }
+                                    />
+                                    <span> ~ </span>
+                                    <CommonDate
+                                      setDate={() => {}}
+                                      minDate={''}
+                                      $button={
+                                        <IconButton
+                                          width="125px"
+                                          height="40px"
+                                          fontSize="14px"
+                                          onClick={() => {}}
+                                        >
+                                          <span className="btn_title">
+                                            종료일
+                                          </span>
+                                          <GrPlan />
+                                        </IconButton>
+                                      }
+                                    />
+                                  </>
+                                ) : null}
+                              </>
+                            );
+                          }
+                        })}
                       </>
                     );
                   });
               })()}
             </SelectWrapper>
+            <List height="none">
+              {(selectedValue === '더미' ? dummyData : menuDataList)
+                .filter((list) => list.name === selectedValue)
+                .flatMap((item) => {
+                  const nameList = item.nameList?.split(',');
+                  const essentialList = item.viewList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+
+                  return (
+                    <ListItem isChecked={false} columnTitle>
+                      <ItemLayout>
+                        <CheckBoxI
+                          id={''}
+                          value={''}
+                          $margin={`0 5px 0 0`}
+                          checked={false}
+                          readOnly
+                        />
+                        <Icon
+                          width={`18px`}
+                          $margin={'0 10px'}
+                          src={`/images/icon/favorites_off_B.svg`}
+                        />
+                        {nameList.map((name, i) => (
+                          <>
+                            {essentialList[i] && (
+                              <>
+                                <i className="line"></i>
+                                <span>
+                                  <strong>{name}</strong>
+                                </span>
+                              </>
+                            )}
+                          </>
+                        ))}
+                        <i className="line"></i>
+                        <span>
+                          <strong>미리보기</strong>
+                        </span>
+                        <i className="line"></i>
+                        <span>
+                          <strong>설정</strong>
+                        </span>
+                      </ItemLayout>
+                    </ListItem>
+                  );
+                })}
+            </List>
             <List>
               {(selectedValue === '더미' ? dummyData : menuDataList)
                 .filter((list) => list.name === selectedValue)
                 .flatMap((item) => {
                   const nameList = item.nameList?.split(',');
-                  console.log(nameList);
                   const essentialList = item.viewList
                     ?.split(',')
                     .map((item) => item.trim() === 'true');
-                  const array = 1;
+                  const array = 5;
 
                   return Array.from({ length: array }).map((_, idx) => (
                     <ListItem
@@ -551,39 +699,26 @@ export function WorkbookListSetting() {
                             {essentialList[i] && (
                               <>
                                 <i className="line"></i>
-                                <div className="wrapper" key={i}>
-                                  <span className="width_80px tooltip_wrapper">
-                                    <strong className="title">{name}</strong>
-                                    <span className="ellipsis">
-                                      <span
-                                        key={`quizCategoryList quizCategory: ${i}`}
-                                      >
-                                        정보
-                                      </span>
-                                    </span>
-                                  </span>
-                                </div>
+                                <span>
+                                  <span>정보</span>
+                                </span>
                               </>
                             )}
                           </>
                         ))}
                         <i className="line"></i>
                         <span>
-                          <strong className="title">미리보기</strong>
-                          <span className="width_20">
+                          <span>
                             <LuFileSearch2
                               style={{ fontSize: '22px', cursor: 'pointer' }}
                             />
                           </span>
                         </span>
                         <i className="line"></i>
-                        <span className="width_5 tooltip_wrapper ">
-                          <strong className="title">설정</strong>
-                          <span className="width_20">
-                            <SlOptionsVertical
-                              style={{ fontSize: '16px', cursor: 'pointer' }}
-                            />
-                          </span>
+                        <span>
+                          <SlOptionsVertical
+                            style={{ fontSize: '16px', cursor: 'pointer' }}
+                          />
                         </span>
                       </ItemLayout>
                     </ListItem>
@@ -624,6 +759,7 @@ const MainWrapper = styled.div`
   width: 100%;
   display: flex;
   gap: 10px;
+  min-height: 750px;
 `;
 const SettingWrapper = styled.div`
   width: 30%;
@@ -713,7 +849,6 @@ const ListWrapper = styled.div`
 const ItemLayout = styled.span`
   display: flex;
   width: 100%;
-  min-height: 40px;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
@@ -722,16 +857,6 @@ const ItemLayout = styled.span`
     position: relative;
   }
 
-  > span {
-    display: flex;
-    /* flex: 1 0 0; */
-    justify-content: space-around;
-    flex-wrap: wrap;
-    word-break: break-all;
-    min-width: 30px;
-    max-width: 150px;
-    font-weight: normal;
-  }
   /* 두줄 이상 ellipsis 처리  */
   .ellipsis {
     overflow: hidden;
@@ -761,6 +886,9 @@ const ItemLayout = styled.span`
   }
   .width_20px {
     width: 20px;
+  }
+  .width_40px {
+    width: 40px;
   }
   .width_50 {
     width: 50%;

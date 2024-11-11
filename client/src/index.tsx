@@ -2,7 +2,6 @@ import * as React from 'react';
 
 // eslint-disable-next-line import/order, import/default
 import ReactDOM from 'react-dom/client';
-
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
@@ -42,6 +41,7 @@ import {
   TagMappingPage,
   TagMappingInitPage,
   InspectionPage,
+  ReportPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
@@ -144,6 +144,10 @@ const router = createBrowserRouter([
       {
         path: '/content-manage/classify',
         element: <ManagementsTreePage />,
+      },
+      {
+        path: '/content-manage/report',
+        element: <ReportPage />,
       },
       {
         path: '/content-manage/inspection',

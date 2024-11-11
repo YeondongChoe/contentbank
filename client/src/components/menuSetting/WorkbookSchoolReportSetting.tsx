@@ -437,6 +437,41 @@ export function WorkbookSchoolReportSetting() {
                   );
                 })}
             </SelectWrapper>
+            <List margin={`10px 0 5px 0`} height="none">
+              {menuDataList
+                .filter((list) => list.name === selectedValue)
+                .flatMap((item) => {
+                  const nameList = item.nameList?.split(',');
+                  const essentialList = item.viewList
+                    ?.split(',')
+                    .map((item) => item.trim() === 'true');
+
+                  return (
+                    <ListItem isChecked={false} columnTitle>
+                      <ItemLayout>
+                        {nameList.map((name, i) => (
+                          <>
+                            {essentialList[i] && (
+                              <>
+                                {i !== 0 && <i className="line"></i>}
+                                <span>
+                                  <strong>{name}</strong>
+                                </span>
+                              </>
+                            )}
+                          </>
+                        ))}
+                        <i className="line"></i>
+                        <span>
+                          <span>
+                            <strong>문항수</strong>
+                          </span>
+                        </span>
+                      </ItemLayout>
+                    </ListItem>
+                  );
+                })}
+            </List>
             <List>
               {menuDataList
                 .filter((list) => list.name === selectedValue)
@@ -445,7 +480,7 @@ export function WorkbookSchoolReportSetting() {
                   const essentialList = item.viewList
                     ?.split(',')
                     .map((item) => item.trim() === 'true');
-                  const array = 6;
+                  const array = 5;
 
                   return Array.from({ length: array }).map((_, idx) => (
                     <ListItem
@@ -460,8 +495,7 @@ export function WorkbookSchoolReportSetting() {
                               <>
                                 {i !== 0 && <i className="line"></i>}
                                 <span>
-                                  <strong className="title">{name}</strong>
-                                  <span className="width_20">정보</span>
+                                  <span>정보</span>
                                 </span>
                               </>
                             )}
@@ -469,8 +503,7 @@ export function WorkbookSchoolReportSetting() {
                         ))}
                         <i className="line"></i>
                         <span>
-                          <strong className="title">문항수</strong>
-                          <span className="width_20">10</span>
+                          <span>10</span>
                         </span>
                       </ItemLayout>
                     </ListItem>
@@ -511,6 +544,7 @@ const MainWrapper = styled.div`
   width: 100%;
   display: flex;
   gap: 10px;
+  min-height: 750px;
 `;
 const SettingWrapper = styled.div`
   width: 30%;
@@ -600,18 +634,9 @@ const ListWrapper = styled.div`
 const ItemLayout = styled.span`
   display: flex;
   width: 100%;
-  min-height: 40px;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
-
-  > span {
-    display: flex;
-    /* flex: 1 0 0; */
-    justify-content: space-around;
-    flex-wrap: wrap;
-    word-break: break-all;
-  }
 
   .title {
     width: 100%;
