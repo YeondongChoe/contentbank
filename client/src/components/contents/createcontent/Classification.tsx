@@ -165,7 +165,6 @@ export function Classification({
 
   const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]); // 각 카테고리의 상세 리스트를 저장할 상태
-  const [categoryNameList, setCategoryNameList] = useState<string>('');
   const [categoryAddInfoList, setCategoryAddInfoList] = useState<
     ItemCategoryType[][]
   >([]); // 각 카테고리의 상세 리스트를 저장할 상태
@@ -177,6 +176,7 @@ export function Classification({
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+  const [categoryNameList, setCategoryNameList] = useState<string>('');
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
 
   //  카테고리 불러오기 api
@@ -1212,6 +1212,8 @@ export function Classification({
           학교급: 1,
           학년: 2,
           학기: 3,
+          교과: 4,
+          과목: 5,
         };
 
         // order에 따른 정렬된 배열 만들기
@@ -2074,7 +2076,14 @@ export function Classification({
                     <RowListWrapper>
                       {categoryAddInfoList ? (
                         <>
-                          {[categoryItems[4]].map((item) => (
+                          {[
+                            {
+                              idx: 0,
+                              name: '행동요소1',
+                              code: '행동요소1',
+                              type: 'SELECT',
+                            },
+                          ].map((item) => (
                             <div
                               id={`${item.name}`}
                               className={`etc1`}
@@ -2090,7 +2099,14 @@ export function Classification({
                               />
                             </div>
                           ))}
-                          {[categoryItems[5]].map((item) => (
+                          {[
+                            {
+                              idx: 0,
+                              name: '행동요소2',
+                              code: '행동요소2',
+                              type: 'SELECT',
+                            },
+                          ].map((item) => (
                             <div
                               id={`${item.name}`}
                               className={`etc2`}

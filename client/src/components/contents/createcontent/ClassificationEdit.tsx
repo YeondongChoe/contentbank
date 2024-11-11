@@ -9,11 +9,13 @@ import styled from 'styled-components';
 
 import {
   Button,
+  CheckBoxI,
   Icon,
   IconButton,
   Loader,
   MathViewer,
   ResizeLayout,
+  Select,
   ValueNone,
   openToastifyAlert,
 } from '../..';
@@ -25,6 +27,7 @@ import {
   DepthBlock,
   Search,
 } from '../../../components/molecules';
+import { MyStaticWrapper } from '../../../components/molecules/sortBox/Masonry';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
   ItemCategoryType,
@@ -37,8 +40,6 @@ import {
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
-
-import { QuizList } from './list';
 
 interface RadioStateType {
   title: string;
@@ -109,12 +110,27 @@ export function ClassificationEdit({
     code: '',
     key: '',
   });
+  const [radio5depthCheck, setRadio5depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
+  const [radio6depthCheck, setRadio6depthCheck] = useState<RadioStateType>({
+    title: '',
+    checkValue: 0,
+    code: '',
+    key: '',
+  });
   const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
   const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
   const [selected1depth, setSelected1depth] = useState<string>('');
   const [selected2depth, setSelected2depth] = useState<string>('');
   const [selected3depth, setSelected3depth] = useState<string>('');
   const [selected4depth, setSelected4depth] = useState<string>('');
+  // 교과 과목
+  const [selected5depth, setSelected5depth] = useState<string>('');
+  const [selected6depth, setSelected6depth] = useState<string>('');
   const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
     '',
   ]);
@@ -130,6 +146,12 @@ export function ClassificationEdit({
     { code: '', idx: 0, name: '' },
   ]);
   const [nextList3depth, setNextList3depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList4depth, setNextList4depth] = useState([
+    { code: '', idx: 0, name: '' },
+  ]);
+  const [nextList5depth, setNextList5depth] = useState([
     { code: '', idx: 0, name: '' },
   ]);
 
@@ -158,6 +180,8 @@ export function ClassificationEdit({
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+  const [categoryNameList, setCategoryNameList] = useState<string>('');
+  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -180,11 +204,11 @@ export function ClassificationEdit({
   });
   // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
   useEffect(() => {
-    // console.log(categoryData && categoryData);
+    if (categoryDataError) {
+      categoryDataRefetch();
+    }
     if (categoryData) {
       setCategoryItems(categoryData.data.data.categoryItemList);
-    } else if (categoryDataError) {
-      categoryDataRefetch();
     }
   }, [categoryData, categoryDataError, categoryDataRefetch]);
 
@@ -213,6 +237,34 @@ export function ClassificationEdit({
       setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
+  useEffect(() => {
+    if (groupsData) {
+      setCategoryNameList(groupsData.nameList);
+    }
+  }, [groupsData]);
+
+  // 카테고리의 그룹 유형 조회 (출처)
+  const getCategoryGroupsE = async () => {
+    const response = await classificationInstance.get('/v1/category/group/E');
+    return response.data.data.typeList;
+  };
+  const {
+    data: groupsEData,
+    refetch: groupsDataERefetch,
+    isFetching: groupsDataEIsFetching,
+  } = useQuery({
+    queryKey: ['get-category-groups-E'],
+    queryFn: getCategoryGroupsE,
+    enabled: !!categoryData,
+    meta: {
+      errorMessage: 'get-category-groups-E 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (groupsEData) {
+      fetchCategoryItems(groupsEData, setCategoriesE);
+    }
+  }, [groupsEData]);
 
   // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (
@@ -296,6 +348,26 @@ export function ClassificationEdit({
           code: e.currentTarget.className,
           key: itemId as string,
         });
+        break;
+      case '5depth':
+        setSelected5depth(e.currentTarget.value);
+        setRadio5depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      case '6depth':
+        setSelected6depth(e.currentTarget.value);
+        setRadio6depthCheck({
+          title: e.currentTarget.name,
+          checkValue: Number(e.currentTarget.value),
+          code: e.currentTarget.className,
+          key: itemId as string,
+        });
+        break;
+      default:
         break;
     }
   };
@@ -624,6 +696,8 @@ export function ClassificationEdit({
           학교급: 1,
           학년: 2,
           학기: 3,
+          교과: 4,
+          과목: 5,
         };
 
         // order에 따른 정렬된 배열 만들기
@@ -675,6 +749,8 @@ export function ClassificationEdit({
           '학교급',
           '학년',
           '학기',
+          '교과',
+          '과목',
           'itemTreeIdxList',
           '행동요소1',
           '행동요소2',
@@ -770,12 +846,14 @@ export function ClassificationEdit({
             buttonList[1],
             buttonList[2],
             buttonList[3],
+            buttonList[4],
+            buttonList[5],
             ...buttonList.filter((item) => item.key === '행동요소1'),
             ...buttonList.filter((item) => item.key === '행동요소2'),
           ];
 
           if (checkedDepthList.length > 0) {
-            newClassification.splice(4, 0, {
+            newClassification.splice(6, 0, {
               itemTreeIdxList: checkedDepthList,
             });
           }
@@ -903,31 +981,102 @@ export function ClassificationEdit({
     enabled: radio3depthCheck?.code !== '',
   });
 
+  const setNextList = (idx: number) => {
+    //교과 과목 오픈여부 라디오 버튼 셋팅
+    if (categoriesE && idx == 4) {
+      setNextList4depth(categoriesE[0]);
+    }
+    if (categoriesE && idx == 5) {
+      setNextList5depth(categoriesE[1]);
+    }
+  };
+
+  useEffect(() => {
+    if (radio1depthCheck.code !== '') nextListData1Refetch();
+    if (radio2depthCheck.code !== '') nextListData2Refetch();
+    if (radio3depthCheck.code !== '') nextListData3Refetch();
+    if (radio4depthCheck.code !== '') setNextList(4);
+    if (radio5depthCheck.code !== '') setNextList(5);
+    if (radio6depthCheck.code !== '') setNextList(6);
+  }, [
+    radio1depthCheck,
+    radio2depthCheck,
+    radio3depthCheck,
+    radio4depthCheck,
+    radio5depthCheck,
+    radio6depthCheck,
+  ]);
+
   // 체크값 변경시 초기화
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio2depthCheck(reset);
+    setRadio3depthCheck(reset);
+    setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
     setSelected2depth('');
     setCheckedDepthList([]);
   }, [selected1depth]);
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio3depthCheck(reset);
+    setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
     setSelected3depth('');
     setCheckedDepthList([]);
-    setCheckedItems([]);
   }, [selected2depth]);
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
     setSelected4depth('');
-    setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
     setCheckedDepthList([]);
-    setCheckedItems([]);
+    setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
   }, [selected3depth]);
   useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
+    setSelected5depth('');
+    setCheckedDepthList([]);
+    setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected4depth]);
+  useEffect(() => {
+    const reset = { title: '', checkValue: 0, code: '', key: '' };
+    setRadio6depthCheck(reset);
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
+    setSelected6depth('');
+    setCheckedDepthList([]);
+    setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
+  }, [selected5depth]);
+  useEffect(() => {
+    setRadioEtc1Check([]);
+    setRadioEtc2Check([]);
+
+    setSearchValue('');
+    setCheckedDepthList([]);
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
     setRadioEtc1Check([]);
     setRadioEtc2Check([]);
-    setCheckedDepthList([]);
-    setSearchValue('');
-    setCheckedItems([]);
-  }, [selected4depth]);
+  }, [selected6depth]);
 
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
@@ -937,25 +1086,27 @@ export function ClassificationEdit({
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
     ];
-    // itemTreeKeyList 객체를 빈 객체로 초기화
-    const itemTreeKeyList: CheckedItemType = {};
-
-    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
-    depthChecks.forEach((depthCheck) => {
-      if (depthCheck && depthCheck.code && depthCheck.title) {
-        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
-      }
-    });
-
-    console.log(
-      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
-      itemTreeKeyList,
+    //서버로 부터 받은 nameList에 맞게 서버에 요청
+    const groupsArray = categoryNameList.split(',');
+    const keyValuePairs = groupsArray.reduce<Record<string, string>>(
+      (acc, item, index) => {
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
+        }
+        return acc;
+      },
+      {},
     );
-    const data = {
-      itemTreeKeyList: [itemTreeKeyList],
-    };
-    const res = await classificationInstance.post('/v1/item', data);
+
+    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
+    //console.log('itemTreeKeyList', itemTreeKeyList);
+
+    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    // console.log('item', res);
     return res;
   };
 
@@ -983,10 +1134,9 @@ export function ClassificationEdit({
   });
 
   useEffect(() => {
-    console.log(radio4depthCheck);
-    if (selected4depth == '') return;
+    if (selected6depth == '') return;
     categoryItemTreeDataMutate();
-  }, [selected4depth]);
+  }, [selected6depth]);
 
   // 카테고리의 그룹 유형 조회 (추가정보)
   const getAddInfoGroups = async () => {
@@ -1040,13 +1190,15 @@ export function ClassificationEdit({
       radio2depthCheck,
       radio3depthCheck,
       radio4depthCheck,
+      radio5depthCheck,
+      radio6depthCheck,
       radioEtc1Check,
       radioEtc2Check,
       ...checkedItems,
     ];
 
     if (checkedDepthList.length > 0) {
-      newClassification.splice(4, 0, { itemTreeIdxList: checkedDepthList });
+      newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
     }
 
     if (unitClassificationList.length < 6) {
@@ -1062,9 +1214,6 @@ export function ClassificationEdit({
     onResetList();
   };
 
-  // 수정
-  const changeUnitClassification = (idx: number) => {};
-
   //삭제
   const deleteUnitClassification = (idx: number) => {
     setUnitClassificationList((prevList) => [
@@ -1078,11 +1227,13 @@ export function ClassificationEdit({
   //분류 리스트 리셋
   const onResetList = () => {
     const reset = { title: '', checkValue: 0, code: '', key: '' };
-
+    const listReset = [{ code: '', idx: 0, name: '' }];
     setRadio1depthCheck(reset);
     setRadio2depthCheck(reset);
     setRadio3depthCheck(reset);
     setRadio4depthCheck(reset);
+    setRadio5depthCheck(reset);
+    setRadio6depthCheck(reset);
     setRadioEtc1Check([]);
     setRadioEtc2Check([]);
 
@@ -1090,26 +1241,30 @@ export function ClassificationEdit({
     setSelected2depth('');
     setSelected3depth('');
     setSelected4depth('');
+    setSelected5depth('');
+    setSelected6depth('');
+    setNextList1depth(listReset);
+    setNextList2depth(listReset);
+    setNextList3depth(listReset);
+    setNextList4depth(listReset);
+    setNextList5depth(listReset);
     setSelectedCategoryEtc1([]);
     setSelectedCategoryEtc2([]);
     setCheckedDepthList([]);
     setCheckedItems([]);
   };
 
-  useEffect(() => {
-    if (radio1depthCheck?.code !== '') nextListData1Refetch();
-    if (radio2depthCheck?.code !== '') nextListData2Refetch();
-    if (radio3depthCheck?.code !== '') nextListData3Refetch();
-  }, [
-    radio1depthCheck,
-    radio2depthCheck,
-    radio3depthCheck,
-    selected1depth,
-    selected2depth,
-    selected3depth,
-    selected4depth,
-    isModifying,
-  ]);
+  // 수정
+  const changeUnitClassification = (idx: number) => {
+    console.log('수정에서의 itemTree checkedDepthList', checkedDepthList);
+    console.log(
+      '수정에서의 itemTree unitClassificationList',
+      unitClassificationList[idx],
+    );
+    onResetList();
+    setSelectedClassification(unitClassificationList[idx]);
+    setIsModifying(true);
+  };
 
   // 아이템 트리 체크값 유형 키값으로 타이틀명 맞춰서 체크
   useEffect(() => {
@@ -1296,274 +1451,433 @@ export function ClassificationEdit({
     console.log('type', type);
   }, []);
 
+  //리스트 솔팅 정렬
+  const [columnsCount, setColumnsCount] = useState<number>(3);
+  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
+  useEffect(() => {}, [columnsCount, itemHeight]);
+
+  //셀렉트 데이터
+  const [content, setContent] = useState<string[]>([]);
+  const [topSelect, setTopSelect] = useState<string>('문제만 보기');
+  const sortArr = [
+    {
+      idx: '대발문 + 지문 + 문제',
+      label: '대발문 + 지문 + 문제',
+      code: '대발문 + 지문 + 문제',
+      value: '대발문 + 지문 + 문제',
+      name: '대발문 + 지문 + 문제',
+    },
+    {
+      idx: '문제 + 정답 + 해설',
+      label: '문제 + 정답 + 해설',
+      code: '문제 + 정답 + 해설',
+      value: '문제 + 정답 + 해설',
+      name: '문제 + 정답 + 해설',
+    },
+    {
+      idx: '대발문 + 지문 + 문제 + 정답 + 해설',
+      label: '대발문 + 지문 + 문제 + 정답 + 해설',
+      code: '대발문 + 지문 + 문제 + 정답 + 해설',
+      value: '대발문 + 지문 + 문제 + 정답 + 해설',
+      name: '대발문 + 지문 + 문제 + 정답 + 해설',
+    },
+  ];
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const value = event.currentTarget.value;
+    setContent((prevContent) => [...prevContent, value]);
+  };
+  useEffect(() => {
+    console.log('셀렉트 값', topSelect);
+  }, [topSelect]);
+
+  // 체크박스 설정
+  const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(e.currentTarget.checked);
+
+    if (e.target.checked) {
+      setCheckedList(questionList.map((item) => item.code as string)); //
+    } else {
+      setCheckedList([]);
+    }
+  };
+  const handleSingleCheckIcon = (checked: boolean, id: string) => {
+    if (checked) {
+      setCheckedList((prev) => [...prev, id]);
+    } else {
+      setCheckedList(checkedList.filter((el) => el !== id));
+    }
+
+    setIsChecked(checked);
+  };
+
   return (
     <Container>
-      <ResizeLayoutWrapper>
-        <ResizeLayout
-          height={'calc(100vh - 100px)'}
-          column={'3rd'}
-          item1Width={300}
-          item1={
-            <QuizList
-              questionList={questionList}
-              showTitle
-              showCheckBox
-              fontBold
-              setCheckedList={setCheckedList}
-              isDataColor
-              setIsCheck={setIsChecked}
+      <LayoutBodyWrapper>
+        <LayoutWrapper className="auto">
+          <TopButtonWrapper>
+            <div>
+              <CheckBoxI
+                $margin={'0 5px 0 0'}
+                onChange={(e) => handleAllCheck(e)}
+                checked={
+                  checkedList.length === questionList.length ? true : false
+                }
+                // checked={true}
+                id={'all check'}
+                value={'all check'}
+              />
+              <span className={`title_top`}>총 {`${0} 건`} 전체선택</span>
+            </div>
+            <p>총 22건 중 5건 분류없음</p>
+          </TopButtonWrapper>
+          <TopButtonWrapper>
+            <Select
+              width={'250px'}
+              defaultValue={'문제만 보기'}
+              key={'문제만 보기'}
+              options={sortArr}
+              onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setTopSelect}
             />
-          }
-          item2={
-            <ScrollWrapper>
-              <PerfectScrollbar>
-                <ViewerWrapper>
-                  <Title>
-                    <span className="title_top">문항뷰어</span>
-                  </Title>
-                  <MathViewerWrapper>
-                    {sortedList.length > 0 ? (
-                      <>
-                        {sortedQuizList &&
-                        sortedQuizList[clickIdx]?.quizItemList ? (
-                          sortedList[clickIdx]?.quizItemList?.map((el) => (
-                            <div key={`${el?.code} quizItemList sortedList`}>
-                              {[
-                                'BIG',
-                                'TEXT',
-                                'QUESTION',
-                                'SMALL',
-                                'EXAMPLE',
-                                'CHOICES',
-                                'ANSWER',
-                                'COMMENTARY',
-                                'HINT',
-                                'CONCEPT',
-                                'TITLE',
-                                'TIP',
-                              ].includes(el?.type) &&
-                                el?.content && (
-                                  <MathViewer data={el.content}></MathViewer>
-                                )}
-                            </div>
-                          ))
-                        ) : (
-                          <>
-                            <ValueNone
-                              info="등록된 데이터가 없습니다"
-                              textOnly
-                            />
-                          </>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <ValueNone info="문항을 선택해 주세요" textOnly />
-                      </>
-                    )}
-                  </MathViewerWrapper>
-                </ViewerWrapper>
-              </PerfectScrollbar>
-            </ScrollWrapper>
-          }
-          item3Width={600}
-          item3={
-            <ScrollWrapper>
-              <PerfectScrollbar id="scrollTopWrapper">
-                <Title>
-                  <span className="title_top">문항단원분류</span>
-                </Title>
-                {/* 추가된 단원분류 리스트 최대5개 저장 */}
-                <UnitClassifications>
-                  {unitClassificationList.length > 0 ? (
-                    <>
-                      {unitClassificationList.map((el, idx) => (
-                        <IconButtonWrapper key={`${el} idx`}>
-                          <IconButton
-                            width={`calc(100% - 25px)`}
-                            fontSize="14px"
-                            height="35px"
-                            textAlign="left"
-                            $padding="0 50px 0 10px"
-                            onClick={() => changeUnitClassification(idx)}
-                          >
-                            <span>
-                              {el
-                                .filter(
-                                  (item): item is RadioStateType =>
-                                    'title' in item,
-                                )
-                                .map((item) => `${item.title} / `)}
-                            </span>
-                          </IconButton>
-
-                          <Icon
-                            onClick={() => deleteUnitClassification(idx)}
-                            $margin={'0 0 0 2px'}
-                            width={`15px`}
-                            src={`/images/icon/icoclose.svg`}
-                          />
-                        </IconButtonWrapper>
+            <ButtonWrapper>
+              <button
+                onClick={() => {
+                  setColumnsCount(3);
+                  setItemHeight('250px');
+                }}
+                className={`button ${columnsCount == 3 ? 'on' : ''} `}
+              >
+                {/* 작게보기 */}
+                <Icon
+                  width={`20px`}
+                  src={`/images/icon/sorting_default_view.svg`}
+                />
+              </button>
+              <button
+                onClick={() => {
+                  setColumnsCount(1);
+                  setItemHeight(undefined);
+                }}
+                className={`button ${columnsCount == 1 ? 'on' : ''}`}
+              >
+                {/* 크게보기 */}
+                <Icon
+                  width={`20px`}
+                  src={`/images/icon/sorting_larger_view.svg`}
+                />
+              </button>
+              <button
+                onClick={() => {
+                  setColumnsCount(2);
+                  setItemHeight(undefined);
+                }}
+                className={`button ${columnsCount == 2 ? 'on' : ''}`}
+              >
+                {/* 맞춤보기  */}
+                <Icon
+                  width={`20px`}
+                  src={`/images/icon/sorting_custom_view.svg`}
+                />
+              </button>
+            </ButtonWrapper>
+          </TopButtonWrapper>
+          <ScrollWrapper className="items_height">
+            <PerfectScrollbar>
+              <MyStaticWrapper columnsCount={columnsCount} padding="5px">
+                {questionList.map((quiz, index) => (
+                  <ItemWrapper key={quiz.idx} height={itemHeight}>
+                    <TopButtonWrapper>
+                      <div>
+                        <CheckBoxI
+                          $margin={'0 5px 0 0'}
+                          onChange={(e) =>
+                            handleSingleCheckIcon(e.target.checked, quiz.code)
+                          }
+                          checked={
+                            checkedList.includes(quiz.code as string)
+                              ? true
+                              : false
+                          }
+                          id={quiz.code}
+                          value={quiz.code}
+                        />
+                        <span className={`title_top`}>{`${0} 건`}</span>
+                      </div>
+                      <span className="tag">{`${quiz.quizCategoryList.map(
+                        (item, idx) => {
+                          <span key={idx}>{item.quizCategory?.문항타입}</span>;
+                        },
+                      )}`}</span>
+                    </TopButtonWrapper>
+                    <div className="quiz_wrap">
+                      {quiz.quizItemList?.map((item) => (
+                        <span key={item.idx}>{item.content}</span>
                       ))}
-                    </>
-                  ) : (
-                    <p className="info">
-                      교과정보는 최대 5개 까지 저장 가능합니다
-                    </p>
-                  )}
-                </UnitClassifications>
-
-                {/* 교육과정 라디오 버튼 부분 */}
-                {/* 체크박스에 선택된 리스트없을시 안보이게 */}
-                {sortedList.length > 0 ? (
+                    </div>
+                    <div className="class_wrap">{`${
+                      quiz.quizCategoryList.some(
+                        (item) =>
+                          item.quizCategory && item.quizCategory.교육과정,
+                      ) ? (
+                        quiz.quizCategoryList.map((item, idx) => {
+                          <span key={idx}>
+                            {item.quizCategory?.교육과정}/
+                            {item.quizCategory?.과목}/{item.quizCategory?.교과}/
+                            {item.quizCategory?.학년}/{item.quizCategory?.학기}/
+                            {item.quizCategory?.대단원}/
+                            {item.quizCategory?.중단원}/
+                            {item.quizCategory?.소단원}/
+                            {item.quizCategory?.유형}
+                          </span>;
+                        })
+                      ) : (
+                        <span>(분류없음)</span>
+                      )
+                    }`}</div>
+                  </ItemWrapper>
+                ))}
+              </MyStaticWrapper>
+            </PerfectScrollbar>
+          </ScrollWrapper>
+        </LayoutWrapper>
+        <LayoutWrapper>
+          <ScrollWrapper>
+            <PerfectScrollbar id="scrollTopWrapper">
+              <Title>
+                <span className="title_top">문항단원분류</span>
+              </Title>
+              {/* 추가된 단원분류 리스트 최대5개 저장 */}
+              <UnitClassifications>
+                {unitClassificationList.length > 0 ? (
                   <>
-                    {categoryList && (
-                      <>
-                        {[
+                    {unitClassificationList.map((el, idx) => (
+                      <IconButtonWrapper key={`${el} idx`}>
+                        <IconButton
+                          width={`calc(100% - 25px)`}
+                          fontSize="14px"
+                          height="35px"
+                          textAlign="left"
+                          $padding="0 50px 0 10px"
+                          onClick={() => changeUnitClassification(idx)}
+                        >
+                          <span>
+                            {el
+                              .filter(
+                                (item): item is RadioStateType =>
+                                  'title' in item,
+                              )
+                              .map((item) => `${item.title} / `)}
+                          </span>
+                        </IconButton>
+
+                        <Icon
+                          onClick={() => deleteUnitClassification(idx)}
+                          $margin={'0 0 0 2px'}
+                          width={`15px`}
+                          src={`/images/icon/icoclose.svg`}
+                        />
+                      </IconButtonWrapper>
+                    ))}
+                  </>
+                ) : (
+                  <p className="info">
+                    교과정보는 최대 5개 까지 저장 가능합니다
+                  </p>
+                )}
+              </UnitClassifications>
+
+              {/* 교육과정 라디오 버튼 부분 */}
+              {/* 체크박스에 선택된 리스트없을시 안보이게 */}
+              {sortedList.length > 0 ? (
+                <>
+                  {categoryList && (
+                    <>
+                      {[
+                        {
+                          idx: 0,
+                          name: '교육과정',
+                          code: '교육과정',
+                          type: 'SELECT',
+                        },
+                      ].map((item) => (
+                        <div
+                          className={`1depth`}
+                          id={`${item.name}`}
+                          key={`selected1depth ${item.idx}`}
+                        >
+                          <ButtonFormatRadio
+                            branchValue={`${item.name}`}
+                            titleText={`${item.name}`}
+                            list={categoryList[0]}
+                            selected={selected1depth}
+                            onChange={(e) => handleRadioCheck(e)}
+                            // defaultChecked={}
+                            checkedInput={radio1depthCheck}
+                            $margin={`10px 0 0 0`}
+                          />
+                        </div>
+                      ))}
+                      {radio1depthCheck?.code !== '' &&
+                        selected1depth !== '' &&
+                        [
                           {
                             idx: 0,
-                            name: '교육과정',
-                            code: '교육과정',
+                            name: '학교급',
+                            code: '학교급',
                             type: 'SELECT',
                           },
                         ].map((item) => (
                           <div
-                            className={`1depth`}
+                            className={`2depth`}
                             id={`${item.name}`}
-                            key={`selected1depth ${item.idx}`}
+                            key={`selected2depth ${item.idx}`}
                           >
                             <ButtonFormatRadio
                               branchValue={`${item.name}`}
                               titleText={`${item.name}`}
-                              list={categoryList[0]}
-                              selected={selected1depth}
+                              list={nextList1depth}
+                              selected={selected2depth}
                               onChange={(e) => handleRadioCheck(e)}
                               // defaultChecked={}
-                              checkedInput={radio1depthCheck}
-                              $margin={`10px 0 0 0`}
+                              checkedInput={radio2depthCheck}
                             />
                           </div>
                         ))}
 
-                        {radio1depthCheck?.code !== '' &&
-                          selected1depth !== '' &&
-                          [
-                            {
-                              idx: 0,
-                              name: '학교급',
-                              code: '학교급',
-                              type: 'SELECT',
-                            },
-                          ].map((item) => (
-                            <div
-                              className={`2depth`}
-                              id={`${item.name}`}
-                              key={`selected2depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList1depth}
-                                selected={selected2depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio2depthCheck}
-                              />
-                            </div>
-                          ))}
+                      {radio2depthCheck?.code !== '' &&
+                        selected2depth !== '' &&
+                        [
+                          {
+                            idx: 0,
+                            name: '학년',
+                            code: '학년',
+                            type: 'SELECT',
+                          },
+                        ].map((item) => (
+                          <div
+                            className={`3depth`}
+                            id={`${item.name}`}
+                            key={`selected3depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList2depth}
+                              selected={selected3depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio3depthCheck}
+                            />
+                          </div>
+                        ))}
+                      {radio3depthCheck?.code !== '' &&
+                        selected3depth !== '' &&
+                        [
+                          {
+                            idx: 0,
+                            name: '학기',
+                            code: '학기',
+                            type: 'SELECT',
+                          },
+                        ].map((item) => (
+                          <div
+                            className={`4depth`}
+                            id={`${item.name}`}
+                            key={`selected4depth ${item.idx}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={`${item.name}`}
+                              titleText={`${item.name}`}
+                              list={nextList3depth}
+                              selected={selected4depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio4depthCheck}
+                            />
+                          </div>
+                        ))}
+                      {/* 교과 */}
+                      {radio4depthCheck.code !== '' &&
+                        selected4depth !== '' && (
+                          <div
+                            className={`5depth`}
+                            id={categoryNameList.split(',')[4]}
+                            key={`selected5depth ${categoryNameList.split(',')[4]}`}
+                          >
+                            <ButtonFormatRadio
+                              branchValue={categoryNameList.split(',')[4]}
+                              titleText={categoryNameList.split(',')[4]}
+                              list={nextList4depth}
+                              selected={selected5depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio5depthCheck}
+                            />
+                          </div>
+                        )}
+                      {/* 과목 */}
+                      {radio5depthCheck.code !== '' &&
+                        selected5depth !== '' && (
+                          <div
+                            className={`6depth`}
+                            id={categoryNameList.split(',')[5]}
+                            key={`selected6depth ${categoryNameList.split(',')[5]}`}
+                          >
+                            <ButtonFormatRadio
+                              overFlow
+                              branchValue={categoryNameList.split(',')[5]}
+                              titleText={categoryNameList.split(',')[5]}
+                              list={nextList5depth}
+                              selected={selected6depth}
+                              onChange={(e) => handleRadioCheck(e)}
+                              // defaultChecked={}
+                              checkedInput={radio6depthCheck}
+                            />
+                          </div>
+                        )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone info="문항을 선택해 주세요" textOnly />
+                </ValueNoneWrapper>
+              )}
 
-                        {radio2depthCheck?.code !== '' &&
-                          selected2depth !== '' &&
-                          [
-                            {
-                              idx: 0,
-                              name: '학년',
-                              code: '학년',
-                              type: 'SELECT',
-                            },
-                          ].map((item) => (
-                            <div
-                              className={`3depth`}
-                              id={`${item.name}`}
-                              key={`selected3depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList2depth}
-                                selected={selected3depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio3depthCheck}
-                              />
-                            </div>
-                          ))}
-                        {radio3depthCheck?.code !== '' &&
-                          selected3depth !== '' &&
-                          [
-                            {
-                              idx: 0,
-                              name: '학기',
-                              code: '학기',
-                              type: 'SELECT',
-                            },
-                          ].map((item) => (
-                            <div
-                              className={`4depth`}
-                              id={`${item.name}`}
-                              key={`selected4depth ${item.idx}`}
-                            >
-                              <ButtonFormatRadio
-                                branchValue={`${item.name}`}
-                                titleText={`${item.name}`}
-                                list={nextList3depth}
-                                selected={selected4depth}
-                                onChange={(e) => handleRadioCheck(e)}
-                                // defaultChecked={}
-                                checkedInput={radio4depthCheck}
-                              />
-                            </div>
-                          ))}
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <ValueNoneWrapper>
-                    <ValueNone info="문항을 선택해 주세요" textOnly />
-                  </ValueNoneWrapper>
-                )}
+              <p className="line"></p>
 
-                <p className="line"></p>
-
-                {/* 교과정보 아코디언 리스트  */}
-                {radio1depthCheck?.code !== '' &&
-                radio2depthCheck?.code !== '' &&
-                radio3depthCheck?.code !== '' &&
-                radio4depthCheck?.code !== '' &&
-                selected1depth !== '' &&
-                selected2depth !== '' &&
-                selected3depth !== '' ? (
-                  <AccordionWrapper>
-                    <Accordion
-                      defaultChecked={isModifying}
-                      title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                      id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                    >
-                      <RowListWrapper>
-                        <Search
-                          height={'30px'}
-                          value={searchValue}
-                          onClick={(e) => filterSearchValue(e)}
-                          onKeyDown={(e) => filterSearchValueEnter(e)}
-                          onChange={(e) => {
-                            setSearchValue(e.target.value);
-                          }}
-                          placeholder="검색어를 입력해주세요.(두글자 이상)"
-                          maxLength={20}
-                        />
-                        {searchValue.length > 1 && (
-                          <p className="line bottom_text">
-                            {`총 
+              {/* 교과정보 아코디언 리스트  */}
+              {radio1depthCheck?.code !== '' &&
+              radio2depthCheck?.code !== '' &&
+              radio3depthCheck?.code !== '' &&
+              radio4depthCheck?.code !== '' &&
+              radio5depthCheck?.code !== '' &&
+              radio6depthCheck?.code !== '' &&
+              selected1depth !== '' &&
+              selected2depth !== '' &&
+              selected3depth !== '' &&
+              selected4depth !== '' ? (
+                <AccordionWrapper>
+                  <Accordion
+                    defaultChecked={isModifying}
+                    title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}학기/${radio5depthCheck.title}/${radio6depthCheck.title}`}
+                    id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}학기/${radio5depthCheck.title}/${radio6depthCheck.title}`}
+                  >
+                    <RowListWrapper>
+                      <Search
+                        height={'30px'}
+                        value={searchValue}
+                        onClick={(e) => filterSearchValue(e)}
+                        onKeyDown={(e) => filterSearchValueEnter(e)}
+                        onChange={(e) => {
+                          setSearchValue(e.target.value);
+                        }}
+                        placeholder="검색어를 입력해주세요.(두글자 이상)"
+                        maxLength={20}
+                      />
+                      {searchValue.length > 1 && (
+                        <p className="line bottom_text">
+                          {`총 
 															${
                                 categoryItemTreeData && itemTree.length
                                   ? itemTree.reduce(
@@ -1577,184 +1891,197 @@ export function ClassificationEdit({
                                   : 0
                               } 
 															건`}
-                            <ArrowButtonWrapper>
-                              <button onClick={() => prevHighlight()}>
-                                <IoMdArrowDropup />
-                              </button>
-                              <button onClick={() => nextHighlight()}>
-                                <IoMdArrowDropdown />
-                              </button>
-                            </ArrowButtonWrapper>
-                          </p>
-                        )}
-                        {isPending && (
-                          <LoaderWrapper>
-                            <Loader width="50px" />
-                          </LoaderWrapper>
-                        )}
-                        <DepthBlockScrollWrapper>
-                          <PerfectScrollbar>
-                            {categoryItemTreeData ? (
-                              <>
-                                {itemTree.length ? (
-                                  <div ref={contentRef} className="content">
-                                    {searchValue.length > 0 ? (
-                                      <>
-                                        {itemTree.map((el) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                branchValue={`${item.name}`}
-                                                highlightText={highlightText}
-                                                defaultChecked
-                                                key={`depthList${item?.idx} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item?.idx}
-                                                name={item.name}
-                                                value={item?.idx}
-                                                level={item?.level}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                    item?.level,
-                                                    item.name,
-                                                    findItemByIdx,
-                                                    findChildItems,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                                searchValue={searchValue}
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </>
-                                    ) : (
-                                      <>
-                                        {itemTree.map((el) => (
-                                          <div key={`${el.itemTreeKey}`}>
-                                            {el.itemTreeList.map((item) => (
-                                              <DepthBlock
-                                                branchValue={`${item.name}`}
-                                                defaultChecked
-                                                key={`depthList${item?.idx} ${item.name}`}
-                                                classNameList={`depth-${item.level}`}
-                                                id={item?.code}
-                                                name={item.name}
-                                                value={item?.idx}
-                                                level={item?.level}
-                                                onChange={(e) =>
-                                                  handleSingleCheck(
-                                                    e.target.checked,
-                                                    item?.idx,
-                                                    item?.level,
-                                                    item.name,
-                                                    findItemByIdx,
-                                                    findChildItems,
-                                                  )
-                                                }
-                                                checked={
-                                                  checkedDepthList.includes(
-                                                    item?.idx,
-                                                  )
-                                                    ? true
-                                                    : false
-                                                }
-                                                searchValue={searchValue}
-                                              >
-                                                <span>{item.name}</span>
-                                              </DepthBlock>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <ValueNone
-                                    textOnly
-                                    info="등록된 데이터가 없습니다"
-                                  />
-                                )}
-                              </>
-                            ) : (
-                              <Loader />
-                            )}
-                          </PerfectScrollbar>
-                        </DepthBlockScrollWrapper>
-                      </RowListWrapper>
-                    </Accordion>
+                          <ArrowButtonWrapper>
+                            <button onClick={() => prevHighlight()}>
+                              <IoMdArrowDropup />
+                            </button>
+                            <button onClick={() => nextHighlight()}>
+                              <IoMdArrowDropdown />
+                            </button>
+                          </ArrowButtonWrapper>
+                        </p>
+                      )}
+                      {isPending && (
+                        <LoaderWrapper>
+                          <Loader width="50px" />
+                        </LoaderWrapper>
+                      )}
+                      <DepthBlockScrollWrapper>
+                        <PerfectScrollbar>
+                          {categoryItemTreeData ? (
+                            <>
+                              {itemTree.length ? (
+                                <div ref={contentRef} className="content">
+                                  {searchValue.length > 0 ? (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              branchValue={`${item.name}`}
+                                              highlightText={highlightText}
+                                              defaultChecked
+                                              key={`depthList${item?.idx} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item?.idx}
+                                              name={item.name}
+                                              value={item?.idx}
+                                              level={item?.level}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                  item?.level,
+                                                  item.name,
+                                                  findItemByIdx,
+                                                  findChildItems,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                              searchValue={searchValue}
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              branchValue={`${item.name}`}
+                                              defaultChecked
+                                              key={`depthList${item?.idx} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item?.code}
+                                              name={item.name}
+                                              value={item?.idx}
+                                              level={item?.level}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                  item?.level,
+                                                  item.name,
+                                                  findItemByIdx,
+                                                  findChildItems,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                              searchValue={searchValue}
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  )}
+                                </div>
+                              ) : (
+                                <ValueNone
+                                  textOnly
+                                  info="등록된 데이터가 없습니다"
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <Loader />
+                          )}
+                        </PerfectScrollbar>
+                      </DepthBlockScrollWrapper>
+                    </RowListWrapper>
+                  </Accordion>
 
-                    <Accordion
-                      title={'추가정보'}
-                      id={'추가정보'}
-                      $margin={'4px 0 0 0 '}
-                      defaultChecked={isModifying}
-                    >
-                      <RowListWrapper>
-                        {categoryAddInfoList ? (
-                          <>
-                            {[categoryItems[4]].map((item) => (
-                              <div
-                                id={`${item.name}`}
-                                className={`etc1`}
-                                key={`etc1 ${item.idx}`}
-                              >
-                                <ButtonFormatMultiRadio
-                                  titleText={`${item.name}`}
-                                  list={categoryAddInfoList[0]}
-                                  selected={selectedCategoryEtc1}
-                                  onChange={(e) => handleMultiRadioCheck(e)}
-                                  checkedInputs={radioEtc1Check}
-                                  branchValue={`etc1`}
-                                />
-                              </div>
-                            ))}
-                            {[categoryItems[5]].map((item) => (
-                              <div
-                                id={`${item.name}`}
-                                className={`etc2`}
-                                key={`etc2 ${item.idx}`}
-                              >
-                                <ButtonFormatMultiRadio
-                                  titleText={`${item.name}`}
-                                  list={categoryAddInfoList[1]}
-                                  selected={selectedCategoryEtc2}
-                                  onChange={(e) => handleMultiRadioCheck(e)}
-                                  checkedInputs={radioEtc2Check}
-                                  branchValue={`etc2`}
-                                />
-                              </div>
-                            ))}
-                          </>
-                        ) : (
-                          <ValueNone textOnly info="등록된 데이터가 없습니다" />
-                        )}
-                      </RowListWrapper>
-                    </Accordion>
-                  </AccordionWrapper>
-                ) : (
-                  <ValueNoneWrapper>
-                    <ValueNone
-                      textOnly
-                      info="교육과정, 학교급, 학년, 학기를 선택해주세요"
-                    />
-                  </ValueNoneWrapper>
-                )}
-              </PerfectScrollbar>
-            </ScrollWrapper>
-          }
-        />
-      </ResizeLayoutWrapper>
+                  <Accordion
+                    title={'추가정보'}
+                    id={'추가정보'}
+                    $margin={'4px 0 0 0 '}
+                    defaultChecked={isModifying}
+                  >
+                    <RowListWrapper>
+                      {categoryAddInfoList ? (
+                        <>
+                          {[
+                            {
+                              idx: 0,
+                              name: '행동요소1',
+                              code: '행동요소1',
+                              type: 'SELECT',
+                            },
+                          ].map((item) => (
+                            <div
+                              id={`${item.name}`}
+                              className={`etc1`}
+                              key={`etc1 ${item.idx}`}
+                            >
+                              <ButtonFormatMultiRadio
+                                titleText={`${item.name}`}
+                                list={categoryAddInfoList[0]}
+                                selected={selectedCategoryEtc1}
+                                onChange={(e) => handleMultiRadioCheck(e)}
+                                checkedInputs={radioEtc1Check}
+                                branchValue={`etc1`}
+                              />
+                            </div>
+                          ))}
+                          {[
+                            {
+                              idx: 0,
+                              name: '행동요소2',
+                              code: '행동요소2',
+                              type: 'SELECT',
+                            },
+                          ].map((item) => (
+                            <div
+                              id={`${item.name}`}
+                              className={`etc2`}
+                              key={`etc2 ${item.idx}`}
+                            >
+                              <ButtonFormatMultiRadio
+                                titleText={`${item.name}`}
+                                list={categoryAddInfoList[1]}
+                                selected={selectedCategoryEtc2}
+                                onChange={(e) => handleMultiRadioCheck(e)}
+                                checkedInputs={radioEtc2Check}
+                                branchValue={`etc2`}
+                              />
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <ValueNone textOnly info="등록된 데이터가 없습니다" />
+                      )}
+                    </RowListWrapper>
+                  </Accordion>
+                </AccordionWrapper>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone
+                    textOnly
+                    info="교육과정, 학교급, 학년, 학기를 선택해주세요"
+                  />
+                </ValueNoneWrapper>
+              )}
+            </PerfectScrollbar>
+          </ScrollWrapper>
+        </LayoutWrapper>
+      </LayoutBodyWrapper>
 
       <BorderWrapper>
         <SubmitButtonWrapper>
@@ -1786,10 +2113,15 @@ export function ClassificationEdit({
 const Container = styled.div`
   position: relative;
 `;
-const ResizeLayoutWrapper = styled.div`
-  border: 1px solid ${COLOR.BORDER_BLUE};
-  border-top: none;
-  height: calc(100vh - 100px);
+const LayoutBodyWrapper = styled.div`
+  display: flex;
+`;
+const LayoutWrapper = styled.div`
+  width: 400px;
+  border: 1px solid ${COLOR.BORDER_GRAY};
+  &.auto {
+    flex: 1 0 0;
+  }
 `;
 const ScrollWrapper = styled.div`
   overflow-y: auto;
@@ -1822,18 +2154,6 @@ const Title = styled.div`
   .title_top {
     font-size: 15px;
     font-weight: bold;
-  }
-`;
-const IconWrapper = styled.div`
-  .icon_button {
-    padding: 5px;
-    border: none;
-    font-size: 13px;
-    font-weight: bold;
-    color: ${COLOR.SECONDARY};
-    background-color: transparent;
-    cursor: pointer;
-    color: ${COLOR.PRIMARY};
   }
 `;
 const IconButtonWrapper = styled.div`
@@ -1895,22 +2215,11 @@ const LoaderWrapper = styled.div`
   padding-bottom: 50px;
   padding-left: calc(50% - 35px);
 `;
-const MathViewerWrapper = styled.div`
-  padding: 20px;
-
-  p > img {
-    width: 100% !important;
-    height: auto !important;
-  }
-
-  div > img {
-    width: 100% !important;
-    height: auto !important;
-  }
-  table {
-    width: inherit !important;
-    height: auto !important;
-  }
+const TopButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  /* padding-top: 15px; */
 `;
 
 const ArrowButtonWrapper = styled.span`
@@ -1921,4 +2230,31 @@ const ArrowButtonWrapper = styled.span`
     background-color: transparent;
     border: none;
   }
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  gap: 5px;
+
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background-color: transparent;
+
+    &.on {
+      background-color: ${COLOR.IS_HAVE_DATA};
+    }
+  }
+`;
+
+const ItemWrapper = styled.div<{ height?: string }>`
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  height: ${({ height }) => height || 'auto'};
+  margin: 5px;
+  overflow: auto;
 `;
