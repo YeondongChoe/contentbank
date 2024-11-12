@@ -43,3 +43,9 @@ export const groupItem = atom<GroupListProps[]>({
   key: 'groupItem',
   default: [],
 });
+
+// 디바이스
+export const deviceTypeState = atom({
+  key: 'deviceTypeState', // atom의 고유 ID
+  default: 'desktop', // 기본 값
+});
