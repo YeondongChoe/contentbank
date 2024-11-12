@@ -54,8 +54,8 @@ export function GroupManagement() {
   }, [typeList]);
   const titleEditHandler = (id: number) => {
     //중복되지 않을 경우 등록 가능
-    const isSavedName = groupList.some((el) => el.name !== tagInputValue);
-    if (!isSavedName) {
+    const isCreatedName = groupList.some((el) => el.name === tagInputValue);
+    if (isCreatedName) {
       openToastifyAlert({
         type: 'error',
         text: '이미 등록된 그룹명입니다.',
@@ -189,9 +189,8 @@ export function GroupManagement() {
       setGroupList(categoryGroupData.data.data.groupList);
     }
   }, [categoryGroupData]);
-  console.log('groupList ------------- ', groupList);
+
   const clickSave = (numberList: number[]) => {
-    console.log(numberList);
     if (numberList.length > 20) {
       openToastifyAlert({
         type: 'error',
