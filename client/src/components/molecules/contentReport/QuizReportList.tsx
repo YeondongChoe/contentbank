@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
+import { TbCopy } from 'react-icons/tb';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -14,8 +15,10 @@ import {
   Modal,
   ValueNone,
   PaginationBox,
+  ImagePreviewModal,
 } from '../..';
 import { quizService } from '../../../api/axios';
+import Image from '../../../assets/images/ClassificationImg.png';
 import { useModal } from '../../../hooks';
 import { pageAtom } from '../../../store/utilAtom';
 import { ReportData, ReportType } from '../../../types';
@@ -37,6 +40,7 @@ export function QuizReportList({
 }: QuizReportListProps) {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
+  console.log(list);
 
   //신고리스트 처리완료 버튼
   const openReportProcess = (idx: number) => {
@@ -46,9 +50,20 @@ export function QuizReportList({
       callback: () => {},
     });
   };
+  //이미지 확대 버튼
+  const openImagePreviewModal = (src: string) => {
+    openModal({
+      title: '',
+      content: <ImagePreviewModal imgSrc={src} />,
+    });
+  };
   // 로컬스토리지에 보낼데이터 저장
-  const saveLocalData = () => {
-    window.localStorage.setItem('quizList', JSON.stringify(list));
+  const saveLocalData = (idx?: number) => {
+    if (idx) {
+      window.localStorage.setItem('quizIdx', JSON.stringify(idx));
+    } else {
+      window.localStorage.setItem('quizList', JSON.stringify(list));
+    }
   };
   const openCreateEditWindow = () => {
     saveLocalData();
@@ -58,9 +73,17 @@ export function QuizReportList({
       queryParams: { state: 'edit' },
     });
   };
+  const openContentPreviewWindow = (idx: number) => {
+    saveLocalData(idx);
+    windowOpenHandler({
+      name: 'contentPreview',
+      url: '/content-preview/report',
+      $width: 850,
+    });
+  };
 
   return (
-    <>
+    <Container>
       <Total> Total : {totalCount}</Total>
 
       <ListTitle>
@@ -141,6 +164,19 @@ export function QuizReportList({
                             <strong className="title">신고내용</strong>
                             <span className="text">{item.reportContent}</span>
                           </div>
+                          <div className="text_wrapper">
+                            <strong className="title">첨부파일</strong>
+                            <span className="text">
+                              <img
+                                className="icon"
+                                src={Image}
+                                width={150}
+                                onClick={() => {
+                                  openImagePreviewModal(Image);
+                                }}
+                              ></img>
+                            </span>
+                          </div>
                           <div className="process_wrapper">
                             {item.isUse ? (
                               <div className="processed">
@@ -163,6 +199,21 @@ export function QuizReportList({
                                   <span className="text">
                                     {item.answerContent}
                                   </span>
+                                </div>
+                                <div className="button_wrapper">
+                                  <Button
+                                    $filled
+                                    width="450px"
+                                    height={'35px'}
+                                    fontSize={'13px'}
+                                    cursor
+                                    $margin="15px 0 0 45px"
+                                    onClick={() => {
+                                      openContentPreviewWindow(item.quiz.idx);
+                                    }}
+                                  >
+                                    처리된 문항 보기
+                                  </Button>
                                 </div>
                               </div>
                             ) : (
@@ -209,10 +260,12 @@ export function QuizReportList({
         totalItemsCount={totalCount as number}
       />
       <Modal />
-    </>
+    </Container>
   );
 }
-
+const Container = styled.div`
+  position: relative;
+`;
 const Total = styled.span`
   text-align: right;
   font-size: 15px;
@@ -311,6 +364,9 @@ const AccordionItemLayout = styled.div`
     text-align: left;
     text-indent: 10px;
   }
+  .icon {
+    cursor: pointer;
+  }
   .process_wrapper {
     padding: 10px;
     .processed {
@@ -324,7 +380,6 @@ const AccordionItemLayout = styled.div`
     }
   }
 `;
-
 const ValueNoneWrapper = styled.div`
   padding: 100px 0;
   height: 550px;

@@ -13,24 +13,41 @@ import { MathViewer } from '../../../components/mathViewer';
 import { ItemQuestionType, QuizListType } from '../../../types';
 import { A4_HEIGHT, A4_WIDTH, COLOR } from '../../constants';
 
-import { makePdf } from './makePDF';
-
-type PDFModalProps = {
-  list: any[];
-};
-
-export function PDFModal({ list }: PDFModalProps) {
+export function ContentPreview() {
+  const [getLocalData, setGetLocalData] = useState<string | null>(null);
   const [sortedList, setSortedList] = useState<QuizListType[]>();
-  const pdf = makePdf();
   const printDivRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [scrollIndex, setScrollIndex] = useState(0);
 
+  // 로컬 스토리지에서 데이터 가져오기
+  useEffect(() => {
+    const fetchDataFromStorage = () => {
+      const data = localStorage.getItem('quizIdx');
+
+      if (data) {
+        try {
+          const parsedData = JSON.parse(data);
+          //console.log('sendData:', parsedData); // 디버깅용 콘솔 로그
+          setGetLocalData(parsedData);
+        } catch (error) {
+          console.error('로컬 스토리지 sendData 파싱 에러:', error);
+        }
+      } else {
+        console.log('로컬 스토리지에 sendData가 없습니다.');
+      }
+    };
+
+    fetchDataFromStorage();
+
+    const retryTimeout = setTimeout(fetchDataFromStorage, 3000); // 3초 후에 다시 시도
+
+    return () => clearTimeout(retryTimeout);
+  }, []);
+
   const getQuiz = async () => {
-    const idxArray = list.map((list) => list.idx);
-    const idxList = idxArray.join(',');
-    console.log(idxList);
-    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    //const idxArray = getLocalData;
+    const res = await quizService.get(`/v1/quiz/${1525408}`); //getLocalData 로 바꿔줘야함
     // console.log('list data----------', res);
     return res.data.data;
   };
@@ -45,7 +62,14 @@ export function PDFModal({ list }: PDFModalProps) {
     meta: {
       errorMessage: 'get-idx-quizList 에러 메세지',
     },
+    enabled: getLocalData !== null,
   });
+
+  useEffect(() => {
+    if (getLocalData) {
+      quizDataRefetch();
+    }
+  }, [getLocalData]);
 
   useEffect(() => {
     if (quizData) setSortedList(quizData.quizList);
@@ -73,12 +97,12 @@ export function PDFModal({ list }: PDFModalProps) {
           <SlPrinter />
         </IconButton> */}
 
-        <ReactToPrint
+        {/* <ReactToPrint
           trigger={() => (
             <SlPrinter style={{ fontSize: '20px', cursor: 'pointer' }} />
           )}
           content={() => printDivRef.current}
-        />
+        /> */}
       </IconButtonWrapper>
 
       <Component>
