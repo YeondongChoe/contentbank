@@ -17,6 +17,7 @@ import {
   ContentListManagementSetting,
   InspectionManagementSetting,
   ContentEditingSetting,
+  ContentPreview,
 } from './components';
 import { ContentInspection } from './components/contents/createcontent';
 import {
@@ -148,6 +149,10 @@ const router = createBrowserRouter([
       {
         path: '/content-manage/report',
         element: <ReportPage />,
+      },
+      {
+        path: '/content-preview/report',
+        element: <ContentPreview />,
       },
       {
         path: '/content-manage/inspection',

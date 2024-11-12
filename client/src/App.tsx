@@ -141,9 +141,8 @@ export function App() {
           location.pathname !== '/contentListManagementSetting' &&
           location.pathname !== '/contentEditingSetting' &&
           location.pathname !== '/inspection' &&
-          location.pathname !== '/inspectionManagementSetting' && (
-            <Navigation />
-          )}
+          location.pathname !== '/inspectionManagementSetting' &&
+          location.pathname !== '/content-preview/report' && <Navigation />}
         <MainWrapper>
           {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
@@ -167,7 +166,8 @@ export function App() {
             location.pathname !== '/contentListManagementSetting' &&
             location.pathname !== '/contentEditingSetting' &&
             location.pathname !== '/inspection' &&
-            location.pathname !== '/inspectionManagementSetting' && <Header />}
+            location.pathname !== '/inspectionManagementSetting' &&
+            location.pathname !== '/content-preview/report' && <Header />}
           <BodyWrapper>
             <ToastifyAlert />
             <Outlet />

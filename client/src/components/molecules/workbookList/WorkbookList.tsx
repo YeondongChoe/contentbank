@@ -545,7 +545,7 @@ const ItemLayout = styled.span`
   align-items: center;
   flex-wrap: wrap;
 
-  .tooltip_wrapper item_wrapper {
+  .tooltip_wrapper {
     position: relative;
   }
   .item_wrapper {
