@@ -42,6 +42,7 @@ import {
   QuizListType,
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
+import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { QuizList } from './list';
@@ -1570,7 +1571,26 @@ export function Classification({
     setIsChecked(checked);
   };
 
-  // console.log();
+  // 전체보기 버튼 누를시
+  const openViewer = (code: string) => {
+    const quiz = questionList.filter((el) => el.code === code);
+    console.log('선택된 요소', quiz[0]);
+    console.log('선택된 요소', quiz[0].idx);
+    const data: QuizListType = quiz[0];
+    // data 객체의 속성들을 문자열로 변환
+    const dataStringified: Record<string, string> = {
+      // ...data,
+      idx: data.idx.toString(),
+    };
+    const queryString = new URLSearchParams(dataStringified).toString();
+
+    windowOpenHandler({
+      name: 'quizpreview',
+      url: `/quizpreview?${queryString}`,
+      $width: 800,
+      $height: 800,
+    });
+  };
 
   return (
     <Container>
@@ -1663,39 +1683,70 @@ export function Classification({
                           id={quiz.code}
                           value={quiz.code}
                         />
-                        <span className={`title_top`}>{`${0} 건`}</span>
+                        <span className={`title_top`}>
+                          {`${0} 건`}
+
+                          <Icon
+                            onClick={() => openViewer(quiz.code)}
+                            width={`15px`}
+                            src={`/images/icon/entypo_popup.svg`}
+                          />
+                        </span>
                       </div>
-                      <span className="tag">{`${quiz.quizCategoryList.map(
-                        (item, idx) => {
-                          <span key={idx}>{item.quizCategory?.문항타입}</span>;
-                        },
-                      )}`}</span>
+                      <span>
+                        {quiz.quizCategoryList[0] && (
+                          <span
+                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
+                  ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
+                          >
+                            {quiz.quizCategoryList[0].quizCategory?.문항타입}{' '}
+                          </span>
+                        )}
+                      </span>
                     </TopButtonWrapper>
+                    {/* 뷰어 영역 */}
                     <div className="quiz_wrap">
-                      {quiz.quizItemList?.map((item) => (
-                        <span key={item.idx}>{item.content}</span>
+                      {quiz?.quizItemList?.map((el) => (
+                        <div key={`${el?.code} quizItemList sortedList`}>
+                          {[
+                            'BIG',
+                            'TEXT',
+                            'QUESTION',
+                            'SMALL',
+                            'EXAMPLE',
+                            'CHOICES',
+                            'ANSWER',
+                            'COMMENTARY',
+                            'HINT',
+                            'CONCEPT',
+                            'TITLE',
+                            'TIP',
+                          ].includes(el?.type) &&
+                            el?.content && (
+                              <MathViewer data={el.content}></MathViewer>
+                            )}
+                        </div>
                       ))}
                     </div>
-                    <div className="class_wrap">{`${
-                      quiz.quizCategoryList.some(
-                        (item) =>
-                          item.quizCategory && item.quizCategory.교육과정,
+                    <div className="class_wrap">
+                      {quiz.quizCategoryList.some(
+                        (item) => item.quizCategory?.교육과정,
                       ) ? (
-                        quiz.quizCategoryList.map((item, idx) => {
+                        quiz.quizCategoryList.map((item, idx) => (
                           <span key={idx}>
                             {item.quizCategory?.교육과정}/
                             {item.quizCategory?.과목}/{item.quizCategory?.교과}/
                             {item.quizCategory?.학년}/{item.quizCategory?.학기}/
-                            {item.quizCategory?.대단원}/
-                            {item.quizCategory?.중단원}/
-                            {item.quizCategory?.소단원}/
-                            {item.quizCategory?.유형}
-                          </span>;
-                        })
+                            {item.quizCategory?.대단원?.split('^^^')[0]}/
+                            {item.quizCategory?.중단원?.split('^^^')[0]}/
+                            {item.quizCategory?.소단원?.split('^^^')[0]}/
+                            {item.quizCategory?.유형?.split('^^^')[0]}
+                          </span>
+                        ))
                       ) : (
                         <span>(분류없음)</span>
-                      )
-                    }`}</div>
+                      )}
+                    </div>
                   </ItemWrapper>
                 ))}
               </MyStaticWrapper>
@@ -2183,7 +2234,7 @@ const LayoutWrapper = styled.div`
 `;
 const ScrollWrapper = styled.div`
   overflow-y: auto;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 40px);
   width: 100%;
   border-top: 1px solid #d1d1d1;
   .line {
@@ -2293,12 +2344,46 @@ const ItemWrapper = styled.div<{ height?: string }>`
   height: ${({ height }) => height || 'auto'};
   margin: 5px;
   overflow: auto;
+
+  .class_wrap {
+    font-size: 12px;
+    color: #aaa;
+    span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Change the number to the number of lines you want to show */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 `;
 const TopButtonWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 10px;
   /* padding-top: 15px; */
+  .title_top {
+    button {
+      height: 15px;
+      margin: 5px;
+    }
+  }
+
+  .tag {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 27px;
+
+    &.yellow {
+      background-color: ${COLOR.ALERTBAR_WARNING};
+    }
+    &.green {
+      background-color: ${COLOR.ALERTBAR_SUCCESS};
+    }
+  }
 `;
 const ButtonWrapper = styled.div`
   display: flex;
