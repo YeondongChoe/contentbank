@@ -37,6 +37,7 @@ export function CategroyManagement() {
   const [typeIndex, setTypeIndex] = useState<number>(0);
   const [tagInputValue, setTagInputValue] = useState<string>('');
   const [tagsList, setTagsList] = useState<string[]>([]);
+  const [groupList, setGroupList] = useState<string[]>([]);
   const [autoTag, setAutoTag] = useState<string>('없음');
   const [autoTageIndex, setAutoTagIndex] = useState<number>(0);
   //선택한 idx값
@@ -175,6 +176,9 @@ export function CategroyManagement() {
       setTagsList(
         categoryInfoData.data.data.classes.map((el: any) => el.className),
       );
+      setGroupList(
+        categoryInfoData.data.data.groupList.map((el: any) => el.groupName),
+      );
     }
   }, [categoryInfoData]);
 
@@ -184,12 +188,19 @@ export function CategroyManagement() {
     //카테고리 추가 취소로 상세 정보 form 노출
     setIsAdd(false);
   };
-
   const clickSaveButton = () => {
+    const CategoryNameList = categoryList.map((category) => category.name);
+
     if (name === '') {
       openToastifyAlert({
         type: 'error',
         text: '카테고리 명을 입력해주세요',
+      });
+      return; // name이 비어 있으면 함수 종료
+    } else if (CategoryNameList.includes(name)) {
+      openToastifyAlert({
+        type: 'error',
+        text: '이미 있는 카테고리 명 입니다',
       });
       return; // name이 비어 있으면 함수 종료
     } else {
@@ -300,8 +311,6 @@ export function CategroyManagement() {
 
   /*  모달 열기 */
   const openTagsModal = () => {
-    console.log('modal open');
-
     openModal({
       title: '',
       content: <TagsModal tags={tagsList} />,
@@ -310,10 +319,17 @@ export function CategroyManagement() {
 
   const tagInputHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      setTagsList([tagInputValue, ...tagsList]);
-      // 등록 후 초기화
-      setActiveAdd(false);
-      setTagInputValue('');
+      if (tagsList.includes(tagInputValue)) {
+        openToastifyAlert({
+          type: 'error',
+          text: '이미 있는 태그명 입니다',
+        });
+      } else {
+        setTagsList([tagInputValue, ...tagsList]);
+        // 등록 후 초기화
+        setActiveAdd(false);
+        setTagInputValue('');
+      }
     }
   };
 
@@ -622,14 +638,27 @@ export function CategroyManagement() {
                 </div>
               </div>
               <div className="input_wrap">
-                <span className="input_label">그룹</span>
-                <input
+                <span className="input_label">
+                  그룹 <br />({`${groupList.length}`}개)
+                </span>
+                <div className="groupButton_wrapper">
+                  {groupList.map((group, index) => (
+                    <button
+                      key={`그룹 : ${group} - ${index}`}
+                      type="button"
+                      className={`value_button ${group}`}
+                    >
+                      {group}
+                    </button>
+                  ))}
+                </div>
+                {/* <input
                   type="text"
                   readOnly
                   disabled
-                  value={'업체정보'}
+                  value={groupList}
                   style={{ opacity: 0.5 }}
-                />
+                /> */}
               </div>
               <div className="input_wrap">
                 <span className="input_label">입력 타입</span>
@@ -954,10 +983,18 @@ const FormBox = styled.div`
   .input_wrap .button_wrap .active_add .tag_add_input::placeholder {
     text-indent: 5px;
   }
+  .groupButton_wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 35px;
+    overflow: hidden;
+    flex: 1 1 0;
+    gap: 5px;
+  }
   .button_wrapper {
     display: flex;
     flex-wrap: wrap;
-    max-height: 145px;
+    max-height: 141px;
     overflow: hidden;
     flex: 1 1 0;
     gap: 5px;
@@ -980,7 +1017,7 @@ const FormBox = styled.div`
 
 const ScrollWrapper = styled.div`
   width: calc(100% - 20px);
-  height: 630px;
+  height: 739px;
   background-color: ${COLOR.LIGHT_GRAY};
 `;
 

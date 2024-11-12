@@ -135,7 +135,7 @@ export function CreateGroupModal({
         </strong>
         <input
           type="text"
-          placeholder="카테고리명을 입력해주세요"
+          placeholder="그룹명을 입력해주세요"
           value={name}
           onChange={(e) => changeName(e)}
         />

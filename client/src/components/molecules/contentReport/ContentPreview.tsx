@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
@@ -18,7 +18,6 @@ export function ContentPreview() {
   const [sortedList, setSortedList] = useState<QuizListType[]>();
   const printDivRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [scrollIndex, setScrollIndex] = useState(0);
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
