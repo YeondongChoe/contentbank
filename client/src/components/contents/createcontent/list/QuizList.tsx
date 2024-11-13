@@ -6,6 +6,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { CheckBoxI, DnDWrapper, Icon, Tooltip, ValueNone } from '../../..';
+import { myAuthorityAtom } from '../../../../store/myAuthorityAtom';
 import { quizListAtom } from '../../../../store/quizListAtom';
 import { QuizListType, Source } from '../../../../types';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
@@ -38,6 +39,7 @@ export function QuizList({
   setIsCheck?: React.Dispatch<React.SetStateAction<boolean>>;
   arrowPosition?: string;
 }) {
+  const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);

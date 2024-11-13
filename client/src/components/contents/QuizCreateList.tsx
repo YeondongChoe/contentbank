@@ -22,6 +22,7 @@ import {
 } from '..';
 import { classificationInstance, quizService } from '../../api/axios';
 import { useModal } from '../../hooks';
+import { myAuthorityAtom } from '../../store/myAuthorityAtom';
 import { quizListAtom } from '../../store/quizListAtom';
 import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuizListType } from '../../types';
@@ -32,6 +33,7 @@ import { CreateContentModal } from './CreateContentModal';
 export function QuizCreateList() {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
+  const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);

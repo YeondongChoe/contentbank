@@ -14,14 +14,26 @@ import {
   Icon,
   openToastifyAlert,
 } from '../../../components/atom';
+import { COLOR } from '../../../components/constants';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { useDnD } from '../../molecules/dragAndDrop';
+
+import { MappingList } from './MappingList';
+
+interface CategoryItem {
+  idx: number;
+  name: string;
+  code: string;
+  depth: number;
+  isUse: boolean;
+  children?: any[];
+}
 
 export function TagMappingInit() {
   const [categoryList, setCategoryList] = useState<
     { type: string; name: string }[]
   >([]);
-  const [mappingList, setMappingList] = useState<string[]>([]);
+  const [mappingList, setMappingList] = useState<CategoryItem[]>([]);
   const [groupIdx, setGgroupIdx] = useState<number>();
   const [groupName, setGgroupName] = useState<string>();
   const [groupData, setGroupData] = useState<{
@@ -33,6 +45,15 @@ export function TagMappingInit() {
   const [activeItem, setActiveItem] = useState<{
     name: string;
     type: string;
+  } | null>(null);
+
+  const [activeMappingItem, setActiveMappingItem] = useState<{
+    idx: number;
+    name: string;
+    code: string;
+    depth: number;
+    isUse: boolean;
+    children?: any[];
   } | null>(null);
   const location = useLocation();
   const query = new URLSearchParams(location.search);
@@ -131,21 +152,11 @@ export function TagMappingInit() {
     if (groupData) mutateCategoryGroup(groupData);
   };
 
-  const moveTag = (
-    dragIndex: number,
-    hoverIndex: number,
-    listType: 'category' | 'mapping',
-  ) => {
+  const moveCategoryTag = (dragIndex: number, hoverIndex: number) => {
     const updatedList = [...categoryList];
-    // listType === 'category' ? [...categoryList] : [...mappingList];
     const draggedItem = updatedList.splice(dragIndex, 1)[0];
     updatedList.splice(hoverIndex, 0, draggedItem);
-
-    if (listType === 'category') {
-      setCategoryList(updatedList);
-    } else {
-      // setMappingList(updatedList);
-    }
+    setCategoryList(updatedList);
   };
 
   const handleTagClick = (item: { name: string; type: string }) => {
@@ -159,13 +170,36 @@ export function TagMappingInit() {
         `/v1/category/map/${groupIdx}`,
       );
       console.log('선택된 idx에 따른 항목 조회 ----- ', res);
-      console.log('선택된 idx에 따른 항목 조회 ----- ', res.data.dat?.mapList);
-      setMappingList(res.data.dat?.mapList);
+      console.log('선택된 idx에 따른 항목 조회 ----- ', res.data.data?.mapList);
+      setMappingList(res.data.data?.mapList);
     };
 
     getCategoryMap();
   };
 
+  const handleTagMappingClick = (item: {
+    idx: number;
+    name: string;
+    code: string;
+    depth: number;
+    isUse: boolean;
+    children?: any[];
+  }) => {
+    setActiveMappingItem(activeMappingItem === item ? null : item);
+
+    console.log('click item ----- ', item);
+  };
+
+  const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
+    const updatedList = [...mappingList];
+    const draggedItem = updatedList.splice(dragIndex, 1)[0];
+    updatedList.splice(hoverIndex, 0, draggedItem);
+    setMappingList(updatedList);
+  };
+
+  useEffect(() => {
+    console.log('MappingList ------------- ', mappingList);
+  }, [mappingList]);
   //
 
   return (
@@ -183,7 +217,7 @@ export function TagMappingInit() {
                 activeItem={activeItem}
                 handleTagClick={handleTagClick}
                 moveTag={(dragIndex, hoverIndex) =>
-                  moveTag(dragIndex, hoverIndex, 'category')
+                  moveCategoryTag(dragIndex, hoverIndex)
                 }
               />
             ))}
@@ -205,22 +239,12 @@ export function TagMappingInit() {
 
       <ListItemWrapper>
         <strong>매핑</strong>
-        <DndProvider backend={HTML5Backend}>
-          {/* <TagsWrapper className="height">
-            {mappingList.map((el, idx) => (
-              <DraggableInitItem
-                key={`${el} ${idx}`}
-                item={el}
-                index={idx}
-                activeItem={activeItem}
-                handleTagClick={handleTagClick}
-                moveTag={(dragIndex, hoverIndex) =>
-                  moveTag(dragIndex, hoverIndex, 'mapping')
-                }
-              />
-            ))}
-          </TagsWrapper> */}
-        </DndProvider>
+        <MappingList
+          mappingList={mappingList}
+          activeItem={activeMappingItem}
+          handleTagClick={handleTagMappingClick}
+          moveTag={moveMappingTag}
+        />
       </ListItemWrapper>
     </Container>
   );
@@ -333,6 +357,9 @@ const Tags = styled.button`
   }
   .end {
     margin-left: auto;
+  }
+  &.on {
+    border: 1px solid ${COLOR.PRIMARY};
   }
 `;
 const ListWrapper = styled.div`

@@ -5,6 +5,7 @@ import {
   QueryObserverResult,
   RefetchOptions,
   useMutation,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -26,9 +27,10 @@ import {
   PDFModal,
   Tooltip,
 } from '../..';
-import { quizService } from '../../../api/axios';
+import { quizService, resourceServiceInstance } from '../../../api/axios';
 import { ProcessListModal } from '../../../components/managements/process';
 import { useModal } from '../../../hooks';
+import { myAuthorityAtom } from '../../../store/myAuthorityAtom';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType } from '../../../types';
@@ -50,6 +52,13 @@ type ContentListProps = {
   key?: number;
 };
 
+export type selectedListProps = {
+  name: string;
+  idx: number;
+  view: boolean;
+  search: boolean;
+};
+
 export function ContentList({
   list,
   tabVeiw,
@@ -62,6 +71,7 @@ export function ContentList({
 }: ContentListProps) {
   const { openModal } = useModal();
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
+  const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<number[]>([]);
@@ -72,6 +82,7 @@ export function ContentList({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const [selectedList, setSelectedList] = useState<selectedListProps[]>([]);
 
   const dropDownList: DropDownItemProps[] = [
     {
@@ -92,6 +103,51 @@ export function ContentList({
     },
   ];
   const [usedToggle, setUsedToggle] = useState<string>('비활성화');
+
+  //그룹 화면설정 정보 불러오기 api
+  // const getMenu = async () => {
+  //   const res = await resourceServiceInstance.get(`/v1/menu/4`);
+  //   //console.log(res);
+  //   return res;
+  // };
+  // const {
+  //   data: menuData,
+  //   isLoading: isMenuLoading,
+  //   refetch: menuRefetch,
+  // } = useQuery({
+  //   queryKey: ['get-menu'],
+  //   queryFn: getMenu,
+  //   meta: {
+  //     errorMessage: 'get-menu 에러 메세지',
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   menuRefetch();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (menuData) {
+  //     const filterList = menuData.data.data.detailList.filter(
+  //       (el: any) => el.isCheck === true,
+  //     );
+  //     const nameListArray = filterList[0]?.nameList?.split(',') || [];
+  //     const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+  //       (item: string) => item === 'true',
+  //     );
+  //     const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+  //       (item: string) => item === 'true',
+  //     );
+  //     const newArray = nameListArray.map((name: string, index: number) => ({
+  //       name,
+  //       idx: index,
+  //       view: viewListArray[index] || false,
+  //       search: searchListArray[index] || false,
+  //     }));
+  //     setSelectedList(newArray);
+  //   }
+  // }, [menuData]);
+  // console.log('selectedList -------------- ', selectedList);
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = () => {
@@ -377,6 +433,14 @@ export function ContentList({
     target?.classList.remove('on');
   };
 
+  console.log('myAuthority ---- ', myAuthority);
+
+  // console.log('문항 제작 ---- ', myAuthority?.QE);
+  // console.log('문항 제작 편집 ---- ', myAuthority?.QE?.isEdit);
+  // console.log('문항 제작 관리 ---- ', myAuthority?.QE?.isManage);
+  // console.log('문항 관리 ---- ', myAuthority?.QM);
+  // console.log('검수 관리  ---- ', myAuthority?.IM);
+
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>
@@ -396,29 +460,50 @@ export function ContentList({
               <span className="title_top">전체선택</span>
             </CheckBoxWrapper>
             <ActionButtonWrapper>
-              <Button
-                width="100px"
-                height="35px"
-                fontSize="14px"
-                $borderRadius="7px"
-                $filled
-                onClick={() => openProcessListModal()}
-                disabled={isEnabled}
-                cursor
-              >
-                검수 요청
-              </Button>
-              <Button
-                width="130px"
-                height="35px"
-                fontSize="14px"
-                $borderRadius="7px"
-                onClick={() => {}}
-                disabled={isEnabled}
-                cursor
-              >
-                검수 요청 취소
-              </Button>
+              {myAuthority?.QE?.isEdit ? (
+                <>
+                  <Button
+                    width="100px"
+                    height="35px"
+                    fontSize="14px"
+                    $borderRadius="7px"
+                    $filled
+                    onClick={() => openProcessListModal()}
+                    disabled={isEnabled}
+                    cursor
+                  >
+                    검수 요청
+                  </Button>
+                  <Button
+                    width="130px"
+                    height="35px"
+                    fontSize="14px"
+                    $borderRadius="7px"
+                    onClick={() => {}}
+                    disabled={isEnabled}
+                    cursor
+                  >
+                    검수 요청 취소
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="info">
+                    문항 제작 후, 검수를 진행하시려면 프로세스 요청을 먼저
+                    진행해야 합니다.
+                  </span>
+                  <Button
+                    width="130px"
+                    height="35px"
+                    fontSize="14px"
+                    $borderRadius="7px"
+                    onClick={() => {}}
+                    cursor
+                  >
+                    프로세스 요청
+                  </Button>
+                </>
+              )}
               <Button
                 width="100px"
                 height="35px"
@@ -1104,6 +1189,10 @@ const ActionButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
+  .info {
+    color: ${COLOR.PRIMARY};
+    font-size: 13px;
+  }
 `;
 const CheckBoxWrapper = styled.div`
   display: flex;
