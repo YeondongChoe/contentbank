@@ -1699,7 +1699,7 @@ export function Classification({
                             className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
                   ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
                           >
-                            {quiz.quizCategoryList[0].quizCategory?.문항타입}{' '}
+                            {quiz.quizCategoryList[0].quizCategory?.문항타입}
                           </span>
                         )}
                       </span>
