@@ -847,8 +847,8 @@ export function ClassificationEdit({
             buttonList[1],
             buttonList[2],
             buttonList[3],
-            buttonList[4],
-            buttonList[5],
+            // buttonList[4],
+            // buttonList[5],
             ...buttonList.filter((item) => item.key === '행동요소1'),
             ...buttonList.filter((item) => item.key === '행동요소2'),
           ];
@@ -1603,13 +1603,17 @@ export function ClassificationEdit({
               </button>
             </ButtonWrapper>
           </TopButtonWrapper>
-          <ScrollWrapper className="items_height">
+          <ScrollWrapper className="height">
             <PerfectScrollbar>
               <MyStaticWrapper columnsCount={columnsCount} padding="5px">
                 {questionList.map((quiz, index) => (
-                  <ItemWrapper key={quiz.idx} height={itemHeight}>
+                  <ItemWrapper
+                    key={quiz.idx}
+                    height={itemHeight}
+                    classHeight={`${columnsCount == 3 ? '60px' : 'auto'}`}
+                  >
                     <TopButtonWrapper>
-                      <div>
+                      <div className="quiz_top_wrap">
                         <CheckBoxI
                           $margin={'0 5px 0 0'}
                           onChange={(e) =>
@@ -1638,53 +1642,78 @@ export function ClassificationEdit({
                             className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
                   ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
                           >
-                            {quiz.quizCategoryList[0].quizCategory?.문항타입}{' '}
+                            {quiz.quizCategoryList[0].quizCategory?.문항타입}
                           </span>
                         )}
                       </span>
                     </TopButtonWrapper>
-                    <div className="quiz_wrap">
-                      {quiz?.quizItemList?.map((el) => (
-                        <div key={`${el?.code} quizItemList sortedList`}>
-                          {[
-                            'BIG',
-                            'TEXT',
-                            'QUESTION',
-                            'SMALL',
-                            'EXAMPLE',
-                            'CHOICES',
-                            'ANSWER',
-                            'COMMENTARY',
-                            'HINT',
-                            'CONCEPT',
-                            'TITLE',
-                            'TIP',
-                          ].includes(el?.type) &&
-                            el?.content && (
-                              <MathViewer data={el.content}></MathViewer>
-                            )}
+                    <ScrollWrapper
+                      className="items_height"
+                      itemsHeight={`${columnsCount == 3 ? '150px' : 'auto'}`}
+                    >
+                      <PerfectScrollbar>
+                        <div className="quiz_wrap">
+                          {quiz?.quizItemList?.map((el) => (
+                            <div key={`${el?.code} quizItemList sortedList`}>
+                              {[
+                                'BIG',
+                                'TEXT',
+                                'QUESTION',
+                                'SMALL',
+                                'EXAMPLE',
+                                'CHOICES',
+                                'ANSWER',
+                                'COMMENTARY',
+                                'HINT',
+                                'CONCEPT',
+                                'TITLE',
+                                'TIP',
+                              ].includes(el?.type) &&
+                                el?.content && (
+                                  <MathViewer data={el.content}></MathViewer>
+                                )}
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                    <div className="class_wrap">
-                      {quiz.quizCategoryList.some(
-                        (item) => item.quizCategory?.교육과정,
-                      ) ? (
-                        quiz.quizCategoryList.map((item, idx) => (
-                          <span key={idx}>
-                            {item.quizCategory?.교육과정}/
-                            {item.quizCategory?.과목}/{item.quizCategory?.교과}/
-                            {item.quizCategory?.학년}/{item.quizCategory?.학기}/
-                            {item.quizCategory?.대단원?.split('^^^')[0]}/
-                            {item.quizCategory?.중단원?.split('^^^')[0]}/
-                            {item.quizCategory?.소단원?.split('^^^')[0]}/
-                            {item.quizCategory?.유형?.split('^^^')[0]}
-                          </span>
-                        ))
-                      ) : (
-                        <span>(분류없음)</span>
-                      )}
-                    </div>
+                      </PerfectScrollbar>
+                    </ScrollWrapper>
+                    <ScrollWrapper
+                      className={`${
+                        columnsCount == 3
+                          ? `${
+                              quiz.quizCategoryList.some(
+                                (item) => item.quizCategory?.교육과정,
+                              )
+                                ? 'class_items_height'
+                                : 'none_class_items_height'
+                            }`
+                          : 'items_height'
+                      }`}
+                    >
+                      <PerfectScrollbar>
+                        <div className="class_wrap">
+                          {quiz.quizCategoryList.some(
+                            (item) => item.quizCategory?.교육과정,
+                          ) ? (
+                            quiz.quizCategoryList.map((item, idx) => (
+                              <span key={idx}>
+                                {item.quizCategory?.교육과정}/
+                                {item.quizCategory?.과목}/
+                                {item.quizCategory?.교과}/
+                                {item.quizCategory?.학년}/
+                                {item.quizCategory?.학기}/
+                                {item.quizCategory?.대단원?.split('^^^')[0]}/
+                                {item.quizCategory?.중단원?.split('^^^')[0]}/
+                                {item.quizCategory?.소단원?.split('^^^')[0]}/
+                                {item.quizCategory?.유형?.split('^^^')[0]}
+                              </span>
+                            ))
+                          ) : (
+                            <span>(분류없음)</span>
+                          )}
+                        </div>
+                      </PerfectScrollbar>
+                    </ScrollWrapper>
                   </ItemWrapper>
                 ))}
               </MyStaticWrapper>
@@ -2174,7 +2203,7 @@ const LayoutWrapper = styled.div`
     flex: 1 0 0;
   }
 `;
-const ScrollWrapper = styled.div`
+const ScrollWrapper = styled.div<{ itemsHeight?: string }>`
   overflow-y: auto;
   height: calc(100vh - 40px);
   width: 100%;
@@ -2190,9 +2219,28 @@ const ScrollWrapper = styled.div`
       padding-bottom: 2px;
     }
   }
+  &.height {
+    overflow-y: auto;
+    height: calc(100vh - 150px);
+  }
   &.items_height {
     margin-top: 5px;
-    height: calc(100vh - 150px);
+    overflow-y: auto;
+    height: ${({ itemsHeight }) => itemsHeight || 'auto'};
+  }
+  &.class_items_height {
+    height: 50px;
+    overflow-y: auto;
+    position: sticky;
+    bottom: 0;
+  }
+  &.none_class_items_height {
+    height: 50px;
+    .class_wrap {
+      position: absolute;
+      height: 20px;
+      bottom: 0px;
+    }
   }
 `;
 const DepthBlockScrollWrapper = styled.div`
@@ -2276,28 +2324,6 @@ const TopButtonWrapper = styled.div`
   padding: 10px;
   align-items: center;
   /* padding-top: 15px; */
-  .title_top {
-    button {
-      height: 15px;
-      margin: 5px;
-    }
-  }
-
-  .tag {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 27px;
-
-    &.yellow {
-      background-color: ${COLOR.ALERTBAR_WARNING};
-    }
-    &.green {
-      background-color: ${COLOR.ALERTBAR_SUCCESS};
-    }
-  }
 `;
 
 const ArrowButtonWrapper = styled.span`
@@ -2328,17 +2354,33 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const ItemWrapper = styled.div<{ height?: string }>`
+const ItemWrapper = styled.div<{ height?: string; classHeight?: string }>`
   padding: 10px;
   border: 1px solid #aaa;
   border-radius: 10px;
   height: ${({ height }) => height || 'auto'};
   margin: 5px;
   overflow: auto;
+  position: relative;
+
+  .quiz_wrap {
+    overflow: auto;
+  }
+
+  .quiz_top_wrap {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    left: 10px;
+  }
 
   .class_wrap {
     font-size: 12px;
     color: #aaa;
+    background-color: #fff;
+    height: ${({ classHeight }) => classHeight || 'auto'};
+    /* display: flex;
+    flex-direction: column-reverse; */
 
     span {
       display: -webkit-box;
@@ -2346,6 +2388,32 @@ const ItemWrapper = styled.div<{ height?: string }>`
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+  }
+
+  .title_top {
+    button {
+      height: 15px;
+      margin: 5px;
+    }
+  }
+
+  .tag {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 27px;
+
+    &.yellow {
+      background-color: ${COLOR.ALERTBAR_WARNING};
+    }
+    &.green {
+      background-color: ${COLOR.ALERTBAR_SUCCESS};
     }
   }
 `;

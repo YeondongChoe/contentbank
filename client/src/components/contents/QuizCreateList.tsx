@@ -110,6 +110,9 @@ export function QuizCreateList() {
     },
   });
 
+  // 셀렉트 셋팅 api
+  // /v1/menu/path
+
   //  카테고리 불러오기 api
   // const getCategory = async () => {
   //   const res = await classificationInstance.get(`/v1/category`);
