@@ -239,8 +239,6 @@ export function WorkbookList({
     setCheckList([]);
   };
 
-  console.log(selectedList);
-
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>

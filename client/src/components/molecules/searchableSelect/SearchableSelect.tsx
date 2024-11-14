@@ -18,10 +18,8 @@ type SearchableSelectProps = {
   border?: boolean;
   padding?: string;
   borderRadius?: string;
-  selectedQuotientValue?: string;
-  setSelectedQuotientValue?: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
+  selectedQuotientValue?: string | null;
+  setSelectedQuotientValue?: React.Dispatch<React.SetStateAction<string>>;
   selectedValue?: string;
   heightScroll?: string;
   isnormalizedOptions?: boolean;
@@ -106,13 +104,13 @@ export function SearchableSelect({
     >
       <Input
         type="text"
-        value={selectedQuotientValue}
+        value={selectedQuotientValue as string}
         placeholder={placeholder}
         onChange={handleInputChange}
         onClick={() => {
           setIsOptionShow(!isOptionShow);
-          setSelectedQuotientValue && setSelectedQuotientValue('');
-          setSearchValue('');
+          //setSelectedQuotientValue && setSelectedQuotientValue('');
+          //setSearchValue('');
         }}
       />
 
@@ -124,7 +122,7 @@ export function SearchableSelect({
         <IoSearch style={{ cursor: 'pointer' }}></IoSearch>
       )}
       {/* TODO: 검색 한 결과값을 리스트로 넣어주기*/}
-      {isOptionShow && !searchValue && (
+      {isOptionShow && (
         <SelectOptionsList
           onMouseLeave={() => {
             setIsOptionShow(false);
@@ -207,7 +205,8 @@ const SelectOptionsList = styled.div<{
   right: 0;
   z-index: 1;
   width: 100%;
-  height: 100%;
+  height: 300px;
+  overflow-y: auto;
 
   .li {
     width: 100%;

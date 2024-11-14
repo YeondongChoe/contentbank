@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IoMdClose, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
 import { IoSettingsOutline } from 'react-icons/io5';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -31,8 +32,12 @@ import {
   List,
   ListItem,
   CheckBoxI,
+  MathViewer,
+  Select,
 } from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
+import { MyStaticWrapper } from '../../../components/molecules/sortBox/Masonry';
+import { CreateContentMain } from '../../../pages/quizCreateWindow';
 import { pageAtom } from '../../../store/utilAtom';
 import {
   ItemCategoryType,
@@ -40,10 +45,13 @@ import {
   csatListType,
   CastQuizListType,
   ItemTreeType,
+  QuizListType,
+  PreviousSchoolType,
 } from '../../../types';
 import { TextbookInfoType } from '../../../types/TextbookType';
 import { DifficultyDataType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
+import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
 
 type ProcessTextbookDataType = {
@@ -101,6 +109,13 @@ type ProcessCsatQuizListDataType = {
     quizNumber: string;
     isChecked: boolean;
   }[];
+};
+
+type SelectListType = {
+  idx: number;
+  name: string;
+  value: string;
+  options: { idx: number; name: string; value: string }[];
 };
 
 interface RadioStateType {
@@ -1118,7 +1133,7 @@ export function Step1() {
     inputValue = inputValue.replace(/[^0-9]/g, '');
 
     const parsedValue = parseInt(inputValue, 10);
-    if (tabVeiw === '시중교재') {
+    if (tabVeiw === '시중교재' || tabVeiw === '기출') {
       if (!isNaN(parsedValue) && parsedValue > 0) {
         setInputValue(
           parsedValue < 1 ? '1' : parsedValue >= 5 ? '5' : inputValue,
@@ -1217,7 +1232,6 @@ export function Step1() {
     if (questionNum || inputValue || includeQuizList.length > 0) {
       setIsEqualScoreModal(true);
       setIsSaveEqualValue(false);
-      //setEqualTotlaValue('0');
     } else {
       openToastifyAlert({
         type: 'error',
@@ -1319,12 +1333,20 @@ export function Step1() {
     const parsedValue = parseInt(equalTotalValue, 10);
 
     //선택된 문항 수
-    const questionNumValue = parseInt(
-      questionNum ||
-        inputValue ||
-        (includeQuizList.length as unknown as string),
-      10,
-    );
+    const questionNumValue =
+      tabVeiw === '시중교재' || tabVeiw === '기출'
+        ? questionNum
+          ? parseInt(questionNum, 10) * includeQuizList.length
+          : inputValue
+            ? parseInt(inputValue, 10) * includeQuizList.length
+            : 0
+        : parseInt(
+            questionNum ||
+              inputValue ||
+              (includeQuizList.length as unknown as string),
+            10,
+          );
+
     if (equalTotalValue === '') {
       openToastifyAlert({
         type: 'error',
@@ -1343,11 +1365,7 @@ export function Step1() {
         type: 'error',
         text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
       });
-      setEqualTotlaValue(
-        questionNum ||
-          inputValue ||
-          (includeQuizList.length as unknown as string),
-      );
+      setEqualTotlaValue(questionNumValue.toString());
       setIsSaveEqualValue(false);
     } else if (equalTotalValue && parsedValue < parsedreceivedQuizValue) {
       openToastifyAlert({
@@ -1789,18 +1807,6 @@ export function Step1() {
     setExamOption(newValue);
   };
 
-  const [previousExamMenu, setPreviousExamMenu] = useState<number>(0);
-  const selectPreviousExamMenu = (newValue: number) => {
-    setPreviousExamMenu(newValue);
-    setPreviousExamYear(null);
-  };
-
-  const [previousExamYear, setPreviousExamYear] = useState<number | null>(null);
-  const selectPreviousExamYear = (newValue: number) => {
-    setPreviousExamYear(newValue);
-  };
-  console.log(previousExamYear);
-
   //선택 초기화
   const selectExamReset = () => {
     setExamGrade([]);
@@ -1837,7 +1843,7 @@ export function Step1() {
   const {
     data: castData,
     refetch: castDataRefetch,
-    isLoading: castDataLoading,
+    isFetching: castDataLoading,
   } = useQuery({
     queryKey: ['get-cast'],
     queryFn: getcsat,
@@ -2204,7 +2210,7 @@ export function Step1() {
     //선택된 값 초기화
     setQuestionNum('');
     selectEqualScore(null);
-    setQuestionLevel('');
+    setQuestionLevel(null);
     setQuestionType([]);
     setContainMock(null);
     setIsQuizEven(false);
@@ -2296,21 +2302,19 @@ export function Step1() {
           return;
         } else {
           if (
-            response.data.data.quizList.length === Number(questionNum) ||
-            response.data.data.quizList.length === Number(inputValue)
+            response.data.data.quizList.length ===
+              Number(questionNum) * Number(includeQuizList.length) ||
+            response.data.data.quizList.length ===
+              Number(inputValue) * Number(includeQuizList.length)
           ) {
             navigate('/content-create/exam/step2');
             const itemCount =
-              Number(questionNum) ||
-              Number(inputValue) ||
-              Number(includeQuizList.length);
+              Number(questionNum) * Number(includeQuizList.length) ||
+              Number(inputValue) * Number(includeQuizList.length);
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           } else {
             setIsAlertOpen(true);
-            const itemCount =
-              Number(questionNum) ||
-              Number(inputValue) ||
-              Number(includeQuizList.length);
+            const itemCount = response.data.data.quizList.length;
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
@@ -2332,6 +2336,31 @@ export function Step1() {
           } else {
             setIsAlertOpen(true);
             const itemCount = Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          }
+        }
+      } else if (tabVeiw === '기출') {
+        if (response.data.data.quizList.length === 0) {
+          openToastifyAlert({
+            type: 'error',
+            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+          });
+          return;
+        } else {
+          if (
+            response.data.data.quizList.length ===
+              Number(questionNum) * Number(includeQuizList.length) ||
+            response.data.data.quizList.length ===
+              Number(inputValue) * Number(includeQuizList.length)
+          ) {
+            navigate('/content-create/exam/step2');
+            const itemCount =
+              Number(questionNum) * Number(includeQuizList.length) ||
+              Number(inputValue) * Number(includeQuizList.length);
+            localStorage.setItem('itemCount', JSON.stringify(itemCount));
+          } else {
+            setIsAlertOpen(true);
+            const itemCount = response.data.data.quizList.length;
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
@@ -2381,9 +2410,14 @@ export function Step1() {
     const data = {
       itemTreeKeyList: tabVeiw === '단원·유형별' ? makingdata : null,
       count:
-        tabVeiw !== '수능/모의고사'
-          ? Number(questionNum) || Number(inputValue)
-          : Number(includeQuizList.length),
+        tabVeiw === '시중교재' || tabVeiw === '기출'
+          ? Number(questionNum) * Number(includeQuizList.length) ||
+            Number(inputValue) * Number(includeQuizList.length)
+          : tabVeiw === '수능/모의고사'
+            ? Number(includeQuizList.length)
+            : tabVeiw === '단원·유형별'
+              ? Number(questionNum) || Number(inputValue)
+              : null,
       //수능/모의고사 경우 어떻게 보내야할지 나중에 수정해야함
       difficulty: questionLevel === '선택안함' ? null : questionLevel || null,
       type: questionType,
@@ -2457,13 +2491,11 @@ export function Step1() {
     if (tabVeiw === '단원·유형별')
       if (unitClassificationList.length > 0) {
         if (
-          inputValue !== '' ||
-          (questionNum !== null &&
-            questionNum !== '' &&
-            questionLevel !== null &&
-            questionType !== null &&
-            containMock !== null &&
-            equalScore !== null)
+          (inputValue !== '' || questionNum !== null || questionNum !== '') &&
+          questionLevel !== null &&
+          questionType?.length !== 0 &&
+          containMock !== null &&
+          equalScore !== null
         ) {
           clickNextButton();
         } else {
@@ -2480,14 +2512,12 @@ export function Step1() {
       }
     else if (tabVeiw === '시중교재') {
       if (
-        inputValue !== '' ||
-        (questionNum !== null &&
-          questionNum !== '' &&
-          includeQuizList.length > 0 &&
-          questionLevel !== null &&
-          questionType !== null &&
-          containMock !== null &&
-          equalScore !== null)
+        (inputValue !== '' || questionNum !== null || questionNum !== '') &&
+        includeQuizList.length > 0 &&
+        questionLevel !== null &&
+        questionType?.length !== 0 &&
+        containMock !== null &&
+        equalScore !== null
       ) {
         clickNextButton();
       } else {
@@ -2505,6 +2535,21 @@ export function Step1() {
           text: '필수항목을 선택해주세요',
         });
       }
+    } else if (tabVeiw === '기출') {
+      if (
+        (inputValue !== '' || questionNum !== null || questionNum !== '') &&
+        includeQuizList.length > 0 &&
+        questionLevel !== null &&
+        questionType?.length !== 0 &&
+        equalScore !== null
+      ) {
+        clickNextButton();
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '필수항목을 선택해주세요',
+        });
+      }
     }
   };
 
@@ -2513,7 +2558,8 @@ export function Step1() {
     if (
       tabVeiw === '단원·유형별' ||
       tabVeiw === '시중교재' ||
-      tabVeiw === '수능/모의고사'
+      tabVeiw === '수능/모의고사' ||
+      tabVeiw === '기출'
     ) {
       const handleBeforeUnload = (event: BeforeUnloadEvent) => {
         // 사용자에게 경고 메시지를 표시하도록 설정
@@ -2536,7 +2582,7 @@ export function Step1() {
     setReceivedQuizCount(null);
     //단원 유형별버튼 초기화
     setQuestionNum('');
-    setQuestionLevel('');
+    setQuestionLevel(null);
     setQuestionType([]);
     setContainMock(null);
     selectEqualScore(null);
@@ -2564,7 +2610,23 @@ export function Step1() {
     //기출
     setPreviousExamMenu(0);
     setPreviousExamYear(null);
-    setSelectedValue('');
+    setSchoolSearchValue('');
+    setPreviousExamMenu(0);
+    setPreviousExamYear(null);
+    setPreviousSchoolList([]);
+    setPreviousSchoolQuizList([]);
+    setPreviousSchoolName('');
+    setPreviousSchoolGrade('');
+    setPreviousSchoolSemester('');
+    setPreviousSchoolAcademic('');
+    setIsSelected(false);
+    setQuestionNum('');
+    setQuestionLevel(null);
+    setQuestionType([]);
+    selectEqualScore(null);
+    setIsQuizEven(false);
+    setPreviousSchoolSubject('교과');
+    setPreviousSchoolUnit('과목');
   }, [tabVeiw]);
 
   //단원.유형별
@@ -3522,18 +3584,657 @@ export function Step1() {
   };
 
   //기출
-  const [checkList, setCheckList] = useState<string[]>([]);
-  const handleButtonCheck = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-  ) => {
-    const target = e.currentTarget.childNodes[0].childNodes[0]
-      .childNodes[0] as HTMLInputElement;
-    if (!target.checked) {
-      setCheckList((prev) => [...prev, id]);
-    } else {
-      setCheckList(checkList.filter((el) => el !== id));
+  const [isSelected, setIsSelected] = useState<boolean>(false);
+  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  //학교 검색값
+  const [schoolSearchValue, setSchoolSearchValue] = useState<string>('');
+  //학교 검색 select 값
+  const [selectArrange, setSelectArrange] = useState<SelectListType[]>([
+    {
+      idx: 0,
+      name: '고등학교',
+      value: '0',
+      options: [],
+    },
+  ]);
+  const [previousExamMenu, setPreviousExamMenu] = useState<number>(0);
+  const [previousExamYear, setPreviousExamYear] = useState<string | null>(null);
+  const [previousSchoolList, setPreviousSchoolList] = useState<
+    PreviousSchoolType[]
+  >([]);
+  const [processPreviousQuizListData, setProcessPreviousQuizListData] =
+    useState<QuizListType[]>([]);
+  //학교내신 문항리스트
+  const [previousSchoolQuizList, setPreviousSchoolQuizList] = useState<
+    number[]
+  >([]);
+  const [previousSchoolName, setPreviousSchoolName] = useState<string>('');
+  const [previousSchoolGrade, setPreviousSchoolGrade] = useState<string>('');
+  const [previousSchoolSemester, setPreviousSchoolSemester] =
+    useState<string>('');
+  const [previousSchoolAcademic, setPreviousSchoolAcademic] =
+    useState<string>('');
+
+  //학교내신 전국시험 선택
+  const selectPreviousExamMenu = (newValue: number) => {
+    setPreviousExamMenu(newValue);
+    setPreviousExamYear(null);
+    setSchoolSearchValue('');
+  };
+
+  //출제년도 선택
+  const selectPreviousExamYear = (newValue: string) => {
+    setPreviousExamYear(newValue);
+  };
+
+  // 학교 리스트 불러오기 api
+  const getSchoolList = async () => {
+    const res = await classificationInstance.get(
+      `/v1/school?pageIndex=${1}&pageUnit=${30000}&searchKeyword=${schoolSearchValue}`,
+    );
+    // console.log(`getSchoolList 결과값`, res);
+    return res;
+  };
+  const {
+    data: schoolData,
+    isFetching,
+    refetch: schoolListRefetch,
+  } = useQuery({
+    queryKey: ['get-schoolList'],
+    queryFn: getSchoolList,
+    meta: {
+      errorMessage: 'get-schoolList 에러 메세지',
+    },
+    enabled: tabVeiw === '기출',
+  });
+
+  useEffect(() => {
+    schoolListRefetch();
+  }, [page, schoolSearchValue]);
+
+  //Select 형식에 맞게 가공
+  useEffect(() => {
+    if (schoolData) {
+      const schoolOptions = schoolData.data.data.schoolList.map(
+        (school: any) => ({
+          idx: school.idx,
+          name: school.schoolName,
+          value: String(school.idx),
+        }),
+      );
+
+      setSelectArrange([
+        {
+          idx: 0,
+          name: '고등학교',
+          value: '0',
+          options: schoolOptions,
+        },
+      ]);
     }
+  }, [schoolData]);
+
+  // 학교내신 불러오기 api
+  const getPreviousSchoolContent = async () => {
+    const res = await quizService.get(
+      `/v1/previous/school?name=${schoolSearchValue}&years=${previousExamYear}&grades=${schoolGradeSelect || null}&semesters=${schoolSemesterSelect || null}&academics=${schoolAcademicSelect || null}`,
+    );
+    return res;
+  };
+  const {
+    data: previousSchoolData,
+    refetch: previousSchoolDataRefetch,
+    isFetching: previousSchoolDataLoading,
+  } = useQuery({
+    queryKey: ['get-previousSchool'],
+    queryFn: getPreviousSchoolContent,
+    meta: {
+      errorMessage: 'get-previousSchool 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (previousSchoolData)
+      setPreviousSchoolList(previousSchoolData?.data.data.previousList);
+  }, [previousSchoolData]);
+  //학교 selectList
+  const [schoolGradeSelectList, setSchoolGradeSelectList] = useState<
+    SelectListType[]
+  >([]);
+  const [schoolGradeSelect, setSchoolGradeSelect] = useState<string>('');
+  console.log(schoolGradeSelect);
+  //학기 selectList
+  const [schoolSemesterSelectList, setSchoolSemesterSelectList] = useState<
+    SelectListType[]
+  >([]);
+  const [schoolSemesterSelect, setSchoolSemesterSelect] = useState<string>('');
+  //학사일정 selectList
+  const [schoolAcademicSelectList, setSchoolAcademicSelectList] = useState<
+    SelectListType[]
+  >([]);
+  const [schoolAcademicSelect, setSchoolAcademicSelect] = useState<string>('');
+
+  //학년리스트 가공해서 관리
+  useEffect(() => {
+    if (previousSchoolList) {
+      const schoolGradeList = previousSchoolList.map((school: any, idx) => ({
+        idx: idx,
+        name: school.grade ? school.grade : '빈값',
+        value: school.grade ? school.grade : '빈값',
+      }));
+      setSchoolGradeSelectList([
+        {
+          idx: 0,
+          name: 'schoolGrade',
+          value: '0',
+          options: schoolGradeList,
+        },
+      ]);
+    }
+  }, [previousSchoolList]);
+  //학기리스트 가공해서 관리
+  useEffect(() => {
+    if (previousSchoolList) {
+      const schoolSemesterList = previousSchoolList.map((school: any, idx) => ({
+        idx: idx,
+        name: school.semester ? school.semester : '빈값',
+        value: school.semester ? school.semester : '빈값',
+      }));
+      setSchoolSemesterSelectList([
+        {
+          idx: 0,
+          name: 'schoolSemester',
+          value: '0',
+          options: schoolSemesterList,
+        },
+      ]);
+    }
+  }, [previousSchoolList]);
+  //학사일정리스트 가공해서 관리
+  useEffect(() => {
+    if (previousSchoolList) {
+      const schoolAcademicList = previousSchoolList.map((school: any, idx) => ({
+        idx: idx,
+        name: school.academic,
+        value: school.academic,
+      }));
+      setSchoolAcademicSelectList([
+        {
+          idx: 0,
+          name: 'schoolAcademic',
+          value: '0',
+          options: schoolAcademicList,
+        },
+      ]);
+    }
+  }, [previousSchoolList]);
+
+  console.log('previousSchoolList', previousSchoolList);
+  console.log('schoolGradeSelectList', schoolGradeSelectList);
+  console.log('schoolSemesterSelectList', schoolSemesterSelectList);
+  console.log('schoolAcademicSelectList', schoolAcademicSelectList);
+
+  useEffect(() => {
+    previousSchoolDataRefetch();
+  }, [
+    previousExamYear,
+    schoolSearchValue,
+    schoolGradeSelectList,
+    schoolSemesterSelectList,
+    schoolAcademicSelectList,
+  ]);
+
+  // 문항 번호 부분 선택
+  const toggleCheckPartialPreviousQuiz = (
+    quizCode: string,
+    isChecked: boolean,
+  ) => {
+    setProcessPreviousQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.code === quizCode) {
+          return {
+            ...item,
+            isChecked: !isChecked,
+          };
+        }
+        return item;
+      });
+    });
+
+    toggleQuizCode(quizCode, isChecked);
+  };
+
+  const handleButtonCheck = (
+    idxList: number[],
+    schoolName: string,
+    grade: string,
+    semester: string,
+    academic: string,
+  ) => {
+    setPreviousSchoolQuizList(idxList);
+    setPreviousSchoolName(schoolName);
+    setPreviousSchoolGrade(grade);
+    setPreviousSchoolSemester(semester);
+    setPreviousSchoolAcademic(academic);
+  };
+
+  //
+  const getPreviousSchoolQuiz = async () => {
+    const res = await quizService.get(`/v1/quiz/${previousSchoolQuizList}`);
+    return res.data.data.quizList;
+  };
+  const {
+    data: perviousSchoolquizData,
+    refetch: perviousSchoolquizDataRefetch,
+  } = useQuery({
+    queryKey: ['get-perviousSchoolquizList'],
+    queryFn: getPreviousSchoolQuiz,
+    meta: {
+      errorMessage: 'get-perviousSchoolquizList 에러 메세지',
+    },
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (previousSchoolQuizList.length > 0) perviousSchoolquizDataRefetch();
+  }, [previousSchoolQuizList]);
+
+  useEffect(() => {
+    if (perviousSchoolquizData) setQuestionList(perviousSchoolquizData);
+  }, [perviousSchoolquizData]);
+
+  // 문항 정보 받아왔을 때 가공하는거로 바꿔야 함
+  useEffect(() => {
+    if (questionList?.length > 0) {
+      const initialData = questionList.map((school) => ({
+        id: `${school.code}-${school.idx}`,
+        code: school.code,
+        createdAt: school.createdAt,
+        createdBy: school.createdBy,
+        idx: school.idx,
+        isDelete: school.isDelete,
+        isUse: school.isUse,
+        isFavorite: school.isFavorite,
+        lastArticle: school.lastArticle,
+        lastModifiedAt: school.lastModifiedAt,
+        lastModifiedBy: school.lastModifiedBy,
+        type: school.type,
+        userKey: school.userKey,
+        quizCategoryList: school.quizCategoryList,
+        quizItemList: school.quizItemList,
+        quizList: school.quizList,
+        isChecked: false,
+      }));
+      setProcessPreviousQuizListData(initialData);
+    }
+  }, [questionList, previousSchoolDataRefetch]);
+
+  //리스트 솔팅 정렬
+  const [columnsCount, setColumnsCount] = useState<number>(3);
+  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
+  useEffect(() => {}, [columnsCount, itemHeight]);
+
+  //셀렉트 데이터
+  const [content, setContent] = useState<string[]>([]);
+  const [topSelect, setTopSelect] = useState<string>('문제만 보기');
+  const sortArr = [
+    {
+      idx: '대발문 + 지문 + 문제',
+      label: '대발문 + 지문 + 문제',
+      code: '대발문 + 지문 + 문제',
+      value: '대발문 + 지문 + 문제',
+      name: '대발문 + 지문 + 문제',
+    },
+    {
+      idx: '문제 + 정답 + 해설',
+      label: '문제 + 정답 + 해설',
+      code: '문제 + 정답 + 해설',
+      value: '문제 + 정답 + 해설',
+      name: '문제 + 정답 + 해설',
+    },
+    {
+      idx: '대발문 + 지문 + 문제 + 정답 + 해설',
+      label: '대발문 + 지문 + 문제 + 정답 + 해설',
+      code: '대발문 + 지문 + 문제 + 정답 + 해설',
+      value: '대발문 + 지문 + 문제 + 정답 + 해설',
+      name: '대발문 + 지문 + 문제 + 정답 + 해설',
+    },
+  ];
+  const [previousSchoolSubjectList, setPreviousSchoolSubjectList] = useState<
+    {
+      name: string;
+      code: string;
+      value: string;
+    }[]
+  >([]);
+  const [previousSchoolSubject, setPreviousSchoolSubject] =
+    useState<string>('교과');
+  const [previousSchoolUnitList, setPreviousSchoolUnitList] = useState<
+    {
+      name: string;
+      code: string;
+      value: string;
+    }[]
+  >([]);
+  const [previousSchoolUnit, setPreviousSchoolUnit] = useState<string>('과목');
+
+  //받아온 값에서 교과 리스트 가공
+  useEffect(() => {
+    if (questionList) {
+      const quizCategoryList = questionList.map(
+        (item) => item.quizCategoryList,
+      );
+      const subjectList = quizCategoryList
+        .flat() // quizCategoryList 배열 안의 배열을 평탄화
+        .map((quizCategoryItem) => quizCategoryItem.quizCategory?.교과) // 교과을 추출
+        .filter((subject): subject is string => subject !== undefined); // undefined 값 제거
+
+      const formattedSubjects = subjectList.map((subject) => ({
+        name: subject,
+        code: subject,
+        value: subject,
+      }));
+
+      setPreviousSchoolSubjectList(formattedSubjects);
+    }
+  }, [questionList]);
+
+  //받아온 값에서 과목 리스트 가공
+  useEffect(() => {
+    if (questionList) {
+      const quizCategoryList = questionList.map(
+        (item) => item.quizCategoryList,
+      );
+
+      const subjectList = quizCategoryList
+        .flat() // quizCategoryList 배열 안의 배열을 평탄화
+        .map((quizCategoryItem) => {
+          // quizCategoryItem.quizCategory?.교과가 previousSchoolSubject와 동일한 경우
+          const subjectCategory = quizCategoryItem.quizCategory?.교과;
+          if (subjectCategory === previousSchoolSubject) {
+            return quizCategoryItem.quizCategory?.과목;
+          }
+          return undefined; // 조건에 맞지 않으면 undefined 반환
+        })
+        .filter((subject): subject is string => subject !== undefined); // undefined 값 제거
+
+      const formattedSubjects = subjectList.map((subject) => ({
+        name: subject,
+        code: subject,
+        value: subject,
+      }));
+
+      setPreviousSchoolUnitList(formattedSubjects);
+    }
+  }, [previousSchoolSubject]);
+
+  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const value = event.currentTarget.value;
+    setContent((prevContent) => [...prevContent, value]);
+  };
+
+  // 전체보기 버튼 누를시
+  const openViewer = (code: string) => {
+    const quiz = questionList.filter((el) => el.code === code);
+    console.log('선택된 요소', quiz[0]);
+    console.log('선택된 요소', quiz[0].idx);
+    const data: QuizListType = quiz[0];
+    // data 객체의 속성들을 문자열로 변환
+    const dataStringified: Record<string, string> = {
+      // ...data,
+      idx: data.idx.toString(),
+    };
+    const queryString = new URLSearchParams(dataStringified).toString();
+
+    windowOpenHandler({
+      name: 'quizpreview',
+      url: `/quizpreview?${queryString}`,
+      $width: 800,
+      $height: 800,
+    });
+  };
+
+  const renderContentMathViwer = () => {
+    return (
+      <LayoutWrapper className="auto">
+        <TopButtonWrapper>
+          <div>
+            {/* <CheckBoxI
+              $margin={'0 5px 0 0'}
+              onChange={(e) => handleAllCheck(e)}
+              checked={
+                checkedList.length === questionList.length ? true : false
+              }
+              // checked={true}
+              id={'all check'}
+              value={'all check'}
+            /> */}
+            <span className="title">
+              {previousSchoolName} - {previousSchoolGrade}
+              {previousSchoolSemester} {previousSchoolAcademic}
+            </span>
+          </div>
+          <Button
+            buttonType="button"
+            onClick={() => {
+              setIsSelected(false);
+              setQuestionNum('');
+              setQuestionLevel(null);
+              setQuestionType([]);
+              selectEqualScore(null);
+              setIsQuizEven(false);
+              setPreviousSchoolSubject('교과');
+              setPreviousSchoolUnit('과목');
+            }}
+            $padding="10px"
+            height={'35px'}
+            width={'130px'}
+            fontSize="13px"
+            $normal
+            cursor
+          >
+            <span>다른 시험 선택</span>
+          </Button>
+        </TopButtonWrapper>
+        <TopButtonWrapper>
+          <SelectWrapper>
+            <Select
+              width={'120px'}
+              defaultValue={'교과'}
+              key={'교과'}
+              options={previousSchoolSubjectList}
+              //onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setPreviousSchoolSubject}
+              padding="0 5px 0 0"
+              isnormalizedOptions
+            />
+            <Select
+              width={'120px'}
+              defaultValue={'과목'}
+              key={'과목'}
+              options={previousSchoolUnitList}
+              //onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setPreviousSchoolUnit}
+              isnormalizedOptions
+            />
+          </SelectWrapper>
+          <ButtonWrapper>
+            <Select
+              width={'250px'}
+              defaultValue={'문제만 보기'}
+              key={'문제만 보기'}
+              options={sortArr}
+              onSelect={(event) => selectCategoryOption(event)}
+              setSelectedValue={setTopSelect}
+            />
+            <button
+              onClick={() => {
+                setColumnsCount(3);
+                setItemHeight('250px');
+              }}
+              className={`button ${columnsCount == 3 ? 'on' : ''} `}
+            >
+              {/* 작게보기 */}
+              <Icon
+                width={`20px`}
+                src={`/images/icon/sorting_default_view.svg`}
+              />
+            </button>
+            <button
+              onClick={() => {
+                setColumnsCount(1);
+                setItemHeight(undefined);
+              }}
+              className={`button ${columnsCount == 1 ? 'on' : ''}`}
+            >
+              {/* 크게보기 */}
+              <Icon
+                width={`20px`}
+                src={`/images/icon/sorting_larger_view.svg`}
+              />
+            </button>
+            <button
+              onClick={() => {
+                setColumnsCount(2);
+                setItemHeight(undefined);
+              }}
+              className={`button ${columnsCount == 2 ? 'on' : ''}`}
+            >
+              {/* 맞춤보기  */}
+              <Icon
+                width={`20px`}
+                src={`/images/icon/sorting_custom_view.svg`}
+              />
+            </button>
+          </ButtonWrapper>
+        </TopButtonWrapper>
+        {previousSchoolSubject === '교과' || previousSchoolUnit === '과목' ? (
+          <BlankWrapper>교과와 과묵을 선택해주세요.</BlankWrapper>
+        ) : (
+          <ScrollWrapper className="items_height">
+            <PerfectScrollbar>
+              <MyStaticWrapper columnsCount={columnsCount} padding="5px">
+                {processPreviousQuizListData.map((quiz, index) => (
+                  <ItemWrapper key={quiz.idx} height={itemHeight}>
+                    <TopButtonWrapper>
+                      <div>
+                        <CheckBoxI
+                          $margin={'0 5px 0 0'}
+                          readOnly
+                          onClick={() =>
+                            toggleCheckPartialPreviousQuiz(
+                              quiz.code,
+                              quiz.isChecked as boolean,
+                            )
+                          }
+                          checked={quiz.isChecked || false}
+                          id={quiz.code}
+                          value={quiz.code}
+                        />
+                        <span className={`title_top`}>
+                          {`${0} 건`}
+                          <Icon
+                            onClick={() => openViewer(quiz.code)}
+                            width={`15px`}
+                            src={`/images/icon/entypo_popup.svg`}
+                          />
+                        </span>
+                      </div>
+                      <span>
+                        {quiz.quizCategoryList[0] && (
+                          <span
+                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
+                                 ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
+                          >
+                            {quiz.quizCategoryList[0].quizCategory?.문항타입}{' '}
+                          </span>
+                        )}
+                      </span>
+                    </TopButtonWrapper>
+                    {/* 뷰어 영역 */}
+                    <div className="quiz_wrap">
+                      {quiz?.quizItemList?.map((el) => {
+                        const contentOnly = ['QUESTION'];
+                        const contentWithBig = ['BIG', 'TEXT', 'QUESTION'];
+                        const contentWithAnswer = [
+                          'QUESTION',
+                          'ANSWER',
+                          'COMMENTARY',
+                        ];
+                        const contentWithAll = [
+                          'BIG',
+                          'QUESTION',
+                          'ANSWER',
+                          'COMMENTARY',
+                        ];
+                        // [
+                        //   'BIG',
+                        //   'TEXT',
+                        //   'QUESTION',
+                        //   'SMALL',
+                        //   'EXAMPLE',
+                        //   'CHOICES',
+                        //   'ANSWER',
+                        //   'COMMENTARY',
+                        //   'HINT',
+                        //   'CONCEPT',
+                        //   'TITLE',
+                        //   'TIP',
+                        // ]
+                        return (
+                          <div key={`${el?.code} quizItemList sortedList`}>
+                            {topSelect === '문제만 보기' &&
+                              contentOnly.includes(el?.type) &&
+                              el?.content && (
+                                <MathViewer data={el.content}></MathViewer> //topSelect
+                              )}
+                            {topSelect === '대발문 + 지문 + 문제' &&
+                              contentWithBig.includes(el?.type) &&
+                              el?.content && (
+                                <MathViewer data={el.content}></MathViewer> //topSelect
+                              )}
+                            {topSelect === '문제 + 정답 + 해설' &&
+                              contentWithAnswer.includes(el?.type) &&
+                              el?.content && (
+                                <MathViewer data={el.content}></MathViewer> //topSelect
+                              )}
+                            {topSelect ===
+                              '대발문 + 지문 + 문제 + 정답 + 해설' &&
+                              contentWithAll.includes(el?.type) &&
+                              el?.content && (
+                                <MathViewer data={el.content}></MathViewer> //topSelect
+                              )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="class_wrap">
+                      {quiz.quizCategoryList.some(
+                        (item) => item.quizCategory?.교육과정,
+                      ) ? (
+                        quiz.quizCategoryList.map((item, idx) => (
+                          <span key={idx}>
+                            {item.quizCategory?.교육과정}/
+                            {item.quizCategory?.과목}/{item.quizCategory?.교과}/
+                            {item.quizCategory?.학년}/{item.quizCategory?.학기}/
+                            {item.quizCategory?.대단원?.split('^^^')[0]}/
+                            {item.quizCategory?.중단원?.split('^^^')[0]}/
+                            {item.quizCategory?.소단원?.split('^^^')[0]}/
+                            {item.quizCategory?.유형?.split('^^^')[0]}
+                          </span>
+                        ))
+                      ) : (
+                        <span>(분류없음)</span>
+                      )}
+                    </div>
+                  </ItemWrapper>
+                ))}
+              </MyStaticWrapper>
+            </PerfectScrollbar>
+          </ScrollWrapper>
+        )}
+      </LayoutWrapper>
+    );
   };
 
   const renderPreviousExamMenuButtons = () => {
@@ -3584,30 +4285,6 @@ export function Step1() {
   //     </Button>
   //   ));
   // };
-  const selectArrange = [
-    {
-      idx: 0,
-      name: '고등학교',
-      value: '0',
-      options: [
-        { idx: 1, name: '대한고등학교', value: '1' },
-        { idx: 2, name: '민국고등학교', value: '2' },
-        { idx: 3, name: '만세고등학교', value: '3' },
-        { idx: 4, name: '드림고등학교', value: '4' },
-        { idx: 5, name: '소울고등학교', value: '5' },
-        { idx: 6, name: '송고등학교', value: '6' },
-        { idx: 7, name: '빨강고등학교', value: '7' },
-        { idx: 8, name: '주황고등학교', value: '8' },
-        { idx: 9, name: '노랑고등학교', value: '9' },
-        { idx: 10, name: '초록고등학교', value: '10' },
-        { idx: 11, name: '파랑고등학교', value: '11' },
-        { idx: 12, name: '남색고등학교', value: '12' },
-        { idx: 13, name: '보라고등학교', value: '13' },
-      ],
-    },
-  ];
-  //학교 검색값
-  const [selectedValue, setSelectedValue] = useState<string>();
 
   //출제년도 슬라이더 화살표
   const scrollLeft = () => {
@@ -3625,22 +4302,32 @@ export function Step1() {
   };
   const renderPreviousExamYearButtons = () => {
     const buttonOption = [
-      { value: 0, label: '2024년' },
-      { value: 1, label: '2023년' },
-      { value: 2, label: '2022년' },
-      { value: 3, label: '2021년' },
-      { value: 4, label: '2020년' },
-      { value: 5, label: '2019년' },
-      { value: 6, label: '2018년' },
-      { value: 7, label: '2017년' },
-      { value: 8, label: '2016년' },
-      { value: 9, label: '2015년' },
-      { value: 10, label: '2014년' },
-      { value: 11, label: '2013년' },
-      { value: 12, label: '2012년' },
-      { value: 13, label: '2011년' },
-      { value: 14, label: '2010년' },
-      { value: 15, label: '2009년' },
+      { value: 0, label: '없음' },
+      { value: 1, label: '2024' },
+      { value: 2, label: '2023' },
+      { value: 3, label: '2022' },
+      { value: 4, label: '2021' },
+      { value: 5, label: '2020' },
+      { value: 6, label: '2019' },
+      { value: 7, label: '2018' },
+      { value: 8, label: '2017' },
+      { value: 9, label: '2016' },
+      { value: 10, label: '2015' },
+      { value: 11, label: '2014' },
+      { value: 12, label: '2013' },
+      { value: 13, label: '2012' },
+      { value: 14, label: '2011' },
+      { value: 15, label: '2010' },
+      { value: 16, label: '2009' },
+      { value: 17, label: '2008' },
+      { value: 18, label: '2007' },
+      { value: 19, label: '2006' },
+      { value: 20, label: '2005' },
+      { value: 21, label: '2004' },
+      { value: 22, label: '2003' },
+      { value: 23, label: '2002' },
+      { value: 24, label: '2001' },
+      { value: 25, label: '2000' },
     ];
 
     return (
@@ -3649,13 +4336,13 @@ export function Step1() {
           <Button
             key={button.value}
             buttonType="button"
-            onClick={() => selectPreviousExamYear(button.value)}
+            onClick={() => selectPreviousExamYear(button.label)}
             $padding="10px"
             height={'35px'}
             width={'100%'}
             fontSize="14px"
-            $normal={previousExamYear !== button.value}
-            $filled={previousExamYear === button.value}
+            $normal={previousExamYear !== button.label}
+            $filled={previousExamYear === button.label}
             cursor
           >
             <span>{button.label}</span>
@@ -4313,217 +5000,315 @@ export function Step1() {
                     setTabVeiw={setTabVeiw}
                   />
                 </TabWrapper>
-                <SchoolGradeWrapper>
-                  <PreviousExamMenuWrapper>
-                    {renderPreviousExamMenuButtons()}
-                  </PreviousExamMenuWrapper>
-                </SchoolGradeWrapper>
-                {previousExamMenu === 0 && (
+                {isSelected ? (
+                  <>{renderContentMathViwer()}</>
+                ) : (
                   <>
-                    <PreviousExamSearchWrapper>
-                      <Label value="학교명" fontSize="16px" width="60px" />
-                      {selectArrange.map((el) => (
-                        <SearchableSelect
-                          key={`${el.idx} - ${el.name}`}
-                          width={'400px'}
-                          height="40px"
-                          placeholder="학교명을 입력해주세요"
-                          options={el.options}
-                          selectedQuotientValue={selectedValue}
-                          setSelectedQuotientValue={setSelectedValue}
-                        ></SearchableSelect>
-                      ))}
-                    </PreviousExamSearchWrapper>
-                    <PreviousExamYearWrapper>
-                      <Label value="출제년도" fontSize="16px" width="80px" />
-                      <ArrowButton
-                        className="arrow left-arrow"
-                        onClick={scrollLeft}
-                      >
-                        {'<'}
-                      </ArrowButton>
-                      <ButtonSlider className="button-slider">
-                        {renderPreviousExamYearButtons()}
-                      </ButtonSlider>
-                      <ArrowButton
-                        className="arrow right-arrow"
-                        onClick={scrollRight}
-                      >
-                        {'>'}
-                      </ArrowButton>
-                    </PreviousExamYearWrapper>
-                    {/* 데이터 들어오는거에 맞게 보여주기*/}
-                    <PreviousExamListWrapper>
-                      {previousExamYear === null ? (
-                        <PreviousExamDefoultBox>
-                          학교명과 출제년도를 선택해주세요
-                        </PreviousExamDefoultBox>
-                      ) : (
-                        <List margin={`10px 0`}>
-                          <ListItem
-                            key={''}
-                            isChecked={false}
-                            height={'70px'}
-                            //isChecked={checkList.includes(item.code)}
-                            //onClick={(e) => handleButtonCheck(e, item.code)}
+                    <SchoolGradeWrapper>
+                      <PreviousExamMenuWrapper>
+                        {renderPreviousExamMenuButtons()}
+                      </PreviousExamMenuWrapper>
+                    </SchoolGradeWrapper>
+                    {previousExamMenu === 0 && (
+                      <>
+                        <PreviousExamSearchWrapper>
+                          <Label value="학교명" fontSize="16px" width="60px" />
+                          {selectArrange.map((el) => (
+                            <SearchableSelect
+                              key={`${el.idx} - ${el.name}`}
+                              width={'400px'}
+                              height="40px"
+                              placeholder="학교명을 입력해주세요"
+                              options={el.options}
+                              selectedQuotientValue={schoolSearchValue}
+                              setSelectedQuotientValue={setSchoolSearchValue}
+                            ></SearchableSelect>
+                          ))}
+                        </PreviousExamSearchWrapper>
+                        <PreviousExamYearWrapper>
+                          <Label
+                            value="출제년도"
+                            fontSize="16px"
+                            width="80px"
+                          />
+                          <ArrowButton
+                            className="arrow left-arrow"
+                            onClick={scrollLeft}
                           >
-                            <ItemLayout>
-                              <CheckBoxI
-                                id={''}
-                                value={''}
-                                $margin={`0 5px 0 0`}
-                                //id={item.code}
-                                //value={item.code}
-                                //checked={checkList.includes(item.code)}
-                                readOnly
-                              />
-                              <span className="width_150px item_wrapper">
-                                <span className="ellipsis">드림고등학교</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">3학년</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">2학기</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">중간고사</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">미적분</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">2024</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_20px item_wrapper">
-                                <span className="ellipsis">7</span>
-                              </span>
-                            </ItemLayout>
-                          </ListItem>
-                        </List>
-                      )}
-                    </PreviousExamListWrapper>
-                  </>
-                )}
-                {previousExamMenu === 1 && (
-                  <>
-                    <PreviousExamSearchWrapper>
-                      <Label value="시험명" fontSize="16px" width="60px" />
-                      <Search
-                        value={searchTextbookValue} //수정필요
-                        width={'400px'}
-                        height="40px"
-                        onKeyDown={(e) => {}}
-                        onChange={(e) => searchTextbook(e.target.value)} //수정필요
-                        placeholder="기출 속성을 선택해주세요"
-                        maxLength={20}
-                      />
-                      <Search
-                        value={searchTextbookValue} //수정필요
-                        width={'400px'}
-                        height="40px"
-                        onKeyDown={(e) => {}}
-                        onChange={(e) => searchTextbook(e.target.value)} //수정필요
-                        placeholder="기출명을 선택해주세요"
-                        maxLength={20}
-                      />
-                    </PreviousExamSearchWrapper>
-                    <PreviousExamYearWrapper>
-                      <Label value="출제년도" fontSize="16px" width="80px" />
-                      <ArrowButton
-                        className="arrow left-arrow"
-                        onClick={scrollLeft}
-                      >
-                        {'<'}
-                      </ArrowButton>
-                      <ButtonSlider className="button-slider">
-                        {renderPreviousExamYearButtons()}
-                      </ButtonSlider>
-                      <ArrowButton
-                        className="arrow right-arrow"
-                        onClick={scrollRight}
-                      >
-                        {'>'}
-                      </ArrowButton>
-                    </PreviousExamYearWrapper>
-                    {/* 데이터 들어오는거에 맞게 보여주기*/}
-                    <PreviousExamListWrapper>
-                      {previousExamYear === null ? (
-                        <PreviousExamDefoultBox>
-                          학교명과 출제년도를 선택해주세요
-                        </PreviousExamDefoultBox>
-                      ) : (
-                        <List margin={`10px 0`}>
-                          <ListItem
-                            key={''}
-                            isChecked={false}
-                            height={'70px'}
-                            //isChecked={checkList.includes(item.code)}
-                            //onClick={(e) => handleButtonCheck(e, item.code)}
+                            {'<'}
+                          </ArrowButton>
+                          <ButtonSlider className="button-slider">
+                            {renderPreviousExamYearButtons()}
+                          </ButtonSlider>
+                          <ArrowButton
+                            className="arrow right-arrow"
+                            onClick={scrollRight}
                           >
-                            <ItemLayout>
-                              <CheckBoxI
-                                id={''}
-                                value={''}
-                                $margin={`0 5px 0 0`}
-                                //id={item.code}
-                                //value={item.code}
-                                //checked={checkList.includes(item.code)}
-                                readOnly
-                              />
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">학력평가</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_40px item_wrapper">
-                                <span className="ellipsis">중등</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_40px item_wrapper">
-                                <span className="ellipsis">학년</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_150px item_wrapper">
-                                <span className="ellipsis">
-                                  교육청 수학경시 대회
-                                </span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">서울교육청</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_80px item_wrapper">
-                                <span className="ellipsis">미적분</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_40px item_wrapper">
-                                <span className="ellipsis">A타입</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_40px item_wrapper">
-                                <span className="ellipsis">2014</span>
-                              </span>
-                              <i className="line"></i>
-                              <span className="width_20px item_wrapper">
-                                <span className="ellipsis">10</span>
-                              </span>
-                            </ItemLayout>
-                          </ListItem>
-                        </List>
-                      )}
-                    </PreviousExamListWrapper>
+                            {'>'}
+                          </ArrowButton>
+                        </PreviousExamYearWrapper>
+                        {/* 데이터 들어오는거에 맞게 보여주기*/}
+                        <PreviousExamListWrapper>
+                          {previousExamYear === null ||
+                          schoolSearchValue === '' ? (
+                            <PreviousExamDefoultBox>
+                              학교명과 출제년도를 선택해주세요
+                            </PreviousExamDefoultBox>
+                          ) : (
+                            <>
+                              <SelectWrapper>
+                                <Select
+                                  width={'130px'}
+                                  defaultValue={'학년'}
+                                  key={'학년'}
+                                  options={schoolGradeSelectList[0].options}
+                                  // onSelect={(event) =>
+                                  //   selectCategoryOption(event)
+                                  // }
+                                  setSelectedValue={setSchoolGradeSelect}
+                                  isnormalizedOptions
+                                  padding="0 5px 0 0"
+                                ></Select>
+                                <Select
+                                  width={'130px'}
+                                  defaultValue={'학기'}
+                                  key={'학기'}
+                                  options={schoolSemesterSelectList[0].options}
+                                  // onSelect={(event) =>
+                                  //   selectCategoryOption(event)
+                                  // }
+                                  setSelectedValue={setSchoolSemesterSelect}
+                                  isnormalizedOptions
+                                  padding="0 5px 0 0"
+                                ></Select>
+                                <Select
+                                  width={'130px'}
+                                  defaultValue={'학사일정'}
+                                  key={'학사일정'}
+                                  options={schoolAcademicSelectList[0].options}
+                                  // onSelect={(event) =>
+                                  //   selectCategoryOption(event)
+                                  // }
+                                  setSelectedValue={setSchoolAcademicSelect}
+                                  isnormalizedOptions
+                                ></Select>
+                              </SelectWrapper>
+                              <List margin={`10px 0`}>
+                                <>
+                                  {previousSchoolList.length > 0 ? (
+                                    <PreviousSchoolListWrapper>
+                                      {previousSchoolList.map((school, i) => (
+                                        <ListItem
+                                          key={`${school.schoolName} - ${i}`}
+                                          isChecked={false}
+                                          height={'70px'}
+                                          //isChecked={checkList.includes(item.code)}
+                                          onClick={(e) => {
+                                            handleButtonCheck(
+                                              school.quizList,
+                                              school.schoolName,
+                                              school.grade,
+                                              school.semester,
+                                              school.academic,
+                                            );
+                                            setIsSelected(true);
+                                          }}
+                                        >
+                                          <ItemLayout>
+                                            <CheckBoxI
+                                              id={''}
+                                              value={''}
+                                              $margin={`0 5px 0 0`}
+                                              //id={item.code}
+                                              //value={item.code}
+                                              //checked={checkList.includes(item.code)}
+                                              readOnly
+                                            />
+                                            <span className="width_150px item_wrapper">
+                                              <span className="ellipsis">
+                                                {school.schoolName}
+                                              </span>
+                                            </span>
+                                            <i className="line"></i>
+                                            <span className="width_80px item_wrapper">
+                                              <span className="ellipsis">
+                                                {school.grade}
+                                              </span>
+                                            </span>
+                                            <i className="line"></i>
+                                            <span className="width_80px item_wrapper">
+                                              <span className="ellipsis">
+                                                {school.semester}
+                                              </span>
+                                            </span>
+                                            <i className="line"></i>
+                                            <span className="width_80px item_wrapper">
+                                              <span className="ellipsis">
+                                                {school.academic}
+                                              </span>
+                                            </span>
+                                            <i className="line"></i>
+                                            <span className="width_80px item_wrapper">
+                                              <span className="ellipsis">
+                                                {school.year}
+                                              </span>
+                                            </span>
+                                            <i className="line"></i>
+                                            <span className="width_20px item_wrapper">
+                                              <span className="ellipsis">
+                                                {school.quizCount}
+                                              </span>
+                                            </span>
+                                          </ItemLayout>
+                                        </ListItem>
+                                      ))}
+                                      <PaginationBox
+                                        itemsCountPerPage={
+                                          schoolData?.data.data.pagination
+                                            .pageUnit as number
+                                        }
+                                        totalItemsCount={
+                                          schoolData?.data.data.pagination
+                                            .totalCount as number
+                                        }
+                                      />
+                                    </PreviousSchoolListWrapper>
+                                  ) : (
+                                    <>
+                                      {previousSchoolDataLoading ? (
+                                        <>
+                                          <Loader width="150px" />
+                                        </>
+                                      ) : (
+                                        <ValueNone
+                                          textOnly
+                                          info="등록된 데이터가 없습니다"
+                                        />
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              </List>
+                            </>
+                          )}
+                        </PreviousExamListWrapper>
+                      </>
+                    )}
+                    {previousExamMenu === 1 && (
+                      <>
+                        <PreviousExamSearchWrapper>
+                          <Label value="시험명" fontSize="16px" width="60px" />
+                          <Search
+                            value={searchTextbookValue} //수정필요
+                            width={'400px'}
+                            height="40px"
+                            onKeyDown={(e) => {}}
+                            onChange={(e) => searchTextbook(e.target.value)} //수정필요
+                            placeholder="기출 속성을 선택해주세요"
+                            maxLength={20}
+                          />
+                          <Search
+                            value={searchTextbookValue} //수정필요
+                            width={'400px'}
+                            height="40px"
+                            onKeyDown={(e) => {}}
+                            onChange={(e) => searchTextbook(e.target.value)} //수정필요
+                            placeholder="기출명을 선택해주세요"
+                            maxLength={20}
+                          />
+                        </PreviousExamSearchWrapper>
+                        <PreviousExamYearWrapper>
+                          <Label
+                            value="출제년도"
+                            fontSize="16px"
+                            width="80px"
+                          />
+                          <ArrowButton
+                            className="arrow left-arrow"
+                            onClick={scrollLeft}
+                          >
+                            {'<'}
+                          </ArrowButton>
+                          <ButtonSlider className="button-slider">
+                            {renderPreviousExamYearButtons()}
+                          </ButtonSlider>
+                          <ArrowButton
+                            className="arrow right-arrow"
+                            onClick={scrollRight}
+                          >
+                            {'>'}
+                          </ArrowButton>
+                        </PreviousExamYearWrapper>
+                        {/* 데이터 들어오는거에 맞게 보여주기*/}
+                        <PreviousExamListWrapper>
+                          {previousExamYear === null ? (
+                            <PreviousExamDefoultBox>
+                              학교명과 출제년도를 선택해주세요
+                            </PreviousExamDefoultBox>
+                          ) : (
+                            <List margin={`10px 0`}>
+                              <ListItem
+                                key={''}
+                                isChecked={false}
+                                height={'70px'}
+                                //isChecked={checkList.includes(item.code)}
+                                //onClick={(e) => handleButtonCheck(e, item.code)}
+                              >
+                                <ItemLayout>
+                                  <CheckBoxI
+                                    id={''}
+                                    value={''}
+                                    $margin={`0 5px 0 0`}
+                                    //id={item.code}
+                                    //value={item.code}
+                                    //checked={checkList.includes(item.code)}
+                                    readOnly
+                                  />
+                                  <span className="width_80px item_wrapper">
+                                    <span className="ellipsis">학력평가</span>
+                                  </span>
+                                  <i className="line"></i>
+                                  <span className="width_40px item_wrapper">
+                                    <span className="ellipsis">중등</span>
+                                  </span>
+                                  <i className="line"></i>
+                                  <span className="width_40px item_wrapper">
+                                    <span className="ellipsis">학년</span>
+                                  </span>
+                                  <i className="line"></i>
+                                  <span className="width_150px item_wrapper">
+                                    <span className="ellipsis">
+                                      교육청 수학경시 대회
+                                    </span>
+                                  </span>
+                                  <i className="line"></i>
+                                  <span className="width_80px item_wrapper">
+                                    <span className="ellipsis">서울교육청</span>
+                                  </span>
+                                  <i className="line"></i>
+                                  <span className="width_40px item_wrapper">
+                                    <span className="ellipsis">A타입</span>
+                                  </span>
+                                  <i className="line"></i>
+                                  <span className="width_40px item_wrapper">
+                                    <span className="ellipsis">2014</span>
+                                  </span>
+                                  <i className="line"></i>
+                                  <span className="width_20px item_wrapper">
+                                    <span className="ellipsis">10</span>
+                                  </span>
+                                </ItemLayout>
+                              </ListItem>
+                            </List>
+                          )}
+                        </PreviousExamListWrapper>
+                      </>
+                    )}
                   </>
                 )}
               </CategorySection>
               <SchoolSelectorSection
-                $isSelectPreviousExamContent={false} //수정필요
+                $isSelectPreviousExamContent={isSelected} //수정필요
                 $tabVeiw={tabVeiw}
               >
                 <SubTitleWrapper>
@@ -4598,7 +5383,7 @@ export function Step1() {
             <EqualScoreModalWrapper>
               <EqualScoreModalTitleWrapper>
                 <Label
-                  value={`총 ${receivedQuizCount ? receivedQuizCount : questionNum || inputValue || includeQuizList.length} 문항`}
+                  value={`총 ${receivedQuizCount ? receivedQuizCount : tabVeiw === '시중교재' || tabVeiw === '기출' ? Number(questionNum) * Number(includeQuizList.length) || Number(inputValue) * Number(includeQuizList.length) : questionNum || inputValue || includeQuizList.length} 문항`}
                   fontSize="25px"
                   width="160px"
                 />
@@ -5187,6 +5972,114 @@ const PreviousExamSearchWrapper = styled.div`
   padding: 10px 0 0 10px;
   gap: 5px;
 `;
+const LayoutWrapper = styled.div`
+  width: 100%;
+  max-height: 693px;
+  border-top: 1px solid ${COLOR.BORDER_GRAY};
+  &.auto {
+    flex: 1 0 0;
+  }
+`;
+const ScrollWrapper = styled.div`
+  overflow-y: auto;
+  max-height: 665px;
+  width: 100%;
+  .line {
+    border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+    padding: 5px 0;
+
+    &.bottom_text {
+      text-align: right;
+      font-size: 13px;
+      padding-bottom: 2px;
+    }
+  }
+
+  &.items_height {
+    margin-top: 5px;
+    height: calc(100vh - 150px);
+  }
+`;
+const BlankWrapper = styled.div`
+  width: 100%;
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ItemWrapper = styled.div<{ height?: string }>`
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  height: ${({ height }) => height || 'auto'};
+  margin: 5px;
+  overflow: auto;
+
+  .class_wrap {
+    font-size: 12px;
+    color: #aaa;
+    span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Change the number to the number of lines you want to show */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+`;
+const TopButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+
+  .title {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .title_top {
+    button {
+      height: 15px;
+      margin: 5px;
+    }
+  }
+
+  .tag {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 27px;
+
+    &.yellow {
+      background-color: ${COLOR.ALERTBAR_WARNING};
+    }
+    &.green {
+      background-color: ${COLOR.ALERTBAR_SUCCESS};
+    }
+  }
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  gap: 5px;
+
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background-color: transparent;
+
+    &.on {
+      background-color: ${COLOR.IS_HAVE_DATA};
+    }
+  }
+`;
 const PreviousExamYearWrapper = styled.div`
   width: 950px;
   display: flex;
@@ -5301,6 +6194,13 @@ const ItemLayout = styled.span`
   .width_150px {
     width: 150px;
   }
+`;
+const PreviousSchoolListWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 10px;
 `;
 const PreviousExamDefoultBox = styled.div`
   height: 150px;
