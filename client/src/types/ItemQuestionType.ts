@@ -37,6 +37,7 @@ export type QuizType = {
 };
 
 export type QuizListType = {
+  id?: string;
   code: string;
   createdAt: string;
   createdBy: string;
@@ -54,6 +55,7 @@ export type QuizListType = {
   quizList: QuizType[];
   process?: string;
   condition?: string;
+  isChecked?: boolean;
 };
 
 export type QuizCategoryList = {
