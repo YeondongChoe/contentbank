@@ -539,15 +539,17 @@ aside {
 /* editor_pc v =================================================== */
 .pc_editor_container {
   position: fixed;
-  left: 0px;
-  bottom: 0px;
+  left: 15vw;
+  top: 30vh;
+  /* bottom: 0px; */
   cursor: move;
-  width: 470px;
-  height: 530px;
+  min-width: 470px;
+  max-width: 640px;
+  /* overflow: scroll; */
+  /* min-height: 530px; */
   border: 12px solid white;
   background-color: white;
   border-radius: 10px;
-  overflow: hidden;
 }
 .pc_display_container {
   /* position: relative; */
@@ -605,14 +607,15 @@ aside {
 .pc_itex_editor_close {
   position: absolute;
   top: -40px;
-  left: 50%;
-  transform: translateX(-50%, 0);
+  right: -23px;
+  transform: translate(-50%, 0);
   width: 27px;
   height: 27px;
   border-radius: 8px;
   opacity: 40%;
 }
 .pc_itex_editor_close:hover {
+  color: red;
   opacity: 100%;
 }
 #pc_input_menu {

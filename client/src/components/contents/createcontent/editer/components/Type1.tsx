@@ -10,6 +10,8 @@ import ChevronLeftIcon from './icons/ChevronLeftIcon';
 import ChevronRightIcon from './icons/ChevronRightIcon';
 import CloseIcon from './icons/CloseIcon';
 import DocumentIcon from './icons/DocumentIcon';
+import DocumentMinus from './icons/DocumentMinus';
+import DocumentPlus from './icons/DocumentPlus';
 import ImageIcon from './icons/ImageIcon';
 import PdfIcon from './icons/PdfIcon';
 import TrashIcon from './icons/TrashIcon';
@@ -118,236 +120,248 @@ const Type1 = ({ saveHandler }: { saveHandler?: () => any }) => {
   }, []);
 
   return (
-    <div className="itex_editor_container">
-      <div id="first" className="resizeable">
-        <div id="itex_viewer_area">
-          <div id="data_viewer_header">
-            <ul id="viewer_list">
-              <li id="add_viewer" className="viewer_li">
-                +
-              </li>
-            </ul>
-          </div>
-          <div id="data_viewer_body">
-            <div className="trans_area h-100">
-              <div
-                className="itex_hml_convert_view"
-                contentEditable="true"
-              ></div>
-              <button id="pasteButton" className="hml_copy_btn">
-                붙여넣기
-              </button>
-              <div className="origin_img_area h-100">
-                <div className="itex_ocrimg_area" style={{ width: '100%' }}>
-                  <img id="itex_main_img" alt="" />
+    <>
+      {/* <button onClick={openFormula}>수식편집기</button> */}
+      <div className="eq_wrap_node"></div>
+      <div className="itex_editor_container">
+        <div id="first" className="resizeable">
+          <div id="itex_viewer_area">
+            <div id="data_viewer_header">
+              <ul id="viewer_list">
+                <div id="viewer_add_remove" className="d-flex">
+                  <li id="remove_viewer" className="viewer_remove">
+                    <DocumentMinus />
+                  </li>
+                  <li id="add_viewer" className="viewer_add">
+                    <DocumentPlus />
+                  </li>
                 </div>
-                <div className="itex-drag-area">
-                  <div className="icon">
-                    <DocumentIcon />
-                    <CameraIcon />
-                    <ImageIcon />
-                    <PdfIcon />
+              </ul>
+            </div>
+            <div id="data_viewer_body">
+              <div className="trans_area h-100">
+                <div
+                  className="itex_hml_convert_view"
+                  contentEditable="true"
+                ></div>
+                <button id="pasteButton" className="hml_copy_btn">
+                  붙여넣기
+                </button>
+                <div className="origin_img_area h-100">
+                  <div className="itex_ocrimg_area" style={{ width: '100%' }}>
+                    <img id="itex_main_img" alt="" />
                   </div>
-                  <input id="upload_file" name="images" type="file" />
+                  <div className="itex-drag-area">
+                    <div className="icon">
+                      <DocumentIcon />
+                      <CameraIcon />
+                      <ImageIcon />
+                      <PdfIcon />
+                    </div>
+                    <input id="upload_file" name="images" type="file" />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div
-              className="itex_fixed_tool position-absolute bottom-0 start-50 translate-middle-x zindex-fixed"
-              role="toolbar"
-              aria-label="Toolbar with button groups"
-            >
               <div
-                className="btn-group btn-group-md"
-                role="group"
-                aria-label="1th group"
+                className="itex_fixed_tool position-absolute bottom-0 start-50 translate-middle-x zindex-fixed"
+                role="toolbar"
+                aria-label="Toolbar with button groups"
               >
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  id="itex_page_clear"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  data-bs-trigger="hover"
-                  title="지우기"
+                <div
+                  className="btn-group btn-group-md"
+                  role="group"
+                  aria-label="1th group"
                 >
-                  <TrashIcon />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-method="rotate"
-                  id="itex_Rotate_L"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  data-bs-trigger="hover"
-                  title="왼쪽으로 회전"
-                >
-                  <ArrowCounterclockwiseIcon />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-method="rotate"
-                  id="itex_Rotate_R"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  data-bs-trigger="hover"
-                  title="오른쪽으로 회전"
-                >
-                  <ArrowClockwiseIcon />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  id="onPrevPage"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  data-bs-trigger="hover"
-                  title="이전 페이지"
-                >
-                  <ChevronLeftIcon />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  id="onNextPage"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  data-bs-trigger="hover"
-                  title="다음 페이지"
-                >
-                  <ChevronRightIcon />
-                </button>
-                <div className="pdf_page_show pdf_page_hidden">
-                  <input
-                    className="input-group-text pdf_page_a"
-                    id="inputGroup-sizing-sm"
-                    type="text"
-                  />
-                  <span
-                    className="input-group-text btn-secondary pdf_page_s"
-                    id="inputGroup-sizing-sm"
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    id="itex_page_clear"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-trigger="hover"
+                    title="지우기"
                   >
-                    /0
-                  </span>
+                    <TrashIcon />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-method="rotate"
+                    id="itex_Rotate_L"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-trigger="hover"
+                    title="왼쪽으로 회전"
+                  >
+                    <ArrowCounterclockwiseIcon />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-method="rotate"
+                    id="itex_Rotate_R"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-trigger="hover"
+                    title="오른쪽으로 회전"
+                  >
+                    <ArrowClockwiseIcon />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    id="onPrevPage"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-trigger="hover"
+                    title="이전 페이지"
+                  >
+                    <ChevronLeftIcon />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    id="onNextPage"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-trigger="hover"
+                    title="다음 페이지"
+                  >
+                    <ChevronRightIcon />
+                  </button>
+                  <div className="pdf_page_show pdf_page_hidden">
+                    <input
+                      className="input-group-text pdf_page_a"
+                      id="inputGroup-sizing-sm"
+                      type="text"
+                    />
+                    <span
+                      className="input-group-text btn-secondary pdf_page_s"
+                      id="inputGroup-sizing-sm"
+                    >
+                      /0
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-secondary itex_edit_mv"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-trigger="hover"
+                    title="모바일 환경에서 에디터 창으로 이동합니다."
+                    style={{ display: 'none' }}
+                  >
+                    <BoxArrowInUpRightIcon />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-info itex_total_count"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-trigger="hover"
+                    title="변환 내역"
+                    style={{ display: 'none' }}
+                  >
+                    <BarCharLineIcon />
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      <span className="itex_obj_count">0</span>
+                      <span className="visually-hidden"></span>
+                    </span>
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className="btn btn-secondary itex_edit_mv"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  data-bs-trigger="hover"
-                  title="모바일 환경에서 에디터 창으로 이동합니다."
-                  style={{ display: 'none' }}
-                >
-                  <BoxArrowInUpRightIcon />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-info itex_total_count"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  data-bs-trigger="hover"
-                  title="변환 내역"
-                  style={{ display: 'none' }}
-                >
-                  <BarCharLineIcon />
-                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    <span className="itex_obj_count">0</span>
-                    <span className="visually-hidden"></span>
-                  </span>
-                </button>
               </div>
             </div>
-          </div>
-          <div id="data_viewer_footer"></div>
-          <div className="qnai_trans_form">
-            <div>
-              <div className="btn-group btn-group-sm">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  data-bs-placement="top"
-                  title="선택영역의 컨텐츠를 인식합니다."
-                  id="doc_ocr_converter"
-                >
-                  문항인식
-                </button>
+            <div id="data_viewer_footer"></div>
+            <div className="qnai_trans_form">
+              <div>
+                <div className="btn-group btn-group-sm">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    data-bs-placement="top"
+                    title="선택영역의 컨텐츠를 인식합니다."
+                    id="doc_ocr_converter"
+                  >
+                    문항인식
+                  </button>
 
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  id="img_crop_normal"
-                  data-bs-placement="top"
-                  title="선택영역을 이미지로 변환합니다."
-                >
-                  그림넣기
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-warning"
-                  id="itex_crop_clear"
-                  title="크롭 해제"
-                  aria-label="Close"
-                >
-                  <CloseIcon />
-                </button>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    id="img_crop_normal"
+                    data-bs-placement="top"
+                    title="선택영역을 이미지로 변환합니다."
+                  >
+                    그림넣기
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    id="itex_crop_clear"
+                    title="크롭 해제"
+                    aria-label="Close"
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div id="dragger-left" className="dragger dragger-left">
-        <button className="open_btn_left" style={{ display: 'none' }}>
-          {'>'}
-        </button>
-      </div>
-      <div id="second" className="resizeable">
-        <div className="col-lg-4 p-0 tiny_wrap">
-          <textarea id="tinyeditor"></textarea>
-          <div
-            className="save_exam_btn_wrap"
-            // style={{
-            //   height: '0%',
-            //   visibility: 'hidden',
-            //   position: 'absolute',
-            // }}
-          >
-            <button id="exam_save" onClick={saveHandler}>
-              문항 저장
-            </button>
-          </div>
-          <div className="poc_checker_block"></div>
+        <div id="dragger-left" className="dragger dragger-left">
+          {/* <button className="open_btn_left" style={{ display: "none" }}>
+					{">"}
+				</button> */}
+          <div className="dragger_region">{''}</div>
         </div>
-      </div>
-
-      <div className="tools_wrap eq_config_hidden">
-        <div id="editor_container"></div>
-        <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>
-        <div id="itexhml_board"></div>
-        <div id="modal_block">
-          <div className="sk-cube-grid">
-            <div className="sk-cube sk-cube1"></div>
-            <div className="sk-cube sk-cube2"></div>
-            <div className="sk-cube sk-cube3"></div>
-            <div className="sk-cube sk-cube4"></div>
-            <div className="sk-cube sk-cube5"></div>
-            <div className="sk-cube sk-cube6"></div>
-            <div className="sk-cube sk-cube7"></div>
-            <div className="sk-cube sk-cube8"></div>
-            <div className="sk-cube sk-cube9"></div>
+        <div id="second" className="resizeable">
+          <div className="col-lg-4 p-0 tiny_wrap">
+            <textarea id="tinyeditor"></textarea>
+            <div className="save_exam_btn_wrap">
+              <button
+                id="exam_save"
+                onClick={async () => {
+                  // console.log("zmfflr");
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-expect-error
+                  const qqqq = await window.saveExamData();
+                  // console.log(qqqq);
+                }}
+              >
+                문항 저장
+              </button>
+            </div>
+            <div className="poc_checker_block"></div>
           </div>
         </div>
-      </div>
 
-      <input
-        type="file"
-        accept=".jpg,.jpeg,.png"
-        id="itex_imgfile"
-        style={{ display: 'none' }}
-      />
-    </div>
+        <div className="tools_wrap eq_config_hidden">
+          <div id="editor_container"></div>
+          <div id="iframe_ocr_box" ref={ocrIframeContainer}></div>{' '}
+          <div id="itexhml_board"></div>
+          <div id="modal_block">
+            <div className="sk-cube-grid">
+              <div className="sk-cube sk-cube1"></div>
+              <div className="sk-cube sk-cube2"></div>
+              <div className="sk-cube sk-cube3"></div>
+              <div className="sk-cube sk-cube4"></div>
+              <div className="sk-cube sk-cube5"></div>
+              <div className="sk-cube sk-cube6"></div>
+              <div className="sk-cube sk-cube7"></div>
+              <div className="sk-cube sk-cube8"></div>
+              <div className="sk-cube sk-cube9"></div>
+            </div>
+          </div>
+        </div>
+
+        <input
+          type="file"
+          accept=".jpg,.jpeg,.png"
+          id="itex_imgfile"
+          style={{ display: 'none' }}
+        />
+      </div>
+    </>
   );
 };
 

@@ -8,7 +8,11 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { classificationInstance, quizService } from '../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../api/axios';
 import {
   Button,
   CheckBoxI,
@@ -43,6 +47,13 @@ interface PairState {
   selectedItems2: string[];
   includeType: 'includeOne' | 'includeAll';
 }
+
+type SearchClass = {
+  [key: string]: {
+    values: string[];
+    condition: 'AND' | 'OR';
+  };
+};
 
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
@@ -161,9 +172,11 @@ export function ContentInformationChange() {
   const [checkList, setCheckList] = useState<number[]>([]); // 문항 체크
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
 
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [searchClassList, setSearchClassList] = useState<SearchClass[]>([]);
+
   const [editQuizList, setEditQuizList] = useState<QuizListType[]>([]);
   const [coppyQuizList, setCoppyQuizList] = useState<QuizListType[]>([]);
-  const [searchValue, setSearchValue] = useState<string>('');
   const [showplaceholder, setShowplaceholder] = useState<boolean>(true);
   // const [changeValue, setChangeValue] = useState<string>('');
   // const [showplaceholder2, setShowplaceholder2] = useState<boolean>(true);
@@ -189,21 +202,55 @@ export function ContentInformationChange() {
   const [state, setState] = useState<'수정' | '복제' | null>(null);
   const { openModal } = useModal();
 
+  // 메뉴 목록 조회 api
+  const getMenuSetting = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=contentEditingSetting`,
+    );
+    console.log('getMenuSetting--------', res);
+    return res;
+  };
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
+    queryKey: ['get-menuSetting'],
+    queryFn: getMenuSetting,
+    meta: {
+      errorMessage: 'get-menuSetting 에러 메세지',
+    },
+    // enabled: menuIdx !== null,
+  });
+
+  // useEffect(() => {
+  //   if (menuSettingData) {
+  //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
+  //     /v1/category/class/{idx}
+  //   }
+  // }, [menuSettingData]);
+
   // 검색 api
   const postSearchCategory = async () => {
     const data = {
-      // TODO : 임시 데이터
-      // searchKeyword: searchValue,
-      itemTreeKey: { 학교급: '중등', 교과: '수학' },
-      itemTreeIdxList: [336],
-      pageIndex: page,
-      pageUnit: 8,
+      searchCondition: 'ALL',
+      searchKeyword: searchValue,
+      searchUseYn: '',
+      pageIndex: 1,
+      pageUnit: 10,
+      pageSize: 10,
+      firstIndex: 1,
+      lastIndex: 1,
+      recordCountPerPage: 10,
+      searchKeywordFrom: '',
+      searchKeywordTo: '',
+      searchFilter: null,
+      searchClassList: searchClassList,
     };
-
     console.log('최종적으로 요청되는 데이터', data);
 
-    const res = await quizService.post('/v1/search/quiz/category', data);
-    console.log('/v1/search/quiz/category 응답:', res);
+    const res = await quizService.post('/v2/search/quiz/category', data);
+    console.log('/v2/search/quiz/category 응답:', res);
     return res.data.data;
   };
   const {
@@ -452,6 +499,30 @@ export function ContentInformationChange() {
         />
       ),
     });
+  };
+
+  const handleComponentUpdate = (
+    index: number,
+    selectedItems1: string[],
+    selectedItems2: string[],
+    includeType: 'includeOne' | 'includeAll',
+  ) => {
+    const updatedSearchClassList = [...searchClassList];
+
+    // 새 컴포넌트를 리스트에 추가 (또는 기존 컴포넌트를 업데이트)
+    updatedSearchClassList[index] = {
+      학교급: {
+        values: selectedItems1,
+        condition: includeType === 'includeAll' ? 'AND' : 'OR',
+      },
+      교과: {
+        values: selectedItems2,
+        condition: includeType === 'includeAll' ? 'AND' : 'OR',
+      },
+    };
+
+    // 업데이트된 searchClassList 상태로 설정
+    setSearchClassList(updatedSearchClassList);
   };
 
   const editSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
