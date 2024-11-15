@@ -116,6 +116,17 @@ export function App() {
     setDeviceType(type);
   }, []);
 
+  // 편집기 종류(PC: true, tab: false);
+  if (deviceType == 'desktop') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.editorType = true;
+  } else {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.editorType = false;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <Container>

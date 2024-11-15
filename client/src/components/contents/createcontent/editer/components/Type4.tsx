@@ -380,6 +380,7 @@ export default Type4;
 
 const MathViewerWrapper = styled.div`
   padding: 20px;
+  width: 100%;
 
   p > img {
     width: 100% !important;
