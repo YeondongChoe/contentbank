@@ -27,6 +27,54 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
+const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
+  if (window.MathJax) {
+    setLoaded(true);
+    return;
+  }
+
+  (window as any).MathJax = {
+    startup: {
+      ready: () => {
+        const { MathJax } = window as any;
+        MathJax.startup.defaultReady();
+        console.log('MathJax is loaded, version: ', MathJax.version);
+        setLoaded(true);
+      },
+    },
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+    },
+    svg: {
+      scale: 1.0,
+      fontCache: 'local',
+      minScale: 0.1,
+    },
+    options: {
+      renderActions: {
+        addMenu: [
+          /* ... */
+        ],
+      },
+      menuOptions: {
+        settings: {},
+      },
+    },
+  };
+
+  const script = document.createElement('script');
+  script.id = 'MathJax-script';
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  script.async = true;
+  script.onload = () => {
+    setLoaded(true);
+  };
+  script.onerror = () => {
+    console.error('Failed to load MathJax.');
+  };
+  document.head.appendChild(script);
+};
+
 export function ContentEdit({
   setTabView,
   type,
@@ -34,6 +82,7 @@ export function ContentEdit({
   setTabView: React.Dispatch<React.SetStateAction<string>>;
   type: string;
 }) {
+  const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
     QuizListType[]
@@ -131,8 +180,16 @@ export function ContentEdit({
       setSelectedQuestionType(foundQuestionType);
       setSelectedDifficulty(foundDifficulty);
       setSelectedSource(foundSources);
+
+      // 데이터 바뀔시 실행
     }
   }, [onItemClickData]);
+
+  useEffect(() => {
+    if (!isMathJaxLoaded) {
+      loadMathJax(setMathJaxLoaded);
+    }
+  }, [isMathJaxLoaded]);
 
   // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
   const getQuiz = async () => {
@@ -503,7 +560,7 @@ export function ContentEdit({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     const data = await window.saveExamData();
-    console.log(data);
+    console.log('에디터 데이터 ----------------', data);
     setEditorData(JSON.parse(data));
   };
 
@@ -708,7 +765,7 @@ export function ContentEdit({
 
         <ContentListWrapper>
           <ContentList>
-            {dataFetched && (
+            {dataFetched && isMathJaxLoaded && (
               <QuizList
                 questionList={quizList}
                 $height={`calc(100vh - 100px)`}

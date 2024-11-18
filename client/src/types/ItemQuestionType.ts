@@ -37,6 +37,7 @@ export type QuizType = {
 };
 
 export type QuizListType = {
+  map(arg0: (el: { content: any }, ind: any) => void): unknown;
   code: string;
   createdAt: string;
   createdBy: string;
