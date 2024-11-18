@@ -233,7 +233,7 @@ export function Worksheet() {
       setSelectedList(newArray);
     }
   }, [menuData]);
-  console.log(selectedList);
+
   // 탭 바뀔시 초기화
   useEffect(() => {
     workbookListRefetch();

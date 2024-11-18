@@ -316,6 +316,12 @@ export function CategroyManagement() {
       content: <TagsModal tags={tagsList} />,
     });
   };
+  const openGroupModal = () => {
+    openModal({
+      title: '',
+      content: <TagsModal tags={groupList} />,
+    });
+  };
 
   const tagInputHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -652,13 +658,18 @@ export function CategroyManagement() {
                     </button>
                   ))}
                 </div>
-                {/* <input
-                  type="text"
-                  readOnly
-                  disabled
-                  value={groupList}
-                  style={{ opacity: 0.5 }}
-                /> */}
+              </div>
+              <div className="input_wrap">
+                <span className="input_label"></span>
+                <div className="button_wrap">
+                  <button
+                    type="button"
+                    className={`value_button`}
+                    onClick={() => openGroupModal()}
+                  >
+                    <span className="transform">⁝</span>
+                  </button>
+                </div>
               </div>
               <div className="input_wrap">
                 <span className="input_label">입력 타입</span>
