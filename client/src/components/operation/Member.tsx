@@ -113,7 +113,13 @@ export function Member() {
     // console.log('isSuccess', isSuccess);
     if (isSuccess) setTotalCount(memberList?.pagination?.totalCount);
   }, [isSuccess]);
-
+  const [companyCoadValue, setCompanyCoadValue] = useState<string | null>(null);
+  useEffect(() => {
+    const storedCompanyCode = localStorage.getItem('companyCode');
+    setCompanyCoadValue(storedCompanyCode);
+  }, []);
+  console.log(companyCoadValue);
+  // TODO: companyCoad 대신 CompanyIdx, CompanyName 넘겨줘야함.
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
@@ -125,7 +131,7 @@ export function Member() {
           memberList={totalMemberList}
           refetch={refetch}
           idxValue={''}
-          companyName=""
+          companyCode={companyCoadValue as string}
         />
       ),
     });

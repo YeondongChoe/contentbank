@@ -29,7 +29,7 @@ import {
 type RegisterModalProps = {
   memberList?: MemberType[];
   idxValue: string;
-  companyName?: string;
+  companyCode?: string;
   refetch: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
@@ -38,7 +38,7 @@ type RegisterModalProps = {
 export function RegisterModal({
   memberList,
   idxValue,
-  companyName,
+  companyCode,
   refetch,
 }: RegisterModalProps) {
   const { closeModal } = useModal();
@@ -333,7 +333,7 @@ export function RegisterModal({
                 <Select
                   width="100%"
                   padding="5px 0px 0px 0px"
-                  defaultValue={companyName}
+                  defaultValue={companyCode}
                   isnormalizedOptions
                   disabled
                 />
