@@ -34,10 +34,9 @@ import ChevronLeftIcon from '../../components/contents/createcontent/editer/comp
 import ChevronRightIcon from '../../components/contents/createcontent/editer/components/icons/ChevronRightIcon';
 import CloseIcon from '../../components/contents/createcontent/editer/components/icons/CloseIcon';
 import TrashIcon from '../../components/contents/createcontent/editer/components/icons/TrashIcon';
-import { QuizList } from '../../components/contents/createcontent/list';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
-import { QuizListType } from '../../types';
+import { ItemCategoryType, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 
 import { EditModal } from './EditModal';
@@ -54,6 +53,10 @@ type SearchClass = {
     condition: 'AND' | 'OR';
   };
 };
+interface IdxNamePair {
+  idx: string;
+  name: string;
+}
 
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
@@ -187,7 +190,7 @@ export function ContentInformationChange() {
     tag: [],
     changeValue: '',
   });
-
+  const [idxNamePairs, setIdxNamePairs] = useState<IdxNamePair[]>([]);
   const searchDivRef = useRef<HTMLDivElement | null>(null);
   const changeDivRef = useRef<HTMLDivElement | null>(null);
   // 드롭박스 셀렉팅 값
@@ -196,6 +199,8 @@ export function ContentInformationChange() {
   ]);
   const [selectedItems1, setSelectedItems1] = useState<string[]>([]);
   const [selectedItems2, setSelectedItems2] = useState<string[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [includeType1, setIncludeType1] = useState<'includeOne' | 'includeAll'>(
     'includeOne',
   );
@@ -207,8 +212,8 @@ export function ContentInformationChange() {
     const res = await resourceServiceInstance.get(
       `/v1/menu/path?url=contentEditingSetting`,
     );
-    console.log('getMenuSetting--------', res);
-    return res;
+    console.log('getMenuSetting--------', res.data.data);
+    return res.data.data;
   };
   const {
     data: menuSettingData,
@@ -223,12 +228,48 @@ export function ContentInformationChange() {
     // enabled: menuIdx !== null,
   });
 
-  // useEffect(() => {
-  //   if (menuSettingData) {
-  //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
-  //     /v1/category/class/{idx}
-  //   }
-  // }, [menuSettingData]);
+  useEffect(() => {
+    if (menuSettingData) {
+      //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
+      fetchCategoryItems(
+        menuSettingData.menuDetailList[0].idxs,
+        setCategoriesE,
+      );
+
+      // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
+      const menuDetail = menuSettingData.menuDetailList[0];
+      const idxs = menuDetail.idxs.split(',');
+      const names = menuDetail.names.split(',');
+      const pairs = idxs.map((idx: any, index: string | number) => ({
+        idx,
+        name: names[index],
+      }));
+
+      console.log('idxNamePairs----', pairs);
+      setIdxNamePairs(pairs);
+    }
+  }, [menuSettingData]);
+
+  // 카테고리의 그룹 아이템 조회
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
+    const typeIds = typeList.split(',');
+    try {
+      const requests = typeIds.map((id) =>
+        classificationInstance.get(`/v1/category/class/${id}`),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+      console.log('itemsList', itemsList);
+      setCategory(itemsList);
+    } catch (error: any) {
+      if (error.response.data?.code == 'GE-002') postRefreshToken();
+    }
+  };
 
   // 검색 api
   const postSearchCategory = async () => {
@@ -595,6 +636,17 @@ export function ContentInformationChange() {
     setCoppyQuizList(sortedQuizList);
   }, [sortedQuizList]);
 
+  const handleFirstDropdownChange = (selectedList: string[]) => {
+    setSelectedItems1(selectedList);
+
+    const selectedIdx = idxNamePairs.findIndex(
+      (pair) => pair.name === selectedList[0],
+    );
+    setSelectedIndex(selectedIdx);
+
+    setSelectedItems2([]);
+  };
+
   return (
     <>
       <Container>
@@ -607,29 +659,17 @@ export function ContentInformationChange() {
               <DropdownWithCheckboxWrapper>
                 <DropdownWithCheckbox
                   width={'140px'}
-                  selectedList={setSelectedItems1}
-                  options={[
-                    'lisdsad sadasdsa dsadsada dsa t1',
-                    'list2',
-                    'list3',
-                    'list4',
-                    'list5',
-                    'list6',
-                  ]}
+                  selectedList={handleFirstDropdownChange}
+                  options={idxNamePairs.map((pair) => pair.name)}
                 />
                 <span>이(가)</span>
-                <DropdownWithCheckbox
+                {/* <DropdownWithCheckbox
                   width={'200px'}
                   selectedList={setSelectedItems2}
-                  options={[
-                    'lisdsad sadasdsa dsadsada dsa t1',
-                    'list2',
-                    'list3',
-                    'list4',
-                    'list5',
-                    'list6',
-                  ]}
-                />
+                  options={
+                    selectedIndex !== null ? categoriesE[selectedIndex] : ['']
+                  }
+                /> */}
               </DropdownWithCheckboxWrapper>
               <SwitchContainer>
                 <SwitchButton

@@ -3865,7 +3865,7 @@ export function Step1() {
         quizList: school.quizList,
         isChecked: false,
       }));
-      setProcessPreviousQuizListData(initialData);
+      // setProcessPreviousQuizListData(initialData);
     }
   }, [questionList, previousSchoolDataRefetch]);
 
