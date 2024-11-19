@@ -18,7 +18,14 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   }
 
   (window as any).MathJax = {
+    loader: {
+      load: ['input/tex', 'output/svg'],
+    },
+    output: {
+      renderer: 'svg',
+    },
     startup: {
+      renderer: 'SVG',
       ready: () => {
         const { MathJax } = window as any;
         MathJax.startup.defaultReady();
@@ -49,6 +56,7 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   const script = document.createElement('script');
   script.id = 'MathJax-script';
   script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  // script.src = '/client/public/static/iTeX_EQ/js/tex-svg-full_3_2_2.js';
   script.async = true;
   script.onload = () => {
     setLoaded(true);
@@ -95,6 +103,7 @@ export function EditerOneFile({
     console.log('type', type);
   }, [type]);
   useEffect(() => {}, [tabView]);
+
   return (
     <Container className={type === 'type2' ? `type2` : ''}>
       {isMathJaxLoaded ? (

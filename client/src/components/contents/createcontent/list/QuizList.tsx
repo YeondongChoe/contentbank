@@ -92,7 +92,7 @@ export function QuizList({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     const data = window.iTeXEQ.latexrecovery();
-    console.log('--------------------- 11', data);
+    console.log('latexrecovery------------------', data);
   };
 
   // 툴팁 토글
@@ -174,24 +174,50 @@ export function QuizList({
     e.preventDefault();
     const quiz = questionList.filter((el) => el.code === code);
     const data: QuizListType = quiz[0];
-    console.log('선택된 요소 퀴즈 데이터 ----------------', data);
     if (onItemClick) onItemClick(data);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const editor = tinymce.get('tinyeditor');
-    // if (editor) {
-    //   console.log('check!!!!!!');
-    //   data.quizItemList.map((el: { content: any }, ind: any) => {
-    //     console.log(ind, el.content);
-    //   });
-    // editor.setContent(data);
-    // } else {
-    //   console.log('data read failed');
-    // }
+    console.log('선택된 요소 퀴즈 데이터 ----------------', data);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    window.iTeXEQ.latexrecovery();
+    if (data && data.quizItemList) {
+      let fullContent = '';
+
+      data.quizItemList.forEach((item) => {
+        const temp = item.content;
+        console.log('선택된 요소 퀴즈 데이터 temp----------------', temp);
+
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(temp, 'text/html');
+
+        const nodes = dom.querySelectorAll('.itexmath');
+        nodes.forEach((node) => {
+          const latex = node.getAttribute('data-latex');
+          while (node.firstChild) {
+            node.removeChild(node.firstChild);
+          }
+          if (latex) {
+            node.textContent = latex;
+          }
+        });
+
+        console.log('test: ', dom.body.innerHTML);
+
+        fullContent += dom.body.innerHTML;
+      });
+
+      const content_0 = fullContent;
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const editor = tinymce.get('tinyeditor');
+      if (editor) {
+        console.log('check!!!!!!');
+        editor.setContent(content_0);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        window.iTeXEQ.latexrecovery();
+      } else {
+        console.log('data read failed');
+      }
+    }
   };
 
   // useEffect(() => {

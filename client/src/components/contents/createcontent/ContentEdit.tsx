@@ -34,7 +34,14 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   }
 
   (window as any).MathJax = {
+    loader: {
+      load: ['input/tex', 'output/svg'],
+    },
+    output: {
+      renderer: 'svg',
+    },
     startup: {
+      renderer: 'SVG',
       ready: () => {
         const { MathJax } = window as any;
         MathJax.startup.defaultReady();
@@ -87,7 +94,7 @@ export function ContentEdit({
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
     QuizListType[]
   >([]);
-  const [data, setData] = useState<QuizType[] | null>(null);
+  // const [data, setData] = useState<QuizType[] | null>(null);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
@@ -577,35 +584,58 @@ export function ContentEdit({
     console.log('quizList', quizList);
   }, [quizList]);
 
-  useEffect(() => {
-    if (data) {
-      const combinedContent = data.map((item) => item.content).join(' ');
+  // useEffect(() => {
+  //   if (data) {
+  // const combinedContent = data.map((item) => item.content).join(' ');
+  // console.log('onItemClickData 선택된 아이템------------', combinedContent);
+  // if (data && data.quizItemList) {
+  //   const temp = data.quizItemList[0].content;
+  //   console.log('선택된 요소 퀴즈 데이터 temp----------------', temp);
+  // const parser = new DOMParser();
+  // const dom = parser.parseFromString(combinedContent, 'text/html');
+  // const nodes = dom.querySelectorAll('.itexmath');
+  // nodes.forEach((node) => {
+  //   const latex = node.getAttribute('data-latex');
+  //   while (node.firstChild) {
+  //     node.removeChild(node.firstChild);
+  //   }
+  //   if (latex) {
+  //     node.textContent = latex;
+  //   }
+  // });
+  // console.log('test: ', dom.body.innerHTML);
+  // const content_0 = dom.body.innerHTML;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // const editor = tinymce.get('tinyeditor');
+  // if (editor) {
+  //   console.log('check!!!!!!');
+  //   editor.setContent(content_0);
+  // } else {
+  //   console.log('data read failed');
+  // }
+  // }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // window.usePostJsonData(combinedContent);
+  //   }
+  // }, [data]);
 
-      // console.log('onItemClickData 선택된 아이템------------', combinedContent);
+  // useEffect(() => {
+  //   if (onItemClickData && onItemClickData.quizItemList) {
+  //     // setData(onItemClickData.quizItemList);
+  //     // 선택 데이터 바뀔시 초기화
+  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //     // @ts-expect-error
+  //     window.tinymce.activeEditor.setContent('');
+  //   }
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      window.usePostJsonData(combinedContent);
-    }
-  }, [data]);
+  //   // 선택된 문항의 idx 값 가져오기
+  //   const idx = onItemClickData?.idx as number | undefined;
 
-  useEffect(() => {
-    if (onItemClickData && onItemClickData.quizItemList) {
-      setData(onItemClickData.quizItemList);
-      // 선택 데이터 바뀔시 초기화
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      window.tinymce.activeEditor.setContent('');
-    }
-
-    // 선택된 문항의 idx 값 가져오기
-    const idx = onItemClickData?.idx as number | undefined;
-
-    // idx 값이 존재하고 중복되지 않았을 경우에만 추가
-    if (idx !== undefined && !quizIdx.includes(idx)) {
-      setQuizIdx((prevQuizIdx) => [...prevQuizIdx, idx]);
-    }
-  }, [onItemClickData]);
+  //   // idx 값이 존재하고 중복되지 않았을 경우에만 추가
+  //   if (idx !== undefined && !quizIdx.includes(idx)) {
+  //     setQuizIdx((prevQuizIdx) => [...prevQuizIdx, idx]);
+  //   }
+  // }, [onItemClickData]);
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -765,7 +795,7 @@ export function ContentEdit({
 
         <ContentListWrapper>
           <ContentList>
-            {dataFetched && isMathJaxLoaded && (
+            {dataFetched && (
               <QuizList
                 questionList={quizList}
                 $height={`calc(100vh - 100px)`}

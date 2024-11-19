@@ -20,7 +20,14 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   }
 
   (window as any).MathJax = {
+    loader: {
+      load: ['input/tex', 'output/svg'],
+    },
+    output: {
+      renderer: 'svg',
+    },
     startup: {
+      renderer: 'SVG',
       ready: () => {
         const { MathJax } = window as any;
         MathJax.startup.defaultReady();
