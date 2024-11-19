@@ -3608,6 +3608,7 @@ export function Step1() {
   >([]);
   const [processPreviousQuizListData, setProcessPreviousQuizListData] =
     useState<QuizListType[]>([]);
+  console.log(processPreviousQuizListData);
   //학교내신 문항리스트
   const [previousSchoolQuizList, setPreviousSchoolQuizList] = useState<
     number[]
@@ -4161,7 +4162,7 @@ export function Step1() {
           </ButtonWrapper>
         </TopButtonWrapper>
         {previousSchoolSubject === '교과' || previousSchoolUnit === '과목' ? (
-          <BlankWrapper>교과와 과묵을 선택해주세요.</BlankWrapper>
+          <BlankWrapper>교과와 과목을 선택해주세요.</BlankWrapper>
         ) : (
           <ScrollWrapper className="items_height">
             <PerfectScrollbar>
