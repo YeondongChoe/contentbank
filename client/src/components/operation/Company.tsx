@@ -357,15 +357,6 @@ export function Company() {
     setIndustryDetailList(companyIndustryCodeData?.data.data.detailedInfoList);
   }, [companyIndustryCodeData]);
 
-  //업종 변경시 업태 초기화
-  // useEffect(() => {
-  //   setDetailItemValue('');
-  // }, [largeItemValue]);
-
-  // useEffect(() => {
-  //   setDetailItemValue('');
-  // }, [largeItemValue]);
-
   //계정 리스트 불러오기 api
   const getCompanyAccount = async () => {
     const res = await userInstance.get(
@@ -416,38 +407,6 @@ export function Company() {
     if (totalCount) totalDataRefetch();
   }, [totalCount]);
 
-  // const getIndustryDetailListFor = (industryCode: string) => {
-  //   // 업태에 해당하는 종목 데이터 반환
-  //   // 예시로 industryCode에 따라 다른 종목 데이터를 반환
-  //   if (industryCode === 'IT') {
-  //     return [
-  //       { code: '1', name: '소프트웨어' },
-  //       { code: '2', name: '하드웨어' },
-  //     ];
-  //   }
-  //   return [];
-  // };
-
-  // useEffect(() => {
-  //   // 업태에 따라 종목 데이터 설정
-  //   if (largeItemValue === '') {
-  //     setIndustryDetailList([]); // 업태가 선택되지 않은 경우, 종목 데이터 초기화
-  //   } else {
-  //     // 업태 선택 시 종목 데이터를 업데이트
-  //     setIndustryDetailList(getIndustryDetailListFor(largeItemValue));
-  //   }
-  // }, [largeItemValue]);
-
-  const handleIndustryChange = (value: string) => {
-    setLargeItemValue(value);
-    setDetailItemValue('');
-  };
-
-  const handleDetailChange = (value: string) => {
-    setDetailItemValue(value);
-  };
-
-  // TODO: companyCoad 대신 CompanyIdx, CompanyName 넘겨줘야함.
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
     //모달 열릴시 체크리스트 초기화
@@ -457,8 +416,10 @@ export function Company() {
         <RegisterModal
           memberList={totalData?.data.data.list}
           refetch={companyAccountRefetch}
-          idxValue={idxValue}
-          companyCode={nameValue}
+          companyIdx={idxValue}
+          companyCode={codeValue}
+          companyName={nameValue}
+          companyCorporateIdentifier={corporateIdentifierValue}
         />
       ),
     });
@@ -466,7 +427,7 @@ export function Company() {
 
   //접근 메뉴 리스트 불러오기 api
   const getAccessMenu = async () => {
-    const res = await userInstance.get(`/v1/company/access`);
+    const res = await userInstance.get(`/v1/company/access/${codeValue}`);
     //console.log(`getAccessMenu 결과값`, res);
     return res;
   };
@@ -481,7 +442,12 @@ export function Company() {
     meta: {
       errorMessage: 'get-companyAccessMenu 에러 메세지',
     },
+    enabled: codeValue !== '',
   });
+
+  useEffect(() => {
+    if (codeValue !== undefined) companyAccessMenuRefetch();
+  }, [codeValue]);
 
   useEffect(() => {
     if (companyAccessMenuData)
@@ -823,7 +789,7 @@ export function Company() {
   //접근 메뉴 업데이트 api
   const putAccessMenu = async () => {
     //서버로 생성 요청
-    const data = { accessMenuList: accessMenuList };
+    const data = { companyCode: codeValue, accessMenuList: accessMenuList };
     return await userInstance.put(`/v1/company/access`, data);
   };
 
@@ -1146,7 +1112,6 @@ export function Company() {
             flexEnd
           />
           <DoubleSelect
-            idxValue={idxValue}
             industryList={industryList}
             industryDetailList={industryDetailList}
             industryValue={largeItemValue}
@@ -1423,6 +1388,7 @@ export function Company() {
                             onClick={() => {
                               setSelectedIdxValue((1 + i).toString());
                               setIdxValue(company.idx);
+                              setCodeValue(company.companyCode);
                             }}
                             $isSelected={isSelected}
                           >

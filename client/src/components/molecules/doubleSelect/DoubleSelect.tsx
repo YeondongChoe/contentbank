@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { styled } from 'styled-components';
 
-import { IconButton } from '../../../components/atom';
 import { COLOR } from '../../constants';
 
 type ItemSelectProps = {
@@ -16,7 +15,6 @@ type DoubleSelectProps = {
   industryDetailList: ItemSelectProps[];
   industryValue: string;
   detailVaule: string;
-  idxValue: string;
   industryCoadValue: React.Dispatch<React.SetStateAction<string | null>>;
   detailCoadValue: React.Dispatch<React.SetStateAction<string | null>>;
 };
@@ -26,14 +24,13 @@ export function DoubleSelect({
   industryDetailList,
   industryValue,
   detailVaule,
-  idxValue,
   industryCoadValue,
   detailCoadValue,
 }: DoubleSelectProps) {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<string | null>(null);
-  console.log(industryValue);
-  console.log(detailVaule);
+
+  //빈값이 들어오면 비우고 값이 있으면 넣어주기
   useEffect(() => {
     if (industryValue === null) {
       setSelectedIndustry(null);

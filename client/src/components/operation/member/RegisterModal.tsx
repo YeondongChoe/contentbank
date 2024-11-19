@@ -28,8 +28,10 @@ import {
 
 type RegisterModalProps = {
   memberList?: MemberType[];
-  idxValue: string;
-  companyCode?: string;
+  companyIdx: string;
+  companyCode: string;
+  companyName: string;
+  companyCorporateIdentifier: string;
   refetch: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
@@ -37,8 +39,10 @@ type RegisterModalProps = {
 
 export function RegisterModal({
   memberList,
-  idxValue,
+  companyIdx,
   companyCode,
+  companyName,
+  companyCorporateIdentifier,
   refetch,
 }: RegisterModalProps) {
   const { closeModal } = useModal();
@@ -63,7 +67,7 @@ export function RegisterModal({
   const Name = watch('name');
   const Id = watch('id');
   const Comment = commentValue;
-  const IdxValue = idxValue;
+  const IdxValue = companyIdx;
   // 정규식 조건
   const isRegexp = idRegex.test(Id);
 
@@ -129,6 +133,7 @@ export function RegisterModal({
       }
     },
   });
+  console.log(`${companyCorporateIdentifier}-${Id}`);
 
   const submitRegister = () => {
     //필수 항목 에러처리
@@ -160,8 +165,13 @@ export function RegisterModal({
       setAuthorityErrorMessage('권한을 선택해주세요');
       return;
     }
-
-    onCreateAccount({ Id, Name, selectedCode, Comment, IdxValue });
+    onCreateAccount({
+      Id: `${companyCorporateIdentifier}-${Id}`,
+      Name,
+      selectedCode,
+      Comment,
+      IdxValue,
+    });
     //버튼 disable 처리
   };
 
@@ -278,7 +288,9 @@ export function RegisterModal({
                   defaultValue=""
                   render={({ field }) => (
                     <>
-                      <IdentifyInput>dr-</IdentifyInput>
+                      <IdentifyInput>
+                        {companyCorporateIdentifier}-
+                      </IdentifyInput>
                       <Input
                         type="text"
                         placeholder="띄워쓰기 없이 영문(소문자)과 숫자만 입력"
@@ -333,7 +345,7 @@ export function RegisterModal({
                 <Select
                   width="100%"
                   padding="5px 0px 0px 0px"
-                  defaultValue={companyCode}
+                  defaultValue={companyName}
                   isnormalizedOptions
                   disabled
                 />

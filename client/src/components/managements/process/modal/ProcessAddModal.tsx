@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { userInstance } from '../../../../api/axios';
 import { getUserList, getUserListTotal } from '../../../../api/user';
 import { useModal } from '../../../../hooks';
 import { pageAtom } from '../../../../store/utilAtom';
@@ -76,6 +77,43 @@ export function ProcessAddModal() {
     },
   ];
 
+  //회원의 기업코드 가져오기
+  const [companyCoadValue, setCompanyCoadValue] = useState<string | null>(null);
+  const [companyIdxValue, setCompanyIdxValue] = useState<string>('0');
+
+  //로컬스토리지에 있는 기업코드 가져오기
+  useEffect(() => {
+    const storedCompanyCode = localStorage.getItem('companyCode');
+    setCompanyCoadValue(storedCompanyCode);
+  }, []);
+  console.log(companyCoadValue);
+
+  //기업코드로 기업 idx 가져오기
+  const getCompanyList = async () => {
+    const res = await userInstance.get(
+      `/v1/company?searchCondition=${companyCoadValue}`,
+    );
+    //console.log(`getCompanyList 결과값`, res);
+    return res;
+  };
+
+  const { data: companyListData, refetch: companyListRefetch } = useQuery({
+    queryKey: ['get-companyList'],
+    queryFn: getCompanyList,
+    meta: {
+      errorMessage: 'get-companyList 에러 메세지',
+    },
+    enabled: companyCoadValue !== null,
+  });
+
+  useEffect(() => {
+    if (companyListData) {
+      setCompanyIdxValue(
+        companyListData?.data.data.list[0].idx.toLocaleString(),
+      );
+    }
+  }, [companyListData]);
+
   // 유저 리스트 불러오기 api
   const isUseFilter = useMemo(() => {
     if (tabVeiw === '계정으로 추가') return '';
@@ -89,7 +127,13 @@ export function ProcessAddModal() {
     isSuccess,
   } = useQuery({
     queryKey: ['get-memberlist'],
-    queryFn: () => getUserList({ page, searchKeywordValue, isUseFilter }),
+    queryFn: () =>
+      getUserList({
+        page,
+        searchKeywordValue,
+        isUseFilter,
+        idxValue,
+      }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
@@ -131,7 +175,7 @@ export function ProcessAddModal() {
   // 아이디 중복 확인 && 토탈 유저 수
   const { data: totalData, refetch: totalDataRefetch } = useQuery({
     queryKey: ['get-memberlist-total'],
-    queryFn: () => getUserListTotal({ totalCount, idxValue }),
+    queryFn: () => getUserListTotal({ totalCount, idxValue: companyIdxValue }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
@@ -139,7 +183,6 @@ export function ProcessAddModal() {
   });
 
   useEffect(() => {
-    // console.log('totalData', totalData);
     if (totalData) {
       setTotalMemberList(totalData.data.data.list);
     } else {
@@ -148,7 +191,6 @@ export function ProcessAddModal() {
   }, [totalData]);
 
   useEffect(() => {
-    // console.log('isSuccess', isSuccess);
     if (isSuccess) setTotalCount(memberList?.pagination?.totalCount);
   }, [isSuccess]);
 
