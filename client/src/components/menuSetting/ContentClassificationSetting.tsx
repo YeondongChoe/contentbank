@@ -3,14 +3,25 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { BiToggleLeft, BiToggleRight } from 'react-icons/bi';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { TabMenu, Label, Button, Select, openToastifyAlert } from '..';
+import {
+  TabMenu,
+  Label,
+  Button,
+  Select,
+  openToastifyAlert,
+  Icon,
+  CheckBoxI,
+  MathViewer,
+} from '..';
 import { resourceServiceInstance } from '../../api/axios';
 import Image from '../../assets/images/ClassificationImg.png';
+import { MyStaticWrapper } from '../../components/molecules/sortBox/Masonry';
 import { pageAtom } from '../../store/utilAtom';
-import { MenuDataListProps } from '../../types';
+import { MenuDataListProps, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
@@ -35,6 +46,62 @@ export function ContentClassificationSetting() {
   >([]);
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
   const [detailExtraIdx, setDetailExtraIdx] = useState<string | null>(null);
+
+  const [columnsCount, setColumnsCount] = useState<number>(2);
+  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
+  useEffect(() => {}, [columnsCount, itemHeight]);
+  const [processPreviousQuizListData, setProcessPreviousQuizListData] =
+    useState<QuizListType[]>([
+      {
+        idx: 431,
+        code: '67167126-794c-4767-b29f-6fdae8d456da',
+        isFavorite: false,
+        isUse: true,
+        isDelete: false,
+        isChecked: false,
+        userKey: 'c676ca2f-874e-426e-bf56-07ea1bcbfa37',
+        createdBy: 'c676ca2f-874e-426e-bf56-07ea1bcbfa37',
+        createdAt: '2024-08-20 10:39:20',
+        lastModifiedBy: 'c676ca2f-874e-426e-bf56-07ea1bcbfa37',
+        lastModifiedAt: '2024-08-20 10:39:20',
+        lastArticle: null,
+        quizItemList: [
+          {
+            idx: 922,
+            code: '0bf78fae-4ec0-451d-bd49-bdb10cb945e7',
+            type: 'BIG',
+            content:
+              '<p class="tag_bigcontent" contenteditable="false">[대발문]</p><p class="0">다음에서 이용된 등식의 성질을 보기에서 고르시오<span lang="EN-US">. (</span>단<span lang="EN-US">, </span>더하거나 빼거나 곱하거나 나누는 수는 모두 자연수이다<span lang="EN-US">.)</span></p><div id="hwpEditorBoardContent" class="hwp_editor_board_content" data-hjsonver="1.0" data-jsonlen="5554"><p class="tag_exam" contenteditable="false">[문제]</p><p class="0">다음에서 이용된 등식의 성질을 보기에서 고르시오<span lang="EN-US">. (</span>단<span lang="EN-US">, </span>더하거나 빼거나 곱하거나 나누는 수는 모두 자연수이다<span lang="EN-US">.)</span></p><div id="hwpEditorBoardContent" class="hwp_editor_board_content" data-hjsonver="1.0" data-jsonlen="5554"><p class="tl_answer" contenteditable="false">[정답]</p><p class="0">다음에서 이용된 등식의 성질을 보기에서 고르시오<span lang="EN-US">. (</span>단<span lang="EN-US">, </span>더하거나 빼거나 곱하거나 나누는 수는 모두 자연수이다<span lang="EN-US">.)</span></p><div id="hwpEditorBoardContent" class="hwp_editor_board_content" data-hjsonver="1.0" data-jsonlen="5554"><br data-mce-bogus="1"></div></div></div>',
+            sort: 1,
+          },
+        ],
+        quizCategoryList: [
+          {
+            quizCategory: {
+              과목: '올림피아드',
+              교과: '수학',
+              sources: [
+                {
+                  출처: '내신',
+                  학교명: '가락고등학교',
+                  내신배점: '45545',
+                  내신형식: '수행평가',
+                  문항번호: '46546',
+                  출제년도: '2024',
+                  학사일정: '겨울방학',
+                  내신페이지: '45465',
+                },
+              ],
+              난이도: '중',
+              문항타입: '주관식',
+            },
+          },
+        ],
+        type: '',
+        quizList: [],
+      },
+    ]);
+  const [topSelect, setTopSelect] = useState<string>('대발문 + 지문 + 문제');
 
   const changeTab = () => {
     setPage(1);
@@ -541,15 +608,157 @@ export function ContentClassificationSetting() {
           </SettingWrapper>
           <ListWrapper>
             <ClassificationWrapper>
-              <ImgWrapper>
-                <img
-                  src={Image}
-                  alt="editer"
-                  style={{
-                    padding: '10px',
-                  }}
-                />
-              </ImgWrapper>
+              <ScrollWrapper className="items_height">
+                <PerfectScrollbar>
+                  <MyStaticWrapper
+                    columnsCount={columnsCount}
+                    padding="5px"
+                    gap="5px"
+                  >
+                    {Array.from({ length: 6 }, (_, i) => (
+                      <>
+                        {processPreviousQuizListData.map((quiz, index) => (
+                          <ItemWrapper key={quiz.idx} height={itemHeight}>
+                            <TopButtonWrapper>
+                              <div>
+                                <CheckBoxI
+                                  $margin={'0 5px 0 0'}
+                                  readOnly
+                                  // onClick={() =>
+                                  //   toggleCheckPartialPreviousQuiz(
+                                  //     quiz.code,
+                                  //     quiz.isChecked as boolean,
+                                  //   )
+                                  // }
+                                  checked={quiz.isChecked || false}
+                                  id={quiz.code}
+                                  value={quiz.code}
+                                />
+                                <span className={`title_top`}>
+                                  {`${0} 건`}
+                                  <Icon
+                                    //onClick={() => openViewer(quiz.code)}
+                                    width={`15px`}
+                                    src={`/images/icon/entypo_popup.svg`}
+                                  />
+                                </span>
+                              </div>
+                              <span>
+                                {quiz.quizCategoryList[0] && (
+                                  <span
+                                    className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
+                                 ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
+                                  >
+                                    {
+                                      quiz.quizCategoryList[0].quizCategory
+                                        ?.문항타입
+                                    }{' '}
+                                  </span>
+                                )}
+                              </span>
+                            </TopButtonWrapper>
+                            {/* 뷰어 영역 */}
+                            <div className="quiz_wrap">
+                              {quiz?.quizItemList?.map((el) => {
+                                const contentOnly = ['QUESTION'];
+                                const contentWithBig = [
+                                  'BIG',
+                                  'TEXT',
+                                  'QUESTION',
+                                ];
+                                const contentWithAnswer = [
+                                  'QUESTION',
+                                  'ANSWER',
+                                  'COMMENTARY',
+                                ];
+                                const contentWithAll = [
+                                  'BIG',
+                                  'QUESTION',
+                                  'ANSWER',
+                                  'COMMENTARY',
+                                ];
+                                // [
+                                //   'BIG',
+                                //   'TEXT',
+                                //   'QUESTION',
+                                //   'SMALL',
+                                //   'EXAMPLE',
+                                //   'CHOICES',
+                                //   'ANSWER',
+                                //   'COMMENTARY',
+                                //   'HINT',
+                                //   'CONCEPT',
+                                //   'TITLE',
+                                //   'TIP',
+                                // ]
+                                return (
+                                  <div
+                                    key={`${el?.code} quizItemList sortedList`}
+                                  >
+                                    {topSelect === '문제만 보기' &&
+                                      contentOnly.includes(el?.type) &&
+                                      el?.content && (
+                                        <MathViewer
+                                          data={el.content}
+                                        ></MathViewer> //topSelect
+                                      )}
+                                    {topSelect === '대발문 + 지문 + 문제' &&
+                                      contentWithBig.includes(el?.type) &&
+                                      el?.content && (
+                                        <MathViewer
+                                          data={el.content}
+                                        ></MathViewer> //topSelect
+                                      )}
+                                    {topSelect === '문제 + 정답 + 해설' &&
+                                      contentWithAnswer.includes(el?.type) &&
+                                      el?.content && (
+                                        <MathViewer
+                                          data={el.content}
+                                        ></MathViewer> //topSelect
+                                      )}
+                                    {topSelect ===
+                                      '대발문 + 지문 + 문제 + 정답 + 해설' &&
+                                      contentWithAll.includes(el?.type) &&
+                                      el?.content && (
+                                        <MathViewer
+                                          data={el.content}
+                                        ></MathViewer> //topSelect
+                                      )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <div className="class_wrap">
+                              {quiz.quizCategoryList.some(
+                                (item) => item.quizCategory?.교육과정,
+                              ) ? (
+                                quiz.quizCategoryList.map((item, idx) => (
+                                  <span key={idx}>
+                                    {item.quizCategory?.교육과정}/
+                                    {item.quizCategory?.과목}/
+                                    {item.quizCategory?.교과}/
+                                    {item.quizCategory?.학년}/
+                                    {item.quizCategory?.학기}/
+                                    {item.quizCategory?.대단원?.split('^^^')[0]}
+                                    /
+                                    {item.quizCategory?.중단원?.split('^^^')[0]}
+                                    /
+                                    {item.quizCategory?.소단원?.split('^^^')[0]}
+                                    /{item.quizCategory?.유형?.split('^^^')[0]}
+                                  </span>
+                                ))
+                              ) : (
+                                <span>(분류없음)</span>
+                              )}
+                            </div>
+                          </ItemWrapper>
+                        ))}
+                      </>
+                    ))}
+                  </MyStaticWrapper>
+                </PerfectScrollbar>
+              </ScrollWrapper>
+
               <SelectWrapper>
                 <SubtitleWrapper>
                   <Label
@@ -806,6 +1015,83 @@ const ListWrapper = styled.div`
 const ClassificationWrapper = styled.div`
   display: flex;
   border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+`;
+const ScrollWrapper = styled.div`
+  overflow-y: auto;
+  max-height: 760px;
+  width: 100%;
+
+  .line {
+    border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+    padding: 5px 0;
+
+    &.bottom_text {
+      text-align: right;
+      font-size: 13px;
+      padding-bottom: 2px;
+    }
+  }
+
+  &.items_height {
+    margin-top: 5px;
+    height: calc(100vh - 150px);
+  }
+`;
+const ItemWrapper = styled.div<{ height?: string }>`
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  height: ${({ height }) => height || 'auto'};
+  margin: 5px;
+  overflow: auto;
+
+  .class_wrap {
+    font-size: 12px;
+    color: #aaa;
+
+    span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Change the number to the number of lines you want to show */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+`;
+const TopButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid ${COLOR.BORDER_GRAY};
+
+  .title {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .title_top {
+    button {
+      height: 15px;
+      margin: 5px;
+    }
+  }
+
+  .tag {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 27px;
+
+    &.yellow {
+      background-color: ${COLOR.ALERTBAR_WARNING};
+    }
+    &.green {
+      background-color: ${COLOR.ALERTBAR_SUCCESS};
+    }
+  }
 `;
 const ImgWrapper = styled.div`
   width: 60%;

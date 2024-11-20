@@ -22,6 +22,7 @@ import {
 } from '..';
 import { userInstance } from '../../api/axios';
 import { getUserListTotal } from '../../api/user';
+import { DoubleSelect } from '../../components/molecules/doubleSelect';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { postRefreshToken } from '../../utils/tokenHandler';
@@ -96,11 +97,15 @@ export function Company() {
   //업종업태(대분류)
   const [largeItemValue, setLargeItemValue] = useState('');
   //업종업태(대분류) code값
-  const [largeItemCodeValue, setLargeItemCodeValue] = useState('');
+  const [largeItemCodeValue, setLargeItemCodeValue] = useState<string | null>(
+    null,
+  );
   //업종종목(소분류)
   const [detailItemValue, setDetailItemValue] = useState('');
   //업종종목(소분류) code값
-  const [detailItemCodeValue, setDetailItemCodeValue] = useState('');
+  const [detailItemCodeValue, setDetailItemCodeValue] = useState<string | null>(
+    null,
+  );
   //표준 산업 대분류 리스트
   const [industryList, setIndustryList] = useState([]);
   //표준 산업 소분류 리스트
@@ -193,7 +198,7 @@ export function Company() {
     const res = await userInstance.get(
       !onSearch ? `/v1/company` : `/v1/company?searchKeyword=${searchValue}`,
     );
-    console.log(`getCompanyList 결과값`, res);
+    //console.log(`getCompanyList 결과값`, res);
     return res;
   };
 
@@ -291,7 +296,13 @@ export function Company() {
       setDetailAddressValue(companyInfoData?.data.data.companyRecord.address2);
       setEmailValue(companyInfoData?.data.data.companyRecord.email);
       setLargeItemValue(companyInfoData?.data.data.companyRecord.largeItem);
+      setLargeItemCodeValue(
+        companyInfoData?.data.data.companyRecord.largeItemCode,
+      );
       setDetailItemValue(companyInfoData?.data.data.companyRecord.detailItem);
+      setDetailItemCodeValue(
+        companyInfoData?.data.data.companyRecord.detailItemCode,
+      );
     }
   }, [companyInfoData]);
 
@@ -313,6 +324,7 @@ export function Company() {
 
   useEffect(() => {
     setIndustryList(companyIndustryData?.data.data.largeItemList);
+    //값이 바꼇을때 업태 리스트 초기화
   }, [companyIndustryData]);
 
   // 기업 표준 산업 소분류 목록 불러오기 api
@@ -404,8 +416,10 @@ export function Company() {
         <RegisterModal
           memberList={totalData?.data.data.list}
           refetch={companyAccountRefetch}
-          idxValue={idxValue}
+          companyIdx={idxValue}
+          companyCode={codeValue}
           companyName={nameValue}
+          companyCorporateIdentifier={corporateIdentifierValue}
         />
       ),
     });
@@ -413,7 +427,7 @@ export function Company() {
 
   //접근 메뉴 리스트 불러오기 api
   const getAccessMenu = async () => {
-    const res = await userInstance.get(`/v1/company/access`);
+    const res = await userInstance.get(`/v1/company/access/${codeValue}`);
     //console.log(`getAccessMenu 결과값`, res);
     return res;
   };
@@ -428,7 +442,12 @@ export function Company() {
     meta: {
       errorMessage: 'get-companyAccessMenu 에러 메세지',
     },
+    enabled: codeValue !== '',
   });
+
+  useEffect(() => {
+    if (codeValue !== undefined) companyAccessMenuRefetch();
+  }, [codeValue]);
 
   useEffect(() => {
     if (companyAccessMenuData)
@@ -524,6 +543,8 @@ export function Company() {
       setDetailItemValue('');
     }
   }, [idxValue]);
+  console.log('largeItemCodeValue', largeItemCodeValue);
+  console.log('detailItemCodeValue', detailItemCodeValue);
 
   //기업 생성/ 수정 api
   const postNewCompany = async () => {
@@ -768,7 +789,7 @@ export function Company() {
   //접근 메뉴 업데이트 api
   const putAccessMenu = async () => {
     //서버로 생성 요청
-    const data = { accessMenuList: accessMenuList };
+    const data = { companyCode: codeValue, accessMenuList: accessMenuList };
     return await userInstance.put(`/v1/company/access`, data);
   };
 
@@ -1090,31 +1111,14 @@ export function Company() {
             padding="10px 10px 10px 0"
             flexEnd
           />
-          <Select
-            width="240px"
-            height="35px"
-            defaultValue={largeItemValue || '업태'}
-            key="업태"
-            isnormalizedOptions
-            options={industryList}
-            setSelectedCode={setLargeItemCodeValue}
-            setSelectedValue={setLargeItemValue}
-            heightScroll={'200px'}
-            $positionTop
-          />
-          <Select
-            width="240px"
-            height="35px"
-            margin="0 0 0 10px"
-            defaultValue={detailItemValue || '종목'}
-            key="종목"
-            isnormalizedOptions
-            options={industryDetailList}
-            setSelectedCode={setDetailItemCodeValue}
-            setSelectedValue={setDetailItemValue}
-            heightScroll={'200px'}
-            $positionTop
-          />
+          <DoubleSelect
+            industryList={industryList}
+            industryDetailList={industryDetailList}
+            industryValue={largeItemValue}
+            detailVaule={detailItemValue}
+            industryCoadValue={setLargeItemCodeValue}
+            detailCoadValue={setDetailItemCodeValue}
+          ></DoubleSelect>
         </InputWrapper>
       </InputContainer>
     );
@@ -1384,6 +1388,7 @@ export function Company() {
                             onClick={() => {
                               setSelectedIdxValue((1 + i).toString());
                               setIdxValue(company.idx);
+                              setCodeValue(company.companyCode);
                             }}
                             $isSelected={isSelected}
                           >

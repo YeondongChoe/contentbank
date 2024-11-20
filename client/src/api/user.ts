@@ -113,13 +113,15 @@ export const getUserList = async ({
   page,
   searchKeywordValue,
   isUseFilter,
+  idxValue,
 }: {
   page: number;
   searchKeywordValue: string;
   isUseFilter: '' | 'Y' | 'N' | undefined;
+  idxValue: string;
 }) => {
   const res = await userInstance.get(
-    `/v1/account?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
+    `/v1/account?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}&searchCondition=${idxValue}
 			`,
   );
   // console.log(`유저리스트 get 결과값`, res);
@@ -134,8 +136,10 @@ export const getUserListTotal = async ({
   totalCount: number;
   idxValue: string;
 }) => {
+  const validCount = totalCount > 0 ? totalCount : 10; // 기본값 설정
+  const validIdxValue = idxValue || 'default';
   const res = await userInstance.get(
-    `/v1/account?&pageIndex=${1}&pageUnit=${totalCount}&searchCondition=${idxValue}
+    `/v1/account?&pageIndex=${1}&pageUnit=${validCount}&searchCondition=${validIdxValue}
 		`,
   );
   //console.log(res);
