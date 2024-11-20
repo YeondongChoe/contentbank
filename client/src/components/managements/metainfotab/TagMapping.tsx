@@ -5,19 +5,37 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import styled from 'styled-components';
 
-import { Button, CheckBoxI, Icon, Switch } from '../../../components/atom';
-import { ListItem, Search } from '../../../components/molecules';
+import { Button, CheckBoxI, Icon, Switch } from '../../atom';
 import { COLOR } from '../../constants';
+import { ListItem, Search } from '../../molecules';
 import { useDnD } from '../../molecules/dragAndDrop';
 
-import { TagMappingInit } from './TagMappingInit';
+import { MappingList } from './MappingList';
+import { SetCategoryList } from './SetCategoryList';
 
 // Sample tags to search
 const sampleTags = ['교과', '수학', '과학', '영어', '역사', '물리', '화학'];
 
+interface CategoryItem {
+  idx: number;
+  name: string;
+  code: string;
+  depth: number;
+  isUse: boolean;
+  children?: any[];
+}
+
 export function TagMapping() {
+  const [categoryList, setCategoryList] = useState<
+    { type: string; name: string }[]
+  >([]);
   const [tagList, setTagList] = useState<string[]>([]);
-  const [mappingList, setMappingList] = useState<string[]>([]);
+  const [mappingList, setMappingList] = useState<CategoryItem[]>([]);
+  const [selectedItem, setSelectedItem] = useState<{
+    type: string;
+    name: string;
+  }>();
+
   const [checkList, setCheckList] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [isInit, setIsInit] = useState<boolean>(false);
@@ -25,8 +43,41 @@ export function TagMapping() {
   // 검색
   const [searchValue, setSearchValue] = useState<string>('');
   const [filteredTags, setFilteredTags] = useState<string[]>(sampleTags);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagCheckList, setTagCheckList] = useState<string[]>([]);
+
+  const [activeMappingItem, setActiveMappingItem] = useState<{
+    idx: number;
+    name: string;
+    code: string;
+    depth: number;
+    isUse: boolean;
+    children?: any[];
+  } | null>(null);
+
+  const handleTagMappingClick = (item: {
+    idx: number;
+    name: string;
+    code: string;
+    depth: number;
+    isUse: boolean;
+    children?: any[];
+  }) => {
+    setActiveMappingItem(activeMappingItem === item ? null : item);
+
+    console.log('선택된 카테고리 아이템 click item ----- ', item);
+  };
+
+  const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
+    const updatedList = [...mappingList];
+    const draggedItem = updatedList.splice(dragIndex, 1)[0];
+    updatedList.splice(hoverIndex, 0, draggedItem);
+    setMappingList(updatedList);
+  };
+
+  useEffect(() => {
+    console.log('MappingList ------------- ', mappingList);
+  }, [mappingList]);
+  //
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -43,24 +94,19 @@ export function TagMapping() {
     console.log(event.key);
   };
 
-  const handleAddTag = () => {
-    if (searchValue && !sampleTags.includes(searchValue)) {
-      // Add the new tag logic here
-      alert(`"${searchValue}" 태그가 추가되었습니다!`);
-      setSearchValue('');
-    }
-  };
+  // const handleAddTag = () => {
+  //   if (searchValue && !sampleTags.includes(searchValue)) {
+  //     // Add the new tag logic here
+  //     alert(`"${searchValue}" 태그가 추가되었습니다!`);
+  //     setSearchValue('');
+  //   }
+  // };
 
-  const handleToggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
-  };
-
-  useEffect(() => {
-    setTagList(['전체', '수학', '영어']);
-    setMappingList(['11차', '10차', '9차', '8차']); //카테고리 순서
-  }, []);
+  // const handleToggleTag = (tag: string) => {
+  //   setSelectedTags((prev) =>
+  //     prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+  //   );
+  // };
 
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -90,34 +136,41 @@ export function TagMapping() {
     }
   };
 
-  const handleTagClick = (item: string) => {
-    setActiveItem(activeItem === item ? null : item);
-  };
+  // const handleTagClick = (item: string) => {
+  //   setActiveItem(activeItem === item ? null : item);
+  // };
 
-  const addTags = () => {};
-
-  const moveTag = (dragIndex: number, hoverIndex: number) => {
-    const updatedList = [...mappingList];
-    const draggedItem = updatedList.splice(dragIndex, 1)[0];
-    updatedList.splice(hoverIndex, 0, draggedItem);
-    setMappingList(updatedList);
-  };
+  // const moveTag = (dragIndex: number, hoverIndex: number) => {
+  //   const updatedList = [...mappingList];
+  //   const draggedItem = updatedList.splice(dragIndex, 1)[0];
+  //   updatedList.splice(hoverIndex, 0, draggedItem);
+  //   setMappingList(updatedList);
+  // };
+  useEffect(() => {
+    setTagList(['전체', '수학', '영어']);
+  }, []);
+  // 매핑에서 선택된 태그 기준으로 태그선택 데이터 넣기
 
   const goToInit = () => {
     setIsInit(true);
   };
+  const addTags = () => {
+    setIsInit(false);
+  };
 
   useEffect(() => {}, [tagList]);
   useEffect(() => {
+    console.log('setSelectedItem----------', selectedItem);
+    console.log('mappingList----------', mappingList);
+  }, [selectedItem]);
+  useEffect(() => {
     console.log('checkList----------', checkList);
   }, [checkList]);
-  useEffect(() => {}, [searchValue]);
+  useEffect(() => {}, [searchValue, isInit]);
   return (
     <>
-      {isInit ? (
-        <TagMappingInit />
-      ) : (
-        <Container>
+      <Container>
+        {isInit ? (
           <ListWrapper>
             <strong className="title">태그 선택</strong>
             <span className="sub_title">매핑할 태그를 선택해주세요.</span>
@@ -159,7 +212,8 @@ export function TagMapping() {
                   <Dropdown>
                     <span className="info">없는 태그 입니다.</span>
 
-                    <Button
+                    {/* TODO: api 추가되야함 */}
+                    {/* <Button
                       $border
                       fontSize="13px"
                       onClick={handleAddTag}
@@ -167,7 +221,7 @@ export function TagMapping() {
                       width="clac(100% - 10px)"
                     >
                       <span>{`"${searchValue}"`} 태그를 신규태그로 추가</span>
-                    </Button>
+                    </Button> */}
                   </Dropdown>
                 )
               ) : null}
@@ -196,22 +250,31 @@ export function TagMapping() {
               <span>{`${checkList.length}`}개의 태그 하위로 추가</span>
             </Button>
           </ListWrapper>
-          <ListItemWrapper>
-            <strong className="title">매핑</strong>
-            <ButtonWrapper>
-              <Button
-                width="200px"
-                height="35px"
-                onClick={() => addTags()}
-                $margin="0 10px 0 0"
-              >
-                최상위 태그 추가
-              </Button>
-              <Button width="150px" height="35px" onClick={() => goToInit()}>
-                순서변경
-              </Button>
-            </ButtonWrapper>
-            <DndProvider backend={HTML5Backend}>
+        ) : (
+          <ListWrapper>
+            <SetCategoryList
+              setMappingList={setMappingList}
+              setSelectedItem={setSelectedItem}
+            />
+          </ListWrapper>
+        )}
+
+        <ListItemWrapper>
+          <strong className="title">매핑</strong>
+          <ButtonWrapper>
+            <Button
+              width="200px"
+              height="35px"
+              onClick={() => addTags()}
+              $margin="0 10px 0 0"
+            >
+              최상위 태그 추가
+            </Button>
+            <Button width="150px" height="35px" onClick={() => goToInit()}>
+              순서변경
+            </Button>
+          </ButtonWrapper>
+          {/* <DndProvider backend={HTML5Backend}>
               <TagsWrappper className="height">
                 {mappingList.map((el, idx) => (
                   <DraggableItem
@@ -224,10 +287,16 @@ export function TagMapping() {
                   />
                 ))}
               </TagsWrappper>
-            </DndProvider>
-          </ListItemWrapper>
-        </Container>
-      )}
+            </DndProvider> */}
+          {/* 매핑 리스트 */}
+          <MappingList
+            mappingList={mappingList}
+            activeItem={activeMappingItem}
+            handleTagClick={handleTagMappingClick}
+            moveTag={moveMappingTag}
+          />
+        </ListItemWrapper>
+      </Container>
       <BottomButtonWrapper>
         <Button
           width="300px"

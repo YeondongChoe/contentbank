@@ -8,32 +8,21 @@ import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
-import {
-  Button,
-  CheckBoxI,
-  Icon,
-  openToastifyAlert,
-} from '../../../components/atom';
-import { COLOR } from '../../../components/constants';
 import { postRefreshToken } from '../../../utils/tokenHandler';
+import { Button, CheckBoxI, Icon, openToastifyAlert } from '../../atom';
+import { COLOR } from '../../constants';
 import { useDnD } from '../../molecules/dragAndDrop';
 
-import { MappingList } from './MappingList';
-
-interface CategoryItem {
-  idx: number;
-  name: string;
-  code: string;
-  depth: number;
-  isUse: boolean;
-  children?: any[];
-}
-
-export function TagMappingInit() {
+export function SetCategoryList({
+  setMappingList,
+  setSelectedItem,
+}: {
+  setMappingList: React.Dispatch<React.SetStateAction<any[]>>;
+  setSelectedItem?: React.Dispatch<React.SetStateAction<any>>;
+}) {
   const [categoryList, setCategoryList] = useState<
     { type: string; name: string }[]
   >([]);
-  const [mappingList, setMappingList] = useState<CategoryItem[]>([]);
   const [groupIdx, setGgroupIdx] = useState<number>();
   const [groupName, setGgroupName] = useState<string>();
   const [groupData, setGroupData] = useState<{
@@ -47,14 +36,6 @@ export function TagMappingInit() {
     type: string;
   } | null>(null);
 
-  const [activeMappingItem, setActiveMappingItem] = useState<{
-    idx: number;
-    name: string;
-    code: string;
-    depth: number;
-    isUse: boolean;
-    children?: any[];
-  } | null>(null);
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const typeKey = query.get('state');
@@ -162,7 +143,8 @@ export function TagMappingInit() {
   const handleTagClick = (item: { name: string; type: string }) => {
     setActiveItem(activeItem === item ? null : item);
 
-    console.log('click item ----- ', item);
+    // console.log('click item ----- ', item);
+    if (setSelectedItem) setSelectedItem(item);
 
     const groupIdx = item.type;
     const getCategoryMap = async () => {
@@ -176,31 +158,6 @@ export function TagMappingInit() {
 
     getCategoryMap();
   };
-
-  const handleTagMappingClick = (item: {
-    idx: number;
-    name: string;
-    code: string;
-    depth: number;
-    isUse: boolean;
-    children?: any[];
-  }) => {
-    setActiveMappingItem(activeMappingItem === item ? null : item);
-
-    console.log('click item ----- ', item);
-  };
-
-  const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
-    const updatedList = [...mappingList];
-    const draggedItem = updatedList.splice(dragIndex, 1)[0];
-    updatedList.splice(hoverIndex, 0, draggedItem);
-    setMappingList(updatedList);
-  };
-
-  useEffect(() => {
-    console.log('MappingList ------------- ', mappingList);
-  }, [mappingList]);
-  //
 
   return (
     <Container>
@@ -236,16 +193,6 @@ export function TagMappingInit() {
           이용해주세요.
         </p>
       </ListWrapper>
-
-      <ListItemWrapper>
-        <strong>매핑</strong>
-        <MappingList
-          mappingList={mappingList}
-          activeItem={activeMappingItem}
-          handleTagClick={handleTagMappingClick}
-          moveTag={moveMappingTag}
-        />
-      </ListItemWrapper>
     </Container>
   );
 }
@@ -291,7 +238,6 @@ const Container = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
   .title {
     font-size: 20px;
   }
@@ -366,7 +312,6 @@ const ListWrapper = styled.div`
   background-color: #eee;
   display: flex;
   flex-direction: column;
-  padding: 20px;
 
   .sub_info {
     width: 300px;

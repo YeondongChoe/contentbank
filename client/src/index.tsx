@@ -40,7 +40,6 @@ import {
   MetaInfoPage,
   ProcessPage,
   TagMappingPage,
-  TagMappingInitPage,
   InspectionPage,
   ReportPage,
 } from './pages';
@@ -170,10 +169,7 @@ const router = createBrowserRouter([
         path: '/content-manage/tagmapping',
         element: <TagMappingPage />,
       },
-      {
-        path: '/content-manage/tagmappinginit',
-        element: <TagMappingInitPage />,
-      },
+
       {
         path: '/operation-manage/member',
         element: <MemberPage />,
