@@ -6,7 +6,15 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { Button, Loader, Modal, openToastifyAlert, Select } from '../..';
+import {
+  Button,
+  Loader,
+  MathViewer,
+  Modal,
+  openToastifyAlert,
+  Select,
+  ValueNone,
+} from '../..';
 import { classificationInstance, quizService } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
@@ -24,6 +32,7 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
+import Type4 from './editer/components/Type4';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
 
@@ -94,7 +103,7 @@ export function ContentEdit({
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
     QuizListType[]
   >([]);
-  // const [data, setData] = useState<QuizType[] | null>(null);
+  const [data, setData] = useState<QuizType[] | null>(null);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
@@ -584,6 +593,28 @@ export function ContentEdit({
     console.log('quizList', quizList);
   }, [quizList]);
 
+  useEffect(() => {
+    if (data) {
+      const combinedContent = data.map((item) => item.content).join(' ');
+
+      console.log('onItemClickData 선택된 아이템------------', combinedContent);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.usePostJsonData(combinedContent);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (onItemClickData && onItemClickData.quizItemList) {
+      setData(onItemClickData.quizItemList);
+      // 선택 데이터 바뀔시 초기화
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.tinymce.activeEditor.setContent('');
+    }
+  }, [onItemClickData]);
+
   // useEffect(() => {
   //   if (data) {
   // const combinedContent = data.map((item) => item.content).join(' ');
@@ -692,13 +723,54 @@ export function ContentEdit({
 
   return (
     <Container>
+      <PerfectScrollbar>
+        <div className="type4_container">
+          <PerfectScrollbar>
+            <MathViewerWrapper>
+              {onItemClickData ? (
+                <>
+                  {onItemClickData?.quizItemList ? (
+                    onItemClickData?.quizItemList?.map((el) => (
+                      <div key={`${el?.code} quizItemList sortedList`}>
+                        {[
+                          'BIG',
+                          'TEXT',
+                          'QUESTION',
+                          'SMALL',
+                          'EXAMPLE',
+                          'CHOICES',
+                          'ANSWER',
+                          'COMMENTARY',
+                          'HINT',
+                          'CONCEPT',
+                          'TITLE',
+                          'TIP',
+                        ].includes(el?.type) &&
+                          el?.content && (
+                            <MathViewer data={el.content}></MathViewer>
+                          )}
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <ValueNone info="등록된 데이터가 없습니다" textOnly />
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <ValueNone info="문항을 선택해 주세요" textOnly />
+                </>
+              )}
+            </MathViewerWrapper>
+          </PerfectScrollbar>
+        </div>
+      </PerfectScrollbar>
       <ContentsWrapper>
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <EditerOneFile
-                type={type}
-                setEditorData={setEditorData}
+              <Type4
                 saveHandler={saveHandler}
                 onItemClickData={onItemClickData}
               />
@@ -841,6 +913,8 @@ const Container = styled.div`
   position: relative;
 `;
 
+const MathViewerWrapper = styled.div``;
+
 const ContentsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -859,6 +933,10 @@ const EditWrapper = styled.div`
   border: 1px solid ${COLOR.BORDER_BLUE};
   border-top: none;
   width: 100%;
+
+  .type4_container {
+    height: 50vh;
+  }
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};

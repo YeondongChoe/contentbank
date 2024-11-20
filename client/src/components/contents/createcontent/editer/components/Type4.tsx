@@ -131,47 +131,6 @@ const Type4 = ({
 
   return (
     <>
-      <div className="type4_container">
-        <PerfectScrollbar>
-          <MathViewerWrapper>
-            {onItemClickData ? (
-              <>
-                {onItemClickData?.quizItemList ? (
-                  onItemClickData?.quizItemList?.map((el) => (
-                    <div key={`${el?.code} quizItemList sortedList`}>
-                      {[
-                        'BIG',
-                        'TEXT',
-                        'QUESTION',
-                        'SMALL',
-                        'EXAMPLE',
-                        'CHOICES',
-                        'ANSWER',
-                        'COMMENTARY',
-                        'HINT',
-                        'CONCEPT',
-                        'TITLE',
-                        'TIP',
-                      ].includes(el?.type) &&
-                        el?.content && (
-                          <MathViewer data={el.content}></MathViewer>
-                        )}
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <ValueNone info="등록된 데이터가 없습니다" textOnly />
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                <ValueNone info="문항을 선택해 주세요" textOnly />
-              </>
-            )}
-          </MathViewerWrapper>
-        </PerfectScrollbar>
-      </div>
       <div className="itex_editor_container type4_container">
         <div id="first" className="resizeable" style={{ display: 'none' }}>
           <div id="itex_viewer_area">
