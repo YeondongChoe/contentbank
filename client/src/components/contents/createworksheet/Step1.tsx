@@ -3608,7 +3608,6 @@ export function Step1() {
   >([]);
   const [processPreviousQuizListData, setProcessPreviousQuizListData] =
     useState<QuizListType[]>([]);
-  console.log(processPreviousQuizListData);
   //학교내신 문항리스트
   const [previousSchoolQuizList, setPreviousSchoolQuizList] = useState<
     number[]
@@ -4026,10 +4025,10 @@ export function Step1() {
   //학교내신 문제 받아오기
   const getPreviousPastNameList = async () => {
     const res = await quizService.get(
-      `/v1/previous/class/search?searchCondition=내신&searchKeyword=${pastAttributeSelect}`,
+      `/v1/previous/class/search?searchCondition=기출&searchKeyword=${pastAttributeSelect}`,
     );
     return res.data.data.dataList;
-  };
+  }; //수요일 작업전 pull 받고 하기
   const {
     data: perviousPastNameListData,
     refetch: perviousPastNameListDataRefetch,
