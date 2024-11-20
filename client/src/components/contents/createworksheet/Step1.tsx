@@ -35,7 +35,11 @@ import {
   MathViewer,
   Select,
 } from '../..';
-import { classificationInstance, quizService } from '../../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../../api/axios';
 import { MyStaticWrapper } from '../../../components/molecules/sortBox/Masonry';
 import { CreateContentMain } from '../../../pages/quizCreateWindow';
 import { pageAtom } from '../../../store/utilAtom';
@@ -3614,6 +3618,19 @@ export function Step1() {
     useState<string>('');
   const [previousSchoolAcademic, setPreviousSchoolAcademic] =
     useState<string>('');
+  //학교내신
+  //학교 selectList
+  const [schoolGradeSelectList, setSchoolGradeSelectList] =
+    useState<SelectListType>();
+  const [schoolGradeSelect, setSchoolGradeSelect] = useState<string>('');
+  //학기 selectList
+  const [schoolSemesterSelectList, setSchoolSemesterSelectList] =
+    useState<SelectListType>();
+  const [schoolSemesterSelect, setSchoolSemesterSelect] = useState<string>('');
+  //학사일정 selectList
+  const [schoolAcademicSelectList, setSchoolAcademicSelectList] =
+    useState<SelectListType>();
+  const [schoolAcademicSelect, setSchoolAcademicSelect] = useState<string>('');
 
   //학교내신 전국시험 선택
   const selectPreviousExamMenu = (newValue: number) => {
@@ -3629,7 +3646,7 @@ export function Step1() {
 
   // 학교 리스트 불러오기 api
   const getSchoolList = async () => {
-    const res = await classificationInstance.get(
+    const res = await resourceServiceInstance.get(
       `/v1/school?pageIndex=${1}&pageUnit=${30000}&searchKeyword=${schoolSearchValue}`,
     );
     // console.log(`getSchoolList 결과값`, res);
@@ -3675,10 +3692,33 @@ export function Step1() {
   }, [schoolData]);
 
   // 학교내신 불러오기 api
+  // const getPreviousSchoolContent = async () => {
+  //   const res = await quizService.get(
+  //     `/v1/previous/school?name=${schoolSearchValue}&years=${previousExamYear}&grades=${schoolGradeSelect || ''}&semesters=${schoolSemesterSelect || ''}&academics=${schoolAcademicSelect || ''}`,
+  //   );
+  //   return res;
+  // };
+  //특정값이 null일때 파라미터에서 빼고 보내기
   const getPreviousSchoolContent = async () => {
-    const res = await quizService.get(
-      `/v1/previous/school?name=${schoolSearchValue}&years=${previousExamYear}&grades=${schoolGradeSelect || null}&semesters=${schoolSemesterSelect || null}&academics=${schoolAcademicSelect || null}`,
-    );
+    const params = new URLSearchParams();
+
+    // 항상 있는 값 추가
+    params.append('name', schoolSearchValue);
+    params.append('years', previousExamYear as string);
+
+    // 조건부로 추가
+    if (schoolGradeSelect) params.append('grades', schoolGradeSelect);
+    if (schoolSemesterSelect) params.append('semesters', schoolSemesterSelect);
+    if (schoolAcademicSelect) params.append('academics', schoolAcademicSelect);
+
+    // 파라미터가 없으면 요청하지 않음
+    if (!schoolSearchValue || !previousExamYear) {
+      console.warn('필수 값(name 또는 years)이 없습니다. 요청을 중단합니다.');
+      return;
+    }
+
+    const queryString = params.toString();
+    const res = await quizService.get(`/v1/previous/school?${queryString}`);
     return res;
   };
   const {
@@ -3697,22 +3737,6 @@ export function Step1() {
     if (previousSchoolData)
       setPreviousSchoolList(previousSchoolData?.data.data.previousList);
   }, [previousSchoolData]);
-  //학교 selectList
-  const [schoolGradeSelectList, setSchoolGradeSelectList] = useState<
-    SelectListType[]
-  >([]);
-  const [schoolGradeSelect, setSchoolGradeSelect] = useState<string>('');
-  console.log(schoolGradeSelect);
-  //학기 selectList
-  const [schoolSemesterSelectList, setSchoolSemesterSelectList] = useState<
-    SelectListType[]
-  >([]);
-  const [schoolSemesterSelect, setSchoolSemesterSelect] = useState<string>('');
-  //학사일정 selectList
-  const [schoolAcademicSelectList, setSchoolAcademicSelectList] = useState<
-    SelectListType[]
-  >([]);
-  const [schoolAcademicSelect, setSchoolAcademicSelect] = useState<string>('');
 
   //학년리스트 가공해서 관리
   useEffect(() => {
@@ -3722,14 +3746,12 @@ export function Step1() {
         name: school.grade ? school.grade : '빈값',
         value: school.grade ? school.grade : '빈값',
       }));
-      setSchoolGradeSelectList([
-        {
-          idx: 0,
-          name: 'schoolGrade',
-          value: '0',
-          options: schoolGradeList,
-        },
-      ]);
+      setSchoolGradeSelectList({
+        idx: 0,
+        name: 'schoolGrade',
+        value: '0',
+        options: schoolGradeList,
+      });
     }
   }, [previousSchoolList]);
   //학기리스트 가공해서 관리
@@ -3740,14 +3762,12 @@ export function Step1() {
         name: school.semester ? school.semester : '빈값',
         value: school.semester ? school.semester : '빈값',
       }));
-      setSchoolSemesterSelectList([
-        {
-          idx: 0,
-          name: 'schoolSemester',
-          value: '0',
-          options: schoolSemesterList,
-        },
-      ]);
+      setSchoolSemesterSelectList({
+        idx: 0,
+        name: 'schoolSemester',
+        value: '0',
+        options: schoolSemesterList,
+      });
     }
   }, [previousSchoolList]);
   //학사일정리스트 가공해서 관리
@@ -3758,30 +3778,23 @@ export function Step1() {
         name: school.academic,
         value: school.academic,
       }));
-      setSchoolAcademicSelectList([
-        {
-          idx: 0,
-          name: 'schoolAcademic',
-          value: '0',
-          options: schoolAcademicList,
-        },
-      ]);
+      setSchoolAcademicSelectList({
+        idx: 0,
+        name: 'schoolAcademic',
+        value: '0',
+        options: schoolAcademicList,
+      });
     }
   }, [previousSchoolList]);
-
-  console.log('previousSchoolList', previousSchoolList);
-  console.log('schoolGradeSelectList', schoolGradeSelectList);
-  console.log('schoolSemesterSelectList', schoolSemesterSelectList);
-  console.log('schoolAcademicSelectList', schoolAcademicSelectList);
 
   useEffect(() => {
     previousSchoolDataRefetch();
   }, [
     previousExamYear,
     schoolSearchValue,
-    schoolGradeSelectList,
-    schoolSemesterSelectList,
-    schoolAcademicSelectList,
+    schoolGradeSelect,
+    schoolSemesterSelect,
+    schoolAcademicSelect,
   ]);
 
   // 문항 번호 부분 선택
@@ -3818,7 +3831,7 @@ export function Step1() {
     setPreviousSchoolAcademic(academic);
   };
 
-  //
+  //학교내신 문제 받아오기
   const getPreviousSchoolQuiz = async () => {
     const res = await quizService.get(`/v1/quiz/${previousSchoolQuizList}`);
     return res.data.data.quizList;
@@ -3842,7 +3855,7 @@ export function Step1() {
   useEffect(() => {
     if (perviousSchoolquizData) setQuestionList(perviousSchoolquizData);
   }, [perviousSchoolquizData]);
-
+  console.log('questionList', questionList);
   // 문항 정보 받아왔을 때 가공하는거로 바꿔야 함
   useEffect(() => {
     if (questionList?.length > 0) {
@@ -3865,7 +3878,7 @@ export function Step1() {
         quizList: school.quizList,
         isChecked: false,
       }));
-      // setProcessPreviousQuizListData(initialData);
+      setProcessPreviousQuizListData(initialData);
     }
   }, [questionList, previousSchoolDataRefetch]);
 
@@ -3994,6 +4007,45 @@ export function Step1() {
     });
   };
 
+  //전국시험
+  //기출속성 selectList
+  const pastAttributeSelectList: SelectListType = {
+    idx: 0,
+    name: '기출속성',
+    value: '기출속성',
+    options: [
+      { idx: 0, name: '입시', value: '입시' },
+      { idx: 1, name: '자격증', value: '자격증' },
+      { idx: 2, name: '경시', value: '경시' },
+    ],
+  };
+  const [pastAttributeSelect, setPastAttributeSelect] = useState<string>('');
+
+  //전국시험 기출명 받아오는 api
+  //학교내신 문제 받아오기
+  const getPreviousPastNameList = async () => {
+    const res = await quizService.get(
+      `/v1/previous/class/search?searchCondition=기출&searchKeyword=${pastAttributeSelect}`,
+    );
+    return res.data.data.dataList;
+  }; //수요일 작업전 pull 받고 하기
+  const {
+    data: perviousPastNameListData,
+    refetch: perviousPastNameListDataRefetch,
+  } = useQuery({
+    queryKey: ['get-perviousPastNameListList'],
+    queryFn: getPreviousPastNameList,
+    meta: {
+      errorMessage: 'get-perviousPastNameListList 에러 메세지',
+    },
+    enabled: previousExamMenu === 1,
+  });
+  console.log(perviousPastNameListData);
+
+  useEffect(() => {
+    perviousPastNameListDataRefetch();
+  }, [pastAttributeSelect]);
+
   const renderContentMathViwer = () => {
     return (
       <LayoutWrapper className="auto">
@@ -4109,7 +4161,7 @@ export function Step1() {
           </ButtonWrapper>
         </TopButtonWrapper>
         {previousSchoolSubject === '교과' || previousSchoolUnit === '과목' ? (
-          <BlankWrapper>교과와 과묵을 선택해주세요.</BlankWrapper>
+          <BlankWrapper>교과와 과목을 선택해주세요.</BlankWrapper>
         ) : (
           <ScrollWrapper className="items_height">
             <PerfectScrollbar>
@@ -4247,7 +4299,11 @@ export function Step1() {
       <Button
         key={button.value}
         buttonType="button"
-        onClick={() => selectPreviousExamMenu(button.value)}
+        onClick={() => {
+          selectPreviousExamMenu(button.value);
+          //기출속성 초기화
+          setPastAttributeSelect('');
+        }}
         $padding="10px"
         height={'35px'}
         width={'100%'}
@@ -4336,7 +4392,12 @@ export function Step1() {
           <Button
             key={button.value}
             buttonType="button"
-            onClick={() => selectPreviousExamYear(button.label)}
+            onClick={() => {
+              selectPreviousExamYear(button.label);
+              setSchoolGradeSelect('');
+              setSchoolSemesterSelect('');
+              setSchoolAcademicSelect('');
+            }}
             $padding="10px"
             height={'35px'}
             width={'100%'}
@@ -5061,7 +5122,7 @@ export function Step1() {
                                   width={'130px'}
                                   defaultValue={'학년'}
                                   key={'학년'}
-                                  options={schoolGradeSelectList[0].options}
+                                  options={schoolGradeSelectList?.options}
                                   // onSelect={(event) =>
                                   //   selectCategoryOption(event)
                                   // }
@@ -5073,7 +5134,7 @@ export function Step1() {
                                   width={'130px'}
                                   defaultValue={'학기'}
                                   key={'학기'}
-                                  options={schoolSemesterSelectList[0].options}
+                                  options={schoolSemesterSelectList?.options}
                                   // onSelect={(event) =>
                                   //   selectCategoryOption(event)
                                   // }
@@ -5085,7 +5146,7 @@ export function Step1() {
                                   width={'130px'}
                                   defaultValue={'학사일정'}
                                   key={'학사일정'}
-                                  options={schoolAcademicSelectList[0].options}
+                                  options={schoolAcademicSelectList?.options}
                                   // onSelect={(event) =>
                                   //   selectCategoryOption(event)
                                   // }
@@ -5198,7 +5259,19 @@ export function Step1() {
                       <>
                         <PreviousExamSearchWrapper>
                           <Label value="시험명" fontSize="16px" width="60px" />
-                          <Search
+                          <Select
+                            width={'400px'}
+                            defaultValue={'기출속성'}
+                            key={'기출속성'}
+                            options={pastAttributeSelectList.options}
+                            // onSelect={(event) =>
+                            //   selectCategoryOption(event)
+                            // }
+                            setSelectedValue={setPastAttributeSelect}
+                            isnormalizedOptions
+                            padding="0 5px 0 0"
+                          ></Select>
+                          {/* <Search
                             value={searchTextbookValue} //수정필요
                             width={'400px'}
                             height="40px"
@@ -5206,8 +5279,19 @@ export function Step1() {
                             onChange={(e) => searchTextbook(e.target.value)} //수정필요
                             placeholder="기출 속성을 선택해주세요"
                             maxLength={20}
-                          />
-                          <Search
+                          /> */}
+                          {selectArrange.map((el) => (
+                            <SearchableSelect
+                              key={`${el.idx} - ${el.name}`}
+                              width={'400px'}
+                              height="40px"
+                              placeholder="기출명을 선택해주세요"
+                              options={el.options}
+                              selectedQuotientValue={schoolSearchValue}
+                              setSelectedQuotientValue={setSchoolSearchValue}
+                            ></SearchableSelect>
+                          ))}
+                          {/* <Search
                             value={searchTextbookValue} //수정필요
                             width={'400px'}
                             height="40px"
@@ -5215,7 +5299,7 @@ export function Step1() {
                             onChange={(e) => searchTextbook(e.target.value)} //수정필요
                             placeholder="기출명을 선택해주세요"
                             maxLength={20}
-                          />
+                          /> */}
                         </PreviousExamSearchWrapper>
                         <PreviousExamYearWrapper>
                           <Label

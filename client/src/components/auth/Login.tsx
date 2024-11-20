@@ -24,8 +24,6 @@ import {
 import { postRefreshToken } from '../../utils/tokenHandler';
 
 export function Login() {
-  const [accessTokenData, setAccessTokenData] = useState<string>('');
-
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
   );
@@ -44,21 +42,18 @@ export function Login() {
 
   const navigate = useNavigate();
 
-  function parseJwt(token: any) {
+  //jwt 변환
+  const jwtDecode = (token: string) => {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split('')
-        .map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        })
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join(''),
     );
-
     return JSON.parse(jsonPayload);
-  }
-  console.log(accessTokenData);
+  };
 
   //로그인 api
   const {
@@ -93,8 +88,18 @@ export function Login() {
       console.log('accessToken ----login', response.data.data.accessToken);
       console.log('refreshToken ----login', response.data.data.refreshToken);
       console.log('sessionId -----login', response.data.data.sessionId);
-      // 로컬데이터에서 토큰과 세션을 저장
-      setAccessTokenData(response.data.data.accessToken);
+
+      // JWT 디코딩하여 companyCode 추출
+      const accessToken = response.data.data.accessToken;
+
+      // JWT 디코드
+      const decodedToken = jwtDecode(accessToken);
+
+      const companyCode = decodedToken?.companyCode; // JWT 페이로드에 companyCode가 포함된 경우
+      if (companyCode) {
+        localStorage.setItem('companyCode', companyCode);
+      }
+
       setAuthorityCookie('accessToken', response.data.data.accessToken, {
         path: '/',
         sameSite: 'strict',

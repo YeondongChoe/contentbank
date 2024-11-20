@@ -38,7 +38,6 @@ export type QuizType = {
 
 export type QuizListType = {
   id?: string;
-  map(arg0: (el: { content: any }, ind: any) => void): unknown;
   code: string;
   createdAt: string;
   createdBy: string;
@@ -46,7 +45,7 @@ export type QuizListType = {
   isDelete: boolean;
   isUse: boolean;
   isFavorite?: boolean;
-  lastArticle: Article;
+  lastArticle: Article | null;
   lastModifiedAt: string;
   lastModifiedBy: string;
   type: string;

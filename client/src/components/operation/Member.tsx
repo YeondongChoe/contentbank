@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { userInstance } from '../../api/axios';
 import { getUserList, getUserListTotal, patchChangeUse } from '../../api/user';
 import {
   Button,
@@ -46,9 +47,20 @@ export function Member() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [totalMemberList, setTotalMemberList] = useState<MemberType[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(1);
-  //기업 idx로 수정해야함
-  const [idxValue, setIdxValue] = useState<string>('1');
+  const [totalCount, setTotalCount] = useState<number>(0);
+  //회원의 기업코드 가져오기
+  const [companyCoadValue, setCompanyCoadValue] = useState<string | null>(null);
+  const [companyNameValue, setCompanyNameValue] = useState<string | null>(null);
+  const [companyIdxValue, setCompanyIdxValue] = useState<string>('0');
+  const [companyCorporateIdentifier, setCompanyCorporateIdentifier] = useState<
+    string | null
+  >(null);
+
+  //로컬스토리지에 있는 기업코드 가져오기
+  useEffect(() => {
+    const storedCompanyCode = localStorage.getItem('companyCode');
+    setCompanyCoadValue(storedCompanyCode);
+  }, []);
 
   // 유저 리스트 불러오기 api
   const isUseFilter = useMemo(() => {
@@ -64,14 +76,20 @@ export function Member() {
     isSuccess,
   } = useQuery({
     queryKey: ['get-memberlist'],
-    queryFn: () => getUserList({ page, searchKeywordValue, isUseFilter }),
+    queryFn: () =>
+      getUserList({
+        page,
+        searchKeywordValue,
+        isUseFilter,
+        idxValue: companyIdxValue,
+      }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
+    enabled: companyIdxValue !== '0',
   });
   // data 디렉토리
   const memberList = memberListData?.data.data;
-  console.log(memberList);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -93,7 +111,11 @@ export function Member() {
   // 아이디 중복 확인 && 토탈 유저 수
   const { data: totalData, refetch: totalDataRefetch } = useQuery({
     queryKey: ['get-memberlist-total'],
-    queryFn: () => getUserListTotal({ totalCount, idxValue }),
+    queryFn: () =>
+      getUserListTotal({
+        totalCount,
+        idxValue: companyIdxValue,
+      }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
@@ -101,7 +123,6 @@ export function Member() {
   });
 
   useEffect(() => {
-    // console.log('totalData', totalData);
     if (totalData) {
       setTotalMemberList(totalData.data.data.list);
     } else {
@@ -110,9 +131,68 @@ export function Member() {
   }, [totalData]);
 
   useEffect(() => {
-    // console.log('isSuccess', isSuccess);
     if (isSuccess) setTotalCount(memberList?.pagination?.totalCount);
   }, [isSuccess]);
+
+  //기업코드로 기업 idx 가져오기
+  const getCompanyList = async () => {
+    const res = await userInstance.get(
+      `/v1/company?searchCondition=${companyCoadValue}`,
+    );
+    //console.log(`getCompanyList 결과값`, res);
+    return res;
+  };
+
+  const { data: companyListData, refetch: companyListRefetch } = useQuery({
+    queryKey: ['get-companyList'],
+    queryFn: getCompanyList,
+    meta: {
+      errorMessage: 'get-companyList 에러 메세지',
+    },
+    enabled: companyCoadValue !== null,
+  });
+
+  useEffect(() => {
+    if (companyListData) {
+      setCompanyNameValue(companyListData?.data.data.list[0].name);
+      setCompanyIdxValue(
+        companyListData?.data.data.list[0].idx.toLocaleString(),
+      );
+    }
+  }, [companyListData]);
+
+  // 기업 상세 정보 불러오기 api
+  const getCompanyInfo = async () => {
+    if (companyIdxValue === '0') {
+      return null;
+    } else {
+      const res = await userInstance.get(`/v1/company/${companyIdxValue}`);
+      // console.log(`getWorkbook 결과값`, res);
+      return res;
+    }
+  };
+
+  const { data: companyInfoData, refetch: companyInfoRefetch } = useQuery({
+    queryKey: ['get-companyInfo'],
+    queryFn: getCompanyInfo,
+    meta: {
+      errorMessage: 'get-companyInfo 에러 메세지',
+    },
+  });
+
+  //기업Idx 들어왔을때 호출
+  useEffect(() => {
+    companyInfoRefetch();
+  }, [companyIdxValue]);
+
+  //기업 상세정보 저장
+  useEffect(() => {
+    if (companyInfoData) {
+      setCompanyCorporateIdentifier(
+        companyInfoData.data.data.companyRecord.corporateIdentifier,
+      );
+    }
+  }, [companyInfoData]);
 
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
@@ -124,8 +204,10 @@ export function Member() {
         <RegisterModal
           memberList={totalMemberList}
           refetch={refetch}
-          idxValue={''}
-          companyName=""
+          companyIdx={companyIdxValue as string}
+          companyCode={companyCoadValue as string}
+          companyName={companyNameValue as string}
+          companyCorporateIdentifier={companyCorporateIdentifier as string}
         />
       ),
     });
