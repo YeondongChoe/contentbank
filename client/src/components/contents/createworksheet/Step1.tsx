@@ -3855,7 +3855,7 @@ export function Step1() {
   useEffect(() => {
     if (perviousSchoolquizData) setQuestionList(perviousSchoolquizData);
   }, [perviousSchoolquizData]);
-
+  console.log('questionList', questionList);
   // 문항 정보 받아왔을 때 가공하는거로 바꿔야 함
   useEffect(() => {
     if (questionList?.length > 0) {
@@ -3878,7 +3878,7 @@ export function Step1() {
         quizList: school.quizList,
         isChecked: false,
       }));
-      // setProcessPreviousQuizListData(initialData);
+      setProcessPreviousQuizListData(initialData);
     }
   }, [questionList, previousSchoolDataRefetch]);
 
