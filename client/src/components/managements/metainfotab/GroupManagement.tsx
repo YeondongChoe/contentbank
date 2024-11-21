@@ -110,7 +110,7 @@ export function GroupManagement() {
           categoryList={categoryList}
           nameList={process}
           typeList={typeList}
-          onSave={(selectedTags) => clickSave(selectedTags)}
+          onSave={(selectedTags) => clickAddSave(selectedTags)}
         />
       ),
     });
@@ -207,6 +207,16 @@ export function GroupManagement() {
       } else {
         updateGroupInfoData(numberList);
       }
+    }
+  };
+  const clickAddSave = (numberList: number[]) => {
+    if (numberList.length > 20) {
+      openToastifyAlert({
+        type: 'error',
+        text: '최대 20개까지 추가 가능합니다',
+      });
+    } else {
+      updateGroupInfoData(numberList);
     }
   };
   //그룹 정보 업데이트 api

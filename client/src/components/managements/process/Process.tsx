@@ -7,12 +7,57 @@ import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
+import { userInstance } from '../../../api/axios';
 import { Modal } from '../../../components';
 import { useModal } from '../../../hooks';
 import { AlertBar, Button, Loader, Input, ValueNone } from '../../atom';
 import { COLOR } from '../../constants';
 
 import { ProcessAddModal, ProcessEditModal } from './modal';
+
+type processNameListProps = {
+  idx: number;
+  code: string;
+  name: string;
+};
+
+type processDetailInfoProps = {
+  idx: number;
+  code: string;
+  companyCode: string;
+  processName: string;
+  isUse: boolean;
+  isDelete: boolean;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+  steps: {
+    idx: number;
+    stepName: string;
+    stepSort: number;
+    createdBy: string;
+    createdAt: string;
+    lastModifiedBy: string;
+    lastModifiedAt: string;
+    workers: {
+      idx: number;
+      workerSort: number;
+      createdBy: string;
+      createdAt: string;
+      account: {
+        idx: number;
+        id: string;
+        name: string;
+        authorityName: string;
+      };
+      authority: {
+        idx: number;
+        name: string;
+      };
+    }[];
+  }[];
+};
 
 export function Process() {
   const DummyData = [
@@ -96,6 +141,64 @@ export function Process() {
       content: <ProcessAddModal />,
     });
   };
+  const [processNameList, setProcessNameList] = useState<
+    processNameListProps[]
+  >([]);
+  const [processNameIdx, setProcessNameIdx] = useState<number | null>(null);
+  const [processDetailInfo, setProcessDetailInfo] = useState<
+    processDetailInfoProps[]
+  >([]);
+  //프로세스 리스트 불러오기 api
+  const getProcessNameList = async () => {
+    const res = await userInstance.get(`/v1/process`);
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: processNameListData,
+    isFetching: isProcessNameListLoading,
+    refetch: processNameListRefetch,
+  } = useQuery({
+    queryKey: ['get-processNameList'],
+    queryFn: getProcessNameList,
+    meta: {
+      errorMessage: 'get-processNameList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (processNameListData)
+      setProcessNameList(processNameListData?.data.data.list);
+  }, [processNameListData]);
+
+  //프로세스 상세정보 불러오기 api
+  const getProcessDetailInfo = async () => {
+    const res = await userInstance.get(`/v1/process/${processNameIdx}`);
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: processDetailInfoData,
+    isFetching: isProcessDetailInfoLoading,
+    refetch: processDetailInfoRefetch,
+  } = useQuery({
+    queryKey: ['get-processDetailInfo'],
+    queryFn: getProcessDetailInfo,
+    meta: {
+      errorMessage: 'get-processDetailInfo 에러 메세지',
+    },
+    enabled: processNameIdx !== null,
+  });
+
+  useEffect(() => {
+    if (processDetailInfoData)
+      setProcessDetailInfo(processDetailInfoData?.data.data.processDetail);
+  }, [processDetailInfoData]);
+  console.log(processDetailInfo);
+
+  useEffect(() => {
+    processDetailInfoRefetch();
+  }, [processNameIdx]);
 
   // 배경 클릭시 체크리스트 초기화
   // useEffect(() => {
@@ -130,29 +233,37 @@ export function Process() {
               </ListTitle>
               {/* 데이터 들어올때 map으로 변경 */}
               <ProcessListBox>
-                <ProcessList>
-                  <ProcessWrapper>
-                    <ProcessName
-                      $isSelected={true}
-                      onClick={() => {
-                        //clickCategoryInfo(el.idx);
-                      }}
-                    >
-                      <div className="title">수학알바1</div>
-                    </ProcessName>
-                  </ProcessWrapper>
-                  <DeleteIconWrapper>
-                    <BiSolidTrashAlt
-                      onClick={() => {
-                        //clickDeleteCompany();
-                        //삭제할 카테고리 idx값 관리
-                        //setCategoryIdx(el.idx);
-                      }}
-                    />
-                  </DeleteIconWrapper>
-                </ProcessList>
-                {/*  */}
-                {/* {isCategoryLoading && <Loader />} */}
+                {isProcessNameListLoading ? (
+                  <>
+                    <Loader />
+                  </>
+                ) : (
+                  <>
+                    {processNameList.map((process, i) => (
+                      <ProcessList key={i}>
+                        <ProcessWrapper>
+                          <ProcessName
+                            $isSelected={true}
+                            onClick={() => {
+                              setProcessNameIdx(process.idx);
+                            }}
+                          >
+                            <div className="title">{process.name}</div>
+                          </ProcessName>
+                        </ProcessWrapper>
+                        <DeleteIconWrapper>
+                          <BiSolidTrashAlt
+                            onClick={() => {
+                              //clickDeleteCompany();
+                              //삭제할 카테고리 idx값 관리
+                              //setCategoryIdx(el.idx);
+                            }}
+                          />
+                        </DeleteIconWrapper>
+                      </ProcessList>
+                    ))}
+                  </>
+                )}
               </ProcessListBox>
             </PerfectScrollbar>
           </ScrollWrapper>
