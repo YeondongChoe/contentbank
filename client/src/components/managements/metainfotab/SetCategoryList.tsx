@@ -14,14 +14,14 @@ import { COLOR } from '../../constants';
 import { useDnD } from '../../molecules/dragAndDrop';
 
 export function SetCategoryList({
-  setMappingList,
   setSelectedItem,
+  setSelectedList,
 }: {
-  setMappingList: React.Dispatch<React.SetStateAction<any[]>>;
+  setSelectedList: React.Dispatch<React.SetStateAction<any[]>>;
   setSelectedItem?: React.Dispatch<React.SetStateAction<any>>;
 }) {
   const [categoryList, setCategoryList] = useState<
-    { type: string; name: string }[]
+    { type: string; name: string; count: string }[]
   >([]);
   const [groupIdx, setGgroupIdx] = useState<number>();
   const [groupName, setGgroupName] = useState<string>();
@@ -34,11 +34,13 @@ export function SetCategoryList({
   const [activeItem, setActiveItem] = useState<{
     name: string;
     type: string;
+    count: string;
   } | null>(null);
 
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  const typeKey = query.get('state');
+  const queryValue = query.get('state');
+
   useEffect(() => {
     if (query.get('state')) {
       console.log('query', query.get('state'));
@@ -47,11 +49,13 @@ export function SetCategoryList({
 
   //카테고리 그룹 리스트 불러오기 api
   const getCategoryGroup = async () => {
-    const res = await classificationInstance.get(
-      `/v1/category/group/${typeKey}`,
-    );
-    console.log(res.data.data);
-    return res.data.data;
+    if (queryValue) {
+      const res = await classificationInstance.get(
+        `/v1/category/group/${queryValue.split('/')[0]}`,
+      );
+      console.log(res.data.data);
+      return res.data.data;
+    }
   };
 
   const { data: categoryGroupData, isLoading: isCategoryGroupLoading } =
@@ -67,14 +71,16 @@ export function SetCategoryList({
     if (categoryGroupData) {
       console.log('가져온 카테고리 ----', categoryGroupData);
       const item = categoryGroupData;
-      const { nameList, typeList, idx, name } = item;
+      const { nameList, typeList, idx, name, countList } = item;
       const names = nameList ? nameList.split(',') : [];
       const types = typeList ? typeList.split(',') : [];
+      const counts = countList ? countList.split(',') : [];
 
       const newCategoryList = names.map(
         (name: any, index: string | number) => ({
           name,
           type: types[index] || '',
+          count: counts[index] || '',
         }),
       );
 
@@ -113,11 +119,13 @@ export function SetCategoryList({
         type: 'success',
         text: `${response.data.message ? response.data.message : '순서가 변경되었습니다'}`,
       });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.onload();
     },
   });
 
   useEffect(() => {
-    console.log('카테고리 변경 ----- ', categoryList);
     //최종 순서 데이터
     const sortList = categoryList.map((item) => Number(item.type));
     console.log('sortList ---------- ', sortList);
@@ -127,6 +135,8 @@ export function SetCategoryList({
       types: sortList,
     };
     setGroupData(data);
+    // console.log('카테고리 변경 ----- ', categoryList);
+    if (setSelectedList) setSelectedList(categoryList);
   }, [categoryList, groupIdx, groupName]);
 
   const submitMapping = () => {
@@ -140,23 +150,14 @@ export function SetCategoryList({
     setCategoryList(updatedList);
   };
 
-  const handleTagClick = (item: { name: string; type: string }) => {
+  const handleTagClick = (item: {
+    name: string;
+    type: string;
+    count: string;
+  }) => {
     setActiveItem(activeItem === item ? null : item);
-
     // console.log('click item ----- ', item);
     if (setSelectedItem) setSelectedItem(item);
-
-    const groupIdx = item.type;
-    const getCategoryMap = async () => {
-      const res = await classificationInstance.get(
-        `/v1/category/map/${groupIdx}`,
-      );
-      console.log('선택된 idx에 따른 항목 조회 ----- ', res);
-      console.log('선택된 idx에 따른 항목 조회 ----- ', res.data.data?.mapList);
-      setMappingList(res.data.data?.mapList);
-    };
-
-    getCategoryMap();
   };
 
   return (
@@ -198,10 +199,10 @@ export function SetCategoryList({
 }
 
 interface DraggableInitItemProps {
-  item: { name: string; type: string };
+  item: { name: string; type: string; count: string };
   index: number;
   activeItem: { name: string; type: string } | null;
-  handleTagClick: (item: { name: string; type: string }) => void;
+  handleTagClick: (item: { name: string; type: string; count: string }) => void;
   moveTag: (dragIndex: number, hoverIndex: number) => void;
 }
 
@@ -229,7 +230,7 @@ const DraggableInitItem: React.FC<DraggableInitItemProps> = ({
         <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
       </span>
       <span className="category_title">{item.name}</span>
-      <span className="category_sub_title end">{`${0}개의 태그`}</span>
+      <span className="category_sub_title end">{`${item.count}개의 태그`}</span>
     </Tags>
   );
 };

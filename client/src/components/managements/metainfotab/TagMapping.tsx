@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { classificationInstance } from '../../../api/axios';
 import { Button, CheckBoxI, Icon, Switch } from '../../atom';
 import { COLOR } from '../../constants';
 import { ListItem, Search } from '../../molecules';
@@ -26,20 +28,29 @@ interface CategoryItem {
 }
 
 export function TagMapping() {
-  const [categoryList, setCategoryList] = useState<
-    { type: string; name: string }[]
-  >([]);
   const [tagList, setTagList] = useState<string[]>([]);
   const [mappingList, setMappingList] = useState<CategoryItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<{
     type: string;
     name: string;
+    count: string;
   }>();
+  const [selectedList, setSelectedList] = useState<
+    {
+      type: string;
+      name: string;
+      count: string;
+    }[]
+  >([]);
+  const [selectedNextItem, setSelectedNextItem] = useState<{
+    type: string;
+    name: string;
+    count: string;
+  } | null>(null);
 
   const [checkList, setCheckList] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [isInit, setIsInit] = useState<boolean>(false);
-
   // 검색
   const [searchValue, setSearchValue] = useState<string>('');
   const [filteredTags, setFilteredTags] = useState<string[]>(sampleTags);
@@ -66,6 +77,30 @@ export function TagMapping() {
 
     console.log('선택된 카테고리 아이템 click item ----- ', item);
   };
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const queryValue = query.get('state');
+
+  useEffect(() => {
+    if (queryValue) {
+      console.log('query', queryValue.split('/')[1]);
+
+      // 최초 집입시 그룹아이템의 idx 값으로 조회
+      const groupIdx = queryValue.split('/')[1];
+      const getCategoryMap = async () => {
+        const res = await classificationInstance.get(
+          `/v1/category/map/${groupIdx}`,
+        );
+        console.log(
+          '선택된 idx에 따른 항목 조회 ----- ',
+          res.data.data?.mapList,
+        );
+        setMappingList(res.data.data?.mapList);
+      };
+
+      getCategoryMap();
+    }
+  }, []);
 
   const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
     const updatedList = [...mappingList];
@@ -93,6 +128,44 @@ export function TagMapping() {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     console.log(event.key);
   };
+
+  useEffect(() => {
+    console.log(
+      '선택된 아이템d idx, 선택된 아이템의 다음 idx----- ',
+      activeMappingItem?.code,
+      selectedList,
+    );
+    const foundItem = selectedList.find(
+      (item) => item.name === activeMappingItem?.code,
+    );
+    if (foundItem) {
+      const currentIndex = selectedList.indexOf(foundItem);
+      const nextItem = selectedList[currentIndex + 1];
+
+      if (nextItem) setSelectedNextItem(nextItem);
+    }
+  }, [selectedItem, activeMappingItem]);
+
+  useEffect(() => {
+    console.log('다음 idx 값으로 클래스 조회', selectedNextItem);
+    // 아이템 선택시 다음 인덱스 로 리스트 불러오기
+    const getCategory = async () => {
+      if (!selectedNextItem?.type) {
+        return null;
+      }
+      try {
+        const response = await classificationInstance.get(
+          `/v1/category/class/${selectedNextItem?.type}`,
+        );
+        return response.data.data;
+      } catch (error) {
+        console.error('Error fetching category:', error);
+        return null;
+      }
+    };
+
+    getCategory();
+  }, [selectedNextItem]);
 
   // const handleAddTag = () => {
   //   if (searchValue && !sampleTags.includes(searchValue)) {
@@ -159,10 +232,7 @@ export function TagMapping() {
   };
 
   useEffect(() => {}, [tagList]);
-  useEffect(() => {
-    console.log('setSelectedItem----------', selectedItem);
-    console.log('mappingList----------', mappingList);
-  }, [selectedItem]);
+
   useEffect(() => {
     console.log('checkList----------', checkList);
   }, [checkList]);
@@ -174,7 +244,7 @@ export function TagMapping() {
           <ListWrapper>
             <strong className="title">태그 선택</strong>
             <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-            <span className="border_tag">{`${'교과'}`}</span>
+            <span className="border_tag">{`${activeMappingItem && activeMappingItem.code}`}</span>
             <DropdownWrapper>
               <Search
                 placeholder="태그를 검색해주세요."
@@ -253,8 +323,8 @@ export function TagMapping() {
         ) : (
           <ListWrapper>
             <SetCategoryList
-              setMappingList={setMappingList}
               setSelectedItem={setSelectedItem}
+              setSelectedList={setSelectedList}
             />
           </ListWrapper>
         )}

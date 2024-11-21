@@ -84,7 +84,6 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   script.async = true;
   script.onload = () => {
     setLoaded(true);
-    console.log('========================dudududududu========');
   };
   script.onerror = () => {
     console.error('Failed to load MathJax.');

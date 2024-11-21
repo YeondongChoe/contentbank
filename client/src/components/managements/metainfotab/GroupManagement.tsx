@@ -133,12 +133,12 @@ export function GroupManagement() {
       ),
     });
   };
-  const openTagMappingWindow = (code: string) => {
-    console.log('code ------ ', code);
+  const openTagMappingWindow = (code: string, idx: number) => {
+    console.log('code ,idx------ ', code, idx);
     windowOpenHandler({
       name: 'tagmapping',
       url: '/content-manage/tagmapping',
-      queryParams: { state: `${code}` },
+      queryParams: { state: `${code}/${idx}` },
     });
   };
 
@@ -360,7 +360,7 @@ export function GroupManagement() {
                     <button
                       className="mapping_button"
                       type="button"
-                      onClick={() => openTagMappingWindow(list.code)}
+                      onClick={() => openTagMappingWindow(list.code, list.idx)}
                     >
                       태그 매핑
                     </button>
