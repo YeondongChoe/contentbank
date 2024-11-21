@@ -7,3 +7,15 @@ export type PreviousSchoolType = {
   quizCount: string;
   quizList: number[];
 };
+
+export type PreviousNationalType = {
+  nationalType: string;
+  level: string;
+  grade: string;
+  nationalName: string;
+  host: string;
+  reportType: string;
+  year: string;
+  quizCount: string;
+  quizList: number[];
+};
