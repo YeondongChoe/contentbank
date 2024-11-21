@@ -84,6 +84,7 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   script.async = true;
   script.onload = () => {
     setLoaded(true);
+    console.log('========================dudududududu========');
   };
   script.onerror = () => {
     console.error('Failed to load MathJax.');
@@ -203,6 +204,7 @@ export function ContentEdit({
 
   useEffect(() => {
     if (!isMathJaxLoaded) {
+      // console.log('===============mathjax=============');
       loadMathJax(setMathJaxLoaded);
     }
   }, [isMathJaxLoaded]);
@@ -723,7 +725,7 @@ export function ContentEdit({
 
   return (
     <Container>
-      <PerfectScrollbar>
+      {/* <PerfectScrollbar>
         <div className="type4_container">
           <PerfectScrollbar>
             <MathViewerWrapper>
@@ -765,12 +767,14 @@ export function ContentEdit({
             </MathViewerWrapper>
           </PerfectScrollbar>
         </div>
-      </PerfectScrollbar>
+      </PerfectScrollbar> */}
       <ContentsWrapper>
         <EditContainerWrapper>
           <PerfectScrollbar>
             <EditWrapper>
-              <Type4
+              <EditerOneFile
+                type={type}
+                setEditorData={setEditorData}
                 saveHandler={saveHandler}
                 onItemClickData={onItemClickData}
               />
@@ -934,9 +938,9 @@ const EditWrapper = styled.div`
   border-top: none;
   width: 100%;
 
-  .type4_container {
+  /* .type4_container {
     height: 50vh;
-  }
+  } */
 `;
 const BackgroundWrapper = styled.div`
   background-color: ${COLOR.BUTTON_LIGHT_NORMAL};
