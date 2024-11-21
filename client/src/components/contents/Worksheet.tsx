@@ -190,9 +190,12 @@ export function Worksheet() {
 
   const workbookList = workbookListData?.data.data;
 
+  //TODO: idx를 url로 변경 필요하며 그때는 한 값만 넘어옴 isChecked: true 확인할 필요 없음.
   //그룹 화면설정 정보 불러오기 api
   const getMenu = async () => {
-    const res = await resourceServiceInstance.get(`/v1/menu/4`);
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=workbookListSetting`,
+    );
     //console.log(res);
     return res;
   };
@@ -214,9 +217,7 @@ export function Worksheet() {
 
   useEffect(() => {
     if (menuData) {
-      const filterList = menuData.data.data.detailList.filter(
-        (el: any) => el.isCheck === true,
-      );
+      const filterList = menuData.data.data.menuDetailList;
       const nameListArray = filterList[0]?.nameList?.split(',') || [];
       const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
         (item: string) => item === 'true',
