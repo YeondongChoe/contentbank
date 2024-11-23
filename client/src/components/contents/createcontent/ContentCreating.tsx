@@ -3,17 +3,30 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { GrPlan } from 'react-icons/gr';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Button, Modal, openToastifyAlert, Select } from '../..';
-import { classificationInstance, quizService } from '../../../api/axios';
+import {
+  Button,
+  CommonDate,
+  IconButton,
+  Modal,
+  openToastifyAlert,
+  Select,
+} from '../..';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
   AddQuestionListType,
   EditorDataType,
+  IdxNamePair,
   ItemCategoryType,
   QuestionClassListType,
   QuizItemListType,
@@ -25,6 +38,8 @@ import { COLOR } from '../../constants/COLOR';
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { OptionList } from './options/OptionList';
+import { Options } from './options/Options';
+import { OtionsSelect } from './options/OtionsSelect';
 
 type SelectedValueType = string | { [key: string]: any };
 
@@ -43,7 +58,8 @@ export function ContentCreating({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
-  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
+  const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
+  const [categoriesDD, setCategoriesDD] = useState<ItemCategoryType[][]>([]);
   const [content, setContent] = useState<string[]>([]);
   const [imagesSrc, setImagesSrc] = useState<string>('');
 
@@ -57,8 +73,6 @@ export function ContentCreating({
   );
   const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
   //셀렉트 값
-  // const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
-  // const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
@@ -69,6 +83,11 @@ export function ContentCreating({
       [key: number]: string;
     }[]
   >([]);
+  const [sourceValue, setSourceValue] = useState<{
+    titleIdx: string;
+    name: string;
+    value: string | number;
+  }>({ titleIdx: '', name: '', value: '' });
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -209,6 +228,142 @@ export function ContentCreating({
     }
   }, [imagesSrc]);
 
+  // 메뉴 목록 조회 api (셋팅값)
+  const [idxNamePairs, setIdxNamePairs] = useState<IdxNamePair[][]>([]);
+  const getMenuSetting = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=contentDtEditingSetting`,
+    );
+    console.log('getMenuSetting--------', res);
+    return res.data.data;
+  };
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
+    queryKey: ['get-menuSetting'],
+    queryFn: getMenuSetting,
+    meta: {
+      errorMessage: 'get-menuSetting 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (menuSettingData) {
+      //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
+      console.log(
+        '메뉴 셋팅값 ------ ',
+        menuSettingData.menuDetailList.length,
+        menuSettingData,
+      );
+
+      // 셋팅값 없을시 얼럿
+      if (menuSettingData.menuDetailList.length == 0) {
+        // openToastifyAlert({
+        //   type: 'error',
+        //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
+        // });
+        alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
+        window.close();
+        return;
+      }
+
+      // 첫번째 출처 값
+      const filteredCategoriesH: any[] = [];
+      // 두번째 추가정보
+      const filteredCategoriesDD: any[] = [];
+
+      // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
+      menuSettingData?.menuDetailList.forEach(
+        (
+          menuDetail: {
+            [x: string]: any;
+            idxList: string;
+            nameList: string;
+            inputList: string;
+          },
+          index: any,
+        ) => {
+          const idxList = menuDetail?.idxList?.split(',');
+          const nameList = menuDetail?.nameList?.split(',');
+          const inputList = menuDetail?.inputList?.split(',');
+
+          // idx와 name을 짝지어 배열로 저장
+          const pairs = idxList.map((idx, index) => ({
+            idx,
+            name: nameList[index],
+            inputType: inputList[index],
+          }));
+
+          setIdxNamePairs((prev) => [...prev, pairs]);
+
+          if (index === 0) {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex],
+            }));
+            filteredCategoriesH.push(categories);
+          } else if (index === 1) {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex],
+            }));
+            filteredCategoriesDD.push(categories);
+          }
+        },
+      );
+
+      const idxListH = filteredCategoriesH
+        .flat()
+        // .filter((category) => category.inputType === 'SELECT')
+        .map((category) => category.idx)
+        .join(',');
+      const idxListDD = filteredCategoriesDD
+        .flat()
+        // .filter((category) => category.inputType === 'SELECT')
+        .map((category) => category.idx)
+        .join(',');
+
+      console.log('inputType 이 셀렉트인것만', idxListH, '/', idxListDD);
+
+      fetchCategoryItems(idxListH, setCategoriesH);
+      fetchCategoryItems(idxListDD, setCategoriesDD);
+    }
+  }, [menuSettingData]);
+
+  // 카테고리의 그룹 아이템 조회
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
+    const typeIds = typeList.split(',');
+    try {
+      const requests = typeIds.map((id) =>
+        classificationInstance.get(`/v1/category/class/${id}`),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+      setCategory(itemsList);
+    } catch (error: any) {
+      if (error.response.data?.code == 'GE-002') postRefreshToken();
+    }
+  };
+
+  useEffect(() => {
+    console.log(`menu idxNamePairs:`, idxNamePairs);
+    console.log(
+      `menu 2depth select setCategoriesH, setCategoriesDD:`,
+      categoriesH,
+      categoriesDD,
+    );
+  }, [categoriesH, categoriesDD]);
+
   useEffect(() => {
     console.log('quizItemList', quizItemList);
     //문항 리스트에 추가
@@ -217,6 +372,7 @@ export function ContentCreating({
     }
   }, [quizItemList]);
 
+  //TODO :
   useEffect(() => {
     console.log('quizItemArrList', quizItemArrList);
     // 등록될 값
@@ -231,26 +387,17 @@ export function ContentCreating({
   }, [quizItemArrList]);
 
   useEffect(() => {
-    // console.log('selectedSubject 교과', selectedSubject);
-    // console.log('selectedCourse 과목', selectedCourse);
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSource 출처', selectedSource);
     // console.log('selected--------출처 선택부분', selectedList);
-    if (
-      selectedSource.length > 0 &&
-      // selectedSubject &&
-      // selectedCourse &&
-      selectedQuestionType
-    ) {
+    if (selectedSource.length > 0 && selectedQuestionType) {
       const quizClassList: QuestionClassListType = [
         {
           type: 'CLASS',
           quizCategory: {
             sources: selectedSource,
-            // 과목: selectedCourse,
-            // 교과: selectedSubject,
             난이도: selectedDifficulty,
             문항타입: selectedQuestionType,
           },
@@ -260,14 +407,7 @@ export function ContentCreating({
       // 필수 메타값 추가 및 변경
       setQuizClassList(quizClassList);
     }
-  }, [
-    // selectedSubject,
-    // selectedCourse,
-    selectedQuestionType,
-    selectedSource,
-    selectedDifficulty,
-    selectedList,
-  ]);
+  }, [selectedQuestionType, selectedSource, selectedDifficulty, selectedList]);
 
   useEffect(() => {
     // 등록 api
@@ -317,99 +457,6 @@ export function ContentCreating({
       setCategoryTitles(categoryData.data.data.categoryItemList);
     }
   }, [categoryData]);
-
-  // 카테고리의 그룹 유형 조회 (출처)
-  const getCategoryGroupsE = async () => {
-    const response = await classificationInstance.get('/v1/category/group/E');
-    return response.data.data.typeList;
-  };
-  const { data: groupsEData, refetch: groupsDataERefetch } = useQuery({
-    queryKey: ['get-category-groups-E'],
-    queryFn: getCategoryGroupsE,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-E 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (groupsEData) {
-      fetchCategoryItems(groupsEData, setCategoriesE);
-    }
-  }, [groupsEData]);
-  // 카테고리의 그룹 유형 조회 (교재)
-  const getCategoryGroupsF = async () => {
-    const response = await classificationInstance.get('/v1/category/group/F');
-    return response.data.data.typeList;
-  };
-  const { data: groupsDataF, refetch: groupsDataFRefetch } = useQuery({
-    queryKey: ['get-category-groups-F'],
-    queryFn: getCategoryGroupsF,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-F 에러 메세지',
-    },
-  });
-
-  // 카테고리의 그룹 유형 조회 (내신)
-  const getCategoryGroupsG = async () => {
-    const response = await classificationInstance.get('/v1/category/group/G');
-    return response.data.data.typeList;
-  };
-  const { data: groupsDataG, refetch: groupsDataGRefetch } = useQuery({
-    queryKey: ['get-category-groups-G'],
-    queryFn: getCategoryGroupsG,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-G 에러 메세지',
-    },
-  });
-
-  // 카테고리의 그룹 유형 조회 (기출)
-  const getCategoryGroupsH = async () => {
-    const response = await classificationInstance.get('/v1/category/group/H');
-    return response.data.data.typeList;
-  };
-  const { data: groupsDataH, refetch: groupsDataHRefetch } = useQuery({
-    queryKey: ['get-category-groups-H'],
-    queryFn: getCategoryGroupsH,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-H 에러 메세지',
-    },
-  });
-  useEffect(() => {}, [groupsDataH, groupsDataG, groupsDataF]);
-
-  // 카테고리의 그룹 아이템 조회
-  const fetchCategoryItems = async (
-    typeList: string,
-    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
-  ) => {
-    const typeIds = typeList.split(',');
-    try {
-      const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
-      );
-      const responses = await Promise.all(requests);
-      const itemsList = responses.map(
-        (res) => res?.data?.data?.categoryClassList,
-      );
-      setCategory(itemsList);
-    } catch (error: any) {
-      if (error.response.data?.code == 'GE-002') postRefreshToken();
-    }
-  };
-  useEffect(() => {
-    // console.log(
-    //   'API Response Check: 등록시 필수 E',
-    //   categoriesE,
-    //   'API Response Check: 교재 F',
-    //   groupsDataF,
-    //   'API Response Check: 내신 G',
-    //   groupsDataG,
-    //   'API Response Check: 기출 H',
-    //   groupsDataH,
-    // );
-  }, [categoriesE]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
@@ -463,111 +510,78 @@ export function ContentCreating({
             </EditWrapper>
 
             <BackgroundWrapper>
-              {/* <SelectListWrapper>
-                <strong>
-                  과목<span>*</span>
-                </strong>
+              <SelectListWrapper>
+                <strong className="top_title">출처</strong>
+              </SelectListWrapper>
+              <SelectListWrapper>
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {categoriesE && (
-                        <Select
-                          onDefaultSelect={() => handleDefaultSelect('교과')}
-                          heightScroll={'150px'}
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={'교과'}
-                          key={'교과'}
-                          options={categoriesE[0]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedSubject}
-                        />
-                      )}
-                      {categoriesE && ( //
-                        <Select
-                          onDefaultSelect={() => handleDefaultSelect('과목')}
-                          heightScroll={'150px'}
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={'과목'}
-                          key={'과목'}
-                          options={categoriesE[1]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedCourse}
-                        />
+                      {idxNamePairs[0] && (
+                        <>
+                          {/* {
+                            // 셀렉트가 아닌 경우
+                            idxNamePairs[0].map((category, idx) => (
+                              <Options
+                                titleIdx={idxNamePairs[0][idx].name}
+                                listItem={categoriesH[idx][idx]}
+                                key={`${category?.name} optionsdepth${idx}`}
+                                onOptionChange={setSourceValue}
+                                // initList={quizCategory && quizCategory[idx]}
+                              />
+                            ))
+                          }
+                          {
+                            // 셀렉트인 경우
+                            categoriesH.map((el, index) => {
+                              <Select
+                                onDefaultSelect={() =>
+                                  handleDefaultSelect('문항타입')
+                                }
+                                $positionTop
+                                width={'110px'}
+                                height={'30px'}
+                                defaultValue={'문항타입'}
+                                key={'문항타입'}
+                                options={categoriesH[3]}
+                                onSelect={(event) =>
+                                  selectCategoryOption(event)
+                                }
+                                setSelectedValue={setSelectedQuestionType}
+                              />;
+                            })
+                          } */}
+                        </>
                       )}
                     </SelectWrapper>
                   </li>
                 </SelectList>
-              </SelectListWrapper> */}
-              <SelectListWrapper>
-                <strong>
-                  출처<span>*</span>
-                </strong>
-                <SourceOptionWrapper>
-                  {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {groupsDataF &&
-                    groupsDataG &&
-                    groupsDataH &&
-                    categoryTitles && (
-                      <OptionList
-                        setSelectedSource={setSelectedSource}
-                        categoryTitles={categoryTitles}
-                        categoriesE={categoriesE[2]}
-                        groupsDataF={groupsDataF}
-                        groupsDataG={groupsDataG}
-                        groupsDataH={groupsDataH}
-                        selectedValue={setSelectedList}
-                      />
-                    )}
-                </SourceOptionWrapper>
               </SelectListWrapper>
             </BackgroundWrapper>
             <BackgroundWrapper className="bottom">
               <SelectListWrapper>
-                <strong>
-                  문항타입<span>*</span>
-                </strong>
-                <SelectList>
-                  <li>
-                    <SelectWrapper>
-                      {categoriesE && (
-                        <Select
-                          onDefaultSelect={() =>
-                            handleDefaultSelect('문항타입')
-                          }
-                          $positionTop
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={'문항타입'}
-                          key={'문항타입'}
-                          options={categoriesE[3]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedQuestionType}
-                        />
-                      )}
-                    </SelectWrapper>
-                  </li>
-                </SelectList>
+                <strong className="top_title">추가정보</strong>
               </SelectListWrapper>
               <SelectListWrapper>
-                <strong>난이도</strong>
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {categoriesE && (
-                        <Select
-                          onDefaultSelect={() => handleDefaultSelect('난이도')}
-                          $positionTop
-                          width={'110px'}
-                          height={'30px'}
-                          defaultValue={'난이도'}
-                          key={'난이도'}
-                          options={categoriesE[4]}
-                          onSelect={(event) => selectCategoryOption(event)}
-                          setSelectedValue={setSelectedDifficulty}
-                        />
-                      )}
+                      {idxNamePairs[1] &&
+                        categoriesDD.map((el, idx) => (
+                          <Select
+                            onDefaultSelect={() =>
+                              handleDefaultSelect(idxNamePairs[1][idx].name)
+                            }
+                            $positionTop
+                            width={'110px'}
+                            height={'30px'}
+                            defaultValue={idxNamePairs[1][idx].name}
+                            key={`${idxNamePairs[1][idx].idx},${idxNamePairs[1][idx].name}`}
+                            options={el}
+                            onSelect={(event) => selectCategoryOption(event)}
+                            setSelectedValue={setSelectedQuestionType}
+                          />
+                        ))}
                     </SelectWrapper>
                   </li>
                 </SelectList>
@@ -670,6 +684,12 @@ const SelectListWrapper = styled.div`
 
   &:last-child {
     padding-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+
+    .top_title {
+      flex: 1 0 0;
+    }
   }
   &:nth-child(1) {
     padding-top: 20px;
@@ -735,4 +755,23 @@ const SubmitButtonWrapper = styled.div`
   display: flex;
   flex-direction: row;
   width: 50%;
+`;
+
+const OptionWrapper = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+
+  input {
+    height: 30px;
+    padding: 10px;
+    width: 120px;
+    border: 1px solid ${COLOR.BORDER_GRAY};
+    border-radius: 5px;
+    text-overflow: ellipsis;
+
+    &.modal_input {
+      border: 1px solid ${COLOR.PRIMARY};
+      cursor: pointer;
+    }
+  }
 `;

@@ -36,7 +36,7 @@ import CloseIcon from '../../components/contents/createcontent/editer/components
 import TrashIcon from '../../components/contents/createcontent/editer/components/icons/TrashIcon';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
-import { ItemCategoryType, QuizListType } from '../../types';
+import { IdxNamePair, ItemCategoryType, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 
 import { EditModal } from './EditModal';
@@ -53,124 +53,120 @@ type SearchClass = {
     condition: 'AND' | 'OR';
   };
 };
-interface IdxNamePair {
-  idx: string;
-  name: string;
-}
 
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([
-    // {
-    //   idx: 1414239,
-    //   code: '18174890134',
-    //   isFavorite: false,
-    //   isUse: true,
-    //   isDelete: false,
-    //   userKey: 't1e2s3t',
-    //   createdBy: 'ADMIN',
-    //   createdAt: '2024-01-25 08:43:44',
-    //   lastModifiedBy: 'ADMIN',
-    //   lastModifiedAt: '2024-01-25 08:43:44',
-    //   quizItemList: [
-    //     {
-    //       idx: 7,
-    //       code: '93473456334',
-    //       type: 'TITLE',
-    //       content: '중1-2-8 포세이돈(2015 개정)',
-    //       sort: 1,
-    //     },
-    //     {
-    //       idx: 8,
-    //       code: '93473456344',
-    //       type: 'QUESTION',
-    //       content:
-    //         '<div class="level3"><p>다음 표는 어느 중학교 입학 시험 성적을 조사하여 나타낸 도수분포표이다. 이 시험에 응시한 학생 수는 명이고,경쟁률은<span data-mathinfo="86,1000,2822,688;;empty" class="itexmath" contenteditable="false" data-latex="\\displaystyle 2.5\\,:\\,1" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>2.5</mn><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;0.33em&quot; /><mo>:</mo><mspace width=&quot;0.33em&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mn>1</mn></mrow></mstyle></math>">\\(\\displaystyle 2.5\\,:\\,1\\)</span>일 때, 합격 점수는 몇 점 이상인지 구하시오.</p><div style="display: block; position: relative; top: 0px; text-align: center;"></div><p>(1) 합격생 수는 몇 명인지 구해 보자.</p><p style="text-align:right;"><span data-mathinfo="78,1000,6380,1195;;{ { BOX{~~~~~ LEFT ( 1 RIGHT )~~~~~}  } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle { \\class{itexboxevt}{}\\boxed { \\mathstrut \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, (1) \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, } } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mrow class=&quot;itexboxevt&quot; /><menclose notation=&quot;box&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mpadded width=&quot;0&quot;><mphantom><mo stretchy=&quot;false&quot;>(</mo></mphantom></mpadded></mrow><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mo stretchy=&quot;false&quot;>(</mo><mn>1</mn><mo stretchy=&quot;false&quot;>)</mo><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /></mrow></mstyle></mrow></menclose></mrow></mstyle></math>">\\(\\displaystyle  { \\class{itexboxevt}{}\\boxed{ \\mathstrut \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, (1) \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, } } \\)</span></span></p></div>',
-    //       sort: 2,
-    //     },
-    //     {
-    //       idx: 9,
-    //       code: '92341234123',
-    //       type: 'EXAMPLE',
-    //       content: '객관식 보기 1',
-    //       sort: 3,
-    //     },
-    //     {
-    //       idx: 10,
-    //       code: '91434123415',
-    //       type: 'ANSWER',
-    //       content:
-    //         '<p>1:240\\\\,240명\\\\;2:110\\\\,110명\\\\;3:70\\\\,70점</p>',
-    //       sort: 4,
-    //     },
-    //     {
-    //       idx: 11,
-    //       code: '97245625635',
-    //       type: 'TIP',
-    //       content:
-    //         '<div class=\\"level7\\"><p><span style=\\"\\">(1) 경쟁률이 </span><span style=\\"\\"><span data-mathinfo=\\"86,1000,2822,688;;empty\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle 2.5\\\\,:\\\\,1\\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>2.5</mn><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;0.33em&quot; /><mo>:</mo><mspace width=&quot;0.33em&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mn>1</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle 2.5\\\\,:\\\\,1\\\\)</span><span class=\\"itex_eqn_dummy\\"></span></span><span style=\\"\\">이므로 합격생 수는</span></p><p><span style=\\"\\">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo=\\"66,1000,7140,2250;;{ { 600 TIMES  { 1 } over { 2.5 } =240 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 600 \\\\times { \\\\dfrac { 1 } { 2.5 } } =240 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x00D7;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mfrac><mn>1</mn><mn>2.5</mn></mfrac></mstyle></mrow><mo>=</mo><mn>240</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 600 \\\\times { \\\\dfrac { 1 } { 2.5 } } =240 } \\\\)</span></span><span style=\\"\\">(명)</span></p><p>(2) 입학 시험 성적이 <span data-mathinfo=\\"86,1000,1050,975;;{ { 70 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 70 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 70 } \\\\)</span>점 이상 <span data-mathinfo=\\"86,1000,1050,975;;{ { 80 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 80 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>80</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 80 } \\\\)</span>점 미만인 학생 수는</p><p>&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo=\\"86,1000,18670,975;;{ { 600-(60+92+96+112+74+56)=110 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 600-(60+92+96+112+74+56)=110 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x2212;</mo><mo stretchy=&quot;false&quot;>(</mo><mn>60</mn><mo>+</mo><mn>92</mn><mo>+</mo><mn>96</mn><mo>+</mo><mn>112</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo stretchy=&quot;false&quot;>)</mo><mo>=</mo><mn>110</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 600-(60+92+96+112+74+56)=110 } \\\\)</span>(명)</p><p><span style=\\"\\">(3) 입학 시험 성적이 </span><span style=\\"\\"><span data-mathinfo=\\"86,1000,1050,975;;{ { 70 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 70 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 70 } \\\\)</span></span><span style=\\"\\">점 이상인 학생 수는</span></p><p><span style=\\"\\">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo=\\"86,1000,8705,975;;{ { 110+74+56=240 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 110+74+56=240 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>110</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo>=</mo><mn>240</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 110+74+56=240 } \\\\)</span></span><span style=\\"\\">(명)</span></p><p><span style=\\"\\">&nbsp;&nbsp;&nbsp;&nbsp;따라서 합격 점수는 </span><span style=\\"\\"><span data-mathinfo=\\"86,1000,1050,975;;{ { 70 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 70 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 70 } \\\\)</span></span><span style=\\"\\">점 이상이다. </span></p><p></p><p></p></div>',
-    //       sort: 5,
-    //     },
-    //     {
-    //       idx: 12,
-    //       code: '97245625625',
-    //       type: 'COMMENTARY',
-    //       content: '객관식 해설 1',
-    //       sort: 6,
-    //     },
-    //   ],
-    //   quizCategoryList: [
-    //     {
-    //       type: 'CATEGORY',
-    //       quizCategory: {
-    //         과목: 'OL_연산',
-    //         교과: '수학',
-    //         학기: 1,
-    //         학년: 1,
-    //         학교급: '중등',
-    //         categories: [
-    //           {
-    //             유형: '유한집합의 원소의 개수',
-    //             대단원: '집합과 자연수',
-    //             소단원: '집합의 뜻',
-    //             중단원: '집합',
-    //           },
-    //         ],
-    //         교육과정: '7차',
-    //       },
-    //     },
-    //     {
-    //       type: 'CLASS',
-    //       quizCategory: {
-    //         sources: [
-    //           {
-    //             출처: '교재',
-    //             교재명: '수학 교재 2',
-    //             시리즈: '시리즈B',
-    //             출판사: '출판사B',
-    //             교재속성: '공통',
-    //             출판년도: '2022',
-    //             교재페이지: 132,
-    //             교재문항번호: 7,
-    //           },
-    //         ],
-    //         난이도: '하',
-    //         문항타입: '객관식',
-    //       },
-    //     },
-    //   ],
-    //   lastArticle: {
-    //     createdAt: '',
-    //     createdBy: '',
-    //     extension: '',
-    //     idx: 0,
-    //     originalName: '',
-    //     storedPath: '',
-    //     type: '',
-    //   },
-    //   type: '',
-    //   quizList: [],
-    // },
+    {
+      idx: 1414239,
+      code: '18174890134',
+      isFavorite: false,
+      isUse: true,
+      isDelete: false,
+      userKey: 't1e2s3t',
+      createdBy: 'ADMIN',
+      createdAt: '2024-01-25 08:43:44',
+      lastModifiedBy: 'ADMIN',
+      lastModifiedAt: '2024-01-25 08:43:44',
+      quizItemList: [
+        {
+          idx: 7,
+          code: '93473456334',
+          type: 'TITLE',
+          content: '중1-2-8 포세이돈(2015 개정)',
+          sort: 1,
+        },
+        {
+          idx: 8,
+          code: '93473456344',
+          type: 'QUESTION',
+          content:
+            '<div class="level3"><p>다음 표는 어느 중학교 입학 시험 성적을 조사하여 나타낸 도수분포표이다. 이 시험에 응시한 학생 수는 명이고,경쟁률은<span data-mathinfo="86,1000,2822,688;;empty" class="itexmath" contenteditable="false" data-latex="\\displaystyle 2.5\\,:\\,1" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>2.5</mn><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;0.33em&quot; /><mo>:</mo><mspace width=&quot;0.33em&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mn>1</mn></mrow></mstyle></math>">\\(\\displaystyle 2.5\\,:\\,1\\)</span>일 때, 합격 점수는 몇 점 이상인지 구하시오.</p><div style="display: block; position: relative; top: 0px; text-align: center;"></div><p>(1) 합격생 수는 몇 명인지 구해 보자.</p><p style="text-align:right;"><span data-mathinfo="78,1000,6380,1195;;{ { BOX{~~~~~ LEFT ( 1 RIGHT )~~~~~}  } }" class="itexmath" contenteditable="false" data-latex="\\displaystyle { \\class{itexboxevt}{}\\boxed { \\mathstrut \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, (1) \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, } } " data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mrow class=&quot;itexboxevt&quot; /><menclose notation=&quot;box&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mpadded width=&quot;0&quot;><mphantom><mo stretchy=&quot;false&quot;>(</mo></mphantom></mpadded></mrow><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mo stretchy=&quot;false&quot;>(</mo><mn>1</mn><mo stretchy=&quot;false&quot;>)</mo><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /></mrow></mstyle></mrow></menclose></mrow></mstyle></math>">\\(\\displaystyle  { \\class{itexboxevt}{}\\boxed{ \\mathstrut \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, (1) \\,\\, \\,\\, \\,\\, \\,\\, \\,\\, } } \\)</span></span></p></div>',
+          sort: 2,
+        },
+        {
+          idx: 9,
+          code: '92341234123',
+          type: 'EXAMPLE',
+          content: '객관식 보기 1',
+          sort: 3,
+        },
+        {
+          idx: 10,
+          code: '91434123415',
+          type: 'ANSWER',
+          content:
+            '<p>1:240\\\\,240명\\\\;2:110\\\\,110명\\\\;3:70\\\\,70점</p>',
+          sort: 4,
+        },
+        {
+          idx: 11,
+          code: '97245625635',
+          type: 'TIP',
+          content:
+            '<div class=\\"level7\\"><p><span style=\\"\\">(1) 경쟁률이 </span><span style=\\"\\"><span data-mathinfo=\\"86,1000,2822,688;;empty\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle 2.5\\\\,:\\\\,1\\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>2.5</mn><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;0.33em&quot; /><mo>:</mo><mspace width=&quot;0.33em&quot; /><mspace width=&quot;thinmathspace&quot; /><mspace width=&quot;thinmathspace&quot; /><mn>1</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle 2.5\\\\,:\\\\,1\\\\)</span><span class=\\"itex_eqn_dummy\\"></span></span><span style=\\"\\">이므로 합격생 수는</span></p><p><span style=\\"\\">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo=\\"66,1000,7140,2250;;{ { 600 TIMES  { 1 } over { 2.5 } =240 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 600 \\\\times { \\\\dfrac { 1 } { 2.5 } } =240 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x00D7;</mo><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mfrac><mn>1</mn><mn>2.5</mn></mfrac></mstyle></mrow><mo>=</mo><mn>240</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 600 \\\\times { \\\\dfrac { 1 } { 2.5 } } =240 } \\\\)</span></span><span style=\\"\\">(명)</span></p><p>(2) 입학 시험 성적이 <span data-mathinfo=\\"86,1000,1050,975;;{ { 70 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 70 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 70 } \\\\)</span>점 이상 <span data-mathinfo=\\"86,1000,1050,975;;{ { 80 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 80 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>80</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 80 } \\\\)</span>점 미만인 학생 수는</p><p>&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo=\\"86,1000,18670,975;;{ { 600-(60+92+96+112+74+56)=110 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 600-(60+92+96+112+74+56)=110 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>600</mn><mo>&amp;#x2212;</mo><mo stretchy=&quot;false&quot;>(</mo><mn>60</mn><mo>+</mo><mn>92</mn><mo>+</mo><mn>96</mn><mo>+</mo><mn>112</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo stretchy=&quot;false&quot;>)</mo><mo>=</mo><mn>110</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 600-(60+92+96+112+74+56)=110 } \\\\)</span>(명)</p><p><span style=\\"\\">(3) 입학 시험 성적이 </span><span style=\\"\\"><span data-mathinfo=\\"86,1000,1050,975;;{ { 70 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 70 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 70 } \\\\)</span></span><span style=\\"\\">점 이상인 학생 수는</span></p><p><span style=\\"\\">&nbsp;&nbsp;&nbsp;&nbsp;<span data-mathinfo=\\"86,1000,8705,975;;{ { 110+74+56=240 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 110+74+56=240 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>110</mn><mo>+</mo><mn>74</mn><mo>+</mo><mn>56</mn><mo>=</mo><mn>240</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 110+74+56=240 } \\\\)</span></span><span style=\\"\\">(명)</span></p><p><span style=\\"\\">&nbsp;&nbsp;&nbsp;&nbsp;따라서 합격 점수는 </span><span style=\\"\\"><span data-mathinfo=\\"86,1000,1050,975;;{ { 70 } }\\" class=\\"itexmath\\" contenteditable=\\"false\\" data-latex=\\"\\\\displaystyle  { 70 } \\" data-mathml=\\"<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mstyle displaystyle=&quot;true&quot; scriptlevel=&quot;0&quot;><mrow class=&quot;MJX-TeXAtom-ORD&quot;><mn>70</mn></mrow></mstyle></math>\\">\\\\(\\\\displaystyle  { 70 } \\\\)</span></span><span style=\\"\\">점 이상이다. </span></p><p></p><p></p></div>',
+          sort: 5,
+        },
+        {
+          idx: 12,
+          code: '97245625625',
+          type: 'COMMENTARY',
+          content: '객관식 해설 1',
+          sort: 6,
+        },
+      ],
+      quizCategoryList: [
+        {
+          type: 'CATEGORY',
+          quizCategory: {
+            과목: 'OL_연산',
+            교과: '수학',
+            학기: 1,
+            학년: 1,
+            학교급: '중등',
+            categories: [
+              {
+                유형: '유한집합의 원소의 개수',
+                대단원: '집합과 자연수',
+                소단원: '집합의 뜻',
+                중단원: '집합',
+              },
+            ],
+            교육과정: '7차',
+          },
+        },
+        {
+          type: 'CLASS',
+          quizCategory: {
+            sources: [
+              {
+                출처: '교재',
+                교재명: '수학 교재 2',
+                시리즈: '시리즈B',
+                출판사: '출판사B',
+                교재속성: '공통',
+                출판년도: '2022',
+                교재페이지: 132,
+                교재문항번호: 7,
+              },
+            ],
+            난이도: '하',
+            문항타입: '객관식',
+          },
+        },
+      ],
+      lastArticle: {
+        createdAt: '',
+        createdBy: '',
+        extension: '',
+        idx: 0,
+        originalName: '',
+        storedPath: '',
+        type: '',
+      },
+      type: '',
+      quizList: [],
+    },
   ]);
   const [checkList, setCheckList] = useState<number[]>([]); // 문항 체크
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
@@ -207,12 +203,12 @@ export function ContentInformationChange() {
   const [state, setState] = useState<'수정' | '복제' | null>(null);
   const { openModal } = useModal();
 
-  // 메뉴 목록 조회 api
+  // 메뉴 목록 조회 api (셋팅값)
   const getMenuSetting = async () => {
     const res = await resourceServiceInstance.get(
       `/v1/menu/path?url=contentEditingSetting`,
     );
-    console.log('getMenuSetting--------', res.data.data);
+    console.log('getMenuSetting--------', res);
     return res.data.data;
   };
   const {
@@ -231,15 +227,29 @@ export function ContentInformationChange() {
   useEffect(() => {
     if (menuSettingData) {
       //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
+      console.log(
+        '메뉴 셋팅값 ------ ',
+        menuSettingData?.menuDetailList[0]?.idxList,
+        menuSettingData,
+      );
+      // 셋팅값 없을시 얼럿
+      // if (menuSettingData?.menuDetailList[0]?.idxs == undefined) {
+      //   // openToastifyAlert({
+      //   //   type: 'error',
+      //   //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
+      //   // });
+      //   alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
+      //   window.close();
+      // }
       fetchCategoryItems(
-        menuSettingData.menuDetailList[0].idxs,
+        menuSettingData?.menuDetailList[0]?.idxList,
         setCategoriesE,
       );
 
       // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
-      const menuDetail = menuSettingData.menuDetailList[0];
-      const idxs = menuDetail.idxs.split(',');
-      const names = menuDetail.names.split(',');
+      const menuDetail = menuSettingData?.menuDetailList[0];
+      const idxs = menuDetail?.idxList?.split(',');
+      const names = menuDetail?.nameList?.split(',');
       const pairs = idxs.map((idx: any, index: string | number) => ({
         idx,
         name: names[index],
@@ -267,7 +277,7 @@ export function ContentInformationChange() {
       console.log('itemsList', itemsList);
       setCategory(itemsList);
     } catch (error: any) {
-      if (error.response.data?.code == 'GE-002') postRefreshToken();
+      if (error?.response?.data?.code == 'GE-002') postRefreshToken();
     }
   };
 
@@ -398,104 +408,104 @@ export function ContentInformationChange() {
   window.editorType_s = true;
   const ocrIframeContainer = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const initialScripts = [
-      '/static/tinymce5/js/tinymce/tinymce.min.js',
-      '/static/iTeX_EQ/js/jquery-3.3.1.min.js',
-      '/static/iTeX_EQ/js/jquery-ui.min.js',
-      '/static/iTeX_EQ/js/ds.min.js',
-      '/static/OCR/cropper/cropper.js',
-      '/static/OCR/PDF/pdf.js',
-      '/static/iTeX_fulltext/js/bootstrap.bundle.min.js',
-      '/static/iTeX_fulltext/js/sort-list.js',
-      '/static/dream_ui/js/dream_setting.js',
-      '/static/iTeX_EQ/js/itex_total_eq_origin_32.js',
-    ];
-    const subsequentScripts = [
-      '/static/dream_ui/js/init_setting.js',
-      '/static/iTeX_EQ/js/itexLoader.js',
-      '/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71',
-      '/static/dream_ui/js/data_view_area.js',
-      '/static/dream_ui/js/frame_controller.js',
-      '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12',
-      '/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1',
-      '/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87',
-      '/static/iTeX_fulltext/js/dream_function.js',
-      '/static/iTeX_fulltext/js/hmlupload.js?v=0.1',
-      '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
-    ];
+  // useEffect(() => {
+  //   const initialScripts = [
+  //     '/static/tinymce5/js/tinymce/tinymce.min.js',
+  //     '/static/iTeX_EQ/js/jquery-3.3.1.min.js',
+  //     '/static/iTeX_EQ/js/jquery-ui.min.js',
+  //     '/static/iTeX_EQ/js/ds.min.js',
+  //     '/static/OCR/cropper/cropper.js',
+  //     '/static/OCR/PDF/pdf.js',
+  //     '/static/iTeX_fulltext/js/bootstrap.bundle.min.js',
+  //     '/static/iTeX_fulltext/js/sort-list.js',
+  //     '/static/dream_ui/js/dream_setting.js',
+  //     '/static/iTeX_EQ/js/itex_total_eq_origin_32.js',
+  //   ];
+  //   const subsequentScripts = [
+  //     '/static/dream_ui/js/init_setting.js',
+  //     '/static/iTeX_EQ/js/itexLoader.js',
+  //     '/static/iTeX_fulltext/js/fulltext_dream.js?v=0.71',
+  //     '/static/dream_ui/js/data_view_area.js',
+  //     '/static/dream_ui/js/frame_controller.js',
+  //     '/static/iTeX_fulltext/js/itex_parser_dream.js?v=0.9.6.12',
+  //     '/static/iTeX_fulltext/js/itex_parser_pj2.js?v=0.9.1',
+  //     '/static/iTeX_fulltext/js/cw_poc_pj_dream.js?v=0.87',
+  //     '/static/iTeX_fulltext/js/dream_function.js',
+  //     '/static/iTeX_fulltext/js/hmlupload.js?v=0.1',
+  //     '/static/iTeX_fulltext/js/pdf_postprocess.js?v=0.1',
+  //   ];
 
-    // 동적 스크립트 로딩 함수
-    const dynamicallyLoadScripts = (
-      scriptUrls: any[],
-      callback: { (): Promise<void>; (): void; (): void },
-    ) => {
-      const promises = scriptUrls.map((url) => {
-        return new Promise((resolve, reject) => {
-          // 스크립트가 이미 존재하는지 확인
-          if (document.querySelector(`script[src="${url}"]`)) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            resolve(); // 이미 로드된 경우 건너뜀
-            return;
-          }
+  //   // 동적 스크립트 로딩 함수
+  //   const dynamicallyLoadScripts = (
+  //     scriptUrls: any[],
+  //     callback: { (): Promise<void>; (): void; (): void },
+  //   ) => {
+  //     const promises = scriptUrls.map((url) => {
+  //       return new Promise((resolve, reject) => {
+  //         // 스크립트가 이미 존재하는지 확인
+  //         if (document.querySelector(`script[src="${url}"]`)) {
+  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //           // @ts-expect-error
+  //           resolve(); // 이미 로드된 경우 건너뜀
+  //           return;
+  //         }
 
-          // 존재하지 않는 경우 새로 로드
-          const script = document.createElement('script');
-          script.src = url;
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          script.onload = () => resolve();
-          script.onerror = () =>
-            reject(new Error(`Failed to load script ${url}`));
-          document.body.appendChild(script);
-        });
-      });
+  //         // 존재하지 않는 경우 새로 로드
+  //         const script = document.createElement('script');
+  //         script.src = url;
+  //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //         // @ts-expect-error
+  //         script.onload = () => resolve();
+  //         script.onerror = () =>
+  //           reject(new Error(`Failed to load script ${url}`));
+  //         document.body.appendChild(script);
+  //       });
+  //     });
 
-      Promise.all(promises)
-        .then(() => {
-          if (callback) callback();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    };
+  //     Promise.all(promises)
+  //       .then(() => {
+  //         if (callback) callback();
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   };
 
-    const initComponent = async () => {
-      dynamicallyLoadScripts([...initialScripts], async () => {
-        console.log('Initial scripts loaded');
-        const checkTinyMCEReady = () => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          if (window.tinymce) {
-            console.log('tinymce loaded successfully');
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            dynamicallyLoadScripts([...subsequentScripts], () => {
-              console.log('Subsequent scripts loaded');
+  //   const initComponent = async () => {
+  //     dynamicallyLoadScripts([...initialScripts], async () => {
+  //       console.log('Initial scripts loaded');
+  //       const checkTinyMCEReady = () => {
+  //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //         // @ts-expect-error
+  //         if (window.tinymce) {
+  //           console.log('tinymce loaded successfully');
+  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //           // @ts-expect-error
+  //           dynamicallyLoadScripts([...subsequentScripts], () => {
+  //             console.log('Subsequent scripts loaded');
 
-              if (ocrIframeContainer.current) {
-                const iframe = document.createElement('iframe');
-                iframe.width = '0';
-                iframe.height = '0';
-                iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
-                iframe.frameBorder = '0';
-                iframe.scrolling = 'no';
-                iframe.id = 'itex_frame_area';
-                ocrIframeContainer.current.appendChild(iframe);
-              }
-            });
-          } else {
-            setTimeout(checkTinyMCEReady, 50);
-          }
-        };
+  //             if (ocrIframeContainer.current) {
+  //               const iframe = document.createElement('iframe');
+  //               iframe.width = '0';
+  //               iframe.height = '0';
+  //               iframe.src = '/static/OCR/ocr_iframe_origin.html?v=0.34';
+  //               iframe.frameBorder = '0';
+  //               iframe.scrolling = 'no';
+  //               iframe.id = 'itex_frame_area';
+  //               ocrIframeContainer.current.appendChild(iframe);
+  //             }
+  //           });
+  //         } else {
+  //           setTimeout(checkTinyMCEReady, 50);
+  //         }
+  //       };
 
-        checkTinyMCEReady();
-      });
-    };
+  //       checkTinyMCEReady();
+  //     });
+  //   };
 
-    initComponent();
-  }, []);
+  //   initComponent();
+  // }, []);
 
   //수식 입력기
   const openFormula = (state: unknown) => {
@@ -603,9 +613,9 @@ export function ContentInformationChange() {
       selectedItems1.length > 0 &&
       selectedItems2.length > 0
     ) {
-      return false;
-    } else {
       return true;
+    } else {
+      return false;
     }
   }, [selectedItems1, selectedItems2]);
 
@@ -663,13 +673,15 @@ export function ContentInformationChange() {
                   options={idxNamePairs.map((pair) => pair.name)}
                 />
                 <span>이(가)</span>
-                {/* <DropdownWithCheckbox
+                <DropdownWithCheckbox
                   width={'200px'}
                   selectedList={setSelectedItems2}
                   options={
-                    selectedIndex !== null ? categoriesE[selectedIndex] : ['']
+                    selectedIndex !== null
+                      ? categoriesE[selectedIndex]?.map((item) => item.name)
+                      : ['']
                   }
-                /> */}
+                />
               </DropdownWithCheckboxWrapper>
               <SwitchContainer>
                 <SwitchButton
@@ -694,14 +706,7 @@ export function ContentInformationChange() {
                       selectedList={(selectedItems: string[]) =>
                         updateSelectedItems1(index, selectedItems)
                       }
-                      options={[
-                        'lisdsad sadasdsa dsadsada dsa t1',
-                        'list2',
-                        'list3',
-                        'list4',
-                        'list5',
-                        'list6',
-                      ]}
+                      options={idxNamePairs.map((pair) => pair.name)}
                     />
                     <span>이(가)</span>
                     <DropdownWithCheckbox
@@ -709,14 +714,11 @@ export function ContentInformationChange() {
                       selectedList={(selectedItems: string[]) =>
                         updateSelectedItems2(index, selectedItems)
                       }
-                      options={[
-                        'lisdsad',
-                        'list2',
-                        'list3',
-                        'list4',
-                        'list5',
-                        'list6',
-                      ]}
+                      options={
+                        selectedIndex !== null
+                          ? categoriesE[selectedIndex]?.map((item) => item.name)
+                          : ['']
+                      }
                     />
                   </DropdownWithCheckboxWrapper>
 

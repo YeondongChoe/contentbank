@@ -19,7 +19,7 @@ type CategoryList = {
 
 interface Props {
   categoryTitles: ItemCategoryType[];
-  categoriesE: ItemCategoryType[];
+  categoriesE?: ItemCategoryType[];
   groupsDataF: string;
   groupsDataG: string;
   groupsDataH: string;

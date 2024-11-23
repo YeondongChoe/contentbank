@@ -15,11 +15,16 @@ import {
   Select,
   ValueNone,
 } from '../..';
-import { classificationInstance, quizService } from '../../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
   AddQuestionListType,
   EditorDataType,
+  IdxNamePair,
   ItemCategoryType,
   QuestionClassListType,
   QuizCategory,
@@ -143,8 +148,6 @@ export function ContentEdit({
   }, []);
 
   //셀렉트 값
-  // const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
-  // const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
   const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
@@ -153,6 +156,64 @@ export function ContentEdit({
       [key: number]: string;
     }[]
   >([]);
+
+  // 메뉴 목록 조회 api (셋팅값)
+  const [idxNamePairs, setIdxNamePairs] = useState<IdxNamePair[]>([]);
+  const getMenuSetting = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=contentDtEditingSetting`,
+    );
+    console.log('getMenuSetting--------', res);
+    return res.data.data;
+  };
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
+    queryKey: ['get-menuSetting'],
+    queryFn: getMenuSetting,
+    meta: {
+      errorMessage: 'get-menuSetting 에러 메세지',
+    },
+  });
+  useEffect(() => {
+    if (menuSettingData) {
+      //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
+      console.log(
+        '메뉴 셋팅값 ------ ',
+        menuSettingData?.menuDetailList[0]?.idxList,
+        menuSettingData,
+      );
+
+      // 셋팅값 없을시 얼럿
+      // if (menuSettingData?.menuDetailList[0]?.idxs == undefined) {
+      //   // openToastifyAlert({
+      //   //   type: 'error',
+      //   //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
+      //   // });
+      //   alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
+      //   window.close();
+      // }
+      fetchCategoryItems(
+        menuSettingData?.menuDetailList[0]?.idxList,
+        setCategoriesE,
+      );
+
+      // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
+      const menuDetail = menuSettingData?.menuDetailList[0];
+      const idxs = menuDetail?.idxList?.split(',');
+      const names = menuDetail?.nameList?.split(',');
+      const pairs = idxs.map((idx: any, index: string | number) => ({
+        idx,
+        name: names[index],
+      }));
+
+      console.log('idxNamePairs----', pairs);
+      setIdxNamePairs(pairs);
+    }
+  }, [menuSettingData]);
+
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
     if (onItemClickData) {
@@ -306,8 +367,6 @@ export function ContentEdit({
   }, [quizItemArrList]);
 
   useEffect(() => {
-    // console.log('selectedSubject 교과', selectedSubject);
-    // console.log('selectedCourse 과목', selectedCourse);
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
@@ -724,49 +783,6 @@ export function ContentEdit({
 
   return (
     <Container>
-      {/* <PerfectScrollbar>
-        <div className="type4_container">
-          <PerfectScrollbar>
-            <MathViewerWrapper>
-              {onItemClickData ? (
-                <>
-                  {onItemClickData?.quizItemList ? (
-                    onItemClickData?.quizItemList?.map((el) => (
-                      <div key={`${el?.code} quizItemList sortedList`}>
-                        {[
-                          'BIG',
-                          'TEXT',
-                          'QUESTION',
-                          'SMALL',
-                          'EXAMPLE',
-                          'CHOICES',
-                          'ANSWER',
-                          'COMMENTARY',
-                          'HINT',
-                          'CONCEPT',
-                          'TITLE',
-                          'TIP',
-                        ].includes(el?.type) &&
-                          el?.content && (
-                            <MathViewer data={el.content}></MathViewer>
-                          )}
-                      </div>
-                    ))
-                  ) : (
-                    <>
-                      <ValueNone info="등록된 데이터가 없습니다" textOnly />
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  <ValueNone info="문항을 선택해 주세요" textOnly />
-                </>
-              )}
-            </MathViewerWrapper>
-          </PerfectScrollbar>
-        </div>
-      </PerfectScrollbar> */}
       <ContentsWrapper>
         <EditContainerWrapper>
           <PerfectScrollbar>

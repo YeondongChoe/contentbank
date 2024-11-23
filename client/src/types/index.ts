@@ -12,3 +12,4 @@ export * from './CsatType';
 export * from './PaginationType';
 export * from './ResourceType';
 export * from './PreviousSchoolType';
+export * from './MenuSetting';

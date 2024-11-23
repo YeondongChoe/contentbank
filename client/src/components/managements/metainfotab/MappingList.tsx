@@ -202,7 +202,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
     <>
       <Tags
         ref={ref}
-        className={`gap ${activeItem === item ? 'on' : ''}`}
+        className={`//${item.idx}//${item.code}//${item.depth}// gap ${activeItem === item ? 'on_map_item' : ''} `}
         onClick={() => {
           handleTagClick(item);
           toggleExpanded(item);
@@ -277,7 +277,7 @@ const Tags = styled.button`
   .end {
     margin-left: auto;
   }
-  &.on {
+  &.on_map_item {
     border: 1px solid ${COLOR.PRIMARY};
   }
 `;
