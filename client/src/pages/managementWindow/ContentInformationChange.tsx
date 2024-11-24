@@ -18,6 +18,7 @@ import {
   CheckBoxI,
   DropdownWithCheckbox,
   EditListItem,
+  Icon,
   List,
   MathViewer,
   Modal,
@@ -38,6 +39,7 @@ import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { IdxNamePair, ItemCategoryType, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
+import { windowOpenHandler } from '../../utils/windowHandler';
 
 import { EditModal } from './EditModal';
 
@@ -576,6 +578,27 @@ export function ContentInformationChange() {
     setSearchClassList(updatedSearchClassList);
   };
 
+  // 전체보기 버튼 누를시
+  const openViewer = (code: string) => {
+    const quiz = questionList.filter((el) => el.code === code);
+    console.log('선택된 요소', quiz[0]);
+    console.log('선택된 요소', quiz[0].idx);
+    const data: QuizListType = quiz[0];
+    // data 객체의 속성들을 문자열로 변환
+    const dataStringified: Record<string, string> = {
+      // ...data,
+      idx: data.idx.toString(),
+    };
+    const queryString = new URLSearchParams(dataStringified).toString();
+
+    windowOpenHandler({
+      name: 'quizpreview',
+      url: `/quizpreview?${queryString}`,
+      $width: 800,
+      $height: 800,
+    });
+  };
+
   const editSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
 
@@ -1061,6 +1084,17 @@ export function ContentInformationChange() {
                               </p>
                             </ContentsBox>
                           </ContentsWrapper>
+                          <ViewDetails>
+                            <span>
+                              <Icon
+                                onClick={() => openViewer(item.code)}
+                                width={`40px`}
+                                src={`/images/icon/entypo_popup.svg`}
+                                $margin="0 0 15px 0"
+                              />
+                              <span>문항 상세보기</span>
+                            </span>
+                          </ViewDetails>
                         </EditListItem>
                       ))}
                     </ListWrapper>
@@ -1144,6 +1178,17 @@ export function ContentInformationChange() {
                               </p>
                             </ContentsBox>
                           </ContentsWrapper>
+                          <ViewDetails>
+                            <span>
+                              <Icon
+                                onClick={() => openViewer(item.code)}
+                                width={`40px`}
+                                src={`/images/icon/entypo_popup.svg`}
+                                $margin="0 0 15px 0"
+                              />
+                              <span>문항 상세보기</span>
+                            </span>
+                          </ViewDetails>
                         </EditListItem>
                       ))}
                     </ListWrapper>
@@ -1312,6 +1357,17 @@ export function ContentInformationChange() {
                                 </p>
                               </ContentsBox>
                             </ContentsWrapper>
+                            <ViewDetails>
+                              <span>
+                                <Icon
+                                  onClick={() => openViewer(item.code)}
+                                  width={`40px`}
+                                  src={`/images/icon/entypo_popup.svg`}
+                                  $margin="0 0 15px 0"
+                                />
+                                <span>문항 상세보기</span>
+                              </span>
+                            </ViewDetails>
                           </EditListItem>
                         ))}
                       </ListWrapper>
@@ -1667,6 +1723,30 @@ const ContentsBox = styled.div`
 const ContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1 0 0;
+`;
+
+const ViewDetails = styled.button`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  border: none;
+  background-color: transparent;
+  border-left: 1px solid #aaa;
+  height: 100%;
+  margin-left: 10px;
+  cursor: pointer;
+  max-width: 100px;
+  padding: 10px 0 0 10px;
+  span {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 12px;
+    color: #aaa;
+  }
 `;
 
 const InputWrapper = styled.div`

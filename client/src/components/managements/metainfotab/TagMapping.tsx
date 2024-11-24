@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
-import { Button, CheckBoxI, Icon, Switch } from '../../atom';
+import { Button, CheckBoxI, Icon, openToastifyAlert, Switch } from '../../atom';
 import { COLOR } from '../../constants';
 import { ListItem, Search } from '../../molecules';
 import { useDnD } from '../../molecules/dragAndDrop';
@@ -83,26 +84,46 @@ export function TagMapping() {
   const query = new URLSearchParams(location.search);
   const queryValue = query.get('state');
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (queryValue) {
+  //     console.log('query', queryValue.split('/')[1]);
+
+  //     // 최초 집입시 그룹아이템의 idx 값으로 조회
+  //     const groupIdx = queryValue.split('/')[1];
+  //     const getCategoryMap = async () => {
+  //       const res = await classificationInstance.get(
+  //         `/v1/category/map/${groupIdx}`,
+  //       );
+  //       console.log(
+  //         '선택된 idx에 따른 항목 조회 ----- ',
+  //         res.data.data?.mapList,
+  //       );
+  //       setMappingList(res.data.data?.mapList);
+  //     };
+
+  //     getCategoryMap();
+  //   }
+  // }, []);
+
+  const getCategoryMap = async () => {
     if (queryValue) {
-      console.log('query', queryValue.split('/')[1]);
-
-      // 최초 집입시 그룹아이템의 idx 값으로 조회
       const groupIdx = queryValue.split('/')[1];
-      const getCategoryMap = async () => {
-        const res = await classificationInstance.get(
-          `/v1/category/map/${groupIdx}`,
-        );
-        console.log(
-          '선택된 idx에 따른 항목 조회 ----- ',
-          res.data.data?.mapList,
-        );
-        setMappingList(res.data.data?.mapList);
-      };
-
-      getCategoryMap();
+      const res = await classificationInstance.get(
+        `/v1/category/map/${groupIdx}`,
+      );
+      console.log('선택된 idx에 따른 항목 조회 ----- ', res.data.data?.mapList);
+      setMappingList(res.data.data?.mapList);
     }
-  }, []);
+  };
+
+  const { data: mappingData, refetch: mappingDataRefetch } = useQuery({
+    queryKey: ['get-categoryMap'], // 쿼리 키를 unique하게 설정
+    queryFn: getCategoryMap, // groupIdx 추출
+    enabled: !!queryValue, // queryValue가 있을 때만 실행
+    meta: {
+      errorMessage: 'get-categoryMap 에러 메세지',
+    },
+  });
 
   const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
     const updatedList = [...mappingList];
@@ -122,13 +143,15 @@ export function TagMapping() {
       if (item.idx === activeMappingItem.idx) {
         // children이 undefined일 수 있으므로 빈 배열로 초기화
 
+        // 코드네임 찾기 / 카테고리 순서에서 다음 순번 이름
+
         checkList.forEach((tagName) => {
           (item.children as CategoryItem[]).push({
             idx: Math.random(), // 태그에 대한 고유 idx 값을 생성
             name: tagName,
-            code: tagName, // 필요한 코드값 설정
+            code: selectedNextItem?.name as string, // 필요한 코드값 설정
             depth: item.depth + 1,
-            isUse: true,
+            isUse: false,
           });
         });
       }
@@ -157,7 +180,71 @@ export function TagMapping() {
   useEffect(() => {
     console.log('MappingList ------------- ', mappingList);
   }, [mappingList]);
-  //
+
+  // 변경 매핑 데이터 전송 api
+  const postCategoryMapData = async (data: {
+    itemGroupIdx: number;
+    categoryClass: any[];
+  }) => {
+    const response = await classificationInstance.post(
+      '/v1/category/class/map',
+      data,
+    );
+    return response.data;
+  };
+
+  const { mutate: sendCategoryData } = useMutation({
+    mutationFn: postCategoryMapData,
+    onSuccess: () => {
+      openToastifyAlert({
+        type: 'success',
+        text: 'Data successfully updated!',
+      });
+      // 성공후 업데이트
+      mappingDataRefetch();
+    },
+    onError: (error) => {
+      openToastifyAlert({
+        type: 'error',
+        text: 'Error while saving data.',
+      });
+    },
+  });
+
+  const updateData = () => {
+    // 필터링된 데이터로 변환하는 함수
+    const filterActiveItems = (list: CategoryItem[]) => {
+      return list.reduce((acc: any[], item) => {
+        // 자식 항목들 필터링
+        const filteredChildren = item.children
+          ? filterActiveItems(item.children)
+          : [];
+
+        // 활성화된 항목만 포함
+        if (item.isUse) {
+          acc.push({
+            idx: item.idx,
+            name: item.name,
+            code: item.code,
+            depth: item.depth,
+            isUse: item.isUse,
+            children: filteredChildren, // 자식 항목들도 동일하게 필터링
+          });
+        }
+
+        return acc;
+      }, []);
+    };
+
+    const requestData = {
+      itemGroupIdx: 2, // TODO: 확인 필요
+      categoryClass: filterActiveItems(mappingList), // 활성화된 아이템만 필터링
+    };
+
+    console.log('활성화된 데이터만 업데이트 --- ', requestData);
+    sendCategoryData(requestData);
+  };
+
   // const handleAddTag = () => {
   //   if (searchValue && !sampleTags.includes(searchValue)) {
   //     // Add the new tag logic here
@@ -312,6 +399,7 @@ export function TagMapping() {
                 filteredTags.length > 0 ? (
                   <Dropdown>
                     <DropdownTagList>
+                      {/* TODO: 필터링될 전체 리스트값 가져오기 */}
                       {filteredTags.map((tag, index) => (
                         <ListItem
                           key={index}
@@ -426,13 +514,7 @@ export function TagMapping() {
         </ListItemWrapper>
       </Container>
       <BottomButtonWrapper>
-        <Button
-          width="300px"
-          $filled
-          onClick={() => {
-            setIsInit(!isInit);
-          }}
-        >
+        <Button width="300px" $filled onClick={() => updateData()}>
           저장
         </Button>
       </BottomButtonWrapper>

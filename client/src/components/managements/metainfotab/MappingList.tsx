@@ -4,6 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { styled } from 'styled-components';
 
+import { classificationInstance } from '../../../api/axios';
 import { CheckBoxI, Icon, Switch, ValueNone } from '../../../components/atom';
 import { COLOR } from '../../../components/constants';
 import { useDnD } from '../../../components/molecules';
@@ -81,9 +82,9 @@ export function MappingList({
 
     const initializeSwitchState = (list: CategoryItem[]) => {
       list.forEach((item) => {
-        initialSwitchState[item.idx] = true; // Set all switches to true initially
+        initialSwitchState[item.idx] = item.isUse; // item.isUse 값을 기반으로 초기화
         if (item.children && item.children.length > 0) {
-          initializeSwitchState(item.children); // Recursively initialize children
+          initializeSwitchState(item.children); // 자식 항목이 있을 경우 재귀적으로 처리
         }
       });
     };
@@ -92,12 +93,28 @@ export function MappingList({
     setSelectedSwitchState(initialSwitchState);
   }, []);
 
-  const toggleSwitchState = (itemIdx: number) => {
+  // 활성화 토글 api
+  const patchTagActivationState = (data: {
+    idxList: number[];
+    isUse: boolean;
+  }) => {
+    return classificationInstance.patch('/v1/category/map/used', data);
+  };
+
+  const toggleSwitchState = async (itemIdx: number, isUse: boolean) => {
+    // 로컬 상태 업데이트
     setSelectedSwitchState((prevState) => ({
       ...prevState,
-      [itemIdx]: !prevState[itemIdx],
+      [itemIdx]: !isUse,
     }));
+
+    // 서버에 상태 업데이트 요청 보내기
+    await patchTagActivationState({
+      idxList: [itemIdx],
+      isUse: !isUse, // 토글된 새로운 상태
+    });
   };
+
   const toggleCheckBoxState = (itemIdx: number) => {
     setSelectedCheckBoxState((prevState) => ({
       ...prevState,
@@ -173,7 +190,7 @@ interface DraggableMappingItemProps {
   isExpanded: boolean;
   depth: number;
   isSwitchOn: boolean;
-  toggleSwitch: (itemIdx: number) => void;
+  toggleSwitch: (itemIdx: number, isUse: boolean) => void;
   isCheckBoxChecked: boolean;
   toggleCheckBox: (itemIdx: number) => void;
 }
@@ -202,7 +219,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
     <>
       <Tags
         ref={ref}
-        className={`gap ${activeItem === item ? 'on_map_item' : ''} `}
+        className={`gap ${activeItem === item ? 'on_map_item' : ''}  ${!isSwitchOn ? 'inactive_tag' : ''}`}
         onClick={() => {
           handleTagClick(item);
           toggleExpanded(item);
@@ -221,7 +238,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
           <Switch
             marginTop={5}
             $ison={isSwitchOn}
-            onClick={() => toggleSwitch(item.idx)}
+            onClick={() => toggleSwitch(item.idx, isSwitchOn)}
           />
           <CheckBoxI
             className={'side_bar'}
@@ -229,6 +246,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
             checked={isCheckBoxChecked}
             onChange={() => toggleCheckBox(item.idx)}
             value={item.idx}
+            disabled={!isSwitchOn}
           />
         </TagsButtonWrapper>
         {/* <span className="category_sub_title end">{`${item.children?.length || 0}개의 태그`}</span> */}
@@ -279,6 +297,9 @@ const Tags = styled.button`
   }
   &.on_map_item {
     border: 1px solid ${COLOR.PRIMARY};
+  }
+  &.inactive_tag {
+    background-color: #cecece; /* 회색 배경 */
   }
 `;
 
