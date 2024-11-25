@@ -37,9 +37,6 @@ import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
-import { OptionList } from './options/OptionList';
-import { Options } from './options/Options';
-import { OtionsSelect } from './options/OtionsSelect';
 
 type SelectedValueType = string | { [key: string]: any };
 
