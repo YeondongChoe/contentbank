@@ -16,6 +16,10 @@
 	width:calc(100% - 100px);
 }
 
+.type4_container .scrollbar-container {
+width: 100%;
+}
+
 .type4_container .tox.tox-tinymce {
 	position: relative;
 	top:0;
