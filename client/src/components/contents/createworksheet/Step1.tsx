@@ -54,7 +54,10 @@ import {
   PreviousNationalType,
 } from '../../../types';
 import { TextbookInfoType } from '../../../types/TextbookType';
-import { DifficultyDataType } from '../../../types/WorkbookType';
+import {
+  DifficultyDataType,
+  selectedListType,
+} from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
@@ -3676,6 +3679,7 @@ export function Step1() {
     setNationalLevelSelect('');
     setNationalGradeSelect('');
     setNationalHostSelect('');
+    setNationalTypeSelect('');
   };
 
   //출제년도 선택
@@ -3736,6 +3740,97 @@ export function Step1() {
     schoolSemesterSelect,
     schoolAcademicSelect,
   ]);
+  const [selectedPreviousSchoolList, setSelectedPreviousSchoolList] = useState<
+    selectedListType[]
+  >([]);
+  const [selectedPreviousNationalList, setSelectedPreviousNationalList] =
+    useState<selectedListType[]>([]);
+
+  //학교내신 화면설정 정보 불러오기 api
+  const getPreviousSchoolMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=workbookSchoolReportSetting`,
+    );
+    //console.log(res);
+    return res;
+  };
+  const { data: previousSchoolMenuData, refetch: previousSchoolMenuRefetch } =
+    useQuery({
+      queryKey: ['get-previousSchoolMenu'],
+      queryFn: getPreviousSchoolMenu,
+      meta: {
+        errorMessage: 'get-previousSchoolMenu 에러 메세지',
+      },
+    });
+
+  useEffect(() => {
+    if (tabVeiw === '기출' && previousExamMenu === 0)
+      previousSchoolMenuRefetch();
+  }, [tabVeiw]);
+
+  useEffect(() => {
+    if (previousSchoolMenuData) {
+      const filterList = previousSchoolMenuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: index,
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
+      }));
+      setSelectedPreviousSchoolList(newArray);
+    }
+  }, [previousSchoolMenuData]);
+
+  //전국시험 화면설정 정보 불러오기 api
+  const getPreviousNationalMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=workbookCSATSetting`,
+    );
+    console.log(res);
+    return res;
+  };
+  const {
+    data: previousNationalMenuData,
+    refetch: previousNationalMenuRefetch,
+  } = useQuery({
+    queryKey: ['get-previousNationalmenu'],
+    queryFn: getPreviousNationalMenu,
+    meta: {
+      errorMessage: 'get-previousNationalmenu 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (tabVeiw === '기출' && previousExamMenu === 1)
+      previousNationalMenuRefetch();
+  }, [previousExamMenu]);
+
+  useEffect(() => {
+    if (previousNationalMenuData) {
+      const filterList = previousNationalMenuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: index,
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
+      }));
+      setSelectedPreviousNationalList(newArray);
+    }
+  }, [previousNationalMenuData]);
 
   //기출 학교급 selectList
   const [nationalLevelSelectList, setNationalLevelSelectList] =
@@ -3749,6 +3844,10 @@ export function Step1() {
   const [nationalHostSelectList, setNationalHostSelectList] =
     useState<SelectListType>();
   const [nationalHostSelect, setNationalHostSelect] = useState<string>('');
+  //기출 시험지타입 selectList
+  const [nationalTypeSelectList, setNationalTypeSelectList] =
+    useState<SelectListType>();
+  const [nationalTypeSelect, setNationalTypeSelect] = useState<string>('');
 
   //전국시험 불러오기 api
   //특정값이 null일때 파라미터에서 빼고 보내기
@@ -3767,6 +3866,9 @@ export function Step1() {
       params.append('grades', nationalGradeSelect);
     if (nationalHostSelect && nationalHostSelect !== '주관사')
       params.append('hosts', nationalHostSelect);
+    //'reportType 바꿔야함'
+    if (nationalTypeSelect && nationalTypeSelect !== '시험지타입')
+      params.append('reportType', nationalTypeSelect);
 
     // 파라미터가 없으면 요청하지 않음
     if (!attributeSelect || !attributeNameSelect || !previousExamYear) {
@@ -4445,6 +4547,50 @@ export function Step1() {
       setNationalHostSelectList(processedData);
     }
   }, [perviousNationalHostListData]);
+
+  //전국시험 주관사 리스트 불러오는 api
+  const getPreviousNationalTypeList = async () => {
+    const res = await quizService.get(
+      `/v1/previous/class/search?searchCondition=기출&searchKeyword=시험지타입`,
+    );
+    console.log(res);
+    return res.data.data.dataList;
+  };
+  const {
+    data: perviousNationalTypeListData,
+    refetch: perviousNationalTypeListDataRefetch,
+  } = useQuery({
+    queryKey: ['get-perviousNationalTypeList'],
+    queryFn: getPreviousNationalTypeList,
+    meta: {
+      errorMessage: 'get-perviousNationalTypeList 에러 메세지',
+    },
+    enabled: previousExamMenu === 1 || previousNationalList.length > 0,
+  });
+
+  useEffect(() => {
+    if (previousExamMenu === 1) {
+      perviousNationalTypeListDataRefetch();
+    }
+  }, [previousNationalList]);
+
+  useEffect(() => {
+    if (perviousNationalTypeListData) {
+      const processedData = {
+        idx: 0,
+        name: 'nationalType',
+        value: '0',
+        options: perviousNationalTypeListData.map(
+          (item: string, index: number) => ({
+            idx: index,
+            name: item,
+            value: item,
+          }),
+        ),
+      };
+      setNationalTypeSelectList(processedData);
+    }
+  }, [perviousNationalTypeListData]);
 
   const renderContentMathViwer = () => {
     return (
@@ -5482,42 +5628,50 @@ export function Step1() {
                           ) : (
                             <>
                               <SelectWrapper>
-                                <Select
-                                  width={'130px'}
-                                  defaultValue={'학년'}
-                                  key={'학년'}
-                                  options={schoolGradeSelectList?.options?.filter(
-                                    (option) => option.name !== null,
-                                  )}
-                                  // onSelect={(event) =>
-                                  //   selectCategoryOption(event)
-                                  // }
-                                  setSelectedValue={setSchoolGradeSelect}
-                                  padding="0 5px 0 0"
-                                ></Select>
-                                <Select
-                                  width={'130px'}
-                                  defaultValue={'학기'}
-                                  key={'학기'}
-                                  options={schoolSemesterSelectList?.options?.filter(
-                                    (option) => option.name !== null,
-                                  )}
-                                  // onSelect={(event) =>
-                                  //   selectCategoryOption(event)
-                                  // }
-                                  setSelectedValue={setSchoolSemesterSelect}
-                                  padding="0 5px 0 0"
-                                ></Select>
-                                <Select
-                                  width={'130px'}
-                                  defaultValue={'학사일정'}
-                                  key={'학사일정'}
-                                  options={schoolAcademicSelectList?.options}
-                                  // onSelect={(event) =>
-                                  //   selectCategoryOption(event)
-                                  // }
-                                  setSelectedValue={setSchoolAcademicSelect}
-                                ></Select>
+                                {selectedPreviousSchoolList.map((list) => {
+                                  if (
+                                    ['학년', '학기', '학사일정'].includes(
+                                      list.name,
+                                    ) &&
+                                    list.search === true
+                                  ) {
+                                    return (
+                                      <Select
+                                        width={'130px'}
+                                        defaultValue={list.name}
+                                        key={list.name}
+                                        options={
+                                          list.name === '학년'
+                                            ? schoolGradeSelectList?.options?.filter(
+                                                (option) =>
+                                                  option.name !== null,
+                                              )
+                                            : list.name === '학기'
+                                              ? schoolSemesterSelectList?.options?.filter(
+                                                  (option) =>
+                                                    option.name !== null,
+                                                )
+                                              : list.name === '학사일정'
+                                                ? schoolAcademicSelectList?.options?.filter(
+                                                    (option) =>
+                                                      option.name !== null,
+                                                  )
+                                                : []
+                                        }
+                                        setSelectedValue={
+                                          list.name === '학년'
+                                            ? setSchoolGradeSelect
+                                            : list.name === '학기'
+                                              ? setSchoolSemesterSelect
+                                              : list.name === '학사일정'
+                                                ? setSchoolAcademicSelect
+                                                : undefined
+                                        }
+                                        padding="0 5px 0 0"
+                                      ></Select>
+                                    );
+                                  }
+                                })}
                               </SelectWrapper>
                               <List margin={`10px 0`} height="470px">
                                 <>
@@ -5540,7 +5694,7 @@ export function Step1() {
                                           }}
                                         >
                                           <ItemLayout>
-                                            <CheckBoxI
+                                            {/* <CheckBoxI
                                               id={''}
                                               value={''}
                                               $margin={`0 5px 0 0`}
@@ -5548,37 +5702,82 @@ export function Step1() {
                                               //value={item.code}
                                               //checked={checkList.includes(item.code)}
                                               readOnly
-                                            />
-                                            <span className="width_150px item_wrapper">
-                                              <span className="ellipsis">
-                                                {school.schoolName}
-                                              </span>
-                                            </span>
-                                            <i className="line"></i>
-                                            <span className="width_80px item_wrapper">
-                                              <span className="ellipsis">
-                                                {school.grade}
-                                              </span>
-                                            </span>
-                                            <i className="line"></i>
-                                            <span className="width_80px item_wrapper">
-                                              <span className="ellipsis">
-                                                {school.semester}
-                                              </span>
-                                            </span>
-                                            <i className="line"></i>
-                                            <span className="width_80px item_wrapper">
-                                              <span className="ellipsis">
-                                                {school.academic}
-                                              </span>
-                                            </span>
-                                            <i className="line"></i>
-                                            <span className="width_80px item_wrapper">
-                                              <span className="ellipsis">
-                                                {school.year}
-                                              </span>
-                                            </span>
-                                            <i className="line"></i>
+                                            /> */}
+                                            {selectedPreviousSchoolList.map(
+                                              (list) => {
+                                                if (
+                                                  list.name === '학교명' &&
+                                                  list.view === true
+                                                ) {
+                                                  return (
+                                                    <>
+                                                      <span className="width_150px item_wrapper">
+                                                        <span className="ellipsis">
+                                                          {school.schoolName}
+                                                        </span>
+                                                      </span>
+                                                      <i className="line"></i>
+                                                    </>
+                                                  );
+                                                } else if (
+                                                  list.name === '학년' &&
+                                                  list.view === true
+                                                ) {
+                                                  return (
+                                                    <>
+                                                      <span className="width_80px item_wrapper">
+                                                        <span className="ellipsis">
+                                                          {school.grade}
+                                                        </span>
+                                                      </span>
+                                                      <i className="line"></i>
+                                                    </>
+                                                  );
+                                                } else if (
+                                                  list.name === '학기' &&
+                                                  list.view === true
+                                                ) {
+                                                  return (
+                                                    <>
+                                                      <span className="width_80px item_wrapper">
+                                                        <span className="ellipsis">
+                                                          {school.semester}
+                                                        </span>
+                                                      </span>
+                                                      <i className="line"></i>
+                                                    </>
+                                                  );
+                                                } else if (
+                                                  list.name === '학사일정' &&
+                                                  list.view === true
+                                                ) {
+                                                  return (
+                                                    <>
+                                                      <span className="width_80px item_wrapper">
+                                                        <span className="ellipsis">
+                                                          {school.academic}
+                                                        </span>
+                                                      </span>
+                                                      <i className="line"></i>
+                                                    </>
+                                                  );
+                                                } else if (
+                                                  list.name === '출제년도' &&
+                                                  list.view === true
+                                                ) {
+                                                  return (
+                                                    <>
+                                                      <span className="width_80px item_wrapper">
+                                                        <span className="ellipsis">
+                                                          {school.year}
+                                                        </span>
+                                                      </span>
+                                                      <i className="line"></i>
+                                                    </>
+                                                  );
+                                                }
+                                              },
+                                            )}
                                             <span className="width_20px item_wrapper">
                                               <span className="ellipsis">
                                                 {school.quizCount}
@@ -5643,15 +5842,6 @@ export function Step1() {
                                 isnormalizedOptions
                                 padding="0 5px 0 0"
                               ></Select>
-                              {/* <Search
-                            value={searchTextbookValue} //수정필요
-                            width={'400px'}
-                            height="40px"
-                            onKeyDown={(e) => {}}
-                            onChange={(e) => searchTextbook(e.target.value)} //수정필요
-                            placeholder="기출 속성을 선택해주세요"
-                            maxLength={20}
-                          /> */}
                               <SearchableSelect
                                 key={`${attributeNameSelectList?.idx} - ${attributeNameSelectList?.name}`}
                                 width={'400px'}
@@ -5663,19 +5853,10 @@ export function Step1() {
                                   setAttributeNameSelect
                                 }
                               ></SearchableSelect>
-                              {/* <Search
-                            value={searchTextbookValue} //수정필요
-                            width={'400px'}
-                            height="40px"
-                            onKeyDown={(e) => {}}
-                            onChange={(e) => searchTextbook(e.target.value)} //수정필요
-                            placeholder="기출명을 선택해주세요"
-                            maxLength={20}
-                          /> */}
                             </PreviousExamSearchWrapper>
                             <PreviousExamYearWrapper>
                               <Label
-                                value="출제년도"
+                                value="기출년도"
                                 fontSize="16px"
                                 width="80px"
                               />
@@ -5704,44 +5885,69 @@ export function Step1() {
                               ) : (
                                 <>
                                   <SelectWrapper>
-                                    <Select
-                                      width={'130px'}
-                                      defaultValue={'학교'}
-                                      key={'학교'}
-                                      options={nationalLevelSelectList?.options?.filter(
-                                        (option) => option.name !== null,
-                                      )}
-                                      // onSelect={(event) =>
-                                      //   selectCategoryOption(event)
-                                      // }
-                                      setSelectedValue={setNationalLevelSelect}
-                                      padding="0 5px 0 0"
-                                    ></Select>
-                                    <Select
-                                      width={'130px'}
-                                      defaultValue={'학년'}
-                                      key={'학년'}
-                                      options={nationalGradeSelectList?.options?.filter(
-                                        (option) => option.name !== null,
-                                      )}
-                                      // onSelect={(event) =>
-                                      //   selectCategoryOption(event)
-                                      // }
-                                      setSelectedValue={setNationalGradeSelect}
-                                      padding="0 5px 0 0"
-                                    ></Select>
-                                    <Select
-                                      width={'130px'}
-                                      defaultValue={'주관사'}
-                                      key={'주관사'}
-                                      options={nationalHostSelectList?.options?.filter(
-                                        (option) => option.name !== null,
-                                      )}
-                                      // onSelect={(event) =>
-                                      //   selectCategoryOption(event)
-                                      // }
-                                      setSelectedValue={setNationalHostSelect}
-                                    ></Select>
+                                    {selectedPreviousNationalList.map(
+                                      (list) => {
+                                        if (
+                                          [
+                                            '학교급',
+                                            '학년',
+                                            '주관사',
+                                            '시험지타입',
+                                          ].includes(list.name) &&
+                                          list.search === true
+                                        ) {
+                                          return (
+                                            <Select
+                                              width={'130px'}
+                                              defaultValue={list.name}
+                                              key={list.name}
+                                              options={
+                                                list.name === '학교급'
+                                                  ? nationalLevelSelectList?.options?.filter(
+                                                      (option) =>
+                                                        option.name !== null,
+                                                    )
+                                                  : list.name === '학년'
+                                                    ? nationalGradeSelectList?.options?.filter(
+                                                        (option) =>
+                                                          option.name !== null,
+                                                      )
+                                                    : list.name === '주관사'
+                                                      ? nationalHostSelectList?.options?.filter(
+                                                          (option) =>
+                                                            option.name !==
+                                                            null,
+                                                        )
+                                                      : list.name ===
+                                                          '시험지타입'
+                                                        ? nationalTypeSelectList?.options?.filter(
+                                                            (option) =>
+                                                              option.name !==
+                                                              null,
+                                                          )
+                                                        : []
+                                              }
+                                              // onSelect={(event) =>
+                                              //   selectCategoryOption(event)
+                                              // }
+                                              setSelectedValue={
+                                                list.name === '학교급'
+                                                  ? setNationalLevelSelect
+                                                  : list.name === '학년'
+                                                    ? setNationalGradeSelect
+                                                    : list.name === '주관사'
+                                                      ? setNationalHostSelect
+                                                      : list.name ===
+                                                          '시험지타입'
+                                                        ? setNationalTypeSelect
+                                                        : undefined
+                                              }
+                                              padding="0 5px 0 0"
+                                            ></Select>
+                                          );
+                                        }
+                                      },
+                                    )}
                                   </SelectWrapper>
                                   <List margin={`10px 0`} height="470px">
                                     <>
@@ -5766,7 +5972,7 @@ export function Step1() {
                                                 }}
                                               >
                                                 <ItemLayout>
-                                                  <CheckBoxI
+                                                  {/* <CheckBoxI
                                                     id={''}
                                                     value={''}
                                                     $margin={`0 5px 0 0`}
@@ -5774,52 +5980,125 @@ export function Step1() {
                                                     //value={item.code}
                                                     //checked={checkList.includes(item.code)}
                                                     readOnly
-                                                  />
-                                                  <span className="width_80px item_wrapper">
-                                                    <span className="ellipsis">
-                                                      {national.nationalType}
-                                                    </span>
-                                                  </span>
-                                                  <i className="line"></i>
-                                                  <span className="width_40px item_wrapper">
-                                                    <span className="ellipsis">
-                                                      {national.level}
-                                                    </span>
-                                                  </span>
-                                                  <i className="line"></i>
-                                                  <span className="width_40px item_wrapper">
-                                                    <span className="ellipsis">
-                                                      {national.grade}
-                                                    </span>
-                                                  </span>
-                                                  <i className="line"></i>
-                                                  <span className="width_150px item_wrapper">
-                                                    <span className="ellipsis">
-                                                      {national.nationalName}
-                                                    </span>
-                                                  </span>
-                                                  <i className="line"></i>
-                                                  <span className="width_80px item_wrapper">
-                                                    <span className="ellipsis">
-                                                      {national.host}
-                                                    </span>
-                                                  </span>
-                                                  <i className="line"></i>
-                                                  <span className="width_40px item_wrapper">
-                                                    <span className="ellipsis">
-                                                      A타입
-                                                    </span>
-                                                  </span>
-                                                  <i className="line"></i>
-                                                  <span className="width_40px item_wrapper">
-                                                    <span className="ellipsis">
-                                                      {national.year}
-                                                    </span>
-                                                  </span>
-                                                  <i className="line"></i>
+                                                  /> */}
+                                                  {selectedPreviousNationalList.map(
+                                                    (list) => {
+                                                      if (
+                                                        list.name ===
+                                                          '기출속성' &&
+                                                        list.view === true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <span className="width_80px item_wrapper">
+                                                              <span className="ellipsis">
+                                                                {
+                                                                  national.nationalType
+                                                                }
+                                                              </span>
+                                                            </span>
+                                                            <i className="line"></i>
+                                                          </>
+                                                        );
+                                                      } else if (
+                                                        list.name ===
+                                                          '학교급' &&
+                                                        list.view === true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <span className="width_40px item_wrapper">
+                                                              <span className="ellipsis">
+                                                                {national.level}
+                                                              </span>
+                                                            </span>
+                                                            <i className="line"></i>
+                                                          </>
+                                                        );
+                                                      } else if (
+                                                        list.name === '학년' &&
+                                                        list.view === true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <span className="width_40px item_wrapper">
+                                                              <span className="ellipsis">
+                                                                {national.grade}
+                                                              </span>
+                                                            </span>
+                                                            <i className="line"></i>
+                                                          </>
+                                                        );
+                                                      } else if (
+                                                        list.name ===
+                                                          '기출명' &&
+                                                        list.view === true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <span className="width_150px item_wrapper">
+                                                              <span className="ellipsis">
+                                                                {
+                                                                  national.nationalName
+                                                                }
+                                                              </span>
+                                                            </span>
+                                                            <i className="line"></i>
+                                                          </>
+                                                        );
+                                                      } else if (
+                                                        list.name ===
+                                                          '주관사' &&
+                                                        list.view === true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <span className="width_80px item_wrapper">
+                                                              <span className="ellipsis">
+                                                                {national.host}
+                                                              </span>
+                                                            </span>
+                                                            <i className="line"></i>
+                                                          </>
+                                                        );
+                                                      } else if (
+                                                        list.name ===
+                                                          '시험지타입' &&
+                                                        list.view === true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <span className="width_40px item_wrapper">
+                                                              <span className="ellipsis">
+                                                                {
+                                                                  national.reportType
+                                                                }
+                                                              </span>
+                                                            </span>
+                                                            <i className="line"></i>
+                                                          </>
+                                                        );
+                                                      } else if (
+                                                        list.name ===
+                                                          '기출년도' &&
+                                                        list.view === true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <span className="width_40px item_wrapper">
+                                                              <span className="ellipsis">
+                                                                {national.year}
+                                                              </span>
+                                                            </span>
+                                                            <i className="line"></i>
+                                                          </>
+                                                        );
+                                                      }
+                                                    },
+                                                  )}
                                                   <span className="width_20px item_wrapper">
                                                     <span className="ellipsis">
-                                                      10
+                                                      {national.quizCount}
                                                     </span>
                                                   </span>
                                                 </ItemLayout>

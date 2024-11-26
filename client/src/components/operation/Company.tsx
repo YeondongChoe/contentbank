@@ -543,8 +543,6 @@ export function Company() {
       setDetailItemValue('');
     }
   }, [idxValue]);
-  console.log('largeItemCodeValue', largeItemCodeValue);
-  console.log('detailItemCodeValue', detailItemCodeValue);
 
   //기업 생성/ 수정 api
   const postNewCompany = async () => {

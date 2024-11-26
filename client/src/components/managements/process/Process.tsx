@@ -8,9 +8,17 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import styled from 'styled-components';
 
 import { userInstance } from '../../../api/axios';
-import { Modal } from '../../../components';
+import { Modal, Alert } from '../../../components';
 import { useModal } from '../../../hooks';
-import { AlertBar, Button, Loader, Input, ValueNone } from '../../atom';
+import { postRefreshToken } from '../../../utils/tokenHandler';
+import {
+  AlertBar,
+  Button,
+  Loader,
+  Input,
+  ValueNone,
+  openToastifyAlert,
+} from '../../atom';
 import { COLOR } from '../../constants';
 
 import { ProcessAddModal, ProcessEditModal } from './modal';
@@ -19,6 +27,32 @@ type processNameListProps = {
   idx: number;
   code: string;
   name: string;
+};
+
+type processStepListProps = {
+  idx: number;
+  stepName: string;
+  stepSort: number;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+  workers: {
+    idx: number;
+    workerSort: number;
+    createdBy: string;
+    createdAt: string;
+    account: {
+      idx: number;
+      id: string;
+      name: string;
+      authorityName: string;
+    };
+    authority: {
+      idx: number;
+      name: string;
+    };
+  }[];
 };
 
 type processDetailInfoProps = {
@@ -32,70 +66,45 @@ type processDetailInfoProps = {
   createdAt: string;
   lastModifiedBy: string;
   lastModifiedAt: string;
-  steps: {
-    idx: number;
-    stepName: string;
-    stepSort: number;
-    createdBy: string;
-    createdAt: string;
-    lastModifiedBy: string;
-    lastModifiedAt: string;
-    workers: {
-      idx: number;
-      workerSort: number;
-      createdBy: string;
-      createdAt: string;
-      account: {
-        idx: number;
-        id: string;
-        name: string;
-        authorityName: string;
-      };
-      authority: {
-        idx: number;
-        name: string;
-      };
-    }[];
-  }[];
+  steps: processStepListProps[];
 };
 
 export function Process() {
-  const DummyData = [
+  const DummyData: processStepListProps[] = [
     {
-      title: '제작',
-      type: '등록/수정/조회',
-      card: [{ name: '홍길동', id: 'admin1', authority: 'ADMIN' }],
+      stepName: 'BUILD',
+      idx: 0,
+      stepSort: 1,
+      createdBy: '',
+      createdAt: '',
+      lastModifiedBy: '',
+      lastModifiedAt: '',
+      workers: [],
     },
     {
-      title: '검수',
-      type: '조회',
-      card: [
-        { name: '김명구', id: 'moung9', authority: 'ADMIN' },
-        { name: '홍상원', id: 'hong31', authority: 'ADMIN' },
-        { name: '정도전', id: 'challengeJ', authority: 'ADMIN' },
-      ],
+      stepName: 'EDITING',
+      idx: 1,
+      stepSort: 2,
+      createdBy: '',
+      createdAt: '',
+      lastModifiedBy: '',
+      lastModifiedAt: '',
+      workers: [],
     },
     {
-      title: '편집',
-      type: '수정/조회',
-      card: [{ name: '이순진', id: 'soon2', authority: 'ADMIN' }],
+      stepName: 'REVIEW',
+      idx: 2,
+      stepSort: 3,
+      createdBy: '',
+      createdAt: '',
+      lastModifiedBy: '',
+      lastModifiedAt: '',
+      workers: [],
     },
-    {
-      title: '검수',
-      type: '조회',
-      card: [],
-    },
-    // {
-    //   title: '검수',
-    //   type: '조회',
-    // },
-    // {
-    //   title: '검수',
-    //   type: '조회',
-    // },
   ];
   // const backgroundRef = useRef<HTMLDivElement>(null);
-  const [processList, setProcessList] = useState(DummyData);
+  const [processList, setProcessList] =
+    useState<processStepListProps[]>(DummyData);
   //프로세스명
   const [nameValue, setNameValue] = useState('');
   /* 안내 알럿 */
@@ -103,12 +112,26 @@ export function Process() {
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
   };
+  const [processNameList, setProcessNameList] = useState<
+    processNameListProps[]
+  >([]);
+  const [processNameIdx, setProcessNameIdx] = useState<number | null>(null);
+  const [processDetailInfo, setProcessDetailInfo] =
+    useState<processDetailInfoProps>();
   const { openModal } = useModal();
 
   const openCreateGroupModal = () => {
     openModal({
       title: '',
-      content: <ProcessEditModal processListData={processList} />,
+      content: (
+        <ProcessEditModal
+          isEdit={processNameIdx !== null ? true : false}
+          processListData={processList}
+          setProcessListData={setProcessList}
+          processDetailInfo={processDetailInfo}
+          setProcessDetailInfo={setProcessDetailInfo}
+        />
+      ),
     });
   };
 
@@ -122,32 +145,71 @@ export function Process() {
   ) => {
     event.currentTarget.children[1].classList.remove('show');
   };
+  console.log(processList);
+  console.log(processDetailInfo);
 
-  const deleteCard = (id: string) => {
-    setProcessList((prev) =>
-      prev.map((list) => {
+  const deleteCard = (sort: number, id: string, isAccount: boolean) => {
+    if (processNameIdx === null) {
+      setProcessList((prev) =>
+        prev.map((list) => {
+          if (list.stepSort === sort) {
+            return {
+              ...list,
+              workers: list.workers.filter((worker) => {
+                if (isAccount) {
+                  return worker.account?.id !== id;
+                } else {
+                  return worker.authority?.name !== id;
+                }
+              }),
+            };
+          }
+          return list;
+        }),
+      );
+    } else {
+      setProcessDetailInfo((prev) => {
+        if (!prev) return undefined; // prev가 null이면 그대로 반환
         return {
-          ...list,
-          card: list.card.filter((el) => el.id !== id),
+          ...prev,
+          steps: prev.steps.map((list) => {
+            if (list.stepSort === sort) {
+              return {
+                ...list,
+                workers: list.workers.filter((worker) => {
+                  if (isAccount) {
+                    return worker.account?.id !== id;
+                  } else {
+                    return worker.authority?.name !== id;
+                  }
+                }),
+              };
+            }
+            return list; // stepSort가 일치하지 않는 경우 그대로 반환
+          }),
         };
-      }),
-    );
+      });
+    }
   };
 
   /*  모달 열기 */
-  const openAddModal = () => {
+  const openAddModal = (sort: number) => {
     openModal({
       title: '',
-      content: <ProcessAddModal />,
+      content: (
+        <ProcessAddModal
+          isEdit={processNameIdx !== null ? true : false}
+          processIdx={processNameIdx as number}
+          stepSort={sort}
+          processListData={processList}
+          setProcessListData={setProcessList}
+          processDetailInfo={processDetailInfo}
+          setProcessDetailInfo={setProcessDetailInfo}
+        />
+      ),
     });
   };
-  const [processNameList, setProcessNameList] = useState<
-    processNameListProps[]
-  >([]);
-  const [processNameIdx, setProcessNameIdx] = useState<number | null>(null);
-  const [processDetailInfo, setProcessDetailInfo] = useState<
-    processDetailInfoProps[]
-  >([]);
+
   //프로세스 리스트 불러오기 api
   const getProcessNameList = async () => {
     const res = await userInstance.get(`/v1/process`);
@@ -189,16 +251,173 @@ export function Process() {
     },
     enabled: processNameIdx !== null,
   });
-
+  const [stepSortList, setStepSortList] = useState<number[]>([]);
+  console.log('stepSortList', stepSortList);
   useEffect(() => {
-    if (processDetailInfoData)
+    if (processDetailInfoData) {
       setProcessDetailInfo(processDetailInfoData?.data.data.processDetail);
+      setStepSortList(
+        processDetailInfoData?.data.data.processDetail.steps.map(
+          (el: any) => el.stepSort,
+        ),
+      );
+    }
   }, [processDetailInfoData]);
-  console.log(processDetailInfo);
 
   useEffect(() => {
     processDetailInfoRefetch();
   }, [processNameIdx]);
+
+  const postNewProcess = async () => {
+    const stepData = processList.map((step, index) => ({
+      name: step.stepName,
+      sort: index + 1, // sort는 1부터 시작
+      workers: step.workers.map((worker, workerIndex) => ({
+        accountIdx: worker.account?.idx || null,
+        authorityIdx: worker.authority?.idx || null,
+        sort: workerIndex + 1, // worker의 순서 1부터 시작
+      })),
+    }));
+
+    const data = {
+      name: nameValue,
+      steps: stepData,
+    };
+    return await userInstance.post(`/v1/process`, data);
+  };
+
+  const { mutate: postNewProcessData } = useMutation({
+    mutationFn: postNewProcess,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //성공 시 리스트 리패치
+      processNameListRefetch();
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      setProcessList(DummyData);
+      setNameValue('');
+    },
+  });
+
+  const handleNewProcess = () => {
+    if (nameValue === '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '프로세스명을 입력해주세요',
+      });
+    } else {
+      postNewProcessData();
+    }
+  };
+
+  const putProcess = async () => {
+    const stepData = processDetailInfo?.steps.map((step, index) => ({
+      name: step.stepName,
+      sort: index + 1, // sort는 1부터 시작
+      workers: step.workers.map((worker, workerIndex) => ({
+        accountIdx: worker.account?.idx || null,
+        authorityIdx: worker.authority?.idx || null,
+        sort: workerIndex + 1, // worker의 순서 1부터 시작
+      })),
+    }));
+
+    const data = {
+      idx: processNameIdx,
+      name: nameValue,
+      steps: stepData,
+      changStepSort: [1],
+    };
+    return await userInstance.put(`/v1/process`, data);
+  };
+
+  const { mutate: putProcessData } = useMutation({
+    mutationFn: putProcess,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //성공 시 리스트 리패치
+      processNameListRefetch();
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      setProcessList(DummyData);
+      setNameValue('');
+    },
+  });
+
+  const handlePutProcess = () => {
+    if (nameValue === '') {
+      openToastifyAlert({
+        type: 'error',
+        text: '프로세스명을 입력해주세요',
+      });
+    } else {
+      putProcessData();
+    }
+  };
+
+  const [isDeleteProcess, setIsDeleteProcess] = useState(false);
+  const clickDeleteProcess = () => {
+    setIsDeleteProcess(true);
+  };
+  const deleteProcess = async () => {
+    const res = await userInstance.delete(`/v1/process/${processNameIdx}`);
+    // console.log(`기업 삭제 결과값`, res);
+    return res.data;
+  };
+
+  const { mutate: deleteProcessMutate } = useMutation({
+    mutationFn: deleteProcess,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      setIsDeleteProcess(false);
+      openToastifyAlert({
+        type: 'success',
+        text: '삭제 되었습니다.',
+      });
+      //리스트 다시 불러오기
+      processNameListRefetch();
+      //초기화
+      setProcessNameIdx(null);
+      setNameValue('');
+      setStepSortList([]);
+      //setSelectedIdxValue('');
+    },
+  });
 
   // 배경 클릭시 체크리스트 초기화
   // useEffect(() => {
@@ -231,7 +450,6 @@ export function Process() {
                   작업자를 지정하여 제작 단계를 설정합니다.
                 </span>
               </ListTitle>
-              {/* 데이터 들어올때 map으로 변경 */}
               <ProcessListBox>
                 {isProcessNameListLoading ? (
                   <>
@@ -239,13 +457,14 @@ export function Process() {
                   </>
                 ) : (
                   <>
-                    {processNameList.map((process, i) => (
-                      <ProcessList key={i}>
+                    {processNameList.map((process) => (
+                      <ProcessList key={`${process.idx} - ${process.name}`}>
                         <ProcessWrapper>
                           <ProcessName
                             $isSelected={true}
                             onClick={() => {
                               setProcessNameIdx(process.idx);
+                              setNameValue(process.name as string);
                             }}
                           >
                             <div className="title">{process.name}</div>
@@ -254,30 +473,27 @@ export function Process() {
                         <DeleteIconWrapper>
                           <BiSolidTrashAlt
                             onClick={() => {
-                              //clickDeleteCompany();
+                              clickDeleteProcess();
                               //삭제할 카테고리 idx값 관리
-                              //setCategoryIdx(el.idx);
+                              setProcessNameIdx(process.idx);
                             }}
                           />
                         </DeleteIconWrapper>
                       </ProcessList>
                     ))}
+                    {processNameIdx === null && (
+                      <ProcessName className="add" $isSelected={true}>
+                        <div className="title">
+                          {nameValue || '검수라인명을 입력해주세요'}
+                        </div>
+                      </ProcessName>
+                    )}
                   </>
                 )}
               </ProcessListBox>
             </PerfectScrollbar>
           </ScrollWrapper>
         </ProcessListWrapper>
-
-        {/* TODO : 데이터 연결후 로딩 처리 */}
-        {/* {isLoading && (
-        <LoaderWrapper>
-          <Loader width="50px" />
-        </LoaderWrapper>
-      )} */}
-        {/* {!isLoading && memberListData && ( */}
-        <></>
-        {/* )} */}
         {/* 프로세스 관리 */}
         <ProcessManageWrapper>
           <InfoTitleWrapper>
@@ -285,7 +501,11 @@ export function Process() {
             <Button
               height={'35px'}
               width={'150px'}
-              //onClick={openCreateModal}
+              onClick={() => {
+                setProcessNameIdx(null);
+                setNameValue('');
+                setStepSortList([]);
+              }}
               fontSize="13px"
               $filled
               cursor
@@ -308,22 +528,52 @@ export function Process() {
             onChange={(e) => setNameValue(e.target.value)}
             maxLength={20}
           />
-          <ProcessCardList>
-            {processList.map((list, i) => {
-              return (
-                <ProcessCardWrapper key={i}>
+          {processNameIdx !== null ? (
+            <ProcessCardList>
+              {processDetailInfo?.steps.map((info, i) => (
+                <ProcessCardWrapper key={`${info?.idx} - ${info?.stepName}`}>
                   <CardTitleWrapper>
-                    <CardTitle>{list.title}</CardTitle>
-                    <ProcessType>{list.type}</ProcessType>
+                    <CardTitle>
+                      {info.stepName === 'BUILD'
+                        ? '제작'
+                        : info.stepName === 'EDITING'
+                          ? '편집'
+                          : info.stepName === 'REVIEW'
+                            ? '검수'
+                            : ''}
+                    </CardTitle>
+                    <ProcessType>
+                      {info.stepName === 'BUILD'
+                        ? '등록/수정/조회'
+                        : info.stepName === 'EDITING'
+                          ? '수정/조회'
+                          : info.stepName === 'REVIEW'
+                            ? '조회'
+                            : ''}
+                    </ProcessType>
                   </CardTitleWrapper>
-                  {list.card.map((card, i) => (
+                  {info.workers.map((work, i) => (
                     <>
                       <ProcessCard key={i}>
                         <CradInfo>
-                          <span className="name">
-                            {card.name}({card.id})
+                          {/* <span className="name">
+                            {work.account?.name}({work.account?.id})
                           </span>
-                          <span className="authority">{card.authority}</span>
+                          <span className="authority">
+                            {work.authority?.name}
+                          </span> */}
+                          {work.account?.name ? (
+                            <span className="name">
+                              {work.account?.name}({work.account?.id})
+                            </span>
+                          ) : (
+                            <span className="name">{work.authority?.name}</span>
+                          )}
+                          {work.account?.name && (
+                            <span className="authority">
+                              {work.account?.authorityName}
+                            </span>
+                          )}
                         </CradInfo>
                         <SettingButton
                           type="button"
@@ -331,14 +581,23 @@ export function Process() {
                           onMouseLeave={(e) => closeSettingList(e)}
                         >
                           <SlOptionsVertical
-                            style={{ fontSize: '14px', cursor: 'pointer' }}
+                            style={{
+                              fontSize: '14px',
+                              cursor: 'pointer',
+                            }}
                           />
                           <SettingList>
                             <li>
                               <button
                                 type="button"
-                                onClick={(e) => {
-                                  deleteCard(card.id);
+                                onClick={() => {
+                                  deleteCard(
+                                    info.stepSort,
+                                    work.account?.id !== ''
+                                      ? work.account?.id
+                                      : work.authority?.name,
+                                    work.account?.id !== '' ? true : false,
+                                  );
                                 }}
                               >
                                 삭제
@@ -347,13 +606,113 @@ export function Process() {
                           </SettingList>
                         </SettingButton>
                       </ProcessCard>
+                      {/* {(info.workers.length === 0 ||
+                        i === info.workers.length - 1) && (
+                        <IncreaseBox
+                          onClick={() => openAddModal(work.workerSort)}
+                        >
+                          +
+                        </IncreaseBox>
+                      )} */}
                     </>
                   ))}
-                  <IncreaseBox onClick={openAddModal}>+</IncreaseBox>
+                  <IncreaseBox onClick={() => openAddModal(info.stepSort)}>
+                    +
+                  </IncreaseBox>
                 </ProcessCardWrapper>
-              );
-            })}
-          </ProcessCardList>
+              ))}
+            </ProcessCardList>
+          ) : (
+            <ProcessCardList>
+              {processList?.map((process, i) => (
+                <ProcessCardWrapper key={i}>
+                  <>
+                    <CardTitleWrapper>
+                      <CardTitle>
+                        {process.stepName === 'BUILD'
+                          ? '제작'
+                          : process.stepName === 'EDITING'
+                            ? '편집'
+                            : process.stepName === 'REVIEW'
+                              ? '검수'
+                              : ''}
+                      </CardTitle>
+                      <ProcessType>
+                        {process.stepName === 'BUILD'
+                          ? '등록/수정/조회'
+                          : process.stepName === 'EDITING'
+                            ? '수정/조회'
+                            : process.stepName === 'REVIEW'
+                              ? '조회'
+                              : ''}
+                      </ProcessType>
+                    </CardTitleWrapper>
+                    {process?.workers.length === 0 ? null : (
+                      <>
+                        {process.workers.map((worker) => (
+                          <>
+                            <ProcessCard>
+                              <CradInfo>
+                                {worker.account?.name ? (
+                                  <span className="name">
+                                    {worker.account?.name}({worker.account?.id})
+                                  </span>
+                                ) : (
+                                  <span className="name">
+                                    {worker.authority?.name}
+                                  </span>
+                                )}
+                                {worker.account?.name && (
+                                  <span className="authority">
+                                    {worker.account?.authorityName}
+                                  </span>
+                                )}
+                              </CradInfo>
+                              <SettingButton
+                                type="button"
+                                onClick={(e) => openSettingList(e)}
+                                onMouseLeave={(e) => closeSettingList(e)}
+                              >
+                                <SlOptionsVertical
+                                  style={{
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                  }}
+                                />
+                                <SettingList>
+                                  <li>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        deleteCard(
+                                          process.stepSort,
+                                          worker.account?.id !== ''
+                                            ? worker.account?.id
+                                            : worker.authority?.name,
+                                          worker.account?.id !== ''
+                                            ? true
+                                            : false,
+                                        );
+                                      }}
+                                    >
+                                      삭제
+                                    </button>
+                                  </li>
+                                </SettingList>
+                              </SettingButton>
+                            </ProcessCard>
+                          </>
+                        ))}
+                      </>
+                    )}
+                  </>
+                  <IncreaseBox onClick={() => openAddModal(process.stepSort)}>
+                    +
+                  </IncreaseBox>
+                </ProcessCardWrapper>
+              ))}
+            </ProcessCardList>
+          )}
           <ButtonWrapper>
             <Button
               height={'35px'}
@@ -367,7 +726,9 @@ export function Process() {
             <Button
               height={'35px'}
               width={'120px'}
-              //onClick={openCreateModal}
+              onClick={
+                processNameIdx === null ? handleNewProcess : handlePutProcess
+              }
               fontSize="13px"
               $filled
               cursor
@@ -376,6 +737,16 @@ export function Process() {
             </Button>
           </ButtonWrapper>
         </ProcessManageWrapper>
+        {isDeleteProcess && (
+          <Alert
+            description="해당 제작 프로세스를 삭제하시겠습니까?"
+            subDescription="제작 프로세스 삭제 시, 현재 진행 중인 검수가 모두 초기화 됩니다."
+            isAlertOpen={isDeleteProcess}
+            action="삭제"
+            onClose={() => setIsDeleteProcess(false)}
+            onClick={() => deleteProcessMutate()}
+          ></Alert>
+        )}
       </ProcessMainWrapper>
       <Modal />
     </Container>
@@ -457,6 +828,8 @@ const ProcessName = styled.div<{ $isSelected: boolean }>`
     $isSelected
       ? `color: ${COLOR.PRIMARY}; border: 1px solid ${COLOR.PRIMARY};`
       : 'none'};
+  background-color: ${({ className }) =>
+    className === 'add' ? 'white' : 'inherit'};
 
   .title {
     display: flex;
