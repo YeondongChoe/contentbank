@@ -599,22 +599,20 @@ export function ContentCreating({
                             {idxNamePairsDD[idx].searchList && (
                               <span className="reddot">*</span>
                             )}
-                            {idxNamePairsDD[idx].viewList && (
-                              <Select
-                                onDefaultSelect={() =>
-                                  handleDefaultSelect(idxNamePairsDD[idx].name)
-                                }
-                                $positionTop
-                                width={'110px'}
-                                height={'30px'}
-                                defaultValue={idxNamePairsDD[idx].name}
-                                options={el}
-                                onSelect={(event) =>
-                                  selectCategoryOption(event)
-                                }
-                                setSelectedValue={setSelectedQuestionType}
-                              />
-                            )}
+                            {/* {idxNamePairsDD[idx].viewList && ( */}
+                            <Select
+                              onDefaultSelect={() =>
+                                handleDefaultSelect(idxNamePairsDD[idx].name)
+                              }
+                              $positionTop
+                              width={'110px'}
+                              height={'30px'}
+                              defaultValue={idxNamePairsDD[idx].name}
+                              options={el}
+                              onSelect={(event) => selectCategoryOption(event)}
+                              setSelectedValue={setSelectedQuestionType}
+                            />
+                            {/* )} */}
                           </InputWrappper>
                         ))}
                     </SelectWrapper>
