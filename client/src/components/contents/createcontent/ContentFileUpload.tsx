@@ -29,7 +29,7 @@ import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
-import { OptionList } from './options/OptionList';
+// import { OptionList } from './options/OptionList';
 export function ContentFileUpload({
   setTabView,
   type,
@@ -514,7 +514,7 @@ export function ContentFileUpload({
                 </strong>
                 <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {groupsDataF &&
+                  {/* {groupsDataF &&
                     groupsDataG &&
                     groupsDataH &&
                     categoryTitles && (
@@ -526,7 +526,7 @@ export function ContentFileUpload({
                         groupsDataG={groupsDataG}
                         groupsDataH={groupsDataH}
                       />
-                    )}
+                    )} */}
                 </SourceOptionWrapper>
               </SelectListWrapper>
             </BackgroundWrapper>

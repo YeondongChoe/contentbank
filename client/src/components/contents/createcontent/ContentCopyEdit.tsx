@@ -25,7 +25,7 @@ import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
-import { OptionList } from './options/OptionList';
+// import { OptionList } from './options/OptionList';
 
 export function ContentCopyEdit({
   setTabView,
@@ -601,7 +601,7 @@ export function ContentCopyEdit({
                     </strong>
                     <SourceOptionWrapper>
                       {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                      {groupsDataF &&
+                      {/* {groupsDataF &&
                         groupsDataG &&
                         groupsDataH &&
                         categoryTitles && (
@@ -617,7 +617,7 @@ export function ContentCopyEdit({
                             }
                             onItemClickData={onItemClickData}
                           />
-                        )}
+                        )} */}
                     </SourceOptionWrapper>
                   </SelectListWrapper>
                 </BackgroundWrapper>

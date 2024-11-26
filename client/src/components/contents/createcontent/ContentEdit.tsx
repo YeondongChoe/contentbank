@@ -39,7 +39,7 @@ import { COLOR } from '../../constants/COLOR';
 import { EditerOneFile } from './editer';
 import Type4 from './editer/components/Type4';
 import { QuizList } from './list';
-import { OptionList } from './options/OptionList';
+// import { OptionList } from './options/OptionList';
 
 const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   if (window.MathJax) {
@@ -804,7 +804,7 @@ export function ContentEdit({
                     </strong>
                     <SourceOptionWrapper>
                       {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                      {groupsDataF &&
+                      {/* {groupsDataF &&
                         groupsDataG &&
                         groupsDataH &&
                         categoryTitles && (
@@ -821,7 +821,7 @@ export function ContentEdit({
                             onItemClickData={onItemClickData}
                             selectedValue={setSelectedList}
                           />
-                        )}
+                        )} */}
                     </SourceOptionWrapper>
                   </SelectListWrapper>
                 </BackgroundWrapper>

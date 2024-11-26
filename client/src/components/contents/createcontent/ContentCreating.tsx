@@ -546,36 +546,6 @@ export function ContentCreating({
                               />
                             ))
                           }
-                          {/* {
-                            // 셀렉트인 경우
-                            categoriesDD.map((el, idx) => {
-                              <InputWrappper
-                                key={`${idxNamePairsDD[idx].idx},${idxNamePairs[1][idx].name}`}
-                              >
-                                {idxNamePairs[1][idx].searchList && (
-                                  <span className="reddot">*</span>
-                                )}
-                                {idxNamePairs[1][idx].viewList && (
-                                  <Select
-                                    onDefaultSelect={() =>
-                                      handleDefaultSelect(
-                                        idxNamePairs[1][idx].name,
-                                      )
-                                    }
-                                    $positionTop
-                                    width={'110px'}
-                                    height={'30px'}
-                                    defaultValue={idxNamePairs[1][idx].name}
-                                    options={el}
-                                    onSelect={(event) =>
-                                      selectCategoryOption(event)
-                                    }
-                                    setSelectedValue={setSelectedQuestionType}
-                                  />
-                                )}
-                              </InputWrappper>;
-                            })
-                          } */}
                         </>
                       )}
                     </SelectWrapper>
