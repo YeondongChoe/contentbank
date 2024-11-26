@@ -58,6 +58,8 @@ export function ContentCreating({
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
   const [categoriesDD, setCategoriesDD] = useState<ItemCategoryType[][]>([]);
+  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
   const [content, setContent] = useState<string[]>([]);
   const [imagesSrc, setImagesSrc] = useState<string>('');
 
@@ -227,8 +229,6 @@ export function ContentCreating({
   }, [imagesSrc]);
 
   // 메뉴 목록 조회 api (셋팅값)
-  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
   const getMenuSetting = async () => {
     const res = await resourceServiceInstance.get(
       `/v1/menu/path?url=contentDtEditingSetting`,
