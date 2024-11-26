@@ -21,9 +21,9 @@ import {
   openToastifyAlert,
   PaginationBox,
 } from '../../../components';
-import { selectedListProps } from '../../../components/contents/Worksheet';
 import { useModal } from '../../../hooks';
 import { WorksheetListType } from '../../../types';
+import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
@@ -36,7 +36,7 @@ type ContentListProps = {
   ondeleteClick?: () => void;
   totalCount?: number;
   itemsCountPerPage?: number;
-  selectedList: selectedListProps[];
+  selectedList: selectedListType[];
 };
 
 export function WorkbookList({

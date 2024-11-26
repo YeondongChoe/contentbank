@@ -74,7 +74,7 @@ export function Process() {
     {
       stepName: 'BUILD',
       idx: 0,
-      stepSort: 0,
+      stepSort: 1,
       createdBy: '',
       createdAt: '',
       lastModifiedBy: '',
@@ -84,7 +84,7 @@ export function Process() {
     {
       stepName: 'EDITING',
       idx: 1,
-      stepSort: 1,
+      stepSort: 2,
       createdBy: '',
       createdAt: '',
       lastModifiedBy: '',
@@ -94,7 +94,7 @@ export function Process() {
     {
       stepName: 'REVIEW',
       idx: 2,
-      stepSort: 2,
+      stepSort: 3,
       createdBy: '',
       createdAt: '',
       lastModifiedBy: '',

@@ -14,8 +14,24 @@ import { COLOR } from '../constants';
 import { SettingPageDnDWrapper } from '../molecules';
 
 export function WorkbookCSATSetting() {
+  const DummyData = [
+    {
+      code: 'A',
+      detailIdx: '1',
+      idx: 1,
+      inputTypeList: 'SELECT,SELECT,SELECT,SELECT,SELECT, SELECT, SELECT',
+      isCheck: true,
+      name: '더미',
+      nameList: '기출속성,학교급,학년,기출명,주관사,시험지타입,기출년도',
+      searchList: 'false,false,false,false,false, false, false',
+      typeList: '1,2,3,4,5,6,7',
+      viewList: 'false,false,false,false,false, false, false',
+    },
+  ];
+  const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
+
   const [isStartDnD, setIsStartDnd] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string>(''); //태그
+  const [selectedValue, setSelectedValue] = useState<string>('더미'); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
@@ -67,71 +83,139 @@ export function WorkbookCSATSetting() {
     const newTypeString = newList.map((item) => item.type).join(',');
 
     // 2. menuDataList 업데이트
-    setMenuDataList((prev) =>
-      prev.map(
-        (item) =>
-          item.name === selectedValue
-            ? {
-                ...item,
-                nameList: newNamesString,
-                searchList: newSearchString,
-                viewList: newViewString,
-                typeList: newTypeString,
-                inputTypeList: newInputTypeString,
-              }
-            : item, // 기존 항목 유지
-      ),
-    );
+    if (selectedValue === '더미') {
+      setDummyData((prev) =>
+        prev.map(
+          (item) =>
+            item.name === selectedValue
+              ? {
+                  ...item,
+                  nameList: newNamesString,
+                  searchList: newSearchString,
+                  viewList: newViewString,
+                  typeList: newTypeString,
+                  inputTypeList: newInputTypeString,
+                }
+              : item, // 기존 항목 유지
+        ),
+      );
+    } else {
+      setMenuDataList((prev) =>
+        prev.map(
+          (item) =>
+            item.name === selectedValue
+              ? {
+                  ...item,
+                  nameList: newNamesString,
+                  searchList: newSearchString,
+                  viewList: newViewString,
+                  typeList: newTypeString,
+                  inputTypeList: newInputTypeString,
+                }
+              : item, // 기존 항목 유지
+        ),
+      );
+    }
   };
 
   const toggleSearch = (idx: number, isSearch: boolean) => {
-    setMenuDataList((prev) => {
-      // 선택된 항목을 필터링
-      const filterList = prev.filter((el) => el.name === selectedValue);
-      if (filterList.length > 0) {
-        const searchList = filterList[0].searchList.split(',');
+    if (selectedValue === '더미') {
+      setDummyData((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const searchList = filterList[0].searchList.split(',');
 
-        // idx 위치의 값을 isSearch 값을 문자열로 업데이트
-        searchList[idx] = isSearch.toString();
+          // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+          searchList[idx] = isSearch.toString();
 
-        // 업데이트된 searchList 배열을 문자열로 변환하여 할당
-        const updatedSearchList = searchList.join(',');
+          // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+          const updatedSearchList = searchList.join(',');
 
-        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
-        return prev.map((item) =>
-          item.name === selectedValue
-            ? { ...item, searchList: updatedSearchList }
-            : item,
-        );
-      }
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, searchList: updatedSearchList }
+              : item,
+          );
+        }
 
-      return prev;
-    });
+        return prev;
+      });
+    } else {
+      setMenuDataList((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const searchList = filterList[0].searchList.split(',');
+
+          // idx 위치의 값을 isSearch 값을 문자열로 업데이트
+          searchList[idx] = isSearch.toString();
+
+          // 업데이트된 searchList 배열을 문자열로 변환하여 할당
+          const updatedSearchList = searchList.join(',');
+
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, searchList: updatedSearchList }
+              : item,
+          );
+        }
+
+        return prev;
+      });
+    }
   };
 
   const toggleView = (idx: number, isView: boolean) => {
-    setMenuDataList((prev) => {
-      // 선택된 항목을 필터링
-      const filterList = prev.filter((el) => el.name === selectedValue);
-      if (filterList.length > 0) {
-        const viewList = filterList[0].viewList.split(',');
+    if (selectedValue === '더미') {
+      setDummyData((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const viewList = filterList[0].viewList.split(',');
 
-        // idx 위치의 값을 isView 값을 문자열로 업데이트
-        viewList[idx] = isView.toString();
+          // idx 위치의 값을 isView 값을 문자열로 업데이트
+          viewList[idx] = isView.toString();
 
-        // 업데이트된 viewList 배열을 문자열로 변환하여 할당
-        const updatedViewList = viewList.join(',');
+          // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+          const updatedViewList = viewList.join(',');
 
-        // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
-        return prev.map((item) =>
-          item.name === selectedValue
-            ? { ...item, viewList: updatedViewList }
-            : item,
-        );
-      }
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, viewList: updatedViewList }
+              : item,
+          );
+        }
 
-      return prev;
-    });
+        return prev;
+      });
+    } else {
+      setMenuDataList((prev) => {
+        // 선택된 항목을 필터링
+        const filterList = prev.filter((el) => el.name === selectedValue);
+        if (filterList.length > 0) {
+          const viewList = filterList[0].viewList.split(',');
+
+          // idx 위치의 값을 isView 값을 문자열로 업데이트
+          viewList[idx] = isView.toString();
+
+          // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+          const updatedViewList = viewList.join(',');
+
+          // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
+          return prev.map((item) =>
+            item.name === selectedValue
+              ? { ...item, viewList: updatedViewList }
+              : item,
+          );
+        }
+
+        return prev;
+      });
+    }
   };
 
   //그룹 화면설정 정보 불러오기 api
@@ -195,18 +279,21 @@ export function WorkbookCSATSetting() {
       );
       const findName = filterList[0]?.name;
       const detailIdx = filterList[0]?.detailIdx;
-      setSelectedValue(findName);
+      setSelectedValue(findName === undefined ? '더미' : findName);
       setDetailIdx(detailIdx);
     }
   }, [menuSettingData]);
 
   //그룹 정보 업데이트 api
   const updateMenuInfo = async () => {
-    const filterData = menuDataList.filter((el) => el.name === selectedValue);
+    const filterData =
+      selectedValue === '더미'
+        ? dummyData.filter((el) => el.name === selectedValue)
+        : menuDataList.filter((el) => el.name === selectedValue);
     const data = {
       detailIdx: detailIdx ? detailIdx : 'null',
       menuIdx: menuIdx,
-      groupCode: filterData[0].code,
+      groupCode: selectedValue === '더미' ? null : filterData[0].code,
       idxs: filterData[0].typeList,
       names: filterData[0].nameList,
       searchs: filterData[0].searchList,
@@ -253,7 +340,7 @@ export function WorkbookCSATSetting() {
               <PageDescription>
                 리스트에 노출되는 필터의 순서를 변경합니다.
               </PageDescription>
-              <Label
+              {/* <Label
                 value={'그룹'}
                 width="100%"
                 bold
@@ -270,7 +357,7 @@ export function WorkbookCSATSetting() {
                   isnormalizedOptions
                   heightScroll="400px"
                 />
-              )}
+              )} */}
               <CategoryWrapper>
                 <Label
                   value={'카테고리'}
@@ -302,11 +389,13 @@ export function WorkbookCSATSetting() {
               </CategoryWrapper>
               <ContentListWrapper>
                 <SettingPageDnDWrapper
-                  dragList={menuDataList}
-                  selectedValue={selectedValue}
+                  dragList={selectedValue === '더미' ? dummyData : menuDataList}
+                  selectedValue={
+                    selectedValue === '더미' ? '더미' : selectedValue
+                  }
                   onDragging={() => {}}
                   onDragEnd={whenDragEnd}
-                  dragSectionName={'문항리스트세팅'}
+                  dragSectionName={'전국시험'}
                   isStartDnD={isStartDnD}
                   setIsStartDnd={setIsStartDnd}
                 >
@@ -407,31 +496,38 @@ export function WorkbookCSATSetting() {
           </SettingWrapper>
           <ListWrapper>
             <SelectWrapper>
-              {menuDataList
-                .filter((el) => el.name === selectedValue)
-                .map((search) => {
-                  const nameList = search.nameList.split(',');
-                  const searchList = search.searchList
-                    .split(',')
-                    .map((item) => item.trim() === 'true');
-                  return (
-                    <>
-                      {nameList.map((el, idx) =>
-                        searchList[idx] ? (
-                          <Select
-                            key={idx}
-                            defaultValue={el}
-                            width="130px"
-                            isnormalizedOptions
-                          ></Select>
-                        ) : null,
-                      )}
-                    </>
-                  );
-                })}
+              {(() => {
+                const dataList =
+                  selectedValue === '더미' ? dummyData : menuDataList;
+                return dataList
+                  .filter((el) => el.name === selectedValue)
+                  .map((search) => {
+                    const nameList = search.nameList.split(',');
+                    const searchList = search.searchList
+                      .split(',')
+                      .map((item) => item.trim() === 'true');
+
+                    return (
+                      <>
+                        {nameList.map((el, idx) => (
+                          <>
+                            {searchList[idx] ? (
+                              <Select
+                                key={idx}
+                                defaultValue={el}
+                                width="130px"
+                                isnormalizedOptions
+                              ></Select>
+                            ) : null}
+                          </>
+                        ))}
+                      </>
+                    );
+                  });
+              })()}
             </SelectWrapper>
             <List height="none">
-              {menuDataList
+              {(selectedValue === '더미' ? dummyData : menuDataList)
                 .filter((list) => list.name === selectedValue)
                 .flatMap((item) => {
                   const nameList = item.nameList?.split(',');
@@ -464,7 +560,7 @@ export function WorkbookCSATSetting() {
                 })}
             </List>
             <List>
-              {menuDataList
+              {(selectedValue === '더미' ? dummyData : menuDataList)
                 .filter((list) => list.name === selectedValue)
                 .flatMap((item) => {
                   const nameList = item.nameList?.split(',');

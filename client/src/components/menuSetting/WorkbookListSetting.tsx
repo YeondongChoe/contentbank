@@ -49,8 +49,8 @@ export function WorkbookListSetting() {
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
   const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
-  // 로컬 스토리지에서 데이터 가져오기
 
+  // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendMenuIdx');

@@ -377,7 +377,7 @@ export function ProcessAddModal({
 
   const getProcessWorkerList = async () => {
     const res = await userInstance.get(
-      `/v1/process/${processIdx === null ? 0 : processIdx}/worker?searchCondition=${tabVeiw === '계정으로 추가' ? 'USER' : tabVeiw === '권한으로 추가' ? 'AUTH' : 'USER'}&searchKeyword=${searchValue}`,
+      `/v1/process/${processIdx === null ? 0 : processIdx}/${stepSort}/worker?searchCondition=${tabVeiw === '계정으로 추가' ? 'USER' : tabVeiw === '권한으로 추가' ? 'AUTH' : 'USER'}&searchKeyword=${searchValue}`,
     );
     //console.log(`getCompanyList 결과값`, res);
     return res;
