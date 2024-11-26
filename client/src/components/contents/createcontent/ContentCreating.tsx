@@ -37,6 +37,7 @@ import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
+import { InputOptions } from './options/InputOptions';
 
 type SelectedValueType = string | { [key: string]: any };
 
@@ -226,7 +227,8 @@ export function ContentCreating({
   }, [imagesSrc]);
 
   // 메뉴 목록 조회 api (셋팅값)
-  const [idxNamePairs, setIdxNamePairs] = useState<IdxNamePair[][]>([]);
+  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
   const getMenuSetting = async () => {
     const res = await resourceServiceInstance.get(
       `/v1/menu/path?url=contentDtEditingSetting`,
@@ -245,6 +247,8 @@ export function ContentCreating({
       errorMessage: 'get-menuSetting 에러 메세지',
     },
   });
+
+  // 셋팅 데이터 바뀔때 선택 구성요소값
   useEffect(() => {
     if (menuSettingData) {
       //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
@@ -278,36 +282,51 @@ export function ContentCreating({
             idxList: string;
             nameList: string;
             inputList: string;
+            searchList: string;
+            viewList: string;
           },
           index: any,
         ) => {
           const idxList = menuDetail?.idxList?.split(',');
           const nameList = menuDetail?.nameList?.split(',');
           const inputList = menuDetail?.inputList?.split(',');
+          const searchList = menuDetail?.searchList?.split(',');
+          const viewList = menuDetail?.viewList?.split(',');
 
           // idx와 name을 짝지어 배열로 저장
           const pairs = idxList.map((idx, index) => ({
             idx,
             name: nameList[index],
             inputType: inputList[index],
+            searchList: searchList[index] === 'true',
+            viewList: viewList[index] === 'true',
           }));
 
-          setIdxNamePairs((prev) => [...prev, pairs]);
+          if (menuDetail.groupCode == 'H') {
+            setIdxNamePairsH((prev) => [...prev, ...pairs]);
+          }
+          if (menuDetail.groupCode == 'DD') {
+            setIdxNamePairsDD((prev) => [...prev, ...pairs]);
+          }
 
-          if (index === 0) {
+          if (menuDetail.groupCode == 'H') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
               code: nameList[idxIndex],
-              inputType: inputList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesH.push(categories);
-          } else if (index === 1) {
+          } else if (menuDetail.groupCode == 'DD') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
               code: nameList[idxIndex],
-              inputType: inputList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              // viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesDD.push(categories);
           }
@@ -353,7 +372,7 @@ export function ContentCreating({
   };
 
   useEffect(() => {
-    console.log(`menu idxNamePairs:`, idxNamePairs);
+    console.log(`menu idxNamePairs:`, idxNamePairsH, idxNamePairsDD);
     console.log(
       `menu 2depth select setCategoriesH, setCategoriesDD:`,
       categoriesH,
@@ -514,38 +533,47 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {idxNamePairs[0] && (
+                      {idxNamePairsH && (
                         <>
-                          {/* {
+                          {
                             // 셀렉트가 아닌 경우
-                            idxNamePairs[0].map((category, idx) => (
-                              <Options
-                                titleIdx={idxNamePairs[0][idx].name}
-                                listItem={categoriesH[idx][idx]}
-                                key={`${category?.name} optionsdepth${idx}`}
+                            idxNamePairsH.map((el, idx) => (
+                              <InputOptions
+                                Item={idxNamePairsH[idx]}
+                                listItem={categoriesH[idx]}
+                                key={`${el?.name} optionsdepth${idx}`}
                                 onOptionChange={setSourceValue}
-                                // initList={quizCategory && quizCategory[idx]}
                               />
                             ))
                           }
-                          {
+                          {/* {
                             // 셀렉트인 경우
-                            categoriesH.map((el, index) => {
-                              <Select
-                                onDefaultSelect={() =>
-                                  handleDefaultSelect('문항타입')
-                                }
-                                $positionTop
-                                width={'110px'}
-                                height={'30px'}
-                                defaultValue={'문항타입'}
-                                key={'문항타입'}
-                                options={categoriesH[3]}
-                                onSelect={(event) =>
-                                  selectCategoryOption(event)
-                                }
-                                setSelectedValue={setSelectedQuestionType}
-                              />;
+                            categoriesDD.map((el, idx) => {
+                              <InputWrappper
+                                key={`${idxNamePairsDD[idx].idx},${idxNamePairs[1][idx].name}`}
+                              >
+                                {idxNamePairs[1][idx].searchList && (
+                                  <span className="reddot">*</span>
+                                )}
+                                {idxNamePairs[1][idx].viewList && (
+                                  <Select
+                                    onDefaultSelect={() =>
+                                      handleDefaultSelect(
+                                        idxNamePairs[1][idx].name,
+                                      )
+                                    }
+                                    $positionTop
+                                    width={'110px'}
+                                    height={'30px'}
+                                    defaultValue={idxNamePairs[1][idx].name}
+                                    options={el}
+                                    onSelect={(event) =>
+                                      selectCategoryOption(event)
+                                    }
+                                    setSelectedValue={setSelectedQuestionType}
+                                  />
+                                )}
+                              </InputWrappper>;
                             })
                           } */}
                         </>
@@ -563,21 +591,31 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {idxNamePairs[1] &&
+                      {idxNamePairsDD &&
                         categoriesDD.map((el, idx) => (
-                          <Select
-                            onDefaultSelect={() =>
-                              handleDefaultSelect(idxNamePairs[1][idx].name)
-                            }
-                            $positionTop
-                            width={'110px'}
-                            height={'30px'}
-                            defaultValue={idxNamePairs[1][idx].name}
-                            key={`${idxNamePairs[1][idx].idx},${idxNamePairs[1][idx].name}`}
-                            options={el}
-                            onSelect={(event) => selectCategoryOption(event)}
-                            setSelectedValue={setSelectedQuestionType}
-                          />
+                          <InputWrappper
+                            key={`${idxNamePairsDD[idx].idx},${idxNamePairsDD[idx].name}`}
+                          >
+                            {idxNamePairsDD[idx].searchList && (
+                              <span className="reddot">*</span>
+                            )}
+                            {idxNamePairsDD[idx].viewList && (
+                              <Select
+                                onDefaultSelect={() =>
+                                  handleDefaultSelect(idxNamePairsDD[idx].name)
+                                }
+                                $positionTop
+                                width={'110px'}
+                                height={'30px'}
+                                defaultValue={idxNamePairsDD[idx].name}
+                                options={el}
+                                onSelect={(event) =>
+                                  selectCategoryOption(event)
+                                }
+                                setSelectedValue={setSelectedQuestionType}
+                              />
+                            )}
+                          </InputWrappper>
                         ))}
                     </SelectWrapper>
                   </li>
@@ -690,6 +728,14 @@ const SelectListWrapper = styled.div`
   }
   &:nth-child(1) {
     padding-top: 20px;
+  }
+`;
+
+const InputWrappper = styled.div`
+  display: flex;
+  .reddot {
+    margin: 0 5px;
+    color: ${COLOR.ALERTBAR_ERROR};
   }
 `;
 
