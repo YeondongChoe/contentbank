@@ -9,7 +9,7 @@ type CheckboxProps = {
   id: string;
   name?: string;
   value: any;
-  onClick?: (value: string) => void;
+  onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   checked?: boolean;
   $margin?: string;
@@ -64,7 +64,7 @@ export const CheckBoxI = ({
       iconHeight={iconHeight}
       disabled={disabled}
       className={className}
-      onClick={() => onClick && onClick(value)}
+      onClick={onClick}
       {...props}
     >
       <label htmlFor={id}>

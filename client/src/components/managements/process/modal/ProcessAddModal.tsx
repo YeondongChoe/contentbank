@@ -28,17 +28,83 @@ import {
   Search,
 } from '../../../molecules';
 
-type ProcessListProps = {
-  title: string;
-  type: string;
-  card: { name: string; id: string; authority: string }[];
+type ProcessWorkerAccountListProps = {
+  idx: number;
+  id: string;
+  name: string;
+  authorityName: string;
+  createdAt: string;
 };
 
-type EditModalProps = {
-  processListData: ProcessListProps[];
+type ProcessWorkerAuthorityListProps = {
+  idx: number;
+  name: string;
+  count: number;
 };
 
-export function ProcessAddModal() {
+type processStepListProps = {
+  idx: number;
+  stepName: string;
+  stepSort: number;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+  workers: {
+    idx: number;
+    workerSort: number;
+    createdBy: string;
+    createdAt: string;
+    account: {
+      idx: number;
+      id: string;
+      name: string;
+      authorityName: string;
+    };
+    authority: {
+      idx: number;
+      name: string;
+    };
+  }[];
+};
+
+type processDetailInfoProps = {
+  idx: number;
+  code: string;
+  companyCode: string;
+  processName: string;
+  isUse: boolean;
+  isDelete: boolean;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+  steps: processStepListProps[];
+};
+
+type AddModalProps = {
+  isEdit: boolean;
+  processIdx: number;
+  stepSort: number;
+  processListData?: processStepListProps[];
+  setProcessListData: React.Dispatch<
+    React.SetStateAction<processStepListProps[]>
+  >;
+  processDetailInfo?: processDetailInfoProps;
+  setProcessDetailInfo: React.Dispatch<
+    React.SetStateAction<processDetailInfoProps | undefined>
+  >;
+};
+
+export function ProcessAddModal({
+  isEdit,
+  processIdx,
+  stepSort,
+  processListData,
+  setProcessListData,
+  processDetailInfo,
+  setProcessDetailInfo,
+}: AddModalProps) {
   const { closeModal } = useModal();
   // 기존에 설정되어 있는 단계 값을 저장
   //페이지네이션
@@ -49,18 +115,244 @@ export function ProcessAddModal() {
   const [nameValue, setNameValue] = useState('');
   const [checkList, setCheckList] = useState<number[]>([]);
 
-  const [processList, setProcessList] = useState<ProcessListProps[]>();
+  //const [processList, setProcessList] = useState<ProcessListProps[]>();
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
-  const [totalMemberList, setTotalMemberList] = useState<MemberType[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(1);
-  //기업 idx로 수정해야함
-  const [idxValue, setIdxValue] = useState<string>('1');
 
   //프로세스 저장
-  const [isProcessSave, setIsProcessSave] = useState(false);
-  const clickProcessSave = () => {
-    setIsProcessSave(true);
+  const [isProcessAlert, setIsProcessAlert] = useState(false);
+  const clickProcessAlert = () => {
+    setIsProcessAlert(true);
+  };
+
+  const [processList, setProcessList] = useState<processStepListProps[]>([]);
+  useEffect(() => {
+    if (processListData) {
+      setProcessList(processListData);
+    }
+  }, [processListData]);
+  const [processDetailList, setProcessDetailList] =
+    useState<processDetailInfoProps>();
+  useEffect(() => {
+    if (processDetailInfo && isEdit) {
+      setProcessDetailList(processDetailInfo);
+    }
+  }, [processDetailInfo]);
+  const [selectedworkerAccountList, setselectedWorkerAccountList] = useState<
+    ProcessWorkerAccountListProps[]
+  >([]);
+  const [selectedworkerAuthorityList, setselectedWorkerAuthorityList] =
+    useState<ProcessWorkerAuthorityListProps[]>([]);
+
+  const clickAccountListSave = () => {
+    if (isEdit) {
+      const updatedProcessList =
+        processDetailList?.steps?.map((process) => {
+          if (process.stepSort === stepSort) {
+            const updatedWorkersAccount = selectedworkerAccountList.map(
+              (worker) => ({
+                idx: process.idx,
+                workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
+                createdBy: process.createdBy, // 필요하면 생성자 값 설정
+                createdAt: process.createdAt, // 현재 시간 설정
+                account: {
+                  idx: worker.idx,
+                  id: worker.id,
+                  name: worker.name,
+                  authorityName: worker.authorityName,
+                },
+                authority: {
+                  idx: 0, // authority는 비워두거나 기본값 설정
+                  name: '',
+                },
+              }),
+            );
+
+            // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
+            const mergedWorkers = [
+              ...process.workers,
+              ...updatedWorkersAccount.filter(
+                (newWorker) =>
+                  !process.workers.some(
+                    (existingWorker) =>
+                      existingWorker.account?.idx === newWorker.account?.idx,
+                  ),
+              ),
+            ];
+
+            return {
+              ...process,
+              workers: mergedWorkers,
+            };
+          }
+          return process; // Ensure we return the unchanged process for other steps
+        }) || []; // Fallback to an empty array if steps is undefined
+
+      setProcessDetailInfo({
+        idx: processDetailList?.idx ?? 0, // idx가 undefined이면 0을 기본값으로 사용
+        code: processDetailList?.code ?? '',
+        companyCode: processDetailList?.companyCode ?? '',
+        processName: processDetailList?.processName ?? '',
+        isUse: processDetailList?.isUse ?? false,
+        isDelete: processDetailList?.isDelete ?? false,
+        createdBy: processDetailList?.createdBy ?? '',
+        createdAt: processDetailList?.createdAt ?? '',
+        lastModifiedBy: processDetailList?.lastModifiedBy ?? '', // 추가된 부분
+        lastModifiedAt: processDetailList?.lastModifiedAt ?? '', // 추가된 부분
+        steps: updatedProcessList, // Update only the steps property
+      });
+    } else {
+      const updatedProcessList = processList.map((process) => {
+        if (process.stepSort === stepSort) {
+          // selectedworkerList에 필요한 필드를 추가하여 workers 배열에 맞게 업데이트
+          const updatedWorkersAccount = selectedworkerAccountList.map(
+            (worker) => ({
+              idx: 0,
+              workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
+              createdBy: '', // 필요하면 생성자 값 설정
+              createdAt: '', // 현재 시간 설정
+              account: {
+                idx: worker.idx,
+                id: worker.id,
+                name: worker.name,
+                authorityName: worker.authorityName,
+              },
+              authority: {
+                idx: 0, // authority는 비워두거나 기본값 설정
+                name: '',
+              },
+            }),
+          );
+
+          // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
+          const mergedWorkers = [
+            ...process.workers,
+            ...updatedWorkersAccount.filter(
+              (newWorker) =>
+                !process.workers.some(
+                  (existingWorker) =>
+                    existingWorker.account?.idx === newWorker.account?.idx,
+                ),
+            ),
+          ];
+
+          return {
+            ...process,
+            workers: mergedWorkers, // workers 배열에 필드가 추가된 worker들로 업데이트
+          };
+        }
+        return process;
+      });
+
+      setProcessListData(updatedProcessList);
+    }
+    closeModal();
+  };
+
+  const clickAuthorityListSave = () => {
+    if (isEdit) {
+      const updatedProcessList =
+        processDetailList?.steps?.map((process) => {
+          if (process.stepSort === stepSort) {
+            const updatedWorkersAuthority = selectedworkerAuthorityList.map(
+              (worker) => ({
+                idx: process.idx,
+                workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
+                createdBy: process.createdBy, // 필요하면 생성자 값 설정
+                createdAt: process.createdAt, // 현재 시간 설정
+                account: {
+                  idx: 0,
+                  id: '',
+                  name: '',
+                  authorityName: '',
+                },
+                authority: {
+                  idx: worker.idx, // authority는 비워두거나 기본값 설정
+                  name: worker.name,
+                },
+              }),
+            );
+
+            // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
+            const mergedWorkers = [
+              ...process.workers,
+              ...updatedWorkersAuthority.filter(
+                (newWorker) =>
+                  !process.workers.some(
+                    (existingWorker) =>
+                      existingWorker.authority?.idx ===
+                      newWorker.authority?.idx,
+                  ),
+              ),
+            ];
+
+            return {
+              ...process,
+              workers: mergedWorkers,
+            };
+          }
+          return process; // Ensure we return the unchanged process for other steps
+        }) || []; // Fallback to an empty array if steps is undefined
+
+      setProcessDetailInfo({
+        idx: processDetailList?.idx ?? 0, // idx가 undefined이면 0을 기본값으로 사용
+        code: processDetailList?.code ?? '',
+        companyCode: processDetailList?.companyCode ?? '',
+        processName: processDetailList?.processName ?? '',
+        isUse: processDetailList?.isUse ?? false,
+        isDelete: processDetailList?.isDelete ?? false,
+        createdBy: processDetailList?.createdBy ?? '',
+        createdAt: processDetailList?.createdAt ?? '',
+        lastModifiedBy: processDetailList?.lastModifiedBy ?? '', // 추가된 부분
+        lastModifiedAt: processDetailList?.lastModifiedAt ?? '', // 추가된 부분
+        steps: updatedProcessList, // Update only the steps property
+      });
+    } else {
+      const updatedProcessList = processList.map((process) => {
+        if (process.stepSort === stepSort) {
+          // selectedworkerList에 필요한 필드를 추가하여 workers 배열에 맞게 업데이트
+          const updatedWorkersAuthority = selectedworkerAuthorityList.map(
+            (worker) => ({
+              idx: 0,
+              workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
+              createdBy: '', // 필요하면 생성자 값 설정
+              createdAt: '', // 현재 시간 설정
+              account: {
+                idx: 0,
+                id: '',
+                name: '',
+                authorityName: '',
+              },
+              authority: {
+                idx: worker.idx, // authority는 비워두거나 기본값 설정
+                name: worker.name,
+              },
+            }),
+          );
+
+          // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
+          const mergedWorkers = [
+            ...process.workers,
+            ...updatedWorkersAuthority.filter(
+              (newWorker) =>
+                !process.workers.some(
+                  (existingWorker) =>
+                    existingWorker.authority?.idx === newWorker.authority?.idx,
+                ),
+            ),
+          ];
+
+          return {
+            ...process,
+            workers: mergedWorkers, // workers 배열에 필드가 추가된 worker들로 업데이트
+          };
+        }
+        return process;
+      });
+
+      setProcessListData(updatedProcessList);
+    }
+    closeModal();
   };
 
   const changeTab = () => {
@@ -76,71 +368,54 @@ export function ProcessAddModal() {
       value: '권한으로 추가',
     },
   ];
+  const [processWorkerAccountList, setProcessWorkerAccountList] = useState<
+    ProcessWorkerAccountListProps[]
+  >([]);
+  const [processWorkerAuthorityList, setProcessWorkerAuthorityList] = useState<
+    ProcessWorkerAuthorityListProps[]
+  >([]);
 
-  //회원의 기업코드 가져오기
-  const [companyCoadValue, setCompanyCoadValue] = useState<string | null>(null);
-  const [companyIdxValue, setCompanyIdxValue] = useState<string>('0');
-
-  //로컬스토리지에 있는 기업코드 가져오기
-  useEffect(() => {
-    const storedCompanyCode = localStorage.getItem('companyCode');
-    setCompanyCoadValue(storedCompanyCode);
-  }, []);
-  console.log(companyCoadValue);
-
-  //기업코드로 기업 idx 가져오기
-  const getCompanyList = async () => {
+  const getProcessWorkerList = async () => {
     const res = await userInstance.get(
-      `/v1/company?searchCondition=${companyCoadValue}`,
+      `/v1/process/${processIdx === null ? 0 : processIdx}/${stepSort}/worker?searchCondition=${tabVeiw === '계정으로 추가' ? 'USER' : tabVeiw === '권한으로 추가' ? 'AUTH' : 'USER'}&searchKeyword=${searchValue}`,
     );
     //console.log(`getCompanyList 결과값`, res);
     return res;
   };
 
-  const { data: companyListData, refetch: companyListRefetch } = useQuery({
-    queryKey: ['get-companyList'],
-    queryFn: getCompanyList,
+  const {
+    data: processWorkerListData,
+    refetch: processWorkerListRefetch,
+    isFetching: processWorkderListLoading,
+  } = useQuery({
+    queryKey: ['get-processWorkerList'],
+    queryFn: getProcessWorkerList,
     meta: {
-      errorMessage: 'get-companyList 에러 메세지',
+      errorMessage: 'get-processWorkerList 에러 메세지',
     },
-    enabled: companyCoadValue !== null,
+    //enabled: companyCoadValue !== null,
   });
 
   useEffect(() => {
-    if (companyListData) {
-      setCompanyIdxValue(
-        companyListData?.data.data.list[0].idx.toLocaleString(),
+    if (tabVeiw) {
+      processWorkerListRefetch();
+    }
+  }, [tabVeiw, searchValue]);
+
+  useEffect(() => {
+    if (processWorkerListData) {
+      setProcessWorkerAccountList(
+        processWorkerListData?.data.data.processWorkerList.map(
+          (el: any) => el.account,
+        ),
+      );
+      setProcessWorkerAuthorityList(
+        processWorkerListData?.data.data.processWorkerList.map(
+          (el: any) => el.authority,
+        ),
       );
     }
-  }, [companyListData]);
-
-  // 유저 리스트 불러오기 api
-  const isUseFilter = useMemo(() => {
-    if (tabVeiw === '계정으로 추가') return '';
-    if (tabVeiw === '권한으로 추가') return '';
-  }, [tabVeiw]);
-
-  const {
-    isLoading,
-    data: memberListData,
-    refetch,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['get-memberlist'],
-    queryFn: () =>
-      getUserList({
-        page,
-        searchKeywordValue,
-        isUseFilter,
-        idxValue,
-      }),
-    meta: {
-      errorMessage: 'get-memberlist 에러 메세지',
-    },
-  });
-  // data 디렉토리
-  const memberList = memberListData?.data.data;
-  console.log(memberList);
+  }, [processWorkerListData]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -159,45 +434,48 @@ export function ProcessAddModal() {
     }
   };
 
-  const handleButtonCheck = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: number,
-  ) => {
-    const target = e.currentTarget.childNodes[0].childNodes[0]
-      .childNodes[0] as HTMLInputElement;
-    if (!target.checked) {
-      setCheckList((prev) => [...prev, id]);
-    } else {
-      setCheckList(checkList.filter((el) => el !== id));
-    }
+  const handleButtonCheck = (id: number) => {
+    setCheckList((prev) =>
+      prev.includes(id) ? prev.filter((el) => el !== id) : [...prev, id],
+    );
   };
 
-  // 아이디 중복 확인 && 토탈 유저 수
-  const { data: totalData, refetch: totalDataRefetch } = useQuery({
-    queryKey: ['get-memberlist-total'],
-    queryFn: () => getUserListTotal({ totalCount, idxValue: companyIdxValue }),
-    meta: {
-      errorMessage: 'get-memberlist 에러 메세지',
-    },
-    enabled: !!isSuccess,
-  });
+  const handleSelectAccountList = (account: ProcessWorkerAccountListProps) => {
+    setselectedWorkerAccountList((prevWorkerArray) => {
+      const workerExists = prevWorkerArray.some((w) => w.idx === account.idx);
+      if (workerExists) {
+        // worker가 이미 배열에 있으면 제거
+        return prevWorkerArray.filter((w) => w.idx !== account.idx);
+      } else {
+        // worker가 없으면 추가
+        return [...prevWorkerArray, account];
+      }
+    });
+  };
+  const handleSelectAuthorityList = (
+    authority: ProcessWorkerAuthorityListProps,
+  ) => {
+    setselectedWorkerAuthorityList((prevWorkerArray) => {
+      const workerExists = prevWorkerArray.some((w) => w.idx === authority.idx);
+      if (workerExists) {
+        // worker가 이미 배열에 있으면 제거
+        return prevWorkerArray.filter((w) => w.idx !== authority.idx);
+      } else {
+        // worker가 없으면 추가
+        return [...prevWorkerArray, authority];
+      }
+    });
+  };
 
   useEffect(() => {
-    if (totalData) {
-      setTotalMemberList(totalData.data.data.list);
-    } else {
-      setTotalMemberList([]);
+    if (tabVeiw === '권한으로 추가') {
+      setselectedWorkerAccountList([]);
+      setCheckList([]);
+    } else if (tabVeiw === '계정으로 추가') {
+      setselectedWorkerAuthorityList([]);
+      setCheckList([]);
     }
-  }, [totalData]);
-
-  useEffect(() => {
-    if (isSuccess) setTotalCount(memberList?.pagination?.totalCount);
-  }, [isSuccess]);
-
-  // 데이터 변경시 리랜더링 (초기화)
-  useEffect(() => {
-    refetch();
-  }, [page, searchKeywordValue]);
+  }, [tabVeiw]);
 
   return (
     <Container>
@@ -214,70 +492,150 @@ export function ProcessAddModal() {
             onClickTab={changeTab}
           />
         </TabWrapper>
-        <Search
-          value={searchValue}
-          width={`calc(100% - 40px)`}
-          height="35px"
-          margin="0 20px"
-          onClick={() => filterSearchValue()}
-          onKeyDown={(e) => filterSearchValueEnter(e)}
-          onChange={(e) => {
-            setSearchValue(e.target.value);
-          }}
-          placeholder="이름, 아이디, 권한을 검색해주세요"
-          maxLength={20}
-          minLength={2}
-        />
-        {!isLoading &&
-        memberListData &&
-        totalMemberList &&
-        memberList.list.length !== 0 ? (
-          <ListWrapper>
-            <List margin={`10px 0`}>
-              {memberList.list.map((list: MemberType) => (
-                <ListItem
-                  key={list.userKey as string}
-                  isChecked={checkList.includes(list.idx)}
-                  onClick={(e) => handleButtonCheck(e, list.idx)}
-                >
-                  <CheckBoxI
-                    id={list.userKey}
-                    value={list.idx}
-                    $margin={`0 5px 0 0`}
-                    checked={checkList.includes(list.idx)}
-                    readOnly
-                  />
-                  <ItemLayout>
-                    <span>{list.name} </span>
-                    <i className="line"></i>
-                    <span>{list.id} </span>
-                    <i className="line"></i>
-                    <span>
-                      <span className="tag">{list.authorityName}</span>
-                    </span>
-                    <i className="line"></i>
-                    <span>{list.createdAt}</span>
-                  </ItemLayout>
-                </ListItem>
-              ))}
-            </List>
-            <PaginationBox
-              itemsCountPerPage={memberList.pagination.pageUnit}
-              totalItemsCount={memberList.pagination.totalCount}
-            />
-          </ListWrapper>
-        ) : (
+        {tabVeiw === '계정으로 추가' && (
           <>
-            {searchKeywordValue ? (
-              <ValueNoneWrapper>
-                <ValueNone
-                  info={`${searchKeywordValue} (으)로 검색결과 데이터가 없습니다`}
+            <Search
+              value={searchValue}
+              width={`calc(100% - 40px)`}
+              height="35px"
+              margin="0 20px"
+              onClick={() => filterSearchValue()}
+              onKeyDown={(e) => filterSearchValueEnter(e)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+              }}
+              placeholder="이름, 아이디, 권한을 검색해주세요"
+              maxLength={20}
+              minLength={2}
+            />
+            {!processWorkderListLoading && processWorkerListData ? (
+              <ListWrapper>
+                <List margin={`10px 0`}>
+                  {processWorkerAccountList.map(
+                    (account: ProcessWorkerAccountListProps, i) => (
+                      <ListItem
+                        key={account?.id}
+                        isChecked={checkList.includes(account?.idx)}
+                        onClick={(e) => {
+                          handleButtonCheck(account?.idx);
+                          handleSelectAccountList(account);
+                        }}
+                      >
+                        {/* <CheckBoxI
+                          id={i.toLocaleString()}
+                          value={account?.idx}
+                          $margin={`0 5px 0 0`}
+                          checked={checkList.includes(account?.idx)}
+                          readOnly
+                          onClick={() => handleSelectAccountList(account)}
+                        /> */}
+                        <ItemLayout>
+                          <span>{account?.name} </span>
+                          <i className="line"></i>
+                          <span>{account?.id} </span>
+                          <i className="line"></i>
+                          <span>{account?.authorityName}</span>
+                          <i className="line"></i>
+                          <span>{account?.createdAt}</span>
+                        </ItemLayout>
+                      </ListItem>
+                    ),
+                  )}
+                </List>
+                <PaginationBox
+                  itemsCountPerPage={
+                    processWorkerListData.data.data.pagination.pageUnit
+                  }
+                  totalItemsCount={
+                    processWorkerListData.data.data.pagination.totalCount
+                  }
                 />
-              </ValueNoneWrapper>
+              </ListWrapper>
             ) : (
-              <ValueNoneWrapper>
-                <ValueNone info={`등록된 데이터가 없습니다`} />
-              </ValueNoneWrapper>
+              <>
+                {searchKeywordValue ? (
+                  <ValueNoneWrapper>
+                    <ValueNone
+                      info={`${searchKeywordValue} (으)로 검색결과 데이터가 없습니다`}
+                    />
+                  </ValueNoneWrapper>
+                ) : (
+                  <ValueNoneWrapper>
+                    <ValueNone info={`등록된 데이터가 없습니다`} />
+                  </ValueNoneWrapper>
+                )}
+              </>
+            )}
+          </>
+        )}
+        {tabVeiw === '권한으로 추가' && (
+          <>
+            <Search
+              value={searchValue}
+              width={`calc(100% - 40px)`}
+              height="35px"
+              margin="0 20px"
+              onClick={() => filterSearchValue()}
+              onKeyDown={(e) => filterSearchValueEnter(e)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+              }}
+              placeholder="권한을 검색해주세요"
+              maxLength={20}
+              minLength={2}
+            />
+            {!processWorkderListLoading && processWorkerListData ? (
+              <ListWrapper>
+                <List margin={`10px 0`}>
+                  {processWorkerAuthorityList.map(
+                    (authority: ProcessWorkerAuthorityListProps, i) => (
+                      <ListItem
+                        key={authority?.idx}
+                        isChecked={checkList.includes(authority?.idx)}
+                        onClick={(e) => {
+                          handleButtonCheck(authority?.idx);
+                          handleSelectAuthorityList(authority);
+                        }}
+                      >
+                        {/* <CheckBoxI
+                          id={i.toLocaleString()}
+                          value={authority?.idx}
+                          $margin={`0 5px 0 0`}
+                          checked={checkList.includes(authority?.idx)}
+                          readOnly
+                        /> */}
+                        <ItemLayout>
+                          <span>{authority?.name} </span>
+                          <i className="line"></i>
+                          <span>{authority?.count} </span>
+                        </ItemLayout>
+                      </ListItem>
+                    ),
+                  )}
+                </List>
+                <PaginationBox
+                  itemsCountPerPage={
+                    processWorkerListData.data.data.pagination.pageUnit
+                  }
+                  totalItemsCount={
+                    processWorkerListData.data.data.pagination.totalCount
+                  }
+                />
+              </ListWrapper>
+            ) : (
+              <>
+                {searchKeywordValue ? (
+                  <ValueNoneWrapper>
+                    <ValueNone
+                      info={`${searchKeywordValue} (으)로 검색결과 데이터가 없습니다`}
+                    />
+                  </ValueNoneWrapper>
+                ) : (
+                  <ValueNoneWrapper>
+                    <ValueNone info={`등록된 데이터가 없습니다`} />
+                  </ValueNoneWrapper>
+                )}
+              </>
             )}
           </>
         )}
@@ -286,17 +644,21 @@ export function ProcessAddModal() {
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
         </Button>
-        <Button width="100px" height="40px" onClick={clickProcessSave} $filled>
+        <Button width="100px" height="40px" onClick={clickProcessAlert} $filled>
           확인
         </Button>
       </ButtonWrapper>
-      {isProcessSave && (
+      {isProcessAlert && (
         <Alert
           description="진행 중인 제작 프로세스가 초기화될 수 있습니다. 그래도 변경하시겠습니까?"
-          isAlertOpen={isProcessSave}
+          isAlertOpen={isProcessAlert}
           action="확인"
-          onClose={() => setIsProcessSave(false)}
-          //onClick={() => deleteItemMutate()}
+          onClose={() => setIsProcessAlert(false)}
+          onClick={() =>
+            tabVeiw === '계정으로 추가'
+              ? clickAccountListSave()
+              : clickAuthorityListSave()
+          }
         ></Alert>
       )}
     </Container>

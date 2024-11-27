@@ -26,15 +26,9 @@ import {
 import { WorkbookList } from '../../components/molecules/workbookList';
 import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType } from '../../types';
+import { selectedListType } from '../../types/WorkbookType';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
-
-export type selectedListProps = {
-  name: string;
-  idx: number;
-  view: boolean;
-  search: boolean;
-};
 
 export function Worksheet() {
   const [tabVeiw, setTabVeiw] = useState<string>('학습지');
@@ -49,7 +43,7 @@ export function Worksheet() {
   const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
   const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
   //초기 셀렉트 list
-  const [selectedList, setSelectedList] = useState<selectedListProps[]>([]);
+  const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
 
   const [page, setPage] = useRecoilState(pageAtom);
 
@@ -190,7 +184,6 @@ export function Worksheet() {
 
   const workbookList = workbookListData?.data.data;
 
-  //TODO: idx를 url로 변경 필요하며 그때는 한 값만 넘어옴 isChecked: true 확인할 필요 없음.
   //그룹 화면설정 정보 불러오기 api
   const getMenu = async () => {
     const res = await resourceServiceInstance.get(

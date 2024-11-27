@@ -142,3 +142,10 @@ export type DifficultyDataType = {
 export type FavoriteQuizList = {
   quizList: QuizList[];
 };
+
+export type selectedListType = {
+  name: string;
+  idx: number;
+  view: boolean;
+  search: boolean;
+};

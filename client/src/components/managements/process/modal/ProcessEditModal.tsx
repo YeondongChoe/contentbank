@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Default } from 'react-toastify/dist/utils';
 import styled from 'styled-components';
 
 import { Alert } from '../../../../components/molecules';
@@ -9,17 +8,65 @@ import { useModal } from '../../../../hooks';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants';
 
-type ProcessListProps = {
-  title: string;
-  type: string;
-  card: { name: string; id: string; authority: string }[];
+type processStepListProps = {
+  idx: number;
+  stepName: string;
+  stepSort: number;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+  workers: {
+    idx: number;
+    workerSort: number;
+    createdBy: string;
+    createdAt: string;
+    account: {
+      idx: number;
+      id: string;
+      name: string;
+      authorityName: string;
+    };
+    authority: {
+      idx: number;
+      name: string;
+    };
+  }[];
+};
+
+type processDetailInfoProps = {
+  idx: number;
+  code: string;
+  companyCode: string;
+  processName: string;
+  isUse: boolean;
+  isDelete: boolean;
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy: string;
+  lastModifiedAt: string;
+  steps: processStepListProps[];
 };
 
 type EditModalProps = {
-  processListData: ProcessListProps[];
+  isEdit: boolean;
+  processListData?: processStepListProps[];
+  setProcessListData: React.Dispatch<
+    React.SetStateAction<processStepListProps[]>
+  >;
+  processDetailInfo?: processDetailInfoProps;
+  setProcessDetailInfo: React.Dispatch<
+    React.SetStateAction<processDetailInfoProps | undefined>
+  >;
 };
 
-export function ProcessEditModal({ processListData }: EditModalProps) {
+export function ProcessEditModal({
+  processListData,
+  setProcessListData,
+  processDetailInfo,
+  setProcessDetailInfo,
+  isEdit,
+}: EditModalProps) {
   const selectList = [
     {
       name: '검수',
@@ -29,47 +76,190 @@ export function ProcessEditModal({ processListData }: EditModalProps) {
     },
   ];
   const { closeModal } = useModal();
-  // 기존에 설정되어 있는 단계 값을 저장
-  const [processList, setProcessList] =
-    useState<ProcessListProps[]>(processListData);
-  //프로세스 저장
-  const [isProcessSave, setIsProcessSave] = useState(false);
-  const clickProcessSave = () => {
-    setIsProcessSave(true);
-  };
+  const [processList, setProcessList] = useState<processStepListProps[]>([]);
+  useEffect(() => {
+    if (processListData) {
+      setProcessList(processListData);
+    }
+  }, [processListData]);
 
+  const [processDetailList, setProcessDetailList] =
+    useState<processDetailInfoProps>();
+  useEffect(() => {
+    if (processDetailInfo && isEdit) {
+      setProcessDetailList(processDetailInfo);
+    }
+  }, [processDetailInfo]);
+  //프로세스 저장
+  const [isProcessAlert, setIsProcessAlert] = useState(false);
+  //확인 클릭시 알람창 띄우기
+  const clickSaveAlert = () => {
+    setIsProcessAlert(true);
+  };
   const increaseButtonHandler = () => {
     const data = {
-      title: '검수',
-      type: '조회',
-      card: [],
+      stepName: 'REVIEW',
+      idx: processList.length + 1,
+      stepSort: 0,
+      createdBy: '',
+      createdAt: '',
+      lastModifiedBy: '',
+      lastModifiedAt: '',
+      workers: [],
     };
-    setProcessList((prev) => [...prev, data]);
+    if (isEdit) {
+      setProcessDetailList(
+        (prev) =>
+          prev
+            ? {
+                ...prev, // 기존 값 유지
+                steps: [
+                  ...(prev.steps || []), // 기존 steps 유지 (없으면 빈 배열 사용)
+                  {
+                    stepName: 'REVIEW',
+                    idx: (prev.steps?.length || 0) + 1, // steps 배열 길이에 따라 idx 설정
+                    stepSort: (prev.steps?.length || 0) + 1,
+                    createdBy: '',
+                    createdAt: '',
+                    lastModifiedBy: '',
+                    lastModifiedAt: '',
+                    workers: [],
+                  },
+                ],
+              }
+            : undefined, // prev가 undefined인 경우 그대로 undefined 반환
+      );
+    } else {
+      setProcessList((prev) => [...prev, data]);
+    }
   };
-
   const decreaseButtonHandler = () => {
-    setProcessList((prev) => prev.slice(0, -1));
+    if (isEdit) {
+      setProcessDetailList(
+        (prev) =>
+          prev
+            ? {
+                ...prev,
+                steps: prev.steps.slice(0, -1), // steps 배열에서 마지막 항목 제거
+              }
+            : prev, // prev가 undefined일 경우 그대로 반환
+      );
+    } else {
+      setProcessList((prev) => prev.slice(0, -1));
+    }
   };
 
+  const handleClickSelect = (name: string, index: number) => {
+    if (isEdit) {
+      setProcessDetailList(
+        (pre) =>
+          pre
+            ? {
+                ...pre,
+                steps: pre.steps.map(
+                  (step) =>
+                    step.stepSort === index + 1 // 조건을 확인
+                      ? { ...step, stepName: name } // stepName 업데이트
+                      : step, // 조건에 맞지 않으면 그대로 반환
+                ),
+              }
+            : pre, // pre가 undefined일 경우 그대로 반환
+      );
+    } else {
+      setProcessList((pre) =>
+        pre.map((list, i) =>
+          i === index ? { ...list, stepName: name } : list,
+        ),
+      );
+    }
+  };
+
+  const handleClickSave = () => {
+    if (isEdit) {
+      setProcessDetailInfo(processDetailList);
+    } else {
+      setProcessListData(processList);
+    }
+    closeModal();
+  };
   return (
     <Container>
       <Title>단계 수정</Title>
       <ListWrapper>
         <DefaultSelect>제작</DefaultSelect>
         <Arrow>&gt;</Arrow>
-        {processList.slice(1).map((process, i) => (
-          <React.Fragment key={i}>
-            <Select
-              width="120px"
-              height="35px"
-              defaultValue={process.title}
-              isnormalizedOptions
-              options={selectList}
-            />
-            {/* 마지막에는 > 추가 안함 */}
-            {i < processList.slice(1).length - 1 && <Arrow>&gt;</Arrow>}
-          </React.Fragment>
-        ))}
+        {isEdit ? (
+          <>
+            {processDetailList?.steps.slice(1).map((process, i) => (
+              <React.Fragment key={i}>
+                <Select
+                  width="120px"
+                  height="35px"
+                  defaultValue={
+                    process.stepName === 'BUILD'
+                      ? '제작'
+                      : process.stepName === 'EDITING'
+                        ? '편집'
+                        : process.stepName === 'REVIEW'
+                          ? '검수'
+                          : ''
+                  }
+                  isnormalizedOptions
+                  onSelect={(e) =>
+                    handleClickSelect(
+                      e.currentTarget.value === '편집'
+                        ? 'EDITING'
+                        : e.currentTarget.value === '검수'
+                          ? 'REVIEW'
+                          : '',
+                      i + 1,
+                    )
+                  }
+                  options={selectList}
+                />
+                {/* 마지막에는 > 추가 안함 */}
+                {i < processDetailList.steps.slice(1).length - 1 && (
+                  <Arrow>&gt;</Arrow>
+                )}
+              </React.Fragment>
+            ))}
+          </>
+        ) : (
+          <>
+            {processList.slice(1).map((process, i) => (
+              <React.Fragment key={i}>
+                <Select
+                  width="120px"
+                  height="35px"
+                  defaultValue={
+                    process.stepName === 'BUILD'
+                      ? '제작'
+                      : process.stepName === 'EDITING'
+                        ? '편집'
+                        : process.stepName === 'REVIEW'
+                          ? '검수'
+                          : ''
+                  }
+                  isnormalizedOptions
+                  onSelect={(e) =>
+                    handleClickSelect(
+                      e.currentTarget.value === '편집'
+                        ? 'EDITING'
+                        : e.currentTarget.value === '검수'
+                          ? 'REVIEW'
+                          : '',
+                      i + 1,
+                    )
+                  }
+                  options={selectList}
+                />
+                {/* 마지막에는 > 추가 안함 */}
+                {i < processList.slice(1).length - 1 && <Arrow>&gt;</Arrow>}
+              </React.Fragment>
+            ))}
+          </>
+        )}
+
         <ButtonBox>
           <IncreaseButton onClick={increaseButtonHandler}>+</IncreaseButton>
           <DecreaseButton onClick={decreaseButtonHandler}>-</DecreaseButton>
@@ -86,17 +276,17 @@ export function ProcessEditModal({ processListData }: EditModalProps) {
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
         </Button>
-        <Button width="100px" height="40px" onClick={clickProcessSave} $filled>
+        <Button width="100px" height="40px" onClick={clickSaveAlert} $filled>
           확인
         </Button>
       </ButtonWrapper>
-      {isProcessSave && (
+      {isProcessAlert && (
         <Alert
           description="진행 중인 제작 프로세스가 초기화될 수 있습니다. 그래도 변경하시겠습니까?"
-          isAlertOpen={isProcessSave}
+          isAlertOpen={isProcessAlert}
           action="확인"
-          onClose={() => setIsProcessSave(false)}
-          //onClick={() => deleteItemMutate()}
+          onClose={() => setIsProcessAlert(false)}
+          onClick={() => handleClickSave()}
         ></Alert>
       )}
     </Container>
