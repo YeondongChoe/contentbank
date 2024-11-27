@@ -83,20 +83,28 @@ export function PreviousTab({
   setIncludeQuizList,
 }: PreviousTabProps) {
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-  //학교 검색 select 값
+  //학교내신 전국시험 select 버튼 값
   const [previousExamMenu, setPreviousExamMenu] = useState<number>(0);
+  //학교내신 출제년도
   const [previousExamYear, setPreviousExamYear] = useState<string | null>(null);
+  //학교내신 학교리스트
   const [previousSchoolList, setPreviousSchoolList] = useState<
     PreviousSchoolType[]
   >([]);
+  //전국시험 문항리스트
   const [previousNationalList, setPreviousNationalList] = useState<
     PreviousNationalType[]
   >([]);
+  //학교내신 가공 데이타
   const [processPreviousQuizListData, setProcessPreviousQuizListData] =
     useState<QuizListType[]>([]);
   //학교내신 문항리스트
   const [previousSchoolQuizList, setPreviousSchoolQuizList] = useState<
     number[]
+  >([]);
+  //사용자가 선택한 학교내신 화면노출 값 리스트
+  const [selectedPreviousSchoolList, setSelectedPreviousSchoolList] = useState<
+    selectedListType[]
   >([]);
   //사용자가 선택한 학교(화면 노출용)
   const [previousSchoolName, setPreviousSchoolName] = useState<string>('');
@@ -108,6 +116,9 @@ export function PreviousTab({
   //사용자가 선택한 학사일정(화면 노출용)
   const [previousSchoolAcademic, setPreviousSchoolAcademic] =
     useState<string>('');
+  //사용자가 선택한 전국시험 화면노출 값 리스트
+  const [selectedPreviousNationalList, setSelectedPreviousNationalList] =
+    useState<selectedListType[]>([]);
   //사용자가 선택한 학교급(화면 노출용)
   const [previousSchoolLevel, setPreviousSchoolLevel] = useState<string>('');
   //사용자가 선택한 주관사(화면 노출용)
@@ -150,396 +161,26 @@ export function PreviousTab({
   const [attributeYearList, setAttributeYearList] = useState<
     { value: number; label: string }[]
   >([]);
-
-  //학교내신 전국시험 선택
-  const selectPreviousExamMenu = (newValue: number) => {
-    setPreviousExamMenu(newValue);
-    setPreviousExamYear(null);
-    //탭변할때 초기화
-    //내신
-    setPreviousSchoolNameSelect('');
-    setSchoolGradeSelect('');
-    setSchoolSemesterSelect('');
-    setSchoolAcademicSelect('');
-    //전국기출
-    setAttributeNameSelect('');
-    setAttributeSelect('');
-    setNationalLevelSelect('');
-    setNationalGradeSelect('');
-    setNationalHostSelect('');
-    setNationalTypeSelect('');
-  };
-
-  //출제년도 선택
-  const selectPreviousExamYear = (newValue: string) => {
-    setPreviousExamYear(newValue);
-  };
-
-  // 학교내신 불러오기 api
-  //특정값이 null일때 파라미터에서 빼고 보내기
-  const getPreviousSchoolContent = async () => {
-    const params = new URLSearchParams();
-
-    // 항상 있는 값 추가
-    params.append('name', previousSchoolNameSelect);
-    params.append('year', previousExamYear as string);
-
-    // 조건부로 추가
-    if (schoolGradeSelect && schoolGradeSelect !== '학년')
-      params.append('grades', schoolGradeSelect);
-    if (schoolSemesterSelect && schoolSemesterSelect !== '학기')
-      params.append('semesters', schoolSemesterSelect);
-    if (schoolAcademicSelect && schoolAcademicSelect !== '학사일정')
-      params.append('academics', schoolAcademicSelect);
-
-    // 파라미터가 없으면 요청하지 않음
-    if (!previousSchoolNameSelect || !previousExamYear) {
-      console.warn('필수 값(name 또는 years)이 없습니다. 요청을 중단합니다.');
-      return;
-    }
-
-    const queryString = params.toString();
-    const res = await quizService.get(`/v1/previous/school?${queryString}`);
-    return res;
-  };
-  const {
-    data: previousSchoolData,
-    refetch: previousSchoolDataRefetch,
-    isFetching: previousSchoolDataLoading,
-  } = useQuery({
-    queryKey: ['get-previousSchool'],
-    queryFn: getPreviousSchoolContent,
-    meta: {
-      errorMessage: 'get-previousSchool 에러 메세지',
-    },
-  });
-
-  useEffect(() => {
-    if (previousSchoolData)
-      setPreviousSchoolList(previousSchoolData?.data.data.previousList);
-  }, [previousSchoolData]);
-
-  useEffect(() => {
-    previousSchoolDataRefetch();
-  }, [
-    previousExamYear,
-    previousSchoolNameSelect,
-    schoolGradeSelect,
-    schoolSemesterSelect,
-    schoolAcademicSelect,
-  ]);
-  const [selectedPreviousSchoolList, setSelectedPreviousSchoolList] = useState<
-    selectedListType[]
-  >([]);
-  const [selectedPreviousNationalList, setSelectedPreviousNationalList] =
-    useState<selectedListType[]>([]);
-
-  //학교내신 화면설정 정보 불러오기 api
-  const getPreviousSchoolMenu = async () => {
-    const res = await resourceServiceInstance.get(
-      `/v1/menu/path?url=workbookSchoolReportSetting`,
-    );
-    //console.log(res);
-    return res;
-  };
-  const { data: previousSchoolMenuData, refetch: previousSchoolMenuRefetch } =
-    useQuery({
-      queryKey: ['get-previousSchoolMenu'],
-      queryFn: getPreviousSchoolMenu,
-      meta: {
-        errorMessage: 'get-previousSchoolMenu 에러 메세지',
-      },
-    });
-
-  useEffect(() => {
-    if (previousExamMenu === 0) previousSchoolMenuRefetch();
-  }, [previousExamMenu]);
-
-  useEffect(() => {
-    if (previousSchoolMenuData) {
-      const filterList = previousSchoolMenuData.data.data.menuDetailList;
-      const nameListArray = filterList[0]?.nameList?.split(',') || [];
-      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
-        (item: string) => item === 'true',
-      );
-      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
-        (item: string) => item === 'true',
-      );
-      const newArray = nameListArray.map((name: string, index: number) => ({
-        name,
-        idx: index,
-        view: viewListArray[index] || false,
-        search: searchListArray[index] || false,
-      }));
-      setSelectedPreviousSchoolList(newArray);
-    }
-  }, [previousSchoolMenuData]);
-
-  //전국시험 화면설정 정보 불러오기 api
-  const getPreviousNationalMenu = async () => {
-    const res = await resourceServiceInstance.get(
-      `/v1/menu/path?url=workbookCSATSetting`,
-    );
-    console.log(res);
-    return res;
-  };
-  const {
-    data: previousNationalMenuData,
-    refetch: previousNationalMenuRefetch,
-  } = useQuery({
-    queryKey: ['get-previousNationalmenu'],
-    queryFn: getPreviousNationalMenu,
-    meta: {
-      errorMessage: 'get-previousNationalmenu 에러 메세지',
-    },
-  });
-
-  useEffect(() => {
-    if (previousExamMenu === 1) previousNationalMenuRefetch();
-  }, [previousExamMenu]);
-
-  useEffect(() => {
-    if (previousNationalMenuData) {
-      const filterList = previousNationalMenuData.data.data.menuDetailList;
-      const nameListArray = filterList[0]?.nameList?.split(',') || [];
-      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
-        (item: string) => item === 'true',
-      );
-      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
-        (item: string) => item === 'true',
-      );
-      const newArray = nameListArray.map((name: string, index: number) => ({
-        name,
-        idx: index,
-        view: viewListArray[index] || false,
-        search: searchListArray[index] || false,
-      }));
-      setSelectedPreviousNationalList(newArray);
-    }
-  }, [previousNationalMenuData]);
-
-  //기출 학교급 selectList
+  //전국시험 학교급 selectList
   const [nationalLevelSelectList, setNationalLevelSelectList] =
     useState<SelectListType>();
   const [nationalLevelSelect, setNationalLevelSelect] = useState<string>('');
-  //기출 학년 selectList
+  //전국시험 학년 selectList
   const [nationalGradeSelectList, setNationalGradeSelectList] =
     useState<SelectListType>();
   const [nationalGradeSelect, setNationalGradeSelect] = useState<string>('');
-  //기출 주관사 selectList
+  //전국시험 주관사 selectList
   const [nationalHostSelectList, setNationalHostSelectList] =
     useState<SelectListType>();
   const [nationalHostSelect, setNationalHostSelect] = useState<string>('');
-  //기출 시험지타입 selectList
+  //전국시험 시험지타입 selectList
   const [nationalTypeSelectList, setNationalTypeSelectList] =
     useState<SelectListType>();
   const [nationalTypeSelect, setNationalTypeSelect] = useState<string>('');
 
-  //전국시험 불러오기 api
-  //특정값이 null일때 파라미터에서 빼고 보내기
-  const getPreviousNationalContent = async () => {
-    const params = new URLSearchParams();
-
-    // 항상 있는 값 추가
-    params.append('nationalType ', attributeSelect);
-    params.append('nationalName ', attributeNameSelect);
-    params.append('year', previousExamYear as string);
-
-    // 조건부로 추가
-    if (nationalLevelSelect && nationalLevelSelect !== '학교')
-      params.append('levels', nationalLevelSelect);
-    if (nationalGradeSelect && nationalGradeSelect !== '학년')
-      params.append('grades', nationalGradeSelect);
-    if (nationalHostSelect && nationalHostSelect !== '주관사')
-      params.append('hosts', nationalHostSelect);
-    //'reportType 바꿔야함'
-    if (nationalTypeSelect && nationalTypeSelect !== '시험지타입')
-      params.append('reportType', nationalTypeSelect);
-
-    // 파라미터가 없으면 요청하지 않음
-    if (!attributeSelect || !attributeNameSelect || !previousExamYear) {
-      console.warn(
-        '필수 값(type, name 또는 years)이 없습니다. 요청을 중단합니다.',
-      );
-      return;
-    }
-
-    const queryString = params.toString();
-    const res = await quizService.get(`/v1/previous/national?${queryString}`);
-    return res;
-  };
-  const {
-    data: previousNationalData,
-    refetch: previousNationalDataRefetch,
-    isFetching: previousNationalDataLoading,
-  } = useQuery({
-    queryKey: ['get-previousNational'],
-    queryFn: getPreviousNationalContent,
-    meta: {
-      errorMessage: 'get-previousNational 에러 메세지',
-    },
-  });
-
-  useEffect(() => {
-    if (previousNationalData)
-      setPreviousNationalList(previousNationalData?.data.data.previousList);
-  }, [previousNationalData]);
-
-  useEffect(() => {
-    previousNationalDataRefetch();
-  }, [
-    previousExamYear,
-    attributeSelect,
-    attributeNameSelect,
-    nationalLevelSelect,
-    nationalGradeSelect,
-    nationalHostSelect,
-  ]);
-
-  //const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
-  // 선택된 문항 코드 넣기
-  const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
-    if (Array.isArray(quizCode)) {
-      setIncludeQuizList((prev) => {
-        if (isChecked) {
-          // isChecked가 true일 때: quizCode를 제거
-          return prev.filter((code) => !quizCode.includes(code));
-        } else {
-          // isChecked가 false일 때: 중복을 제거하고 quizCode를 추가
-          const uniqueCodesToAdd = quizCode.filter(
-            (code, index, self) =>
-              self.indexOf(code) === index && !prev.includes(code),
-          );
-          return [...prev, ...uniqueCodesToAdd];
-        }
-      });
-    } else {
-      setIncludeQuizList((prev) => {
-        if (isChecked) {
-          // isChecked가 true일 때: quizCode를 제거
-          return prev.filter((code) => code !== quizCode);
-        } else {
-          // isChecked가 false일 때: quizCode를 추가
-          if (!prev.includes(quizCode)) {
-            return [...prev, quizCode];
-          }
-          return prev;
-        }
-      });
-    }
-  };
-
-  // 문항 번호 부분 선택
-  const toggleCheckPartialPreviousQuiz = (
-    quizCode: string,
-    isChecked: boolean,
-  ) => {
-    setProcessPreviousQuizListData((prevList) => {
-      return prevList.map((item) => {
-        if (item.code === quizCode) {
-          return {
-            ...item,
-            isChecked: !isChecked,
-          };
-        }
-        return item;
-      });
-    });
-
-    toggleQuizCode(quizCode, isChecked);
-  };
-
-  //학교내신 사용자선택 값
-  const handleButtonCheckSchool = (
-    idxList: number[],
-    schoolName: string,
-    grade: string,
-    semester: string,
-    academic: string,
-  ) => {
-    setPreviousSchoolQuizList(idxList);
-    setPreviousSchoolName(schoolName);
-    setPreviousSchoolGrade(grade);
-    setPreviousSchoolSemester(semester);
-    setPreviousSchoolAcademic(academic);
-  };
-
-  //전국시험 사용자선택 값
-  const handleNationalButtonCheck = (
-    idxList: number[],
-    schoolName: string,
-    grade: string,
-    level: string,
-    host: string,
-    type: string,
-  ) => {
-    setPreviousSchoolQuizList(idxList);
-    setPreviousSchoolName(schoolName);
-    setPreviousSchoolGrade(grade);
-    setPreviousSchoolLevel(level);
-    setPreviousSchoolHost(host);
-    setPreviousSchoolType(type);
-  };
-
-  //학교내신 문제 받아오기
-  const getPreviousSchoolQuiz = async () => {
-    const res = await quizService.get(`/v1/quiz/${previousSchoolQuizList}`);
-    return res.data.data.quizList;
-  };
-  const {
-    data: perviousSchoolquizData,
-    refetch: perviousSchoolquizDataRefetch,
-  } = useQuery({
-    queryKey: ['get-perviousSchoolquizList'],
-    queryFn: getPreviousSchoolQuiz,
-    meta: {
-      errorMessage: 'get-perviousSchoolquizList 에러 메세지',
-    },
-    enabled: false,
-  });
-
-  useEffect(() => {
-    if (previousSchoolQuizList.length > 0) perviousSchoolquizDataRefetch();
-  }, [previousSchoolQuizList]);
-
-  useEffect(() => {
-    if (perviousSchoolquizData) setQuestionList(perviousSchoolquizData);
-  }, [perviousSchoolquizData]);
-
-  // 문항 정보 받아왔을 때 가공하는거로 바꿔야 함
-  useEffect(() => {
-    if (questionList?.length > 0) {
-      const initialData = questionList.map((school) => ({
-        id: `${school.code}-${school.idx}`,
-        code: school.code,
-        createdAt: school.createdAt,
-        createdBy: school.createdBy,
-        idx: school.idx,
-        isDelete: school.isDelete,
-        isUse: school.isUse,
-        isFavorite: school.isFavorite,
-        lastArticle: school.lastArticle,
-        lastModifiedAt: school.lastModifiedAt,
-        lastModifiedBy: school.lastModifiedBy,
-        type: school.type,
-        userKey: school.userKey,
-        quizCategoryList: school.quizCategoryList,
-        quizItemList: school.quizItemList,
-        quizList: school.quizList,
-        isChecked: false,
-      }));
-      setProcessPreviousQuizListData(initialData);
-    }
-  }, [questionList, previousSchoolDataRefetch]);
-
-  //리스트 솔팅 정렬
-  const [columnsCount, setColumnsCount] = useState<number>(3);
-  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
-  useEffect(() => {}, [columnsCount, itemHeight]);
-
-  //셀렉트 데이터
-  const [content, setContent] = useState<string[]>([]);
+  //문항 뷰어 선택값
   const [topSelect, setTopSelect] = useState<string>('문제만 보기');
+  //문항 뷰어 선택고정값
   const sortArr = [
     {
       idx: '대발문 + 지문 + 문제',
@@ -563,6 +204,7 @@ export function PreviousTab({
       name: '대발문 + 지문 + 문제 + 정답 + 해설',
     },
   ];
+  //문항 뷰어 과목 선택리스트
   const [previousSchoolSubjectList, setPreviousSchoolSubjectList] = useState<
     {
       name: string;
@@ -570,8 +212,10 @@ export function PreviousTab({
       value: string;
     }[]
   >([]);
+  //문항 뷰어 과목 선택
   const [previousSchoolSubject, setPreviousSchoolSubject] =
     useState<string>('교과');
+  //문항 뷰어 단원 선택리스트
   const [previousSchoolUnitList, setPreviousSchoolUnitList] = useState<
     {
       name: string;
@@ -579,83 +223,12 @@ export function PreviousTab({
       value: string;
     }[]
   >([]);
+  //문항 뷰어 단원
   const [previousSchoolUnit, setPreviousSchoolUnit] = useState<string>('과목');
-
-  //받아온 값에서 교과 리스트 가공
-  useEffect(() => {
-    if (questionList) {
-      const quizCategoryList = questionList.map(
-        (item) => item.quizCategoryList,
-      );
-      const subjectList = quizCategoryList
-        .flat() // quizCategoryList 배열 안의 배열을 평탄화
-        .map((quizCategoryItem) => quizCategoryItem.quizCategory?.교과) // 교과을 추출
-        .filter((subject): subject is string => subject !== undefined); // undefined 값 제거
-
-      const formattedSubjects = subjectList.map((subject) => ({
-        name: subject,
-        code: subject,
-        value: subject,
-      }));
-
-      setPreviousSchoolSubjectList(formattedSubjects);
-    }
-  }, [questionList]);
-
-  //받아온 값에서 과목 리스트 가공
-  useEffect(() => {
-    if (questionList) {
-      const quizCategoryList = questionList.map(
-        (item) => item.quizCategoryList,
-      );
-
-      const subjectList = quizCategoryList
-        .flat() // quizCategoryList 배열 안의 배열을 평탄화
-        .map((quizCategoryItem) => {
-          // quizCategoryItem.quizCategory?.교과가 previousSchoolSubject와 동일한 경우
-          const subjectCategory = quizCategoryItem.quizCategory?.교과;
-          if (subjectCategory === previousSchoolSubject) {
-            return quizCategoryItem.quizCategory?.과목;
-          }
-          return undefined; // 조건에 맞지 않으면 undefined 반환
-        })
-        .filter((subject): subject is string => subject !== undefined); // undefined 값 제거
-
-      const formattedSubjects = subjectList.map((subject) => ({
-        name: subject,
-        code: subject,
-        value: subject,
-      }));
-
-      setPreviousSchoolUnitList(formattedSubjects);
-    }
-  }, [previousSchoolSubject]);
-
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
-  };
-
-  // 전체보기 버튼 누를시
-  const openViewer = (code: string) => {
-    const quiz = questionList.filter((el) => el.code === code);
-    console.log('선택된 요소', quiz[0]);
-    console.log('선택된 요소', quiz[0].idx);
-    const data: QuizListType = quiz[0];
-    // data 객체의 속성들을 문자열로 변환
-    const dataStringified: Record<string, string> = {
-      // ...data,
-      idx: data.idx.toString(),
-    };
-    const queryString = new URLSearchParams(dataStringified).toString();
-
-    windowOpenHandler({
-      name: 'quizpreview',
-      url: `/quizpreview?${queryString}`,
-      $width: 800,
-      $height: 800,
-    });
-  };
+  //문항 뷰어 리스트 솔팅 정렬
+  const [columnsCount, setColumnsCount] = useState<number>(3);
+  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
+  useEffect(() => {}, [columnsCount, itemHeight]);
 
   //학교내신 학교명 리스트 불러오는 api
   const getPreviousSchoolNameList = async () => {
@@ -823,6 +396,141 @@ export function PreviousTab({
     }
   }, [perviousSchoolAcademicListData]);
 
+  //학교내신/전국시험 출제년도 리스트 불러오는 api
+  const getPreviousAttributeYearList = async () => {
+    const res = await quizService.get(
+      `/v1/previous/class/search?searchCondition=${previousExamMenu === 0 ? '내신' : '기출'}&searchKeyword=${previousExamMenu === 0 ? '출제년도' : '기출일시'}`,
+    );
+    return res.data.data.dataList;
+  };
+  const {
+    data: perviousAttributeYearListData,
+    refetch: perviousAttributeYearListDataRefetch,
+    isFetching: perviousAttributeYearListFetching,
+  } = useQuery({
+    queryKey: ['get-perviousAttributeYearList'],
+    queryFn: getPreviousAttributeYearList,
+    meta: {
+      errorMessage: 'get-perviousAttributeYearList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    perviousAttributeYearListDataRefetch();
+  }, [previousExamMenu]);
+
+  useEffect(() => {
+    if (perviousAttributeYearListData) {
+      const uniqueYears = Array.from(
+        new Set(
+          perviousAttributeYearListData.map((item: string) => item.slice(0, 4)),
+        ),
+      );
+
+      const processedData = uniqueYears.map((year, index) => ({
+        value: index,
+        label: year as string,
+      }));
+
+      setAttributeYearList(processedData);
+    }
+  }, [perviousAttributeYearListData]);
+
+  //학교내신 학교 리스트 불러오기 api
+  //특정값이 null일때 파라미터에서 빼고 보내기
+  const getPreviousSchoolContent = async () => {
+    const params = new URLSearchParams();
+
+    // 항상 있는 값 추가
+    params.append('name', previousSchoolNameSelect);
+    params.append('year', previousExamYear as string);
+
+    // 조건부로 추가
+    if (schoolGradeSelect && schoolGradeSelect !== '학년')
+      params.append('grades', schoolGradeSelect);
+    if (schoolSemesterSelect && schoolSemesterSelect !== '학기')
+      params.append('semesters', schoolSemesterSelect);
+    if (schoolAcademicSelect && schoolAcademicSelect !== '학사일정')
+      params.append('academics', schoolAcademicSelect);
+
+    // 파라미터가 없으면 요청하지 않음
+    if (!previousSchoolNameSelect || !previousExamYear) {
+      console.warn('필수 값(name 또는 years)이 없습니다. 요청을 중단합니다.');
+      return;
+    }
+
+    const queryString = params.toString();
+    const res = await quizService.get(`/v1/previous/school?${queryString}`);
+    return res;
+  };
+  const {
+    data: previousSchoolData,
+    refetch: previousSchoolDataRefetch,
+    isFetching: previousSchoolDataLoading,
+  } = useQuery({
+    queryKey: ['get-previousSchool'],
+    queryFn: getPreviousSchoolContent,
+    meta: {
+      errorMessage: 'get-previousSchool 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (previousSchoolData)
+      setPreviousSchoolList(previousSchoolData?.data.data.previousList);
+  }, [previousSchoolData]);
+
+  useEffect(() => {
+    previousSchoolDataRefetch();
+  }, [
+    previousExamYear,
+    previousSchoolNameSelect,
+    schoolGradeSelect,
+    schoolSemesterSelect,
+    schoolAcademicSelect,
+  ]);
+
+  //학교내신 화면설정 정보 불러오기 api
+  const getPreviousSchoolMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=workbookSchoolReportSetting`,
+    );
+    //console.log(res);
+    return res;
+  };
+  const { data: previousSchoolMenuData, refetch: previousSchoolMenuRefetch } =
+    useQuery({
+      queryKey: ['get-previousSchoolMenu'],
+      queryFn: getPreviousSchoolMenu,
+      meta: {
+        errorMessage: 'get-previousSchoolMenu 에러 메세지',
+      },
+    });
+
+  useEffect(() => {
+    if (previousExamMenu === 0) previousSchoolMenuRefetch();
+  }, [previousExamMenu]);
+
+  useEffect(() => {
+    if (previousSchoolMenuData) {
+      const filterList = previousSchoolMenuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: index,
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
+      }));
+      setSelectedPreviousSchoolList(newArray);
+    }
+  }, [previousSchoolMenuData]);
+
   //전국시험 기출속성 리스트 불러오는 api
   const getPreviousAttributeList = async () => {
     const res = await quizService.get(
@@ -897,45 +605,109 @@ export function PreviousTab({
     }
   }, [perviousAttributeNameListData]);
 
-  //학교내신/전국시험 출제년도 리스트 불러오는 api
-  const getPreviousAttributeYearList = async () => {
-    const res = await quizService.get(
-      `/v1/previous/class/search?searchCondition=${previousExamMenu === 0 ? '내신' : '기출'}&searchKeyword=${previousExamMenu === 0 ? '출제년도' : '기출일시'}`,
-    );
-    return res.data.data.dataList;
+  //전국시험 리스트 불러오기 api
+  //특정값이 null일때 파라미터에서 빼고 보내기
+  const getPreviousNationalContent = async () => {
+    const params = new URLSearchParams();
+
+    // 항상 있는 값 추가
+    params.append('nationalType ', attributeSelect);
+    params.append('nationalName ', attributeNameSelect);
+    params.append('year', previousExamYear as string);
+
+    // 조건부로 추가
+    if (nationalLevelSelect && nationalLevelSelect !== '학교')
+      params.append('levels', nationalLevelSelect);
+    if (nationalGradeSelect && nationalGradeSelect !== '학년')
+      params.append('grades', nationalGradeSelect);
+    if (nationalHostSelect && nationalHostSelect !== '주관사')
+      params.append('hosts', nationalHostSelect);
+    //'reportType 바꿔야함'
+    if (nationalTypeSelect && nationalTypeSelect !== '시험지타입')
+      params.append('reportType', nationalTypeSelect);
+
+    // 파라미터가 없으면 요청하지 않음
+    if (!attributeSelect || !attributeNameSelect || !previousExamYear) {
+      console.warn(
+        '필수 값(type, name 또는 years)이 없습니다. 요청을 중단합니다.',
+      );
+      return;
+    }
+
+    const queryString = params.toString();
+    const res = await quizService.get(`/v1/previous/national?${queryString}`);
+    return res;
   };
   const {
-    data: perviousAttributeYearListData,
-    refetch: perviousAttributeYearListDataRefetch,
-    isFetching: perviousAttributeYearListFetching,
+    data: previousNationalData,
+    refetch: previousNationalDataRefetch,
+    isFetching: previousNationalDataLoading,
   } = useQuery({
-    queryKey: ['get-perviousAttributeYearList'],
-    queryFn: getPreviousAttributeYearList,
+    queryKey: ['get-previousNational'],
+    queryFn: getPreviousNationalContent,
     meta: {
-      errorMessage: 'get-perviousAttributeYearList 에러 메세지',
+      errorMessage: 'get-previousNational 에러 메세지',
     },
   });
 
   useEffect(() => {
-    perviousAttributeYearListDataRefetch();
+    if (previousNationalData)
+      setPreviousNationalList(previousNationalData?.data.data.previousList);
+  }, [previousNationalData]);
+
+  useEffect(() => {
+    previousNationalDataRefetch();
+  }, [
+    previousExamYear,
+    attributeSelect,
+    attributeNameSelect,
+    nationalLevelSelect,
+    nationalGradeSelect,
+    nationalHostSelect,
+  ]);
+
+  //전국시험 화면설정 정보 불러오기 api
+  const getPreviousNationalMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=workbookCSATSetting`,
+    );
+    console.log(res);
+    return res;
+  };
+  const {
+    data: previousNationalMenuData,
+    refetch: previousNationalMenuRefetch,
+  } = useQuery({
+    queryKey: ['get-previousNationalmenu'],
+    queryFn: getPreviousNationalMenu,
+    meta: {
+      errorMessage: 'get-previousNationalmenu 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (previousExamMenu === 1) previousNationalMenuRefetch();
   }, [previousExamMenu]);
 
   useEffect(() => {
-    if (perviousAttributeYearListData) {
-      const uniqueYears = Array.from(
-        new Set(
-          perviousAttributeYearListData.map((item: string) => item.slice(0, 4)),
-        ),
+    if (previousNationalMenuData) {
+      const filterList = previousNationalMenuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
       );
-
-      const processedData = uniqueYears.map((year, index) => ({
-        value: index,
-        label: year as string,
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: index,
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
       }));
-
-      setAttributeYearList(processedData);
+      setSelectedPreviousNationalList(newArray);
     }
-  }, [perviousAttributeYearListData]);
+  }, [previousNationalMenuData]);
 
   //전국시험 학교 리스트 불러오는 api
   const getPreviousNationalLevelList = async () => {
@@ -1110,6 +882,251 @@ export function PreviousTab({
     }
   }, [perviousNationalTypeListData]);
 
+  //기출 학교내신/전국시험 문제 받아오기
+  const getPreviousSchoolQuiz = async () => {
+    const res = await quizService.get(`/v1/quiz/${previousSchoolQuizList}`);
+    return res.data.data.quizList;
+  };
+  const {
+    data: perviousSchoolquizData,
+    refetch: perviousSchoolquizDataRefetch,
+  } = useQuery({
+    queryKey: ['get-perviousSchoolquizList'],
+    queryFn: getPreviousSchoolQuiz,
+    meta: {
+      errorMessage: 'get-perviousSchoolquizList 에러 메세지',
+    },
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (previousSchoolQuizList.length > 0) perviousSchoolquizDataRefetch();
+  }, [previousSchoolQuizList]);
+
+  useEffect(() => {
+    if (perviousSchoolquizData) setQuestionList(perviousSchoolquizData);
+  }, [perviousSchoolquizData]);
+
+  // 문항 정보 받아왔을 때 가공하는거로 바꿔야 함
+  useEffect(() => {
+    if (questionList?.length > 0) {
+      const initialData = questionList.map((school) => ({
+        id: `${school.code}-${school.idx}`,
+        code: school.code,
+        createdAt: school.createdAt,
+        createdBy: school.createdBy,
+        idx: school.idx,
+        isDelete: school.isDelete,
+        isUse: school.isUse,
+        isFavorite: school.isFavorite,
+        lastArticle: school.lastArticle,
+        lastModifiedAt: school.lastModifiedAt,
+        lastModifiedBy: school.lastModifiedBy,
+        type: school.type,
+        userKey: school.userKey,
+        quizCategoryList: school.quizCategoryList,
+        quizItemList: school.quizItemList,
+        quizList: school.quizList,
+        isChecked: false,
+      }));
+      setProcessPreviousQuizListData(initialData);
+    }
+  }, [questionList, previousSchoolDataRefetch]);
+
+  //받아온 값에서 교과 리스트 가공
+  useEffect(() => {
+    if (questionList) {
+      const quizCategoryList = questionList.map(
+        (item) => item.quizCategoryList,
+      );
+      const subjectList = quizCategoryList
+        .flat() // quizCategoryList 배열 안의 배열을 평탄화
+        .map((quizCategoryItem) => quizCategoryItem.quizCategory?.교과) // 교과을 추출
+        .filter((subject): subject is string => subject !== undefined); // undefined 값 제거
+
+      const formattedSubjects = subjectList.map((subject) => ({
+        name: subject,
+        code: subject,
+        value: subject,
+      }));
+
+      setPreviousSchoolSubjectList(formattedSubjects);
+    }
+  }, [questionList]);
+
+  //받아온 값에서 과목 리스트 가공
+  useEffect(() => {
+    if (questionList) {
+      const quizCategoryList = questionList.map(
+        (item) => item.quizCategoryList,
+      );
+
+      const subjectList = quizCategoryList
+        .flat() // quizCategoryList 배열 안의 배열을 평탄화
+        .map((quizCategoryItem) => {
+          // quizCategoryItem.quizCategory?.교과가 previousSchoolSubject와 동일한 경우
+          const subjectCategory = quizCategoryItem.quizCategory?.교과;
+          if (subjectCategory === previousSchoolSubject) {
+            return quizCategoryItem.quizCategory?.과목;
+          }
+          return undefined; // 조건에 맞지 않으면 undefined 반환
+        })
+        .filter((subject): subject is string => subject !== undefined); // undefined 값 제거
+
+      const formattedSubjects = subjectList.map((subject) => ({
+        name: subject,
+        code: subject,
+        value: subject,
+      }));
+
+      setPreviousSchoolUnitList(formattedSubjects);
+    }
+  }, [previousSchoolSubject]);
+
+  //학교내신 전국시험 선택
+  const selectPreviousExamMenu = (newValue: number) => {
+    setPreviousExamMenu(newValue);
+    setPreviousExamYear(null);
+    //탭변할때 초기화
+    //내신
+    setPreviousSchoolNameSelect('');
+    setSchoolGradeSelect('');
+    setSchoolSemesterSelect('');
+    setSchoolAcademicSelect('');
+    //전국기출
+    setAttributeNameSelect('');
+    setAttributeSelect('');
+    setNationalLevelSelect('');
+    setNationalGradeSelect('');
+    setNationalHostSelect('');
+    setNationalTypeSelect('');
+  };
+
+  //출제년도 선택
+  const selectPreviousExamYear = (newValue: string) => {
+    setPreviousExamYear(newValue);
+  };
+
+  //출제년도 슬라이더 화살표
+  const scrollLeft = () => {
+    const slider = document.querySelector('.button-slider');
+    if (slider) {
+      slider.scrollLeft -= 200; // 200px만큼 왼쪽으로 스크롤
+    }
+  };
+
+  const scrollRight = () => {
+    const slider = document.querySelector('.button-slider');
+    if (slider) {
+      slider.scrollLeft += 200; // 200px만큼 오른쪽으로 스크롤
+    }
+  };
+
+  // 선택된 문항 코드 넣기
+  const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
+    if (Array.isArray(quizCode)) {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => !quizCode.includes(code));
+        } else {
+          // isChecked가 false일 때: 중복을 제거하고 quizCode를 추가
+          const uniqueCodesToAdd = quizCode.filter(
+            (code, index, self) =>
+              self.indexOf(code) === index && !prev.includes(code),
+          );
+          return [...prev, ...uniqueCodesToAdd];
+        }
+      });
+    } else {
+      setIncludeQuizList((prev) => {
+        if (isChecked) {
+          // isChecked가 true일 때: quizCode를 제거
+          return prev.filter((code) => code !== quizCode);
+        } else {
+          // isChecked가 false일 때: quizCode를 추가
+          if (!prev.includes(quizCode)) {
+            return [...prev, quizCode];
+          }
+          return prev;
+        }
+      });
+    }
+  };
+
+  // 문항 번호 부분 선택
+  const toggleCheckPartialPreviousQuiz = (
+    quizCode: string,
+    isChecked: boolean,
+  ) => {
+    setProcessPreviousQuizListData((prevList) => {
+      return prevList.map((item) => {
+        if (item.code === quizCode) {
+          return {
+            ...item,
+            isChecked: !isChecked,
+          };
+        }
+        return item;
+      });
+    });
+
+    toggleQuizCode(quizCode, isChecked);
+  };
+
+  //학교내신 사용자선택 값
+  const handleButtonCheckSchool = (
+    idxList: number[],
+    schoolName: string,
+    grade: string,
+    semester: string,
+    academic: string,
+  ) => {
+    setPreviousSchoolQuizList(idxList);
+    setPreviousSchoolName(schoolName);
+    setPreviousSchoolGrade(grade);
+    setPreviousSchoolSemester(semester);
+    setPreviousSchoolAcademic(academic);
+  };
+
+  //전국시험 사용자선택 값
+  const handleNationalButtonCheck = (
+    idxList: number[],
+    schoolName: string,
+    grade: string,
+    level: string,
+    host: string,
+    type: string,
+  ) => {
+    setPreviousSchoolQuizList(idxList);
+    setPreviousSchoolName(schoolName);
+    setPreviousSchoolGrade(grade);
+    setPreviousSchoolLevel(level);
+    setPreviousSchoolHost(host);
+    setPreviousSchoolType(type);
+  };
+
+  // 뷰어보기 버튼 누를시
+  const openViewer = (code: string) => {
+    const quiz = questionList.filter((el) => el.code === code);
+    console.log('선택된 요소', quiz[0]);
+    console.log('선택된 요소', quiz[0].idx);
+    const data: QuizListType = quiz[0];
+    // data 객체의 속성들을 문자열로 변환
+    const dataStringified: Record<string, string> = {
+      // ...data,
+      idx: data.idx.toString(),
+    };
+    const queryString = new URLSearchParams(dataStringified).toString();
+
+    windowOpenHandler({
+      name: 'quizpreview',
+      url: `/quizpreview?${queryString}`,
+      $width: 800,
+      $height: 800,
+    });
+  };
+
   //다른 시험 선택
   const handleChangeExam = () => {
     setIsSelectPreviousExamContent(false);
@@ -1175,19 +1192,15 @@ export function PreviousTab({
               defaultValue={'교과'}
               key={'교과'}
               options={previousSchoolSubjectList}
-              //onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setPreviousSchoolSubject}
               padding="0 5px 0 0"
-              //isnormalizedOptions
             />
             <Select
               width={'120px'}
               defaultValue={'과목'}
               key={'과목'}
               options={previousSchoolUnitList}
-              //onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setPreviousSchoolUnit}
-              //isnormalizedOptions
             />
           </SelectWrapper>
           <ButtonWrapper>
@@ -1196,7 +1209,6 @@ export function PreviousTab({
               defaultValue={'문제만 보기'}
               key={'문제만 보기'}
               options={sortArr}
-              onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setTopSelect}
             />
             <button
@@ -1397,20 +1409,6 @@ export function PreviousTab({
     ));
   };
 
-  //출제년도 슬라이더 화살표
-  const scrollLeft = () => {
-    const slider = document.querySelector('.button-slider');
-    if (slider) {
-      slider.scrollLeft -= 200; // 200px만큼 왼쪽으로 스크롤
-    }
-  };
-
-  const scrollRight = () => {
-    const slider = document.querySelector('.button-slider');
-    if (slider) {
-      slider.scrollLeft += 200; // 200px만큼 오른쪽으로 스크롤
-    }
-  };
   const renderPreviousExamYearButtons = () => {
     return (
       <>
