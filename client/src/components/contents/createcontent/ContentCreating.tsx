@@ -40,8 +40,7 @@ import { QuizList } from './list';
 import { InputOptions } from './options/InputOptions';
 
 type SelectedValueType = string | { [key: string]: any };
-
-type SelectedValuesType = { [key: number]: SelectedValueType };
+type SelectedSourceItem = Record<string, any>;
 
 export function ContentCreating({
   setTabView,
@@ -75,14 +74,13 @@ export function ContentCreating({
   //셀렉트 값
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
-  const [selectedSource, setSelectedSource] = useState<SelectedValuesType[]>(
+  const [selectedSource, setSelectedSource] = useState<SelectedSourceItem[]>(
     [],
   ); //출처
-  const [selectedList, setSelectedList] = useState<
-    {
-      [key: number]: string;
-    }[]
-  >([]);
+  const [selectedSourceList, setSelectedSourceList] = useState<
+    SelectedSourceItem[]
+  >([]); //출처
+
   const [sourceValue, setSourceValue] = useState<{
     titleIdx: string;
     name: string;
@@ -400,20 +398,20 @@ export function ContentCreating({
       quizClassList: quizClassList,
     }));
     setAddQuestionList(newQuestionList);
-  }, [quizItemArrList]);
+  }, [quizItemArrList, quizClassList]);
 
   useEffect(() => {
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
-    console.log('selectedSource 출처', selectedSource);
+    console.log('selectedSourceList 출처', selectedSourceList);
     // console.log('selected--------출처 선택부분', selectedList);
     if (selectedSource.length > 0 && selectedQuestionType) {
       const quizClassList: QuestionClassListType = [
         {
           type: 'CLASS',
           quizCategory: {
-            sources: selectedSource,
+            sources: selectedSourceList,
             난이도: selectedDifficulty,
             문항타입: selectedQuestionType,
           },
@@ -423,7 +421,45 @@ export function ContentCreating({
       // 필수 메타값 추가 및 변경
       setQuizClassList(quizClassList);
     }
-  }, [selectedQuestionType, selectedSource, selectedDifficulty, selectedList]);
+  }, [selectedQuestionType, selectedSourceList, selectedDifficulty]);
+
+  useEffect(() => {
+    console.log('소스 데이터 선택', sourceValue.name, sourceValue.value);
+    const updatedSourceValue = [];
+    updatedSourceValue.push({ [sourceValue.name]: sourceValue.value });
+
+    console.log(updatedSourceValue);
+    setSelectedSource([...updatedSourceValue]);
+  }, [sourceValue]);
+
+  useEffect(() => {
+    const combinedList = [...selectedSourceList, ...selectedSource];
+
+    const uniqueList = combinedList.reduce<SelectedSourceItem[]>(
+      (acc, curr) => {
+        const key = Object.keys(curr)[0];
+        const value = curr[key];
+        if (!value) {
+          return acc;
+        }
+        const existingIndex = acc.findIndex((item) =>
+          Object.prototype.hasOwnProperty.call(item, key),
+        );
+
+        if (existingIndex >= 0) {
+          acc[existingIndex] = curr;
+        } else {
+          acc.push(curr);
+        }
+
+        return acc;
+      },
+      [],
+    );
+    setSelectedSourceList(uniqueList);
+  }, [selectedSource]);
+
+  // console.log('selectedSourceList-최종적 들어갈 소스값---', selectedSourceList);
 
   useEffect(() => {
     // 등록 api
@@ -504,12 +540,12 @@ export function ContentCreating({
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
-    if (selectedQuestionType !== '' && selectedList.length > 0) {
+    if (selectedQuestionType !== '') {
       return false;
     } else {
       return true;
     }
-  }, [selectedQuestionType, selectedList]);
+  }, [selectedQuestionType]);
 
   return (
     <Container>
@@ -610,7 +646,7 @@ export function ContentCreating({
         <SubmitButtonWrapper>
           <Button
             buttonType="button"
-            disabled={addButtonBool}
+            // disabled={addButtonBool}
             onClick={submitSave}
             width={'calc(50% - 5px)'}
             $margin={'0 10px 0 0'}

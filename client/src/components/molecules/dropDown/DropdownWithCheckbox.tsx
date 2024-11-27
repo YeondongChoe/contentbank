@@ -8,16 +8,29 @@ export function DropdownWithCheckbox({
   width = '200px',
   options,
   selectedList,
+  singleSelect = false,
+  selectedItemList,
 }: {
   width?: string;
   options: string[];
   selectedList: (selectedItems: string[]) => void;
+  singleSelect?: boolean;
+  selectedItemList?: string[];
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredOptions, setFilteredOptions] = useState<string[]>(options);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [internalSelectedItems, setInternalSelectedItems] =
+    useState<string[]>();
+
+  useEffect(() => {
+    if (selectedItemList) {
+      setInternalSelectedItems(selectedItemList);
+    }
+  }, []);
 
   useEffect(() => {
     // 검색 입력값을 기준으로 리스트 필터링
@@ -53,13 +66,29 @@ export function DropdownWithCheckbox({
   }, [dropdownRef]);
 
   const handleCheckboxChange = (option: string) => {
-    const updatedSelectedItems = selectedItems.includes(option)
-      ? selectedItems.filter((item) => item !== option)
-      : [...selectedItems, option];
-
-    setSelectedItems(updatedSelectedItems); // 내부 상태 업데이트
-    selectedList(updatedSelectedItems); // 부모로 상태 전달
+    if (singleSelect) {
+      const updatedSelectedItems = selectedItems[0] === option ? [] : [option];
+      setSelectedItems(updatedSelectedItems); // 내부 상태 업데이트
+      selectedList(updatedSelectedItems); // 부모로 상태 전달
+    } else {
+      const updatedSelectedItems = selectedItems.includes(option)
+        ? selectedItems.filter((item) => item !== option)
+        : [...selectedItems, option];
+      setSelectedItems(updatedSelectedItems); // 내부 상태 업데이트
+      selectedList(updatedSelectedItems); // 부모로 상태 전달
+    }
   };
+
+  useEffect(() => {
+    console.log('들어온 자식 셀렉트값 ---- ', options);
+    console.log('들어온 부모 selectedItemList ---- ', selectedItemList);
+    // 변할시 초기화
+    if (!singleSelect) {
+      setFilteredOptions([]);
+      selectedList([]);
+      setSelectedItems([]);
+    }
+  }, [selectedItemList]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -105,7 +134,7 @@ export function DropdownWithCheckbox({
                   >
                     <label>
                       <input
-                        type="checkbox"
+                        type={singleSelect ? 'radio' : 'checkbox'}
                         checked={selectedItems.includes(option)}
                         onChange={() => handleCheckboxChange(option)}
                       />
