@@ -61,7 +61,7 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
       inlineMath: [['\\(', '\\)']],
     },
     svg: {
-      scale: 1.0,
+      scale: 0.9,
       fontCache: 'local',
       minScale: 0.1,
     },
