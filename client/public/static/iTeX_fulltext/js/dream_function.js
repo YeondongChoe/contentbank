@@ -1,153 +1,160 @@
 /* eslint-disable no-func-assign */
 /* eslint-disable no-undef */
 /* eslint-disable no-constant-condition */
-const _0x55c2fc = _0x5716;
-(function (_0x1e2f42, _0x28aa96) {
-  const _0x1b8cb0 = _0x5716,
-    _0x5109fd = _0x1e2f42();
+const _0x46d5ad = _0x5413;
+(function (_0x534c29, _0x4bf054) {
+  const _0x5e4ae9 = _0x5413,
+    _0x3069cc = _0x534c29();
   while ([]) {
     try {
-      const _0x136ac8 =
-        (parseInt(_0x1b8cb0(0x20b)) / 0x1) *
-          (-parseInt(_0x1b8cb0(0x1ff)) / 0x2) +
-        parseInt(_0x1b8cb0(0x1cd)) / 0x3 +
-        parseInt(_0x1b8cb0(0x1d4)) / 0x4 +
-        parseInt(_0x1b8cb0(0x205)) / 0x5 +
-        (parseInt(_0x1b8cb0(0x1a2)) / 0x6) *
-          (parseInt(_0x1b8cb0(0x1d9)) / 0x7) +
-        (parseInt(_0x1b8cb0(0x20a)) / 0x8) *
-          (-parseInt(_0x1b8cb0(0x1ef)) / 0x9) +
-        -parseInt(_0x1b8cb0(0x19b)) / 0xa;
-      if (_0x136ac8 === _0x28aa96) break;
-      else _0x5109fd['push'](_0x5109fd['shift']());
-    } catch (_0x476015) {
-      _0x5109fd['push'](_0x5109fd['shift']());
+      const _0x3293b1 =
+        parseInt(_0x5e4ae9(0xd7)) / 0x1 +
+        (-parseInt(_0x5e4ae9(0x8f)) / 0x2) * (parseInt(_0x5e4ae9(0xf7)) / 0x3) +
+        -parseInt(_0x5e4ae9(0x91)) / 0x4 +
+        (-parseInt(_0x5e4ae9(0xd1)) / 0x5) * (parseInt(_0x5e4ae9(0xf2)) / 0x6) +
+        (parseInt(_0x5e4ae9(0x9d)) / 0x7) * (-parseInt(_0x5e4ae9(0xb7)) / 0x8) +
+        -parseInt(_0x5e4ae9(0xca)) / 0x9 +
+        parseInt(_0x5e4ae9(0x70)) / 0xa;
+      if (_0x3293b1 === _0x4bf054) break;
+      else _0x3069cc['push'](_0x3069cc['shift']());
+    } catch (_0xb0c58b) {
+      _0x3069cc['push'](_0x3069cc['shift']());
     }
   }
-})(_0x7c64, 0xaea71),
-  (window[_0x55c2fc(0x200)] = (_0x50143e) => {
-    const _0x208990 = _0x55c2fc,
-      _0x357119 = document[_0x208990(0x1d7)](iTeXEQ[_0x208990(0x1f2)]);
-    function _0x5194ac() {
-      const _0x24413b = _0x208990;
+})(_0x126d, 0x8f98b),
+  (window[_0x46d5ad(0xb3)] = (_0x88e3cf) => {
+    const _0x31e3f9 = _0x46d5ad,
+      _0x5c8033 = document[_0x31e3f9(0xb8)](iTeXEQ[_0x31e3f9(0x95)]);
+    function _0x1c6896() {
+      const _0xab67d4 = _0x31e3f9;
       (onlyEQ = !![]),
-        (onlyEQNode = _0x50143e),
-        _0x357119?.[_0x24413b(0x1be)][_0x24413b(0x1ee)](_0x24413b(0x1f5)),
-        iTeXEQ[_0x24413b(0x203)]();
+        (onlyEQNode = _0x88e3cf),
+        _0x5c8033?.[_0xab67d4(0xc6)][_0xab67d4(0xd5)](_0xab67d4(0xec)),
+        iTeXEQ['editorStart']();
     }
-    function _0x3fd948() {
-      const _0x308794 = _0x208990;
+    function _0x1273aa() {
+      const _0x529e5f = _0x31e3f9;
       (onlyEQ = ![]),
         (onlyEQNode = ''),
-        _0x357119?.['classList'][_0x308794(0x1f7)](_0x308794(0x1f5));
+        _0x5c8033?.[_0x529e5f(0xc6)][_0x529e5f(0x71)]('display_inactive');
     }
-    _0x357119?.[_0x208990(0x1be)][_0x208990(0x18c)](_0x208990(0x1f5))
-      ? _0x5194ac()
-      : _0x3fd948();
+    _0x5c8033?.[_0x31e3f9(0xc6)][_0x31e3f9(0xc9)](_0x31e3f9(0xec))
+      ? _0x1c6896()
+      : _0x1273aa();
   }),
-  (window['usePostJsonData'] = function setExamData(_0xb78887) {
-    const _0x3fbed0 = _0x55c2fc;
+  (window['usePostJsonData'] = function setExamData(_0x4ff1f) {
+    const _0x2cc53c = _0x46d5ad;
     try {
-      const _0x2cf8e9 = tinymce[_0x3fbed0(0x1a9)]('tinyeditor');
-      return _0x2cf8e9
-        ? (_0x2cf8e9['selection']['setContent'](_0xb78887), !![])
-        : (console[_0x3fbed0(0x198)](_0x3fbed0(0x1bc)), ![]);
-    } catch (_0x475940) {
-      return console[_0x3fbed0(0x198)](_0x3fbed0(0x1d3), _0x475940), ![];
+      const _0x228d81 = tinymce[_0x2cc53c(0xa7)](_0x2cc53c(0xa1));
+      return _0x228d81
+        ? (_0x228d81['selection'][_0x2cc53c(0x6a)](_0x4ff1f), !![])
+        : (console[_0x2cc53c(0x89)](
+            'ID가\x20\x27tinyeditor\x27인\x20TinyMCE\x20에디터가\x20없습니다.',
+          ),
+          ![]);
+    } catch (_0x1fd10a) {
+      return console[_0x2cc53c(0x89)](_0x2cc53c(0xb6), _0x1fd10a), ![];
     }
   });
-async function uploadImageToServer(_0x34997, _0x3805e7) {
-  const _0x25e938 = _0x55c2fc,
-    _0x51dfcd = new FormData(),
-    _0x4b8b7b = await fetch(_0x3805e7),
-    _0x1cc2ec = await _0x4b8b7b['blob']();
-  console[_0x25e938(0x1d6)](_0x25e938(0x1cb), _0x1cc2ec),
-    _0x51dfcd[_0x25e938(0x18f)](_0x25e938(0x1b3), _0x1cc2ec, 'image.png'),
-    _0x51dfcd[_0x25e938(0x18f)]('img_save_type', img_save_type),
-    _0x51dfcd[_0x25e938(0x18f)]('save_path', dream_server_url);
-  const _0x31ef2f = await fetch(dream_server_url + _0x25e938(0x1eb), {
-    method: _0x25e938(0x207),
-    body: _0x51dfcd,
+async function uploadImageToServer(_0x34fc74, _0x33c956) {
+  const _0x2d625b = _0x46d5ad,
+    _0x4454e3 = new FormData(),
+    _0x26524c = await fetch(_0x33c956),
+    _0xc0d9d6 = await _0x26524c[_0x2d625b(0xce)]();
+  console[_0x2d625b(0x7c)]('blob:\x20', _0xc0d9d6),
+    _0x4454e3[_0x2d625b(0x7f)](_0x2d625b(0x9b), _0xc0d9d6, _0x2d625b(0xd4)),
+    _0x4454e3[_0x2d625b(0x7f)]('img_save_type', img_save_type),
+    _0x4454e3['append'](_0x2d625b(0x74), dream_server_url);
+  const _0xdc5c83 = await fetch(dream_server_url + _0x2d625b(0x6d), {
+    method: _0x2d625b(0x80),
+    body: _0x4454e3,
   });
-  if (!_0x31ef2f['ok']) throw new Error(_0x25e938(0x191));
-  const _0x1a8ae3 = await _0x31ef2f[_0x25e938(0x1af)]();
-  return console['log']('data:\x20', _0x1a8ae3), _0x1a8ae3;
+  if (!_0xdc5c83['ok']) throw new Error(_0x2d625b(0x68));
+  const _0x59568e = await _0xdc5c83[_0x2d625b(0xa6)]();
+  return console[_0x2d625b(0x7c)](_0x2d625b(0xc5), _0x59568e), _0x59568e;
+}
+function _0x5413(_0x5b6eae, _0x2d976b) {
+  const _0x126d70 = _0x126d();
+  return (
+    (_0x5413 = function (_0x541386, _0x2c8cde) {
+      _0x541386 = _0x541386 - 0x67;
+      let _0x5f0750 = _0x126d70[_0x541386];
+      return _0x5f0750;
+    }),
+    _0x5413(_0x5b6eae, _0x2d976b)
+  );
 }
 function clearEditorContent() {
-  const _0x112d24 = _0x55c2fc,
-    _0x31d807 = tinymce[_0x112d24(0x1a9)](_0x112d24(0x1a1));
-  _0x31d807
-    ? _0x31d807[_0x112d24(0x192)]('')
-    : console[_0x112d24(0x198)](_0x112d24(0x1c7));
+  const _0xc58eed = _0x46d5ad,
+    _0xe22151 = tinymce[_0xc58eed(0xa7)](_0xc58eed(0xa1));
+  _0xe22151
+    ? _0xe22151[_0xc58eed(0x6a)]('')
+    : console[_0xc58eed(0x89)](_0xc58eed(0xa8));
 }
-window['saveExamData'] = async function () {
-  const _0x172da7 = _0x55c2fc;
+window[_0x46d5ad(0xdb)] = async function () {
+  const _0x2e9a8e = _0x46d5ad;
   try {
-    const _0x1005ec =
-        tinymce['activeEditor']['contentWindow'][_0x172da7(0x1a4)] ||
-        tinymce[_0x172da7(0x1c4)][_0x172da7(0x1a5)][_0x172da7(0x1a4)],
-      _0x33c2c2 = iTeXEQ[_0x172da7(0x1d8)](_0x1005ec[_0x172da7(0x202)]('body'));
-    if (!_0x33c2c2) return console[_0x172da7(0x198)](_0x172da7(0x1b4)), ![];
-    const _0x42a1d6 = [
-        _0x172da7(0x1e6),
-        _0x172da7(0x208),
-        _0x172da7(0x211),
-        _0x172da7(0x1df),
-        'tag_example',
-        _0x172da7(0x1b1),
-        _0x172da7(0x1e1),
-        'tag_commentary',
-        _0x172da7(0x1f9),
-        _0x172da7(0x1b6),
-        _0x172da7(0x213),
-        _0x172da7(0x1ae),
-      ],
-      _0x1e4730 = _0x33c2c2[_0x172da7(0x1a0)]('p');
-    if (_0x1e4730) {
-      const _0x48be0e = _0x1e4730[0x0][_0x172da7(0x202)](_0x172da7(0x210)),
-        _0x74d879 = Array[_0x172da7(0x19a)](_0x1e4730[0x0]?.[_0x172da7(0x1be)])[
-          _0x172da7(0x1c8)
-        ]((_0xabd033) => _0x42a1d6['includes'](_0xabd033)),
-        _0x571d78 = Array[_0x172da7(0x19a)](_0x1e4730)[_0x172da7(0x1c8)](
-          (_0x3a28ac) =>
-            _0x3a28ac?.[_0x172da7(0x1be)][_0x172da7(0x18c)](_0x172da7(0x211)),
-        ),
-        _0x37eb2a = Array[_0x172da7(0x19a)](_0x1e4730)['find']((_0x4b291c) =>
-          _0x4b291c?.[_0x172da7(0x1be)]['contains'](_0x172da7(0x1db)),
-        );
-      if (_0x48be0e) return alert(_0x172da7(0x1b7)), ![];
-      if (!_0x74d879)
-        return alert(_0x172da7(0x1b5)), iTeXEQ['latexrecovery'](), ![];
-      if (!_0x571d78) return alert(_0x172da7(0x1ab)), ![];
-    } else
-      return (
-        alert('No\x20<p>\x20tag\x20found\x20in\x20the\x20parsed\x20document.'),
-        ![]
+    const _0x1b6924 =
+        tinymce[_0x2e9a8e(0xa3)][_0x2e9a8e(0xcd)][_0x2e9a8e(0xad)] ||
+        tinymce[_0x2e9a8e(0xa3)][_0x2e9a8e(0xba)][_0x2e9a8e(0xad)],
+      _0x2521b2 = iTeXEQ['removeSVG'](
+        _0x1b6924['querySelector'](_0x2e9a8e(0xb9)),
       );
-    const _0x149e44 = _0x33c2c2[_0x172da7(0x1a0)]('img');
-    for (const _0x502437 of _0x149e44) {
-      try {
-        const { imgUUID: _0x196b4a, imgURL: _0x2ecf2f } =
-          await uploadImageToServer(img_save_type, _0x502437['src']);
-        console[_0x172da7(0x1d6)](
-          _0x172da7(0x1f1),
-          dream_server_url + _0x2ecf2f,
+    if (!_0x2521b2) return console['error'](_0x2e9a8e(0xcb)), ![];
+    const _0x47b61f = [
+        _0x2e9a8e(0xea),
+        _0x2e9a8e(0xac),
+        _0x2e9a8e(0xc3),
+        'tag_exam_sm',
+        _0x2e9a8e(0x6b),
+        _0x2e9a8e(0xda),
+        _0x2e9a8e(0xaf),
+        _0x2e9a8e(0xde),
+        _0x2e9a8e(0x86),
+        _0x2e9a8e(0xe9),
+        _0x2e9a8e(0x88),
+        _0x2e9a8e(0xe5),
+      ],
+      _0x33ab98 = _0x2521b2[_0x2e9a8e(0xee)]('p');
+    if (_0x33ab98) {
+      const _0xaf4e33 = _0x33ab98[0x0][_0x2e9a8e(0x87)](_0x2e9a8e(0x9e)),
+        _0x5a8575 = Array[_0x2e9a8e(0x8e)](_0x33ab98[0x0]?.[_0x2e9a8e(0xc6)])[
+          _0x2e9a8e(0x75)
+        ]((_0x1499c3) => _0x47b61f['includes'](_0x1499c3)),
+        _0x39eeb6 = Array[_0x2e9a8e(0x8e)](_0x33ab98)[_0x2e9a8e(0x75)](
+          (_0x3c7789) =>
+            _0x3c7789?.[_0x2e9a8e(0xc6)][_0x2e9a8e(0xc9)](_0x2e9a8e(0xc3)),
         ),
-          _0x502437[_0x172da7(0x1d0)](_0x172da7(0x1e3), _0x196b4a),
-          _0x502437[_0x172da7(0x1d0)](
-            _0x172da7(0x199),
-            dream_server_url + _0x2ecf2f,
+        _0x52c9e4 = Array[_0x2e9a8e(0x8e)](_0x33ab98)[_0x2e9a8e(0x75)](
+          (_0x8f5fd5) =>
+            _0x8f5fd5?.['classList'][_0x2e9a8e(0xc9)](_0x2e9a8e(0xbc)),
+        );
+      if (_0xaf4e33) return alert(_0x2e9a8e(0xf9)), ![];
+      if (!_0x5a8575)
+        return alert(_0x2e9a8e(0xef)), iTeXEQ['latexrecovery'](), ![];
+      if (!_0x39eeb6) return alert(_0x2e9a8e(0xdf)), ![];
+    } else return alert(_0x2e9a8e(0x6c)), ![];
+    const _0x589f51 = _0x2521b2[_0x2e9a8e(0xee)]('img');
+    for (const _0x2da5a5 of _0x589f51) {
+      try {
+        const { imgUUID: _0x45ca5d, imgURL: _0x82f3a6 } =
+          await uploadImageToServer(img_save_type, _0x2da5a5[_0x2e9a8e(0xe6)]);
+        console['log'](_0x2e9a8e(0x8d), dream_server_url + _0x82f3a6),
+          _0x2da5a5[_0x2e9a8e(0xd8)](_0x2e9a8e(0x72), _0x45ca5d),
+          _0x2da5a5[_0x2e9a8e(0xd8)](
+            _0x2e9a8e(0xe6),
+            dream_server_url + _0x82f3a6,
           );
-      } catch (_0x22a285) {
-        console[_0x172da7(0x198)](
-          _0x172da7(0x1c6),
-          _0x502437[_0x172da7(0x199)],
-          _0x22a285,
+      } catch (_0x16f6c9) {
+        console[_0x2e9a8e(0x89)](
+          _0x2e9a8e(0xb1),
+          _0x2da5a5[_0x2e9a8e(0xe6)],
+          _0x16f6c9,
         );
       }
     }
-    const _0x1a9d46 = {
-        tag_group: _0x33c2c2[_0x172da7(0x20f)],
+    const _0x5956cf = {
+        tag_group: _0x2521b2['innerHTML'],
         tag_bigcontent: [],
         tag_content: [],
         tag_exam: [],
@@ -161,251 +168,408 @@ window['saveExamData'] = async function () {
         tag_title: [],
         tag_tip: [],
       },
-      _0x36f29d = new DOMParser(),
-      _0x3864c8 = _0x36f29d[_0x172da7(0x19f)](
-        _0x33c2c2[_0x172da7(0x20f)],
-        _0x172da7(0x1c2),
+      _0x1a7325 = new DOMParser(),
+      _0x3db7e1 = _0x1a7325[_0x2e9a8e(0xe8)](
+        _0x2521b2[_0x2e9a8e(0xa9)],
+        _0x2e9a8e(0x7b),
       );
-    let _0x5a1fc9 = null,
-      _0x48f861 = '';
-    if (!_0x3864c8[_0x172da7(0x1dc)])
-      return console[_0x172da7(0x198)](_0x172da7(0x1bd)), ![];
-    const _0x1657d1 = (_0x12666e, _0x5eff19) => {
-      const _0x1dbe71 = _0x172da7;
-      Array[_0x1dbe71(0x1f8)](_0x1a9d46[_0x12666e]) &&
-        _0x1a9d46[_0x12666e][_0x1dbe71(0x206)](_0x5eff19);
+    let _0x42900b = null,
+      _0x55c484 = '';
+    if (!_0x3db7e1[_0x2e9a8e(0xb9)])
+      return (
+        console[_0x2e9a8e(0x89)](
+          'Parsed\x20document\x20does\x20not\x20contain\x20body.',
+        ),
+        ![]
+      );
+    const _0x59678d = (_0x3e5887, _0x3cd44d) => {
+      const _0x416900 = _0x2e9a8e;
+      Array[_0x416900(0xd6)](_0x5956cf[_0x3e5887]) &&
+        _0x5956cf[_0x3e5887]['push'](_0x3cd44d);
     };
-    Array['from'](_0x3864c8[_0x172da7(0x1dc)][_0x172da7(0x1d2)])[
-      _0x172da7(0x1e7)
-    ]((_0x360df0) => {
-      const _0x67a89c = _0x172da7;
-      if (_0x360df0['nodeType'] === Node[_0x67a89c(0x209)]) {
-        const _0x14f340 = Array[_0x67a89c(0x19a)](
-            _0x360df0?.[_0x67a89c(0x1be)],
-          ),
-          _0x54b862 = _0x14f340[_0x67a89c(0x1c8)]((_0x55b3d5) =>
-            _0x42a1d6[_0x67a89c(0x1e5)](_0x55b3d5),
-          );
-        if (_0x54b862)
-          _0x5a1fc9 && _0x1657d1(_0x5a1fc9, _0x48f861),
-            (_0x5a1fc9 = _0x54b862),
-            (_0x48f861 = _0x360df0['outerHTML']);
-        else _0x5a1fc9 && (_0x48f861 += _0x360df0[_0x67a89c(0x20d)]);
-      }
-    });
-    _0x5a1fc9 && _0x1657d1(_0x5a1fc9, _0x48f861);
-    const _0x102162 = JSON[_0x172da7(0x204)](_0x1a9d46, null, 0x2);
-    return iTeXEQ[_0x172da7(0x18b)](), clearEditorContent(), _0x102162;
-  } catch (_0x8cbaed) {
-    return console['error'](_0x172da7(0x18a), _0x8cbaed), ![];
+    Array[_0x2e9a8e(0x8e)](_0x3db7e1['body']['childNodes'])[_0x2e9a8e(0x67)](
+      (_0x527a3b) => {
+        const _0x5b589e = _0x2e9a8e;
+        if (_0x527a3b['nodeType'] === Node[_0x5b589e(0xe4)]) {
+          const _0x2a347d = Array[_0x5b589e(0x8e)](
+              _0x527a3b?.[_0x5b589e(0xc6)],
+            ),
+            _0xe464d9 = _0x2a347d[_0x5b589e(0x75)]((_0x19940d) =>
+              _0x47b61f[_0x5b589e(0xbb)](_0x19940d),
+            );
+          if (_0xe464d9)
+            _0x42900b && _0x59678d(_0x42900b, _0x55c484),
+              (_0x42900b = _0xe464d9),
+              (_0x55c484 = _0x527a3b['outerHTML']);
+          else _0x42900b && (_0x55c484 += _0x527a3b[_0x5b589e(0x79)]);
+        }
+      },
+    );
+    _0x42900b && _0x59678d(_0x42900b, _0x55c484);
+    const _0x3c391f = JSON[_0x2e9a8e(0xe0)](_0x5956cf, null, 0x2);
+    return iTeXEQ['latexrecovery'](), clearEditorContent(), _0x3c391f;
+  } catch (_0x2ff00a) {
+    return console[_0x2e9a8e(0x89)](_0x2e9a8e(0xd0), _0x2ff00a), ![];
   }
 };
-function hml_upload(_0x158e99) {
-  const _0x1304b8 = _0x55c2fc;
-  console[_0x1304b8(0x1d6)]('save_path:\x20', dream_server_url);
-  var _0x2626b4 = new FormData();
-  _0x2626b4[_0x1304b8(0x18f)](_0x1304b8(0x1d5), _0x158e99[_0x1304b8(0x1fe)]),
-    _0x2626b4['append'](_0x1304b8(0x1b3), _0x158e99),
-    _0x2626b4[_0x1304b8(0x18f)]('img_save_type', img_save_type),
-    _0x2626b4[_0x1304b8(0x18f)](_0x1304b8(0x1ec), dream_server_url);
-  var _0x65e465 = new XMLHttpRequest();
-  _0x65e465[_0x1304b8(0x20e)](
-    _0x1304b8(0x207),
-    dream_server_url + '/qnapi_dream/hml_upload',
+function hml_upload(_0x56128e) {
+  const _0x294efe = _0x46d5ad;
+  var _0xcfc062 = new FormData();
+  _0xcfc062[_0x294efe(0x7f)](_0x294efe(0xc4), _0x56128e[_0x294efe(0xae)]),
+    _0xcfc062[_0x294efe(0x7f)]('file', _0x56128e),
+    _0xcfc062[_0x294efe(0x7f)](_0x294efe(0xe2), img_save_type),
+    _0xcfc062[_0x294efe(0x7f)](_0x294efe(0x74), dream_server_url);
+  var _0x74bfa3 = new XMLHttpRequest();
+  _0x74bfa3[_0x294efe(0xb4)](
+    _0x294efe(0x80),
+    dream_server_url + _0x294efe(0xe3),
     !![],
   ),
-    _0x65e465[_0x1304b8(0x1b0)](_0x2626b4),
-    (_0x65e465['onreadystatechange'] = function () {
-      const _0xacba14 = _0x1304b8;
+    _0x74bfa3[_0x294efe(0x8b)](_0xcfc062),
+    (_0x74bfa3[_0x294efe(0xc8)] = function () {
+      const _0x105654 = _0x294efe;
       if (
-        _0x65e465[_0xacba14(0x1ba)] == 0x4 &&
-        _0x65e465[_0xacba14(0x1d1)] == 0xc8
+        _0x74bfa3['readyState'] == 0x4 &&
+        _0x74bfa3[_0x105654(0x78)] == 0xc8
       ) {
-        const _0x1ecea2 = document[_0xacba14(0x202)](_0xacba14(0x18d));
-        var _0x4f60c0 = JSON[_0xacba14(0x1a3)](_0x65e465[_0xacba14(0x195)]);
-        (_0x1ecea2[_0xacba14(0x20f)] = _0x4f60c0[_0xacba14(0x215)]),
-          document[_0xacba14(0x202)](_0xacba14(0x1f0))?.['classList'][
-            _0xacba14(0x1f7)
-          ]('itex_area_hidden'),
-          iTeXEQ[_0xacba14(0x193)](_0x1ecea2),
-          (document['getElementById'](_0xacba14(0x1f4))['style'][
-            _0xacba14(0x1c3)
-          ] = _0xacba14(0x1ce)),
+        const _0xb9155a = document[_0x105654(0x87)](_0x105654(0xc2));
+        var _0x23e578 = JSON[_0x105654(0xa2)](_0x74bfa3[_0x105654(0x9c)]);
+        (_0xb9155a[_0x105654(0xa9)] = _0x23e578[_0x105654(0x7a)]),
+          document['querySelector'](_0x105654(0x92))?.['classList'][
+            _0x105654(0x71)
+          ](_0x105654(0x77)),
+          iTeXEQ[_0x105654(0xab)](_0xb9155a),
+          (document['getElementById']('modal_block')[_0x105654(0x83)][
+            _0x105654(0x8c)
+          ] = _0x105654(0x76)),
           updateButtonStates(!![], ![], ![], ![], ![]);
       }
     });
 }
-function _0x5716(_0x3ba883, _0x2b1316) {
-  const _0x7c64d5 = _0x7c64();
-  return (
-    (_0x5716 = function (_0x5716c4, _0x5be2e3) {
-      _0x5716c4 = _0x5716c4 - 0x187;
-      let _0x1a9c08 = _0x7c64d5[_0x5716c4];
-      return _0x1a9c08;
-    }),
-    _0x5716(_0x3ba883, _0x2b1316)
-  );
+function _0x126d() {
+  const _0x19c3ac = [
+    'Editor\x20not\x20found',
+    'innerHTML',
+    'false',
+    'recoverynew_no_click',
+    'tag_content',
+    'document',
+    'name',
+    'tl_answer',
+    'SMALL',
+    'Error\x20processing\x20image:',
+    'addEventListener',
+    'openEQ',
+    'open',
+    'QUESTION',
+    '콘텐츠\x20삽입\x20중\x20오류\x20발생:',
+    '2944rcQSCg',
+    'getElementById',
+    'body',
+    'contentDocument',
+    'includes',
+    'tag_group',
+    'recoverynew',
+    'modal_block',
+    'TEXT',
+    'data',
+    'setExamData',
+    '.itex_hml_convert_view',
+    'tag_exam',
+    'file_name',
+    'data:\x20',
+    'classList',
+    '.exam_box',
+    'onreadystatechange',
+    'contains',
+    '5767659aznMYE',
+    'No\x20data\x20found\x20in\x20the\x20parsed\x20document.',
+    '원래\x20자리를\x20찾을\x20수\x20없습니다.',
+    'contentWindow',
+    'blob',
+    'appendChild',
+    'Error\x20while\x20saving\x20exam\x20data:',
+    '5hxfOJR',
+    'getExamCodenum',
+    'TITLE',
+    'image.png',
+    'remove',
+    'isArray',
+    '786828DDMDYm',
+    'setAttribute',
+    'exam_box_',
+    'tag_choices',
+    'saveExamData',
+    'trim',
+    'Error\x20in\x20math\x20render:',
+    'tag_commentary',
+    '문제\x20태그가\x20필요합니다!',
+    'stringify',
+    'match',
+    'img_save_type',
+    '/qnapi_dream/hml_upload',
+    'ELEMENT_NODE',
+    'tag_tip',
+    'src',
+    'CONCEPT',
+    'parseFromString',
+    'tag_concept',
+    'tag_bigcontent',
+    '에디터에\x20편집하던\x20내용을\x20적용하지\x20않고\x20저장하시겠습니까?',
+    'display_inactive',
+    'nextElementSibling',
+    'querySelectorAll',
+    '내용\x20앞에\x20태그를\x20입력해\x20주세요',
+    '수정할\x20요소가\x20선택되지\x20않았습니다.',
+    'cloneNode',
+    '6030726ugjDFF',
+    'CHOICES',
+    'className',
+    'push',
+    'hasChildNodes',
+    '93rLThFi',
+    '문서를\x20업로드\x20하세요.',
+    '내용\x20앞에\x20태그를\x20입력해주세요.',
+    'forEach',
+    'Error\x20uploading\x20image',
+    'COMMENTARY',
+    'setContent',
+    'tag_example',
+    'No\x20<p>\x20tag\x20found\x20in\x20the\x20parsed\x20document.',
+    '/uploadImage',
+    'EXAMPLE',
+    'closest',
+    '24849420QHIAMq',
+    'add',
+    'Img_code',
+    'join',
+    'save_path',
+    'find',
+    'none',
+    'itex_area_hidden',
+    'status',
+    'outerHTML',
+    'itexdata',
+    'text/html',
+    'log',
+    'tag_exam_sm',
+    'click',
+    'append',
+    'POST',
+    'length',
+    'function',
+    'style',
+    'message',
+    'BIG',
+    'tag_hint',
+    'querySelector',
+    'tag_title',
+    'error',
+    'block',
+    'send',
+    'display',
+    'img_url:\x20',
+    'from',
+    '30350pDnznK',
+    'dream_server_url:\x20',
+    '1412104nisJZb',
+    '.origin_img_area',
+    'readyState',
+    'div',
+    'editor_container',
+    'HINT',
+    'map',
+    'getContent',
+    'createElement',
+    'saveHmlData',
+    'file',
+    'responseText',
+    '4074HTmfDI',
+    'br[data-mce-bogus=\x221\x22]',
+    'ANSWER',
+    'contenteditable',
+    'tinyeditor',
+    'parse',
+    'activeEditor',
+    '데이터가\x20존재하지\x20않습니다.',
+    'setExamList',
+    'json',
+    'get',
+  ];
+  _0x126d = function () {
+    return _0x19c3ac;
+  };
+  return _0x126d();
 }
 let lastClickedBoxId = null,
   currentEditorContent = '';
-function htmlStringToNode(_0x54cdc3) {
-  const _0xaa6626 = _0x55c2fc;
-  var _0x36a126 = document[_0xaa6626(0x20c)](_0xaa6626(0x1dd));
-  return (_0x36a126[_0xaa6626(0x20f)] = _0x54cdc3), _0x36a126[_0xaa6626(0x18e)];
+function htmlStringToNode(_0x3dac72) {
+  const _0x11834d = _0x46d5ad;
+  var _0xf23d03 = document['createElement']('template');
+  return (_0xf23d03[_0x11834d(0xa9)] = _0x3dac72), _0xf23d03['content'];
 }
 async function hml_edit_finish() {
-  const _0x1de23e = _0x55c2fc;
+  const _0x3105f0 = _0x46d5ad;
   if (!lastClickedBoxId) {
-    console[_0x1de23e(0x198)](_0x1de23e(0x1bf));
+    console[_0x3105f0(0x89)](_0x3105f0(0xf0));
     return;
   }
-  const _0x35479a = tinymce[_0x1de23e(0x1a9)](_0x1de23e(0x1a1))['getContent'](),
-    _0x51035a = document[_0x1de23e(0x202)]('.itex_hml_convert_view'),
-    _0x140a03 = document[_0x1de23e(0x1d7)](lastClickedBoxId);
-  if (_0x140a03) {
-    const _0x5abb39 = htmlStringToNode(_0x35479a);
+  const _0x432d63 = tinymce[_0x3105f0(0xa7)](_0x3105f0(0xa1))[
+      _0x3105f0(0x98)
+    ](),
+    _0x1b61b4 = document[_0x3105f0(0x87)](_0x3105f0(0xc2)),
+    _0x3125cd = document['getElementById'](lastClickedBoxId);
+  if (_0x3125cd) {
+    const _0x4ad786 = htmlStringToNode(_0x432d63);
     try {
-      const _0x547661 = await iTeXDBW_mathrender_hml(_0x5abb39),
-        _0x363294 = document[_0x1de23e(0x20c)]('div');
-      _0x363294['appendChild'](_0x547661),
-        (_0x140a03[_0x1de23e(0x20d)] = _0x363294[_0x1de23e(0x20f)]),
-        iTeXEQ['recoverynew_no_click'](_0x51035a),
-        tinymce[_0x1de23e(0x1a9)](_0x1de23e(0x1a1))['setContent'](''),
+      const _0x492197 = await iTeXDBW_mathrender_hml(_0x4ad786),
+        _0x184646 = document[_0x3105f0(0x99)](_0x3105f0(0x94));
+      _0x184646[_0x3105f0(0xcf)](_0x492197),
+        (_0x3125cd[_0x3105f0(0x79)] = _0x184646['innerHTML']),
+        iTeXEQ[_0x3105f0(0xab)](_0x1b61b4),
+        tinymce[_0x3105f0(0xa7)](_0x3105f0(0xa1))[_0x3105f0(0x6a)](''),
         (lastClickedBoxId = null),
         (currentEditorContent = '');
-    } catch (_0xa389ea) {
-      console[_0x1de23e(0x198)](_0x1de23e(0x194), _0xa389ea);
+    } catch (_0x4fac0c) {
+      console[_0x3105f0(0x89)]('Error\x20in\x20math\x20render:', _0x4fac0c);
     }
-  } else console[_0x1de23e(0x198)](_0x1de23e(0x19d));
+  } else console[_0x3105f0(0x89)](_0x3105f0(0xcc));
 }
-async function hml_upload_frame(_0x2531e6) {
-  const _0x27cb6f = _0x55c2fc;
-  console[_0x27cb6f(0x1d6)](_0x27cb6f(0x1ad)),
-    (document[_0x27cb6f(0x1d7)](_0x27cb6f(0x1f4))[_0x27cb6f(0x1e2)][
-      _0x27cb6f(0x1c3)
-    ] = _0x27cb6f(0x188));
-  var _0x40f8e2 = new FormData();
-  _0x40f8e2[_0x27cb6f(0x18f)]('file_name', _0x2531e6[_0x27cb6f(0x1fe)]),
-    _0x40f8e2[_0x27cb6f(0x18f)](_0x27cb6f(0x1b3), _0x2531e6),
-    _0x40f8e2['append']('img_save_type', img_save_type),
-    _0x40f8e2['append']('save_path', dream_server_url);
-  var _0x4563ac = new XMLHttpRequest();
-  _0x4563ac['open'](
-    _0x27cb6f(0x207),
-    dream_server_url + _0x27cb6f(0x19c),
-    !![],
-  ),
-    _0x4563ac[_0x27cb6f(0x1b0)](_0x40f8e2),
-    (_0x4563ac[_0x27cb6f(0x201)] = async function () {
-      const _0x261921 = _0x27cb6f;
+async function hml_upload_frame(_0x5ef9dc) {
+  const _0x557656 = _0x46d5ad;
+  document[_0x557656(0xb8)](_0x557656(0xbe))[_0x557656(0x83)][_0x557656(0x8c)] =
+    _0x557656(0x8a);
+  var _0x2dbac4 = new FormData();
+  _0x2dbac4[_0x557656(0x7f)](_0x557656(0xc4), _0x5ef9dc[_0x557656(0xae)]),
+    _0x2dbac4[_0x557656(0x7f)](_0x557656(0x9b), _0x5ef9dc),
+    _0x2dbac4['append'](_0x557656(0xe2), img_save_type),
+    _0x2dbac4['append']('save_path', dream_server_url);
+  var _0x59f3d8 = new XMLHttpRequest();
+  console[_0x557656(0x7c)](_0x557656(0x90), dream_server_url),
+    _0x59f3d8['open'](
+      _0x557656(0x80),
+      dream_server_url + _0x557656(0xe3),
+      !![],
+    ),
+    _0x59f3d8['send'](_0x2dbac4),
+    (_0x59f3d8[_0x557656(0xc8)] = async function () {
+      const _0x3c60ec = _0x557656;
       if (
-        _0x4563ac[_0x261921(0x1ba)] == 0x4 &&
-        _0x4563ac[_0x261921(0x1d1)] == 0xc8
+        _0x59f3d8[_0x3c60ec(0x93)] == 0x4 &&
+        _0x59f3d8[_0x3c60ec(0x78)] == 0xc8
       ) {
-        const _0x39a150 = document[_0x261921(0x202)](_0x261921(0x18d));
-        console[_0x261921(0x1d6)](_0x4563ac[_0x261921(0x195)]);
-        var _0x39b269 = JSON[_0x261921(0x1a3)](_0x4563ac[_0x261921(0x195)]);
-        const _0x3efa1d = iTeX_hml_tag_parser(_0x39b269[_0x261921(0x215)]);
-        (_0x39a150[_0x261921(0x20f)] = _0x3efa1d),
-          _0x39a150[_0x261921(0x190)]('click', async function (_0x1ee5b6) {
-            const _0x154bb7 = _0x261921;
-            if (
-              _0x1ee5b6[_0x154bb7(0x1c9)][_0x154bb7(0x1aa)](_0x154bb7(0x189))
-            ) {
-              const _0x141e9e = _0x1ee5b6[_0x154bb7(0x1c9)]['closest'](
-                  _0x154bb7(0x189),
-                ),
-                _0xfed3f = _0x141e9e[_0x154bb7(0x1b2)]('id');
-              lastClickedBoxId &&
-                tinymce['get'](_0x154bb7(0x1a1))[_0x154bb7(0x1cf)]() !==
-                  currentEditorContent &&
-                confirm(_0x154bb7(0x1e8)) &&
-                (await hml_edit_finish());
-              const _0x85ac84 = htmlStringToNode(_0x141e9e[_0x154bb7(0x20d)]);
-              lastClickedBoxId = _0xfed3f;
-              try {
-                const _0x1e5615 = await iTeXDBW_mathrender_hml(_0x85ac84),
-                  _0xdb8ed3 = document[_0x154bb7(0x20c)](_0x154bb7(0x1e4));
-                _0xdb8ed3[_0x154bb7(0x214)](_0x1e5615),
-                  tinymce[_0x154bb7(0x1a9)]('tinyeditor')[_0x154bb7(0x192)](
-                    _0xdb8ed3['innerHTML'],
+        const _0x31ca22 = document[_0x3c60ec(0x87)](_0x3c60ec(0xc2));
+        console[_0x3c60ec(0x7c)](_0x59f3d8[_0x3c60ec(0x9c)]);
+        var _0x2f6fdf = JSON['parse'](_0x59f3d8[_0x3c60ec(0x9c)]);
+        const _0x4aa9f0 = iTeX_hml_tag_parser(_0x2f6fdf[_0x3c60ec(0x7a)]);
+        (_0x31ca22[_0x3c60ec(0xa9)] = _0x4aa9f0),
+          _0x31ca22[_0x3c60ec(0xb2)](
+            _0x3c60ec(0x7e),
+            async function (_0x10e6e8) {
+              const _0x4fd5a2 = _0x3c60ec;
+              if (_0x10e6e8['target'][_0x4fd5a2(0x6f)](_0x4fd5a2(0xc7))) {
+                const _0x1926b9 = _0x10e6e8['target'][_0x4fd5a2(0x6f)](
+                    _0x4fd5a2(0xc7),
                   ),
-                  (currentEditorContent = _0xdb8ed3[_0x154bb7(0x20f)]);
-              } catch (_0x5bec98) {
-                console[_0x154bb7(0x198)](_0x154bb7(0x194), _0x5bec98);
+                  _0x28b18d = _0x1926b9['getAttribute']('id');
+                lastClickedBoxId &&
+                  tinymce[_0x4fd5a2(0xa7)]('tinyeditor')[_0x4fd5a2(0x98)]() !==
+                    currentEditorContent &&
+                  confirm(
+                    '변경사항을\x20저장하고\x20불러오시겠습니까?\x20\x27확인\x27을\x20클릭하면\x20저장\x20후\x20불러오고,\x20\x27취소\x27를\x20클릭하면\x20변경\x20없이\x20불러옵니다.',
+                  ) &&
+                  (await hml_edit_finish());
+                const _0x42fc9a = htmlStringToNode(_0x1926b9[_0x4fd5a2(0x79)]);
+                lastClickedBoxId = _0x28b18d;
+                try {
+                  const _0x1ffafb = await iTeXDBW_mathrender_hml(_0x42fc9a),
+                    _0x5b74f3 = document[_0x4fd5a2(0x99)](_0x4fd5a2(0x94));
+                  _0x5b74f3[_0x4fd5a2(0xcf)](_0x1ffafb),
+                    tinymce[_0x4fd5a2(0xa7)]('tinyeditor')['setContent'](
+                      _0x5b74f3[_0x4fd5a2(0xa9)],
+                    ),
+                    (currentEditorContent = _0x5b74f3['innerHTML']);
+                } catch (_0x22c49f) {
+                  console[_0x4fd5a2(0x89)](_0x4fd5a2(0xdd), _0x22c49f);
+                }
+                iTeXEQ[_0x4fd5a2(0xbd)]();
               }
-              iTeXEQ[_0x154bb7(0x1f6)]();
-            }
-          }),
-          document[_0x261921(0x202)]('.origin_img_area')?.[_0x261921(0x1be)][
-            'add'
+            },
+          ),
+          document[_0x3c60ec(0x87)]('.origin_img_area')?.[_0x3c60ec(0xc6)][
+            _0x3c60ec(0x71)
           ]('itex_area_hidden'),
-          iTeXEQ[_0x261921(0x193)](_0x39a150),
-          (document[_0x261921(0x1d7)]('modal_block')[_0x261921(0x1e2)][
-            'display'
-          ] = _0x261921(0x1ce));
+          iTeXEQ[_0x3c60ec(0xab)](_0x31ca22),
+          (document['getElementById'](_0x3c60ec(0xbe))[_0x3c60ec(0x83)][
+            _0x3c60ec(0x8c)
+          ] = _0x3c60ec(0x76));
       }
     });
 }
-window[_0x55c2fc(0x1cc)] = function () {
-  const _0x183252 = _0x55c2fc,
-    _0x350287 = document[_0x183252(0x202)](_0x183252(0x18d))['cloneNode'](!![]);
-  if (!_0x350287['hasChildNodes']()) {
-    alert(_0x183252(0x1ed));
+window[_0x46d5ad(0x9a)] = function () {
+  const _0x41fbd8 = _0x46d5ad,
+    _0x3aa432 = document[_0x41fbd8(0x87)](_0x41fbd8(0xc2))[_0x41fbd8(0xf1)](
+      !![],
+    );
+  if (!_0x3aa432[_0x41fbd8(0xf6)]()) {
+    alert(_0x41fbd8(0xf8));
     return;
   }
-  const _0x124569 = tinymce['get'](_0x183252(0x1a1))[_0x183252(0x1cf)]();
-  if (_0x124569[_0x183252(0x187)]() !== '') {
-    const _0x1cde5c = confirm(_0x183252(0x1e0));
-    if (!_0x1cde5c) return;
+  const _0x19626f = tinymce[_0x41fbd8(0xa7)](_0x41fbd8(0xa1))[
+    _0x41fbd8(0x98)
+  ]();
+  if (_0x19626f['trim']() !== '') {
+    const _0x19f7b3 = confirm(_0x41fbd8(0xeb));
+    if (!_0x19f7b3) return;
   }
-  if (_0x350287) {
-    const _0x3045df = _0x350287[_0x183252(0x1a0)](_0x183252(0x189)),
-      _0x52ee95 = [];
+  if (_0x3aa432) {
+    const _0x656798 = _0x3aa432['querySelectorAll'](_0x41fbd8(0xc7)),
+      _0x491273 = [];
     return (
-      _0x3045df[_0x183252(0x1e7)]((_0x3f7155, _0x1bd35d) => {
-        const _0x198856 = _0x183252,
-          _0x428ca9 = [];
-        let _0x67a7ef = 0x1;
-        const _0x4b9da9 = _0x3f7155[_0x198856(0x1a0)]('p');
-        _0x4b9da9[_0x198856(0x1e7)]((_0x4f2e74) => {
-          const _0x8757d = _0x198856,
-            _0xaa13f9 = _0x4f2e74?.['classList'];
-          let _0x5dd24d = null;
-          if (_0xaa13f9[_0x8757d(0x18c)]('tag_bigcontent')) _0x5dd24d = 'BIG';
+      _0x656798['forEach']((_0x5b61f8, _0x7a45fa) => {
+        const _0x517c05 = _0x41fbd8,
+          _0x5d301a = [];
+        let _0x217f2b = 0x1;
+        const _0x135e2f = _0x5b61f8[_0x517c05(0xee)]('p');
+        _0x135e2f['forEach']((_0x1ce12f) => {
+          const _0x109f95 = _0x517c05,
+            _0x3fc25d = _0x1ce12f?.['classList'];
+          let _0xe34eaf = null;
+          if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0xea)))
+            _0xe34eaf = _0x109f95(0x85);
           else {
-            if (_0xaa13f9[_0x8757d(0x18c)](_0x8757d(0x208)))
-              _0x5dd24d = _0x8757d(0x1bb);
+            if (_0x3fc25d[_0x109f95(0xc9)]('tag_content'))
+              _0xe34eaf = _0x109f95(0xbf);
             else {
-              if (_0xaa13f9[_0x8757d(0x18c)](_0x8757d(0x211)))
-                _0x5dd24d = 'QUESTION';
+              if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0xc3)))
+                _0xe34eaf = _0x109f95(0xb5);
               else {
-                if (_0xaa13f9[_0x8757d(0x18c)]('tag_exam_sm'))
-                  _0x5dd24d = _0x8757d(0x1c0);
+                if (_0x3fc25d['contains']('tag_exam_sm'))
+                  _0xe34eaf = _0x109f95(0xb0);
                 else {
-                  if (_0xaa13f9[_0x8757d(0x18c)](_0x8757d(0x1fc)))
-                    _0x5dd24d = 'EXAMPLE';
+                  if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0x6b)))
+                    _0xe34eaf = _0x109f95(0x6e);
                   else {
-                    if (_0xaa13f9['contains']('tag_choices'))
-                      _0x5dd24d = _0x8757d(0x197);
+                    if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0xda)))
+                      _0xe34eaf = _0x109f95(0xf3);
                     else {
-                      if (_0xaa13f9[_0x8757d(0x18c)](_0x8757d(0x1e1)))
-                        _0x5dd24d = 'ANSWER';
+                      if (_0x3fc25d['contains'](_0x109f95(0xaf)))
+                        _0xe34eaf = _0x109f95(0x9f);
                       else {
-                        if (_0xaa13f9[_0x8757d(0x18c)](_0x8757d(0x1fb)))
-                          _0x5dd24d = 'COMMENTARY';
+                        if (_0x3fc25d['contains'](_0x109f95(0xde)))
+                          _0xe34eaf = _0x109f95(0x69);
                         else {
-                          if (_0xaa13f9[_0x8757d(0x18c)](_0x8757d(0x1f9)))
-                            _0x5dd24d = _0x8757d(0x1c1);
+                          if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0x86)))
+                            _0xe34eaf = _0x109f95(0x96);
                           else {
-                            if (_0xaa13f9['contains'](_0x8757d(0x1b6)))
-                              _0x5dd24d = _0x8757d(0x1ea);
+                            if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0xe9)))
+                              _0xe34eaf = _0x109f95(0xe7);
                             else {
-                              if (_0xaa13f9['contains'](_0x8757d(0x213)))
-                                _0x5dd24d = _0x8757d(0x1f3);
+                              if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0x88)))
+                                _0xe34eaf = _0x109f95(0xd3);
                               else {
-                                if (_0xaa13f9[_0x8757d(0x18c)](_0x8757d(0x1ae)))
-                                  _0x5dd24d = _0x8757d(0x1c5);
+                                if (_0x3fc25d[_0x109f95(0xc9)](_0x109f95(0xe5)))
+                                  _0xe34eaf = 'TIP';
                               }
                             }
                           }
@@ -417,282 +581,129 @@ window[_0x55c2fc(0x1cc)] = function () {
               }
             }
           }
-          if (_0x5dd24d) {
-            let _0x3ba333 = _0x4f2e74['outerHTML'],
-              _0x11ae87 = _0x4f2e74['nextElementSibling'];
+          if (_0xe34eaf) {
+            let _0x56978b = _0x1ce12f['outerHTML'],
+              _0x108316 = _0x1ce12f[_0x109f95(0xed)];
             while (
-              _0x11ae87 &&
-              !_0x11ae87[_0x8757d(0x1be)][_0x8757d(0x18c)]('tag_bigcontent') &&
-              !_0x11ae87['classList']['contains'](_0x8757d(0x208)) &&
-              !_0x11ae87['classList'][_0x8757d(0x18c)](_0x8757d(0x211)) &&
-              !_0x11ae87[_0x8757d(0x1be)][_0x8757d(0x18c)]('tag_exam_sm') &&
-              !_0x11ae87[_0x8757d(0x1be)][_0x8757d(0x18c)]('tag_example') &&
-              !_0x11ae87[_0x8757d(0x1be)]['contains'](_0x8757d(0x1b1)) &&
-              !_0x11ae87[_0x8757d(0x1be)]['contains'](_0x8757d(0x1e1)) &&
-              !_0x11ae87[_0x8757d(0x1be)][_0x8757d(0x18c)]('tag_commentary') &&
-              !_0x11ae87[_0x8757d(0x1be)][_0x8757d(0x18c)](_0x8757d(0x1f9)) &&
-              !_0x11ae87['classList'][_0x8757d(0x18c)](_0x8757d(0x1b6)) &&
-              !_0x11ae87['classList']['contains'](_0x8757d(0x213)) &&
-              !_0x11ae87[_0x8757d(0x1be)][_0x8757d(0x18c)](_0x8757d(0x1ae))
+              _0x108316 &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0xea)) &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0xac)) &&
+              !_0x108316['classList']['contains'](_0x109f95(0xc3)) &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0x7d)) &&
+              !_0x108316['classList'][_0x109f95(0xc9)](_0x109f95(0x6b)) &&
+              !_0x108316['classList']['contains'](_0x109f95(0xda)) &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0xaf)) &&
+              !_0x108316['classList'][_0x109f95(0xc9)](_0x109f95(0xde)) &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0x86)) &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0xe9)) &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0x88)) &&
+              !_0x108316[_0x109f95(0xc6)][_0x109f95(0xc9)](_0x109f95(0xe5))
             ) {
-              (_0x3ba333 += _0x11ae87[_0x8757d(0x20d)]),
-                (_0x11ae87 = _0x11ae87[_0x8757d(0x1ca)]);
+              (_0x56978b += _0x108316[_0x109f95(0x79)]),
+                (_0x108316 = _0x108316[_0x109f95(0xed)]);
             }
-            _0x428ca9[_0x8757d(0x206)]({
-              type: _0x5dd24d,
-              content: _0x3ba333,
-              sort: _0x67a7ef++,
+            _0x5d301a[_0x109f95(0xf5)]({
+              type: _0xe34eaf,
+              content: _0x56978b,
+              sort: _0x217f2b++,
             });
           }
         }),
-          _0x52ee95[_0x198856(0x206)]({ id: null, quizItemList: _0x428ca9 });
+          _0x491273['push']({ id: null, quizItemList: _0x5d301a });
       }),
-      tinymce[_0x183252(0x1a9)]('tinyeditor')['setContent'](''),
-      _0x52ee95
+      tinymce[_0x41fbd8(0xa7)](_0x41fbd8(0xa1))[_0x41fbd8(0x6a)](''),
+      _0x491273
     );
-  } else
-    return console[_0x183252(0x1d6)]('데이터가\x20존재하지\x20않습니다.'), null;
+  } else return console['log'](_0x41fbd8(0xa4)), null;
 };
-function processHmlData(_0x201561) {
-  const _0x4a27d1 = _0x55c2fc,
-    _0x1bb107 = [],
-    _0x570e13 = Array['from'](_0x201561[_0x4a27d1(0x1a0)]('p'));
-  let _0x24bdb5 = [],
-    _0x2aae99 = ![];
+function processHmlData(_0x462056) {
+  const _0x5f4ddb = _0x46d5ad,
+    _0x3edba1 = [],
+    _0x625afc = Array[_0x5f4ddb(0x8e)](_0x462056['querySelectorAll']('p'));
+  let _0x451687 = [],
+    _0xbc33b7 = ![];
   return (
-    _0x570e13[_0x4a27d1(0x1e7)]((_0x58608b) => {
-      const _0x4a17ec = _0x4a27d1;
-      divideKey[_0x4a17ec(0x1e5)](_0x58608b[_0x4a17ec(0x212)])
-        ? (_0x24bdb5[_0x4a17ec(0x196)] > 0x0 &&
-            (_0x1bb107[_0x4a17ec(0x206)](
-              _0x24bdb5[_0x4a17ec(0x1a7)](
-                (_0x3f80b1) => _0x3f80b1[_0x4a17ec(0x20d)],
-              )[_0x4a17ec(0x1ac)](''),
+    _0x625afc['forEach']((_0x284a98) => {
+      const _0x4a401d = _0x5f4ddb;
+      divideKey['includes'](_0x284a98[_0x4a401d(0xf4)])
+        ? (_0x451687[_0x4a401d(0x81)] > 0x0 &&
+            (_0x3edba1[_0x4a401d(0xf5)](
+              _0x451687[_0x4a401d(0x97)](
+                (_0x1aca24) => _0x1aca24[_0x4a401d(0x79)],
+              )[_0x4a401d(0x73)](''),
             ),
-            (_0x24bdb5 = [])),
-          _0x24bdb5['push'](_0x58608b))
-        : _0x24bdb5['push'](_0x58608b);
+            (_0x451687 = [])),
+          _0x451687[_0x4a401d(0xf5)](_0x284a98))
+        : _0x451687[_0x4a401d(0xf5)](_0x284a98);
     }),
-    _0x24bdb5[_0x4a27d1(0x196)] > 0x0 &&
-      _0x1bb107[_0x4a27d1(0x206)](
-        _0x24bdb5[_0x4a27d1(0x1a7)]((_0x5ca1fc) => _0x5ca1fc['outerHTML'])[
+    _0x451687[_0x5f4ddb(0x81)] > 0x0 &&
+      _0x3edba1[_0x5f4ddb(0xf5)](
+        _0x451687[_0x5f4ddb(0x97)]((_0x7d4eec) => _0x7d4eec[_0x5f4ddb(0x79)])[
           'join'
         ](''),
       ),
-    _0x1bb107
+    _0x3edba1
   );
 }
-window[_0x55c2fc(0x190)]('message', (_0x2231d8) => {
-  const _0x416b36 = _0x55c2fc,
-    { functionName: _0x5940c1, args: _0x310901 } = _0x2231d8['data'];
-  _0x5940c1 === _0x416b36(0x216) &&
-    typeof window[_0x5940c1] === _0x416b36(0x1fa) &&
-    window[_0x5940c1](_0x310901[0x0]),
-    _0x5940c1 === _0x416b36(0x19e) &&
-      typeof window[_0x5940c1] === _0x416b36(0x1fa) &&
-      window[_0x5940c1](_0x310901[0x0]),
-    _0x5940c1 === _0x416b36(0x1fd) &&
-      typeof window[_0x5940c1] === _0x416b36(0x1fa) &&
-      window[_0x5940c1](_0x310901[0x0]),
-    _0x5940c1 === _0x416b36(0x1a8) &&
-      typeof window[_0x5940c1] === _0x416b36(0x1fa) &&
-      window[_0x5940c1](_0x310901[0x0]);
+window[_0x46d5ad(0xb2)](_0x46d5ad(0x84), (_0x5d2832) => {
+  const _0x259e50 = _0x46d5ad,
+    { functionName: _0x5260dd, args: _0x71fcca } = _0x5d2832[_0x259e50(0xc0)];
+  _0x5260dd === _0x259e50(0xc1) &&
+    typeof window[_0x5260dd] === _0x259e50(0x82) &&
+    window[_0x5260dd](_0x71fcca[0x0]),
+    _0x5260dd === _0x259e50(0xa5) &&
+      typeof window[_0x5260dd] === 'function' &&
+      window[_0x5260dd](_0x71fcca[0x0]),
+    _0x5260dd === _0x259e50(0xd2) &&
+      typeof window[_0x5260dd] === _0x259e50(0x82) &&
+      window[_0x5260dd](_0x71fcca[0x0]),
+    _0x5260dd === 'saveExamData' &&
+      typeof window[_0x5260dd] === _0x259e50(0x82) &&
+      window[_0x5260dd](_0x71fcca[0x0]);
 });
-function _0x7c64() {
-  const _0x741f4e = [
-    'replace',
-    'CONCEPT',
-    '/uploadImage',
-    'save_path',
-    '문서를\x20업로드\x20하세요.',
-    'remove',
-    '1564443JURTKa',
-    '.origin_img_area',
-    'img_url:\x20',
-    'editor_container',
-    'TITLE',
-    'modal_block',
-    'display_inactive',
-    'recoverynew',
-    'add',
-    'isArray',
-    'tag_hint',
-    'function',
-    'tag_commentary',
-    'tag_example',
-    'getExamCodenum',
-    'name',
-    '121118CPVRjN',
-    'openEQ',
-    'onreadystatechange',
-    'querySelector',
-    'editorStart',
-    'stringify',
-    '3533205hPabGh',
-    'push',
-    'POST',
-    'tag_content',
-    'ELEMENT_NODE',
-    '56jCKBKx',
-    '17XofUCl',
-    'createElement',
-    'outerHTML',
-    'open',
-    'innerHTML',
-    'br[data-mce-bogus=\x221\x22]',
-    'tag_exam',
-    'className',
-    'tag_title',
-    'appendChild',
-    'itexdata',
-    'setExamData',
-    'trim',
-    'block',
-    '.exam_box',
-    'Error\x20while\x20saving\x20exam\x20data:',
-    'latexrecovery',
-    'contains',
-    '.itex_hml_convert_view',
-    'content',
-    'append',
-    'addEventListener',
-    'Error\x20uploading\x20image',
-    'setContent',
-    'recoverynew_no_click',
-    'Error\x20in\x20math\x20render:',
-    'responseText',
-    'length',
-    'CHOICES',
-    'error',
-    'src',
-    'from',
-    '2333290dtLWFO',
-    '/qnapi_dream/hml_upload',
-    '원래\x20자리를\x20찾을\x20수\x20없습니다.',
-    'setExamList',
-    'parseFromString',
-    'querySelectorAll',
-    'tinyeditor',
-    '18VNmhcq',
-    'parse',
-    'document',
-    'contentDocument',
-    'contenteditable',
-    'map',
-    'saveExamData',
-    'get',
-    'closest',
-    '문제\x20태그가\x20필요합니다!',
-    'join',
-    'hml_upload_frame\x20들옴',
-    'tag_tip',
-    'json',
-    'send',
-    'tag_choices',
-    'getAttribute',
-    'file',
-    'No\x20data\x20found\x20in\x20the\x20parsed\x20document.',
-    '내용\x20앞에\x20태그를\x20입력해\x20주세요',
-    'tag_concept',
-    '내용\x20앞에\x20태그를\x20입력해주세요.',
-    'exam_box_',
-    'removeAttribute',
-    'readyState',
-    'TEXT',
-    'ID가\x20\x27tinyeditor\x27인\x20TinyMCE\x20에디터가\x20없습니다.',
-    'Parsed\x20document\x20does\x20not\x20contain\x20body.',
-    'classList',
-    '수정할\x20요소가\x20선택되지\x20않았습니다.',
-    'SMALL',
-    'HINT',
-    'text/html',
-    'display',
-    'activeEditor',
-    'TIP',
-    'Error\x20processing\x20image:',
-    'Editor\x20not\x20found',
-    'find',
-    'target',
-    'nextElementSibling',
-    'blob:\x20',
-    'saveHmlData',
-    '205560FSkolV',
-    'none',
-    'getContent',
-    'setAttribute',
-    'status',
-    'childNodes',
-    '콘텐츠\x20삽입\x20중\x20오류\x20발생:',
-    '4040776VkCogX',
-    'file_name',
-    'log',
-    'getElementById',
-    'removeSVG',
-    '3289167vzeiYM',
-    'exam_box',
-    'tag_group',
-    'body',
-    'template',
-    'false',
-    'tag_exam_sm',
-    '에디터에\x20편집하던\x20내용을\x20적용하지\x20않고\x20저장하시겠습니까?',
-    'tl_answer',
-    'style',
-    'Img_code',
-    'div',
-    'includes',
-    'tag_bigcontent',
-    'forEach',
-    '변경사항을\x20저장하고\x20불러오시겠습니까?\x20\x27확인\x27을\x20클릭하면\x20저장\x20후\x20불러오고,\x20\x27취소\x27를\x20클릭하면\x20변경\x20없이\x20불러옵니다.',
-  ];
-  _0x7c64 = function () {
-    return _0x741f4e;
-  };
-  return _0x7c64();
-}
-function iTeX_hml_tag_parser(_0x130e2d) {
-  const _0x50c3b1 = _0x55c2fc,
-    _0x3e485f = new DOMParser(),
-    _0x5aabac = _0x3e485f[_0x50c3b1(0x19f)](_0x130e2d, _0x50c3b1(0x1c2)),
-    _0x286791 = _0x5aabac[_0x50c3b1(0x1a0)]('p'),
-    _0x33d0a1 = {
+function iTeX_hml_tag_parser(_0x305998) {
+  const _0x7332c6 = _0x46d5ad,
+    _0x544549 = new DOMParser(),
+    _0x5009ff = _0x544549[_0x7332c6(0xe8)](_0x305998, 'text/html'),
+    _0x5207f1 = _0x5009ff['querySelectorAll']('p'),
+    _0x5aafd8 = {
       그룹: 'tag_group',
-      대발문: 'tag_bigcontent',
-      지문: _0x50c3b1(0x208),
-      문제: _0x50c3b1(0x211),
-      소문제: _0x50c3b1(0x1df),
-      보기: _0x50c3b1(0x1fc),
-      선지: _0x50c3b1(0x1b1),
-      정답: 'tl_answer',
-      해설: _0x50c3b1(0x1fb),
-      힌트: _0x50c3b1(0x1f9),
-      개념: _0x50c3b1(0x1b6),
-      제목: _0x50c3b1(0x213),
-      팁: _0x50c3b1(0x1ae),
+      대발문: _0x7332c6(0xea),
+      지문: 'tag_content',
+      문제: _0x7332c6(0xc3),
+      소문제: _0x7332c6(0x7d),
+      보기: _0x7332c6(0x6b),
+      선지: 'tag_choices',
+      정답: _0x7332c6(0xaf),
+      해설: _0x7332c6(0xde),
+      힌트: _0x7332c6(0x86),
+      개념: _0x7332c6(0xe9),
+      제목: _0x7332c6(0x88),
+      팁: _0x7332c6(0xe5),
     };
-  let _0x4a17ab = '',
-    _0x39a1b7 = null,
-    _0xeed24 = 0x0;
+  let _0xf70dc2 = '',
+    _0x235ca5 = null,
+    _0x5441c = 0x0;
   return (
-    _0x286791[_0x50c3b1(0x1e7)]((_0x24ab66) => {
-      const _0x2f63ba = _0x50c3b1;
-      _0x24ab66[_0x2f63ba(0x1b9)]('style');
-      let _0x512384 = _0x24ab66['textContent'][_0x2f63ba(0x187)]();
-      const _0x474a1b = _0x512384['match'](/^\[(.*?)\]$/);
-      if (_0x474a1b) {
-        const _0x5cebd4 = _0x474a1b[0x1][_0x2f63ba(0x1e9)](/\s+/g, '');
-        _0x5cebd4 in _0x33d0a1 &&
-          (_0x24ab66?.['classList']['add'](_0x33d0a1[_0x5cebd4]),
-          _0x24ab66[_0x2f63ba(0x1d0)](_0x2f63ba(0x1a6), _0x2f63ba(0x1de)),
-          _0x33d0a1[_0x5cebd4] === _0x2f63ba(0x1db) &&
-            (_0x39a1b7 && (_0x4a17ab += _0x39a1b7[_0x2f63ba(0x20d)]),
-            (_0x39a1b7 = document[_0x2f63ba(0x20c)](_0x2f63ba(0x1e4))),
-            _0x39a1b7?.[_0x2f63ba(0x1be)][_0x2f63ba(0x1f7)](_0x2f63ba(0x1da)),
-            _0x39a1b7[_0x2f63ba(0x1d0)]('id', _0x2f63ba(0x1b8) + _0xeed24++)));
+    _0x5207f1[_0x7332c6(0x67)]((_0x6d7bdb) => {
+      const _0x2eacdf = _0x7332c6;
+      _0x6d7bdb['removeAttribute']('style');
+      let _0x389fc8 = _0x6d7bdb['textContent'][_0x2eacdf(0xdc)]();
+      const _0x521d5b = _0x389fc8[_0x2eacdf(0xe1)](/^\[(.*?)\]$/);
+      if (_0x521d5b) {
+        const _0x592113 = _0x521d5b[0x1]['replace'](/\s+/g, '');
+        _0x592113 in _0x5aafd8 &&
+          (_0x6d7bdb?.[_0x2eacdf(0xc6)][_0x2eacdf(0x71)](_0x5aafd8[_0x592113]),
+          _0x6d7bdb[_0x2eacdf(0xd8)](_0x2eacdf(0xa0), _0x2eacdf(0xaa)),
+          _0x5aafd8[_0x592113] === _0x2eacdf(0xbc) &&
+            (_0x235ca5 && (_0xf70dc2 += _0x235ca5['outerHTML']),
+            (_0x235ca5 = document[_0x2eacdf(0x99)](_0x2eacdf(0x94))),
+            _0x235ca5?.[_0x2eacdf(0xc6)][_0x2eacdf(0x71)]('exam_box'),
+            _0x235ca5[_0x2eacdf(0xd8)]('id', _0x2eacdf(0xd9) + _0x5441c++)));
       }
-      _0x39a1b7 && _0x39a1b7[_0x2f63ba(0x214)](_0x24ab66);
+      _0x235ca5 && _0x235ca5[_0x2eacdf(0xcf)](_0x6d7bdb);
     }),
-    _0x39a1b7 && (_0x4a17ab += _0x39a1b7[_0x50c3b1(0x20d)]),
-    _0x4a17ab
+    _0x235ca5 && (_0xf70dc2 += _0x235ca5[_0x7332c6(0x79)]),
+    _0xf70dc2
   );
 }

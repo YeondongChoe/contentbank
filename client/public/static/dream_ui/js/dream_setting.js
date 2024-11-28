@@ -15,8 +15,19 @@ var bookmarkCount = 10;
 var bookmarkCount_pc = 30;
 
 // 편집기 종류(PC: true, tab: false);
-var editorType = true;
+var editorType;
 // var editorType = false;
+const userAgent = window.navigator.userAgent;
+if (/iPhone|iPad|iPod|Android|Linux/i.test(userAgent)) {
+  // alert("모바일");
+  editorType = false;
+} else if (/Windows|Macintosh/i.test(userAgent)) {
+  // alert("PC");
+  editorType = true;
+} else {
+  // alert("기타");
+  editorType = true;
+}
 
 // redo, undo 단계 설정
 var undo_redo_level = 10;

@@ -49,14 +49,7 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   }
 
   (window as any).MathJax = {
-    loader: {
-      load: ['input/tex', 'output/svg'],
-    },
-    output: {
-      renderer: 'svg',
-    },
     startup: {
-      renderer: 'SVG',
       ready: () => {
         const { MathJax } = window as any;
         MathJax.startup.defaultReady();
@@ -86,7 +79,7 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
 
   const script = document.createElement('script');
   script.id = 'MathJax-script';
-  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  script.src = '/static/iTeX_EQ/js/tex-svg-full_3_2_2.js';
   script.async = true;
   script.onload = () => {
     setLoaded(true);
@@ -504,6 +497,10 @@ export function ContentEdit({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       window.usePostJsonData(combinedContent);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.iTeXEQ.latexrecovery();
     }
   }, [data]);
 
