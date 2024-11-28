@@ -386,20 +386,21 @@ export function ContentCreating({
     }
   }, [quizItemList]);
 
-  //TODO :
   useEffect(() => {
-    console.log('quizItemArrList', quizItemArrList);
+    console.log('quizItemArrList 에디터 데이터 업데이트:', quizItemArrList);
+    console.log('quizClassList 분류등록 업데이트:', quizClassList);
     // 등록될 값
     const newQuestionList = quizItemArrList.map((quizItems) => ({
       commandCode: 0,
       quizIdx: null,
       articleList: [],
       quizItemList: quizItems,
-      quizClassList: quizClassList,
+      quizClassList: [...quizClassList],
     }));
     setAddQuestionList(newQuestionList);
   }, [quizItemArrList, quizClassList]);
 
+  // 분류 등록
   useEffect(() => {
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
@@ -563,7 +564,9 @@ export function ContentCreating({
 
             <BackgroundWrapper>
               <SelectListWrapper>
-                <strong className="top_title">출처</strong>
+                <strong className="top_title">
+                  출처<span>*</span>
+                </strong>
               </SelectListWrapper>
               <SelectListWrapper>
                 <SelectList>
