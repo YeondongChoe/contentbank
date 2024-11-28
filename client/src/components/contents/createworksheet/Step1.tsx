@@ -3243,22 +3243,6 @@ const CheckBoxWrapper = styled.div`
   align-items: center;
   padding-left: 10px;
 `;
-const MockExamSummaryWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  gap: 10px;
-`;
-const MockExamSummary = styled.div`
-  width: 100%;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const CastListWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
 const Overlay = styled.div`
   position: fixed;
   top: 0;
