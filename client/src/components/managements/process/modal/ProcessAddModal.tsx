@@ -94,6 +94,7 @@ type AddModalProps = {
   setProcessDetailInfo: React.Dispatch<
     React.SetStateAction<processDetailInfoProps | undefined>
   >;
+  setStepSort: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 export function ProcessAddModal({
@@ -104,6 +105,7 @@ export function ProcessAddModal({
   setProcessListData,
   processDetailInfo,
   setProcessDetailInfo,
+  setStepSort,
 }: AddModalProps) {
   const { closeModal } = useModal();
   // 기존에 설정되어 있는 단계 값을 저장
@@ -141,8 +143,10 @@ export function ProcessAddModal({
   const [selectedworkerAccountList, setselectedWorkerAccountList] = useState<
     ProcessWorkerAccountListProps[]
   >([]);
+  console.log(selectedworkerAccountList);
   const [selectedworkerAuthorityList, setselectedWorkerAuthorityList] =
     useState<ProcessWorkerAuthorityListProps[]>([]);
+  console.log(selectedworkerAuthorityList);
 
   const clickAccountListSave = () => {
     if (isEdit) {
@@ -201,6 +205,7 @@ export function ProcessAddModal({
         lastModifiedAt: processDetailList?.lastModifiedAt ?? '', // 추가된 부분
         steps: updatedProcessList, // Update only the steps property
       });
+      setStepSort(stepSort);
     } else {
       const updatedProcessList = processList.map((process) => {
         if (process.stepSort === stepSort) {
@@ -307,6 +312,7 @@ export function ProcessAddModal({
         lastModifiedAt: processDetailList?.lastModifiedAt ?? '', // 추가된 부분
         steps: updatedProcessList, // Update only the steps property
       });
+      setStepSort(stepSort);
     } else {
       const updatedProcessList = processList.map((process) => {
         if (process.stepSort === stepSort) {
@@ -644,7 +650,16 @@ export function ProcessAddModal({
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
         </Button>
-        <Button width="100px" height="40px" onClick={clickProcessAlert} $filled>
+        <Button
+          width="100px"
+          height="40px"
+          onClick={clickProcessAlert}
+          $filled
+          disabled={
+            selectedworkerAccountList.length === 0 &&
+            selectedworkerAuthorityList.length === 0
+          }
+        >
           확인
         </Button>
       </ButtonWrapper>

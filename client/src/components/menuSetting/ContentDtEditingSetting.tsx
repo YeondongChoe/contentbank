@@ -34,6 +34,7 @@ export function ContentDtEditingSetting() {
   const [menuExtraDataList, setMenuExtraDataList] = useState<
     MenuDataListProps[]
   >([]);
+  console.log(menuDataList);
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
   const [detailExtraIdx, setDetailExtraIdx] = useState<string | null>(null);
 

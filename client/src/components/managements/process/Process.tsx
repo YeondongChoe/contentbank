@@ -82,7 +82,7 @@ export function Process() {
       workers: [],
     },
     {
-      stepName: 'EDITING',
+      stepName: 'REVIEW',
       idx: 1,
       stepSort: 2,
       createdBy: '',
@@ -92,9 +92,19 @@ export function Process() {
       workers: [],
     },
     {
-      stepName: 'REVIEW',
+      stepName: 'EDITING',
       idx: 2,
       stepSort: 3,
+      createdBy: '',
+      createdAt: '',
+      lastModifiedBy: '',
+      lastModifiedAt: '',
+      workers: [],
+    },
+    {
+      stepName: 'REVIEW',
+      idx: 3,
+      stepSort: 4,
       createdBy: '',
       createdAt: '',
       lastModifiedBy: '',
@@ -145,8 +155,6 @@ export function Process() {
   ) => {
     event.currentTarget.children[1].classList.remove('show');
   };
-  console.log(processList);
-  console.log(processDetailInfo);
 
   const deleteCard = (sort: number, id: string, isAccount: boolean) => {
     if (processNameIdx === null) {
@@ -192,6 +200,11 @@ export function Process() {
     }
   };
 
+  const [stepSort, setStepSort] = useState<number | null>(null);
+  const [stepSortList, setStepSortList] = useState<number[]>([]);
+  console.log('stepSort', stepSort);
+  console.log('stepSortList', stepSortList);
+
   /*  모달 열기 */
   const openAddModal = (sort: number) => {
     openModal({
@@ -205,10 +218,25 @@ export function Process() {
           setProcessListData={setProcessList}
           processDetailInfo={processDetailInfo}
           setProcessDetailInfo={setProcessDetailInfo}
+          setStepSort={setStepSort}
         />
       ),
     });
   };
+
+  //사용자 추가됐을때 추가된 stepSortList 관리
+  useEffect(() => {
+    if (stepSort) {
+      setStepSortList((prevList) => {
+        // 이미 존재하면 기존 리스트 반환
+        if (prevList.includes(stepSort)) {
+          return prevList;
+        }
+        // 존재하지 않으면 새 값을 추가
+        return [...prevList, stepSort];
+      });
+    }
+  }, [stepSort]);
 
   //프로세스 리스트 불러오기 api
   const getProcessNameList = async () => {
@@ -251,21 +279,17 @@ export function Process() {
     },
     enabled: processNameIdx !== null,
   });
-  const [stepSortList, setStepSortList] = useState<number[]>([]);
-  console.log('stepSortList', stepSortList);
+
   useEffect(() => {
     if (processDetailInfoData) {
       setProcessDetailInfo(processDetailInfoData?.data.data.processDetail);
-      setStepSortList(
-        processDetailInfoData?.data.data.processDetail.steps.map(
-          (el: any) => el.stepSort,
-        ),
-      );
     }
   }, [processDetailInfoData]);
 
   useEffect(() => {
     processDetailInfoRefetch();
+    setStepSortList([]);
+    setStepSort(null);
   }, [processNameIdx]);
 
   const postNewProcess = async () => {
@@ -308,19 +332,14 @@ export function Process() {
         text: '저장되었습니다.',
       });
       setProcessList(DummyData);
+      setProcessNameIdx(null);
       setNameValue('');
     },
   });
 
   const handleNewProcess = () => {
-    if (nameValue === '') {
-      openToastifyAlert({
-        type: 'error',
-        text: '프로세스명을 입력해주세요',
-      });
-    } else {
-      postNewProcessData();
-    }
+    postNewProcessData();
+    setIsSaveAlert(false);
   };
 
   const putProcess = async () => {
@@ -338,7 +357,7 @@ export function Process() {
       idx: processNameIdx,
       name: nameValue,
       steps: stepData,
-      changStepSort: [1],
+      changStepSort: stepSortList,
     };
     return await userInstance.put(`/v1/process`, data);
   };
@@ -366,17 +385,64 @@ export function Process() {
       });
       setProcessList(DummyData);
       setNameValue('');
+      setProcessNameIdx(null);
     },
   });
 
   const handlePutProcess = () => {
-    if (nameValue === '') {
-      openToastifyAlert({
-        type: 'error',
-        text: '프로세스명을 입력해주세요',
-      });
+    putProcessData();
+    setIsSaveAlert(false);
+  };
+
+  //저장 클릭시 alert 띄우기
+  const [isSaveAlert, setIsSaveAlert] = useState(false);
+  const handleSaveProcess = () => {
+    if (processNameIdx === null) {
+      const stepData = processList.map((step, index) => ({
+        name: step.stepName,
+        sort: index + 1, // sort는 1부터 시작
+        workers: step.workers.map((worker, workerIndex) => ({
+          accountIdx: worker.account?.idx || null,
+          authorityIdx: worker.authority?.idx || null,
+          sort: workerIndex + 1, // worker의 순서 1부터 시작
+        })),
+      }));
+      if (nameValue === '') {
+        openToastifyAlert({
+          type: 'error',
+          text: '프로세스명을 입력해주세요',
+        });
+      } else if (stepData.some((el) => el.workers.length === 0)) {
+        openToastifyAlert({
+          type: 'error',
+          text: '반드시 단계별 1명 이상의 작업자가 필요합니다',
+        });
+      } else {
+        setIsSaveAlert(true);
+      }
     } else {
-      putProcessData();
+      const stepData = processDetailInfo?.steps.map((step, index) => ({
+        name: step.stepName,
+        sort: index + 1, // sort는 1부터 시작
+        workers: step.workers.map((worker, workerIndex) => ({
+          accountIdx: worker.account?.idx || null,
+          authorityIdx: worker.authority?.idx || null,
+          sort: workerIndex + 1, // worker의 순서 1부터 시작
+        })),
+      }));
+      if (nameValue === '') {
+        openToastifyAlert({
+          type: 'error',
+          text: '프로세스명을 입력해주세요',
+        });
+      } else if (stepData?.some((el) => el.workers.length === 0)) {
+        openToastifyAlert({
+          type: 'error',
+          text: '반드시 단계별 1명 이상의 작업자가 필요합니다',
+        });
+      } else {
+        setIsSaveAlert(true);
+      }
     }
   };
 
@@ -414,7 +480,7 @@ export function Process() {
       //초기화
       setProcessNameIdx(null);
       setNameValue('');
-      setStepSortList([]);
+      //setStepSortList([]);
       //setSelectedIdxValue('');
     },
   });
@@ -505,6 +571,7 @@ export function Process() {
                 setProcessNameIdx(null);
                 setNameValue('');
                 setStepSortList([]);
+                setStepSort(null);
               }}
               fontSize="13px"
               $filled
@@ -726,9 +793,7 @@ export function Process() {
             <Button
               height={'35px'}
               width={'120px'}
-              onClick={
-                processNameIdx === null ? handleNewProcess : handlePutProcess
-              }
+              onClick={handleSaveProcess}
               fontSize="13px"
               $filled
               cursor
@@ -737,6 +802,26 @@ export function Process() {
             </Button>
           </ButtonWrapper>
         </ProcessManageWrapper>
+        {isSaveAlert && (
+          <Alert
+            description={
+              processNameIdx === null
+                ? '신규 프로세스를 생성하시겠습니까?'
+                : '해당 프로세스를 저장하시겠습니까?'
+            }
+            subDescription={
+              processNameIdx === null
+                ? ''
+                : '프로세스가 수정될 시, 현재 진행 중인 검수가 모두 초기화 됩니다.(변경필요)'
+            }
+            isAlertOpen={isSaveAlert}
+            action="확인"
+            onClose={() => setIsSaveAlert(false)}
+            onClick={
+              processNameIdx === null ? handleNewProcess : handlePutProcess
+            }
+          ></Alert>
+        )}
         {isDeleteProcess && (
           <Alert
             description="해당 제작 프로세스를 삭제하시겠습니까?"
