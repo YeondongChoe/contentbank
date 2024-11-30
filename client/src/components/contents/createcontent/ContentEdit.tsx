@@ -715,7 +715,7 @@ export function ContentEdit({
             {dataFetched && (
               <QuizList
                 questionList={quizList}
-                $height={`calc(100vh - 100px)`}
+                $height={`calc(100vh - 200px)`}
                 showViewAllButton
                 onItemClick={setOnItemClickData}
                 setCheckedList={setCheckedList}
@@ -851,13 +851,13 @@ const SelectWrapper = styled.div`
 const ContentListWrapper = styled.div`
   width: 340px;
   padding-left: 10px;
-  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
+  /* border-bottom: 1px solid ${COLOR.BORDER_BLUE}; */
 
   position: absolute;
   right: 0;
 `;
 const ContentList = styled.div`
-  height: calc(100vh - 100px);
+  height: calc(100vh - 200px);
   width: 100%;
   overflow: hidden;
   border: 1px solid ${COLOR.BORDER_BLUE};

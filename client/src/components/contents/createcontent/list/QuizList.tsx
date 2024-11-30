@@ -652,7 +652,7 @@ const Container = styled.div<{ $height?: string }>`
 const ScrollWrapper = styled.div<{ $height?: string }>`
   /* overflow-y: auto; */
   width: 100%;
-  height: ${({ $height }) => ($height ? ` ${$height}` : `calc(100vh - 100px)`)};
+  height: ${({ $height }) => ($height ? ` ${$height}` : `calc(100vh - 200px)`)};
   background-color: ${COLOR.LIGHT_GRAY};
 `;
 const Title = styled.div`

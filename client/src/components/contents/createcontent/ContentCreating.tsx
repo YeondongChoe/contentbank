@@ -36,7 +36,7 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
-import { QuizList } from './list';
+import { QuizElementList, QuizList } from './list';
 import { InputOptions } from './options/InputOptions';
 
 type SelectedValueType = string | { [key: string]: any };
@@ -63,10 +63,10 @@ export function ContentCreating({
   const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
+  // 에디터에서 나온 문항 요소
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
-  const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType[]>(
-    [],
-  );
+  // 에디터에서 나온 문항 요소의 모든 배열
+  const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType>([]);
   const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
     [],
   );
@@ -89,7 +89,8 @@ export function ContentCreating({
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
-    console.log('editorData', editorData?.tag_group);
+    console.log('editorData 에디터 데이터  ----', editorData);
+    console.log('editorData 에디터 데이터 묶음 ----', editorData?.tag_group);
 
     if (editorData) {
       const itemDataList: QuizItemListType = [];
@@ -103,24 +104,24 @@ export function ContentCreating({
 
           switch (type) {
             case 'EXAM':
-              type = 'QUESTION';
+              type = 'QUESTION'; // 문제
               break;
             case 'BIGCONTENT':
-              type = 'BIG';
+              type = 'BIG'; // 대발문
               break;
             case 'CONTENT':
-              type = 'TEXT';
+              type = 'TEXT'; // 지문
               break;
             case 'EXAM_SM':
-              type = 'SMALL';
+              type = 'SMALL'; // 소문제
               break;
             default:
-              break;
+              break; // 나머지는 값과 타입이 같음
           }
 
           value.forEach((content) => {
             itemDataList.push({
-              code: null,
+              code: uuidv4(),
               type: type,
               content: content,
               sort: sort++,
@@ -129,6 +130,8 @@ export function ContentCreating({
         }
       });
 
+      //itemDataList 의 값들을 대발문과 지문 문제로 각기 객체로 나누어 배열에 담기
+      console.log('itemDataList 각 데이터를 배열에 담음', itemDataList);
       setQuizItemList(itemDataList);
 
       const imagesSrc = extractImgSrc(`${editorData?.tag_group}`);
@@ -378,27 +381,62 @@ export function ContentCreating({
     );
   }, [categoriesH, categoriesDD]);
 
+  // 등록 버튼 입력시 에디터에서 문항값 축출 등록
   useEffect(() => {
-    console.log('quizItemList', quizItemList);
-    //문항 리스트에 추가
+    console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
     if (quizItemList.length > 0) {
-      setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
+      setQuizItemArrList((prevArrList) => {
+        const mergedList = [...prevArrList, ...quizItemList];
+
+        // 중복 제거
+        const uniqueList = mergedList.filter(
+          (item, index, self) =>
+            index ===
+            self.findIndex(
+              (t) => t.type === item.type && t.content === item.content,
+            ),
+        );
+
+        return uniqueList;
+      });
     }
   }, [quizItemList]);
 
   useEffect(() => {
-    console.log('quizItemArrList 에디터 데이터 업데이트:', quizItemArrList);
+    console.log(
+      'quizItemArrList 등록된 모든 문항 데이터 업데이트:',
+      quizItemArrList,
+    );
+    //quizItemArrList 를 순회하며 중복값 제거
+    // setQuestionList(quizItemArrList);
+  }, [quizItemArrList]);
+
+  const AddQuestionElements = () => {
+    saveHandler();
+    // 이미지 데이터 저장
+  };
+
+  const saveHandler = async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const data = await window.saveExamData();
+    console.log(data);
+    setEditorData(JSON.parse(data));
+  };
+
+  useEffect(() => {
     console.log('quizClassList 분류등록 업데이트:', quizClassList);
     // 등록될 값
-    const newQuestionList = quizItemArrList.map((quizItems) => ({
-      commandCode: 0,
-      quizIdx: null,
-      articleList: [],
-      quizItemList: quizItems,
-      quizClassList: [...quizClassList],
-    }));
-    setAddQuestionList(newQuestionList);
-  }, [quizItemArrList, quizClassList]);
+    // TODO : 그룹 맵핑 기준으로 다시
+    // const newQuestionList = quizItemArrList.map((quizItems) => ({
+    //   commandCode: 0,
+    //   quizIdx: null,
+    //   articleList: [],
+    //   quizItemList: quizItems,
+    //   quizClassList: [...quizClassList],
+    // }));
+    // setAddQuestionList(newQuestionList);
+  }, [quizClassList]);
 
   // 분류 등록
   useEffect(() => {
@@ -462,10 +500,10 @@ export function ContentCreating({
 
   // console.log('selectedSourceList-최종적 들어갈 소스값---', selectedSourceList);
 
-  useEffect(() => {
-    // 등록 api
-    if (addQuestionList.length) postQuizDataMutate();
-  }, [addQuestionList]);
+  // useEffect(() => {
+  //   // 등록 api
+  //   if (addQuestionList.length) postQuizDataMutate();
+  // }, [addQuestionList]);
 
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
@@ -518,24 +556,15 @@ export function ContentCreating({
 
   // 셀렉트 초기화
   const handleDefaultSelect = (defaultValue?: string) => {};
-  const submitSave = () => {
-    saveHandler();
-    // 이미지 데이터 저장
-  };
-  const saveHandler = async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const data = await window.saveExamData();
-    console.log(data);
-    setEditorData(JSON.parse(data));
-  };
+  //TODO : 그룹 화 / 출처데이터 설정 후 최종 저장
+  const submitSave = () => {};
 
-  useEffect(() => {
-    if (postQuizData) {
-      setQuizList([...quizList, postQuizData.data.data.quiz]);
-      setQuestionList([...quizList, postQuizData.data.data.quiz]);
-    }
-  }, [postQuizData]);
+  // useEffect(() => {
+  //   if (postQuizData) {
+  //     setQuizList([...quizList, postQuizData.data.data.quiz]);
+  //     setQuestionList([...quizList, postQuizData.data.data.quiz]);
+  //   }
+  // }, [postQuizData]);
   useEffect(() => {}, [quizList]);
   useEffect(() => {}, [questionList]);
 
@@ -560,6 +589,27 @@ export function ContentCreating({
                 setEditorData={setEditorData}
                 saveHandler={saveHandler}
               />
+              <EditerButtonWrapper>
+                <Button
+                  onClick={() => AddQuestionElements()}
+                  width="calc(100% - 310px);"
+                  height="35px"
+                  $margin="0 20px 0 0"
+                  $filled
+                >
+                  에디터 데이터 등록
+                </Button>
+                <div className="border"></div>
+                <Button
+                  onClick={() => {}}
+                  width="292px"
+                  height="35px"
+                  $margin="0 0 0 20px"
+                  $filled
+                >
+                  그룹 등록
+                </Button>
+              </EditerButtonWrapper>
             </EditWrapper>
 
             <BackgroundWrapper>
@@ -569,7 +619,7 @@ export function ContentCreating({
                 </strong>
               </SelectListWrapper>
               <SelectListWrapper>
-                <SelectList>
+                {/* <SelectList>
                   <li>
                     <SelectWrapper>
                       {idxNamePairsH && (
@@ -589,7 +639,7 @@ export function ContentCreating({
                       )}
                     </SelectWrapper>
                   </li>
-                </SelectList>
+                </SelectList> */}
               </SelectListWrapper>
             </BackgroundWrapper>
             <BackgroundWrapper className="bottom">
@@ -634,10 +684,9 @@ export function ContentCreating({
 
         <ContentListWrapper>
           <ContentList>
-            <QuizList
-              questionList={questionList}
-              $height={`calc(100vh - 100px)`}
-              showViewAllButton
+            <QuizElementList
+              questionList={quizItemArrList}
+              $height={`calc(100vh - 200px)`}
               setCheckedList={setCheckedList}
             />
           </ContentList>
@@ -674,6 +723,18 @@ export function ContentCreating({
 
 const Container = styled.div`
   position: relative;
+`;
+
+const EditerButtonWrapper = styled.div`
+  display: flex;
+  padding: 10px 20px;
+
+  .border {
+    width: 1px;
+    height: 35px;
+    border: none;
+    background: #a3aed0;
+  }
 `;
 
 const ContentsWrapper = styled.div`
@@ -771,13 +832,13 @@ const SelectWrapper = styled.div`
 const ContentListWrapper = styled.div`
   width: 340px;
   padding-left: 10px;
-  border-bottom: 1px solid ${COLOR.BORDER_BLUE};
+  /* border-bottom: 1px solid ${COLOR.BORDER_BLUE}; */
 
   position: absolute;
   right: 0;
 `;
 const ContentList = styled.div`
-  height: calc(100vh - 100px);
+  height: calc(100vh - 200px);
   width: 100%;
   overflow: hidden;
   border: 1px solid ${COLOR.BORDER_BLUE};
