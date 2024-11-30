@@ -19,6 +19,7 @@ import {
   DropdownWithCheckbox,
   EditListItem,
   List,
+  Loader,
   MathViewer,
   Modal,
   openToastifyAlert,
@@ -91,6 +92,8 @@ export function ContentInformationChange() {
     'includeOne',
   );
   const [state, setState] = useState<'수정' | '복제' | null>(null);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
   const { openModal } = useModal();
 
   // 메뉴 목록 조회 api (셋팅값)
@@ -177,7 +180,7 @@ export function ContentInformationChange() {
       searchCondition: 'ALL',
       searchKeyword: searchValue,
       searchUseYn: '',
-      pageIndex: 1,
+      pageIndex: page,
       pageUnit: 10,
       pageSize: 10,
       firstIndex: 1,
@@ -213,11 +216,14 @@ export function ContentInformationChange() {
     },
   });
   useEffect(() => {
-    console.log('searchCategoryData-----', searchCategoryData);
+    console.log(
+      'searchCategoryData검색후 반환된 데이터-----',
+      searchCategoryData,
+    );
     // 검색 이후 리스트 값
     if (searchCategoryData) {
-      // setQuestionList(searchCategoryData.quizList);
-      // TODO : 임시 리스트값
+      setQuestionList(searchCategoryData.quizList);
+      setTotalCount(searchCategoryData.pagination.totalCount);
     }
   }, [searchCategoryData]);
 
@@ -897,386 +903,407 @@ export function ContentInformationChange() {
                 )}
               </p>
               <ScrollWrapper className="height">
-                {state === null && (
-                  <PerfectScrollbar>
-                    <ListWrapper>
-                      {questionList.map((item: QuizListType) => (
-                        <EditListItem
-                          key={item.code}
-                          isChecked={checkList.includes(item.idx)}
-                          onClick={(e) => handleButtonCheck(e, item.idx)}
-                        >
-                          <ContentsWrapper>
-                            <ContentsBox>
-                              <CheckBoxI
-                                id={item.code}
-                                value={item.idx}
-                                $margin={`0 5px 0 0`}
-                                checked={checkList.includes(item.idx)}
-                                readOnly
-                                width="15px"
-                              />
-                              <p className="flex_line size_12">
-                                {item.quizCategoryList.map(
-                                  (categoryItem, categoryIdx) => {
-                                    const { quizCategory } = categoryItem; // quizCategory 추출
-
-                                    return (
-                                      <span
-                                        key={`category-${item.idx}-${categoryIdx}`}
-                                      >
-                                        {/* "*유형"에 해당하는 값 */}
-                                        {quizCategory.categories &&
-                                          quizCategory.categories.map((el) => (
-                                            <span
-                                              key={`category-${item.idx}-${categoryIdx}-${el}`}
-                                            >
-                                              <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
-                                            </span>
-                                          ))}
-                                      </span>
-                                    );
-                                  },
-                                )}
-                              </p>
-                            </ContentsBox>
-                            <ContentsBox>
-                              <p className="flex_line size_12">
-                                {item.quizItemList &&
-                                  item.quizItemList.map(
-                                    (categoryItem, categoryIdx) => {
-                                      return (
-                                        <span
-                                          key={`category-${item.idx}-${categoryIdx}`}
-                                        >
-                                          <MathViewer
-                                            data={categoryItem.content}
-                                          ></MathViewer>
-                                        </span>
-                                      );
-                                    },
-                                  )}
-                              </p>
-                            </ContentsBox>
-
-                            <ContentsBox>
-                              <p className="flex_line size_12">
-                                {item.quizCategoryList.map(
-                                  (categoryItem, categoryIdx) => {
-                                    const { quizCategory } = categoryItem; // quizCategory 추출
-
-                                    return (
-                                      <span
-                                        key={`category-${item.idx}-${categoryIdx}`}
-                                      >
-                                        {quizCategory &&
-                                          quizCategory.sources &&
-                                          quizCategory.sources.length > 0 &&
-                                          quizCategory.sources.map(
-                                            (el, idx) => (
-                                              <span key={`${el.출처}-${idx}`}>
-                                                {`${el.출처} `}
-                                                {/* {idx <
-                                            quizCategory.sources.length - 1
-                                              ? ', '
-                                              : ''} */}
-                                              </span>
-                                            ),
-                                          )}
-                                      </span>
-                                    );
-                                  },
-                                )}
-                              </p>
-                            </ContentsBox>
-                          </ContentsWrapper>
-                          <PreviewButton onClick={() => openViewer(item.code)}>
-                            문항 상세보기
-                          </PreviewButton>
-                        </EditListItem>
-                      ))}
-                    </ListWrapper>
-                  </PerfectScrollbar>
-                )}
-
-                {state === '수정' && (
-                  <PerfectScrollbar>
-                    <ListWrapper>
-                      {editQuizList.map((item: QuizListType) => (
-                        <EditListItem
-                          key={item.code}
-                          isChecked={checkList.includes(item.idx)}
-                          // onClick={(e) => handleButtonCheck(e, item.idx)}
-                        >
-                          <ContentsWrapper>
-                            <ContentsBox>
-                              <CheckBoxI
-                                id={item.code}
-                                value={item.idx}
-                                $margin={`0 5px 0 0`}
-                                checked={checkList.includes(item.idx)}
-                                readOnly
-                                width="15px"
-                              />
-                              <p className="flex_line size_12">
-                                {item.quizCategoryList.map(
-                                  (categoryItem, categoryIdx) => {
-                                    const { quizCategory } = categoryItem; // quizCategory 추출
-
-                                    return (
-                                      <span
-                                        key={`category-${item.idx}-${categoryIdx}`}
-                                      >
-                                        {/* "*유형"에 해당하는 값 */}
-                                        {quizCategory.categories &&
-                                          quizCategory.categories.map((el) => (
-                                            <span
-                                              key={`category-${item.idx}-${categoryIdx}-${el}`}
-                                            >
-                                              <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                              <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
-                                            </span>
-                                          ))}
-                                      </span>
-                                    );
-                                  },
-                                )}
-                              </p>
-                            </ContentsBox>
-                            <ContentsBox>
-                              <p className="flex_line size_12">
-                                {item.quizCategoryList.map(
-                                  (categoryItem, categoryIdx) => {
-                                    const { quizCategory } = categoryItem; // quizCategory 추출
-
-                                    return (
-                                      <span
-                                        key={`category-${item.idx}-${categoryIdx}`}
-                                      >
-                                        {quizCategory &&
-                                          quizCategory.sources &&
-                                          quizCategory.sources.length > 0 &&
-                                          quizCategory.sources.map(
-                                            (el, idx) => (
-                                              <span key={`${el.출처}-${idx}`}>
-                                                {`${el.출처} `}
-                                                {/* {idx <
-                                            quizCategory.sources.length - 1
-                                              ? ', '
-                                              : ''} */}
-                                              </span>
-                                            ),
-                                          )}
-                                      </span>
-                                    );
-                                  },
-                                )}
-                              </p>
-                            </ContentsBox>
-                          </ContentsWrapper>
-                          <PreviewButton onClick={() => openViewer(item.code)}>
-                            문항 상세보기
-                          </PreviewButton>
-                        </EditListItem>
-                      ))}
-                    </ListWrapper>
-                  </PerfectScrollbar>
-                )}
-                {state === '복제' && (
-                  <HalfWrapper>
-                    <PerfectScrollbar>
-                      <ListWrapper>
-                        {sortedQuizList.map((item: QuizListType) => (
-                          <EditListItem
-                            key={item.code}
-                            isChecked={checkList.includes(item.idx)}
-                            // onClick={(e) => handleButtonCheck(e, item.idx)}
-                          >
-                            <ContentsWrapper>
-                              <ContentsBox>
-                                <CheckBoxI
-                                  id={item.code}
-                                  value={item.idx}
-                                  $margin={`0 5px 0 0`}
-                                  checked={checkList.includes(item.idx)}
-                                  readOnly
-                                  width="15px"
-                                />
-                                <p className="flex_line size_12">
-                                  {item.quizCategoryList.map(
-                                    (categoryItem, categoryIdx) => {
-                                      const { quizCategory } = categoryItem; // quizCategory 추출
-
-                                      return (
-                                        <span
-                                          key={`category-${item.idx}-${categoryIdx}`}
-                                        >
-                                          {/* "*유형"에 해당하는 값 */}
-                                          {quizCategory.categories &&
-                                            quizCategory.categories.map(
-                                              (el) => (
-                                                <span
-                                                  key={`category-${item.idx}-${categoryIdx}-${el}`}
-                                                >
-                                                  <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
-                                                </span>
-                                              ),
-                                            )}
-                                        </span>
-                                      );
-                                    },
-                                  )}
-                                </p>
-                              </ContentsBox>
-                              <ContentsBox>
-                                <p className="flex_line size_12">
-                                  {item.quizCategoryList.map(
-                                    (categoryItem, categoryIdx) => {
-                                      const { quizCategory } = categoryItem; // quizCategory 추출
-
-                                      return (
-                                        <span
-                                          key={`category-${item.idx}-${categoryIdx}`}
-                                        >
-                                          {quizCategory &&
-                                            quizCategory.sources &&
-                                            quizCategory.sources.length > 0 &&
-                                            quizCategory.sources.map(
-                                              (el, idx) => (
-                                                <span key={`${el.출처}-${idx}`}>
-                                                  {`${el.출처} `}
-                                                  {/* {idx <
-                                            quizCategory.sources.length - 1
-                                              ? ', '
-                                              : ''} */}
-                                                </span>
-                                              ),
-                                            )}
-                                        </span>
-                                      );
-                                    },
-                                  )}
-                                </p>
-                              </ContentsBox>
-                            </ContentsWrapper>
-                            <PreviewButton
-                              onClick={() => openViewer(item.code)}
+                {isPending ? (
+                  <Loader />
+                ) : (
+                  <>
+                    {state === null && (
+                      <PerfectScrollbar>
+                        <ListWrapper>
+                          {questionList.map((item: QuizListType) => (
+                            <EditListItem
+                              key={item.code}
+                              isChecked={checkList.includes(item.idx)}
+                              onClick={(e) => handleButtonCheck(e, item.idx)}
                             >
-                              문항 상세보기
-                            </PreviewButton>
-                          </EditListItem>
-                        ))}
-                      </ListWrapper>
-                    </PerfectScrollbar>
-                    <p>복제된 문항 총 {`${coppyQuizList.length}`}건</p>
-                    <PerfectScrollbar>
-                      <ListWrapper>
-                        {coppyQuizList.map((item: QuizListType) => (
-                          <EditListItem
-                            key={item.code}
-                            isChecked={checkList.includes(item.idx)}
-                            // onClick={(e) => handleButtonCheck(e, item.idx)}
-                          >
-                            <ContentsWrapper>
-                              <ContentsBox>
-                                <CheckBoxI
-                                  id={item.code}
-                                  value={item.idx}
-                                  $margin={`0 5px 0 0`}
-                                  checked={checkList.includes(item.idx)}
-                                  readOnly
-                                  width="15px"
-                                />
-                                <p className="flex_line size_12">
-                                  {item.quizCategoryList.map(
-                                    (categoryItem, categoryIdx) => {
-                                      const { quizCategory } = categoryItem; // quizCategory 추출
+                              <ContentsWrapper>
+                                <ContentsBox>
+                                  <CheckBoxI
+                                    id={item.code}
+                                    value={item.idx}
+                                    $margin={`0 5px 0 0`}
+                                    checked={checkList.includes(item.idx)}
+                                    readOnly
+                                    width="15px"
+                                  />
+                                  <p className="flex_line size_12">
+                                    {item.quizCategoryList.map(
+                                      (categoryItem, categoryIdx) => {
+                                        const { quizCategory } = categoryItem; // quizCategory 추출
 
-                                      return (
-                                        <span
-                                          key={`category-${item.idx}-${categoryIdx}`}
-                                        >
-                                          {/* "*유형"에 해당하는 값 */}
-                                          {quizCategory.categories &&
-                                            quizCategory.categories.map(
-                                              (el) => (
-                                                <span
-                                                  key={`category-${item.idx}-${categoryIdx}-${el}`}
-                                                >
-                                                  <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
-                                                  <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
-                                                </span>
-                                              ),
-                                            )}
-                                        </span>
-                                      );
-                                    },
-                                  )}
-                                </p>
-                              </ContentsBox>
-                              <ContentsBox>
-                                <p className="flex_line size_12">
-                                  {item.quizCategoryList.map(
-                                    (categoryItem, categoryIdx) => {
-                                      const { quizCategory } = categoryItem; // quizCategory 추출
+                                        return (
+                                          <span
+                                            key={`category-${item.idx}-${categoryIdx}`}
+                                          >
+                                            {/* "*유형"에 해당하는 값 */}
+                                            {quizCategory.categories &&
+                                              quizCategory.categories.map(
+                                                (el) => (
+                                                  <span
+                                                    key={`category-${item.idx}-${categoryIdx}-${el}`}
+                                                  >
+                                                    <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                    <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                    <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                    <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
+                                                  </span>
+                                                ),
+                                              )}
+                                          </span>
+                                        );
+                                      },
+                                    )}
+                                  </p>
+                                </ContentsBox>
+                                <ContentsBox>
+                                  <p className="flex_line size_12">
+                                    {item.quizItemList &&
+                                      item.quizItemList.map(
+                                        (categoryItem, categoryIdx) => {
+                                          return (
+                                            <span
+                                              key={`category-${item.idx}-${categoryIdx}`}
+                                            >
+                                              <MathViewer
+                                                data={categoryItem.content}
+                                              ></MathViewer>
+                                            </span>
+                                          );
+                                        },
+                                      )}
+                                  </p>
+                                </ContentsBox>
 
-                                      return (
-                                        <span
-                                          key={`category-${item.idx}-${categoryIdx}`}
-                                        >
-                                          {quizCategory &&
-                                            quizCategory.sources &&
-                                            quizCategory.sources.length > 0 &&
-                                            quizCategory.sources.map(
-                                              (el, idx) => (
-                                                <span key={`${el.출처}-${idx}`}>
-                                                  {`${el.출처} `}
-                                                  {/* {idx <
+                                <ContentsBox>
+                                  <p className="flex_line size_12">
+                                    {item.quizCategoryList.map(
+                                      (categoryItem, categoryIdx) => {
+                                        const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                        return (
+                                          <span
+                                            key={`category-${item.idx}-${categoryIdx}`}
+                                          >
+                                            {quizCategory &&
+                                              quizCategory.sources &&
+                                              quizCategory.sources.length > 0 &&
+                                              quizCategory.sources.map(
+                                                (el, idx) => (
+                                                  <span
+                                                    key={`${el.출처}-${idx}`}
+                                                  >
+                                                    {`${el.출처} `}
+                                                    {/* {idx <
                                             quizCategory.sources.length - 1
                                               ? ', '
                                               : ''} */}
-                                                </span>
-                                              ),
-                                            )}
-                                        </span>
-                                      );
-                                    },
-                                  )}
-                                </p>
-                              </ContentsBox>
-                            </ContentsWrapper>
-                            <PreviewButton
-                              onClick={() => openViewer(item.code)}
+                                                  </span>
+                                                ),
+                                              )}
+                                          </span>
+                                        );
+                                      },
+                                    )}
+                                  </p>
+                                </ContentsBox>
+                              </ContentsWrapper>
+                              <PreviewButton
+                                onClick={() => openViewer(item.code)}
+                              >
+                                문항 상세보기
+                              </PreviewButton>
+                            </EditListItem>
+                          ))}
+                        </ListWrapper>
+                      </PerfectScrollbar>
+                    )}
+                    {state === '수정' && (
+                      <PerfectScrollbar>
+                        <ListWrapper>
+                          {editQuizList.map((item: QuizListType) => (
+                            <EditListItem
+                              key={item.code}
+                              isChecked={checkList.includes(item.idx)}
+                              // onClick={(e) => handleButtonCheck(e, item.idx)}
                             >
-                              문항 상세보기
-                            </PreviewButton>
-                          </EditListItem>
-                        ))}
-                      </ListWrapper>
-                    </PerfectScrollbar>
-                  </HalfWrapper>
+                              <ContentsWrapper>
+                                <ContentsBox>
+                                  <CheckBoxI
+                                    id={item.code}
+                                    value={item.idx}
+                                    $margin={`0 5px 0 0`}
+                                    checked={checkList.includes(item.idx)}
+                                    readOnly
+                                    width="15px"
+                                  />
+                                  <p className="flex_line size_12">
+                                    {item.quizCategoryList.map(
+                                      (categoryItem, categoryIdx) => {
+                                        const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                        return (
+                                          <span
+                                            key={`category-${item.idx}-${categoryIdx}`}
+                                          >
+                                            {/* "*유형"에 해당하는 값 */}
+                                            {quizCategory.categories &&
+                                              quizCategory.categories.map(
+                                                (el) => (
+                                                  <span
+                                                    key={`category-${item.idx}-${categoryIdx}-${el}`}
+                                                  >
+                                                    <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                    <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                    <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                    <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
+                                                  </span>
+                                                ),
+                                              )}
+                                          </span>
+                                        );
+                                      },
+                                    )}
+                                  </p>
+                                </ContentsBox>
+                                <ContentsBox>
+                                  <p className="flex_line size_12">
+                                    {item.quizCategoryList.map(
+                                      (categoryItem, categoryIdx) => {
+                                        const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                        return (
+                                          <span
+                                            key={`category-${item.idx}-${categoryIdx}`}
+                                          >
+                                            {quizCategory &&
+                                              quizCategory.sources &&
+                                              quizCategory.sources.length > 0 &&
+                                              quizCategory.sources.map(
+                                                (el, idx) => (
+                                                  <span
+                                                    key={`${el.출처}-${idx}`}
+                                                  >
+                                                    {`${el.출처} `}
+                                                    {/* {idx <
+                                            quizCategory.sources.length - 1
+                                              ? ', '
+                                              : ''} */}
+                                                  </span>
+                                                ),
+                                              )}
+                                          </span>
+                                        );
+                                      },
+                                    )}
+                                  </p>
+                                </ContentsBox>
+                              </ContentsWrapper>
+                              <PreviewButton
+                                onClick={() => openViewer(item.code)}
+                              >
+                                문항 상세보기
+                              </PreviewButton>
+                            </EditListItem>
+                          ))}
+                        </ListWrapper>
+                      </PerfectScrollbar>
+                    )}
+                    {state === '복제' && (
+                      <HalfWrapper>
+                        <PerfectScrollbar>
+                          <ListWrapper>
+                            {sortedQuizList.map((item: QuizListType) => (
+                              <EditListItem
+                                key={item.code}
+                                isChecked={checkList.includes(item.idx)}
+                                // onClick={(e) => handleButtonCheck(e, item.idx)}
+                              >
+                                <ContentsWrapper>
+                                  <ContentsBox>
+                                    <CheckBoxI
+                                      id={item.code}
+                                      value={item.idx}
+                                      $margin={`0 5px 0 0`}
+                                      checked={checkList.includes(item.idx)}
+                                      readOnly
+                                      width="15px"
+                                    />
+                                    <p className="flex_line size_12">
+                                      {item.quizCategoryList.map(
+                                        (categoryItem, categoryIdx) => {
+                                          const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                          return (
+                                            <span
+                                              key={`category-${item.idx}-${categoryIdx}`}
+                                            >
+                                              {/* "*유형"에 해당하는 값 */}
+                                              {quizCategory.categories &&
+                                                quizCategory.categories.map(
+                                                  (el) => (
+                                                    <span
+                                                      key={`category-${item.idx}-${categoryIdx}-${el}`}
+                                                    >
+                                                      <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                      <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                      <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                      <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
+                                                    </span>
+                                                  ),
+                                                )}
+                                            </span>
+                                          );
+                                        },
+                                      )}
+                                    </p>
+                                  </ContentsBox>
+                                  <ContentsBox>
+                                    <p className="flex_line size_12">
+                                      {item.quizCategoryList.map(
+                                        (categoryItem, categoryIdx) => {
+                                          const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                          return (
+                                            <span
+                                              key={`category-${item.idx}-${categoryIdx}`}
+                                            >
+                                              {quizCategory &&
+                                                quizCategory.sources &&
+                                                quizCategory.sources.length >
+                                                  0 &&
+                                                quizCategory.sources.map(
+                                                  (el, idx) => (
+                                                    <span
+                                                      key={`${el.출처}-${idx}`}
+                                                    >
+                                                      {`${el.출처} `}
+                                                      {/* {idx <
+                                            quizCategory.sources.length - 1
+                                              ? ', '
+                                              : ''} */}
+                                                    </span>
+                                                  ),
+                                                )}
+                                            </span>
+                                          );
+                                        },
+                                      )}
+                                    </p>
+                                  </ContentsBox>
+                                </ContentsWrapper>
+                                <PreviewButton
+                                  onClick={() => openViewer(item.code)}
+                                >
+                                  문항 상세보기
+                                </PreviewButton>
+                              </EditListItem>
+                            ))}
+                          </ListWrapper>
+                        </PerfectScrollbar>
+                        <p>복제된 문항 총 {`${coppyQuizList.length}`}건</p>
+                        <PerfectScrollbar>
+                          <ListWrapper>
+                            {coppyQuizList.map((item: QuizListType) => (
+                              <EditListItem
+                                key={item.code}
+                                isChecked={checkList.includes(item.idx)}
+                                // onClick={(e) => handleButtonCheck(e, item.idx)}
+                              >
+                                <ContentsWrapper>
+                                  <ContentsBox>
+                                    <CheckBoxI
+                                      id={item.code}
+                                      value={item.idx}
+                                      $margin={`0 5px 0 0`}
+                                      checked={checkList.includes(item.idx)}
+                                      readOnly
+                                      width="15px"
+                                    />
+                                    <p className="flex_line size_12">
+                                      {item.quizCategoryList.map(
+                                        (categoryItem, categoryIdx) => {
+                                          const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                          return (
+                                            <span
+                                              key={`category-${item.idx}-${categoryIdx}`}
+                                            >
+                                              {/* "*유형"에 해당하는 값 */}
+                                              {quizCategory.categories &&
+                                                quizCategory.categories.map(
+                                                  (el) => (
+                                                    <span
+                                                      key={`category-${item.idx}-${categoryIdx}-${el}`}
+                                                    >
+                                                      <span>{`${el.대단원 ? el.대단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                      <span>{`${el.중단원 ? el.중단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                      <span>{`${el.소단원 ? el.소단원.replace(/\^\^\^\d+$/, '') + ' >' : ''}`}</span>
+                                                      <span>{`${el.유형 ? el.유형.replace(/\^\^\^\d+$/, '') + ' ' : ''}`}</span>
+                                                    </span>
+                                                  ),
+                                                )}
+                                            </span>
+                                          );
+                                        },
+                                      )}
+                                    </p>
+                                  </ContentsBox>
+                                  <ContentsBox>
+                                    <p className="flex_line size_12">
+                                      {item.quizCategoryList.map(
+                                        (categoryItem, categoryIdx) => {
+                                          const { quizCategory } = categoryItem; // quizCategory 추출
+
+                                          return (
+                                            <span
+                                              key={`category-${item.idx}-${categoryIdx}`}
+                                            >
+                                              {quizCategory &&
+                                                quizCategory.sources &&
+                                                quizCategory.sources.length >
+                                                  0 &&
+                                                quizCategory.sources.map(
+                                                  (el, idx) => (
+                                                    <span
+                                                      key={`${el.출처}-${idx}`}
+                                                    >
+                                                      {`${el.출처} `}
+                                                      {/* {idx <
+                                            quizCategory.sources.length - 1
+                                              ? ', '
+                                              : ''} */}
+                                                    </span>
+                                                  ),
+                                                )}
+                                            </span>
+                                          );
+                                        },
+                                      )}
+                                    </p>
+                                  </ContentsBox>
+                                </ContentsWrapper>
+                                <PreviewButton
+                                  onClick={() => openViewer(item.code)}
+                                >
+                                  문항 상세보기
+                                </PreviewButton>
+                              </EditListItem>
+                            ))}
+                          </ListWrapper>
+                        </PerfectScrollbar>
+                      </HalfWrapper>
+                    )}
+                  </>
                 )}
               </ScrollWrapper>
 
               {state == null ? (
                 <>
-                  {searchCategoryData && searchCategoryData.pagination && (
-                    <PaginationBox
-                      itemsCountPerPage={8}
-                      totalItemsCount={searchCategoryData.pagination.totalCount}
-                      $margin={'0 0 20px 0'}
-                    />
-                  )}
+                  <PaginationBox
+                    itemsCountPerPage={10}
+                    totalItemsCount={totalCount}
+                    $margin={'0 0 20px 0'}
+                  />
                 </>
               ) : (
                 <ButtonApplyWrapper>

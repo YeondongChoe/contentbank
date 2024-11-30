@@ -1453,43 +1453,43 @@ export function ClassificationEdit({
   }, []);
 
   //리스트 솔팅 정렬
-  const [columnsCount, setColumnsCount] = useState<number>(3);
+  const [columnsCount, setColumnsCount] = useState<number>(2);
   const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
   useEffect(() => {}, [columnsCount, itemHeight]);
 
   //셀렉트 데이터
-  const [content, setContent] = useState<string[]>([]);
-  const [topSelect, setTopSelect] = useState<string>('문제만 보기');
-  const sortArr = [
-    {
-      idx: '대발문 + 지문 + 문제',
-      label: '대발문 + 지문 + 문제',
-      code: '대발문 + 지문 + 문제',
-      value: '대발문 + 지문 + 문제',
-      name: '대발문 + 지문 + 문제',
-    },
-    {
-      idx: '문제 + 정답 + 해설',
-      label: '문제 + 정답 + 해설',
-      code: '문제 + 정답 + 해설',
-      value: '문제 + 정답 + 해설',
-      name: '문제 + 정답 + 해설',
-    },
-    {
-      idx: '대발문 + 지문 + 문제 + 정답 + 해설',
-      label: '대발문 + 지문 + 문제 + 정답 + 해설',
-      code: '대발문 + 지문 + 문제 + 정답 + 해설',
-      value: '대발문 + 지문 + 문제 + 정답 + 해설',
-      name: '대발문 + 지문 + 문제 + 정답 + 해설',
-    },
-  ];
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
-  };
-  useEffect(() => {
-    console.log('셀렉트 값', topSelect);
-  }, [topSelect]);
+  // const [content, setContent] = useState<string[]>([]);
+  // const [topSelect, setTopSelect] = useState<string>('문제만 보기');
+  // const sortArr = [
+  //   {
+  //     idx: '대발문 + 지문 + 문제',
+  //     label: '대발문 + 지문 + 문제',
+  //     code: '대발문 + 지문 + 문제',
+  //     value: '대발문 + 지문 + 문제',
+  //     name: '대발문 + 지문 + 문제',
+  //   },
+  //   {
+  //     idx: '문제 + 정답 + 해설',
+  //     label: '문제 + 정답 + 해설',
+  //     code: '문제 + 정답 + 해설',
+  //     value: '문제 + 정답 + 해설',
+  //     name: '문제 + 정답 + 해설',
+  //   },
+  //   {
+  //     idx: '대발문 + 지문 + 문제 + 정답 + 해설',
+  //     label: '대발문 + 지문 + 문제 + 정답 + 해설',
+  //     code: '대발문 + 지문 + 문제 + 정답 + 해설',
+  //     value: '대발문 + 지문 + 문제 + 정답 + 해설',
+  //     name: '대발문 + 지문 + 문제 + 정답 + 해설',
+  //   },
+  // ];
+  // const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   const value = event.currentTarget.value;
+  //   setContent((prevContent) => [...prevContent, value]);
+  // };
+  // useEffect(() => {
+  //   console.log('셀렉트 값', topSelect);
+  // }, [topSelect]);
 
   // 체크박스 설정
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1553,21 +1553,21 @@ export function ClassificationEdit({
             <p>총 22건 중 5건 분류없음</p>
           </TopButtonWrapper>
           <TopButtonWrapper>
-            <Select
+            {/* <Select
               width={'250px'}
               defaultValue={'문제만 보기'}
               key={'문제만 보기'}
               options={sortArr}
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setTopSelect}
-            />
+            /> */}
             <ButtonWrapper>
               <button
                 onClick={() => {
-                  setColumnsCount(3);
+                  setColumnsCount(2);
                   setItemHeight('250px');
                 }}
-                className={`button ${columnsCount == 3 ? 'on' : ''} `}
+                className={`button ${columnsCount == 2 ? 'on' : ''} `}
               >
                 {/* 작게보기 */}
                 <Icon
@@ -1588,19 +1588,18 @@ export function ClassificationEdit({
                   src={`/images/icon/sorting_larger_view.svg`}
                 />
               </button>
-              <button
+              {/* <button
                 onClick={() => {
                   setColumnsCount(2);
                   setItemHeight(undefined);
                 }}
                 className={`button ${columnsCount == 2 ? 'on' : ''}`}
               >
-                {/* 맞춤보기  */}
                 <Icon
                   width={`20px`}
                   src={`/images/icon/sorting_custom_view.svg`}
                 />
-              </button>
+              </button> */}
             </ButtonWrapper>
           </TopButtonWrapper>
           <ScrollWrapper className="height">
