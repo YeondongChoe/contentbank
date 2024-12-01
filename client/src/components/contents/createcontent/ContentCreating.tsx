@@ -36,7 +36,7 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
-import { QuizElementList, QuizList } from './list';
+import QuizElementList from './list/QuizElementList';
 import { InputOptions } from './options/InputOptions';
 
 type SelectedValueType = string | { [key: string]: any };
@@ -53,7 +53,10 @@ export function ContentCreating({
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-  const [checkedList, setCheckedList] = useState<string[]>([]);
+  const [groupId, setGroupId] = useState<string>('');
+  // 최종적으로 등록될 리스트
+  const [groupList, setGroupList] = useState('');
+
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
   const [categoriesDD, setCategoriesDD] = useState<ItemCategoryType[][]>([]);
@@ -424,6 +427,19 @@ export function ContentCreating({
     setEditorData(JSON.parse(data));
   };
 
+  const childRef = useRef<{ AddGroup: () => void } | null>(null);
+  // 그룹 id 불러오기
+  const AddGroupID = () => {
+    const Id = uuidv4();
+    // 그룹화를 실행해고 생성된 그룹에 새로운 그룹아이디값 부여
+    setGroupId(Id);
+    console.log('Parent function executed', Id);
+
+    if (childRef.current?.AddGroup) {
+      childRef.current.AddGroup();
+    }
+  };
+
   useEffect(() => {
     console.log('quizClassList 분류등록 업데이트:', quizClassList);
     // 등록될 값
@@ -601,7 +617,7 @@ export function ContentCreating({
                 </Button>
                 <div className="border"></div>
                 <Button
-                  onClick={() => {}}
+                  onClick={() => AddGroupID()}
                   width="292px"
                   height="35px"
                   $margin="0 0 0 20px"
@@ -685,9 +701,10 @@ export function ContentCreating({
         <ContentListWrapper>
           <ContentList>
             <QuizElementList
+              ref={childRef}
               questionList={quizItemArrList}
               $height={`calc(100vh - 200px)`}
-              setCheckedList={setCheckedList}
+              groupId={groupId}
             />
           </ContentList>
         </ContentListWrapper>
