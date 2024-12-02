@@ -196,7 +196,7 @@ export function ContentFileUpload({
         .toISOString()
         .split('T')[0]
         .split('-');
-      const newUrl = `http://localhost:5050/images/${year}/${month}/${day}/${imgUUID}.png`;
+      const newUrl = `https://j-dev01.dreamonesys.co.kr/file/${year}/${month}/${day}/${imgUUID}.png`;
 
       return newUrl;
     } catch (error) {

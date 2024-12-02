@@ -85,7 +85,7 @@ var tag_control = {
   tag_group: {
     // 그룹
     use: false,
-    available_num: 1,
+    available_num: 2,
   },
   tag_bigcontent: {
     // 대발문
