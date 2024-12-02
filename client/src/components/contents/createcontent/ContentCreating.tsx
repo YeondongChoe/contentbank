@@ -95,6 +95,16 @@ export function ContentCreating({
     console.log('editorData 에디터 데이터  ----', editorData);
     console.log('editorData 에디터 데이터 묶음 ----', editorData?.tag_group);
 
+    // 출처 데이터 추가
+    console.log(
+      '출처: ',
+      selectedSourceList,
+      ' 난이도: ',
+      selectedDifficulty,
+      '	문항타입: ',
+      selectedQuestionType,
+    );
+
     if (editorData) {
       const itemDataList: QuizItemListType = [];
       let sort = 1;
@@ -128,6 +138,11 @@ export function ContentCreating({
               type: type,
               content: content,
               sort: sort++,
+              quizCategory: {
+                sources: selectedSourceList,
+                난이도: selectedDifficulty,
+                문항타입: selectedQuestionType,
+              },
             });
           });
         }
@@ -237,7 +252,7 @@ export function ContentCreating({
     const res = await resourceServiceInstance.get(
       `/v1/menu/path?url=contentDtEditingSetting`,
     );
-    console.log('getMenuSetting--------', res);
+    // console.log('getMenuSetting--------', res);
     return res.data.data;
   };
   const {
@@ -256,11 +271,11 @@ export function ContentCreating({
   useEffect(() => {
     if (menuSettingData) {
       //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
-      console.log(
-        '메뉴 셋팅값 ------ ',
-        menuSettingData.menuDetailList.length,
-        menuSettingData,
-      );
+      // console.log(
+      //   '메뉴 셋팅값 ------ ',
+      //   menuSettingData.menuDetailList.length,
+      //   menuSettingData,
+      // );
 
       // 셋팅값 없을시 얼럿
       if (menuSettingData.menuDetailList.length == 0) {
@@ -376,17 +391,18 @@ export function ContentCreating({
   };
 
   useEffect(() => {
-    console.log(`menu idxNamePairs:`, idxNamePairsH, idxNamePairsDD);
-    console.log(
-      `menu 2depth select setCategoriesH, setCategoriesDD:`,
-      categoriesH,
-      categoriesDD,
-    );
+    // console.log(`menu idxNamePairs:`, idxNamePairsH, idxNamePairsDD);
+    // console.log(
+    //   `menu 2depth select setCategoriesH, setCategoriesDD:`,
+    //   categoriesH,
+    //   categoriesDD,
+    // );
   }, [categoriesH, categoriesDD]);
 
   // 등록 버튼 입력시 에디터에서 문항값 축출 등록
   useEffect(() => {
     console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
+
     if (quizItemList.length > 0) {
       setQuizItemArrList((prevArrList) => {
         const mergedList = [...prevArrList, ...quizItemList];
@@ -415,8 +431,8 @@ export function ContentCreating({
   }, [quizItemArrList]);
 
   const AddQuestionElements = () => {
-    saveHandler();
     // 이미지 데이터 저장
+    saveHandler();
   };
 
   const saveHandler = async () => {
@@ -684,6 +700,8 @@ export function ContentCreating({
               questionList={quizItemArrList}
               $height={`calc(100vh - 200px)`}
               groupId={groupId}
+              selectedDifficulty={selectedDifficulty}
+              selectedQuestionType={selectedQuestionType}
             />
           </ContentList>
         </ContentListWrapper>
@@ -699,17 +717,17 @@ export function ContentCreating({
             $margin="0 20px 0 0"
             $filled
           >
-            에디터 데이터 등록
+            문항과 출처 데이터 추가
           </Button>
           <div className="border"></div>
           <Button
             onClick={() => AddGroupID()}
-            width="292px"
+            width="330px"
             height="35px"
             $margin="0 0 0 20px"
             $filled
           >
-            그룹 등록
+            그룹 묶기
           </Button>
         </EditerButtonWrapper>
         <SubmitButtonWrapper>

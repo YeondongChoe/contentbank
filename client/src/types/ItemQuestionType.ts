@@ -125,6 +125,11 @@ interface QuizItem {
   type: string;
   content: string;
   sort: number;
+  quizCategory?: {
+    sources?: Source[] | any[];
+    문항타입: string;
+    난이도?: string;
+  };
 }
 
 export type QuizItemListType = QuizItem[];

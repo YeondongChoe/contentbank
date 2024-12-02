@@ -35,6 +35,8 @@ export const QuizElementList = forwardRef(
       onItemClick,
       setIsCheck,
       arrowPosition = `left: calc(50% - 25px)`,
+      selectedDifficulty,
+      selectedQuestionType,
     }: {
       questionList: QuizItemListType | [];
       $height?: string;
@@ -43,6 +45,8 @@ export const QuizElementList = forwardRef(
       onItemClick?: (item: QuizItemListType) => void;
       setIsCheck?: React.Dispatch<React.SetStateAction<boolean>>;
       arrowPosition?: string;
+      selectedDifficulty: string;
+      selectedQuestionType: string;
     },
     ref,
   ) => {
@@ -159,7 +163,10 @@ export const QuizElementList = forwardRef(
         const originalElement = document.getElementById(item.code as string);
         const target =
           originalElement &&
-          (originalElement.parentNode?.parentNode?.parentNode as HTMLElement);
+          (originalElement.parentNode?.parentNode?.parentNode
+            ?.parentNode as HTMLElement);
+
+        console.log('target이동될 타겟', target);
 
         if (originalElement) {
           parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
@@ -442,28 +449,43 @@ export const QuizElementList = forwardRef(
                     // ref={ref}
                     // className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${dragItem.quizCategoryList[0] ? 'isHasMeta' : ''}`}
                   >
-                    <CheckBoxI
-                      $margin={'0 5px 0 0'}
-                      onChange={(e) =>
-                        handleSingleCheck(
-                          e.target.checked,
-                          dragItem.code as string,
-                        )
-                      }
-                      checked={
-                        checkList.includes(dragItem.code as string)
-                          ? true
-                          : false
-                      }
-                      id={dragItem.code as string}
-                      value={dragItem.code}
-                    />
-
-                    <PerfectScrollbar>
-                      <MathViewerWrapper>
-                        <MathViewer data={dragItem.content}></MathViewer>
-                      </MathViewerWrapper>
-                    </PerfectScrollbar>
+                    <Quiz>
+                      <CheckBoxI
+                        $margin={'0 5px 0 0'}
+                        onChange={(e) =>
+                          handleSingleCheck(
+                            e.target.checked,
+                            dragItem.code as string,
+                          )
+                        }
+                        checked={
+                          checkList.includes(dragItem.code as string)
+                            ? true
+                            : false
+                        }
+                        id={dragItem.code as string}
+                        value={dragItem.code}
+                      />
+                      <PerfectScrollbarWrapper>
+                        <PerfectScrollbar>
+                          <MathViewerWrapper>
+                            <MathViewer data={dragItem.content}></MathViewer>
+                          </MathViewerWrapper>
+                        </PerfectScrollbar>
+                      </PerfectScrollbarWrapper>
+                    </Quiz>
+                    {/* 출처 난이도 문항타입 */}
+                    <QuizCategory>
+                      {dragItem.quizCategory?.문항타입 != '' && (
+                        <span>{`문항타입 : ${dragItem.quizCategory?.문항타입}`}</span>
+                      )}
+                      {dragItem.quizCategory?.난이도 != '' && (
+                        <span>{`난이도 : ${dragItem.quizCategory?.난이도}`}</span>
+                      )}
+                      {dragItem.quizCategory?.sources?.map((el, idx) => (
+                        <span key={idx}>{el}</span>
+                      ))}
+                    </QuizCategory>
                   </ListDnDItem>
                 ))}
                 {/* </DnDWrapper> */}
@@ -512,6 +534,22 @@ const Container = styled.div<{ $height?: string }>`
     font-size: 12px;
   }
 `;
+const Quiz = styled.div`
+  display: flex;
+`;
+const QuizCategory = styled.div`
+  border-top: 1px solid #eee;
+  background-color: ${COLOR.HOVER};
+  font-size: 12px;
+  padding: 5px 2px;
+  span {
+    font-weight: bold;
+  }
+`;
+const PerfectScrollbarWrapper = styled.div`
+  max-height: 300px;
+  flex: 1 0 0;
+`;
 const ScrollWrapper = styled.div<{ $height?: string }>`
   /* overflow-y: auto; */
   width: 100%;
@@ -550,7 +588,7 @@ const ListWrapper = styled.ul`
 const ListDnDItem = styled.li`
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   /* flex-wrap: wrap; */
   height: fit-content;
   padding: 10px;
