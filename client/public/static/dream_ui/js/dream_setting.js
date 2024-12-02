@@ -79,3 +79,72 @@ var getEQData = () => {
       console.log('수식 입력 실패');
     });
 };
+
+// 태그 컨트롤
+var tag_control = {
+  tag_group: {
+    // 그룹
+    use: false,
+    available_num: 1,
+  },
+  tag_bigcontent: {
+    // 대발문
+    use: true,
+    available_num: 1,
+  },
+  tag_content: {
+    // 지문
+    use: true,
+    available_num: 1,
+  },
+  tag_exam: {
+    // 문제
+    use: true,
+    available_num: 2,
+  },
+  tag_exam_sm: {
+    // 소문제
+    use: false,
+    available_num: 1,
+  },
+  tag_example: {
+    // 보기
+    use: false,
+    available_num: 3,
+  },
+  tag_choices: {
+    // 선지
+    use: true,
+    available_num: 3,
+  },
+  tl_answer: {
+    // 정답
+    use: true,
+    available_num: 3,
+  },
+  tag_commentary: {
+    // 해설
+    use: true,
+    available_num: 3,
+  },
+  tag_hint: {
+    // 힌트
+    use: false,
+    available_num: 3,
+  },
+  tag_concept: {
+    // 개념
+    use: true,
+    available_num: 3,
+  },
+  tag_title: {
+    // 제목
+    use: false,
+    available_num: 3,
+  },
+  tag_tip: {
+    // 팁
+    use: false,
+    available_num: 3,
+  },
+};

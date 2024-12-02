@@ -451,7 +451,7 @@
           { "d": "itex_overleftrightarrow" }
         ]
       },
-      { "d": "itex_boxed1", "a": [{ "d": "itex_boxed2" }] },
+      { "d": "itex_boxed1", "a": [{ "d": "itex_boxed3" }] },
       {
         "e": true,
         "d": "itex_sec",

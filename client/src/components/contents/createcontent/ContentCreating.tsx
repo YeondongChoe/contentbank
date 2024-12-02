@@ -58,8 +58,12 @@ export function ContentCreating({
   const [groupList, setGroupList] = useState('');
 
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
+  const [categoriesF, setCategoriesF] = useState<ItemCategoryType[][]>([]);
+  const [categoriesG, setCategoriesG] = useState<ItemCategoryType[][]>([]);
   const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
   const [categoriesDD, setCategoriesDD] = useState<ItemCategoryType[][]>([]);
+  const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
   const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
   const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
   const [content, setContent] = useState<string[]>([]);
@@ -271,11 +275,11 @@ export function ContentCreating({
   useEffect(() => {
     if (menuSettingData) {
       //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
-      // console.log(
-      //   '메뉴 셋팅값 ------ ',
-      //   menuSettingData.menuDetailList.length,
-      //   menuSettingData,
-      // );
+      console.log(
+        '메뉴 셋팅값 ------ ',
+        menuSettingData.menuDetailList.length,
+        menuSettingData,
+      );
 
       // 셋팅값 없을시 얼럿
       if (menuSettingData.menuDetailList.length == 0) {
@@ -289,6 +293,11 @@ export function ContentCreating({
       }
 
       // 첫번째 출처 값
+      // 교재
+      const filteredCategoriesF: any[] = [];
+      //내신
+      const filteredCategoriesG: any[] = [];
+      //기출
       const filteredCategoriesH: any[] = [];
       // 두번째 추가정보
       const filteredCategoriesDD: any[] = [];
