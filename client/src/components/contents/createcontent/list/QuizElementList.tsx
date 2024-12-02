@@ -185,6 +185,55 @@ export const QuizElementList = forwardRef(
       AddGroup,
     }));
 
+    const removeOnFromCheckList = () => {
+      setCheckList((prev) => prev.filter((item) => item !== 'on'));
+    };
+    // 그룹 체크박스 상태 변경 처리 함수
+    const handleGroupCheckboxChange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+
+      // group-checkbox인 경우에만 처리
+      if (target && target.classList.contains('group-checkbox')) {
+        const isChecked = target.checked;
+
+        // 그룹 컨테이너 내부의 모든 체크박스 선택
+        const parentDiv = target.closest('.groupedItemsContainer');
+        if (parentDiv) {
+          const childCheckboxes = parentDiv.querySelectorAll(
+            '.groupedItemsContainer input[type="checkbox"]',
+          );
+
+          // 모든 자식 체크박스 상태 업데이트
+          childCheckboxes.forEach((checkbox) => {
+            const inputElement = checkbox as HTMLInputElement;
+
+            // 체크 상태 동기화
+            inputElement.checked = isChecked;
+
+            // CheckList 업데이트 (React 상태 관리)
+            const id = inputElement.value;
+            if (isChecked) {
+              setCheckList((prev) => [...prev, id]);
+            } else {
+              setCheckList((prev) => prev.filter((el) => el !== id));
+            }
+          });
+          // 'on' 제거
+          removeOnFromCheckList();
+        }
+      }
+    };
+
+    useEffect(() => {
+      // 이벤트 리스너 등록
+      document.addEventListener('change', handleGroupCheckboxChange);
+
+      // 정리 함수: 컴포넌트 언마운트 시 이벤트 리스너 제거
+      return () => {
+        document.removeEventListener('change', handleGroupCheckboxChange);
+      };
+    }, [checkList]);
+
     // 체크박스 설정
     const handleSingleCheck = (checked: boolean, id: string) => {
       if (checked) {
@@ -195,6 +244,10 @@ export const QuizElementList = forwardRef(
 
       setIsChecked(checked);
     };
+
+    useEffect(() => {
+      console.log('checkList ------- ', checkList);
+    }, [checkList]);
 
     useEffect(() => {
       if (setIsCheck) setIsCheck(isChecked);
@@ -446,6 +499,7 @@ export const QuizElementList = forwardRef(
                 {questionList.map((dragItem) => (
                   <ListDnDItem
                     key={`${dragItem.code}`}
+                    className={''}
                     // ref={ref}
                     // className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${dragItem.quizCategoryList[0] ? 'isHasMeta' : ''}`}
                   >
