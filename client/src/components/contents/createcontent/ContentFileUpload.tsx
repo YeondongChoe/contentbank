@@ -578,7 +578,7 @@ export function ContentFileUpload({
         <SubmitButtonWrapper>
           <Button
             buttonType="button"
-            disabled={addButtonBool}
+            // disabled={addButtonBool}
             onClick={() => submitSave()}
             width={'calc(50% - 5px)'}
             $margin={'0 10px 0 0'}

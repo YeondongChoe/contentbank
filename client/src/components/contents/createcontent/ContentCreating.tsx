@@ -605,27 +605,6 @@ export function ContentCreating({
                 setEditorData={setEditorData}
                 saveHandler={saveHandler}
               />
-              <EditerButtonWrapper>
-                <Button
-                  onClick={() => AddQuestionElements()}
-                  width="calc(100% - 310px);"
-                  height="35px"
-                  $margin="0 20px 0 0"
-                  $filled
-                >
-                  에디터 데이터 등록
-                </Button>
-                <div className="border"></div>
-                <Button
-                  onClick={() => AddGroupID()}
-                  width="292px"
-                  height="35px"
-                  $margin="0 0 0 20px"
-                  $filled
-                >
-                  그룹 등록
-                </Button>
-              </EditerButtonWrapper>
             </EditWrapper>
 
             <BackgroundWrapper>
@@ -712,6 +691,27 @@ export function ContentCreating({
         <Modal />
       </ContentsWrapper>
       <BorderWrapper>
+        <EditerButtonWrapper>
+          <Button
+            onClick={() => AddQuestionElements()}
+            width="calc(100% - 310px);"
+            height="35px"
+            $margin="0 20px 0 0"
+            $filled
+          >
+            에디터 데이터 등록
+          </Button>
+          <div className="border"></div>
+          <Button
+            onClick={() => AddGroupID()}
+            width="292px"
+            height="35px"
+            $margin="0 0 0 20px"
+            $filled
+          >
+            그룹 등록
+          </Button>
+        </EditerButtonWrapper>
         <SubmitButtonWrapper>
           <Button
             buttonType="button"
@@ -778,7 +778,7 @@ const BackgroundWrapper = styled.div`
   margin-bottom: 10px;
 
   &.bottom {
-    margin-bottom: 70px;
+    margin-bottom: 120px;
   }
 `;
 const SelectListWrapper = styled.div`
@@ -871,18 +871,16 @@ const BorderWrapper = styled.div`
   right: 0;
   left: 0;
   width: 100%;
-  height: 70px;
+  height: 120px;
   background-color: #fff;
 `;
 const SubmitButtonWrapper = styled.div`
-  position: absolute;
-  right: 30px;
-  left: auto;
-  top: 10px;
-  bottom: 0px;
   display: flex;
-  flex-direction: row;
+  gap: 10px;
   width: 50%;
+  position: absolute;
+  left: auto;
+  right: 20px;
 `;
 
 const OptionWrapper = styled.ul`
