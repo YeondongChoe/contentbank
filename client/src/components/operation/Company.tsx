@@ -392,6 +392,10 @@ export function Company() {
     }
   }, [idxValue, page]);
 
+  useEffect(() => {
+    companyListRefetch();
+  }, [companyAccountRefetch()]);
+
   // 아이디 중복 확인 && 토탈 유저 수
   const { data: totalData, refetch: totalDataRefetch } = useQuery({
     queryKey: ['get-memberlist-total'],

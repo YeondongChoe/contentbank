@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { Alert } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
-import { Button, Select } from '../../../atom';
+import { Button, Select, openToastifyAlert } from '../../../atom';
 import { COLOR } from '../../../constants';
 
 type processStepListProps = {
@@ -96,11 +96,12 @@ export function ProcessEditModal({
   const clickSaveAlert = () => {
     setIsProcessAlert(true);
   };
+  //단계 추가 버튼
   const increaseButtonHandler = () => {
     const data = {
       stepName: 'REVIEW',
-      idx: processList.length + 1,
-      stepSort: 0,
+      idx: processList.length + 1, //0부터시작
+      stepSort: processList.length + 2, //1부터 시작
       createdBy: '',
       createdAt: '',
       lastModifiedBy: '',
@@ -108,47 +109,77 @@ export function ProcessEditModal({
       workers: [],
     };
     if (isEdit) {
-      setProcessDetailList(
-        (prev) =>
-          prev
-            ? {
-                ...prev, // 기존 값 유지
-                steps: [
-                  ...(prev.steps || []), // 기존 steps 유지 (없으면 빈 배열 사용)
-                  {
-                    stepName: 'REVIEW',
-                    idx: (prev.steps?.length || 0) + 1, // steps 배열 길이에 따라 idx 설정
-                    stepSort: (prev.steps?.length || 0) + 1,
-                    createdBy: '',
-                    createdAt: '',
-                    lastModifiedBy: '',
-                    lastModifiedAt: '',
-                    workers: [],
-                  },
-                ],
-              }
-            : undefined, // prev가 undefined인 경우 그대로 undefined 반환
-      );
+      setProcessDetailList((prev) => {
+        if (prev) {
+          if ((prev.steps?.length || 0) >= 10) {
+            openToastifyAlert({
+              type: 'warning',
+              text: '단계는 10개까지 추가 가능합니다',
+            });
+            return prev; //기존 값 유지
+          }
+          return {
+            ...prev, //기존 값 유지
+            steps: [
+              ...(prev.steps || []), //기존 steps 유지
+              {
+                stepName: 'REVIEW',
+                idx: 0, // steps 배열 길이에 따라 idx 설정
+                stepSort: (prev.steps?.length || 0) + 1,
+                createdBy: '',
+                createdAt: '',
+                lastModifiedBy: '',
+                lastModifiedAt: '',
+                workers: [],
+              },
+            ],
+          };
+        }
+      });
     } else {
-      setProcessList((prev) => [...prev, data]);
-    }
-  };
-  const decreaseButtonHandler = () => {
-    if (isEdit) {
-      setProcessDetailList(
-        (prev) =>
-          prev
-            ? {
-                ...prev,
-                steps: prev.steps.slice(0, -1), // steps 배열에서 마지막 항목 제거
-              }
-            : prev, // prev가 undefined일 경우 그대로 반환
-      );
-    } else {
-      setProcessList((prev) => prev.slice(0, -1));
+      if (processList.length >= 10) {
+        openToastifyAlert({
+          type: 'warning',
+          text: '단계는 10개까지 추가 가능합니다',
+        });
+      } else {
+        setProcessList((prev) => [...prev, data]);
+      }
     }
   };
 
+  //단계 삭제 버튼
+  const decreaseButtonHandler = () => {
+    console.log(isEdit);
+    if (isEdit) {
+      setProcessDetailList((prev) => {
+        if (!prev || prev.steps.length <= 1) {
+          openToastifyAlert({
+            type: 'warning',
+            text: '제작단계는 삭제할 수 없습니다',
+          });
+          return prev;
+        }
+        return {
+          ...prev,
+          steps: prev.steps.slice(0, -1), // Remove the last item
+        };
+      });
+    } else {
+      setProcessList((prev) => {
+        if (prev.length <= 1) {
+          openToastifyAlert({
+            type: 'warning',
+            text: '최초단계는 삭제할 수 없습니다',
+          });
+          return prev;
+        }
+        return prev.slice(0, -1); // Remove the last item
+      });
+    }
+  };
+
+  //단계 옵션Select
   const handleClickSelect = (name: string, index: number) => {
     if (isEdit) {
       setProcessDetailList(
@@ -174,6 +205,7 @@ export function ProcessEditModal({
     }
   };
 
+  //저장해서 부모로 값을 보내주기
   const handleClickSave = () => {
     if (isEdit) {
       setProcessDetailInfo(processDetailList);
