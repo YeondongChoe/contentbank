@@ -95,11 +95,6 @@ export function ReportProcessModal({
       closeModal();
     },
   });
-  //노드서버에 이미지 저장 후 응답값 저장
-  const [imgResults, setImgResults] = useState<any[]>([]);
-  console.log('imgResults', imgResults);
-  //값이 들어오면 가공하기
-  //useEffect(() => )
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
@@ -160,7 +155,7 @@ export function ReportProcessModal({
         idx: reportIdx,
         type: content,
         content: commentValue,
-        articleList,
+        articleList: articleList,
       };
 
       await postReportQuizData(data);
@@ -219,7 +214,6 @@ export function ReportProcessModal({
         type: 'success',
         text: response.data.message,
       });
-      setImgResults(response.data.results);
     },
   });
 
