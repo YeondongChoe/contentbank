@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { styled } from 'styled-components';
 
 import { Alert } from '..';
@@ -15,6 +15,17 @@ import { COLOR } from '../../constants';
 type ReportProcessType = {
   registorReport?: boolean;
   reportIdx?: number;
+};
+
+type UploadReportResponse = {
+  message: string;
+  results: {
+    mimeType: string;
+    originalName: string;
+    savedPath: string;
+    success: boolean;
+    url: string;
+  }[];
 };
 
 export function ReportProcessModal({
@@ -84,9 +95,12 @@ export function ReportProcessModal({
       closeModal();
     },
   });
-
-  const [imgResults, setImgResults] = useState();
+  //노드서버에 이미지 저장 후 응답값 저장
+  const [imgResults, setImgResults] = useState<any[]>([]);
   console.log('imgResults', imgResults);
+  //값이 들어오면 가공하기
+  //useEffect(() => )
+
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent(value);
@@ -149,7 +163,9 @@ export function ReportProcessModal({
 
   //j-dev01.dreamonesys.co.kr/file/upload_report
   // 문항 신고
-  const postReportImg = async (data: any) => {
+  const postReportImg = async (
+    data: any,
+  ): Promise<AxiosResponse<UploadReportResponse>> => {
     return await axios.post(
       'https://j-dev01.dreamonesys.co.kr/file/upload_report',
       data,
@@ -194,7 +210,6 @@ export function ReportProcessModal({
       fileInputRef.current.dataset.index = String(index);
     }
   };
-  console.log(images);
 
   // 이미지 파일 처리
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
