@@ -85,6 +85,8 @@ export function ReportProcessModal({
     },
   });
 
+  const [imgResults, setImgResults] = useState();
+  console.log('imgResults', imgResults);
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent(value);
@@ -113,27 +115,18 @@ export function ReportProcessModal({
             byteNumbers[i] = byteString.charCodeAt(i);
           }
 
-          console.log('images', images);
-          console.log('base64Data', base64Data);
-          console.log('byteString', byteString);
-          console.log('byteNumbers', byteNumbers);
-
           const blob = new Blob([byteNumbers], { type: 'image/png' });
-          console.log('blob', blob);
 
           // FormData에 Blob 추가 (파일명에 인덱스 추가)
           formData.append('file', blob, `image_${index}.png`);
         });
-      console.log(formData);
-      for (const [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
 
       // 모든 이미지를 한 번에 업로드
       const uploadResponse = await postReportImgData(formData);
-      console.log(uploadResponse);
+      console.log('uploadResponse', uploadResponse);
       // 업로드 결과에서 URL 또는 필요한 정보를 추출
       const articleList = uploadResponse;
+      console.log('articleList', articleList);
 
       // 신고 데이터를 서버로 전송
       const data = {
@@ -157,9 +150,6 @@ export function ReportProcessModal({
   //j-dev01.dreamonesys.co.kr/file/upload_report
   // 문항 신고
   const postReportImg = async (data: any) => {
-    for (const [key, value] of data.entries()) {
-      console.log(key, value);
-    }
     return await axios.post(
       'https://j-dev01.dreamonesys.co.kr/file/upload_report',
       data,
@@ -190,6 +180,7 @@ export function ReportProcessModal({
         type: 'success',
         text: response.data.message,
       });
+      setImgResults(response.data.results);
     },
   });
 
