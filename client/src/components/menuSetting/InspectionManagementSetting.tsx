@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { BsArrowsMove, BsEyeSlash, BsEye } from 'react-icons/bs';
+import { GrPlan } from 'react-icons/gr';
 import { TbFilter, TbFilterOff } from 'react-icons/tb';
 import styled from 'styled-components';
 
@@ -15,6 +16,9 @@ import {
   Button,
   Select,
   openToastifyAlert,
+  Search,
+  CommonDate,
+  IconButton,
 } from '..';
 import { resourceServiceInstance } from '../../api/axios';
 import { MenuDataListProps } from '../../types';
@@ -23,12 +27,31 @@ import { COLOR } from '../constants';
 import { SettingPageDnDWrapper } from '../molecules';
 
 export function InspectionManagementSetting() {
+  const DummyData = [
+    {
+      code: 'A',
+      detailIdx: '1',
+      idx: 1,
+      inputTypeList:
+        'SELECT,SELECT,SELECT,SELECT,SELECT,SELECT,SELECT,SELECT,SELECT',
+      isCheck: true,
+      name: '더미',
+      nameList:
+        '출처, 교육과정, 학교급, 학년, 학기, 교과, 과목, 대단원, 문항타입',
+      searchList: 'false,false,false,false,false,false,false,false,false',
+      typeList: '1,2,3,4,5,6,7,8,9',
+      viewList: 'false,false,false,false,false,false,false,false,false',
+    },
+  ];
   const [isStartDnD, setIsStartDnd] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
-
+  const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  console.log(menuDataList);
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
@@ -37,7 +60,7 @@ export function InspectionManagementSetting() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
+          //console.log('sendMenuIdx:', parsedData); // 디버깅용 콘솔 로그
           setMenuIdx(parsedData.idx);
           //localStorage.removeItem('sendMenuIdx');
         } catch (error) {
@@ -444,16 +467,83 @@ export function InspectionManagementSetting() {
                   const searchList = search.searchList
                     .split(',')
                     .map((item) => item.trim() === 'true');
+                  const typeList = search.inputTypeList.split(',');
+                  console.log('nameList', nameList);
+                  console.log('searchList', searchList);
+                  console.log('typeList', typeList);
                   return (
                     <>
                       {nameList.map((el, idx) =>
-                        searchList[idx] ? (
+                        searchList[idx] && typeList[idx] === 'SELECT' ? (
                           <Select
                             key={idx}
                             defaultValue={el}
                             width="130px"
                             isnormalizedOptions
                           ></Select>
+                        ) : searchList[idx] && typeList[idx] === 'INPUT' ? (
+                          <Search
+                            key={idx}
+                            width="130px"
+                            height="40px"
+                            value={''}
+                            onClick={() => {}}
+                            onKeyDown={() => {}}
+                            onChange={() => {}}
+                            placeholder={`${el} 검색`}
+                          ></Search>
+                        ) : searchList[idx] &&
+                          typeList[idx] === 'DATEPICKER' ? (
+                          <div key={idx}>
+                            <CommonDate
+                              setDate={setStartDate}
+                              $button={
+                                <IconButton
+                                  width="125px"
+                                  height="40px"
+                                  fontSize="14px"
+                                  onClick={() => {}}
+                                >
+                                  <span className="btn_title">
+                                    {startDate === ''
+                                      ? `시작일`
+                                      : `${startDate}`}
+                                  </span>
+                                  <GrPlan />
+                                </IconButton>
+                              }
+                            />
+                            <span> ~ </span>
+                            <CommonDate
+                              setDate={setEndDate}
+                              minDate={startDate}
+                              $button={
+                                <IconButton
+                                  width="125px"
+                                  height="40px"
+                                  fontSize="14px"
+                                  onClick={() => {}}
+                                >
+                                  <span className="btn_title">
+                                    {endDate === '' ? `종료일` : `${endDate}`}
+                                  </span>
+                                  <GrPlan />
+                                </IconButton>
+                              }
+                            />
+                          </div>
+                        ) : searchList[idx] && typeList[idx] === 'INPUT_INT' ? (
+                          <Search
+                            key={idx}
+                            width="130px"
+                            height="40px"
+                            value={el}
+                            onClick={() => {}}
+                            onKeyDown={() => {}}
+                            onChange={() => {}}
+                            placeholder={`${el} 검색`}
+                            inputInt={true}
+                          ></Search>
                         ) : null,
                       )}
                     </>

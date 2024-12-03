@@ -94,6 +94,7 @@ export function ReportProcessModal({
       idx: reportIdx,
       type: content,
       content: commentValue,
+      articleList: [],
     };
     if (content === undefined) {
       openToastifyAlert({

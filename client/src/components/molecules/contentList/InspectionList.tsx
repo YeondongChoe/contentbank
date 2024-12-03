@@ -31,6 +31,7 @@ import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType } from '../../../types';
+import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
@@ -47,6 +48,7 @@ type InspectionListProps = {
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<any, Error>>;
   key?: number;
+  selectedList: selectedListType[];
 };
 
 export function InspectionList({
@@ -57,6 +59,7 @@ export function InspectionList({
   setCheckListOn,
   deleteQuizIsSuccess,
   quizDataRefetch,
+  selectedList,
 }: InspectionListProps) {
   const { openModal } = useModal();
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
@@ -305,6 +308,54 @@ export function InspectionList({
           </ButtonWrapper>
         </InputWrapper>
       </ListButtonWrapper>
+      <List margin={`10px 0 5px 0`} height="none">
+        <ListItem isChecked={false} columnTitle marginBottom="0px">
+          <CheckBoxI
+            id={''}
+            value={''}
+            $margin={`0 5px 0 0`}
+            checked={false}
+            readOnly
+          />
+          <Icon
+            width={`18px`}
+            $margin={'0 0 0 10px'}
+            src={`/images/icon/favorites_off_B.svg`}
+            onClick={() => {}}
+            cursor
+          />
+          <ItemLayout>
+            {selectedList.map((list) => {
+              if (list.view === true) {
+                return (
+                  <>
+                    <span key={list.name} className="width_80px item_wrapper">
+                      <strong>{list.name}</strong>
+                    </span>
+                    <i className="line"></i>
+                  </>
+                );
+              }
+              return null;
+            })}
+            <span className="width_80px item_wrapper">
+              <strong>담당자</strong>
+            </span>
+            <i className="line"></i>
+            <span className="width_80px item_wrapper">
+              <strong>등록일자</strong>
+            </span>
+            <i className="line"></i>
+            <span className="width_80px item_wrapper">
+              <strong>프로세스(단계)</strong>
+            </span>
+            <i className="line"></i>
+            <span className="width_20px item_wrapper">
+              <strong>설정</strong>
+            </span>
+          </ItemLayout>
+        </ListItem>
+      </List>
       <ListWrapper ref={backgroundRef}>
         <List margin={`10px 0`}>
           {questionList.map((item: QuizListType) => (
@@ -320,7 +371,7 @@ export function InspectionList({
                 checked={checkList.includes(item.idx)}
                 readOnly
               />
-              {item.isFavorite ? (
+              {/* {item.isFavorite ? (
                 <Icon
                   width={`18px`}
                   $margin={'0 0 0 12px'}
@@ -346,15 +397,13 @@ export function InspectionList({
                   }
                   cursor
                 />
-              )}
+              )} */}
               <ItemLayout>
                 <span
                   className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">출처</strong>
-
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -402,8 +451,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">교육과정</strong>
-
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -453,8 +500,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">학교급</strong>
-
                   {item.quizCategoryList ? (
                     <span className=" tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -503,8 +548,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">학년</strong>
-
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -553,8 +596,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">학기</strong>
-
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -603,8 +644,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">교과</strong>
-
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -653,8 +692,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">과목</strong>
-
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -703,8 +740,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">대단원</strong>
-
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length !== 0 ? (
@@ -753,7 +788,6 @@ export function InspectionList({
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
-                  <strong className="title">문항타입</strong>
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.quizCategoryList.length > 0 ? (
@@ -833,36 +867,6 @@ export function InspectionList({
                     </span>
                   ) : (
                     <span className="tag"></span>
-                  )}
-                </span>
-                <i className="line"></i>
-                <span className="width_5 item_wrapper tag_icon">
-                  {item.isUse ? (
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/lock_open_${
-                        checkList.length
-                          ? checkList.includes(item.idx)
-                            ? 'on'
-                            : 'off'
-                          : 'off'
-                      }.svg`}
-                      disabled={true}
-                    />
-                  ) : (
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/lock_${
-                        checkList.length
-                          ? checkList.includes(item.idx)
-                            ? 'on'
-                            : 'off'
-                          : 'off'
-                      }.svg`}
-                      disabled={true}
-                    />
                   )}
                 </span>
               </ItemLayout>
