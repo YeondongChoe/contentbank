@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { styled } from 'styled-components';
 
 import { Alert } from '..';
@@ -139,7 +139,19 @@ export function ReportProcessModal({
       const uploadResponse = await postReportImgData(formData);
       console.log('uploadResponse', uploadResponse);
       // 업로드 결과에서 URL 또는 필요한 정보를 추출
-      const articleList = uploadResponse;
+      const articleList = uploadResponse.data.results.map(
+        (result: {
+          mimeType: string;
+          originalName: string;
+          savedPath: string;
+          success: boolean;
+          url: string;
+        }) => ({
+          originalName: result.savedPath,
+          type: result.mimeType,
+          storedPath: result.url,
+        }),
+      );
       console.log('articleList', articleList);
 
       // 신고 데이터를 서버로 전송
@@ -148,7 +160,7 @@ export function ReportProcessModal({
         idx: reportIdx,
         type: content,
         content: commentValue,
-        articleList: articleList,
+        articleList,
       };
 
       await postReportQuizData(data);
@@ -164,7 +176,7 @@ export function ReportProcessModal({
   //j-dev01.dreamonesys.co.kr/file/upload_report
   // 문항 신고
   const postReportImg = async (
-    data: any,
+    data: FormData,
   ): Promise<AxiosResponse<UploadReportResponse>> => {
     return await axios.post(
       'https://j-dev01.dreamonesys.co.kr/file/upload_report',
@@ -178,17 +190,28 @@ export function ReportProcessModal({
     );
   };
 
-  const { mutate: postReportImgData } = useMutation({
+  const { mutateAsync: postReportImgData } = useMutation<
+    AxiosResponse<UploadReportResponse>, // 응답 타입
+    AxiosError<{ message: string; code: string }>, // 에러 타입
+    FormData // 요청 변수 타입
+  >({
     mutationFn: postReportImg,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: context.response.data.message,
-      });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
+    onError: (error) => {
+      // AxiosError의 response 안전하게 접근
+      const response = error.response;
+      if (response) {
+        openToastifyAlert({
+          type: 'error',
+          text: response.data.message,
+        });
+        if (response.data.code === 'GE-002') {
+          postRefreshToken();
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '알 수 없는 오류가 발생했습니다.',
+        });
       }
     },
     onSuccess: (response) => {
