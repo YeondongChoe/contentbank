@@ -143,7 +143,7 @@ export function ReportProcessModal({
           url: string;
         }) => ({
           originalName: result.savedPath,
-          type: result.mimeType,
+          type: 'IMAGE',
           storedPath: result.url,
         }),
       );
