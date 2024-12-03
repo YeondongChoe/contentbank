@@ -18,6 +18,7 @@ type SearchProps = {
   errorMessage?: string;
   maxLength?: number;
   minLength?: number;
+  inputInt?: boolean;
 };
 
 export function Search({
@@ -33,7 +34,26 @@ export function Search({
   errorMessage,
   maxLength,
   minLength,
+  inputInt = false,
 }: SearchProps) {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+
+    if (inputInt) {
+      // 숫자만 허용: 숫자 이외의 문자 제거
+      const numericValue = inputValue.replace(/[^0-9]/g, '');
+      if (numericValue !== value) {
+        onChange({
+          ...event,
+          target: { ...event.target, value: numericValue },
+        });
+      }
+    } else {
+      // 그대로 전달
+      onChange(event);
+    }
+  };
+
   return (
     <Component
       width={width}
@@ -43,7 +63,7 @@ export function Search({
     >
       <input
         value={value}
-        onChange={onChange}
+        onChange={handleInputChange}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
         maxLength={maxLength}

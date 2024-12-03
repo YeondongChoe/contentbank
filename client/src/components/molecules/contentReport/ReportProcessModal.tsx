@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { styled } from 'styled-components';
 
 import { Alert } from '..';
@@ -88,23 +89,109 @@ export function ReportProcessModal({
     const value = event.currentTarget.value;
     setContent(value);
   };
-  const submitReportProcess = () => {
-    const data = {
-      reportType: registorReport ? 'REPORT' : 'ANSWER',
-      idx: reportIdx,
-      type: content,
-      content: commentValue,
-    };
-    if (content === undefined) {
+  const submitReportProcess = async () => {
+    if (!content) {
       openToastifyAlert({
         type: 'error',
         text: '신고유형을 선택해주세요',
       });
-    } else {
-      postReportQuizData(data);
+      return;
     }
-    //해당 신고내역에 처리된 상태 보내기
+
+    try {
+      // FormData 생성 및 이미지 추가
+      const formData = new FormData();
+
+      images
+        .filter((imgSrc) => imgSrc) // `null`이 아닌 이미지만 처리
+        .forEach((imgSrc, index) => {
+          // Base64 문자열을 Blob으로 변환
+          const base64Data = imgSrc!.split(',')[1]; // Base64 데이터 추출
+          const byteString = atob(base64Data); // Base64 디코딩
+          const byteNumbers = new Uint8Array(byteString.length);
+          for (let i = 0; i < byteString.length; i++) {
+            byteNumbers[i] = byteString.charCodeAt(i);
+          }
+
+          console.log('images', images);
+          console.log('base64Data', base64Data);
+          console.log('byteString', byteString);
+          console.log('byteNumbers', byteNumbers);
+
+          const blob = new Blob([byteNumbers], { type: 'image/png' });
+          console.log('blob', blob);
+
+          // FormData에 Blob 추가 (파일명에 인덱스 추가)
+          formData.append('file', blob, `image_${index}.png`);
+        });
+      console.log(formData);
+      for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      // 모든 이미지를 한 번에 업로드
+      const uploadResponse = await postReportImgData(formData);
+      console.log(uploadResponse);
+      // 업로드 결과에서 URL 또는 필요한 정보를 추출
+      const articleList = uploadResponse;
+
+      // 신고 데이터를 서버로 전송
+      const data = {
+        reportType: registorReport ? 'REPORT' : 'ANSWER',
+        idx: reportIdx,
+        type: content,
+        content: commentValue,
+        articleList: articleList,
+      };
+
+      await postReportQuizData(data);
+    } catch (error) {
+      openToastifyAlert({
+        type: 'error',
+        text: '이미지 업로드 중 문제가 발생했습니다.',
+      });
+      console.error(error);
+    }
   };
+
+  //j-dev01.dreamonesys.co.kr/file/upload_report
+  // 문항 신고
+  const postReportImg = async (data: any) => {
+    for (const [key, value] of data.entries()) {
+      console.log(key, value);
+    }
+    return await axios.post(
+      'https://j-dev01.dreamonesys.co.kr/file/upload_report',
+      data,
+      {
+        withCredentials: true, // 자격 증명 포함
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+  };
+
+  const { mutate: postReportImgData } = useMutation({
+    mutationFn: postReportImg,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
 
   const [images, setImages] = useState<Array<string | null>>([null]); // 초기 빈 ImgBox 1개
   const fileInputRef = useRef<HTMLInputElement | null>(null);
