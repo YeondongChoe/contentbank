@@ -132,7 +132,7 @@ export function Options({
     const response = await classificationInstance.get(
       `/v1/category/class/${listItem.idx}`,
     );
-    console.log('response -------select', response);
+    // console.log('response -------select', response);
     return response.data.data.categoryClassList;
   };
   const { data: categoryItems, refetch: categoryItemsRefetch } = useQuery({

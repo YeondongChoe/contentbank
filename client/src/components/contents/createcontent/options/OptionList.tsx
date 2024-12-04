@@ -260,7 +260,7 @@ export function OptionList({
   }, [selectedValue]);
 
   useEffect(() => {
-    console.log('sourceValue 출처=----------', sourceValue);
+    console.log('sourceValue 변경시 넘어온 출처값----------', sourceValue);
 
     // sourceValue의 객체 요소 중 하나라도 키값이 빈 문자열이 아닐 때
     if (
