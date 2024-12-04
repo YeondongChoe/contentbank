@@ -59,9 +59,7 @@ export function ContentCreating({
   const [isAdd, setIsAdd] = useState<boolean>(false);
 
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
-  const [categoriesF, setCategoriesF] = useState<ItemCategoryType[][]>([]);
-  const [categoriesG, setCategoriesG] = useState<ItemCategoryType[][]>([]);
-  const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
+
   const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
   const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
   const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
@@ -320,16 +318,6 @@ export function ContentCreating({
             viewList: viewList[index] === 'true',
           }));
 
-          // ItemCategoryType = {
-          // 	code: string;
-          // 	idx: number;
-          // 	name: string;
-          // 	type?: string;
-          // 	value?: number;
-          // 	isUse?: boolean;
-          // 	autoNum?: string;
-          // };
-
           if (menuDetail.groupCode == 'F') {
             setIdxNamePairsF((prev) => {
               const uniquePairs = pairs.filter(
@@ -406,65 +394,8 @@ export function ContentCreating({
           }
         },
       );
-
-      const idxListH = filteredCategoriesH
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-      const idxListF = filteredCategoriesF
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-      const idxListG = filteredCategoriesG
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-      const idxListDD = filteredCategoriesDD
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-
-      console.log(
-        'inputType 이 셀렉트인것만',
-        idxListH,
-        '/',
-        idxListF,
-        '/',
-        idxListG,
-        '/',
-        idxListDD,
-      );
-
-      fetchCategoryItems(idxListH, setCategoriesH);
-      fetchCategoryItems(idxListF, setCategoriesF);
-      fetchCategoryItems(idxListG, setCategoriesG);
-      // fetchCategoryItems(idxListDD, setCategoriesDD);
     }
   }, [menuSettingData]);
-
-  // 카테고리의 그룹 아이템 조회
-  const fetchCategoryItems = async (
-    typeList: string,
-    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
-  ) => {
-    const typeIds = typeList.split(',');
-    try {
-      const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
-      );
-      const responses = await Promise.all(requests);
-      const itemsList = responses.map(
-        (res) => res?.data?.data?.categoryClassList,
-      );
-      setCategory(itemsList);
-    } catch (error: any) {
-      if (error.response.data?.code == 'GE-002') postRefreshToken();
-    }
-  };
 
   useEffect(() => {
     console.log(
@@ -474,14 +405,7 @@ export function ContentCreating({
       idxNamePairsG,
       // idxNamePairsDD,
     );
-    console.log(
-      `menu 2depth select setCategoriesH, setCategoriesDD:`,
-      categoriesH,
-      categoriesF,
-      categoriesG,
-      // categoriesDD,
-    );
-  }, [categoriesH, categoriesF, categoriesG]);
+  }, [idxNamePairsH, idxNamePairsF, idxNamePairsG]);
 
   // 등록 버튼 입력시 에디터에서 문항값 축출 등록
 
@@ -793,8 +717,8 @@ export function ContentCreating({
                       <Select
                         onDefaultSelect={() => {}}
                         width={'120px'}
-                        defaultValue={'상'}
-                        key={'상'}
+                        defaultValue={'난이도'}
+                        key={'난이도'}
                         options={[
                           {
                             code: '상',
@@ -950,14 +874,6 @@ const SelectListWrapper = styled.div`
   }
 `;
 
-const InputWrappper = styled.div`
-  display: flex;
-  .reddot {
-    margin: 0 5px;
-    color: ${COLOR.ALERTBAR_ERROR};
-  }
-`;
-
 const SourceOptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -1024,23 +940,4 @@ const SubmitButtonWrapper = styled.div`
   left: auto;
   right: 20px;
   top: 10px;
-`;
-
-const OptionWrapper = styled.ul`
-  display: flex;
-  flex-wrap: wrap;
-
-  input {
-    height: 30px;
-    padding: 10px;
-    width: 120px;
-    border: 1px solid ${COLOR.BORDER_GRAY};
-    border-radius: 5px;
-    text-overflow: ellipsis;
-
-    &.modal_input {
-      border: 1px solid ${COLOR.PRIMARY};
-      cursor: pointer;
-    }
-  }
 `;

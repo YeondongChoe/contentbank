@@ -180,6 +180,7 @@ export function ContentFileUpload({
     formData.append('file', file);
     formData.append('img_save_type', '3'); // 1을 문자열로 변환
 
+    console.log('formData --------------', formData);
     try {
       const response = await axios.post(
         'https://j-dev01.dreamonesys.co.kr/file',

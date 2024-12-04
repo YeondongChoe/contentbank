@@ -130,8 +130,9 @@ export function Options({
   // 셀렉트 api 호출
   const getCategoryItems = async () => {
     const response = await classificationInstance.get(
-      `/v1/category/${listItem.idx}`,
+      `/v1/category/class/${listItem.idx}`,
     );
+    console.log('response -------select', response);
     return response.data.data.categoryClassList;
   };
   const { data: categoryItems, refetch: categoryItemsRefetch } = useQuery({
@@ -143,7 +144,8 @@ export function Options({
   });
 
   useEffect(() => {
-    if (categoryItems) categoryItemsRefetch();
+    // console.log('listItem --------------- 옵션 아이템', listItem);
+    if (listItem?.type === 'SELECT' && categoryItems) categoryItemsRefetch();
   }, [listItem]);
 
   return (
