@@ -94,7 +94,6 @@ type AddModalProps = {
   setProcessDetailInfo: React.Dispatch<
     React.SetStateAction<processDetailInfoProps | undefined>
   >;
-  setStepSort: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 export function ProcessAddModal({
@@ -105,7 +104,6 @@ export function ProcessAddModal({
   setProcessListData,
   processDetailInfo,
   setProcessDetailInfo,
-  setStepSort,
 }: AddModalProps) {
   const { closeModal } = useModal();
   // 기존에 설정되어 있는 단계 값을 저장
@@ -205,7 +203,6 @@ export function ProcessAddModal({
         lastModifiedAt: processDetailList?.lastModifiedAt ?? '', // 추가된 부분
         steps: updatedProcessList, // Update only the steps property
       });
-      setStepSort(stepSort);
     } else {
       const updatedProcessList = processList.map((process) => {
         if (process.stepSort === stepSort) {
@@ -312,7 +309,6 @@ export function ProcessAddModal({
         lastModifiedAt: processDetailList?.lastModifiedAt ?? '', // 추가된 부분
         steps: updatedProcessList, // Update only the steps property
       });
-      setStepSort(stepSort);
     } else {
       const updatedProcessList = processList.map((process) => {
         if (process.stepSort === stepSort) {

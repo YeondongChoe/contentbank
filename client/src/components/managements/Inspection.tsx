@@ -22,9 +22,14 @@ import {
   ValueNone,
   openToastifyAlert,
 } from '..';
-import { classificationInstance, quizService } from '../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../api/axios';
 import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuestionTableType } from '../../types';
+import { selectedListType } from '../../types/WorkbookType';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
@@ -46,6 +51,7 @@ export function Inspection() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [onSearch, setOnSearch] = useState<boolean>(false);
+  const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
 
   const [key, setKey] = useState(0);
 
@@ -204,6 +210,53 @@ export function Inspection() {
     }
   }, [onSearch]);
 
+  //그룹 화면설정 정보 불러오기 api
+  const getMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=inspectionManagementSetting`,
+    );
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: menuData,
+    isLoading: isMenuLoading,
+    refetch: menuRefetch,
+  } = useQuery({
+    queryKey: ['get-menu'],
+    queryFn: getMenu,
+    meta: {
+      errorMessage: 'get-menu 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    menuRefetch();
+  }, []);
+
+  useEffect(() => {
+    if (menuData) {
+      const filterList = menuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const typeListArray = filterList[0]?.inputList?.split(',') || [];
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: index,
+        type: typeListArray[index] || '',
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
+      }));
+      setSelectedList(newArray);
+    }
+  }, [menuData]);
+  console.log(selectedList);
+
   return (
     <Container>
       <TitleWrapper>
@@ -220,8 +273,24 @@ export function Inspection() {
         <>
           {/* 리스트 셀렉트 */}
           <SelectWrapper>
+            {selectedList.map((list) => {
+              if (list.type === 'SELECT' && list.search) {
+                return (
+                  <Select
+                    onDefaultSelect={() => handleDefaultSelect(list.name)}
+                    width={'130px'}
+                    defaultValue={list.name}
+                    key={list.idx}
+                    options={categoryList[0]}
+                    onSelect={(event) => selectCategoryOption(event)}
+                    setSelectedValue={setSelectedCurriculum}
+                    heightScroll={'300px'}
+                  />
+                );
+              }
+            })}
             {/* 교육과정 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('교육과정')}
               width={'130px'}
               defaultValue={'교육과정'}
@@ -230,9 +299,9 @@ export function Inspection() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedCurriculum}
               heightScroll={'300px'}
-            />
+            /> */}
             {/* 학교급 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('학교급')}
               width={'130px'}
               defaultValue={'학교급'}
@@ -241,9 +310,9 @@ export function Inspection() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedLevel}
               heightScroll={'300px'}
-            />
+            /> */}
             {/* 학년 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('학년')}
               width={'130px'}
               defaultValue={'학년'}
@@ -252,9 +321,9 @@ export function Inspection() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedGrade}
               heightScroll={'300px'}
-            />
+            /> */}
             {/* 상태 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('상태')}
               width={'130px'}
               defaultValue={'상태'}
@@ -263,7 +332,7 @@ export function Inspection() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedGrade}
               heightScroll={'300px'}
-            />
+            /> */}
           </SelectWrapper>
 
           {quizData && questionList.length > 0 ? (
@@ -271,6 +340,7 @@ export function Inspection() {
               <InspectionList
                 key={key}
                 list={questionList}
+                selectedList={selectedList}
                 deleteBtn
                 quizDataRefetch={quizDataRefetch}
                 ondeleteClick={() => {

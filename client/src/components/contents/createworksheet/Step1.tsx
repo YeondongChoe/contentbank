@@ -674,11 +674,15 @@ export function Step1() {
       },
       {},
     );
+    console.log('groupsArray', groupsArray);
+    const itemTreeKeyList = {
+      //commandCode: 1,
+      //quizCodeList: [],
+      itemTreeKeyList: [keyValuePairs],
+    };
+    console.log('itemTreeKeyList', itemTreeKeyList);
 
-    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    //console.log('itemTreeKeyList', itemTreeKeyList);
-
-    const res = await classificationInstance.post('/v2/item', itemTreeKeyList);
+    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
     // console.log('item', res);
     return res;
   };

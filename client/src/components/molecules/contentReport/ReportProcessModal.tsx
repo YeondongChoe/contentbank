@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { styled } from 'styled-components';
 
 import { Alert } from '..';
@@ -14,6 +15,17 @@ import { COLOR } from '../../constants';
 type ReportProcessType = {
   registorReport?: boolean;
   reportIdx?: number;
+};
+
+type UploadReportResponse = {
+  message: string;
+  results: {
+    mimeType: string;
+    originalName: string;
+    savedPath: string;
+    success: boolean;
+    url: string;
+  }[];
 };
 
 export function ReportProcessModal({
@@ -88,23 +100,122 @@ export function ReportProcessModal({
     const value = event.currentTarget.value;
     setContent(value);
   };
-  const submitReportProcess = () => {
-    const data = {
-      reportType: registorReport ? 'REPORT' : 'ANSWER',
-      idx: reportIdx,
-      type: content,
-      content: commentValue,
-    };
-    if (content === undefined) {
+  const submitReportProcess = async () => {
+    if (!content) {
       openToastifyAlert({
         type: 'error',
         text: '신고유형을 선택해주세요',
       });
-    } else {
-      postReportQuizData(data);
+      return;
     }
-    //해당 신고내역에 처리된 상태 보내기
+
+    try {
+      // FormData 생성 및 이미지 추가
+      const formData = new FormData();
+
+      images
+        .filter((imgSrc) => imgSrc) // `null`이 아닌 이미지만 처리
+        .forEach((imgSrc, index) => {
+          // Base64 문자열을 Blob으로 변환
+          const base64Data = imgSrc!.split(',')[1]; // Base64 데이터 추출
+          const byteString = atob(base64Data); // Base64 디코딩
+          const byteNumbers = new Uint8Array(byteString.length);
+          for (let i = 0; i < byteString.length; i++) {
+            byteNumbers[i] = byteString.charCodeAt(i);
+          }
+
+          const blob = new Blob([byteNumbers], { type: 'image/png' });
+
+          // FormData에 Blob 추가 (파일명에 인덱스 추가)
+          formData.append('file', blob, `image_${index}.png`);
+        });
+
+      // 모든 이미지를 한 번에 업로드
+      const uploadResponse = await postReportImgData(formData);
+      console.log('uploadResponse', uploadResponse);
+      // 업로드 결과에서 URL 또는 필요한 정보를 추출
+      const articleList = uploadResponse.data.results.map(
+        (result: {
+          mimeType: string;
+          originalName: string;
+          savedPath: string;
+          success: boolean;
+          url: string;
+        }) => ({
+          originalName: result.savedPath,
+          type: 'IMAGE',
+          storedPath: result.url,
+        }),
+      );
+      console.log('articleList', articleList);
+
+      // 신고 데이터를 서버로 전송
+      const data = {
+        reportType: registorReport ? 'REPORT' : 'ANSWER',
+        idx: reportIdx,
+        type: content,
+        content: commentValue,
+        articleList: articleList,
+      };
+
+      await postReportQuizData(data);
+    } catch (error) {
+      openToastifyAlert({
+        type: 'error',
+        text: '이미지 업로드 중 문제가 발생했습니다.',
+      });
+      console.error(error);
+    }
   };
+
+  //j-dev01.dreamonesys.co.kr/file/upload_report
+  // 문항 신고
+  const postReportImg = async (
+    data: FormData,
+  ): Promise<AxiosResponse<UploadReportResponse>> => {
+    return await axios.post(
+      'https://j-dev01.dreamonesys.co.kr/file/upload_report',
+      data,
+      {
+        withCredentials: true, // 자격 증명 포함
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+  };
+
+  const { mutateAsync: postReportImgData } = useMutation<
+    AxiosResponse<UploadReportResponse>, // 응답 타입
+    AxiosError<{ message: string; code: string }>, // 에러 타입
+    FormData // 요청 변수 타입
+  >({
+    mutationFn: postReportImg,
+    onError: (error) => {
+      // AxiosError의 response 안전하게 접근
+      const response = error.response;
+      if (response) {
+        openToastifyAlert({
+          type: 'error',
+          text: response.data.message,
+        });
+        if (response.data.code === 'GE-002') {
+          postRefreshToken();
+        }
+      } else {
+        openToastifyAlert({
+          type: 'error',
+          text: '알 수 없는 오류가 발생했습니다.',
+        });
+      }
+    },
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+    },
+  });
 
   const [images, setImages] = useState<Array<string | null>>([null]); // 초기 빈 ImgBox 1개
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -116,7 +227,6 @@ export function ReportProcessModal({
       fileInputRef.current.dataset.index = String(index);
     }
   };
-  console.log(images);
 
   // 이미지 파일 처리
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

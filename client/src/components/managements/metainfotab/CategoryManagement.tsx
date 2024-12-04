@@ -197,7 +197,7 @@ export function CategroyManagement() {
         text: '카테고리 명을 입력해주세요',
       });
       return; // name이 비어 있으면 함수 종료
-    } else if (CategoryNameList.includes(name)) {
+    } else if (isAdd && CategoryNameList.includes(name)) {
       openToastifyAlert({
         type: 'error',
         text: '이미 있는 카테고리 명 입니다',
@@ -219,7 +219,7 @@ export function CategroyManagement() {
         type === '태그 선택'
           ? 'SELECT'
           : type === '텍스트 입력'
-            ? 'INPUT '
+            ? 'INPUT'
             : type === '날짜 선택'
               ? 'DATEPICKER'
               : type === '숫자 입력'
@@ -246,7 +246,7 @@ export function CategroyManagement() {
         type === '태그 선택'
           ? 'SELECT'
           : type === '텍스트 입력'
-            ? 'INPUT '
+            ? 'INPUT'
             : type === '날짜 선택'
               ? 'DATEPICKER'
               : type === '숫자 입력'

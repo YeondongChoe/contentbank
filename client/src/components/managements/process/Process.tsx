@@ -11,14 +11,7 @@ import { userInstance } from '../../../api/axios';
 import { Modal, Alert } from '../../../components';
 import { useModal } from '../../../hooks';
 import { postRefreshToken } from '../../../utils/tokenHandler';
-import {
-  AlertBar,
-  Button,
-  Loader,
-  Input,
-  ValueNone,
-  openToastifyAlert,
-} from '../../atom';
+import { AlertBar, Button, Loader, Input, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
 
 import { ProcessAddModal, ProcessEditModal } from './modal';
@@ -112,6 +105,7 @@ export function Process() {
       workers: [],
     },
   ];
+  const { openModal } = useModal();
   // const backgroundRef = useRef<HTMLDivElement>(null);
   const [processList, setProcessList] =
     useState<processStepListProps[]>(DummyData);
@@ -126,9 +120,12 @@ export function Process() {
     processNameListProps[]
   >([]);
   const [processNameIdx, setProcessNameIdx] = useState<number | null>(null);
+  //서버로 받은 최초의 데이터값
+  const [processDetailInfoOrigin, setProcessDetailInfoOrigin] =
+    useState<processDetailInfoProps>();
   const [processDetailInfo, setProcessDetailInfo] =
     useState<processDetailInfoProps>();
-  const { openModal } = useModal();
+  const [stepSortList, setStepSortList] = useState<number[]>([]);
 
   const openCreateGroupModal = () => {
     openModal({
@@ -200,11 +197,6 @@ export function Process() {
     }
   };
 
-  const [stepSort, setStepSort] = useState<number | null>(null);
-  const [stepSortList, setStepSortList] = useState<number[]>([]);
-  console.log('stepSort', stepSort);
-  console.log('stepSortList', stepSortList);
-
   /*  모달 열기 */
   const openAddModal = (sort: number) => {
     openModal({
@@ -218,25 +210,10 @@ export function Process() {
           setProcessListData={setProcessList}
           processDetailInfo={processDetailInfo}
           setProcessDetailInfo={setProcessDetailInfo}
-          setStepSort={setStepSort}
         />
       ),
     });
   };
-
-  //사용자 추가됐을때 추가된 stepSortList 관리
-  useEffect(() => {
-    if (stepSort) {
-      setStepSortList((prevList) => {
-        // 이미 존재하면 기존 리스트 반환
-        if (prevList.includes(stepSort)) {
-          return prevList;
-        }
-        // 존재하지 않으면 새 값을 추가
-        return [...prevList, stepSort];
-      });
-    }
-  }, [stepSort]);
 
   //프로세스 리스트 불러오기 api
   const getProcessNameList = async () => {
@@ -283,13 +260,15 @@ export function Process() {
   useEffect(() => {
     if (processDetailInfoData) {
       setProcessDetailInfo(processDetailInfoData?.data.data.processDetail);
+      setProcessDetailInfoOrigin(
+        processDetailInfoData?.data.data.processDetail,
+      );
     }
   }, [processDetailInfoData]);
 
   useEffect(() => {
     processDetailInfoRefetch();
     setStepSortList([]);
-    setStepSort(null);
   }, [processNameIdx]);
 
   const postNewProcess = async () => {
@@ -421,6 +400,49 @@ export function Process() {
         setIsSaveAlert(true);
       }
     } else {
+      //기존의 값과 비교하여서 변화된 stepSort를 저장
+      const changedStepSorts = new Set<number>(); // 중복 방지를 위해 Set 사용
+
+      processDetailInfo?.steps.forEach((currentStep) => {
+        const originalStep = processDetailInfoOrigin?.steps.find(
+          (originStep) => originStep.stepSort === currentStep.stepSort,
+        );
+
+        if (originalStep) {
+          // 기존 값이 존재하면 workers를 비교
+          const currentWorkers = JSON.stringify(currentStep.workers);
+          const originalWorkers = JSON.stringify(originalStep.workers);
+
+          if (currentWorkers !== originalWorkers) {
+            // workers 값이 다르면 stepSort 저장
+            changedStepSorts.add(currentStep.stepSort);
+          }
+        } else {
+          // 추가된 항목이라면 stepSort 저장
+          changedStepSorts.add(currentStep.stepSort);
+        }
+      });
+
+      // 삭제된 항목 확인
+      processDetailInfoOrigin?.steps.forEach((originalStep) => {
+        const currentStep = processDetailInfo?.steps.find(
+          (step) => step.stepSort === originalStep.stepSort,
+        );
+
+        if (!currentStep) {
+          // 현재 값에 없는 항목이라면 삭제된 것으로 간주
+          changedStepSorts.add(originalStep.stepSort);
+        }
+      });
+
+      // `changedStepSorts`를 배열로 변환하여 상태에 추가
+      setStepSortList((prevList) => [
+        ...prevList,
+        ...Array.from(changedStepSorts).filter(
+          (sort) => !prevList.includes(sort),
+        ),
+      ]);
+
       const stepData = processDetailInfo?.steps.map((step, index) => ({
         name: step.stepName,
         sort: index + 1, // sort는 1부터 시작
@@ -480,8 +502,7 @@ export function Process() {
       //초기화
       setProcessNameIdx(null);
       setNameValue('');
-      //setStepSortList([]);
-      //setSelectedIdxValue('');
+      setStepSortList([]);
     },
   });
 
@@ -571,7 +592,6 @@ export function Process() {
                 setProcessNameIdx(null);
                 setNameValue('');
                 setStepSortList([]);
-                setStepSort(null);
               }}
               fontSize="13px"
               $filled
@@ -597,83 +617,88 @@ export function Process() {
           />
           {processNameIdx !== null ? (
             <ProcessCardList>
-              {processDetailInfo?.steps.map((info, i) => (
-                <ProcessCardWrapper key={`${info?.idx} - ${info?.stepName}`}>
-                  <CardTitleWrapper>
-                    <CardTitle>
-                      {info.stepName === 'BUILD'
-                        ? '제작'
-                        : info.stepName === 'EDITING'
-                          ? '편집'
-                          : info.stepName === 'REVIEW'
-                            ? '검수'
-                            : ''}
-                    </CardTitle>
-                    <ProcessType>
-                      {info.stepName === 'BUILD'
-                        ? '등록/수정/조회'
-                        : info.stepName === 'EDITING'
-                          ? '수정/조회'
-                          : info.stepName === 'REVIEW'
-                            ? '조회'
-                            : ''}
-                    </ProcessType>
-                  </CardTitleWrapper>
-                  {info.workers.map((work, i) => (
-                    <>
-                      <ProcessCard key={i}>
-                        <CradInfo>
-                          {/* <span className="name">
+              {processDetailInfo?.steps
+                ?.slice()
+                .sort((a, b) => a.stepSort - b.stepSort)
+                .map((info, i) => (
+                  <ProcessCardWrapper key={`${info?.idx} - ${info?.stepName}`}>
+                    <CardTitleWrapper>
+                      <CardTitle>
+                        {info.stepName === 'BUILD'
+                          ? '제작'
+                          : info.stepName === 'EDITING'
+                            ? '편집'
+                            : info.stepName === 'REVIEW'
+                              ? '검수'
+                              : ''}
+                      </CardTitle>
+                      <ProcessType>
+                        {info.stepName === 'BUILD'
+                          ? '등록/수정/조회'
+                          : info.stepName === 'EDITING'
+                            ? '수정/조회'
+                            : info.stepName === 'REVIEW'
+                              ? '조회'
+                              : ''}
+                      </ProcessType>
+                    </CardTitleWrapper>
+                    {info.workers.map((work, i) => (
+                      <>
+                        <ProcessCard key={i}>
+                          <CradInfo>
+                            {/* <span className="name">
                             {work.account?.name}({work.account?.id})
                           </span>
                           <span className="authority">
                             {work.authority?.name}
                           </span> */}
-                          {work.account?.name ? (
-                            <span className="name">
-                              {work.account?.name}({work.account?.id})
-                            </span>
-                          ) : (
-                            <span className="name">{work.authority?.name}</span>
-                          )}
-                          {work.account?.name && (
-                            <span className="authority">
-                              {work.account?.authorityName}
-                            </span>
-                          )}
-                        </CradInfo>
-                        <SettingButton
-                          type="button"
-                          onClick={(e) => openSettingList(e)}
-                          onMouseLeave={(e) => closeSettingList(e)}
-                        >
-                          <SlOptionsVertical
-                            style={{
-                              fontSize: '14px',
-                              cursor: 'pointer',
-                            }}
-                          />
-                          <SettingList>
-                            <li>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  deleteCard(
-                                    info.stepSort,
-                                    work.account?.id !== ''
-                                      ? work.account?.id
-                                      : work.authority?.name,
-                                    work.account?.id !== '' ? true : false,
-                                  );
-                                }}
-                              >
-                                삭제
-                              </button>
-                            </li>
-                          </SettingList>
-                        </SettingButton>
-                      </ProcessCard>
-                      {/* {(info.workers.length === 0 ||
+                            {work.account?.name ? (
+                              <span className="name">
+                                {work.account?.name}({work.account?.id})
+                              </span>
+                            ) : (
+                              <span className="name">
+                                {work.authority?.name}
+                              </span>
+                            )}
+                            {work.account?.name && (
+                              <span className="authority">
+                                {work.account?.authorityName}
+                              </span>
+                            )}
+                          </CradInfo>
+                          <SettingButton
+                            type="button"
+                            onClick={(e) => openSettingList(e)}
+                            onMouseLeave={(e) => closeSettingList(e)}
+                          >
+                            <SlOptionsVertical
+                              style={{
+                                fontSize: '14px',
+                                cursor: 'pointer',
+                              }}
+                            />
+                            <SettingList>
+                              <li>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    deleteCard(
+                                      info.stepSort,
+                                      work.account?.id !== ''
+                                        ? work.account?.id
+                                        : work.authority?.name,
+                                      work.account?.id !== '' ? true : false,
+                                    );
+                                  }}
+                                >
+                                  삭제
+                                </button>
+                              </li>
+                            </SettingList>
+                          </SettingButton>
+                        </ProcessCard>
+                        {/* {(info.workers.length === 0 ||
                         i === info.workers.length - 1) && (
                         <IncreaseBox
                           onClick={() => openAddModal(work.workerSort)}
@@ -681,103 +706,107 @@ export function Process() {
                           +
                         </IncreaseBox>
                       )} */}
-                    </>
-                  ))}
-                  <IncreaseBox onClick={() => openAddModal(info.stepSort)}>
-                    +
-                  </IncreaseBox>
-                </ProcessCardWrapper>
-              ))}
+                      </>
+                    ))}
+                    <IncreaseBox onClick={() => openAddModal(info.stepSort)}>
+                      +
+                    </IncreaseBox>
+                  </ProcessCardWrapper>
+                ))}
             </ProcessCardList>
           ) : (
             <ProcessCardList>
-              {processList?.map((process, i) => (
-                <ProcessCardWrapper key={i}>
-                  <>
-                    <CardTitleWrapper>
-                      <CardTitle>
-                        {process.stepName === 'BUILD'
-                          ? '제작'
-                          : process.stepName === 'EDITING'
-                            ? '편집'
-                            : process.stepName === 'REVIEW'
-                              ? '검수'
-                              : ''}
-                      </CardTitle>
-                      <ProcessType>
-                        {process.stepName === 'BUILD'
-                          ? '등록/수정/조회'
-                          : process.stepName === 'EDITING'
-                            ? '수정/조회'
-                            : process.stepName === 'REVIEW'
-                              ? '조회'
-                              : ''}
-                      </ProcessType>
-                    </CardTitleWrapper>
-                    {process?.workers.length === 0 ? null : (
-                      <>
-                        {process.workers.map((worker) => (
-                          <>
-                            <ProcessCard>
-                              <CradInfo>
-                                {worker.account?.name ? (
-                                  <span className="name">
-                                    {worker.account?.name}({worker.account?.id})
-                                  </span>
-                                ) : (
-                                  <span className="name">
-                                    {worker.authority?.name}
-                                  </span>
-                                )}
-                                {worker.account?.name && (
-                                  <span className="authority">
-                                    {worker.account?.authorityName}
-                                  </span>
-                                )}
-                              </CradInfo>
-                              <SettingButton
-                                type="button"
-                                onClick={(e) => openSettingList(e)}
-                                onMouseLeave={(e) => closeSettingList(e)}
-                              >
-                                <SlOptionsVertical
-                                  style={{
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                  }}
-                                />
-                                <SettingList>
-                                  <li>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        deleteCard(
-                                          process.stepSort,
-                                          worker.account?.id !== ''
-                                            ? worker.account?.id
-                                            : worker.authority?.name,
-                                          worker.account?.id !== ''
-                                            ? true
-                                            : false,
-                                        );
-                                      }}
-                                    >
-                                      삭제
-                                    </button>
-                                  </li>
-                                </SettingList>
-                              </SettingButton>
-                            </ProcessCard>
-                          </>
-                        ))}
-                      </>
-                    )}
-                  </>
-                  <IncreaseBox onClick={() => openAddModal(process.stepSort)}>
-                    +
-                  </IncreaseBox>
-                </ProcessCardWrapper>
-              ))}
+              {processList
+                ?.slice()
+                .sort((a, b) => a.stepSort - b.stepSort)
+                ?.map((process, i) => (
+                  <ProcessCardWrapper key={i}>
+                    <>
+                      <CardTitleWrapper>
+                        <CardTitle>
+                          {process.stepName === 'BUILD'
+                            ? '제작'
+                            : process.stepName === 'EDITING'
+                              ? '편집'
+                              : process.stepName === 'REVIEW'
+                                ? '검수'
+                                : ''}
+                        </CardTitle>
+                        <ProcessType>
+                          {process.stepName === 'BUILD'
+                            ? '등록/수정/조회'
+                            : process.stepName === 'EDITING'
+                              ? '수정/조회'
+                              : process.stepName === 'REVIEW'
+                                ? '조회'
+                                : ''}
+                        </ProcessType>
+                      </CardTitleWrapper>
+                      {process?.workers.length === 0 ? null : (
+                        <>
+                          {process.workers.map((worker) => (
+                            <>
+                              <ProcessCard>
+                                <CradInfo>
+                                  {worker.account?.name ? (
+                                    <span className="name">
+                                      {worker.account?.name}(
+                                      {worker.account?.id})
+                                    </span>
+                                  ) : (
+                                    <span className="name">
+                                      {worker.authority?.name}
+                                    </span>
+                                  )}
+                                  {worker.account?.name && (
+                                    <span className="authority">
+                                      {worker.account?.authorityName}
+                                    </span>
+                                  )}
+                                </CradInfo>
+                                <SettingButton
+                                  type="button"
+                                  onClick={(e) => openSettingList(e)}
+                                  onMouseLeave={(e) => closeSettingList(e)}
+                                >
+                                  <SlOptionsVertical
+                                    style={{
+                                      fontSize: '14px',
+                                      cursor: 'pointer',
+                                    }}
+                                  />
+                                  <SettingList>
+                                    <li>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          deleteCard(
+                                            process.stepSort,
+                                            worker.account?.id !== ''
+                                              ? worker.account?.id
+                                              : worker.authority?.name,
+                                            worker.account?.id !== ''
+                                              ? true
+                                              : false,
+                                          );
+                                        }}
+                                      >
+                                        삭제
+                                      </button>
+                                    </li>
+                                  </SettingList>
+                                </SettingButton>
+                              </ProcessCard>
+                            </>
+                          ))}
+                        </>
+                      )}
+                    </>
+                    <IncreaseBox onClick={() => openAddModal(process.stepSort)}>
+                      +
+                    </IncreaseBox>
+                  </ProcessCardWrapper>
+                ))}
             </ProcessCardList>
           )}
           <ButtonWrapper>

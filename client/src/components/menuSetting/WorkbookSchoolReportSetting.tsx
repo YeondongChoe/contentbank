@@ -126,6 +126,14 @@ export function WorkbookSchoolReportSetting() {
     }
   };
 
+  //목록노출이 비활성화일때 검색사용은 불가
+  const handleToggleSearch = () => {
+    openToastifyAlert({
+      type: 'error',
+      text: '목록노출이 비활성화일때는 사용할 수 없습니다',
+    });
+  };
+
   const toggleSearch = (idx: number, isSearch: boolean) => {
     if (selectedValue === '더미') {
       setDummyData((prev) => {
@@ -183,17 +191,28 @@ export function WorkbookSchoolReportSetting() {
         const filterList = prev.filter((el) => el.name === selectedValue);
         if (filterList.length > 0) {
           const viewList = filterList[0].viewList.split(',');
+          const searchList = filterList[0].searchList.split(',');
 
           // idx 위치의 값을 isView 값을 문자열로 업데이트
           viewList[idx] = isView.toString();
 
-          // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+          //노출목록이 false일때 검색사용도 false
+          if (!isView) {
+            searchList[idx] = 'false';
+          }
+
+          // 업데이트된 viewList와 searchList 배열을 문자열로 변환하여 할당
           const updatedViewList = viewList.join(',');
+          const updatedSearchList = searchList.join(',');
 
           // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
           return prev.map((item) =>
             item.name === selectedValue
-              ? { ...item, viewList: updatedViewList }
+              ? {
+                  ...item,
+                  viewList: updatedViewList,
+                  searchList: updatedSearchList,
+                }
               : item,
           );
         }
@@ -206,17 +225,28 @@ export function WorkbookSchoolReportSetting() {
         const filterList = prev.filter((el) => el.name === selectedValue);
         if (filterList.length > 0) {
           const viewList = filterList[0].viewList.split(',');
+          const searchList = filterList[0].searchList.split(',');
 
           // idx 위치의 값을 isView 값을 문자열로 업데이트
           viewList[idx] = isView.toString();
 
-          // 업데이트된 viewList 배열을 문자열로 변환하여 할당
+          //노출목록이 false일때 검색사용도 false
+          if (!isView) {
+            searchList[idx] = 'false';
+          }
+
+          // 업데이트된 viewList와 searchList 배열을 문자열로 변환하여 할당
           const updatedViewList = viewList.join(',');
+          const updatedSearchList = searchList.join(',');
 
           // prev 배열의 해당 항목을 업데이트하여 새로운 배열로 반환
           return prev.map((item) =>
             item.name === selectedValue
-              ? { ...item, viewList: updatedViewList }
+              ? {
+                  ...item,
+                  viewList: updatedViewList,
+                  searchList: updatedSearchList,
+                }
               : item,
           );
         }
@@ -225,7 +255,7 @@ export function WorkbookSchoolReportSetting() {
       });
     }
   };
-  console.log(menuIdx);
+
   //그룹 화면설정 정보 불러오기 api
   const getMenuSetting = async () => {
     const res = await resourceServiceInstance.get(`/v1/menu/${menuIdx}`);
@@ -449,7 +479,9 @@ export function WorkbookSchoolReportSetting() {
                                   stroke: `${COLOR.MUTE}`,
                                 }}
                                 onClick={() => {
-                                  toggleSearch(itemIndex, !dragItem.search);
+                                  dragItem.view === true
+                                    ? toggleSearch(itemIndex, !dragItem.search)
+                                    : handleToggleSearch();
                                 }}
                               ></TbFilterOff>
                             </div>

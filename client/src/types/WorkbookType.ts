@@ -148,4 +148,5 @@ export type selectedListType = {
   idx: number;
   view: boolean;
   search: boolean;
+  type?: string;
 };

@@ -76,7 +76,7 @@ export function Report() {
 
   useEffect(() => {
     if (reportData) {
-      setReportList(reportData.data.reportList);
+      setReportList(reportData?.data.reportList);
     }
   }, [reportData]);
 
@@ -464,8 +464,8 @@ export function Report() {
 
             <QuizReportList
               list={reportList}
-              totalCount={reportData.data.pagination.totalCount}
-              itemsCountPerPage={reportData.data.pagination.pageUnit}
+              totalCount={reportData?.data?.pagination?.totalCount}
+              itemsCountPerPage={reportData?.data?.pagination?.pageUnit}
             ></QuizReportList>
           </>
         )}
