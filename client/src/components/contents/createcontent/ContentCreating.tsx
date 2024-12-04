@@ -441,8 +441,9 @@ export function ContentCreating({
         ],
       };
       console.log('최종 적으로 등록될 문항 data값', data);
-
-      return await quizService.post(`/v2/quiz`, data);
+      const res = await quizService.post(`/v2/quiz`, data);
+      console.log('res문항 data값', res.data.data.quizList);
+      return res.data.data.quizList;
     }
   };
 
@@ -460,22 +461,24 @@ export function ContentCreating({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response) => {
-      openToastifyAlert({
-        type: 'success',
-        text: `문항이 추가 되었습니다 ${response && response.data.data.quiz.idx}`,
-      });
-      console.log('문항이 추가 되었습니다;', response && response);
-    },
+    onSuccess: (response) => {},
   });
 
   useEffect(() => {
     console.log('문항 data postQuizData 값', postQuizData);
     if (postQuizData) {
-      setQuestionList([...quizList, postQuizData.data.data.quiz]);
-      setQuizList([...quizList, postQuizData.data.data.quiz]);
+      setQuestionList([...quizList, ...postQuizData]);
+      setQuizList([...quizList, ...postQuizData]);
       // 등록 이후 축출 값 초기화
-      // if (isSuccess) setQuizItemList([]);
+      if (isSuccess) {
+        setQuizItemList([]);
+
+        openToastifyAlert({
+          type: 'success',
+          text: `문항이 추가 되었습니다 ${postQuizData[0].idx}`,
+        });
+        console.log('문항이 추가 되었습니다;', postQuizData);
+      }
     }
   }, [postQuizData]);
 
@@ -717,15 +720,13 @@ export function ContentCreating({
 
         <ContentListWrapper>
           <ContentList>
-            {isSuccess && (
-              <QuizList
-                questionList={questionList}
-                $height={`calc(100vh - 200px)`}
-                showViewAllButton
-                setCheckedList={setCheckedList}
-                showCheckBox
-              />
-            )}
+            <QuizList
+              questionList={questionList}
+              $height={`calc(100vh - 200px)`}
+              showViewAllButton
+              setCheckedList={setCheckedList}
+              showCheckBox
+            />
           </ContentList>
         </ContentListWrapper>
 
