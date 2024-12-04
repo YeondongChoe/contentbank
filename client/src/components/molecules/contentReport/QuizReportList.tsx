@@ -104,7 +104,7 @@ export function QuizReportList({
       <ScrollWrapper>
         <PerfectScrollbar>
           <>
-            {list.length > 0 ? (
+            {list && list.length > 0 ? (
               <List margin={`10px 0`} width="99%" noWrap={true}>
                 {list.map((item: ReportType) => (
                   <ListItem
@@ -167,14 +167,19 @@ export function QuizReportList({
                           <div className="text_wrapper">
                             <strong className="title">첨부파일</strong>
                             <span className="text">
-                              <img
-                                className="icon"
-                                src={Image}
-                                width={150}
-                                onClick={() => {
-                                  openImagePreviewModal(Image);
-                                }}
-                              ></img>
+                              <ImgWrapper>
+                                {item.articleList.map((img, i) => (
+                                  <img
+                                    key={i}
+                                    className="icon"
+                                    src={img.storedPath}
+                                    width={150}
+                                    onClick={() => {
+                                      openImagePreviewModal(img.storedPath);
+                                    }}
+                                  ></img>
+                                ))}
+                              </ImgWrapper>
                             </span>
                           </div>
                           <div className="process_wrapper">
@@ -379,6 +384,11 @@ const AccordionItemLayout = styled.div`
       gap: 10px;
     }
   }
+`;
+const ImgWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  padding-left: 10px;
 `;
 const ValueNoneWrapper = styled.div`
   padding: 100px 0;

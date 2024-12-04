@@ -12,6 +12,12 @@ export interface ReportType {
   answerBy: string;
   answerAt: string;
   isUse: boolean;
+  articleList: {
+    idx: number;
+    originalName: string;
+    storedPath: string;
+    type: string;
+  }[];
 }
 
 export interface ReportData {
