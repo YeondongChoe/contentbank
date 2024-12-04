@@ -675,6 +675,8 @@ export function Step1() {
       {},
     );
     console.log('groupsArray', groupsArray);
+    console.log('keyValuePairs', keyValuePairs);
+
     const itemTreeKeyList = {
       //commandCode: 1,
       //quizCodeList: [],
@@ -682,7 +684,9 @@ export function Step1() {
     };
     console.log('itemTreeKeyList', itemTreeKeyList);
 
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    const res = await classificationInstance.get(
+      `/v2/item?교육과정=${keyValuePairs.교육과정}&학교급=${keyValuePairs.학교급}&학기=${keyValuePairs.학기}&학년=${keyValuePairs.학년}`,
+    );
     // console.log('item', res);
     return res;
   };

@@ -100,6 +100,7 @@ export function ReportProcessModal({
     const value = event.currentTarget.value;
     setContent(value);
   };
+
   const submitReportProcess = async () => {
     if (!content) {
       openToastifyAlert({
@@ -110,53 +111,77 @@ export function ReportProcessModal({
     }
 
     try {
-      // FormData 생성 및 이미지 추가
-      const formData = new FormData();
+      let articleList: {
+        originalName: string;
+        type: string;
+        storedPath: string;
+      }[] = []; // 이미지 업로드 결과를 저장할 변수
 
-      images
-        .filter((imgSrc) => imgSrc) // `null`이 아닌 이미지만 처리
-        .forEach((imgSrc, index) => {
-          // Base64 문자열을 Blob으로 변환
-          const base64Data = imgSrc!.split(',')[1]; // Base64 데이터 추출
-          const byteString = atob(base64Data); // Base64 디코딩
-          const byteNumbers = new Uint8Array(byteString.length);
-          for (let i = 0; i < byteString.length; i++) {
-            byteNumbers[i] = byteString.charCodeAt(i);
-          }
+      // `images`가 유효한지 확인 후 처리
+      if (images.some((imgSrc) => imgSrc)) {
+        // FormData 생성 및 이미지 추가
+        const formData = new FormData();
 
-          const blob = new Blob([byteNumbers], { type: 'image/png' });
+        images
+          .filter((imgSrc) => imgSrc) // `null`이 아닌 이미지만 처리
+          .forEach((imgSrc, index) => {
+            // Base64 문자열을 Blob으로 변환
+            const base64Data = imgSrc!.split(',')[1]; // Base64 데이터 추출
+            const byteString = atob(base64Data); // Base64 디코딩
+            const byteNumbers = new Uint8Array(byteString.length);
+            for (let i = 0; i < byteString.length; i++) {
+              byteNumbers[i] = byteString.charCodeAt(i);
+            }
 
-          // FormData에 Blob 추가 (파일명에 인덱스 추가)
-          formData.append('file', blob, `image_${index}.png`);
-        });
+            const blob = new Blob([byteNumbers], { type: 'image/png' });
 
-      // 모든 이미지를 한 번에 업로드
-      const uploadResponse = await postReportImgData(formData);
-      console.log('uploadResponse', uploadResponse);
-      // 업로드 결과에서 URL 또는 필요한 정보를 추출
-      const articleList = uploadResponse.data.results.map(
-        (result: {
-          mimeType: string;
-          originalName: string;
-          savedPath: string;
-          success: boolean;
-          url: string;
-        }) => ({
-          originalName: result.savedPath,
-          type: 'IMAGE',
-          storedPath: result.url,
-        }),
-      );
-      console.log('articleList', articleList);
+            // FormData에 Blob 추가 (파일명에 인덱스 추가)
+            formData.append('file', blob, `image_${index}.png`);
+          });
+
+        // 모든 이미지를 한 번에 업로드
+        const uploadResponse = await postReportImgData(formData);
+        console.log('uploadResponse', uploadResponse);
+
+        // 업로드 결과에서 URL 또는 필요한 정보를 추출
+        articleList = uploadResponse.data.results.map(
+          (result: {
+            mimeType: string;
+            originalName: string;
+            savedPath: string;
+            success: boolean;
+            url: string;
+          }) => ({
+            originalName: result.savedPath,
+            type: result.mimeType,
+            storedPath: result.url,
+          }),
+        );
+        console.log('articleList', articleList);
+      }
 
       // 신고 데이터를 서버로 전송
-      const data = {
+      const data: {
+        reportType: string;
+        idx: number | undefined;
+        type: string;
+        content: string;
+        articleList?: {
+          originalName: string;
+          type: string;
+          storedPath: string;
+        }[];
+      } = {
         reportType: registorReport ? 'REPORT' : 'ANSWER',
         idx: reportIdx,
         type: content,
         content: commentValue,
-        articleList: articleList,
       };
+
+      // `articleList`가 비어있지 않은 경우에만 추가
+      if (articleList.length > 0) {
+        data.articleList = articleList;
+      }
 
       await postReportQuizData(data);
     } catch (error) {
@@ -219,7 +244,7 @@ export function ReportProcessModal({
 
   const [images, setImages] = useState<Array<string | null>>([null]); // 초기 빈 ImgBox 1개
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+  console.log('images', images);
   // 파일 선택 트리거
   const handleClick = (index: number) => {
     fileInputRef.current?.click();
