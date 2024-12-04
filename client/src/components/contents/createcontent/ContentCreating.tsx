@@ -208,7 +208,7 @@ export function ContentCreating({
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('img_save_type', '1'); // 1을 문자열로 변환
+    formData.append('img_save_type', '3'); // 1을 문자열로 변환
 
     try {
       const response = await axios.post(
