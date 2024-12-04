@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Alert } from '../../../../components/molecules';
-import { ItemCategoryType, QuizListType } from '../../../../types';
+import { IdxNamePair, ItemCategoryType, QuizListType } from '../../../../types';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 
@@ -20,9 +20,9 @@ type CategoryList = {
 interface Props {
   categoryTitles: ItemCategoryType[];
   categoriesE?: ItemCategoryType[];
-  groupsDataF: string;
-  groupsDataG: string;
-  groupsDataH: string;
+  groupsDataF: IdxNamePair[];
+  groupsDataG: IdxNamePair[];
+  groupsDataH: IdxNamePair[];
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
   quizCategory?: any[];
   onItemClickData?: QuizListType;
@@ -69,7 +69,7 @@ export function OptionList({
   const [totalSource, setTotalSource] = useState<
     {
       [x: string]: any;
-      [key: number]: string;
+      [key: number]: any;
     }[]
   >([]);
 
@@ -101,9 +101,15 @@ export function OptionList({
     value: string | number;
   }>({ titleIdx: '', name: '', value: '' });
 
-  const getCategoryListFromString = (data: string) => {
-    const groupsArray = data.split(',').map(Number);
-    return categoryTitles.filter((el) => groupsArray.includes(el.idx));
+  const getCategoryListFromString = (data: IdxNamePair[]) => {
+    return data.map((item) => ({
+      code: item.idx,
+      idx: Number(item.idx),
+      name: item.name,
+      type: item.inputType, // inputType을 type으로 매핑
+      value: item.searchList ? 1 : 0, // searchList가 true면 value를 1로 설정
+      isUse: item.viewList, // viewList를 isUse로 매핑
+    }));
   };
 
   const categoriesF = getCategoryListFromString(groupsDataF);
@@ -462,11 +468,11 @@ export function OptionList({
         sourceOptions.map((index) => (
           <SelectList key={`${index}selectList el`} id={index.toString()}>
             <li>
-              {index === 0 && optionsList1.name == '' && (
+              {/* {index === 0 && optionsList1.name == '' && (
                 <p className="info_hight">
                   <p className="info">출처는 최대 5개까지만 추가 가능</p>
                 </p>
-              )}
+              )} */}
               {index === 0 ? (
                 <Button
                   width={'50px'}

@@ -51,7 +51,7 @@ var undo_redo_level = 10;
 var divideKey = ['tag_group'];
 
 // 이미지 저장 설정 (1: 로컬, 2: ftp, 3: s3)
-var img_save_type = 1;
+var img_save_type = 3;
 
 // 수식 입력 버튼 누를때 출력되는 값 반환
 
@@ -100,7 +100,7 @@ var tag_control = {
   tag_exam: {
     // 문제
     use: true,
-    available_num: 2,
+    available_num: 1,
   },
   tag_exam_sm: {
     // 소문제
@@ -120,7 +120,7 @@ var tag_control = {
   tl_answer: {
     // 정답
     use: true,
-    available_num: 3,
+    available_num: 1,
   },
   tag_commentary: {
     // 해설
@@ -129,7 +129,7 @@ var tag_control = {
   },
   tag_hint: {
     // 힌트
-    use: false,
+    use: true,
     available_num: 3,
   },
   tag_concept: {

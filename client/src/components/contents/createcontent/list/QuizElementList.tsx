@@ -66,20 +66,6 @@ export const QuizElementList = forwardRef(
     // 그룹으로 묶기
     useEffect(() => {}, [groupId]);
     const AddGroup = () => {
-      {
-        /* {dragItem.type === 'BIG' && }
-      {dragItem.type === 'TEXT' && }
-      {dragItem.type === 'QUESTION' && }
-      {dragItem.type === 'SMALL' && }
-      {dragItem.type === 'EXAMPLE' && }
-      {dragItem.type === 'CHOICES' && }
-      {dragItem.type === 'ANSWER' && }
-      {dragItem.type === 'COMMENTARY' && }
-      {dragItem.type === 'HINT' && }
-      {dragItem.type === 'CONCEPT' && }
-      {dragItem.type === 'TITLE' && }
-      {dragItem.type === 'TIP' && } */
-      }
       // 하나이상의 대발문은 그룹 불가능
       // 문제와 정답은 1:1 대응되도록 개수가 안맞으면 불가능
       // 체크값을 조건에 대응되게 그룹화후 div 생성

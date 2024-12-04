@@ -5,7 +5,14 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { CheckBoxI, DnDWrapper, Icon, Tooltip, ValueNone } from '../../..';
+import {
+  Button,
+  CheckBoxI,
+  DnDWrapper,
+  Icon,
+  Tooltip,
+  ValueNone,
+} from '../../..';
 import { myAuthorityAtom } from '../../../../store/myAuthorityAtom';
 import { quizListAtom } from '../../../../store/quizListAtom';
 import { QuizListType, Source } from '../../../../types';
@@ -47,6 +54,7 @@ export function QuizList({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [isPostMessage, setIsPostMessage] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [groupId, setGroupId] = useState<string>('');
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -162,6 +170,120 @@ export function QuizList({
 
     setIsPostMessage(true);
   };
+
+  // 그룹으로 묶기
+  useEffect(() => {}, [groupId]);
+  const AddGroup = () => {
+    // 하나이상의 대발문은 그룹 불가능
+    // 문제와 정답은 1:1 대응되도록 개수가 안맞으면 불가능
+    // 체크값을 조건에 대응되게 그룹화후 div 생성
+    console.log('전체 아이템 리스트 - ', questionList);
+    console.log('체크된 아이템 리스트 - ', checkList);
+
+    const checkSet = new Set(checkList);
+    const items = questionList
+      .filter((el) => checkSet.has(el.code as string))
+      .sort(
+        (a, b) =>
+          checkList.indexOf(a.code as string) -
+          checkList.indexOf(b.code as string),
+      );
+    console.log('체크된 아이템 리스트 솔팅- ', items);
+    // 대발문(BIG) 타입 요소 카운트
+    const bigItems = items.filter(
+      (el) =>
+        el.quizItemList &&
+        el.quizItemList.filter((item) => item.type === 'BIG'),
+    );
+    if (bigItems.length > 1) {
+      alert('대발문 항목은 하나만 선택할 수 있습니다.');
+      setCheckList([]);
+      return;
+    }
+    // 문제(QUESTION) 타입 확인
+    const questionItems = items.filter(
+      (el) =>
+        el.quizItemList &&
+        el.quizItemList.filter((item) => item.type === 'QUESTION'),
+    );
+    //
+    if (questionItems.length === 0) {
+      alert('그룹에는 문제가 하나 이상 포함되어야 합니다.');
+      return;
+    }
+    // 그룹화 DOM 생성
+    const parentDiv = document.createElement('div');
+    parentDiv.id = groupId; // props로 전달받은 groupId를 id로 설정
+    parentDiv.className = 'groupedItemsContainer';
+    // 그룹 체크박스 추가
+    const groupCheckbox = document.createElement('input');
+    groupCheckbox.type = 'checkbox';
+    groupCheckbox.id = `groupCheckbox_${groupId}`;
+    groupCheckbox.className = 'group-checkbox';
+
+    const groupCheckboxLabel = document.createElement('label');
+    groupCheckboxLabel.htmlFor = `groupCheckbox_${groupId}`;
+    groupCheckboxLabel.innerText = '그룹 선택';
+
+    parentDiv.appendChild(groupCheckbox);
+    parentDiv.appendChild(groupCheckboxLabel);
+
+    // 그룹 해제 버튼 추가
+    const ungroupButton = document.createElement('button');
+    ungroupButton.innerText = '그룹 해제';
+    ungroupButton.className = 'ungroup-button';
+    ungroupButton.onclick = (e) => {
+      if (confirm('그룹을 해제하시겠습니까?')) {
+        const button = e.currentTarget as HTMLButtonElement;
+        const parentDiv = button.parentElement as HTMLElement;
+
+        if (parentDiv) {
+          // 원래 위치로 복원
+          const childNodes = Array.from(parentDiv.childNodes);
+          const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
+          console.log('Elements to move:', elementsToMove);
+
+          // 이동 대상 컨테이너
+          const scrollbarContainer = document.querySelector('.list_wrapper');
+          if (scrollbarContainer) {
+            elementsToMove.forEach((element) => {
+              if (element instanceof HTMLElement) {
+                scrollbarContainer.appendChild(element); // 요소를 이동
+              }
+            });
+          }
+        }
+        // 그룹 컨테이너 제거
+        parentDiv.remove();
+        alert('그룹이 해제되었습니다.');
+      }
+    };
+
+    parentDiv.appendChild(ungroupButton);
+
+    // 체크된 아이템 이동
+    items.forEach((item) => {
+      const originalElement = document.getElementById(item.code as string);
+      const target =
+        originalElement &&
+        (originalElement.parentNode?.parentNode?.parentNode
+          ?.parentNode as HTMLElement);
+
+      console.log('target이동될 타겟', target);
+
+      if (originalElement) {
+        parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
+      }
+    });
+
+    const scrollbarContainer = document.querySelector('.list_wrapper');
+    if (scrollbarContainer) {
+      scrollbarContainer.appendChild(parentDiv);
+      alert('그룹화되었습니다.');
+      setCheckList([]);
+    }
+  };
+
   // 클릭 된 아이템의 데이터
   const handleClickItem = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -261,6 +383,7 @@ export function QuizList({
 
   useEffect(() => {
     // setQuestionList()
+    console.log('questionList -------- ', questionList);
   }, [questionList, quizList]);
 
   // 스타틱 파일
@@ -393,70 +516,161 @@ export function QuizList({
               </Title>
             )}
             <ListWrapper>
-              <DnDWrapper
+              {/* <DnDWrapper
                 dragList={questionList}
                 onDragging={() => {}}
                 onDragEnd={whenDragEnd}
                 dragSectionName={'abc'}
               >
-                {(dragItem, ref, isDragging) => (
-                  <ListDnDItem
-                    key={`${dragItem.code}`}
-                    ref={ref}
-                    className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${dragItem.quizCategoryList[0] ? 'isHasMeta' : ''}`}
-                    isChecked={checkList.includes(dragItem.code)}
-                  >
-                    {showCheckBox ? (
-                      <button
-                        type="button"
-                        className="title"
-                        onClick={(e) => {
-                          handleButtonCheck(e, dragItem.code);
-                        }}
-                      >
-                        <CheckBoxI
-                          $margin={'0 5px 0 0'}
-                          onChange={(e) =>
-                            handleSingleCheck(e.target.checked, dragItem.code)
-                          }
-                          checked={
-                            checkList.includes(dragItem.code as string)
-                              ? true
-                              : false
-                          }
-                          id={dragItem.code}
-                          value={dragItem.code}
-                        />
-                        <span className="title_id">
-                          {dragItem.quizCategoryList[0]?.quizCategory?.교육과정}
-                          / {dragItem.code}
-                        </span>
-                        <span className="title_tag">
-                          {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
-                        </span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="title"
-                        onClick={(e) => {
-                          handleClickItem(e, dragItem.code);
-                        }}
-                      >
-                        <span className="title_id">
-                          {dragItem.quizCategoryList[0]?.quizCategory?.교육과정}
-                          / {dragItem.code}
-                        </span>
-                        <span className="title_tag">
-                          {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
-                        </span>
-                      </button>
-                    )}
-                    <MetaGroup
-                      onMouseOver={(e) => showTooltip(e)}
-                      onMouseLeave={(e) => hideTooltip(e)}
+                {(dragItem, ref, isDragging) => ( */}
+              {questionList.map((dragItem) => (
+                <ListDnDItem
+                  key={`${dragItem.code}`}
+                  // ref={ref}
+                  // className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${dragItem.quizCategoryList[0] ? 'isHasMeta' : ''}`}
+                  className={`${dragItem.quizCategoryList[0] ? 'isHasMeta' : ''}`}
+                >
+                  {showCheckBox ? (
+                    <button
+                      type="button"
+                      className="title"
+                      onClick={(e) => {
+                        handleButtonCheck(e, dragItem.code);
+                      }}
                     >
-                      <span className="sub_title ellipsis" ref={textRef}>
+                      <CheckBoxI
+                        $margin={'0 5px 0 0'}
+                        onChange={(e) =>
+                          handleSingleCheck(e.target.checked, dragItem.code)
+                        }
+                        checked={
+                          checkList.includes(dragItem.code as string)
+                            ? true
+                            : false
+                        }
+                        id={dragItem.code}
+                        value={dragItem.code}
+                      />
+                      <span className="title_id">
+                        {dragItem.quizItemList &&
+                          dragItem.quizItemList.map((el) => (
+                            <span key={el.code}>
+                              {el.type === 'BIG' && '대발문'}
+                              {el.type === 'TEXT' && '지문'}
+                              {el.type === 'QUESTION' && '문제'}
+                              {/* {el.type === 'SMALL' && '소문제'} */}
+                              {/* {el.type === 'EXAMPLE' && ''} */}
+                              {el.type === 'CHOICES' && '선지'}
+                              {el.type === 'ANSWER' && '정답'}
+                              {el.type === 'COMMENTARY' && '해설'}
+                              {el.type === 'HINT' && '힌트'}
+                              {el.type === 'CONCEPT' && '개념'}
+                              {/* {el.type === 'TITLE' && ''} */}
+                              {/* {el.type === 'TIP' && ''} */} /
+                            </span>
+                          ))}
+                      </span>
+                      <span className="title_tag">
+                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="title"
+                      onClick={(e) => {
+                        handleClickItem(e, dragItem.code);
+                      }}
+                    >
+                      <span className="title_id">{dragItem.code}</span>
+                      <span className="title_tag">
+                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                      </span>
+                    </button>
+                  )}
+                  <MetaGroup
+                    onMouseOver={(e) => showTooltip(e)}
+                    onMouseLeave={(e) => hideTooltip(e)}
+                  >
+                    <span className="sub_title ellipsis" ref={textRef}>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.교과 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.교과} ,`}
+                      </span>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.과목 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.과목} ,`}
+                      </span>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.학년 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.학년} ,`}
+                      </span>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.난이도 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.난이도} ,`}
+                      </span>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.학교급 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.학교급} ,`}
+                      </span>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.문항타입} ,`}
+                      </span>
+
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.대단원 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
+                      </span>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
+                      </span>
+                      <span>
+                        {dragItem.quizCategoryList[0]?.quizCategory?.소단원 &&
+                          `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
+                      </span>
+
+                      {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
+                        dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
+                          (item: Source) => (
+                            <span key={`출처 배열 ${item.출처}`}>
+                              {item?.출처}
+                              {item?.기출명}
+                              {item?.문항번호}
+                              {item?.출제년도}
+                              {item?.교재속성}
+                              {item?.출판사}
+                              {item?.시리즈}
+                              {item?.교재명}
+                              {item?.교재페이지}
+                              {item?.교재번호}
+                              {item?.출판년도}
+                              {item?.내신형식}
+                              {item?.학교명}
+                              {item?.학사일정}
+                              {item?.내신페이지}
+                              {item?.내신배점}
+                              {item?.기출속성}
+                              {item?.주관사}
+                              {item?.기출명}
+                              {item?.시행학제}
+                              {item?.시행학년}
+                              {item?.시험지타입}
+                              {item?.기출배점}
+                              {item?.기출일시}
+                            </span>
+                          ),
+                        )}
+                    </span>
+
+                    <Tooltip
+                      arrowPosition={arrowPosition}
+                      // arrowPosition={`left: calc(50% - 25px)`}
+                      width={'100%'}
+                      ref={tooltipRef}
+                    >
+                      <>
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.교과 &&
                             `${dragItem.quizCategoryList[0].quizCategory.교과} ,`}
@@ -485,15 +699,16 @@ export function QuizList({
 
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.대단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.대단원.split('^^^')[0]} ,`}
-                        </span>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.중단원.split('^^^')[0]} ,`}
+                            `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
                         </span>
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.소단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.소단원.split('^^^')[0]} ,`}
+                            `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
+                        </span>
+
+                        <span>
+                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
+                            `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
                         </span>
 
                         {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
@@ -527,118 +742,39 @@ export function QuizList({
                               </span>
                             ),
                           )}
-                      </span>
-
-                      <Tooltip
-                        arrowPosition={arrowPosition}
-                        // arrowPosition={`left: calc(50% - 25px)`}
-                        width={'100%'}
-                        ref={tooltipRef}
+                      </>
+                    </Tooltip>
+                  </MetaGroup>
+                  {showViewAllButton && (
+                    <ViewAllButton>
+                      <button
+                        type="button"
+                        onClick={() => openViewer(dragItem.code)}
                       >
-                        <>
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory?.교과 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.교과} ,`}
-                          </span>
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory?.과목 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.과목} ,`}
-                          </span>
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory?.학년 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.학년} ,`}
-                          </span>
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory
-                              ?.난이도 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.난이도} ,`}
-                          </span>
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory
-                              ?.학교급 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.학교급} ,`}
-                          </span>
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory
-                              ?.문항타입 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.문항타입} ,`}
-                          </span>
-
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory
-                              ?.대단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.대단원.split('^^^')[0]} ,`}
-                          </span>
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory
-                              ?.소단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.소단원.split('^^^')[0]} ,`}
-                          </span>
-
-                          <span>
-                            {dragItem.quizCategoryList[0]?.quizCategory
-                              ?.중단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.중단원.split('^^^')[0]} ,`}
-                          </span>
-
-                          {dragItem.quizCategoryList[0]?.quizCategory
-                            ?.sources &&
-                            dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
-                              (item: Source) => (
-                                <span key={`출처 배열 ${item.출처}`}>
-                                  {item?.출처}
-                                  {item?.기출명}
-                                  {item?.문항번호}
-                                  {item?.출제년도}
-                                  {item?.교재속성}
-                                  {item?.출판사}
-                                  {item?.시리즈}
-                                  {item?.교재명}
-                                  {item?.교재페이지}
-                                  {item?.교재번호}
-                                  {item?.출판년도}
-                                  {item?.내신형식}
-                                  {item?.학교명}
-                                  {item?.학사일정}
-                                  {item?.내신페이지}
-                                  {item?.내신배점}
-                                  {item?.기출속성}
-                                  {item?.주관사}
-                                  {item?.기출명}
-                                  {item?.시행학제}
-                                  {item?.시행학년}
-                                  {item?.시험지타입}
-                                  {item?.기출배점}
-                                  {item?.기출일시}
-                                </span>
-                              ),
-                            )}
-                        </>
-                      </Tooltip>
-                    </MetaGroup>
-                    {showViewAllButton && (
-                      <ViewAllButton>
-                        <button
-                          type="button"
-                          onClick={() => openViewer(dragItem.code)}
-                        >
-                          전체보기
-                          <Icon
-                            $margin={'0 0 0 2px'}
-                            width={`10px`}
-                            src={`/images/icon/view_arrow.svg`}
-                            disabled={true}
-                          />
-                        </button>
-                      </ViewAllButton>
-                    )}
-                  </ListDnDItem>
-                )}
-              </DnDWrapper>
+                        전체보기
+                        <Icon
+                          $margin={'0 0 0 2px'}
+                          width={`10px`}
+                          src={`/images/icon/view_arrow.svg`}
+                          disabled={true}
+                        />
+                      </button>
+                    </ViewAllButton>
+                  )}
+                </ListDnDItem>
+              ))}
+              {/* //   )}
+              // </DnDWrapper> */}
             </ListWrapper>
           </PerfectScrollbar>
         </ScrollWrapper>
       )}
+
+      <EditerButtonWrapper>
+        <Button onClick={() => AddGroup()} width="310px" height="35px" $filled>
+          그룹 묶기
+        </Button>
+      </EditerButtonWrapper>
     </Container>
   );
 }
@@ -648,7 +784,19 @@ const Container = styled.div<{ $height?: string }>`
   border-top: none; */
   width: 100%;
   height: fit-content;
+  position: relative;
+  height: 100%;
 `;
+
+const EditerButtonWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid ${COLOR.BORDER_BLUE};
+`;
+
 const ScrollWrapper = styled.div<{ $height?: string }>`
   /* overflow-y: auto; */
   width: 100%;
@@ -677,7 +825,7 @@ const ListWrapper = styled.ul`
   height: fit-content;
 `;
 
-const ListDnDItem = styled.li<{ isChecked: boolean }>`
+const ListDnDItem = styled.li<{ isChecked?: boolean }>`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -750,8 +898,8 @@ const ListDnDItem = styled.li<{ isChecked: boolean }>`
   &.opacity {
     opacity: 0.8;
   }
-  background-color: ${({ isChecked }) =>
-    isChecked ? `${COLOR.IS_CHECK_BACKGROUND}` : 'white'};
+  /* background-color: ${({ isChecked }) =>
+    isChecked ? `${COLOR.IS_CHECK_BACKGROUND}` : 'white'}; */
 
   &.isHasMeta {
     background-color: ${COLOR.IS_HAVE_DATA};

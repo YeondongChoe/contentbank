@@ -135,7 +135,7 @@ export function EditerOneFile({
 
 const Container = styled.div`
   width: calc(100% - 330px);
-  height: calc(100vh - 200px); // 탭 네비 높이, 하단 셀렉트 높이 제외
+  height: calc(100vh - 140px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   padding: 0;
   margin: 0;
   display: flex;

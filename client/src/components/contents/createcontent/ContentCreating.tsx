@@ -36,8 +36,10 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
+import { QuizList } from './list';
 import QuizElementList from './list/QuizElementList';
 import { InputOptions } from './options/InputOptions';
+import { OptionList } from './options/OptionList';
 
 type SelectedValueType = string | { [key: string]: any };
 type SelectedSourceItem = Record<string, any>;
@@ -53,30 +55,26 @@ export function ContentCreating({
 }) {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-  const [groupId, setGroupId] = useState<string>('');
-  // 최종적으로 등록될 리스트
-  const [groupList, setGroupList] = useState('');
+  const [checkedList, setCheckedList] = useState<string[]>([]);
+  const [isAdd, setIsAdd] = useState<boolean>(false);
 
   const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoriesF, setCategoriesF] = useState<ItemCategoryType[][]>([]);
   const [categoriesG, setCategoriesG] = useState<ItemCategoryType[][]>([]);
   const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
-  const [categoriesDD, setCategoriesDD] = useState<ItemCategoryType[][]>([]);
   const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
   const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
   const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
   const [content, setContent] = useState<string[]>([]);
   const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   // 에디터에서 나온 문항 요소
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
+
   // 에디터에서 나온 문항 요소의 모든 배열
-  const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType>([]);
-  const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
-    [],
-  );
+  // const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType>([]);
+
   const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
   //셀렉트 값
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
@@ -86,7 +84,13 @@ export function ContentCreating({
   ); //출처
   const [selectedSourceList, setSelectedSourceList] = useState<
     SelectedSourceItem[]
-  >([]); //출처
+  >([]);
+
+  const [selectedList, setSelectedList] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
 
   const [sourceValue, setSourceValue] = useState<{
     titleIdx: string;
@@ -98,16 +102,6 @@ export function ContentCreating({
   useEffect(() => {
     console.log('editorData 에디터 데이터  ----', editorData);
     console.log('editorData 에디터 데이터 묶음 ----', editorData?.tag_group);
-
-    // 출처 데이터 추가
-    console.log(
-      '출처: ',
-      selectedSourceList,
-      ' 난이도: ',
-      selectedDifficulty,
-      '	문항타입: ',
-      selectedQuestionType,
-    );
 
     if (editorData) {
       const itemDataList: QuizItemListType = [];
@@ -138,21 +132,17 @@ export function ContentCreating({
 
           value.forEach((content) => {
             itemDataList.push({
-              code: uuidv4(),
+              code: null,
               type: type,
               content: content,
               sort: sort++,
-              quizCategory: {
-                sources: selectedSourceList,
-                난이도: selectedDifficulty,
-                문항타입: selectedQuestionType,
-              },
             });
           });
         }
       });
 
       //itemDataList 의 값들을 대발문과 지문 문제로 각기 객체로 나누어 배열에 담기
+      // 에디터 값이 리스트에 담김
       console.log('itemDataList 각 데이터를 배열에 담음', itemDataList);
       setQuizItemList(itemDataList);
 
@@ -222,7 +212,7 @@ export function ContentCreating({
 
     try {
       const response = await axios.post(
-        'http://localhost:5050/uploadImage',
+        'https://j-dev01.dreamonesys.co.kr/file',
         formData,
         {
           headers: {
@@ -330,12 +320,48 @@ export function ContentCreating({
             viewList: viewList[index] === 'true',
           }));
 
+          // ItemCategoryType = {
+          // 	code: string;
+          // 	idx: number;
+          // 	name: string;
+          // 	type?: string;
+          // 	value?: number;
+          // 	isUse?: boolean;
+          // 	autoNum?: string;
+          // };
+
+          if (menuDetail.groupCode == 'F') {
+            setIdxNamePairsF((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'G') {
+            setIdxNamePairsG((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
           if (menuDetail.groupCode == 'H') {
-            setIdxNamePairsH((prev) => [...prev, ...pairs]);
+            setIdxNamePairsH((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
           }
-          if (menuDetail.groupCode == 'DD') {
-            setIdxNamePairsDD((prev) => [...prev, ...pairs]);
-          }
+          // if (menuDetail.groupCode == 'DD') {
+          //   setIdxNamePairsDD((prev) => {
+          //     const uniquePairs = pairs.filter(
+          //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+          //     );
+          //     return [...prev, ...uniquePairs];
+          //   });
+          // }
 
           if (menuDetail.groupCode == 'H') {
             const categories = idxList.map((idx, idxIndex) => ({
@@ -347,6 +373,26 @@ export function ContentCreating({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesH.push(categories);
+          } else if (menuDetail.groupCode == 'F') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesF.push(categories);
+          } else if (menuDetail.groupCode == 'G') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesG.push(categories);
           } else if (menuDetail.groupCode == 'DD') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
@@ -366,16 +412,37 @@ export function ContentCreating({
         // .filter((category) => category.inputType === 'SELECT')
         .map((category) => category.idx)
         .join(',');
+      const idxListF = filteredCategoriesF
+        .flat()
+        // .filter((category) => category.inputType === 'SELECT')
+        .map((category) => category.idx)
+        .join(',');
+      const idxListG = filteredCategoriesG
+        .flat()
+        // .filter((category) => category.inputType === 'SELECT')
+        .map((category) => category.idx)
+        .join(',');
       const idxListDD = filteredCategoriesDD
         .flat()
         // .filter((category) => category.inputType === 'SELECT')
         .map((category) => category.idx)
         .join(',');
 
-      console.log('inputType 이 셀렉트인것만', idxListH, '/', idxListDD);
+      console.log(
+        'inputType 이 셀렉트인것만',
+        idxListH,
+        '/',
+        idxListF,
+        '/',
+        idxListG,
+        '/',
+        idxListDD,
+      );
 
       fetchCategoryItems(idxListH, setCategoriesH);
-      fetchCategoryItems(idxListDD, setCategoriesDD);
+      fetchCategoryItems(idxListF, setCategoriesF);
+      fetchCategoryItems(idxListG, setCategoriesG);
+      // fetchCategoryItems(idxListDD, setCategoriesDD);
     }
   }, [menuSettingData]);
 
@@ -400,84 +467,27 @@ export function ContentCreating({
   };
 
   useEffect(() => {
-    // console.log(`menu idxNamePairs:`, idxNamePairsH, idxNamePairsDD);
-    // console.log(
-    //   `menu 2depth select setCategoriesH, setCategoriesDD:`,
-    //   categoriesH,
-    //   categoriesDD,
-    // );
-  }, [categoriesH, categoriesDD]);
+    console.log(
+      `menu idxNamePairs:`,
+      idxNamePairsH,
+      idxNamePairsF,
+      idxNamePairsG,
+      // idxNamePairsDD,
+    );
+    console.log(
+      `menu 2depth select setCategoriesH, setCategoriesDD:`,
+      categoriesH,
+      categoriesF,
+      categoriesG,
+      // categoriesDD,
+    );
+  }, [categoriesH, categoriesF, categoriesG]);
 
   // 등록 버튼 입력시 에디터에서 문항값 축출 등록
+
   useEffect(() => {
     console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
-
-    if (quizItemList.length > 0) {
-      setQuizItemArrList((prevArrList) => {
-        const mergedList = [...prevArrList, ...quizItemList];
-
-        // 중복 제거
-        const uniqueList = mergedList.filter(
-          (item, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.type === item.type && t.content === item.content,
-            ),
-        );
-
-        return uniqueList;
-      });
-    }
   }, [quizItemList]);
-
-  useEffect(() => {
-    console.log(
-      'quizItemArrList 등록된 모든 문항 데이터 업데이트:',
-      quizItemArrList,
-    );
-    //quizItemArrList 를 순회하며 중복값 제거
-    // setQuestionList(quizItemArrList);
-  }, [quizItemArrList]);
-
-  const AddQuestionElements = () => {
-    // 이미지 데이터 저장
-    saveHandler();
-  };
-
-  const saveHandler = async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const data = await window.saveExamData();
-    console.log(data);
-    setEditorData(JSON.parse(data));
-  };
-
-  const childRef = useRef<{ AddGroup: () => void } | null>(null);
-  // 그룹 id 불러오기
-  const AddGroupID = () => {
-    const Id = uuidv4();
-    // 그룹화를 실행해고 생성된 그룹에 새로운 그룹아이디값 부여
-    setGroupId(Id);
-    console.log('Parent function executed', Id);
-
-    if (childRef.current?.AddGroup) {
-      childRef.current.AddGroup();
-    }
-  };
-
-  useEffect(() => {
-    console.log('quizClassList 분류등록 업데이트:', quizClassList);
-    // 등록될 값
-    // TODO : 그룹 맵핑 기준으로 다시
-    // const newQuestionList = quizItemArrList.map((quizItems) => ({
-    //   commandCode: 0,
-    //   quizIdx: null,
-    //   articleList: [],
-    //   quizItemList: quizItems,
-    //   quizClassList: [...quizClassList],
-    // }));
-    // setAddQuestionList(newQuestionList);
-  }, [quizClassList]);
 
   // 분류 등록
   useEffect(() => {
@@ -485,13 +495,13 @@ export function ContentCreating({
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
     console.log('selectedSourceList 출처', selectedSourceList);
-    // console.log('selected--------출처 선택부분', selectedList);
+    console.log('selected--------출처 선택부분', selectedList);
     if (selectedSource.length > 0 && selectedQuestionType) {
       const quizClassList: QuestionClassListType = [
         {
           type: 'CLASS',
           quizCategory: {
-            sources: selectedSourceList,
+            sources: selectedList,
             난이도: selectedDifficulty,
             문항타입: selectedQuestionType,
           },
@@ -539,22 +549,27 @@ export function ContentCreating({
     setSelectedSourceList(uniqueList);
   }, [selectedSource]);
 
-  // console.log('selectedSourceList-최종적 들어갈 소스값---', selectedSourceList);
-
-  // useEffect(() => {
-  //   // 등록 api
-  //   if (addQuestionList.length) postQuizDataMutate();
-  // }, [addQuestionList]);
-
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
-    const data = addQuestionList[addQuestionList.length - 1];
-    console.log('최종 적으로 등록될 문항 data값', data);
+    if (quizItemList.length > 0) {
+      const data = {
+        commandCode: 0,
+        quizIdx: null,
+        articleList: [],
+        quizItemList: quizItemList,
+        quizClassList: quizClassList,
+      };
+      console.log('최종 적으로 등록될 문항 data값', data);
 
-    return await quizService.post(`/v1/quiz`, data);
+      return await quizService.post(`/v1/quiz`, data);
+    }
   };
 
-  const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
+  const {
+    data: postQuizData,
+    mutate: postQuizDataMutate,
+    isSuccess,
+  } = useMutation({
     mutationFn: postQuiz,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -567,10 +582,22 @@ export function ContentCreating({
     onSuccess: (response) => {
       openToastifyAlert({
         type: 'success',
-        text: `문항이 추가 되었습니다 ${response.data.data.quiz.idx}`,
+        text: `문항이 추가 되었습니다 ${response && response.data.data.quiz.idx}`,
       });
+
+      setQuestionList([...quizList, response && response.data.data.quiz]);
     },
   });
+
+  useEffect(() => {
+    console.log('문항 data값', postQuizData);
+    if (postQuizData) {
+      // 등록 이후 축출 값 초기화
+      setQuizList([...quizList, postQuizData.data.data.quiz]);
+
+      // if (isSuccess) setQuizItemList([]);
+    }
+  }, [postQuizData]);
 
   // 카테고리 api 불러오기
   const getCategory = async () => {
@@ -597,15 +624,22 @@ export function ContentCreating({
 
   // 셀렉트 초기화
   const handleDefaultSelect = (defaultValue?: string) => {};
-  //TODO : 그룹 화 / 출처데이터 설정 후 최종 저장
-  const submitSave = () => {};
+  const submitSave = () => {
+    // 버튼 누를 시 에디터 값 축출
+    saveHandler();
 
-  // useEffect(() => {
-  //   if (postQuizData) {
-  //     setQuizList([...quizList, postQuizData.data.data.quiz]);
-  //     setQuestionList([...quizList, postQuizData.data.data.quiz]);
-  //   }
-  // }, [postQuizData]);
+    // 등록 호출
+    postQuizDataMutate();
+  };
+  const saveHandler = async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const data = await window.saveExamData();
+    console.log(data);
+    // 축출된 에디터 값 저장
+    setEditorData(JSON.parse(data));
+  };
+
   useEffect(() => {}, [quizList]);
   useEffect(() => {}, [questionList]);
 
@@ -636,30 +670,51 @@ export function ContentCreating({
               <SelectListWrapper>
                 <strong className="top_title">
                   출처<span>*</span>
+                  <span className="info">(최대 5개)</span>
                 </strong>
-              </SelectListWrapper>
-              <SelectListWrapper>
-                {/* <SelectList>
-                  <li>
-                    <SelectWrapper>
-                      {idxNamePairsH && (
-                        <>
+                <SourceOptionWrapper>
+                  {/* 옵션 리스트 셀렉트 컴포넌트 */}
+                  {idxNamePairsH &&
+                    idxNamePairsF &&
+                    idxNamePairsG &&
+                    categoryTitles && (
+                      <OptionList
+                        setSelectedSource={setSelectedSource}
+                        categoryTitles={categoryTitles}
+                        categoriesE={[
                           {
-                            // 셀렉트가 아닌 경우
-                            idxNamePairsH.map((el, idx) => (
-                              <InputOptions
-                                Item={idxNamePairsH[idx]}
-                                listItem={categoriesH[idx]}
-                                key={`${el?.name} optionsdepth${idx}`}
-                                onOptionChange={setSourceValue}
-                              />
-                            ))
-                          }
-                        </>
-                      )}
-                    </SelectWrapper>
-                  </li>
-                </SelectList> */}
+                            code: '교재',
+                            idx: 1,
+                            name: '교재',
+                          },
+                          {
+                            code: '내신',
+                            idx: 2,
+                            name: '내신',
+                          },
+                          {
+                            code: '기출',
+                            idx: 3,
+                            name: '기출',
+                          },
+                          {
+                            code: '자체제작',
+                            idx: 4,
+                            name: '자체제작',
+                          },
+                          {
+                            code: '기타',
+                            idx: 5,
+                            name: '기타',
+                          },
+                        ]}
+                        groupsDataF={idxNamePairsF}
+                        groupsDataG={idxNamePairsG}
+                        groupsDataH={idxNamePairsH}
+                        selectedValue={setSelectedList}
+                      />
+                    )}
+                </SourceOptionWrapper>
               </SelectListWrapper>
             </BackgroundWrapper>
             <BackgroundWrapper className="bottom">
@@ -670,30 +725,108 @@ export function ContentCreating({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {idxNamePairsDD &&
-                        categoriesDD.map((el, idx) => (
-                          <InputWrappper
-                            key={`${idxNamePairsDD[idx].idx},${idxNamePairsDD[idx].name}`}
-                          >
-                            {idxNamePairsDD[idx].searchList && (
-                              <span className="reddot">*</span>
-                            )}
-                            {/* {idxNamePairsDD[idx].viewList && ( */}
-                            <Select
-                              onDefaultSelect={() =>
-                                handleDefaultSelect(idxNamePairsDD[idx].name)
-                              }
-                              $positionTop
-                              width={'110px'}
-                              height={'30px'}
-                              defaultValue={idxNamePairsDD[idx].name}
-                              options={el}
-                              onSelect={(event) => selectCategoryOption(event)}
-                              setSelectedValue={setSelectedQuestionType}
-                            />
-                            {/* )} */}
-                          </InputWrappper>
-                        ))}
+                      <strong className="title">문항타입</strong>
+                      <Select
+                        onDefaultSelect={() => {}}
+                        width={'120px'}
+                        defaultValue={'문항 타입'}
+                        key={'문항 타입'}
+                        options={[
+                          {
+                            code: '객관식',
+                            idx: 1,
+                            name: '객관식',
+                          },
+                          {
+                            code: '주관식',
+                            idx: 2,
+                            name: '주관식',
+                          },
+                          {
+                            code: '서술형',
+                            idx: 3,
+                            name: '서술형',
+                          },
+                        ]}
+                        onSelect={(event) => selectCategoryOption(event)}
+                        setSelectedValue={setSelectedQuestionType}
+                        $positionTop
+                        height="35px"
+                      />
+                    </SelectWrapper>
+                  </li>
+                  <li>
+                    <SelectWrapper>
+                      <strong className="title">난이도</strong>
+                      <Select
+                        onDefaultSelect={() => {}}
+                        width={'120px'}
+                        defaultValue={'공통(시험)'}
+                        key={'공통(시험)'}
+                        options={[
+                          {
+                            code: '개념',
+                            idx: 1,
+                            name: '개념',
+                          },
+                          {
+                            code: '기본',
+                            idx: 2,
+                            name: '기본',
+                          },
+                          {
+                            code: '심화',
+                            idx: 3,
+                            name: '심화',
+                          },
+                          {
+                            code: '없음',
+                            idx: 4,
+                            name: '없음',
+                          },
+                        ]}
+                        onSelect={(event) => selectCategoryOption(event)}
+                        setSelectedValue={() => {}} // TODO : 개념값
+                        $positionTop
+                        height="35px"
+                      />
+                      <Select
+                        onDefaultSelect={() => {}}
+                        width={'120px'}
+                        defaultValue={'상'}
+                        key={'상'}
+                        options={[
+                          {
+                            code: '상',
+                            idx: 1,
+                            name: '상',
+                          },
+                          {
+                            code: '중상',
+                            idx: 2,
+                            name: '중상',
+                          },
+                          {
+                            code: '중',
+                            idx: 3,
+                            name: '중',
+                          },
+                          {
+                            code: '중하',
+                            idx: 4,
+                            name: '중하',
+                          },
+                          {
+                            code: '하',
+                            idx: 5,
+                            name: '하',
+                          },
+                        ]}
+                        onSelect={(event) => selectCategoryOption(event)}
+                        setSelectedValue={setSelectedDifficulty}
+                        $positionTop
+                        height="35px"
+                      />
                     </SelectWrapper>
                   </li>
                 </SelectList>
@@ -704,13 +837,12 @@ export function ContentCreating({
 
         <ContentListWrapper>
           <ContentList>
-            <QuizElementList
-              ref={childRef}
-              questionList={quizItemArrList}
+            <QuizList
+              questionList={questionList}
               $height={`calc(100vh - 200px)`}
-              groupId={groupId}
-              selectedDifficulty={selectedDifficulty}
-              selectedQuestionType={selectedQuestionType}
+              showViewAllButton
+              setCheckedList={setCheckedList}
+              showCheckBox
             />
           </ContentList>
         </ContentListWrapper>
@@ -718,27 +850,6 @@ export function ContentCreating({
         <Modal />
       </ContentsWrapper>
       <BorderWrapper>
-        <EditerButtonWrapper>
-          <Button
-            onClick={() => AddQuestionElements()}
-            width="calc(100% - 310px);"
-            height="35px"
-            $margin="0 20px 0 0"
-            $filled
-          >
-            문항과 출처 데이터 추가
-          </Button>
-          <div className="border"></div>
-          <Button
-            onClick={() => AddGroupID()}
-            width="330px"
-            height="35px"
-            $margin="0 0 0 20px"
-            $filled
-          >
-            그룹 묶기
-          </Button>
-        </EditerButtonWrapper>
         <SubmitButtonWrapper>
           <Button
             buttonType="button"
@@ -769,18 +880,6 @@ const Container = styled.div`
   position: relative;
 `;
 
-const EditerButtonWrapper = styled.div`
-  display: flex;
-  padding: 10px 20px;
-
-  .border {
-    width: 1px;
-    height: 35px;
-    border: none;
-    background: #a3aed0;
-  }
-`;
-
 const ContentsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -805,7 +904,7 @@ const BackgroundWrapper = styled.div`
   margin-bottom: 10px;
 
   &.bottom {
-    margin-bottom: 120px;
+    margin-bottom: 70px;
   }
 `;
 const SelectListWrapper = styled.div`
@@ -820,7 +919,7 @@ const SelectListWrapper = styled.div`
     font-size: 15px;
     padding-right: 10px;
     position: relative;
-    span {
+    > span {
       position: absolute;
       top: 10px;
       right: 0px;
@@ -836,6 +935,14 @@ const SelectListWrapper = styled.div`
 
     .top_title {
       flex: 1 0 0;
+    }
+    .info {
+      width: 100%;
+      display: flex;
+      position: static;
+      color: ${COLOR.GRAY};
+      font-size: 12px;
+      letter-spacing: -1px;
     }
   }
   &:nth-child(1) {
@@ -854,11 +961,15 @@ const InputWrappper = styled.div`
 const SourceOptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  width: calc(100% - 70px);
 `;
 const SelectList = styled.ul`
-  padding: 5px 10px;
+  /* padding: 5px 10px; */
+  display: flex;
+  width: 100%;
 
   li {
+    width: 50%;
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
@@ -870,7 +981,11 @@ const SelectWrapper = styled.div`
   flex-wrap: wrap;
   gap: 5px;
   align-items: center;
-  color: ${COLOR.GRAY};
+
+  .title {
+    padding: 10px;
+    font-weight: normal;
+  }
 `;
 
 const ContentListWrapper = styled.div`
@@ -882,7 +997,7 @@ const ContentListWrapper = styled.div`
   right: 0;
 `;
 const ContentList = styled.div`
-  height: calc(100vh - 200px);
+  height: calc(100vh - 145px);
   width: 100%;
   overflow: hidden;
   border: 1px solid ${COLOR.BORDER_BLUE};
@@ -898,7 +1013,7 @@ const BorderWrapper = styled.div`
   right: 0;
   left: 0;
   width: 100%;
-  height: 120px;
+  height: 70px;
   background-color: #fff;
 `;
 const SubmitButtonWrapper = styled.div`
@@ -908,6 +1023,7 @@ const SubmitButtonWrapper = styled.div`
   position: absolute;
   left: auto;
   right: 20px;
+  top: 10px;
 `;
 
 const OptionWrapper = styled.ul`

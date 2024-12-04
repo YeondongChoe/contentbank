@@ -182,7 +182,7 @@ export function ContentFileUpload({
 
     try {
       const response = await axios.post(
-        'http://localhost:5050/uploadImage',
+        'https://j-dev01.dreamonesys.co.kr/file',
         formData,
         {
           headers: {
