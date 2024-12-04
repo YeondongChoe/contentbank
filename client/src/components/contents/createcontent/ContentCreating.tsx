@@ -58,7 +58,7 @@ export function ContentCreating({
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [isAdd, setIsAdd] = useState<boolean>(false);
 
-  const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
+  // const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
 
   const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
   const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
@@ -77,24 +77,16 @@ export function ContentCreating({
   //셀렉트 값
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
+  const [selectedDifficultyCommon, setSelectedDifficultyCommon] =
+    useState<string>(''); //난이도 공통
   const [selectedSource, setSelectedSource] = useState<SelectedSourceItem[]>(
     [],
   ); //출처
-  const [selectedSourceList, setSelectedSourceList] = useState<
-    SelectedSourceItem[]
-  >([]);
-
   const [selectedList, setSelectedList] = useState<
     {
       [key: number]: string;
     }[]
   >([]);
-
-  const [sourceValue, setSourceValue] = useState<{
-    titleIdx: string;
-    name: string;
-    value: string | number;
-  }>({ titleIdx: '', name: '', value: '' });
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -408,84 +400,49 @@ export function ContentCreating({
   }, [idxNamePairsH, idxNamePairsF, idxNamePairsG]);
 
   // 등록 버튼 입력시 에디터에서 문항값 축출 등록
-
   useEffect(() => {
     console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
   }, [quizItemList]);
-
   // 분류 등록
   useEffect(() => {
-    console.log('selectedQuestionType 문항타입', selectedQuestionType);
-    console.log('selectedDifficulty 난이도', selectedDifficulty);
-    //출처
-    console.log('selectedSourceList 출처', selectedSourceList);
-    console.log('selected--------출처 선택부분', selectedList);
-    if (selectedSource.length > 0 && selectedQuestionType) {
-      const quizClassList: QuestionClassListType = [
-        {
-          type: 'CLASS',
-          quizCategory: {
-            sources: selectedList,
-            난이도: selectedDifficulty,
-            문항타입: selectedQuestionType,
-          },
-        },
-      ];
-
-      // 필수 메타값 추가 및 변경
-      setQuizClassList(quizClassList);
-    }
-  }, [selectedQuestionType, selectedSourceList, selectedDifficulty]);
-
-  useEffect(() => {
-    console.log('소스 데이터 선택', sourceValue.name, sourceValue.value);
-    const updatedSourceValue = [];
-    updatedSourceValue.push({ [sourceValue.name]: sourceValue.value });
-
-    console.log(updatedSourceValue);
-    setSelectedSource([...updatedSourceValue]);
-  }, [sourceValue]);
-
-  useEffect(() => {
-    const combinedList = [...selectedSourceList, ...selectedSource];
-
-    const uniqueList = combinedList.reduce<SelectedSourceItem[]>(
-      (acc, curr) => {
-        const key = Object.keys(curr)[0];
-        const value = curr[key];
-        if (!value) {
-          return acc;
-        }
-        const existingIndex = acc.findIndex((item) =>
-          Object.prototype.hasOwnProperty.call(item, key),
-        );
-
-        if (existingIndex >= 0) {
-          acc[existingIndex] = curr;
-        } else {
-          acc.push(curr);
-        }
-
-        return acc;
-      },
-      [],
-    );
-    setSelectedSourceList(uniqueList);
+    console.log(',selectedSourceList 전체 출처 리스트 ', selectedSource);
   }, [selectedSource]);
+  useEffect(() => {
+    console.log(',selectedDifficulty 난이도 ', selectedDifficulty);
+  }, [selectedDifficulty]);
+  useEffect(() => {
+    console.log(
+      ',selectedDifficultyCommon 난이도공통 ',
+      selectedDifficultyCommon,
+    );
+  }, [selectedDifficultyCommon]);
+  useEffect(() => {
+    console.log(',selectedQuestionType 문항타입 ', selectedQuestionType);
+  }, [selectedQuestionType]);
 
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
-    if (quizItemList.length > 0) {
+    if (quizItemList.length > 0 && selectedSource.length > 0) {
       const data = {
         commandCode: 0,
         quizIdx: null,
         articleList: [],
         quizItemList: quizItemList,
-        quizClassList: quizClassList,
+        quizClassList: [
+          {
+            type: 'CLASS',
+            quizCategory: {
+              sources: selectedSource,
+              난이도: selectedDifficulty,
+              문항타입: selectedQuestionType,
+              난이도공통: selectedDifficultyCommon,
+            },
+          },
+        ],
       };
       console.log('최종 적으로 등록될 문항 data값', data);
 
-      return await quizService.post(`/v1/quiz`, data);
+      return await quizService.post(`/v2/quiz`, data);
     }
   };
 
@@ -508,38 +465,37 @@ export function ContentCreating({
         type: 'success',
         text: `문항이 추가 되었습니다 ${response && response.data.data.quiz.idx}`,
       });
-
-      setQuestionList([...quizList, response && response.data.data.quiz]);
+      console.log('문항이 추가 되었습니다;', response && response);
     },
   });
 
   useEffect(() => {
-    console.log('문항 data값', postQuizData);
+    console.log('문항 data postQuizData 값', postQuizData);
     if (postQuizData) {
-      // 등록 이후 축출 값 초기화
+      setQuestionList([...quizList, postQuizData.data.data.quiz]);
       setQuizList([...quizList, postQuizData.data.data.quiz]);
-
+      // 등록 이후 축출 값 초기화
       // if (isSuccess) setQuizItemList([]);
     }
   }, [postQuizData]);
 
   // 카테고리 api 불러오기
-  const getCategory = async () => {
-    const res = await classificationInstance.get(`/v1/category`);
-    return res;
-  };
-  const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
-    queryKey: ['get-category'],
-    queryFn: getCategory,
-    meta: {
-      errorMessage: 'get-category 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (categoryData) {
-      setCategoryTitles(categoryData.data.data.categoryItemList);
-    }
-  }, [categoryData]);
+  // const getCategory = async () => {
+  //   const res = await classificationInstance.get(`/v1/category`);
+  //   return res;
+  // };
+  // const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
+  //   queryKey: ['get-category'],
+  //   queryFn: getCategory,
+  //   meta: {
+  //     errorMessage: 'get-category 에러 메세지',
+  //   },
+  // });
+  // useEffect(() => {
+  //   if (categoryData) {
+  //     setCategoryTitles(categoryData.data.data.categoryItemList);
+  //   }
+  // }, [categoryData]);
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
@@ -564,8 +520,12 @@ export function ContentCreating({
     setEditorData(JSON.parse(data));
   };
 
-  useEffect(() => {}, [quizList]);
-  useEffect(() => {}, [questionList]);
+  useEffect(() => {
+    console.log('questionList생성된 문항 리스트 ---- ', questionList);
+  }, [questionList]);
+  useEffect(() => {
+    console.log('quizList 문항 리스트 ---- ', quizList);
+  }, [quizList]);
 
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
@@ -598,46 +558,42 @@ export function ContentCreating({
                 </strong>
                 <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {idxNamePairsH &&
-                    idxNamePairsF &&
-                    idxNamePairsG &&
-                    categoryTitles && (
-                      <OptionList
-                        setSelectedSource={setSelectedSource}
-                        categoryTitles={categoryTitles}
-                        categoriesE={[
-                          {
-                            code: '교재',
-                            idx: 1,
-                            name: '교재',
-                          },
-                          {
-                            code: '내신',
-                            idx: 2,
-                            name: '내신',
-                          },
-                          {
-                            code: '기출',
-                            idx: 3,
-                            name: '기출',
-                          },
-                          {
-                            code: '자체제작',
-                            idx: 4,
-                            name: '자체제작',
-                          },
-                          {
-                            code: '기타',
-                            idx: 5,
-                            name: '기타',
-                          },
-                        ]}
-                        groupsDataF={idxNamePairsF}
-                        groupsDataG={idxNamePairsG}
-                        groupsDataH={idxNamePairsH}
-                        selectedValue={setSelectedList}
-                      />
-                    )}
+                  {idxNamePairsH && idxNamePairsF && idxNamePairsG && (
+                    <OptionList
+                      setSelectedSource={setSelectedSource}
+                      categoriesE={[
+                        {
+                          code: '교재',
+                          idx: 1,
+                          name: '교재',
+                        },
+                        {
+                          code: '내신',
+                          idx: 2,
+                          name: '내신',
+                        },
+                        {
+                          code: '기출',
+                          idx: 3,
+                          name: '기출',
+                        },
+                        {
+                          code: '자체제작',
+                          idx: 4,
+                          name: '자체제작',
+                        },
+                        {
+                          code: '기타',
+                          idx: 5,
+                          name: '기타',
+                        },
+                      ]}
+                      groupsDataF={idxNamePairsF}
+                      groupsDataG={idxNamePairsG}
+                      groupsDataH={idxNamePairsH}
+                      selectedValue={setSelectedList}
+                    />
+                  )}
                 </SourceOptionWrapper>
               </SelectListWrapper>
             </BackgroundWrapper>
@@ -710,7 +666,7 @@ export function ContentCreating({
                           },
                         ]}
                         onSelect={(event) => selectCategoryOption(event)}
-                        setSelectedValue={() => {}} // TODO : 개념값
+                        setSelectedValue={setSelectedDifficultyCommon}
                         $positionTop
                         height="35px"
                       />
@@ -761,13 +717,15 @@ export function ContentCreating({
 
         <ContentListWrapper>
           <ContentList>
-            <QuizList
-              questionList={questionList}
-              $height={`calc(100vh - 200px)`}
-              showViewAllButton
-              setCheckedList={setCheckedList}
-              showCheckBox
-            />
+            {isSuccess && (
+              <QuizList
+                questionList={questionList}
+                $height={`calc(100vh - 200px)`}
+                showViewAllButton
+                setCheckedList={setCheckedList}
+                showCheckBox
+              />
+            )}
           </ContentList>
         </ContentListWrapper>
 
