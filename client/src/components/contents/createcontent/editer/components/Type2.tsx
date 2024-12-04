@@ -143,7 +143,7 @@ const Type2 = () => {
 
     console.log('최종적으로 등록될 데이터------------', data);
 
-    return await quizService.post(`/v1/quiz/upload`, data);
+    return await quizService.post(`/v2/quiz/upload`, data);
   };
 
   const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
