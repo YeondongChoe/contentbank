@@ -392,9 +392,9 @@ export function Company() {
     }
   }, [idxValue, page]);
 
-  useEffect(() => {
-    companyListRefetch();
-  }, [companyAccountRefetch()]);
+  // useEffect(() => {
+  //   companyListRefetch();
+  // }, [companyAccountRefetch()]);
 
   // 아이디 중복 확인 && 토탈 유저 수
   const { data: totalData, refetch: totalDataRefetch } = useQuery({
@@ -441,12 +441,12 @@ export function Company() {
     data: companyAccessMenuData,
     refetch: companyAccessMenuRefetch,
   } = useQuery({
-    queryKey: ['get-companyAccessMenu'],
+    queryKey: ['get-companyAccessMenu', codeValue],
     queryFn: getAccessMenu,
     meta: {
       errorMessage: 'get-companyAccessMenu 에러 메세지',
     },
-    enabled: codeValue !== '',
+    enabled: !!codeValue,
   });
 
   useEffect(() => {

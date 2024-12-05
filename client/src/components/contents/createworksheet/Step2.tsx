@@ -2495,8 +2495,9 @@ export function Step2() {
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="title">
-                                        {quizCategory?.유형.split('^^^')[0] ||
-                                          'N/A'}
+                                        {/* {quizCategory?.유형.split('^^^')[0] ||
+                                          'N/A'} */}
+                                        {quizCategory?.유형[0].name || 'N/A'}
                                         {/* 값이 없으면 'N/A' 출력 */}
                                       </div>
                                       <div className="icon">
@@ -3373,10 +3374,7 @@ export function Step2() {
                                     data={dragItem}
                                     quizNum={dragItem.num}
                                     itemIndex={itemIndex}
-                                    title={
-                                      quizCategory?.유형?.split('^^^')[0] ||
-                                      'N/A'
-                                    }
+                                    title={quizCategory?.유형[0].name || 'N/A'}
                                     index={dragItem.idx}
                                     selectedCardIndex={selectedCardIndex}
                                     onSelectCard={setSelectedCardIndex}

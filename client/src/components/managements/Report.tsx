@@ -466,6 +466,7 @@ export function Report() {
               list={reportList}
               totalCount={reportData?.data?.pagination?.totalCount}
               itemsCountPerPage={reportData?.data?.pagination?.pageUnit}
+              refetch={reportListRefetch}
             ></QuizReportList>
           </>
         )}
