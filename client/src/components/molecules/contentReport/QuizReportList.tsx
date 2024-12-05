@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useQuery,
+} from '@tanstack/react-query';
 import { TbCopy } from 'react-icons/tb';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
@@ -31,12 +35,16 @@ type QuizReportListProps = {
   list: ReportType[];
   totalCount?: number;
   itemsCountPerPage?: number;
+  refetch: (
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<any, Error>>;
 };
 
 export function QuizReportList({
   list,
   totalCount,
   itemsCountPerPage,
+  refetch,
 }: QuizReportListProps) {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
@@ -46,7 +54,13 @@ export function QuizReportList({
   const openReportProcess = (idx: number) => {
     openModal({
       title: '',
-      content: <ReportProcessModal registorReport={false} reportIdx={idx} />,
+      content: (
+        <ReportProcessModal
+          registorReport={false}
+          reportIdx={idx}
+          refetch={refetch}
+        />
+      ),
       callback: () => {},
     });
   };

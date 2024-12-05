@@ -4,3 +4,4 @@ export * from './Step3';
 export * from './SelectSection';
 export * from './PreviousTab';
 export * from './MockExamTab';
+export * from './UnitTypeTab';
