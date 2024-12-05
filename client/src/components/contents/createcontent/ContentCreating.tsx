@@ -56,9 +56,6 @@ export function ContentCreating({
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [isAdd, setIsAdd] = useState<boolean>(false);
-
-  // const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
 
   const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
   const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
@@ -71,10 +68,6 @@ export function ContentCreating({
   // 에디터에서 나온 문항 요소
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
 
-  // 에디터에서 나온 문항 요소의 모든 배열
-  // const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType>([]);
-
-  const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
   //셀렉트 값
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
