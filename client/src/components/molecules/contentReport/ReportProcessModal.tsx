@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { styled } from 'styled-components';
 
@@ -15,6 +20,9 @@ import { COLOR } from '../../constants';
 type ReportProcessType = {
   registorReport?: boolean;
   reportIdx?: number;
+  refetch?: (
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<any, Error>>;
 };
 
 type UploadReportResponse = {
@@ -31,11 +39,14 @@ type UploadReportResponse = {
 export function ReportProcessModal({
   registorReport,
   reportIdx,
+  refetch,
 }: ReportProcessType) {
   const { closeModal } = useModal();
   const [content, setContent] = useState<string>();
   const [commentValue, setCommentValue] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [images, setImages] = useState<Array<string | null>>([null]); // 초기 빈 ImgBox 1개
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [reportType, setReportType] = useState<
     {
       id: string;
@@ -93,6 +104,7 @@ export function ReportProcessModal({
         text: response.data.message,
       });
       closeModal();
+      refetch && refetch();
     },
   });
 
@@ -141,7 +153,6 @@ export function ReportProcessModal({
 
         // 모든 이미지를 한 번에 업로드
         const uploadResponse = await postReportImgData(formData);
-        console.log('uploadResponse', uploadResponse);
 
         // 업로드 결과에서 URL 또는 필요한 정보를 추출
         articleList = uploadResponse.data.results.map(
@@ -157,7 +168,6 @@ export function ReportProcessModal({
             storedPath: result.url,
           }),
         );
-        console.log('articleList', articleList);
       }
 
       // 신고 데이터를 서버로 전송
@@ -193,7 +203,6 @@ export function ReportProcessModal({
     }
   };
 
-  //j-dev01.dreamonesys.co.kr/file/upload_report
   // 문항 신고
   const postReportImg = async (
     data: FormData,
@@ -242,9 +251,6 @@ export function ReportProcessModal({
     },
   });
 
-  const [images, setImages] = useState<Array<string | null>>([null]); // 초기 빈 ImgBox 1개
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  console.log('images', images);
   // 파일 선택 트리거
   const handleClick = (index: number) => {
     fileInputRef.current?.click();
