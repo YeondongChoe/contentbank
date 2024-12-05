@@ -53,6 +53,7 @@ export function ContentCreating({
   tabView: string;
   type: string;
 }) {
+  const queryClient = useQueryClient();
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
@@ -233,11 +234,7 @@ export function ContentCreating({
     // console.log('getMenuSetting--------', res);
     return res.data.data;
   };
-  const {
-    data: menuSettingData,
-    isLoading: isMenuSettingLoading,
-    refetch: menuSettingRefetch,
-  } = useQuery({
+  const { data: menuSettingData, refetch: menuSettingRefetch } = useQuery({
     queryKey: ['get-menuSetting'],
     queryFn: getMenuSetting,
     meta: {
@@ -419,7 +416,7 @@ export function ContentCreating({
   useEffect(() => {
     console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
     // 등록 호출
-    if (isEditor) postQuizDataMutate();
+    if (isEditor && !isPending) postQuizDataMutate();
   }, [quizItemList]);
 
   // 문항 등록 후 메타데이터 수정 되게
@@ -455,6 +452,7 @@ export function ContentCreating({
   const {
     data: postQuizData,
     mutate: postQuizDataMutate,
+    isPending,
     isSuccess,
   } = useMutation({
     mutationFn: postQuiz,
@@ -472,6 +470,12 @@ export function ContentCreating({
         text: `문항이 추가 되었습니다 ${response[0]?.idx}`,
       });
       console.log('문항이 추가 되었습니다;', response);
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+        exact: true,
+      });
     },
   });
 

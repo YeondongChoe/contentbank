@@ -42,6 +42,7 @@ export function ContentFileUpload({
   setTabView: React.Dispatch<React.SetStateAction<string>>;
   type: string;
 }) {
+  const queryClient = useQueryClient();
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
 
@@ -71,7 +72,7 @@ export function ContentFileUpload({
     }[]
   >([]);
   // 선택된 리스트 아이템 데이터
-  const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
+  // const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -405,7 +406,7 @@ export function ContentFileUpload({
   useEffect(() => {
     console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
     // 등록 호출
-    if (isEditor) postQuizDataMutate();
+    if (isEditor && !isPending) postQuizDataMutate();
   }, [quizItemList]);
 
   // 문항 등록 후 메타데이터 수정 되게
@@ -441,6 +442,7 @@ export function ContentFileUpload({
   const {
     data: postQuizData,
     mutate: postQuizDataMutate,
+    isPending,
     isSuccess,
   } = useMutation({
     mutationFn: postQuiz,
@@ -458,6 +460,12 @@ export function ContentFileUpload({
         text: `문항이 추가 되었습니다 ${response[0]?.idx}`,
       });
       console.log('문항이 추가 되었습니다;', response);
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+        exact: true,
+      });
     },
   });
 
@@ -484,8 +492,6 @@ export function ContentFileUpload({
     console.log('quizList 문항 리스트 ---- ', quizList);
   }, [quizList]);
 
-  useEffect(() => {}, [onItemClickData]);
-
   // 문항 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
     if (selectedQuestionType !== '' && selectedSource.length > 0) {
@@ -505,7 +511,7 @@ export function ContentFileUpload({
                 type={type}
                 setEditorData={setEditorData}
                 saveHandler={saveHandler}
-                onItemClickData={onItemClickData}
+                // onItemClickData={onItemClickData}
               />
             </EditWrapper>
 
@@ -680,7 +686,8 @@ export function ContentFileUpload({
               questionList={quizList}
               $height={`calc(100vh - 200px)`}
               showViewAllButton
-              onItemClick={setOnItemClickData}
+              showCheckBox
+              // onItemClick={setOnItemClickData}
               setCheckedList={setCheckedList}
             />
           </ContentList>

@@ -97,6 +97,7 @@ export function ContentEdit({
   setTabView: React.Dispatch<React.SetStateAction<string>>;
   type: string;
 }) {
+  const queryClient = useQueryClient();
   const [isMathJaxLoaded, setMathJaxLoaded] = useState(false);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
@@ -429,6 +430,12 @@ export function ContentEdit({
         text: `문항이 수정 되었습니다 ${response.data.data.quiz.idx}`,
       });
       // 추가된 문항의 idx값을 배열에 넣기 전체리스트에서 idx값으로 찾아온뒤 필수 메타값넣고 등록
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+        exact: true,
+      });
     },
   });
 

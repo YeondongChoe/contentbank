@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState, useRef } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -50,6 +50,7 @@ export function QuizList({
   setIsCheck?: React.Dispatch<React.SetStateAction<boolean>>;
   arrowPosition?: string;
 }) {
+  const queryClient = useQueryClient();
   const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -246,7 +247,7 @@ export function QuizList({
     return groupCode.data.data.groupCode;
   };
 
-  const { mutate: putGroupData } = useMutation({
+  const { mutate: putGroupData, isPending } = useMutation({
     mutationFn: putGroup,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -267,6 +268,12 @@ export function QuizList({
       openToastifyAlert({
         type: 'success',
         text: '저장되었습니다.',
+      });
+
+      // 초기화
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+        exact: true,
       });
     },
   });
@@ -312,7 +319,7 @@ export function QuizList({
     }
     // 그룹화 DOM 생성
     // 서버에 그룹 상태 전송
-    putGroupData(items);
+    if (!isPending) putGroupData(items);
     const parentDiv = document.createElement('div');
     parentDiv.id = groupId as string; // props로 전달받은 groupId를 id로 설정
     parentDiv.className = 'groupedItemsContainer';
@@ -358,7 +365,7 @@ export function QuizList({
         setGroupId(null);
         parentDiv.remove();
         // 서버에 그룹 상태 전송
-        putGroupData(items);
+        if (!isPending) putGroupData(items);
         alert('그룹이 해제되었습니다.');
       }
     };
@@ -413,7 +420,9 @@ export function QuizList({
     // @ts-expect-error
     window.iTeXEQ.latexrecovery();
 
-    if (onItemClick) onItemClick(data);
+    if (onItemClick) {
+      onItemClick(data);
+    }
     // e.preventDefault();
     // const quiz = questionList.filter((el) => el.code === code);
     // const data: QuizListType = quiz[0];
