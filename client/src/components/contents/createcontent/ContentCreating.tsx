@@ -67,6 +67,7 @@ export function ContentCreating({
   const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
+  const [isEditor, setIsEditor] = useState<boolean>(false);
   // 에디터에서 나온 문항 요소
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
 
@@ -399,10 +400,6 @@ export function ContentCreating({
     );
   }, [idxNamePairsH, idxNamePairsF, idxNamePairsG]);
 
-  // 등록 버튼 입력시 에디터에서 문항값 축출 등록
-  useEffect(() => {
-    console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
-  }, [quizItemList]);
   // 분류 등록
   useEffect(() => {
     console.log(',selectedSourceList 전체 출처 리스트 ', selectedSource);
@@ -420,9 +417,21 @@ export function ContentCreating({
     console.log(',selectedQuestionType 문항타입 ', selectedQuestionType);
   }, [selectedQuestionType]);
 
+  const submitSave = () => {
+    setIsEditor(true);
+    // 버튼 누를 시 에디터 값 축출
+    saveHandler();
+  };
+  // 등록 버튼 입력시 에디터에서 문항값 축출 등록
+  useEffect(() => {
+    console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
+    // 등록 호출
+    if (isEditor) postQuizDataMutate();
+  }, [quizItemList]);
+
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
-    if (quizItemList.length > 0 && selectedSource.length > 0) {
+    if (selectedSource.length > 0) {
       const data = {
         commandCode: 0,
         quizIdx: null,
@@ -443,6 +452,9 @@ export function ContentCreating({
       console.log('최종 적으로 등록될 문항 data값', data);
       const res = await quizService.post(`/v2/quiz`, data);
       console.log('res문항 data값', res.data.data.quizList);
+      setQuizList([...quizList, ...res.data.data.quizList]);
+      setQuestionList([...quizList, ...res.data.data.quizList]);
+
       return res.data.data.quizList;
     }
   };
@@ -461,24 +473,21 @@ export function ContentCreating({
         text: context.response.data.message,
       });
     },
-    onSuccess: (response) => {},
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: `문항이 추가 되었습니다 ${response[0]?.idx}`,
+      });
+      console.log('문항이 추가 되었습니다;', response);
+    },
   });
 
   useEffect(() => {
     console.log('문항 data postQuizData 값', postQuizData);
     if (postQuizData) {
-      setQuestionList([...quizList, ...postQuizData]);
-      setQuizList([...quizList, ...postQuizData]);
       // 등록 이후 축출 값 초기화
-      if (isSuccess) {
-        setQuizItemList([]);
-
-        openToastifyAlert({
-          type: 'success',
-          text: `문항이 추가 되었습니다 ${postQuizData[0].idx}`,
-        });
-        console.log('문항이 추가 되었습니다;', postQuizData);
-      }
+      setQuizItemList([]);
+      setIsEditor(false);
     }
   }, [postQuizData]);
 
@@ -507,13 +516,7 @@ export function ContentCreating({
 
   // 셀렉트 초기화
   const handleDefaultSelect = (defaultValue?: string) => {};
-  const submitSave = () => {
-    // 버튼 누를 시 에디터 값 축출
-    saveHandler();
 
-    // 등록 호출
-    postQuizDataMutate();
-  };
   const saveHandler = async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error

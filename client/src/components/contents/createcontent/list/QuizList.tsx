@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState, useRef } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -10,12 +11,15 @@ import {
   CheckBoxI,
   DnDWrapper,
   Icon,
+  openToastifyAlert,
   Tooltip,
   ValueNone,
 } from '../../..';
+import { quizService } from '../../../../api/axios';
 import { myAuthorityAtom } from '../../../../store/myAuthorityAtom';
 import { quizListAtom } from '../../../../store/quizListAtom';
 import { QuizListType, Source } from '../../../../types';
+import { postRefreshToken } from '../../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
 
@@ -54,7 +58,7 @@ export function QuizList({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [isPostMessage, setIsPostMessage] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [groupId, setGroupId] = useState<string>('');
+  const [groupId, setGroupId] = useState<string | null>(null);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -173,6 +177,55 @@ export function QuizList({
 
   // 그룹으로 묶기
   useEffect(() => {}, [groupId]);
+
+  //문항 그룹 생성/해제 api
+  const putGroup = async (items: QuizListType[]) => {
+    console.log('groupId ----- ', groupId);
+    console.log('group ----- ', items);
+    const quizList = items.map((item, index) => ({
+      idx: item.idx, // idx 값 가져오기
+      sort: index + 1, // 순번은 배열 순서대로 1부터 시작
+    }));
+
+    console.log('quizList ----- ', quizList);
+    const data = {
+      groupCode: groupId,
+      quizList: quizList,
+    };
+    const groupCode = await quizService.put(`/v1/quiz/group`, data);
+
+    return groupCode.data.data.groupCode;
+  };
+
+  const { mutate: putGroupData } = useMutation({
+    mutationFn: putGroup,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      console.log('response ----- ', response);
+      setGroupId(response);
+
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+    },
+  });
+
+  useEffect(() => {
+    console.log('groupId ----- ', groupId);
+  }, [groupId]);
+
   const AddGroup = () => {
     // 하나이상의 대발문은 그룹 불가능
     // 문제와 정답은 1:1 대응되도록 개수가 안맞으면 불가능
@@ -190,21 +243,18 @@ export function QuizList({
       );
     console.log('체크된 아이템 리스트 솔팅- ', items);
     // 대발문(BIG) 타입 요소 카운트
-    const bigItems = items.filter(
-      (el) =>
-        el.quizItemList &&
-        el.quizItemList.filter((item) => item.type === 'BIG'),
+    const bigItems = items.filter((el) =>
+      el?.quizItemList?.some((item) => item.type === 'BIG'),
     );
+    console.log('대발문 조건 ---- ', bigItems);
     if (bigItems.length > 1) {
       alert('대발문 항목은 하나만 선택할 수 있습니다.');
       setCheckList([]);
       return;
     }
     // 문제(QUESTION) 타입 확인
-    const questionItems = items.filter(
-      (el) =>
-        el.quizItemList &&
-        el.quizItemList.filter((item) => item.type === 'QUESTION'),
+    const questionItems = items.filter((el) =>
+      el?.quizItemList?.some((item) => item.type === 'QUESTION'),
     );
     //
     if (questionItems.length === 0) {
@@ -212,8 +262,10 @@ export function QuizList({
       return;
     }
     // 그룹화 DOM 생성
+    // 서버에 그룹 상태 전송
+    putGroupData(items);
     const parentDiv = document.createElement('div');
-    parentDiv.id = groupId; // props로 전달받은 groupId를 id로 설정
+    parentDiv.id = groupId as string; // props로 전달받은 groupId를 id로 설정
     parentDiv.className = 'groupedItemsContainer';
     // 그룹 체크박스 추가
     const groupCheckbox = document.createElement('input');
@@ -255,6 +307,9 @@ export function QuizList({
         }
         // 그룹 컨테이너 제거
         parentDiv.remove();
+        // 서버에 그룹 상태 전송
+        putGroupData(items);
+        setGroupId(null);
         alert('그룹이 해제되었습니다.');
       }
     };
@@ -384,6 +439,7 @@ export function QuizList({
   useEffect(() => {
     // setQuestionList()
     console.log('questionList -------- ', questionList);
+    console.log('quizList -------- ', quizList);
   }, [questionList, quizList]);
 
   // 스타틱 파일
@@ -515,7 +571,7 @@ export function QuizList({
                 </span>
               </Title>
             )}
-            <ListWrapper>
+            <ListWrapper className="list_wrapper">
               {/* <DnDWrapper
                 dragList={questionList}
                 onDragging={() => {}}
@@ -786,6 +842,30 @@ const Container = styled.div<{ $height?: string }>`
   height: fit-content;
   position: relative;
   height: 100%;
+
+  .groupedItemsContainer {
+    border: 3px solid ${COLOR.BORDER_BLUE};
+    position: relative;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+
+  .group-checkbox {
+    margin-right: 5px;
+  }
+
+  .ungroup-button {
+    padding: 5px;
+    background-color: ${COLOR.ERROR};
+    color: white;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 12px;
+  }
 `;
 
 const EditerButtonWrapper = styled.div`
