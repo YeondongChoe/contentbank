@@ -11,7 +11,7 @@ type ButtonFormatRadioProps = {
   titleText?: string;
   $margin?: string;
   defaultChecked?: boolean;
-  checkedInput: { title: string; checkValue: number; code: string };
+  checkedInput?: { title: string; checkValue: number; code: string };
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   selected: string | number;

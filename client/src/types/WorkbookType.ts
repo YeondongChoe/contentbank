@@ -149,4 +149,5 @@ export type selectedListType = {
   view: boolean;
   search: boolean;
   type?: string;
+  selected?: string;
 };
