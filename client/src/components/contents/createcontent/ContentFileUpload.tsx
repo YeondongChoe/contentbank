@@ -138,38 +138,38 @@ export function ContentFileUpload({
   };
 
   // 이미지 업로딩
-  const uploadImages = async () => {
-    const blobUrls = imagesSrc.split(',');
-    const uploadedUrls = await Promise.all(blobUrls.map(uploadImage));
+  // const uploadImages = async () => {
+  //   const blobUrls = imagesSrc.split(',');
+  //   const uploadedUrls = await Promise.all(blobUrls.map(uploadImage));
 
-    // blob URL을 업로드된 URL로 교체
-    let updatedContent = editorData && editorData.tag_group;
+  //   // blob URL을 업로드된 URL로 교체
+  //   let updatedContent = editorData && editorData.tag_group;
 
-    if (typeof updatedContent === 'string') {
-      // blobUrls.forEach((blobUrl, index) => {
-      //   updatedContent =
-      //     updatedContent &&
-      //     updatedContent.replace(blobUrl, uploadedUrls[index]);
-      // });
+  //   if (typeof updatedContent === 'string') {
+  //     // blobUrls.forEach((blobUrl, index) => {
+  //     //   updatedContent =
+  //     //     updatedContent &&
+  //     //     updatedContent.replace(blobUrl, uploadedUrls[index]);
+  //     // });
 
-      // 상태 업데이트 또는 업데이트된 콘텐츠 처리
-      console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
-    } else if (Array.isArray(updatedContent)) {
-      updatedContent = updatedContent.map((content) => {
-        if (typeof content === 'string') {
-          blobUrls.forEach((blobUrl, index) => {
-            content = content.replace(blobUrl, uploadedUrls[index]);
-          });
-        }
-        return content;
-      });
+  //     // 상태 업데이트 또는 업데이트된 콘텐츠 처리
+  //     console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
+  //   } else if (Array.isArray(updatedContent)) {
+  //     updatedContent = updatedContent.map((content) => {
+  //       if (typeof content === 'string') {
+  //         blobUrls.forEach((blobUrl, index) => {
+  //           content = content.replace(blobUrl, uploadedUrls[index]);
+  //         });
+  //       }
+  //       return content;
+  //     });
 
-      // 상태 업데이트 또는 업데이트된 콘텐츠 처리
-      console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
-    } else {
-      console.error('updatedContent는 문자열 또는 문자열 배열이어야 합니다.');
-    }
-  };
+  //     // 상태 업데이트 또는 업데이트된 콘텐츠 처리
+  //     console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
+  //   } else {
+  //     console.error('updatedContent는 문자열 또는 문자열 배열이어야 합니다.');
+  //   }
+  // };
 
   const uploadImage = async (blobUrl: RequestInfo | URL) => {
     const response = await fetch(blobUrl);
@@ -206,11 +206,11 @@ export function ContentFileUpload({
     }
   };
 
-  useEffect(() => {
-    if (imagesSrc) {
-      uploadImages();
-    }
-  }, [imagesSrc]);
+  // useEffect(() => {
+  //   if (imagesSrc) {
+  //     uploadImages();
+  //   }
+  // }, [imagesSrc]);
 
   // 메뉴 목록 조회 api (셋팅값)
   const getMenuSetting = async () => {
