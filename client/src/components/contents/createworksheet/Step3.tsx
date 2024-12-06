@@ -280,27 +280,28 @@ export function Step3() {
     setIsComplete(false);
   }, []);
 
-  const { mutate: postNewWorkbookData } = useMutation({
-    mutationFn: postNewWorkbook,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: '잠시후 다시 시도해주세요',
-      });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
-      }
-    },
-    onSuccess: (response) => {
-      //수정 값 초기화
-      setIsEditWorkbook(0);
-      //alert 열기
-      setIsSuccessAlertOpen(true);
-      setIsComplete(true);
-    },
-  });
+  const { mutate: postNewWorkbookData, isPending: postNewWorkbookIsPending } =
+    useMutation({
+      mutationFn: postNewWorkbook,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: '잠시후 다시 시도해주세요',
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response) => {
+        //수정 값 초기화
+        setIsEditWorkbook(0);
+        //alert 열기
+        setIsSuccessAlertOpen(true);
+        setIsComplete(true);
+      },
+    });
 
   const submitCreateWorksheet = () => {
     if (!nameValue || !contentAuthor || !gradeValue || !tag) {
@@ -942,6 +943,7 @@ export function Step3() {
           fontSize="13px"
           $filled
           cursor
+          disabled={postNewWorkbookIsPending}
         >
           <span>학습지 만들기</span>
         </Button>
