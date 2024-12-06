@@ -171,40 +171,40 @@ export function ContentFileUpload({
   //   }
   // };
 
-  const uploadImage = async (blobUrl: RequestInfo | URL) => {
-    const response = await fetch(blobUrl);
-    const blob = await response.blob();
-    const file = new File([blob], `${uuidv4()}.png`, { type: blob.type });
+  // const uploadImage = async (blobUrl: RequestInfo | URL) => {
+  //   const response = await fetch(blobUrl);
+  //   const blob = await response.blob();
+  //   const file = new File([blob], `${uuidv4()}.png`, { type: blob.type });
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('img_save_type', '3'); // 1을 문자열로 변환
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   formData.append('img_save_type', '3'); // 1을 문자열로 변환
 
-    console.log('formData --------------', formData);
-    try {
-      const response = await axios.post(
-        'https://j-dev01.dreamonesys.co.kr/file',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        },
-      );
+  //   console.log('formData --------------', formData);
+  //   try {
+  //     const response = await axios.post(
+  //       'https://j-dev01.dreamonesys.co.kr/file',
+  //       formData,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       },
+  //     );
 
-      const { imgUUID } = response.data;
-      const [year, month, day] = new Date()
-        .toISOString()
-        .split('T')[0]
-        .split('-');
-      const newUrl = `https://j-dev01.dreamonesys.co.kr/file/${year}/${month}/${day}/${imgUUID}.png`;
+  //     const { imgUUID } = response.data;
+  //     const [year, month, day] = new Date()
+  //       .toISOString()
+  //       .split('T')[0]
+  //       .split('-');
+  //     const newUrl = `https://j-dev01.dreamonesys.co.kr/file/${year}/${month}/${day}/${imgUUID}.png`;
 
-      return newUrl;
-    } catch (error) {
-      console.error('파일 업로드 오류:', error);
-      throw error;
-    }
-  };
+  //     return newUrl;
+  //   } catch (error) {
+  //     console.error('파일 업로드 오류:', error);
+  //     throw error;
+  //   }
+  // };
 
   // useEffect(() => {
   //   if (imagesSrc) {
