@@ -19,12 +19,16 @@ import {
   IconButton,
   ButtonFormatMultiRadio,
 } from '../..';
-import { classificationInstance } from '../../../api/axios';
+import {
+  classificationInstance,
+  resourceServiceInstance,
+} from '../../../api/axios';
 import {
   ItemCategoryType,
   ItemTreeListType,
   ItemTreeType,
 } from '../../../types';
+import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 
@@ -150,6 +154,58 @@ export function UnitTypeTab({
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
   //검색
   const [searchValue, setSearchValue] = useState<string>('');
+  const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
+  const [menuGroupCode, setMenuGroupCode] = useState<string | null>(null);
+  //선택한 값의 idx
+  const [pidxList, setPidxList] = useState<number[]>([]);
+
+  //그룹 화면설정 정보 불러오기 api
+  const getMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=workbookClassificationSetting`,
+    );
+    console.log(res);
+    return res;
+  };
+  const {
+    data: menuData,
+    isLoading: isMenuLoading,
+    refetch: menuRefetch,
+  } = useQuery({
+    queryKey: ['get-menu'],
+    queryFn: getMenu,
+    meta: {
+      errorMessage: 'get-menu 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (menuData) {
+      const filterList = menuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const typeListArray = filterList[0]?.idxList.split(',') || [];
+      const typeList = filterList[0]?.idxList;
+      const nameList = filterList[0]?.nameList;
+
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: typeListArray[index],
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
+      }));
+      setCategoryTypeList(typeList);
+      setSelectedList(newArray);
+      setMenuGroupCode(filterList[0].groupCode);
+      setCategoryNameList(nameList);
+      //setCategoryTypeList(filterList[0].typeList);
+    }
+  }, [menuData]);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -181,22 +237,25 @@ export function UnitTypeTab({
   }, [categoryData, categoryDataError, categoryDataRefetch]);
 
   // 카테고리의 그룹 유형 조회
-  const getCategoryGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
-    return response.data.data;
-  };
-  const {
-    data: groupsData,
-    isFetching: groupsDataAIsFetching,
-    refetch: groupsDataRefetch,
-  } = useQuery({
-    queryKey: ['get-category-groups-A'],
-    queryFn: getCategoryGroups,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups 에러 메세지',
-    },
-  });
+  // const getCategoryGroups = async () => {
+  //   const response = await classificationInstance.get(
+  //     `/v1/category/group/${menuGroupCode}`,
+  //   );
+  //   return response.data.data;
+  // };
+  // const {
+  //   data: groupsData,
+  //   isFetching: groupsDataAIsFetching,
+  //   refetch: groupsDataRefetch,
+  // } = useQuery({
+  //   queryKey: ['get-category-groups', menuGroupCode],
+  //   queryFn: getCategoryGroups,
+  //   enabled: !!categoryData,
+  //   meta: {
+  //     errorMessage: 'get-category-groups 에러 메세지',
+  //   },
+  // });
+
   useEffect(() => {
     if (tabVeiw === '단원·유형별' && categoryTypeList) {
       fetchCategoryItems(categoryTypeList, setCategoryList);
@@ -204,18 +263,18 @@ export function UnitTypeTab({
   }, [categoryTypeList, tabVeiw]);
 
   //groupsData값 들어왔을때 typeList 관리
-  useEffect(() => {
-    if (groupsData) {
-      setCategoryTypeList(groupsData.typeList);
-    }
-  }, [groupsData]);
+  // useEffect(() => {
+  //   if (groupsData) {
+  //     setCategoryTypeList(groupsData.typeList);
+  //   }
+  // }, [groupsData]);
 
   //groupsData값 들어왔을때 nameList 관리
-  useEffect(() => {
-    if (groupsData) {
-      setCategoryNameList(groupsData.nameList);
-    }
-  }, [groupsData]);
+  // useEffect(() => {
+  //   if (groupsData) {
+  //     setCategoryNameList(groupsData.nameList);
+  //   }
+  // }, [groupsData]);
 
   // 카테고리의 그룹 유형 조회 (출처)
   const getCategoryGroupsE = async () => {
@@ -239,9 +298,6 @@ export function UnitTypeTab({
       fetchCategoryItems(groupsEData, setCategoriesE);
     }
   }, [groupsEData]);
-  console.log('groupsEData', groupsEData);
-  console.log('categoryList', categoryList);
-  console.log('categoriesE', categoriesE);
 
   // 카테고리의 그룹 유형 조회
   const fetchCategoryItems = async (
@@ -273,75 +329,121 @@ export function UnitTypeTab({
       console.log('finally');
     }
   };
+  const [selectedDepth, setSelectedDepth] = useState<{
+    [key: number]: string | null;
+  }>({});
+  console.log('categoryList', categoryList);
+  console.log('selectedDepth', selectedDepth);
+  //console.log('selectedList', selectedList);
+  //console.log('menuGroupCode', menuGroupCode);
+  //console.log('categoryTypeList', categoryTypeList);
+  //console.log(unitClassificationList);
+  //console.log('pidxList', pidxList);
+  //console.log(itemIdx);
 
-  // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const depth =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.classList[0];
-    const itemId =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.id;
+    const radioValue = e.currentTarget.value; // 선택된 값
+    const radioName = e.currentTarget.name; // radio 버튼의 name 값
+    const radioClass = e.currentTarget.className; // radio 버튼의 class 값
+    const itemId = e.target.closest('.depth')?.id; // 부모 요소의 ID
 
-    switch (depth) {
-      case '1depth':
-        setSelected1depth(e.currentTarget.value);
-        setRadio1depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '2depth':
-        setSelected2depth(e.currentTarget.value);
-        setRadio2depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '3depth':
-        setSelected3depth(e.currentTarget.value);
-        setRadio3depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '4depth':
-        setSelected4depth(e.currentTarget.value);
-        setRadio4depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '5depth':
-        setSelected5depth(e.currentTarget.value);
-        setRadio5depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '6depth':
-        setSelected6depth(e.currentTarget.value);
-        setRadio6depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      default:
-        break;
+    // selectedList에서 해당 name에 맞는 항목을 찾아서 selected 값을 업데이트
+    const updatedSelectedList = selectedList.map((item) => {
+      if (item.name === radioClass) {
+        return {
+          ...item,
+          selected: radioValue, // 선택된 값을 selected로 업데이트
+        };
+      }
+      return item;
+    });
+    console.log('radioValue', radioValue);
+
+    // selectedList를 업데이트합니다.
+    setSelectedList(updatedSelectedList);
+
+    // pidxList를 업데이트 (radioValue를 pidx로 설정)
+    const updatedPidxList = [...pidxList];
+    const indexToUpdate = selectedList.findIndex(
+      (item) => item.name === radioClass,
+    );
+    console.log('indexToUpdate', indexToUpdate);
+
+    if (indexToUpdate !== -1) {
+      updatedPidxList[indexToUpdate] = Number(radioValue);
+      setPidxList(updatedPidxList);
     }
   };
+
+  // 라디오 버튼 설정
+  // const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const depth =
+  //     e.target.parentElement?.parentElement?.parentElement?.parentElement
+  //       ?.parentElement?.classList[0];
+  //   const itemId =
+  //     e.target.parentElement?.parentElement?.parentElement?.parentElement
+  //       ?.parentElement?.id;
+  //   console.log('선택값', e.currentTarget.value);
+
+  //   switch (depth) {
+  //     case '1depth':
+  //       setSelected1depth(e.currentTarget.value);
+  //       setRadio1depthCheck({
+  //         title: e.currentTarget.name,
+  //         checkValue: Number(e.currentTarget.value),
+  //         code: e.currentTarget.className,
+  //         key: itemId as string,
+  //       });
+  //       break;
+  //     case '2depth':
+  //       setSelected2depth(e.currentTarget.value);
+  //       setRadio2depthCheck({
+  //         title: e.currentTarget.name,
+  //         checkValue: Number(e.currentTarget.value),
+  //         code: e.currentTarget.className,
+  //         key: itemId as string,
+  //       });
+  //       break;
+  //     case '3depth':
+  //       setSelected3depth(e.currentTarget.value);
+  //       setRadio3depthCheck({
+  //         title: e.currentTarget.name,
+  //         checkValue: Number(e.currentTarget.value),
+  //         code: e.currentTarget.className,
+  //         key: itemId as string,
+  //       });
+  //       break;
+  //     case '4depth':
+  //       setSelected4depth(e.currentTarget.value);
+  //       setRadio4depthCheck({
+  //         title: e.currentTarget.name,
+  //         checkValue: Number(e.currentTarget.value),
+  //         code: e.currentTarget.className,
+  //         key: itemId as string,
+  //       });
+  //       break;
+  //     case '5depth':
+  //       setSelected5depth(e.currentTarget.value);
+  //       setRadio5depthCheck({
+  //         title: e.currentTarget.name,
+  //         checkValue: Number(e.currentTarget.value),
+  //         code: e.currentTarget.className,
+  //         key: itemId as string,
+  //       });
+  //       break;
+  //     case '6depth':
+  //       setSelected6depth(e.currentTarget.value);
+  //       setRadio6depthCheck({
+  //         title: e.currentTarget.name,
+  //         checkValue: Number(e.currentTarget.value),
+  //         code: e.currentTarget.className,
+  //         key: itemId as string,
+  //       });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   // 다중 라디오 버튼 설정
   const handleMultiRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -421,105 +523,143 @@ export function UnitTypeTab({
     }
   };
 
+  const [categoryLists, setCategoryLists] = useState<ItemCategoryType[][]>([]);
+  /* 선택된 유형에따라 항목 조회 */
+  const fetchCategoryList = async (
+    itemIdx: number, //구하고자 하는 유형의 idx
+    pidx: number, //클릭한 유형의 idx
+    index: number,
+  ) => {
+    try {
+      const res = await classificationInstance.get(
+        `/v1/category/${itemIdx}/${pidx}`,
+      );
+      const newCategoryLists = [...categoryList];
+      newCategoryLists[index + 1] = res?.data?.data?.categoryClassList || [];
+      setCategoryList(newCategoryLists);
+    } catch (error) {
+      console.error(`Error fetching category list for index ${index}:`, error);
+    }
+  };
+  console.log('categoryLists', categoryLists);
+  console.log('categoryList', categoryList);
+  console.log('selectedList', selectedList);
+  useEffect(() => {
+    console.log(selectedList);
+    console.log(pidxList);
+    selectedList.forEach((list, index) => {
+      if (list.search) {
+        //클릭한 항목의 idx의 다음번째 idx의 list.idx
+        const nextItem = selectedList[index + 1];
+        const itemIdx = nextItem ? nextItem.idx : null; //구하고자 하는 유형의 idx
+        const pidx = pidxList[index]; //클릭한 유형의 idx
+
+        if (itemIdx !== null && pidx !== undefined) {
+          fetchCategoryList(itemIdx, pidx, index);
+        }
+      }
+    });
+  }, [selectedList, pidxList]);
+
   /* 선택된 유형에따라 항목 조회 */
   //1뎁스 선택시 2뎁스 설정되게
-  const getNextList1 = async () => {
-    const groupsArray = categoryTypeList.split(',').map(Number);
-    const itemIdx = groupsArray[1];
-    const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
-    try {
-      const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
-      );
-      setNextList1depth(res?.data.data.categoryClassList);
-      return res.data;
-    } catch (error: any) {
-      if (error.response?.data?.code == 'GE-002')
-        postRefreshToken().then(() => {
-          //groupsDataRefetch();
-        });
-      return undefined;
-    }
-  };
-  const {
-    data: nextListData1,
-    refetch: nextListData1Refetch,
-    isLoading: nextListData1IsLoading,
-  } = useQuery({
-    queryKey: ['get-nextList1'],
-    queryFn: getNextList1,
-    meta: {
-      errorMessage: 'get-nextList1 에러 메세지',
-    },
-    // 체크된 값이 있을때 조회
-    enabled: radio1depthCheck?.code !== '',
-  });
+  // const getNextList1 = async () => {
+  //   const groupsArray = categoryTypeList.split(',').map(Number);
+  //   const itemIdx = groupsArray[1];
+  //   const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
+  //   try {
+  //     const res = await classificationInstance.get(
+  //       `/v1/category/${itemIdx}/${pidx}`,
+  //     );
+  //     setNextList1depth(res?.data.data.categoryClassList);
+  //     return res.data;
+  //   } catch (error: any) {
+  //     if (error.response?.data?.code == 'GE-002')
+  //       postRefreshToken().then(() => {
+  //         //groupsDataRefetch();
+  //       });
+  //     return undefined;
+  //   }
+  // };
+  // const {
+  //   data: nextListData1,
+  //   refetch: nextListData1Refetch,
+  //   isLoading: nextListData1IsLoading,
+  // } = useQuery({
+  //   queryKey: ['get-nextList1'],
+  //   queryFn: getNextList1,
+  //   meta: {
+  //     errorMessage: 'get-nextList1 에러 메세지',
+  //   },
+  //   // 체크된 값이 있을때 조회
+  //   enabled: radio1depthCheck?.code !== '',
+  // });
 
   //2뎁스 선택시 3뎁스 설정되게
-  const getNextList2 = async () => {
-    const groupsArray = categoryTypeList.split(',').map(Number);
-    const itemIdx = groupsArray[2];
-    const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
-    try {
-      const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
-      );
-      setNextList2depth(res?.data.data.categoryClassList);
-      return res.data;
-    } catch (error: any) {
-      if (error.response?.data?.code == 'GE-002')
-        postRefreshToken().then(() => {
-          nextListData1Refetch();
-        });
-      return undefined;
-    }
-  };
-  const {
-    data: nextListData2,
-    refetch: nextListData2Refetch,
-    isLoading: nextListData2IsLoading,
-  } = useQuery({
-    queryKey: ['get-nextList2'],
-    queryFn: getNextList2,
-    meta: {
-      errorMessage: 'get-nextList2 에러 메세지',
-    },
-    // 체크된 값이 있을때 조회
-    enabled: radio2depthCheck?.code !== '',
-  });
+  // const getNextList2 = async () => {
+  //   const groupsArray = categoryTypeList.split(',').map(Number);
+  //   const itemIdx = groupsArray[2];
+  //   const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
+  //   try {
+  //     const res = await classificationInstance.get(
+  //       `/v1/category/${itemIdx}/${pidx}`,
+  //     );
+  //     setNextList2depth(res?.data.data.categoryClassList);
+  //     return res.data;
+  //   } catch (error: any) {
+  //     if (error.response?.data?.code == 'GE-002')
+  //       postRefreshToken().then(() => {
+  //         nextListData1Refetch();
+  //       });
+  //     return undefined;
+  //   }
+  // };
+  // const {
+  //   data: nextListData2,
+  //   refetch: nextListData2Refetch,
+  //   isLoading: nextListData2IsLoading,
+  // } = useQuery({
+  //   queryKey: ['get-nextList2'],
+  //   queryFn: getNextList2,
+  //   meta: {
+  //     errorMessage: 'get-nextList2 에러 메세지',
+  //   },
+  //   // 체크된 값이 있을때 조회
+  //   enabled: radio2depthCheck?.code !== '',
+  // });
 
   //3뎁스 선택시 4뎁스 설정되게
-  const getNextList3 = async () => {
-    const groupsArray = categoryTypeList.split(',').map(Number);
-    const itemIdx = groupsArray[3];
-    const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
-    try {
-      const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
-      );
-      setNextList3depth(res?.data.data.categoryClassList);
-      return res.data;
-    } catch (error: any) {
-      if (error.response?.data?.code == 'GE-002')
-        postRefreshToken().then(() => {
-          nextListData2Refetch();
-        });
-      return undefined;
-    }
-  };
-  const {
-    data: nextListData3,
-    refetch: nextListData3Refetch,
-    isLoading: nextListData3IsLoading,
-  } = useQuery({
-    queryKey: ['get-nextList3'],
-    queryFn: getNextList3,
-    meta: {
-      errorMessage: 'get-nextList3 에러 메세지',
-    },
-    // 체크된 값이 있을때 조회
-    enabled: radio3depthCheck?.code !== '',
-  });
+  // const getNextList3 = async () => {
+  //   const groupsArray = categoryTypeList.split(',').map(Number);
+  //   const itemIdx = groupsArray[3];
+  //   const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
+  //   try {
+  //     const res = await classificationInstance.get(
+  //       `/v1/category/${itemIdx}/${pidx}`,
+  //     );
+  //     setNextList3depth(res?.data.data.categoryClassList);
+  //     return res.data;
+  //   } catch (error: any) {
+  //     if (error.response?.data?.code == 'GE-002')
+  //       postRefreshToken().then(() => {
+  //         nextListData2Refetch();
+  //       });
+  //     return undefined;
+  //   }
+  // };
+  // const {
+  //   data: nextListData3,
+  //   refetch: nextListData3Refetch,
+  //   isLoading: nextListData3IsLoading,
+  // } = useQuery({
+  //   queryKey: ['get-nextList3'],
+  //   queryFn: getNextList3,
+  //   meta: {
+  //     errorMessage: 'get-nextList3 에러 메세지',
+  //   },
+  //   // 체크된 값이 있을때 조회
+  //   enabled: radio3depthCheck?.code !== '',
+  // });
 
   const setNextList = (idx: number) => {
     //교과 과목 오픈여부 라디오 버튼 셋팅
@@ -532,9 +672,9 @@ export function UnitTypeTab({
   };
 
   useEffect(() => {
-    if (radio1depthCheck.code !== '') nextListData1Refetch();
-    if (radio2depthCheck.code !== '') nextListData2Refetch();
-    if (radio3depthCheck.code !== '') nextListData3Refetch();
+    //if (radio1depthCheck.code !== '') nextListData1Refetch();
+    //if (radio2depthCheck.code !== '') nextListData2Refetch();
+    //if (radio3depthCheck.code !== '') nextListData3Refetch();
     if (radio4depthCheck.code !== '') setNextList(4);
     if (radio5depthCheck.code !== '') setNextList(5);
     if (radio6depthCheck.code !== '') setNextList(6);
@@ -719,7 +859,7 @@ export function UnitTypeTab({
     } catch (error: any) {
       if (error.response?.data?.code == 'GE-002') {
         postRefreshToken();
-        groupsDataRefetch();
+        //groupsDataRefetch();
       }
     }
   };
@@ -1059,8 +1199,7 @@ export function UnitTypeTab({
         {/* 교육과정 라디오 버튼 부분 */}
         {categoryItems[0] && categoryList && (
           <>
-            {/* 교육과정 */}
-            {
+            {/* {
               <div
                 className={`1depth`}
                 id={categoryNameList.split(',')[0]}
@@ -1077,9 +1216,34 @@ export function UnitTypeTab({
                   $margin={`10px 0 0 0`}
                 />
               </div>
-            }
+            } */}
+            {selectedList.map((list, index) => {
+              if (list.search) {
+                return (
+                  <div
+                    className={`${list.idx + 1}depth`}
+                    id={list.name}
+                    key={`selected${list.idx + 1}depth ${list.name}`}
+                  >
+                    <ButtonFormatRadio
+                      branchValue={list.name}
+                      titleText={list.name}
+                      list={categoryList[index] || []}
+                      selected={
+                        selectedList.find((item) => item.name === list.name)
+                          ?.selected || ''
+                      }
+                      onChange={(e) => handleRadioCheck(e)}
+                      $margin={`10px 0 0 0`}
+                    />
+                  </div>
+                );
+              }
+              return null;
+            })}
+
             {/* 학교급 */}
-            {radio1depthCheck.code !== '' &&
+            {/* {radio1depthCheck.code !== '' &&
               selected1depth !== '' &&
               !nextListData1IsLoading && (
                 <div
@@ -1097,9 +1261,9 @@ export function UnitTypeTab({
                     checkedInput={radio2depthCheck}
                   />
                 </div>
-              )}
+              )} */}
             {/* 학년 */}
-            {radio2depthCheck.code !== '' &&
+            {/* {radio2depthCheck.code !== '' &&
               selected2depth !== '' &&
               !nextListData2IsLoading && (
                 <div
@@ -1117,9 +1281,9 @@ export function UnitTypeTab({
                     checkedInput={radio3depthCheck}
                   />
                 </div>
-              )}
+              )} */}
             {/* 학기 */}
-            {radio3depthCheck.code !== '' &&
+            {/* {radio3depthCheck.code !== '' &&
               selected3depth !== '' &&
               !nextListData3IsLoading && (
                 <div
@@ -1137,7 +1301,7 @@ export function UnitTypeTab({
                     checkedInput={radio4depthCheck}
                   />
                 </div>
-              )}
+              )} */}
             {/* 교과 */}
             {radio4depthCheck.code !== '' && selected4depth !== '' && (
               <div
