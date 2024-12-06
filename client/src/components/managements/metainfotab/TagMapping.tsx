@@ -111,8 +111,10 @@ export function TagMapping() {
       const res = await classificationInstance.get(
         `/v1/category/map/${groupIdx}`,
       );
-      console.log('선택된 idx에 따른 항목 조회 ----- ', res.data.data?.mapList);
-      setMappingList(res.data.data?.mapList);
+
+      const list = res.data.data.mapList;
+      console.log(',list-----', list);
+      return list;
     }
   };
 
@@ -275,11 +277,11 @@ export function TagMapping() {
   };
 
   useEffect(() => {
-    console.log(
-      '선택된 아이템d idx, 선택된 아이템의 다음 idx----- ',
-      activeMappingItem?.code,
-      selectedList,
-    );
+    // console.log(
+    //   '선택된 아이템d idx, 선택된 아이템의 다음 idx----- ',
+    //   activeMappingItem?.code,
+    //   selectedList,
+    // );
     const foundItem = selectedList.find(
       (item) => item.name === activeMappingItem?.code,
     );
@@ -366,6 +368,43 @@ export function TagMapping() {
   // };
 
   // 매핑에서 선택된 태그 기준으로 태그선택 데이터 넣기
+  useEffect(() => {
+    const fetchInitialCategory = async () => {
+      if (mappingData) {
+        console.log(',mappingData-----', mappingData);
+        if (mappingData.length > 0) {
+          setMappingList(mappingData);
+        } else if (mappingData.length === 0 && selectedList.length > 0) {
+          const idx = selectedList[0].type;
+
+          const res = await classificationInstance.get(
+            `/v1/category/class/${idx}`,
+          );
+          // console.log(
+          //   '저장 된 리스트가 없을경우 최초 첫번째 카테고리 리스트 데이터 복제 ----- ',
+          //   idx,
+          //   res.data.data.categoryClassList,
+          // );
+          const categoryClassList = res.data.data.categoryClassList;
+          // categoryClassList 데이터를 CategoryItem 구조로 변환
+          const list: CategoryItem[] = categoryClassList.map(
+            (item: { idx: any; name: any; code: any }) => ({
+              idx: item.idx,
+              name: item.name,
+              code: item.code,
+              depth: 0, // 기본 depth 설정
+              isUse: true, // 기본 isUse 설정
+              children: [], // 기본 빈 배열
+            }),
+          );
+
+          setMappingList([...list]);
+        }
+      }
+    };
+
+    fetchInitialCategory();
+  }, [mappingData, selectedList]);
 
   const goToInit = () => {
     setIsInit(true);

@@ -107,6 +107,7 @@ export type QuizCategory = {
   학년?: number;
   학기?: number;
   난이도?: string;
+  난이도공통?: string;
   학교급?: string;
   문항타입?: string;
   행동요소1?: string[];

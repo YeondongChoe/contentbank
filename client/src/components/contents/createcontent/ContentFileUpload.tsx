@@ -475,7 +475,21 @@ export function ContentFileUpload({
   };
 
   // 셀렉트 초기화
-  const handleDefaultSelect = (defaultValue?: string) => {};
+  const handleDefaultSelect = (defaultValue?: string) => {
+    switch (defaultValue) {
+      case '문항 타입':
+        setSelectedQuestionType('');
+        break;
+      case '난이도':
+        setSelectedDifficulty('');
+        break;
+      case '공통(시험)':
+        setSelectedDifficulty('');
+        break;
+      default:
+        break;
+    }
+  };
 
   const saveHandler = async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -572,7 +586,7 @@ export function ContentFileUpload({
                     <SelectWrapper>
                       <strong className="title">문항타입</strong>
                       <Select
-                        onDefaultSelect={() => {}}
+                        onDefaultSelect={() => handleDefaultSelect('문항 타입')}
                         width={'120px'}
                         defaultValue={'문항 타입'}
                         key={'문항 타입'}
@@ -604,7 +618,9 @@ export function ContentFileUpload({
                     <SelectWrapper>
                       <strong className="title">난이도</strong>
                       <Select
-                        onDefaultSelect={() => {}}
+                        onDefaultSelect={() =>
+                          handleDefaultSelect('공통(시험)')
+                        }
                         width={'120px'}
                         defaultValue={'공통(시험)'}
                         key={'공통(시험)'}
@@ -636,7 +652,7 @@ export function ContentFileUpload({
                         height="35px"
                       />
                       <Select
-                        onDefaultSelect={() => {}}
+                        onDefaultSelect={() => handleDefaultSelect('난이도')}
                         width={'120px'}
                         defaultValue={'난이도'}
                         key={'난이도'}
@@ -724,14 +740,6 @@ export function ContentFileUpload({
 
 const Container = styled.div`
   position: relative;
-`;
-
-const InputWrappper = styled.div`
-  display: flex;
-  .reddot {
-    margin: 0 5px;
-    color: ${COLOR.ALERTBAR_ERROR};
-  }
 `;
 
 const ContentsWrapper = styled.div`

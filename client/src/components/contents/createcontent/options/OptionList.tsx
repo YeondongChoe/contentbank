@@ -387,6 +387,7 @@ export function OptionList({
 
   const [titleArr, setTitleArr] = useState<string[]>([]);
   useEffect(() => {
+    console.log('onItemClickData---기존 출처값 ', quizCategory);
     // console.log('quizCategory---기존 출처값', quizCategory);
     setSourceOptions([]);
 
@@ -395,7 +396,7 @@ export function OptionList({
       // 객체내 출처키의 값이 해당하는 값들을 각기
       const titleArr = quizCategory.map((el) => el.출처);
       setTitleArr(titleArr);
-      // console.log('titleArr -----', '출처', titleArr);
+      console.log('titleArr -----', '출처', titleArr);
       const arr = [];
       for (let i = 0; i < titleArr.length; i++) {
         arr.push(quizCategory[i].출처);
