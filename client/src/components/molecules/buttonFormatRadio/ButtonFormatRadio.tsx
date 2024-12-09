@@ -29,7 +29,6 @@ export function ButtonFormatRadio({
   branchValue,
   overFlow,
 }: ButtonFormatRadioProps) {
-  // console.log(list && list);
   return (
     <Component $margin={$margin}>
       {list && list.length !== 0 ? (

@@ -7,6 +7,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { redirect } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { userInstance } from '../../api/axios';
 import {
   deleteAuthority,
   getAuthorityItem,
@@ -124,15 +125,49 @@ export function Authority() {
   const [isCreateNameError, setIsCreateNameError] = useState(false);
   const [isCheckNullError, setIsCheckNullError] = useState(false);
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
-
   const [checkList, setCheckList] =
     useState<PermissionInput[]>(defaultPermissions);
+
+  const [companyCoadValue, setCompanyCoadValue] = useState<string | null>(null);
+  const [companyIdxValue, setCompanyIdxValue] = useState<string>('0');
+  //로컬스토리지에 있는 기업코드 가져오기
+  useEffect(() => {
+    const storedCompanyCode = localStorage.getItem('companyCode');
+    setCompanyCoadValue(storedCompanyCode);
+  }, []);
+
+  //기업코드로 기업 idx 가져오기
+  const getCompanyList = async () => {
+    const res = await userInstance.get(
+      `/v1/company?searchCondition=${companyCoadValue}`,
+    );
+    //console.log(`getCompanyList 결과값`, res);
+    return res;
+  };
+
+  const { data: companyListData, refetch: companyListRefetch } = useQuery({
+    queryKey: ['get-companyList'],
+    queryFn: getCompanyList,
+    meta: {
+      errorMessage: 'get-companyList 에러 메세지',
+    },
+    enabled: companyCoadValue !== null,
+  });
+
+  useEffect(() => {
+    if (companyListData) {
+      setCompanyIdxValue(
+        companyListData?.data.data.list[0].idx.toLocaleString(),
+      );
+    }
+  }, [companyListData]);
+
   const queryClient = useQueryClient();
 
-  // 권한 리스트 불러오기 api 기업코드 변경해줘야함
+  //TODO: 권한 리스트 불러오기 api : 기업코드 변경해줘야함
   const { data: authorityListData, refetch: authorityListDataRefetch } =
     useQuery({
-      queryKey: ['get-authorityList', '1'],
+      queryKey: ['get-authorityList', companyIdxValue],
       queryFn: ({ queryKey }) => getAuthorityList(queryKey[1]),
       meta: {
         errorMessage: 'get-authorityList 에러 메세지',
