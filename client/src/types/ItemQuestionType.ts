@@ -39,6 +39,7 @@ export type QuizType = {
 export type QuizListType = {
   id?: string;
   code: string;
+  groupCode?: string | null;
   createdAt: string;
   createdBy: string;
   idx: number;

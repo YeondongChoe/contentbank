@@ -195,7 +195,7 @@ export function TagMapping() {
     return response.data;
   };
 
-  const { mutate: sendCategoryData } = useMutation({
+  const { mutate: sendCategoryData, isPending } = useMutation({
     mutationFn: postCategoryMapData,
     onSuccess: () => {
       openToastifyAlert({
@@ -244,7 +244,7 @@ export function TagMapping() {
     };
 
     console.log('활성화된 데이터만 업데이트 --- ', requestData);
-    sendCategoryData(requestData);
+    if (!isPending) sendCategoryData(requestData);
   };
 
   // const handleAddTag = () => {
@@ -529,20 +529,7 @@ export function TagMapping() {
               순서변경
             </Button>
           </ButtonWrapper>
-          {/* <DndProvider backend={HTML5Backend}>
-              <TagsWrappper className="height">
-                {mappingList.map((el, idx) => (
-                  <DraggableItem
-                    key={`${el} ${idx}`}
-                    item={el}
-                    index={idx}
-                    activeItem={activeItem}
-                    handleTagClick={handleTagClick}
-                    moveTag={moveTag}
-                  />
-                ))}
-              </TagsWrappper>
-            </DndProvider> */}
+
           {/* 매핑 리스트 */}
           <MappingList
             mappingList={mappingList}

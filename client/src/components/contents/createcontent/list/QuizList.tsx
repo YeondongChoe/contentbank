@@ -401,6 +401,17 @@ export function QuizList({
     code: string,
   ) => {
     e.preventDefault();
+    // 체크 표시
+    const target = e.currentTarget.childNodes[0].childNodes[0]
+      .childNodes[0] as HTMLInputElement;
+
+    if (!target.checked) {
+      setCheckList((prev) => [...prev, code]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== code));
+    }
+
+    //
     const quiz = questionList.filter((el) => el.code === code);
     console.log('선택된 요소', quiz[0]);
     const data: QuizListType = quiz[0];
@@ -487,13 +498,36 @@ export function QuizList({
   }, [checkList, setCheckedList]);
 
   useEffect(() => {
-    setQuestionList(initialQuestionList);
+    const result = rearrangeQuestionList(initialQuestionList);
+    setQuestionList(result);
+
+    console.log('그룹 값에 대한 결과 솔팅 --- ', result);
   }, [initialQuestionList]);
+  // 최초값 들어올시 그룹 아이디를 가진 문항이있을 때
+  function rearrangeQuestionList(questionList: QuizListType[]): QuizListType[] {
+    const grouped: Record<string, QuizListType[]> = {};
+    const ungrouped: QuizListType[] = [];
+
+    questionList.forEach((item) => {
+      if (item.groupCode) {
+        if (!grouped[item.groupCode]) {
+          grouped[item.groupCode] = [];
+        }
+        grouped[item.groupCode].push(item);
+      } else {
+        ungrouped.push(item);
+      }
+    });
+
+    const groupedArray = Object.values(grouped).flat();
+
+    return [...groupedArray, ...ungrouped];
+  }
 
   useEffect(() => {
     // setQuestionList()
     console.log('questionList -------- ', questionList);
-    console.log('quizList -------- ', quizList);
+    // console.log('quizList -------- ', quizList);
   }, [questionList, quizList]);
 
   // 스타틱 파일
@@ -692,7 +726,38 @@ export function QuizList({
                         handleClickItem(e, dragItem.code);
                       }}
                     >
-                      <span className="title_id">{dragItem.code}</span>
+                      <CheckBoxI
+                        $margin={'0 5px 0 0'}
+                        onChange={(e) =>
+                          handleSingleCheck(e.target.checked, dragItem.code)
+                        }
+                        checked={
+                          checkList.includes(dragItem.code as string)
+                            ? true
+                            : false
+                        }
+                        id={dragItem.code}
+                        value={dragItem.code}
+                      />
+                      <span className="title_id">
+                        {dragItem.quizItemList &&
+                          dragItem.quizItemList.map((el) => (
+                            <span key={el.code}>
+                              {el.type === 'BIG' && '대발문'}
+                              {el.type === 'TEXT' && '지문'}
+                              {el.type === 'QUESTION' && '문제'}
+                              {/* {el.type === 'SMALL' && '소문제'} */}
+                              {/* {el.type === 'EXAMPLE' && ''} */}
+                              {el.type === 'CHOICES' && '선지'}
+                              {el.type === 'ANSWER' && '정답'}
+                              {el.type === 'COMMENTARY' && '해설'}
+                              {el.type === 'HINT' && '힌트'}
+                              {el.type === 'CONCEPT' && '개념'}
+                              {/* {el.type === 'TITLE' && ''} */}
+                              {/* {el.type === 'TIP' && ''} */} /
+                            </span>
+                          ))}
+                      </span>
                       <span className="title_tag">
                         {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
                       </span>
