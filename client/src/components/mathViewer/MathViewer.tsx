@@ -88,70 +88,83 @@ export function MathViewer({
   //   }
   // }, [mathJax, data]);
 
-  useEffect(() => {
-    const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
-      if (window.MathJax) {
-        setLoaded(true);
-        return;
-      }
+  // useEffect(() => {
+  //   const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
+  //     if (window.MathJax) {
+  //       setLoaded(true);
+  //       return;
+  //     }
 
-      (window as any).MathJax = {
-        startup: {
-          ready: () => {
-            const { MathJax } = window as any;
-            MathJax.startup.defaultReady();
-            console.log('MathJax is loaded, version: ', MathJax.version);
-            setLoaded(true);
-          },
-        },
-        tex: {
-          inlineMath: [['\\(', '\\)']],
-        },
-        svg: {
-          scale: 1.0,
-          fontCache: 'local',
-          minScale: 0.1,
-        },
-        options: {
-          renderActions: {
-            addMenu: [
-              /* ... */
-            ],
-          },
-          menuOptions: {
-            settings: {},
-          },
-        },
-      };
+  //     (window as any).MathJax = {
+  //       startup: {
+  //         ready: () => {
+  //           const { MathJax } = window as any;
+  //           MathJax.startup.defaultReady();
+  //           console.log('MathJax is loaded, version: ', MathJax.version);
+  //           setLoaded(true);
+  //         },
+  //       },
+  //       tex: {
+  //         inlineMath: [
+  //           ['\\(', '\\)'],
+  //           ['', ''],
+  //         ],
+  //         displayMath: [
+  //           ['$$', '$$'],
+  //           ['\\[', '\\]'],
+  //         ],
+  //       },
+  //       svg: {
+  //         scale: 1.0,
+  //         fontCache: 'local',
+  //         minScale: 0.1,
+  //       },
+  //       options: {
+  //         renderActions: {
+  //           addMenu: [0, '', ''],
+  //         },
+  //         menuOptions: {
+  //           settings: {},
+  //         },
+  //       },
+  //     };
 
-      const script = document.createElement('script');
-      script.id = 'MathJax-script';
-      script.type = 'text/javascript';
-      script.src = '/static/iTeX_EQ/js/tex-svg-full_3_2_2.js';
-      script.async = true;
-      script.onload = () => {
-        setLoaded(true);
-      };
-      script.onerror = () => {
-        console.error('Failed to load MathJax.');
-      };
-      document.head.appendChild(script);
-    };
-    if (window.MathJax) {
-      console.log('Using existing MathJax!');
-    } else {
-      loadMathJax(setMathJaxLoaded);
-    }
-  }, []);
+  //     const script = document.createElement('script');
+  //     script.id = 'MathJax-script';
+  //     script.type = 'text/javascript';
+  //     script.src = '/static/iTeX_EQ/js/tex-svg-full_3_2_2.js';
+  //     script.async = true;
+  //     script.onload = () => {
+  //       setLoaded(true);
+  //     };
+  //     script.onerror = () => {
+  //       console.error('Failed to load MathJax.');
+  //     };
+  //     document.head.appendChild(script);
+  //   };
+  //   if (window.MathJax) {
+  //     console.log('Using existing MathJax!');
+  //   } else {
+  //     loadMathJax(setMathJaxLoaded);
+  //   }
+  // }, []);
 
   useEffect(() => {
     // console.log('뷰어로 들어온 데이터 0---', data);
     setIsLoading(!data);
+    setDangerHTML(data);
   }, [data]);
-
+  const [dangerHTML, setDangerHTML] = useState('');
   const createMarkup = (data: string) => {
+    console.log('data: ', data);
     return { __html: data || '' };
   };
+  useEffect(() => {
+    const temp = document.querySelector('#itex_recovery');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.iTeXEQ?.recoverynew(temp);
+  }, [dangerHTML]);
 
   const renderCalculations = () => {
     if (!data) {
@@ -159,10 +172,11 @@ export function MathViewer({
     }
 
     return (
-      <div>
+      <div id="itex_recovery">
         {/* <MathJax inline dynamic> */}
-        <ContentQuestion dangerouslySetInnerHTML={createMarkup(data)} />
+        <ContentQuestion dangerouslySetInnerHTML={createMarkup(dangerHTML)} />
         {/* </MathJax> */}
+        {/* Perform additional operations */}
       </div>
     );
   };

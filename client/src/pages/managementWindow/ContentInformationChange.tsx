@@ -42,6 +42,7 @@ import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
 
 import { EditModal } from './EditModal';
+import list from './question_list.json';
 
 interface PairState {
   selectedItems1: string[];
@@ -58,7 +59,7 @@ type SearchClass = {
 
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
-  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  const [questionList, setQuestionList] = useState<any[]>([]);
   const [checkList, setCheckList] = useState<number[]>([]); // 문항 체크
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
 
@@ -222,8 +223,11 @@ export function ContentInformationChange() {
     );
     // 검색 이후 리스트 값
     if (searchCategoryData) {
-      setQuestionList(searchCategoryData.quizList);
-      setTotalCount(searchCategoryData.pagination.totalCount);
+      // setQuestionList(searchCategoryData?.quizList);
+      // eslint-disable-next-line prettier/prettier
+      setQuestionList(list?.data.quizList);
+
+      setTotalCount(searchCategoryData?.pagination?.totalCount);
     }
   }, [searchCategoryData]);
 
@@ -821,7 +825,7 @@ export function ContentInformationChange() {
         </PositionWrapper>
 
         <PositionWrapper className="width">
-          {questionList.length ? (
+          {questionList?.length ? (
             <>
               <p className="top_info">
                 {state == null && (
@@ -830,7 +834,7 @@ export function ContentInformationChange() {
                       $margin={'0 5px 0 0'}
                       onChange={(e) => handleAllCheck(e)}
                       checked={
-                        checkList.length === questionList.length ? true : false
+                        checkList.length === questionList?.length ? true : false
                       }
                       id={'all check'}
                       value={'all check'}
@@ -1297,7 +1301,7 @@ export function ContentInformationChange() {
                 )}
               </ScrollWrapper>
 
-              {state == null ? (
+              {state == null && totalCount != null ? (
                 <>
                   <PaginationBox
                     itemsCountPerPage={10}

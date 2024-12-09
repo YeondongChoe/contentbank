@@ -1165,6 +1165,60 @@ export function Classification({
 
   useEffect(() => {
     // 그룹 아이디 묶기
+    // DOM에서 그룹코드에 따라 요소를 동적으로 그룹화
+    const groupElementsByCode = () => {
+      const listWrapper = document.querySelector('.list_wrapper');
+      if (!listWrapper) return;
+
+      const groupMap: Record<string, HTMLElement> = {};
+
+      // 그룹 ID로 부모 요소 생성
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          if (!groupMap[item.groupCode]) {
+            const parentDiv = document.createElement('div') as HTMLElement;
+            parentDiv.id = item.groupCode;
+            parentDiv.className = 'groupedItemsContainer';
+
+            const groupCheckbox = document.createElement('input');
+            groupCheckbox.type = 'checkbox';
+            groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
+            groupCheckbox.className = 'group-checkbox';
+
+            const groupCheckboxLabel = document.createElement('label');
+            groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
+            groupCheckboxLabel.innerText = '그룹 선택';
+
+            parentDiv.appendChild(groupCheckbox);
+            parentDiv.appendChild(groupCheckboxLabel);
+            // parentDiv.appendChild(ungroupButton);
+
+            groupMap[item.groupCode] = parentDiv;
+            listWrapper.appendChild(parentDiv);
+          }
+        }
+      });
+      // 동일한 그룹 ID를 가진 리스트 요소를 이동
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          const element = document.getElementById(item.code);
+          console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
+          const target =
+            element &&
+            (element.parentNode?.parentNode?.parentNode?.parentNode
+              ?.parentNode as HTMLElement);
+
+          console.log('target이동될 타겟', target);
+
+          if (element) {
+            const parentDiv = groupMap[item.groupCode];
+            parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
+          }
+        }
+      });
+    };
+
+    groupElementsByCode();
   }, [questionList]);
 
   const sortList = () => {
@@ -1682,11 +1736,13 @@ export function Classification({
           <ScrollWrapper className="height">
             <PerfectScrollbar>
               <MyStaticWrapper columnsCount={columnsCount} padding="5px">
+                {/* <div className="list_wrapper"> */}
                 {questionList.map((quiz, index) => (
                   <ItemWrapper
                     key={quiz.idx}
                     height={itemHeight}
                     classHeight={`${columnsCount == 3 ? '60px' : 'auto'}`}
+                    className="list_wrapper"
                   >
                     <TopButtonWrapper>
                       <div className="quiz_top_wrap">
@@ -1780,10 +1836,10 @@ export function Classification({
                                 {item.quizCategory?.교과}/
                                 {item.quizCategory?.학년}/
                                 {item.quizCategory?.학기}/
-                                {item.quizCategory?.대단원?.split('^^^')[0]}/
-                                {item.quizCategory?.중단원?.split('^^^')[0]}/
-                                {item.quizCategory?.소단원?.split('^^^')[0]}/
-                                {item.quizCategory?.유형?.split('^^^')[0]}
+                                {item.quizCategory?.대단원}/
+                                {item.quizCategory?.중단원}/
+                                {item.quizCategory?.소단원}/
+                                {item.quizCategory?.유형}
                               </span>
                             ))
                           ) : (
@@ -1794,6 +1850,7 @@ export function Classification({
                     </ScrollWrapper>
                   </ItemWrapper>
                 ))}
+                {/* </div> */}
               </MyStaticWrapper>
             </PerfectScrollbar>
           </ScrollWrapper>
