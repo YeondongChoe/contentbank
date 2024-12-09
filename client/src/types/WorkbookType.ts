@@ -150,4 +150,5 @@ export type selectedListType = {
   search: boolean;
   type?: string;
   selected?: string;
+  selectedName?: string;
 };
