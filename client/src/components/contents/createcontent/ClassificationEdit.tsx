@@ -362,11 +362,6 @@ export function ClassificationEdit({
       setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
-  useEffect(() => {
-    if (groupsData) {
-      setCategoryNameList(groupsData.nameList);
-    }
-  }, [groupsData]);
 
   // 카테고리의 그룹 유형 조회 (출처)
   const getCategoryGroupsE = async () => {
@@ -798,7 +793,7 @@ export function ClassificationEdit({
           console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
           const target =
             element &&
-            (element.parentNode?.parentNode?.parentNode
+            (element.parentNode?.parentNode?.parentNode?.parentNode
               ?.parentNode as HTMLElement);
 
           console.log('target이동될 타겟', target);
@@ -2378,6 +2373,18 @@ export function ClassificationEdit({
 
 const Container = styled.div`
   position: relative;
+
+  .groupedItemsContainer {
+    border: 3px solid ${COLOR.BORDER_BLUE};
+    position: relative;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+
+  .group-checkbox {
+    margin-right: 5px;
+  }
 `;
 const LayoutBodyWrapper = styled.div`
   display: flex;

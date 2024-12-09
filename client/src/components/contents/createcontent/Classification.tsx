@@ -1142,11 +1142,30 @@ export function Classification({
   };
 
   // 전역으로 저장한 추가된 문항 데이터들 불러오기
-  // 화면 진입시 문항 데이터들 리스트ui에넣기
+  // (그룹데이터 업데이트된 상테로 다시 불러오기)
+  const getQuiz = async () => {
+    const idxArray = quizList.map((list) => list.idx);
+    const idxList = idxArray.join(',');
+    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    return res.data.data.quizList;
+  };
+  const { data: quizData, refetch: quizDataRefetch } = useQuery({
+    queryKey: ['get-idx-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-idx-quizList 에러 메세지',
+    },
+    enabled: quizList.length > 0,
+  });
   useEffect(() => {
-    console.log('quizList-----------', quizList);
-    setQuestionList(quizList);
-  }, []);
+    console.log('quizData-----------', quizData);
+    // 퀴즈리스트 idx 값으로 최신 리스트 다시불러오기
+    if (quizData) setQuestionList(quizData);
+  }, [quizData]);
+
+  useEffect(() => {
+    // 그룹 아이디 묶기
+  }, [questionList]);
 
   const sortList = () => {
     const sorted = questionList.filter((el) => checkedList.includes(el.code));
