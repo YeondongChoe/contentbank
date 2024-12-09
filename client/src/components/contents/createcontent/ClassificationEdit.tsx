@@ -184,6 +184,26 @@ export function ClassificationEdit({
   const [categoryNameList, setCategoryNameList] = useState<string>('');
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
 
+  // 메뉴 목록 조회 api (셋팅값)
+  // const getMenuSetting = async () => {
+  //   const res = await resourceServiceInstance.get(
+  //     `/v1/menu/path?url=contentDtEditingSetting`,
+  //   );
+  //   console.log('getMenuSetting--------', res);
+  //   return res.data.data;
+  // };
+  // const {
+  //   data: menuSettingData,
+  //   isLoading: isMenuSettingLoading,
+  //   refetch: menuSettingRefetch,
+  // } = useQuery({
+  //   queryKey: ['get-menuSetting'],
+  //   queryFn: getMenuSetting,
+  //   meta: {
+  //     errorMessage: 'get-menuSetting 에러 메세지',
+  //   },
+  // });
+
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
