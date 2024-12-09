@@ -500,10 +500,8 @@ export function QuizList({
   }, [checkList, setCheckedList]);
 
   useEffect(() => {
-    // const result = rearrangeQuestionList(initialQuestionList);
-    const result = rearrangeQuestionList(
-      quizData.data.quizList as unknown as QuizListType[],
-    );
+    const result = rearrangeQuestionList(initialQuestionList);
+
     setQuestionList(result);
 
     console.log('그룹 값에 대한 결과 솔팅 --- ', result);
@@ -601,10 +599,22 @@ export function QuizList({
       questionList.forEach((item) => {
         if (item.groupCode) {
           const element = document.getElementById(item.code);
+          console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
+          const target =
+            element &&
+            (element.parentNode?.parentNode?.parentNode
+              ?.parentNode as HTMLElement);
+
+          console.log('target이동될 타겟', target);
+
           if (element) {
             const parentDiv = groupMap[item.groupCode];
-            parentDiv.appendChild(element.parentElement as HTMLElement);
+            parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
           }
+          // if (element) {
+          //   const parentDiv = groupMap[item.groupCode];
+          //   parentDiv.appendChild(element.parentElement as HTMLElement);
+          // }
         }
       });
     };
