@@ -23,7 +23,7 @@ import { postRefreshToken } from '../../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
 
-import quizData from './question_list.json';
+// import quizData from './question_list.json';
 
 export function QuizList({
   questionList: initialQuestionList,
@@ -581,8 +581,12 @@ export function QuizList({
                 setGroupId(null);
                 parentDiv.remove();
                 // 서버에 그룹 상태 전송
-                // if (!isPending) putGroupData(item);
-                alert('그룹이 해제되었습니다.');
+                if (!isPending)
+                  // putGroupData({
+                  //   groupCode: item.groupCode,
+                  //   quizList: [],
+                  // });
+                  alert('그룹이 해제되었습니다.');
               }
             };
 
@@ -611,10 +615,6 @@ export function QuizList({
             const parentDiv = groupMap[item.groupCode];
             parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
           }
-          // if (element) {
-          //   const parentDiv = groupMap[item.groupCode];
-          //   parentDiv.appendChild(element.parentElement as HTMLElement);
-          // }
         }
       });
     };

@@ -94,6 +94,7 @@ export function ClassificationEdit({
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
   const [idxNamePairsA, setIdxNamePairsA] = useState<IdxNamePair[]>([]);
   const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
+  const [groupId, setGroupId] = useState<string | null>(null);
   const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
     title: '',
     checkValue: 0,
@@ -756,6 +757,97 @@ export function ClassificationEdit({
     console.log('quizList-----------', quizList);
     setQuestionList(quizList);
   }, []);
+  useEffect(() => {
+    // 그룹 아이디끼리 묶기
+    // DOM에서 그룹코드에 따라 요소를 동적으로 그룹화
+    const groupElementsByCode = () => {
+      const listWrapper = document.querySelector('.list_wrapper');
+      if (!listWrapper) return;
+
+      const groupMap: Record<string, HTMLElement> = {};
+
+      // 그룹 ID로 부모 요소 생성
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          if (!groupMap[item.groupCode]) {
+            const parentDiv = document.createElement('div') as HTMLElement;
+            parentDiv.id = item.groupCode;
+            parentDiv.className = 'groupedItemsContainer';
+
+            const groupCheckbox = document.createElement('input');
+            groupCheckbox.type = 'checkbox';
+            groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
+            groupCheckbox.className = 'group-checkbox';
+
+            const groupCheckboxLabel = document.createElement('label');
+            groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
+            groupCheckboxLabel.innerText = '그룹 선택';
+
+            const ungroupButton = document.createElement('button');
+            ungroupButton.innerText = '그룹 해제';
+            ungroupButton.className = 'ungroup-button';
+            ungroupButton.onclick = (e) => {
+              if (confirm('그룹을 해제하시겠습니까?')) {
+                const button = e.currentTarget as HTMLButtonElement;
+                const parentDiv = button.parentElement as HTMLElement;
+
+                if (parentDiv) {
+                  // 원래 위치로 복원
+                  const childNodes = Array.from(parentDiv.childNodes);
+                  const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
+                  console.log('Elements to move:', elementsToMove);
+
+                  // 이동 대상 컨테이너
+                  const scrollbarContainer =
+                    document.querySelector('.list_wrapper');
+                  if (scrollbarContainer) {
+                    elementsToMove.forEach((element) => {
+                      if (element instanceof HTMLElement) {
+                        scrollbarContainer.appendChild(element); // 요소를 이동
+                      }
+                    });
+                  }
+                }
+                // 그룹 컨테이너 제거
+                setGroupId(null);
+                parentDiv.remove();
+                // 서버에 그룹 상태 전송
+                // if (!isPending) putGroupData(item);
+                alert('그룹이 해제되었습니다.');
+              }
+            };
+
+            parentDiv.appendChild(groupCheckbox);
+            parentDiv.appendChild(groupCheckboxLabel);
+            parentDiv.appendChild(ungroupButton);
+
+            groupMap[item.groupCode] = parentDiv;
+            listWrapper.appendChild(parentDiv);
+          }
+        }
+      });
+      // 동일한 그룹 ID를 가진 리스트 요소를 이동
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          const element = document.getElementById(item.code);
+          console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
+          const target =
+            element &&
+            (element.parentNode?.parentNode?.parentNode
+              ?.parentNode as HTMLElement);
+
+          console.log('target이동될 타겟', target);
+
+          if (element) {
+            const parentDiv = groupMap[item.groupCode];
+            parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
+          }
+        }
+      });
+    };
+
+    groupElementsByCode();
+  }, [questionList]);
 
   const sortList = () => {
     const sorted = questionList.filter((el) => checkedList.includes(el.code));
@@ -1671,9 +1763,11 @@ export function ClassificationEdit({
                 id={'all check'}
                 value={'all check'}
               />
-              <span className={`title_top`}>총 {`${0} 건`} 전체선택</span>
+              <span className={`title_top`}>
+                총 {`${questionList.length} 건`} 전체선택
+              </span>
             </div>
-            <p>총 22건 중 5건 분류없음</p>
+            <p>총 {`${questionList.length} 건`} 중 5건 분류없음</p>
           </TopButtonWrapper>
           <TopButtonWrapper>
             {/* <Select
