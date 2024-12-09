@@ -32,6 +32,9 @@ import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { InputOptions } from './options/InputOptions';
 
+type SelectedValueType = string | { [key: string]: any };
+type SelectedSourceItem = Record<string, any>;
+
 export function ContentCopyEdit({
   setTabView,
   type,
@@ -46,12 +49,10 @@ export function ContentCopyEdit({
   >([]);
   const [data, setData] = useState<QuizType[] | null>(null);
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
 
-  const [categoriesH, setCategoriesH] = useState<ItemCategoryType[][]>([]);
-  const [categoriesDD, setCategoriesDD] = useState<ItemCategoryType[][]>([]);
+  const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
   const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
 
   const [content, setContent] = useState<string[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
@@ -68,7 +69,7 @@ export function ContentCopyEdit({
 
   // 선택된 리스트 아이템 데이터
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
-
+  const [quizIdx, setQuizIdx] = useState<number[]>([]);
   // 수정시 체크리스트 값 가져오기
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
@@ -88,65 +89,75 @@ export function ContentCopyEdit({
   }, []);
 
   //셀렉트 값
-  // const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
-  // const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
-  const [selectedSource, setSelectedSource] = useState<any[]>([]); //출처
+  const [selectedDifficultyCommon, setSelectedDifficultyCommon] =
+    useState<string>(''); //난이도 공통
+  const [selectedSource, setSelectedSource] = useState<SelectedSourceItem[]>(
+    [],
+  ); //출처
   const [selectedList, setSelectedList] = useState<
     {
       [key: number]: string;
     }[]
   >([]);
-  const [sourceValue, setSourceValue] = useState<{
-    titleIdx: string;
-    name: string;
-    value: string | number;
-  }>({ titleIdx: '', name: '', value: '' });
 
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
+    // if (onItemClickData) {
+    //   const quizCategoryList = onItemClickData?.quizCategoryList;
+
+    //   console.log('quizCategoryList-------------', quizCategoryList);
+
+    //   let foundSources: any[] = [];
+    //   let foundQuestionType = '';
+    //   let foundDifficulty = '';
+
+    //   // 값이 존재하면 상태값을 업데이트
+    //   quizCategoryList.forEach((item) => {
+    //     const quizCategory = item?.quizCategory;
+
+    //     console.log(
+    //       '값이 존재하면 상태값을 업데이트quizCategory -------',
+    //       quizCategory,
+    //     );
+
+    //     if (quizCategory) {
+    //       if (quizCategory.sources && Array.isArray(quizCategory.sources)) {
+    //         foundSources = [...foundSources, ...quizCategory.sources];
+    //       }
+    //       if (quizCategory.문항타입 && !foundQuestionType) {
+    //         foundQuestionType = quizCategory.문항타입;
+    //       }
+    //       if (quizCategory.난이도 && !foundDifficulty) {
+    //         foundDifficulty = quizCategory.난이도;
+    //       }
+    //     }
+    //   });
+
+    //   console.log(
+    //     '값이 존재하면 상태값을 업데이트 최종 -------',
+    //     foundQuestionType,
+    //     foundDifficulty,
+    //     foundSources,
+    //   );
+
+    //   setSelectedQuestionType(foundQuestionType);
+    //   setSelectedDifficulty(foundDifficulty);
+    //   setSelectedSource(foundSources);
+    // }
     if (onItemClickData) {
-      const quizCategoryList = onItemClickData?.quizCategoryList;
+      const quizCategory = onItemClickData?.quizCategoryList[0]?.quizCategory;
 
-      console.log('quizCategoryList-------------', quizCategoryList);
-
-      let foundSources: any[] = [];
-      let foundQuestionType = '';
-      let foundDifficulty = '';
+      console.log('quizCategory-------------', quizCategory);
 
       // 값이 존재하면 상태값을 업데이트
-      quizCategoryList.forEach((item) => {
-        const quizCategory = item?.quizCategory;
-
-        console.log(
-          '값이 존재하면 상태값을 업데이트quizCategory -------',
-          quizCategory,
-        );
-
-        if (quizCategory) {
-          if (quizCategory.sources && Array.isArray(quizCategory.sources)) {
-            foundSources = [...foundSources, ...quizCategory.sources];
-          }
-          if (quizCategory.문항타입 && !foundQuestionType) {
-            foundQuestionType = quizCategory.문항타입;
-          }
-          if (quizCategory.난이도 && !foundDifficulty) {
-            foundDifficulty = quizCategory.난이도;
-          }
-        }
-      });
-
-      console.log(
-        '값이 존재하면 상태값을 업데이트 최종 -------',
-        foundQuestionType,
-        foundDifficulty,
-        foundSources,
-      );
-
-      setSelectedQuestionType(foundQuestionType);
-      setSelectedDifficulty(foundDifficulty);
-      setSelectedSource(foundSources);
+      if (quizCategory) {
+        setSelectedQuestionType(quizCategory?.문항타입 || '');
+        setSelectedDifficulty(quizCategory?.난이도 || '');
+        setSelectedDifficultyCommon(quizCategory?.난이도공통 || '');
+        setSelectedSource(quizCategory?.sources || []);
+      }
     }
   }, [onItemClickData]);
 
@@ -235,7 +246,7 @@ export function ContentCopyEdit({
     // 등록될 값
     const newQuestionList = quizItemArrList.map((quizItems) => ({
       commandCode: 0,
-      quizIdx: null,
+      quizIdx: null, // 복사 (신규)등록
       articleList: [
         //에디터 이미지 값
       ],
@@ -246,8 +257,6 @@ export function ContentCopyEdit({
   }, [quizItemArrList]);
 
   useEffect(() => {
-    // console.log('selectedSubject 교과', selectedSubject);
-    // console.log('selectedCourse 과목', selectedCourse);
     console.log('selectedQuestionType 문항타입', selectedQuestionType);
     console.log('selectedDifficulty 난이도', selectedDifficulty);
     //출처
@@ -301,6 +310,7 @@ export function ContentCopyEdit({
           sources: selectedSource,
           난이도: selectedDifficulty,
           문항타입: selectedQuestionType,
+          난이도공통: selectedDifficultyCommon,
         },
       },
       ...category.filter(
@@ -327,12 +337,11 @@ export function ContentCopyEdit({
     // 필수 메타값 추가 및 변경
     setQuizClassList(filteredQuizClassList);
   }, [
-    // selectedSubject,
-    // selectedCourse,
     selectedQuestionType,
     selectedSource,
     selectedDifficulty,
     onItemClickData,
+    selectedList,
   ]);
 
   useEffect(() => {
@@ -447,9 +456,6 @@ export function ContentCopyEdit({
           if (menuDetail.groupCode == 'H') {
             setIdxNamePairsH((prev) => [...prev, ...pairs]);
           }
-          if (menuDetail.groupCode == 'DD') {
-            setIdxNamePairsDD((prev) => [...prev, ...pairs]);
-          }
 
           if (menuDetail.groupCode == 'H') {
             const categories = idxList.map((idx, idxIndex) => ({
@@ -487,9 +493,6 @@ export function ContentCopyEdit({
         .join(',');
 
       console.log('inputType 이 셀렉트인것만', idxListH, '/', idxListDD);
-
-      fetchCategoryItems(idxListH, setCategoriesH);
-      fetchCategoryItems(idxListDD, setCategoriesDD);
     }
   }, [menuSettingData]);
 
@@ -519,7 +522,21 @@ export function ContentCopyEdit({
   };
 
   // 셀렉트 초기화
-  const handleDefaultSelect = (defaultValue?: string) => {};
+  const handleDefaultSelect = (defaultValue?: string) => {
+    switch (defaultValue) {
+      case '문항 타입':
+        setSelectedQuestionType('');
+        break;
+      case '난이도':
+        setSelectedDifficulty('');
+        break;
+      case '공통(시험)':
+        setSelectedDifficulty('');
+        break;
+      default:
+        break;
+    }
+  };
 
   const submitSave = () => {
     // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
@@ -653,7 +670,7 @@ export function ContentCopyEdit({
                 <SelectList>
                   <li>
                     <SelectWrapper>
-                      {idxNamePairsH && (
+                      {/* {idxNamePairsH && (
                         <>
                           {
                             // 셀렉트가 아닌 경우
@@ -667,7 +684,7 @@ export function ContentCopyEdit({
                             ))
                           }
                         </>
-                      )}
+                      )} */}
                     </SelectWrapper>
                   </li>
                 </SelectList>
@@ -679,34 +696,7 @@ export function ContentCopyEdit({
               </SelectListWrapper>
               <SelectListWrapper>
                 <SelectList>
-                  <li>
-                    <SelectWrapper>
-                      {idxNamePairsDD &&
-                        categoriesDD.map((el, idx) => (
-                          <InputWrappper
-                            key={`${idxNamePairsDD[idx].idx},${idxNamePairsDD[idx].name}`}
-                          >
-                            {idxNamePairsDD[idx].searchList && (
-                              <span className="reddot">*</span>
-                            )}
-                            {/* {idxNamePairsDD[idx].viewList && ( */}
-                            <Select
-                              onDefaultSelect={() =>
-                                handleDefaultSelect(idxNamePairsDD[idx].name)
-                              }
-                              $positionTop
-                              width={'110px'}
-                              height={'30px'}
-                              defaultValue={idxNamePairsDD[idx].name}
-                              options={el}
-                              onSelect={(event) => selectCategoryOption(event)}
-                              setSelectedValue={setSelectedQuestionType}
-                            />
-                            {/* )} */}
-                          </InputWrappper>
-                        ))}
-                    </SelectWrapper>
-                  </li>
+                  <li></li>
                 </SelectList>
               </SelectListWrapper>
             </BackgroundWrapper>
