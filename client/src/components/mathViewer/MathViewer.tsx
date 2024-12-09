@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
+// import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import styled from 'styled-components';
 
 import { ItemQuestionType } from '../../types';
@@ -69,24 +69,24 @@ export function MathViewer({
   height,
 }: MathViewerProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
+  // const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
   const [isMathJaxLoaded, setMathJaxLoaded] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (mathJax && data) {
-      mathJax.startup.promise
-        .then(() => {
-          mathJax.typeset();
-        })
-        .catch((err: any) => {
-          console.error('MathJax typeset error:', err);
-        });
+  // useEffect(() => {
+  //   if (mathJax && data) {
+  //     mathJax.startup.promise
+  //       .then(() => {
+  //         mathJax.typeset();
+  //       })
+  //       .catch((err: any) => {
+  //         console.error('MathJax typeset error:', err);
+  //       });
 
-      return () => {
-        mathJax.texReset();
-      };
-    }
-  }, [mathJax, data]);
+  //     return () => {
+  //       mathJax.texReset();
+  //     };
+  //   }
+  // }, [mathJax, data]);
 
   useEffect(() => {
     const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
@@ -160,29 +160,29 @@ export function MathViewer({
 
     return (
       <div>
-        <MathJax inline dynamic>
-          <ContentQuestion dangerouslySetInnerHTML={createMarkup(data)} />
-        </MathJax>
+        {/* <MathJax inline dynamic> */}
+        <ContentQuestion dangerouslySetInnerHTML={createMarkup(data)} />
+        {/* </MathJax> */}
       </div>
     );
   };
 
   return (
     <Component width={width} height={height} $padding={padding}>
-      <MathJaxContext
+      {/* <MathJaxContext
         version={3}
         config={config}
         onStartup={(mathJaxInstance) => {
           console.log('MathJax initialized');
           setMathJax(mathJaxInstance);
         }}
-      >
-        {isLoading ? (
-          <Loader height={'50px'} size="35px" />
-        ) : (
-          renderCalculations()
-        )}
-      </MathJaxContext>
+      > */}
+      {isLoading ? (
+        <Loader height={'50px'} size="35px" />
+      ) : (
+        renderCalculations()
+      )}
+      {/* </MathJaxContext> */}
     </Component>
   );
 }

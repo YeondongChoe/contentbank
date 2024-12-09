@@ -682,8 +682,8 @@ export function ClassificationEdit({
 
     setCheckedItems((prev) => {
       let updatedList = checked
-        ? [...prev, { [key]: `${name}^^^${idx}` }]
-        : prev.filter((item) => Object.values(item)[0] !== `${name}^^^${idx}`);
+        ? [...prev, { [key]: `${name}` }]
+        : prev.filter((item) => Object.values(item)[0] !== `${name}`);
 
       if (checked) {
         // 상위 요소를 체크
@@ -694,12 +694,11 @@ export function ClassificationEdit({
             const parentKey = getTypeKey(parentItem.level);
             if (
               !updatedList.some(
-                (item) =>
-                  item[parentKey] === `${parentItem.name}^^^${parentItem.idx}`,
+                (item) => item[parentKey] === `${parentItem.name}`,
               )
             ) {
               updatedList.push({
-                [parentKey]: `${parentItem.name}^^^${parentItem.idx}`,
+                [parentKey]: `${parentItem.name}`,
               });
             }
             currentItem = parentItem;
@@ -714,7 +713,7 @@ export function ClassificationEdit({
           childItems.forEach((child) => {
             const childKey = getTypeKey(child.level);
             updatedList = updatedList.filter(
-              (item) => item[childKey] !== `${child.name}^^^${child.idx}`,
+              (item) => item[childKey] !== `${child.name}`,
             );
             removeDescendants(child.idx);
           });
@@ -782,40 +781,6 @@ export function ClassificationEdit({
             const groupCheckboxLabel = document.createElement('label');
             groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
             groupCheckboxLabel.innerText = '그룹 선택';
-
-            // const ungroupButton = document.createElement('button');
-            // ungroupButton.innerText = '그룹 해제';
-            // ungroupButton.className = 'ungroup-button';
-            // ungroupButton.onclick = (e) => {
-            //   if (confirm('그룹을 해제하시겠습니까?')) {
-            //     const button = e.currentTarget as HTMLButtonElement;
-            //     const parentDiv = button.parentElement as HTMLElement;
-
-            //     if (parentDiv) {
-            //       // 원래 위치로 복원
-            //       const childNodes = Array.from(parentDiv.childNodes);
-            //       const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
-            //       console.log('Elements to move:', elementsToMove);
-
-            //       // 이동 대상 컨테이너
-            //       const scrollbarContainer =
-            //         document.querySelector('.list_wrapper');
-            //       if (scrollbarContainer) {
-            //         elementsToMove.forEach((element) => {
-            //           if (element instanceof HTMLElement) {
-            //             scrollbarContainer.appendChild(element); // 요소를 이동
-            //           }
-            //         });
-            //       }
-            //     }
-            //     // 그룹 컨테이너 제거
-            //     setGroupId(null);
-            //     parentDiv.remove();
-            //     // 서버에 그룹 상태 전송
-            //     // if (!isPending) putGroupData(item);
-            //     alert('그룹이 해제되었습니다.');
-            //   }
-            // };
 
             parentDiv.appendChild(groupCheckbox);
             parentDiv.appendChild(groupCheckboxLabel);
