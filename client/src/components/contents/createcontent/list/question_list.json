@@ -1,0 +1,183 @@
+ {
+    "code": "S-001",
+    "timestamp": "2024-12-09 09:21:37",
+    "data": {
+        "quizList": [
+            {
+                "idx": 1,
+                "code": "85923457943243242",
+                "groupCode": "adsf",
+                "isFavorite": true,
+                "isUse": true,
+                "isDelete": false,
+                "isQuiz": true,
+                "sort": 1,
+                "userKey": "t1e2s3t",
+                "createdBy": "ADMIN",
+                "createdAt": "2024-01-25 08:43:44",
+                "lastModifiedBy": "ADMIN",
+                "lastModifiedAt": "2024-01-25 08:43:44",
+                "lastArticle": {
+                    "idx": 1,
+                    "type": "PDF",
+                    "originalName": "test",
+                    "storedPath": "/usr/share/CB",
+                    "extension": "pdf",
+                    "createdBy": "admin",
+                    "createdAt": "2024-01-25 08:43:44"
+                },
+                "quizItemList": [
+                    {
+                        "idx": 13,
+                        "code": "62362552354",
+                        "type": "TITLE",
+                        "content": "초5-1-5-25_27 문제은행(2015개정)",
+                        "sort": 1
+                    },
+                    {
+                        "idx": 14,
+                        "code": "62362362354",
+                        "type": "QUESTION",
+                        "content": "질문 텍스트",
+                        "sort": 2
+                    },
+                    {
+                        "idx": 15,
+                        "code": "23462346245",
+                        "type": "EXAMPLE",
+                        "content": "객관식 보기 2",
+                        "sort": 3
+                    }
+                ],
+                "quizCategoryList": [
+                    {
+                        "quizCategory": {
+                            "sources": [
+                                {
+                                    "출처": "교재",
+                                    "교재명": "수학 교재 4",
+                                    "시리즈": "시리즈B",
+                                    "출판사": "출판사B",
+                                    "교재속성": "공통",
+                                    "출판년도": "2022",
+                                    "교재페이지": 100,
+                                    "교재문항번호": 6
+                                }
+                            ],
+                            "난이도": "상",
+                            "문항타입": "주관식",
+                            "출판년도": "2022"
+                        }
+                    }
+                ]
+            },
+						{
+							"idx": 2,
+							"code": "85923457984",
+							"groupCode": "adsf",
+							"isFavorite": true,
+							"isUse": true,
+							"isDelete": false,
+							"isQuiz": true,
+							"sort": 1,
+							"userKey": "t1e2s3t",
+							"createdBy": "ADMIN",
+							"createdAt": "2024-01-25 08:43:44",
+							"lastModifiedBy": "ADMIN",
+							"lastModifiedAt": "2024-01-25 08:43:44",
+							"lastArticle": {
+									"idx": 1,
+									"type": "PDF",
+									"originalName": "test",
+									"storedPath": "/usr/share/CB",
+									"extension": "pdf",
+									"createdBy": "admin",
+									"createdAt": "2024-01-25 08:43:44"
+							},
+							"quizItemList": [
+									{
+											"idx": 13,
+											"code": "62362552354",
+											"type": "TITLE",
+											"content": "초5-1-5-25_27 문제은행(2015개정)",
+											"sort": 1
+									},
+									{
+											"idx": 14,
+											"code": "62362362354",
+											"type": "QUESTION",
+											"content": "질문 텍스트",
+											"sort": 2
+									},
+									{
+											"idx": 15,
+											"code": "23462346245",
+											"type": "EXAMPLE",
+											"content": "객관식 보기 2",
+											"sort": 3
+									}
+							],
+							"quizCategoryList": [
+									{
+											"quizCategory": {
+													"sources": [
+															{
+																	"출처": "교재",
+																	"교재명": "수학 교재 4",
+																	"시리즈": "시리즈B",
+																	"출판사": "출판사B",
+																	"교재속성": "공통",
+																	"출판년도": "2022",
+																	"교재페이지": 100,
+																	"교재문항번호": 6
+															}
+													],
+													"난이도": "상",
+													"문항타입": "주관식",
+													"출판년도": "2022"
+											}
+									}
+							]
+					},
+            {
+                "idx": 6,
+                "code": "23411456655",
+                "groupCode": "44gwef",
+                "isFavorite": false,
+                "isUse": true,
+                "isDelete": false,
+                "isQuiz": true,
+                "sort": 1,
+                "userKey": "t1e2s3t",
+                "createdBy": "ADMIN",
+                "createdAt": "2024-01-25 08:43:44",
+                "lastModifiedBy": "ADMIN",
+                "lastModifiedAt": "2024-01-25 08:43:44",
+                "lastArticle": null,
+                "quizItemList": [],
+                "quizCategoryList": [
+                    {
+                        "quizCategory": {
+                            "과목": "올림피아드",
+                            "교과": "수학",
+                            "sources": [
+                                {
+                                    "출처": "내신",
+                                    "학교명": "학력인정 경남미용고등학교(3년제)",
+                                    "내신배점": "33",
+                                    "내신형식": "정기고사",
+                                    "문항번호": "321",
+                                    "출제년도": "2024-07-31T00:00:00",
+                                    "학사일정": "여름방학",
+                                    "내신페이지": "321"
+                                }
+                            ],
+                            "난이도": "중",
+                            "문항타입": "주관식"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -23,6 +23,8 @@ import { postRefreshToken } from '../../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
 
+import quizData from './question_list.json';
+
 export function QuizList({
   questionList: initialQuestionList,
   showTitle,
@@ -320,7 +322,7 @@ export function QuizList({
     // 그룹화 DOM 생성
     // 서버에 그룹 상태 전송
     if (!isPending) putGroupData(items);
-    const parentDiv = document.createElement('div');
+    const parentDiv = document.createElement('div') as HTMLElement;
     parentDiv.id = groupId as string; // props로 전달받은 groupId를 id로 설정
     parentDiv.className = 'groupedItemsContainer';
     // 그룹 체크박스 추가
@@ -498,7 +500,10 @@ export function QuizList({
   }, [checkList, setCheckedList]);
 
   useEffect(() => {
-    const result = rearrangeQuestionList(initialQuestionList);
+    // const result = rearrangeQuestionList(initialQuestionList);
+    const result = rearrangeQuestionList(
+      quizData.data.quizList as unknown as QuizListType[],
+    );
     setQuestionList(result);
 
     console.log('그룹 값에 대한 결과 솔팅 --- ', result);
@@ -523,6 +528,89 @@ export function QuizList({
 
     return [...groupedArray, ...ungrouped];
   }
+
+  useEffect(() => {
+    // DOM에서 그룹코드에 따라 요소를 동적으로 그룹화
+    const groupElementsByCode = () => {
+      const listWrapper = document.querySelector('.list_wrapper');
+      if (!listWrapper) return;
+
+      const groupMap: Record<string, HTMLElement> = {};
+
+      // 그룹 ID로 부모 요소 생성
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          if (!groupMap[item.groupCode]) {
+            const parentDiv = document.createElement('div') as HTMLElement;
+            parentDiv.id = item.groupCode;
+            parentDiv.className = 'groupedItemsContainer';
+
+            const groupCheckbox = document.createElement('input');
+            groupCheckbox.type = 'checkbox';
+            groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
+            groupCheckbox.className = 'group-checkbox';
+
+            const groupCheckboxLabel = document.createElement('label');
+            groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
+            groupCheckboxLabel.innerText = '그룹 선택';
+
+            const ungroupButton = document.createElement('button');
+            ungroupButton.innerText = '그룹 해제';
+            ungroupButton.className = 'ungroup-button';
+            ungroupButton.onclick = (e) => {
+              if (confirm('그룹을 해제하시겠습니까?')) {
+                const button = e.currentTarget as HTMLButtonElement;
+                const parentDiv = button.parentElement as HTMLElement;
+
+                if (parentDiv) {
+                  // 원래 위치로 복원
+                  const childNodes = Array.from(parentDiv.childNodes);
+                  const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
+                  console.log('Elements to move:', elementsToMove);
+
+                  // 이동 대상 컨테이너
+                  const scrollbarContainer =
+                    document.querySelector('.list_wrapper');
+                  if (scrollbarContainer) {
+                    elementsToMove.forEach((element) => {
+                      if (element instanceof HTMLElement) {
+                        scrollbarContainer.appendChild(element); // 요소를 이동
+                      }
+                    });
+                  }
+                }
+                // 그룹 컨테이너 제거
+                setGroupId(null);
+                parentDiv.remove();
+                // 서버에 그룹 상태 전송
+                // if (!isPending) putGroupData(item);
+                alert('그룹이 해제되었습니다.');
+              }
+            };
+
+            parentDiv.appendChild(groupCheckbox);
+            parentDiv.appendChild(groupCheckboxLabel);
+            parentDiv.appendChild(ungroupButton);
+
+            groupMap[item.groupCode] = parentDiv;
+            listWrapper.appendChild(parentDiv);
+          }
+        }
+      });
+      // 동일한 그룹 ID를 가진 리스트 요소를 이동
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          const element = document.getElementById(item.code);
+          if (element) {
+            const parentDiv = groupMap[item.groupCode];
+            parentDiv.appendChild(element.parentElement as HTMLElement);
+          }
+        }
+      });
+    };
+
+    groupElementsByCode();
+  }, [questionList]);
 
   useEffect(() => {
     // setQuestionList()
