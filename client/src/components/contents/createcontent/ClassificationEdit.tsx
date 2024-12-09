@@ -1786,7 +1786,11 @@ export function ClassificationEdit({
           </TopButtonWrapper>
           <ScrollWrapper className="height">
             <PerfectScrollbar>
-              <MyStaticWrapper columnsCount={columnsCount} padding="5px">
+              <MyStaticWrapper
+                columnsCount={columnsCount}
+                padding="5px"
+                className="list_wrapper"
+              >
                 {questionList.map((quiz, index) => (
                   <ItemWrapper
                     key={quiz.idx}

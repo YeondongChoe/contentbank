@@ -53,6 +53,7 @@ interface MyStaticWrapperProps {
   gap?: string; // gap 프롭
   margin?: string; // margin 프롭
   padding?: string; // padding 프롭
+  className?: string;
 }
 
 // Styled Container for Static
@@ -78,9 +79,15 @@ const MyStaticWrapper: React.FC<MyStaticWrapperProps> = ({
   gap,
   margin,
   padding,
+  className,
 }) => {
   return (
-    <StaticContainer gap={gap} margin={margin} padding={padding}>
+    <StaticContainer
+      gap={gap}
+      margin={margin}
+      padding={padding}
+      className={className}
+    >
       <Masonry columnsCount={columnsCount}>{children}</Masonry>
     </StaticContainer>
   );
