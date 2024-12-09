@@ -533,6 +533,12 @@ export function QuizList({
       const listWrapper = document.querySelector('.list_wrapper');
       if (!listWrapper) return;
 
+      // // 기존 그룹화된 부모 요소 초기화
+      // const existingGroups = document.querySelectorAll(
+      //   '.groupedItemsContainer',
+      // );
+      // existingGroups.forEach((group) => group.remove());
+
       const groupMap: Record<string, HTMLElement> = {};
       const itemsToSend: QuizListType[] = [];
       // 그룹 ID로 부모 요소 생성
