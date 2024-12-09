@@ -669,42 +669,81 @@ export function ContentCopyEdit({
                     <SourceOptionWrapper>
                       {/* 옵션 리스트 셀렉트 컴포넌트 */}
                       {idxNamePairsH && idxNamePairsF && idxNamePairsG && (
-                        <OptionList
-                          quizCategory={quizCategory.sources}
-                          setSelectedSource={setSelectedSource}
-                          categoriesE={[
-                            {
-                              code: '교재',
-                              idx: 1,
-                              name: '교재',
-                            },
-                            {
-                              code: '내신',
-                              idx: 2,
-                              name: '내신',
-                            },
-                            {
-                              code: '기출',
-                              idx: 3,
-                              name: '기출',
-                            },
-                            {
-                              code: '자체제작',
-                              idx: 4,
-                              name: '자체제작',
-                            },
-                            {
-                              code: '기타',
-                              idx: 5,
-                              name: '기타',
-                            },
-                          ]}
-                          groupsDataF={idxNamePairsF}
-                          groupsDataG={idxNamePairsG}
-                          groupsDataH={idxNamePairsH}
-                          selectedValue={setSelectedList}
-                          onItemClickData={onItemClickData}
-                        />
+                        <>
+                          {quizCategory.sources.length > 0 ? (
+                            <OptionList
+                              quizCategory={quizCategory.sources}
+                              setSelectedSource={setSelectedSource}
+                              categoriesE={[
+                                {
+                                  code: '교재',
+                                  idx: 1,
+                                  name: '교재',
+                                },
+                                {
+                                  code: '내신',
+                                  idx: 2,
+                                  name: '내신',
+                                },
+                                {
+                                  code: '기출',
+                                  idx: 3,
+                                  name: '기출',
+                                },
+                                {
+                                  code: '자체제작',
+                                  idx: 4,
+                                  name: '자체제작',
+                                },
+                                {
+                                  code: '기타',
+                                  idx: 5,
+                                  name: '기타',
+                                },
+                              ]}
+                              groupsDataF={idxNamePairsF}
+                              groupsDataG={idxNamePairsG}
+                              groupsDataH={idxNamePairsH}
+                              selectedValue={setSelectedList}
+                              onItemClickData={onItemClickData}
+                            />
+                          ) : (
+                            <OptionList
+                              setSelectedSource={setSelectedSource}
+                              categoriesE={[
+                                {
+                                  code: '교재',
+                                  idx: 1,
+                                  name: '교재',
+                                },
+                                {
+                                  code: '내신',
+                                  idx: 2,
+                                  name: '내신',
+                                },
+                                {
+                                  code: '기출',
+                                  idx: 3,
+                                  name: '기출',
+                                },
+                                {
+                                  code: '자체제작',
+                                  idx: 4,
+                                  name: '자체제작',
+                                },
+                                {
+                                  code: '기타',
+                                  idx: 5,
+                                  name: '기타',
+                                },
+                              ]}
+                              groupsDataF={idxNamePairsF}
+                              groupsDataG={idxNamePairsG}
+                              groupsDataH={idxNamePairsH}
+                              selectedValue={setSelectedList}
+                            />
+                          )}
+                        </>
                       )}
                     </SourceOptionWrapper>
                   </SelectListWrapper>

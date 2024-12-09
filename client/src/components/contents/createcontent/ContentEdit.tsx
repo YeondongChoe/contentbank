@@ -729,12 +729,12 @@ export function ContentEdit({
   const quizCategory = useMemo(() => {
     console.log('onItemClickData 클릭된 아이템 ----', onItemClickData);
     if (onItemClickData) {
-      const category = onItemClickData.quizCategoryList[0].quizCategory;
+      const category = onItemClickData.quizCategoryList[0]?.quizCategory;
       return {
         문항타입: category?.문항타입 || '',
         난이도: category?.난이도 || '',
         난이도공통: category?.난이도공통 || '',
-        sources: category.sources || [],
+        sources: category?.sources || [],
       };
     }
     return {
@@ -782,42 +782,81 @@ export function ContentEdit({
                     <SourceOptionWrapper>
                       {/* 옵션 리스트 셀렉트 컴포넌트 */}
                       {idxNamePairsH && idxNamePairsF && idxNamePairsG && (
-                        <OptionList
-                          quizCategory={quizCategory.sources}
-                          setSelectedSource={setSelectedSource}
-                          categoriesE={[
-                            {
-                              code: '교재',
-                              idx: 1,
-                              name: '교재',
-                            },
-                            {
-                              code: '내신',
-                              idx: 2,
-                              name: '내신',
-                            },
-                            {
-                              code: '기출',
-                              idx: 3,
-                              name: '기출',
-                            },
-                            {
-                              code: '자체제작',
-                              idx: 4,
-                              name: '자체제작',
-                            },
-                            {
-                              code: '기타',
-                              idx: 5,
-                              name: '기타',
-                            },
-                          ]}
-                          groupsDataF={idxNamePairsF}
-                          groupsDataG={idxNamePairsG}
-                          groupsDataH={idxNamePairsH}
-                          selectedValue={setSelectedList}
-                          onItemClickData={onItemClickData}
-                        />
+                        <>
+                          {quizCategory.sources.length > 0 ? (
+                            <OptionList
+                              quizCategory={quizCategory.sources}
+                              setSelectedSource={setSelectedSource}
+                              categoriesE={[
+                                {
+                                  code: '교재',
+                                  idx: 1,
+                                  name: '교재',
+                                },
+                                {
+                                  code: '내신',
+                                  idx: 2,
+                                  name: '내신',
+                                },
+                                {
+                                  code: '기출',
+                                  idx: 3,
+                                  name: '기출',
+                                },
+                                {
+                                  code: '자체제작',
+                                  idx: 4,
+                                  name: '자체제작',
+                                },
+                                {
+                                  code: '기타',
+                                  idx: 5,
+                                  name: '기타',
+                                },
+                              ]}
+                              groupsDataF={idxNamePairsF}
+                              groupsDataG={idxNamePairsG}
+                              groupsDataH={idxNamePairsH}
+                              selectedValue={setSelectedList}
+                              onItemClickData={onItemClickData}
+                            />
+                          ) : (
+                            <OptionList
+                              setSelectedSource={setSelectedSource}
+                              categoriesE={[
+                                {
+                                  code: '교재',
+                                  idx: 1,
+                                  name: '교재',
+                                },
+                                {
+                                  code: '내신',
+                                  idx: 2,
+                                  name: '내신',
+                                },
+                                {
+                                  code: '기출',
+                                  idx: 3,
+                                  name: '기출',
+                                },
+                                {
+                                  code: '자체제작',
+                                  idx: 4,
+                                  name: '자체제작',
+                                },
+                                {
+                                  code: '기타',
+                                  idx: 5,
+                                  name: '기타',
+                                },
+                              ]}
+                              groupsDataF={idxNamePairsF}
+                              groupsDataG={idxNamePairsG}
+                              groupsDataH={idxNamePairsH}
+                              selectedValue={setSelectedList}
+                            />
+                          )}
+                        </>
                       )}
                     </SourceOptionWrapper>
                   </SelectListWrapper>

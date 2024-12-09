@@ -534,7 +534,7 @@ export function QuizList({
       if (!listWrapper) return;
 
       const groupMap: Record<string, HTMLElement> = {};
-
+      const itemsToSend: QuizListType[] = [];
       // 그룹 ID로 부모 요소 생성
       questionList.forEach((item) => {
         if (item.groupCode) {
@@ -580,13 +580,8 @@ export function QuizList({
                 // 그룹 컨테이너 제거
                 setGroupId(null);
                 parentDiv.remove();
-                // 서버에 그룹 상태 전송
-                if (!isPending)
-                  // putGroupData({
-                  //   groupCode: item.groupCode,
-                  //   quizList: [],
-                  // });
-                  alert('그룹이 해제되었습니다.');
+
+                alert('그룹이 해제되었습니다.');
               }
             };
 
@@ -615,8 +610,16 @@ export function QuizList({
             const parentDiv = groupMap[item.groupCode];
             parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
           }
+
+          itemsToSend.push(item);
         }
       });
+
+      // 서버에 그룹 상태 한 번에 전송
+      console.log('최종 그룹 리스트 데이터 ---', itemsToSend);
+      if (!isPending && itemsToSend.length > 0) {
+        putGroupData(itemsToSend);
+      }
     };
 
     groupElementsByCode();
