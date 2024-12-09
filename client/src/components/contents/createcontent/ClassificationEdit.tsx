@@ -19,7 +19,11 @@ import {
   ValueNone,
   openToastifyAlert,
 } from '../..';
-import { classificationInstance, quizService } from '../../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../../api/axios';
 import {
   Accordion,
   ButtonFormatRadio,
@@ -30,6 +34,7 @@ import {
 import { MyStaticWrapper } from '../../../components/molecules/sortBox/Masonry';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
+  IdxNamePair,
   ItemCategoryType,
   ItemTreeListType,
   ItemTreeType,
@@ -87,6 +92,8 @@ export function ClassificationEdit({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
+  const [idxNamePairsA, setIdxNamePairsA] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
   const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
     title: '',
     checkValue: 0,
@@ -185,24 +192,120 @@ export function ClassificationEdit({
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
 
   // 메뉴 목록 조회 api (셋팅값)
-  // const getMenuSetting = async () => {
-  //   const res = await resourceServiceInstance.get(
-  //     `/v1/menu/path?url=contentDtEditingSetting`,
-  //   );
-  //   console.log('getMenuSetting--------', res);
-  //   return res.data.data;
-  // };
-  // const {
-  //   data: menuSettingData,
-  //   isLoading: isMenuSettingLoading,
-  //   refetch: menuSettingRefetch,
-  // } = useQuery({
-  //   queryKey: ['get-menuSetting'],
-  //   queryFn: getMenuSetting,
-  //   meta: {
-  //     errorMessage: 'get-menuSetting 에러 메세지',
-  //   },
-  // });
+  const getMenuSetting = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=contentClassificationSetting`,
+    );
+    console.log('getMenuSetting--------', res);
+    return res.data.data;
+  };
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
+    queryKey: ['get-menuSetting'],
+    queryFn: getMenuSetting,
+    meta: {
+      errorMessage: 'get-menuSetting 에러 메세지',
+    },
+  });
+  // 셋팅 데이터 바뀔때 선택 구성요소값
+  useEffect(() => {
+    if (menuSettingData) {
+      //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
+      console.log(
+        '메뉴 셋팅값 ------ ',
+        menuSettingData.menuDetailList.length,
+        menuSettingData,
+      );
+
+      // 셋팅값 없을시 얼럿
+      if (menuSettingData.menuDetailList.length == 0) {
+        // openToastifyAlert({
+        //   type: 'error',
+        //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
+        // });
+        alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
+        window.close();
+        return;
+      }
+
+      // 첫번째 출처 값
+      const filteredCategoriesA: any[] = [];
+      // 두번째 추가정보
+      const filteredCategoriesDD: any[] = [];
+
+      // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
+      menuSettingData?.menuDetailList.forEach(
+        (
+          menuDetail: {
+            [x: string]: any;
+            idxList: string;
+            nameList: string;
+            inputList: string;
+            searchList: string;
+            viewList: string;
+          },
+          index: any,
+        ) => {
+          const idxList = menuDetail?.idxList?.split(',');
+          const nameList = menuDetail?.nameList?.split(',');
+          const inputList = menuDetail?.inputList?.split(',');
+          const searchList = menuDetail?.searchList?.split(',');
+          const viewList = menuDetail?.viewList?.split(',');
+
+          // idx와 name을 짝지어 배열로 저장
+          const pairs = idxList.map((idx, index) => ({
+            idx,
+            name: nameList[index],
+            inputType: inputList[index],
+            searchList: searchList[index] === 'true',
+            viewList: viewList[index] === 'true',
+          }));
+
+          if (menuDetail.groupCode == 'A') {
+            setIdxNamePairsA((prev) => [...prev, ...pairs]);
+          }
+
+          if (menuDetail.groupCode == 'A') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesA.push(categories);
+          } else if (menuDetail.groupCode == 'DD') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              // viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesDD.push(categories);
+          }
+        },
+      );
+
+      const idxListA = filteredCategoriesA
+        .flat()
+        // .filter((category) => category.inputType === 'SELECT')
+        .map((category) => category.idx)
+        .join(',');
+      const idxListDD = filteredCategoriesDD
+        .flat()
+        // .filter((category) => category.inputType === 'SELECT')
+        .map((category) => category.idx)
+        .join(',');
+
+      console.log('inputType 이 셀렉트인것만', idxListA, '/', idxListDD);
+    }
+  }, [menuSettingData]);
 
   //  카테고리 불러오기 api
   const getCategory = async () => {
@@ -1658,7 +1761,8 @@ export function ClassificationEdit({
                       <span>
                         {quiz.quizCategoryList[0] && (
                           <span
-                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
+                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
+														${quiz.quizCategoryList[0].quizCategory?.문항타입 == '서술형' && 'gray'} 
                   ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
                           >
                             {quiz.quizCategoryList[0].quizCategory?.문항타입}
@@ -1721,10 +1825,10 @@ export function ClassificationEdit({
                                 {item.quizCategory?.교과}/
                                 {item.quizCategory?.학년}/
                                 {item.quizCategory?.학기}/
-                                {item.quizCategory?.대단원?.split('^^^')[0]}/
-                                {item.quizCategory?.중단원?.split('^^^')[0]}/
-                                {item.quizCategory?.소단원?.split('^^^')[0]}/
-                                {item.quizCategory?.유형?.split('^^^')[0]}
+                                {item.quizCategory?.대단원}/
+                                {item.quizCategory?.중단원}/
+                                {item.quizCategory?.소단원}/
+                                {item.quizCategory?.유형}
                               </span>
                             ))
                           ) : (
@@ -2433,6 +2537,9 @@ const ItemWrapper = styled.div<{ height?: string; classHeight?: string }>`
     }
     &.green {
       background-color: ${COLOR.ALERTBAR_SUCCESS};
+    }
+    &.gray {
+      background-color: ${COLOR.BORDER_GRAY};
     }
   }
 `;
