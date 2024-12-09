@@ -31,6 +31,7 @@ import { COLOR } from '../../constants/COLOR';
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
 import { InputOptions } from './options/InputOptions';
+import { OptionList } from './options/OptionList';
 
 type SelectedValueType = string | { [key: string]: any };
 type SelectedSourceItem = Record<string, any>;
@@ -584,6 +585,15 @@ export function ContentCopyEdit({
     }
   }, [data]);
 
+  // useEffect(() => {
+  //   if (onItemClickData && onItemClickData.quizItemList) {
+  //     setData(onItemClickData.quizItemList);
+  //     // 선택 데이터 바뀔시 초기화
+  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //     // @ts-expect-error
+  //     window.tinymce.activeEditor.setContent('');
+  //   }
+  // }, [onItemClickData]);
   useEffect(() => {
     if (onItemClickData && onItemClickData.quizItemList) {
       setData(onItemClickData.quizItemList);
@@ -591,6 +601,14 @@ export function ContentCopyEdit({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       window.tinymce.activeEditor.setContent('');
+    }
+
+    // 선택된 문항의 idx 값 가져오기
+    const idx = onItemClickData?.idx as number | undefined;
+
+    // idx 값이 존재하고 중복되지 않았을 경우에만 추가
+    if (idx !== undefined && !quizIdx.includes(idx)) {
+      setQuizIdx((prevQuizIdx) => [...prevQuizIdx, idx]);
     }
   }, [onItemClickData]);
 
@@ -609,39 +627,17 @@ export function ContentCopyEdit({
   }, [selectedQuestionType, selectedSource]);
 
   const quizCategory = useMemo(() => {
+    console.log('onItemClickData 클릭된 아이템 ----', onItemClickData);
     if (onItemClickData) {
-      const categories =
-        onItemClickData.quizCategoryList?.map((item) => item.quizCategory) ||
-        [];
-
-      // 필터링하여 존재하는 값을 찾아 반환
-      const validCategory = categories.reduce(
-        (acc, category) => {
-          if (category) {
-            acc.교과 = category.교과 || acc.교과;
-            acc.과목 = category.과목 || acc.과목;
-            acc.문항타입 = category.문항타입 || acc.문항타입;
-            acc.난이도 = category.난이도 || acc.난이도;
-            acc.sources = category.sources?.length
-              ? category.sources
-              : acc.sources;
-          }
-          return acc;
-        },
-        {
-          교과: '',
-          과목: '',
-          문항타입: '',
-          난이도: '',
-          sources: [],
-        },
-      );
-
-      return validCategory;
+      const category = onItemClickData.quizCategoryList[0].quizCategory;
+      return {
+        문항타입: category?.문항타입 || '',
+        난이도: category?.난이도 || '',
+        난이도공통: category?.난이도공통 || '',
+        sources: category.sources || [],
+      };
     }
     return {
-      교과: '',
-      과목: '',
       문항타입: '',
       난이도: '',
       sources: [],
@@ -662,44 +658,182 @@ export function ContentCopyEdit({
               />
             </EditWrapper>
 
-            <BackgroundWrapper>
-              <SelectListWrapper>
-                <strong className="top_title">출처</strong>
-              </SelectListWrapper>
-              <SelectListWrapper>
-                <SelectList>
-                  <li>
-                    <SelectWrapper>
-                      {/* {idxNamePairsH && (
-                        <>
-                          {
-                            // 셀렉트가 아닌 경우
-                            idxNamePairsH.map((el, idx) => (
-                              <InputOptions
-                                Item={idxNamePairsH[idx]}
-                                listItem={categoriesH[idx]}
-                                key={`${el?.name} optionsdepth${idx}`}
-                                onOptionChange={setSourceValue}
-                              />
-                            ))
-                          }
-                        </>
-                      )} */}
-                    </SelectWrapper>
-                  </li>
-                </SelectList>
-              </SelectListWrapper>
-            </BackgroundWrapper>
-            <BackgroundWrapper className="bottom">
-              <SelectListWrapper>
-                <strong className="top_title">추가정보</strong>
-              </SelectListWrapper>
-              <SelectListWrapper>
-                <SelectList>
-                  <li></li>
-                </SelectList>
-              </SelectListWrapper>
-            </BackgroundWrapper>
+            {quizCategory && (
+              <>
+                <BackgroundWrapper>
+                  <SelectListWrapper>
+                    <strong className="top_title">
+                      출처<span>*</span>
+                      <span className="info">(최대 5개)</span>
+                    </strong>
+                    <SourceOptionWrapper>
+                      {/* 옵션 리스트 셀렉트 컴포넌트 */}
+                      {idxNamePairsH && idxNamePairsF && idxNamePairsG && (
+                        <OptionList
+                          quizCategory={quizCategory.sources}
+                          setSelectedSource={setSelectedSource}
+                          categoriesE={[
+                            {
+                              code: '교재',
+                              idx: 1,
+                              name: '교재',
+                            },
+                            {
+                              code: '내신',
+                              idx: 2,
+                              name: '내신',
+                            },
+                            {
+                              code: '기출',
+                              idx: 3,
+                              name: '기출',
+                            },
+                            {
+                              code: '자체제작',
+                              idx: 4,
+                              name: '자체제작',
+                            },
+                            {
+                              code: '기타',
+                              idx: 5,
+                              name: '기타',
+                            },
+                          ]}
+                          groupsDataF={idxNamePairsF}
+                          groupsDataG={idxNamePairsG}
+                          groupsDataH={idxNamePairsH}
+                          selectedValue={setSelectedList}
+                          onItemClickData={onItemClickData}
+                        />
+                      )}
+                    </SourceOptionWrapper>
+                  </SelectListWrapper>
+                </BackgroundWrapper>
+                <BackgroundWrapper className="bottom">
+                  <SelectListWrapper>
+                    <strong className="top_title">추가정보</strong>
+                  </SelectListWrapper>
+                  <SelectListWrapper>
+                    <SelectList>
+                      <li>
+                        <SelectWrapper>
+                          <strong className="title">문항타입</strong>
+                          <Select
+                            onDefaultSelect={() =>
+                              handleDefaultSelect('문항 타입')
+                            }
+                            width={'120px'}
+                            defaultValue={quizCategory?.문항타입 || '문항타입'}
+                            key={'문항 타입'}
+                            options={[
+                              {
+                                code: '객관식',
+                                idx: 1,
+                                name: '객관식',
+                              },
+                              {
+                                code: '주관식',
+                                idx: 2,
+                                name: '주관식',
+                              },
+                              {
+                                code: '서술형',
+                                idx: 3,
+                                name: '서술형',
+                              },
+                            ]}
+                            onSelect={(event) => selectCategoryOption(event)}
+                            setSelectedValue={setSelectedQuestionType}
+                            $positionTop
+                            height="35px"
+                          />
+                        </SelectWrapper>
+                      </li>
+                      <li>
+                        <SelectWrapper>
+                          <strong className="title">난이도</strong>
+                          <Select
+                            onDefaultSelect={() =>
+                              handleDefaultSelect('공통(시험)')
+                            }
+                            width={'120px'}
+                            defaultValue={
+                              quizCategory?.난이도공통 || '공통(시험)'
+                            }
+                            key={'공통(시험)'}
+                            options={[
+                              {
+                                code: '개념',
+                                idx: 1,
+                                name: '개념',
+                              },
+                              {
+                                code: '기본',
+                                idx: 2,
+                                name: '기본',
+                              },
+                              {
+                                code: '심화',
+                                idx: 3,
+                                name: '심화',
+                              },
+                              {
+                                code: '없음',
+                                idx: 4,
+                                name: '없음',
+                              },
+                            ]}
+                            onSelect={(event) => selectCategoryOption(event)}
+                            setSelectedValue={setSelectedDifficultyCommon}
+                            $positionTop
+                            height="35px"
+                          />
+                          <Select
+                            onDefaultSelect={() =>
+                              handleDefaultSelect('난이도')
+                            }
+                            width={'120px'}
+                            defaultValue={quizCategory?.난이도 || '난이도'}
+                            key={'난이도'}
+                            options={[
+                              {
+                                code: '상',
+                                idx: 1,
+                                name: '상',
+                              },
+                              {
+                                code: '중상',
+                                idx: 2,
+                                name: '중상',
+                              },
+                              {
+                                code: '중',
+                                idx: 3,
+                                name: '중',
+                              },
+                              {
+                                code: '중하',
+                                idx: 4,
+                                name: '중하',
+                              },
+                              {
+                                code: '하',
+                                idx: 5,
+                                name: '하',
+                              },
+                            ]}
+                            onSelect={(event) => selectCategoryOption(event)}
+                            setSelectedValue={setSelectedDifficulty}
+                            $positionTop
+                            height="35px"
+                          />
+                        </SelectWrapper>
+                      </li>
+                    </SelectList>
+                  </SelectListWrapper>
+                </BackgroundWrapper>
+              </>
+            )}
           </PerfectScrollbar>
         </EditContainerWrapper>
 
@@ -724,7 +858,7 @@ export function ContentCopyEdit({
         <SubmitButtonWrapper>
           <Button
             buttonType="button"
-            disabled={addButtonBool}
+            // disabled={addButtonBool}
             onClick={() => submitSave()}
             width={'calc(50% - 5px)'}
             $margin={'0 10px 0 0'}
@@ -749,14 +883,6 @@ export function ContentCopyEdit({
 
 const Container = styled.div`
   position: relative;
-`;
-
-const InputWrappper = styled.div`
-  display: flex;
-  .reddot {
-    margin: 0 5px;
-    color: ${COLOR.ALERTBAR_ERROR};
-  }
 `;
 
 const ContentsWrapper = styled.div`
@@ -798,7 +924,7 @@ const SelectListWrapper = styled.div`
     font-size: 15px;
     padding-right: 10px;
     position: relative;
-    span {
+    > span {
       position: absolute;
       top: 10px;
       right: 0px;
@@ -809,6 +935,18 @@ const SelectListWrapper = styled.div`
 
   &:last-child {
     padding-bottom: 20px;
+
+    .top_title {
+      flex: 1 0 0;
+    }
+    .info {
+      width: 100%;
+      display: flex;
+      position: static;
+      color: ${COLOR.GRAY};
+      font-size: 12px;
+      letter-spacing: -1px;
+    }
   }
   &:nth-child(1) {
     padding-top: 20px;
@@ -818,11 +956,15 @@ const SelectListWrapper = styled.div`
 const SourceOptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  width: calc(100% - 70px);
 `;
 const SelectList = styled.ul`
-  padding: 5px 10px;
+  /* padding: 5px 10px; */
+  display: flex;
+  width: 100%;
 
   li {
+    width: 50%;
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
@@ -834,7 +976,11 @@ const SelectWrapper = styled.div`
   flex-wrap: wrap;
   gap: 5px;
   align-items: center;
-  color: ${COLOR.GRAY};
+
+  .title {
+    padding: 10px;
+    font-weight: normal;
+  }
 `;
 
 const ContentListWrapper = styled.div`
@@ -846,7 +992,7 @@ const ContentListWrapper = styled.div`
   right: 0;
 `;
 const ContentList = styled.div`
-  height: calc(100vh - 200px);
+  height: calc(100vh - 145px);
   width: 100%;
   overflow: hidden;
   border: 1px solid ${COLOR.BORDER_BLUE};
