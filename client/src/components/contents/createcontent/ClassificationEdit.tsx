@@ -31,7 +31,7 @@ import {
   DepthBlock,
   Search,
 } from '../../../components/molecules';
-import { MyStaticWrapper } from '../../../components/molecules/sortBox/Masonry';
+// import { ListWrapper } from '../../../components/molecules/sortBox/';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
   IdxNamePair,
@@ -95,6 +95,12 @@ export function ClassificationEdit({
   const [idxNamePairsA, setIdxNamePairsA] = useState<IdxNamePair[]>([]);
   const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[]>([]);
   const [groupId, setGroupId] = useState<string | null>(null);
+
+  //리스트 솔팅 정렬
+  const [columnsCount, setColumnsCount] = useState<number>(2);
+  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
+  useEffect(() => {}, [columnsCount, itemHeight]);
+
   const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
     title: '',
     checkValue: 0,
@@ -752,62 +758,128 @@ export function ClassificationEdit({
     setQuestionList(quizList);
   }, []);
   useEffect(() => {
-    // 그룹 아이디끼리 묶기
-    // DOM에서 그룹코드에 따라 요소를 동적으로 그룹화
-    const groupElementsByCode = () => {
-      const listWrapper = document.querySelector('.list_wrapper');
-      if (!listWrapper) return;
-
-      const groupMap: Record<string, HTMLElement> = {};
-
-      // 그룹 ID로 부모 요소 생성
-      questionList.forEach((item) => {
-        if (item.groupCode) {
-          if (!groupMap[item.groupCode]) {
-            const parentDiv = document.createElement('div') as HTMLElement;
-            parentDiv.id = item.groupCode;
-            parentDiv.className = 'groupedItemsContainer';
-
-            const groupCheckbox = document.createElement('input');
-            groupCheckbox.type = 'checkbox';
-            groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
-            groupCheckbox.className = 'group-checkbox';
-
-            const groupCheckboxLabel = document.createElement('label');
-            groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
-            groupCheckboxLabel.innerText = '그룹 선택';
-
-            parentDiv.appendChild(groupCheckbox);
-            parentDiv.appendChild(groupCheckboxLabel);
-            // parentDiv.appendChild(ungroupButton);
-
-            groupMap[item.groupCode] = parentDiv;
-            listWrapper.appendChild(parentDiv);
-          }
-        }
-      });
-      // 동일한 그룹 ID를 가진 리스트 요소를 이동
-      questionList.forEach((item) => {
-        if (item.groupCode) {
-          const element = document.getElementById(item.code);
-          console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
-          const target =
-            element &&
-            (element.parentNode?.parentNode?.parentNode?.parentNode
-              ?.parentNode as HTMLElement);
-
-          console.log('target이동될 타겟', target);
-
-          if (element) {
-            const parentDiv = groupMap[item.groupCode];
-            parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
-          }
-        }
-      });
-    };
-
     groupElementsByCode();
   }, [questionList]);
+
+  // 그룹 아이디끼리 묶기
+  // DOM에서 그룹코드에 따라 요소를 동적으로 그룹화
+  const groupElementsByCode = () => {
+    const listWrapper = document.querySelector('.list_wrapper');
+    if (!listWrapper) return;
+
+    const groupMap: Record<string, HTMLElement> = {};
+
+    // 그룹 ID로 부모 요소 생성
+    questionList.forEach((item) => {
+      if (item.groupCode) {
+        if (
+          !groupMap[item.groupCode] &&
+          !document.getElementById(item.groupCode)
+        ) {
+          const parentDiv = document.createElement('div') as HTMLElement;
+          parentDiv.id = item.groupCode;
+          parentDiv.className = `groupedItemsContainer ${columnsCount == 2 ? 'colum_2' : 'colum_1'}`;
+
+          const groupCheckbox = document.createElement('input');
+          groupCheckbox.type = 'checkbox';
+          groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
+          groupCheckbox.className = 'group-checkbox';
+
+          const groupCheckboxLabel = document.createElement('label');
+          groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
+          groupCheckboxLabel.innerText = '그룹 선택';
+          groupCheckboxLabel.className = 'group_checkbox_label';
+
+          parentDiv.appendChild(groupCheckbox);
+          parentDiv.appendChild(groupCheckboxLabel);
+          // parentDiv.appendChild(ungroupButton);
+
+          groupMap[item.groupCode] = parentDiv;
+          listWrapper.appendChild(parentDiv);
+        }
+      }
+    });
+    // 동일한 그룹 ID를 가진 리스트 요소를 이동
+    questionList.forEach((item) => {
+      if (item.groupCode) {
+        const element = document.getElementById(item.code);
+        console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
+        const target =
+          element &&
+          (element.parentNode?.parentNode?.parentNode?.parentNode
+            ?.parentNode as HTMLElement);
+
+        console.log('target이동될 타겟', target);
+
+        const parentDiv = groupMap[item.groupCode];
+
+        if (parentDiv && target && target instanceof HTMLElement) {
+          parentDiv.appendChild(target); // 기존 요소를 새 부모로 이동
+        }
+      }
+    });
+  };
+  // 그룹 체크
+  const removeOnFromCheckList = () => {
+    setCheckedList((prev) => prev.filter((item) => item !== 'on'));
+  };
+  // 그룹 체크박스 상태 변경 처리 함수
+  const handleGroupCheckboxChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+
+    // group-checkbox인 경우에만 처리
+    if (target && target.classList.contains('group-checkbox')) {
+      const isChecked = target.checked;
+
+      // 그룹 컨테이너 내부의 모든 체크박스 선택
+      const parentDiv = target.closest('.groupedItemsContainer');
+      if (parentDiv) {
+        const childCheckboxes = parentDiv.querySelectorAll(
+          '.groupedItemsContainer input[type="checkbox"]',
+        );
+
+        // 모든 자식 체크박스 상태 업데이트
+        childCheckboxes.forEach((checkbox) => {
+          const inputElement = checkbox as HTMLInputElement;
+
+          // 체크 상태 동기화
+          inputElement.checked = isChecked;
+
+          // CheckList 업데이트 (React 상태 관리)
+          const id = inputElement.value;
+          if (isChecked) {
+            setCheckedList((prev) => [...prev, id]);
+          } else {
+            setCheckedList((prev) => prev.filter((el) => el !== id));
+          }
+        });
+        // 'on' 제거
+        removeOnFromCheckList();
+      }
+    }
+  };
+
+  useEffect(() => {
+    // 이벤트 리스너 등록
+    document.addEventListener('change', handleGroupCheckboxChange);
+
+    // 정리 함수: 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener('change', handleGroupCheckboxChange);
+    };
+  }, [checkedList]);
+  // 동적으로 바뀔 때 그룹ui 클래스명 재할당
+  useEffect(() => {
+    const groupedItemsContainers = document.querySelectorAll(
+      '.groupedItemsContainer',
+    );
+
+    groupedItemsContainers.forEach((element) => {
+      element.className = `groupedItemsContainer ${
+        columnsCount === 2 ? 'colum_2' : 'colum_1'
+      }`;
+    });
+  }, [columnsCount]);
 
   const sortList = () => {
     const sorted = questionList.filter((el) => checkedList.includes(el.code));
@@ -1627,11 +1699,6 @@ export function ClassificationEdit({
     console.log('type', type);
   }, []);
 
-  //리스트 솔팅 정렬
-  const [columnsCount, setColumnsCount] = useState<number>(2);
-  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
-  useEffect(() => {}, [columnsCount, itemHeight]);
-
   //셀렉트 데이터
   // const [content, setContent] = useState<string[]>([]);
   // const [topSelect, setTopSelect] = useState<string>('문제만 보기');
@@ -1781,15 +1848,12 @@ export function ClassificationEdit({
           </TopButtonWrapper>
           <ScrollWrapper className="height">
             <PerfectScrollbar>
-              <MyStaticWrapper
-                columnsCount={columnsCount}
-                padding="5px"
-                className="list_wrapper"
-              >
+              <ListWrapper className={`list_wrapper `}>
                 {questionList.map((quiz, index) => (
                   <ItemWrapper
                     key={quiz.idx}
                     height={itemHeight}
+                    className={`${columnsCount == 2 ? 'colum_item_2' : 'colum_item_1'} `}
                     classHeight={`${columnsCount == 3 ? '60px' : 'auto'}`}
                   >
                     <TopButtonWrapper>
@@ -1897,7 +1961,7 @@ export function ClassificationEdit({
                     </ScrollWrapper>
                   </ItemWrapper>
                 ))}
-              </MyStaticWrapper>
+              </ListWrapper>
             </PerfectScrollbar>
           </ScrollWrapper>
         </LayoutWrapper>
@@ -2380,10 +2444,43 @@ const Container = styled.div`
     margin: 10px 0;
     padding: 10px;
     background-color: #f9f9f9;
+    display: flex;
+    padding-top: 30px;
   }
 
   .group-checkbox {
-    margin-right: 5px;
+    position: absolute;
+    top: 15px;
+  }
+  label.group_checkbox_label {
+    position: absolute;
+    top: 10px;
+    right: auto;
+    left: 30px;
+  }
+`;
+
+const ListWrapper = styled.div`
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  .colum_2 {
+    display: flex;
+    flex-wrap: wrap;
+
+    > div {
+      width: calc(50% - 10px);
+    }
+  }
+
+  .colum_1 {
+    display: flex;
+    flex-wrap: wrap;
+
+    > div {
+      width: 100%;
+    }
   }
 `;
 const LayoutBodyWrapper = styled.div`
@@ -2555,6 +2652,18 @@ const ItemWrapper = styled.div<{ height?: string; classHeight?: string }>`
   margin: 5px;
   overflow: auto;
   position: relative;
+
+  &.colum_item_1 {
+    width: 100%;
+  }
+  &.colum_item_2 {
+    width: calc(50% - 10px);
+  }
+
+  img {
+    width: 100%;
+    height: fit-content;
+  }
 
   .quiz_wrap {
     overflow: auto;
