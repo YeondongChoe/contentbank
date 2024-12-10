@@ -156,7 +156,7 @@ export function MathViewer({
   }, [data]);
   const [dangerHTML, setDangerHTML] = useState('');
   const createMarkup = (data: string) => {
-    console.log('data: ', data);
+    // console.log('data: ', data);
     return { __html: data || '' };
   };
   useEffect(() => {
