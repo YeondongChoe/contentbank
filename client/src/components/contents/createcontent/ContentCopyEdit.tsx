@@ -24,6 +24,7 @@ import {
   QuizItemListType,
   QuizListType,
   QuizType,
+  Source,
 } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
@@ -154,10 +155,10 @@ export function ContentCopyEdit({
 
       // 값이 존재하면 상태값을 업데이트
       if (quizCategory) {
-        setSelectedQuestionType(quizCategory?.문항타입 || '');
-        setSelectedDifficulty(quizCategory?.난이도 || '');
-        setSelectedDifficultyCommon(quizCategory?.난이도공통 || '');
-        setSelectedSource(quizCategory?.sources || []);
+        setSelectedQuestionType((quizCategory?.문항타입 as string) || '');
+        setSelectedDifficulty((quizCategory?.난이도 as string) || '');
+        setSelectedDifficultyCommon((quizCategory?.난이도공통 as string) || '');
+        setSelectedSource((quizCategory?.sources as Source[]) || []);
       }
     }
   }, [onItemClickData]);
@@ -762,7 +763,9 @@ export function ContentCopyEdit({
                               handleDefaultSelect('문항 타입')
                             }
                             width={'120px'}
-                            defaultValue={quizCategory?.문항타입 || '문항타입'}
+                            defaultValue={
+                              (quizCategory?.문항타입 as string) || '문항타입'
+                            }
                             key={'문항 타입'}
                             options={[
                               {
@@ -797,7 +800,8 @@ export function ContentCopyEdit({
                             }
                             width={'120px'}
                             defaultValue={
-                              quizCategory?.난이도공통 || '공통(시험)'
+                              (quizCategory?.난이도공통 as string) ||
+                              '공통(시험)'
                             }
                             key={'공통(시험)'}
                             options={[
@@ -832,7 +836,9 @@ export function ContentCopyEdit({
                               handleDefaultSelect('난이도')
                             }
                             width={'120px'}
-                            defaultValue={quizCategory?.난이도 || '난이도'}
+                            defaultValue={
+                              (quizCategory?.난이도 as string) || '난이도'
+                            }
                             key={'난이도'}
                             options={[
                               {

@@ -37,6 +37,7 @@ import {
 } from '../../../components/molecules/sortBox/Masonry';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
+  CategoryGroup,
   IdxNamePair,
   ItemCategoryType,
   ItemTreeListType,
@@ -64,6 +65,7 @@ interface ItemTreeIdxListType {
 }
 
 type UnitClassificationType =
+  | CategoryGroup[]
   | CheckedItemType
   | RadioStateType
   | ItemTreeIdxListType
@@ -1168,68 +1170,62 @@ export function Classification({
   //   }
   // }, [isModifying, selected6depth]);
 
-  const sortedArr = () => {
+  const sortedArr = (): CategoryGroup[] => {
     console.log('아이템트리키 들어가야할 목록', unitClassificationList);
-    const arr = unitClassificationList.map((classification) => {
-      const itemTreeKey = classification.reduce(
-        (acc: Record<string, string | string[]>, curr) => {
-          if ('key' in curr && curr.title) {
-            if (curr.key === '행동요소1' || curr.key === '행동요소2') {
-              // 행동요소1 또는 행동요소2인 경우 배열로 처리
-              if (acc[curr.key]) {
-                // 이미 해당 키가 존재하는 경우 배열에 추가
-                (acc[curr.key] as string[]).push(curr.title);
-              } else {
-                // 새로 배열을 생성하여 추가
-                acc[curr.key] = [curr.title];
+
+    const quizCategory: CategoryGroup = {};
+
+    unitClassificationList.forEach((classification) => {
+      classification.forEach((item) => {
+        if (Array.isArray(item)) {
+          // 배열 처리 (예: 난이도, 문항타입)
+          item.forEach((nestedItem) => {
+            if (
+              typeof nestedItem === 'object' &&
+              typeof nestedItem.code === 'string' &&
+              typeof nestedItem.title === 'string'
+            ) {
+              if (!quizCategory[nestedItem.code]) {
+                quizCategory[nestedItem.code] = [];
               }
-            } else {
-              // 일반적인 키 처리
-              acc[curr.key] = curr.title;
+              quizCategory[nestedItem.code]?.push({
+                code: nestedItem.code,
+                name: nestedItem.title,
+              });
             }
-          } else if (typeof curr === 'object' && !('itemTreeIdxList' in curr)) {
-            // checkedItems 객체 병합
-            Object.assign(acc, curr);
+          });
+        } else if (
+          typeof item === 'object' &&
+          'code' in item &&
+          'title' in item
+        ) {
+          // 일반적인 객체 처리
+          const typedItem = item as { code: string; title: string };
+          if (!quizCategory[typedItem.code]) {
+            quizCategory[typedItem.code] = [];
           }
-          return acc;
-        },
-        {} as Record<string, string | string[]>,
-      );
-
-      const itemTreeIdxList =
-        classification.find(
-          (item): item is ItemTreeIdxListType => 'itemTreeIdxList' in item,
-        )?.itemTreeIdxList || [];
-
-      // 등록시 앞쪽에서 등록한 필수 메타값도 함께 등록
-      const requiredMetacategory =
-        sortedList[sortedList.length - 1].quizCategoryList[0].quizCategory;
-
-      console.log('itemTreeKey------', itemTreeKey);
-      console.log('requiredMetacategory------', requiredMetacategory);
-      const mergedItemTreeKey = {
-        ...itemTreeKey,
-        ...requiredMetacategory,
-      };
-      return {
-        itemTreeKey: mergedItemTreeKey,
-        itemTreeIdxList,
-        // quizCategory: {},
-      };
+          quizCategory[typedItem.code]?.push({
+            code: typedItem.code,
+            name: typedItem.title,
+          });
+        }
+      });
     });
 
-    return arr;
+    // CategoryGroup[]로 변환
+    const categoryList: CategoryGroup[] = [quizCategory];
+    return categoryList;
   };
-
   // 분류 등록 버튼
   const onSubmit = () => {
     // 최종적으로 전송 될 데이터
     console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
 
-    const categoryListArr = sortedArr();
+    const categoryListArr: CategoryGroup[] = sortedArr();
     console.log('categoryList 들어가야할 목록------', categoryListArr);
 
     const data: QuizClassificationData = {
+      commandCode: 1,
       quizCodeList: checkedList,
       categoryList: categoryListArr,
     };
@@ -1239,7 +1235,7 @@ export function Classification({
 
   // 분류 바꾸기 (등록) api
   const putClassification = async (data: QuizClassificationData) => {
-    const res = await classificationInstance.put(`/v1/item/quiz`, data);
+    const res = await quizService.put(`/v1/item`, data);
     console.log('데이터 최종 등록 후 리턴값', res);
     return res;
   };
@@ -2102,15 +2098,18 @@ export function Classification({
                         </span>
                       </div>
                       <span>
-                        {quiz.quizCategoryList[0] && (
-                          <span
-                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
+                        {quiz.quizCategoryList.length > 0 &&
+                          quiz.quizCategoryList?.[0]?.quizCategory?.문항타입 &&
+                          typeof quiz.quizCategoryList[0].quizCategory
+                            .문항타입 === 'string' && (
+                            <span
+                              className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
 														${quiz.quizCategoryList[0].quizCategory?.문항타입 == '서술형' && 'gray'} 
                   ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
-                          >
-                            {quiz.quizCategoryList[0].quizCategory?.문항타입}
-                          </span>
-                        )}
+                            >
+                              {quiz.quizCategoryList[0].quizCategory.문항타입}
+                            </span>
+                          )}
                       </span>
                     </TopButtonWrapper>
                     <ScrollWrapper
@@ -2146,31 +2145,38 @@ export function Classification({
                     <ScrollWrapper className={`height_class_wrap`}>
                       <PerfectScrollbar>
                         <div className="class_wrap">
-                          {quiz.quizCategoryList.some(
-                            (item) =>
-                              item.quizCategory?.교육과정 ||
-                              item.quizCategory?.과목 ||
-                              item.quizCategory?.교과 ||
-                              item.quizCategory?.학년 ||
-                              item.quizCategory?.학기 ||
-                              item.quizCategory?.대단원 ||
-                              item.quizCategory?.중단원 ||
-                              item.quizCategory?.소단원 ||
-                              item.quizCategory?.유형,
-                          ) ? (
-                            quiz.quizCategoryList.map((item, idx) => (
-                              <span key={idx}>
-                                {item.quizCategory?.교육과정}/
-                                {item.quizCategory?.과목}/
-                                {item.quizCategory?.교과}/
-                                {item.quizCategory?.학년}/
-                                {item.quizCategory?.학기}/
-                                {item.quizCategory?.대단원}/
-                                {item.quizCategory?.중단원}/
-                                {item.quizCategory?.소단원}/
-                                {item.quizCategory?.유형}
-                              </span>
-                            ))
+                          {quiz.quizCategoryList.length > 0 ? (
+                            quiz.quizCategoryList.map((item, idx) => {
+                              const quizCategory = item.quizCategory || {};
+
+                              // quizCategory에서 각 항목을 문자열로 변환
+                              const details = (
+                                [
+                                  '교육과정',
+                                  '과목',
+                                  '교과',
+                                  '학년',
+                                  '학기',
+                                  '대단원',
+                                  '중단원',
+                                  '소단원',
+                                  '유형',
+                                ] as const
+                              )
+                                .map((key) => {
+                                  const categoryArray = quizCategory[key]; // quizCategory 내부의 배열
+                                  if (Array.isArray(categoryArray)) {
+                                    return categoryArray
+                                      .map((sub) => (sub.name ? sub.name : sub)) // name이 있으면 사용
+                                      .join(', '); // 배열 항목을 ', '로 결합
+                                  }
+                                  return ''; // 배열이 아니면 빈 문자열 반환
+                                })
+                                .filter(Boolean) // 빈 문자열 제거
+                                .join(' / '); // '/'로 항목 연결
+
+                              return <span key={idx}>{details || ''}</span>;
+                            })
                           ) : (
                             <span>(분류없음)</span>
                           )}
@@ -2451,7 +2457,7 @@ export function Classification({
                       {idxNamePairsDD[0] && idxNamePairsDD[0][0] && (
                         <div
                           id={idxNamePairsDD[0][0].idx}
-                          className={`etc${1}`}
+                          className={`${idxNamePairsDD[0][0].code}`}
                           key={idxNamePairsDD[0][0].idx}
                         >
                           <ButtonFormatMultiRadio
@@ -2467,7 +2473,7 @@ export function Classification({
                       {idxNamePairsDD[0] && idxNamePairsDD[0][1] && (
                         <div
                           id={idxNamePairsDD[0][1].idx}
-                          className={`etc${2}`}
+                          className={`${idxNamePairsDD[0][1].code}`}
                           key={idxNamePairsDD[0][1].idx}
                         >
                           <ButtonFormatMultiRadio
@@ -2601,12 +2607,7 @@ const ScrollWrapper = styled.div<{ itemsHeight?: string }>`
     }
   }
 `;
-const DepthBlockScrollWrapper = styled.div`
-  overflow-y: auto;
-  /* height: 300px; */
-  width: 100%;
-  margin-top: 10px;
-`;
+
 const Title = styled.div`
   padding: 15px;
   background-color: #fff;
@@ -2667,22 +2668,6 @@ const SubmitButtonWrapper = styled.div`
   display: flex;
   flex-direction: row;
   width: 50%;
-`;
-const LoaderWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  padding-bottom: 50px;
-  padding-left: calc(50% - 35px);
-`;
-
-const ArrowButtonWrapper = styled.span`
-  padding: 0 10px;
-  > button {
-    cursor: pointer;
-    padding: 4px;
-    background-color: transparent;
-    border: none;
-  }
 `;
 
 const ListWrapper = styled.div`

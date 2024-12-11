@@ -18,6 +18,7 @@ import {
   CheckBoxI,
   DropdownWithCheckbox,
   EditListItem,
+  Icon,
   List,
   Loader,
   MathViewer,
@@ -60,7 +61,7 @@ type SearchClass = {
 export function ContentInformationChange() {
   const [page, setPage] = useRecoilState(pageAtom);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
-  const [checkList, setCheckList] = useState<number[]>([]); // 문항 체크
+  const [checkList, setCheckList] = useState<string[]>([]); // 문항 체크
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
 
   const [searchValue, setSearchValue] = useState<string>('');
@@ -224,12 +225,120 @@ export function ContentInformationChange() {
     // 검색 이후 리스트 값
     if (searchCategoryData) {
       setQuestionList(searchCategoryData?.quizList);
-      // eslint-disable-next-line prettier/prettier
-      // setQuestionList(list?.data.quizList);
 
       setTotalCount(searchCategoryData?.pagination?.totalCount);
     }
   }, [searchCategoryData]);
+
+  useEffect(() => {
+    // 그룹 코드로 묶기
+    groupElementsByCode();
+  }, [questionList]);
+  const groupElementsByCode = () => {
+    const listWrapper = document.querySelector('.list_wrapper');
+    if (!listWrapper) return;
+
+    const groupMap: Record<string, HTMLElement> = {};
+
+    // 그룹 ID로 부모 요소 생성
+    questionList.forEach((item) => {
+      if (item.groupCode) {
+        if (
+          !groupMap[item.groupCode] &&
+          !document.getElementById(item.groupCode)
+        ) {
+          const parentDiv = document.createElement('div') as HTMLElement;
+          parentDiv.id = item.groupCode;
+          parentDiv.className = `groupedItemsContainer`;
+
+          const groupCheckbox = document.createElement('input');
+          groupCheckbox.type = 'checkbox';
+          groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
+          groupCheckbox.className = 'group-checkbox';
+
+          const groupCheckboxLabel = document.createElement('label');
+          groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
+          groupCheckboxLabel.innerText = '그룹 선택';
+          groupCheckboxLabel.className = 'group_checkbox_label';
+
+          parentDiv.appendChild(groupCheckbox);
+          parentDiv.appendChild(groupCheckboxLabel);
+          // parentDiv.appendChild(ungroupButton);
+
+          groupMap[item.groupCode] = parentDiv;
+          listWrapper.appendChild(parentDiv);
+        }
+      }
+    });
+    // 동일한 그룹 ID를 가진 리스트 요소를 이동
+    questionList.forEach((item) => {
+      if (item.groupCode) {
+        const element = document.getElementById(item.code);
+        console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
+        const target =
+          element &&
+          (element.parentNode?.parentNode?.parentNode?.parentNode
+            ?.parentNode as HTMLElement);
+
+        console.log('target이동될 타겟', target);
+
+        const parentDiv = groupMap[item.groupCode];
+
+        if (parentDiv && target && target instanceof HTMLElement) {
+          parentDiv.appendChild(target); // 기존 요소를 새 부모로 이동
+        }
+      }
+    });
+  };
+  // 그룹 체크
+  const removeOnFromCheckList = () => {
+    setCheckList((prev) => prev.filter((item) => item !== 'on'));
+  };
+  // 그룹 체크박스 상태 변경 처리 함수
+  const handleGroupCheckboxChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+
+    // group-checkbox인 경우에만 처리
+    if (target && target.classList.contains('group-checkbox')) {
+      const isChecked = target.checked;
+
+      // 그룹 컨테이너 내부의 모든 체크박스 선택
+      const parentDiv = target.closest('.groupedItemsContainer');
+      if (parentDiv) {
+        const childCheckboxes = parentDiv.querySelectorAll(
+          '.groupedItemsContainer input[type="checkbox"]',
+        );
+
+        // 모든 자식 체크박스 상태 업데이트
+        childCheckboxes.forEach((checkbox) => {
+          const inputElement = checkbox as HTMLInputElement;
+
+          // 체크 상태 동기화
+          inputElement.checked = isChecked;
+
+          // CheckList 업데이트 (React 상태 관리)
+          const id = inputElement.value;
+          if (isChecked) {
+            setCheckList((prev) => [...prev, id]);
+          } else {
+            setCheckList((prev) => prev.filter((el) => el !== id));
+          }
+        });
+        // 'on' 제거
+        removeOnFromCheckList();
+      }
+    }
+  };
+
+  useEffect(() => {
+    // 이벤트 리스너 등록
+    document.addEventListener('change', handleGroupCheckboxChange);
+
+    // 정리 함수: 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener('change', handleGroupCheckboxChange);
+    };
+  }, [checkList]);
 
   // 데이터 변경시 리랜더링
   useEffect(() => {
@@ -280,14 +389,23 @@ export function ContentInformationChange() {
   const handleAllCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.currentTarget.checked);
     if (e.target.checked) {
-      setCheckList(questionList.map((item: QuizListType) => item.idx));
+      setCheckList(questionList.map((item: QuizListType) => item.code));
     } else {
       setCheckList([]);
     }
   };
+  const handleSingleCheckIcon = (checked: boolean, id: string) => {
+    if (checked) {
+      setCheckList((prev) => [...prev, id]);
+    } else {
+      setCheckList(checkList.filter((el) => el !== id));
+    }
+
+    // setIsChecked(checked);
+  };
   const handleButtonCheck = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: number,
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
   ) => {
     const target = e.currentTarget.childNodes[0].childNodes[0].childNodes[0]
       .childNodes[0].childNodes[0] as HTMLInputElement;
@@ -564,7 +682,7 @@ export function ContentInformationChange() {
 
   // 체크박스 선택된 리스트값 있을시 버튼 노출
   useEffect(() => {
-    const sorted = questionList.filter((el) => checkList.includes(el.idx));
+    const sorted = questionList.filter((el) => checkList.includes(el.code));
     console.log('sortedList------------', sorted);
     setSortedQuizList(sorted);
   }, [checkList]);
@@ -916,20 +1034,13 @@ export function ContentInformationChange() {
                         className={`colum_item_2 `}
                         classHeight={`auto`}
                       >
-                        {/* <TopButtonWrapper>
+                        <TopButtonWrapper>
                           <div className="quiz_top_wrap">
                             <CheckBoxI
                               $margin={'0 5px 0 0'}
-                              onChange={(e) =>
-                                handleSingleCheckIcon(
-                                  e.target.checked,
-                                  quiz.code,
-                                )
-                              }
+                              onChange={(e) => handleButtonCheck(e, quiz.code)}
                               checked={
-                                checkedList.includes(quiz.code as string)
-                                  ? true
-                                  : false
+                                checkList.includes(quiz.code) ? true : false
                               }
                               id={quiz.code}
                               value={quiz.code}
@@ -944,20 +1055,24 @@ export function ContentInformationChange() {
                             </span>
                           </div>
                           <span>
-                            {quiz.quizCategoryList[0] && (
-                              <span
-                                className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
+                            {quiz.quizCategoryList.length > 0 &&
+                              quiz.quizCategoryList?.[0]?.quizCategory
+                                ?.문항타입 &&
+                              typeof quiz.quizCategoryList[0].quizCategory
+                                .문항타입 === 'string' && (
+                                <span
+                                  className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
 														${quiz.quizCategoryList[0].quizCategory?.문항타입 == '서술형' && 'gray'} 
                   ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
-                              >
-                                {
-                                  quiz.quizCategoryList[0].quizCategory
-                                    ?.문항타입
-                                }
-                              </span>
-                            )}
+                                >
+                                  {
+                                    quiz.quizCategoryList[0].quizCategory
+                                      ?.문항타입
+                                  }
+                                </span>
+                              )}
                           </span>
-                        </TopButtonWrapper> */}
+                        </TopButtonWrapper>
                         <ScrollWrapper
                           className="items_height"
                           // itemsHeight={`150px`}
@@ -1001,22 +1116,40 @@ export function ContentInformationChange() {
                         <ScrollWrapper className={`items_height`}>
                           <PerfectScrollbar>
                             <div className="class_wrap">
-                              {quiz.quizCategoryList.some(
-                                (item) => item.quizCategory?.교육과정,
-                              ) ? (
-                                quiz.quizCategoryList.map((item, idx) => (
-                                  <span key={idx}>
-                                    {item.quizCategory?.교육과정}/
-                                    {item.quizCategory?.과목}/
-                                    {item.quizCategory?.교과}/
-                                    {item.quizCategory?.학년}/
-                                    {item.quizCategory?.학기}/
-                                    {item.quizCategory?.대단원}/
-                                    {item.quizCategory?.중단원}/
-                                    {item.quizCategory?.소단원}/
-                                    {item.quizCategory?.유형}
-                                  </span>
-                                ))
+                              {quiz.quizCategoryList.length > 0 ? (
+                                quiz.quizCategoryList.map((item, idx) => {
+                                  const quizCategory = item.quizCategory || {};
+
+                                  // quizCategory에서 각 항목을 문자열로 변환
+                                  const details = (
+                                    [
+                                      '교육과정',
+                                      '과목',
+                                      '교과',
+                                      '학년',
+                                      '학기',
+                                      '대단원',
+                                      '중단원',
+                                      '소단원',
+                                      '유형',
+                                    ] as const
+                                  )
+                                    .map((key) => {
+                                      const categoryArray = quizCategory[key]; // quizCategory 내부의 배열
+                                      if (Array.isArray(categoryArray)) {
+                                        return categoryArray
+                                          .map((sub) =>
+                                            sub.name ? sub.name : sub,
+                                          ) // name이 있으면 사용
+                                          .join(', '); // 배열 항목을 ', '로 결합
+                                      }
+                                      return ''; // 배열이 아니면 빈 문자열 반환
+                                    })
+                                    .filter(Boolean) // 빈 문자열 제거
+                                    .join(' / '); // '/'로 항목 연결
+
+                                  return <span key={idx}>{details || ''}</span>;
+                                })
                               ) : (
                                 <span>(분류없음)</span>
                               )}
@@ -1303,6 +1436,28 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  .groupedItemsContainer {
+    border: 3px solid ${COLOR.BORDER_BLUE};
+    position: relative;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    display: flex;
+    padding-top: 30px;
+    width: 100%;
+  }
+
+  .group-checkbox {
+    position: absolute;
+    top: 15px;
+  }
+  label.group_checkbox_label {
+    position: absolute;
+    top: 10px;
+    right: auto;
+    left: 30px;
+  }
 `;
 const PositionWrapper = styled.div`
   display: flex;
@@ -1444,18 +1599,6 @@ const ScrollWrapper = styled.div`
   }
   .size_12 {
     font-size: 12px;
-  }
-`;
-const ContentsBox = styled.div`
-  display: flex;
-`;
-
-const ContentsWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  .preview_btn {
-    display: flex;
   }
 `;
 
@@ -1613,4 +1756,12 @@ const LoaderWrapper = styled.div`
   width: 100%;
   padding-top: 30px;
   padding-left: calc(50% - 35px);
+`;
+
+const TopButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  align-items: center;
+  /* padding-top: 15px; */
 `;

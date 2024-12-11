@@ -675,18 +675,13 @@ export function ContentList({
 
                   {item.quizCategoryList ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:교육과정 ${idx}`}
-                          >
-                            {el.quizCategory.교육과정
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교육과정}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 ? (
+                        item.quizCategoryList
+                          .filter((el) => el.quizCategory?.교육과정) // 교육과정이 있는 항목만 필터링
+                          .map((el) => el.quizCategory?.교육과정) // 교육과정 값만 추출
+                          .join(', ') // ','로 연결
                       ) : (
-                        <span></span>
+                        <span></span> // 데이터가 없을 경우 처리
                       )}
                     </span>
                   ) : (
@@ -982,7 +977,7 @@ export function ContentList({
                             key={`quizCategoryList quizCategory:대단원 ${idx}`}
                           >
                             {el.quizCategory.대단원
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원.split('^^^')[0]}`
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
                               : ''}
                           </span>
                         ))
@@ -1006,7 +1001,7 @@ export function ContentList({
                             key={`quizCategoryList quizCategory:대단원 ${idx}`}
                           >
                             {el.quizCategory.대단원
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원.split('^^^')[0]}`
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
                               : ''}
                           </span>
                         ))

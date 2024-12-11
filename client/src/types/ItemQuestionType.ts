@@ -61,7 +61,7 @@ export type QuizListType = {
 
 export type QuizCategoryList = {
   type?: 'CATEGORY' | 'CLASS';
-  quizCategory: QuizCategory;
+  quizCategory: QuizCategory | CategoryGroup;
 };
 
 export type ItemTreeIdxListType = {
@@ -70,6 +70,7 @@ export type ItemTreeIdxListType = {
 
 //TODO : 데이터 다 들어갈시 명확히
 export type Source = {
+  [key: string]: string | number | string[] | undefined;
   출처: string;
   문항번호?: string;
   출제년도?: string;
@@ -150,7 +151,7 @@ export type AddQuestionListType = {
 
 export type QuestionClassListType = {
   type: string;
-  quizCategory: QuizCategory;
+  quizCategory: QuizCategory | CategoryGroup;
 }[];
 
 type QuizCategoryClassType = {
@@ -181,7 +182,7 @@ export type QuizCategoryListType = {
 
 export type CategoryQuiz = {
   type: 'CATEGORY';
-  quizCategory: QuizCategoryListType;
+  quizCategory: CategoryGroup;
 };
 export type ClassQuiz = {
   type: 'CLASS';
@@ -193,9 +194,18 @@ export type QuizClassListType = (ClassQuiz | CategoryQuiz)[];
 
 // 분류 수정
 export type QuizClassificationData = {
+  commandCode?: number;
   quizCodeList: string[];
-  categoryList: CategoryItem[];
+  categoryList: CategoryGroup[];
 };
+
+export interface CategoryGroup {
+  [key: string]: CategoryItems[] | undefined;
+}
+export interface CategoryItems {
+  code?: string;
+  name: string;
+}
 // categoryList 아이템 타입 정의
 type CategoryItem = {
   itemTreeKey?: QuizCategory;

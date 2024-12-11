@@ -1305,20 +1305,20 @@ export function ClassificationEdit({
   };
 
   // 분류 등록 버튼
-  const onSubmit = () => {
-    // 최종적으로 전송 될 데이터
-    console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
-    const categoryListArr = sortedArr();
-    console.log('categoryList 들어가야할 목록------', categoryListArr);
+  // const onSubmit = () => {
+  //   // 최종적으로 전송 될 데이터
+  //   console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
+  //   const categoryListArr = sortedArr();
+  //   console.log('categoryList 들어가야할 목록------', categoryListArr);
 
-    const data: QuizClassificationData = {
-      quizCodeList: checkedList,
-      categoryList: categoryListArr,
-    };
+  //   const data: QuizClassificationData = {
+  //     quizCodeList: checkedList,
+  //     categoryList: categoryListArr,
+  //   };
 
-    console.log('최종 전송 데이터 형태', data);
-    mutateChangeClassification(data);
-  };
+  //   console.log('최종 전송 데이터 형태', data);
+  //   mutateChangeClassification(data);
+  // };
 
   // 교과정보 추가버튼 disable 처리
   // const addButtonBool = useMemo(() => {
@@ -1604,15 +1604,18 @@ export function ClassificationEdit({
                         </span>
                       </div>
                       <span>
-                        {quiz.quizCategoryList[0] && (
-                          <span
-                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
+                        {quiz.quizCategoryList.length > 0 &&
+                          quiz.quizCategoryList?.[0]?.quizCategory?.문항타입 &&
+                          typeof quiz.quizCategoryList[0].quizCategory
+                            .문항타입 === 'string' && (
+                            <span
+                              className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
 														${quiz.quizCategoryList[0].quizCategory?.문항타입 == '서술형' && 'gray'} 
                   ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
-                          >
-                            {quiz.quizCategoryList[0].quizCategory?.문항타입}
-                          </span>
-                        )}
+                            >
+                              {quiz.quizCategoryList[0].quizCategory?.문항타입}
+                            </span>
+                          )}
                       </span>
                     </TopButtonWrapper>
                     <ScrollWrapper
@@ -1669,31 +1672,38 @@ export function ClassificationEdit({
                     >
                       <PerfectScrollbar>
                         <div className="class_wrap">
-                          {quiz.quizCategoryList.some(
-                            (item) =>
-                              item.quizCategory?.교육과정 ||
-                              item.quizCategory?.과목 ||
-                              item.quizCategory?.교과 ||
-                              item.quizCategory?.학년 ||
-                              item.quizCategory?.학기 ||
-                              item.quizCategory?.대단원 ||
-                              item.quizCategory?.중단원 ||
-                              item.quizCategory?.소단원 ||
-                              item.quizCategory?.유형,
-                          ) ? (
-                            quiz.quizCategoryList.map((item, idx) => (
-                              <span key={idx}>
-                                {item.quizCategory?.교육과정}/
-                                {item.quizCategory?.과목}/
-                                {item.quizCategory?.교과}/
-                                {item.quizCategory?.학년}/
-                                {item.quizCategory?.학기}/
-                                {item.quizCategory?.대단원}/
-                                {item.quizCategory?.중단원}/
-                                {item.quizCategory?.소단원}/
-                                {item.quizCategory?.유형}
-                              </span>
-                            ))
+                          {quiz.quizCategoryList.length > 0 ? (
+                            quiz.quizCategoryList.map((item, idx) => {
+                              const quizCategory = item.quizCategory || {};
+
+                              // quizCategory에서 각 항목을 문자열로 변환
+                              const details = (
+                                [
+                                  '교육과정',
+                                  '과목',
+                                  '교과',
+                                  '학년',
+                                  '학기',
+                                  '대단원',
+                                  '중단원',
+                                  '소단원',
+                                  '유형',
+                                ] as const
+                              )
+                                .map((key) => {
+                                  const categoryArray = quizCategory[key]; // quizCategory 내부의 배열
+                                  if (Array.isArray(categoryArray)) {
+                                    return categoryArray
+                                      .map((sub) => (sub.name ? sub.name : sub)) // name이 있으면 사용
+                                      .join(', '); // 배열 항목을 ', '로 결합
+                                  }
+                                  return ''; // 배열이 아니면 빈 문자열 반환
+                                })
+                                .filter(Boolean) // 빈 문자열 제거
+                                .join(' / '); // '/'로 항목 연결
+
+                              return <span key={idx}>{details || ''}</span>;
+                            })
                           ) : (
                             <span>(분류없음)</span>
                           )}
@@ -2057,7 +2067,7 @@ export function ClassificationEdit({
             disabled={unitClassificationList.length !== 0 ? false : true}
             cursor
             width={'calc(50% - 5px)'}
-            onClick={() => onSubmit()}
+            // onClick={() => onSubmit()}
           >
             {type === 'copyedit' ? '등록' : '수정'}
           </Button>

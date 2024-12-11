@@ -323,15 +323,15 @@ export function InspectionList({
 
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.대단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.대단원.split('^^^')[0]} ,`}
+                            `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
                         </span>
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.중단원.split('^^^')[0]} ,`}
+                            `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
                         </span>
                         <span>
                           {dragItem.quizCategoryList[0]?.quizCategory?.소단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.소단원.split('^^^')[0]} ,`}
+                            `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
                         </span>
 
                         {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
@@ -404,18 +404,18 @@ export function InspectionList({
                           <span>
                             {dragItem.quizCategoryList[0]?.quizCategory
                               ?.대단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.대단원.split('^^^')[0]} ,`}
+                              `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
                           </span>
                           <span>
                             {dragItem.quizCategoryList[0]?.quizCategory
                               ?.소단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.소단원.split('^^^')[0]} ,`}
+                              `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
                           </span>
 
                           <span>
                             {dragItem.quizCategoryList[0]?.quizCategory
                               ?.중단원 &&
-                              `${dragItem.quizCategoryList[0].quizCategory.중단원.split('^^^')[0]} ,`}
+                              `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
                           </span>
 
                           {dragItem.quizCategoryList[0]?.quizCategory

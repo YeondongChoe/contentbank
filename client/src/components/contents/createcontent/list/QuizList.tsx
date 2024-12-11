@@ -822,7 +822,12 @@ export function QuizList({
                           ))}
                       </span>
                       <span className="title_tag">
-                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                        {dragItem.quizCategoryList.length > 0 &&
+                          dragItem.quizCategoryList?.[0]?.quizCategory
+                            ?.문항타입 &&
+                          typeof dragItem.quizCategoryList[0].quizCategory
+                            .문항타입 === 'string' &&
+                          dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
                       </span>
                     </button>
                   ) : (
@@ -866,7 +871,12 @@ export function QuizList({
                           ))}
                       </span>
                       <span className="title_tag">
-                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                        {dragItem.quizCategoryList.length > 0 &&
+                          dragItem.quizCategoryList?.[0]?.quizCategory
+                            ?.문항타입 &&
+                          typeof dragItem.quizCategoryList[0].quizCategory
+                            .문항타입 === 'string' &&
+                          dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
                       </span>
                     </button>
                   )}
@@ -913,37 +923,54 @@ export function QuizList({
                           `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
                       </span>
 
-                      {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
-                        dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
-                          (item: Source) => (
-                            <span key={`출처 배열 ${item.출처}`}>
-                              {item?.출처}
-                              {item?.기출명}
-                              {item?.문항번호}
-                              {item?.출제년도}
-                              {item?.교재속성}
-                              {item?.출판사}
-                              {item?.시리즈}
-                              {item?.교재명}
-                              {item?.교재페이지}
-                              {item?.교재번호}
-                              {item?.출판년도}
-                              {item?.내신형식}
-                              {item?.학교명}
-                              {item?.학사일정}
-                              {item?.내신페이지}
-                              {item?.내신배점}
-                              {item?.기출속성}
-                              {item?.주관사}
-                              {item?.기출명}
-                              {item?.시행학제}
-                              {item?.시행학년}
-                              {item?.시험지타입}
-                              {item?.기출배점}
-                              {item?.기출일시}
+                      {dragItem.quizCategoryList[0]?.quizCategory?.sources?.map(
+                        (item: Record<string, any>, idx) => {
+                          // 렌더링할 속성 이름 배열
+                          const attributes = [
+                            '출처',
+                            '기출명',
+                            '문항번호',
+                            '출제년도',
+                            '교재속성',
+                            '출판사',
+                            '시리즈',
+                            '교재명',
+                            '교재페이지',
+                            '교재번호',
+                            '출판년도',
+                            '내신형식',
+                            '학교명',
+                            '학사일정',
+                            '내신페이지',
+                            '내신배점',
+                            '기출속성',
+                            '주관사',
+                            '시행학제',
+                            '시행학년',
+                            '시험지타입',
+                            '기출배점',
+                            '기출일시',
+                          ];
+
+                          // 값이 있는 속성만 필터링하여 렌더링
+                          const renderedAttributes = attributes
+                            .map((attr) => {
+                              const value = item[attr];
+                              if (Array.isArray(value)) {
+                                return value.join(', '); // 배열 값을 문자열로 결합
+                              }
+                              return value ? String(value) : ''; // 값을 문자열로 변환
+                            })
+                            .filter(Boolean) // 빈 값 제거
+                            .join(', '); // 원하는 구분자 사용 (여기서는 ', ')
+
+                          return (
+                            <span key={`출처 배열 ${idx}`}>
+                              {renderedAttributes}
                             </span>
-                          ),
-                        )}
+                          );
+                        },
+                      )}
                     </span>
 
                     <Tooltip
@@ -993,37 +1020,54 @@ export function QuizList({
                             `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
                         </span>
 
-                        {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
-                          dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
-                            (item: Source) => (
-                              <span key={`출처 배열 ${item.출처}`}>
-                                {item?.출처}
-                                {item?.기출명}
-                                {item?.문항번호}
-                                {item?.출제년도}
-                                {item?.교재속성}
-                                {item?.출판사}
-                                {item?.시리즈}
-                                {item?.교재명}
-                                {item?.교재페이지}
-                                {item?.교재번호}
-                                {item?.출판년도}
-                                {item?.내신형식}
-                                {item?.학교명}
-                                {item?.학사일정}
-                                {item?.내신페이지}
-                                {item?.내신배점}
-                                {item?.기출속성}
-                                {item?.주관사}
-                                {item?.기출명}
-                                {item?.시행학제}
-                                {item?.시행학년}
-                                {item?.시험지타입}
-                                {item?.기출배점}
-                                {item?.기출일시}
+                        {dragItem.quizCategoryList[0]?.quizCategory?.sources?.map(
+                          (item: Record<string, any>, idx) => {
+                            // 렌더링할 속성 이름 배열
+                            const attributes = [
+                              '출처',
+                              '기출명',
+                              '문항번호',
+                              '출제년도',
+                              '교재속성',
+                              '출판사',
+                              '시리즈',
+                              '교재명',
+                              '교재페이지',
+                              '교재번호',
+                              '출판년도',
+                              '내신형식',
+                              '학교명',
+                              '학사일정',
+                              '내신페이지',
+                              '내신배점',
+                              '기출속성',
+                              '주관사',
+                              '시행학제',
+                              '시행학년',
+                              '시험지타입',
+                              '기출배점',
+                              '기출일시',
+                            ];
+
+                            // 값이 있는 속성만 필터링하여 렌더링
+                            const renderedAttributes = attributes
+                              .map((attr) => {
+                                const value = item[attr];
+                                if (Array.isArray(value)) {
+                                  return value.join(', '); // 배열 값을 문자열로 결합
+                                }
+                                return value ? String(value) : ''; // 값을 문자열로 변환
+                              })
+                              .filter(Boolean) // 빈 값 제거
+                              .join(', '); // 원하는 구분자 사용 (여기서는 ', ')
+
+                            return (
+                              <span key={`출처 배열 ${idx}`}>
+                                {renderedAttributes}
                               </span>
-                            ),
-                          )}
+                            );
+                          },
+                        )}
                       </>
                     </Tooltip>
                   </MetaGroup>

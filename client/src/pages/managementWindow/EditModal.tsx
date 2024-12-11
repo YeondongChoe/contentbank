@@ -40,6 +40,9 @@ export function EditModal({
   const [errorMessage, setErrorMessage] = useState('');
   const [changeValue, setChangeValue] = useState<string>('');
   const [tagMapping, setTagMapping] = useState([]);
+  const [educationCurriculumList, setEducationCurriculumList] = useState<any[]>(
+    [],
+  );
   const [tagCheckList, setTagCheckList] = useState([]);
   const searchEditDivRef = useRef<HTMLDivElement | null>(null);
 
@@ -71,7 +74,24 @@ export function EditModal({
     }
   };
 
-  useEffect(() => {}, [tagMapping]); // 태그 맵 데이터 불러와서 보여주기
+  useEffect(() => {
+    if (sortedQuizList && sortedQuizList.length > 0) {
+      const extractedData = sortedQuizList
+        .flatMap((item) => item.quizCategoryList || [])
+        .filter((quizCategoryItem) => quizCategoryItem.quizCategory?.교육과정)
+        .map((quizCategoryItem) => quizCategoryItem.quizCategory.교육과정);
+
+      setEducationCurriculumList(extractedData);
+    }
+  }, [sortedQuizList]);
+
+  useEffect(() => {
+    console.log(
+      '선택되서 가져와진 데이터sortedQuizList ----- ',
+      sortedQuizList,
+    );
+    console.log('선택되서 가져와진 데이터 ----- ', educationCurriculumList);
+  }, [educationCurriculumList]);
 
   useEffect(() => {
     change({
