@@ -1577,7 +1577,7 @@ export function ClassificationEdit({
                     key={quiz.idx}
                     height={itemHeight}
                     className={`${columnsCount == 2 ? 'colum_item_2' : 'colum_item_1'} `}
-                    classHeight={`${columnsCount == 3 ? '60px' : 'auto'}`}
+                    classHeight={`auto`}
                   >
                     <TopButtonWrapper>
                       <div className="quiz_top_wrap">
@@ -1617,7 +1617,7 @@ export function ClassificationEdit({
                     </TopButtonWrapper>
                     <ScrollWrapper
                       className="items_height"
-                      itemsHeight={`${columnsCount == 3 ? '150px' : 'auto'}`}
+                      itemsHeight={`${columnsCount == 2 ? '150px' : 'auto'}`}
                     >
                       <PerfectScrollbar>
                         <div className="quiz_wrap">
@@ -1650,7 +1650,16 @@ export function ClassificationEdit({
                         columnsCount == 3
                           ? `${
                               quiz.quizCategoryList.some(
-                                (item) => item.quizCategory?.교육과정,
+                                (item) =>
+                                  item.quizCategory?.교육과정 ||
+                                  item.quizCategory?.과목 ||
+                                  item.quizCategory?.교과 ||
+                                  item.quizCategory?.학년 ||
+                                  item.quizCategory?.학기 ||
+                                  item.quizCategory?.대단원 ||
+                                  item.quizCategory?.중단원 ||
+                                  item.quizCategory?.소단원 ||
+                                  item.quizCategory?.유형,
                               )
                                 ? 'class_items_height'
                                 : 'none_class_items_height'
@@ -1661,7 +1670,16 @@ export function ClassificationEdit({
                       <PerfectScrollbar>
                         <div className="class_wrap">
                           {quiz.quizCategoryList.some(
-                            (item) => item.quizCategory?.교육과정,
+                            (item) =>
+                              item.quizCategory?.교육과정 ||
+                              item.quizCategory?.과목 ||
+                              item.quizCategory?.교과 ||
+                              item.quizCategory?.학년 ||
+                              item.quizCategory?.학기 ||
+                              item.quizCategory?.대단원 ||
+                              item.quizCategory?.중단원 ||
+                              item.quizCategory?.소단원 ||
+                              item.quizCategory?.유형,
                           ) ? (
                             quiz.quizCategoryList.map((item, idx) => (
                               <span key={idx}>
