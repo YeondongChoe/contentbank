@@ -1284,16 +1284,23 @@ export function PreviousTab({
                           />
                         </span>
                       </div>
-                      {/* <span>
-                        {quiz.quizCategoryList[0] && (
+                      <span>
+                        {quiz.quizCategoryList[0]?.quizCategory?.문항타입 && (
                           <span
-                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
-                                     ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
+                            className={`tag ${
+                              quiz.quizCategoryList[0].quizCategory.문항타입 ===
+                              '객관식'
+                                ? 'green'
+                                : quiz.quizCategoryList[0].quizCategory
+                                      .문항타입 === '주관식'
+                                  ? 'yellow'
+                                  : ''
+                            }`}
                           >
-                            {quiz.quizCategoryList[0].quizCategory?.문항타입}
+                            {quiz.quizCategoryList[0].quizCategory.문항타입}
                           </span>
                         )}
-                      </span> */}
+                      </span>
                     </TopButtonWrapper>
                     {/* 뷰어 영역 */}
                     <div className="quiz_wrap">
@@ -1358,13 +1365,7 @@ export function PreviousTab({
                       ) ? (
                         quiz.quizCategoryList.map((item, idx) => (
                           <span key={idx}>
-                            {item.quizCategory?.교육과정}/
-                            {item.quizCategory?.과목}/{item.quizCategory?.교과}/
-                            {item.quizCategory?.학년}/{item.quizCategory?.학기}/
-                            {item.quizCategory?.대단원?.[0]}/
-                            {item.quizCategory?.중단원?.[0]}/
-                            {item.quizCategory?.소단원?.[0]}/
-                            {item.quizCategory?.유형?.[0]}
+                            {`${item.quizCategory?.교육과정}/${item.quizCategory?.과목}/${item.quizCategory?.교과}/${item.quizCategory?.학년}/${item.quizCategory?.학기}`}
                           </span>
                         ))
                       ) : (
