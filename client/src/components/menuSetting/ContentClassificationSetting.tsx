@@ -734,17 +734,7 @@ export function ContentClassificationSetting() {
                               ) ? (
                                 quiz.quizCategoryList.map((item, idx) => (
                                   <span key={idx}>
-                                    {item.quizCategory?.교육과정}/
-                                    {item.quizCategory?.과목}/
-                                    {item.quizCategory?.교과}/
-                                    {item.quizCategory?.학년}/
-                                    {item.quizCategory?.학기}/
-                                    {item.quizCategory?.대단원?.split('^^^')[0]}
-                                    /
-                                    {item.quizCategory?.중단원?.split('^^^')[0]}
-                                    /
-                                    {item.quizCategory?.소단원?.split('^^^')[0]}
-                                    /{item.quizCategory?.유형?.split('^^^')[0]}
+                                    {`${item.quizCategory?.교육과정}/${item.quizCategory?.과목}/${item.quizCategory?.교과}/${item.quizCategory?.학년}/${item.quizCategory?.학기}`}
                                   </span>
                                 ))
                               ) : (
