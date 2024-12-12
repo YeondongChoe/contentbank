@@ -148,7 +148,7 @@ export function UnitTypeTab({
         setCategory([itemsList]); // 2D 배열로 설정
       }
     } finally {
-      console.log('finally');
+      //console.log('finally');
     }
   };
 
@@ -322,7 +322,6 @@ export function UnitTypeTab({
     //저장 성공 후
     onResetList();
   };
-  console.log('unitClassificationList', unitClassificationList);
   //삭제
   const deleteUnitClassification = (idx: number) => {
     setUnitClassificationList((prevList) => [

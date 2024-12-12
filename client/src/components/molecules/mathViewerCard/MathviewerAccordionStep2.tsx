@@ -312,7 +312,7 @@ export function MathviewerAccordionStep2({
       isNewQuiz={isNewQuiz}
     >
       <Component className={className} $componentHeight={componentHeight}>
-        <div className="leftInfomation">
+        {/* <div className="leftInfomation">
           {isFavorite ? (
             <Icon
               width={`18px`}
@@ -343,7 +343,7 @@ export function MathviewerAccordionStep2({
                 onClick={() => setSelectedQuizNum(quizNum as number)}
               ></Select>
             )}
-        </div>
+        </div> */}
         <WorkbookMathViewer
           data={data}
           width={width}
@@ -356,8 +356,27 @@ export function MathviewerAccordionStep2({
                   ? '문제+정답+해설'
                   : '문제만'
           }
+          isFavorite={isFavorite}
+          favoriteQuizItem={favoriteQuizItem}
+          category={category}
+          isSimilarQuiz={isSimilarQuiz}
+          quotient={quotient}
+          equalScore={equalScore}
+          quotientOption={quotientOption}
+          getDefaultValue={getDefaultValue}
+          setSelectedValue={setSelectedValue}
+          setSelectedQuizNum={setSelectedQuizNum}
+          quizNum={quizNum}
+          isNewQuiz={isNewQuiz}
+          index={index}
+          selectedCardIndex={selectedCardIndex}
+          isSimilar={isSimilar}
+          onClick={onClick}
+          reportQuizitem={reportQuizitem}
+          onSelectCard={onSelectCard}
+          deleteQuizItem={deleteQuizItem}
         ></WorkbookMathViewer>
-        {isNewQuiz ? (
+        {/* {isNewQuiz ? (
           <ButtonWrapper>
             <div className="menuIcon">
               <LuSiren
@@ -423,7 +442,7 @@ export function MathviewerAccordionStep2({
               />
             </div>
           </ButtonWrapper>
-        )}
+        )} */}
       </Component>
     </Accordion>
   );

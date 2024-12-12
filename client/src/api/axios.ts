@@ -85,3 +85,7 @@ export const quizService = createAPIInstance('quiz-service');
 export const historyService = createAPIInstance('history-service');
 /* 리소스 API Instance */
 export const resourceServiceInstance = createAPIInstance('resource-service');
+/* 알람 API Instance */
+export const notificationServiceInstance = createAPIInstance(
+  'notification-service',
+);

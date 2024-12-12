@@ -99,7 +99,7 @@ export function Step2() {
   const [getItemCountData, setGetItemCountData] = useState<number | null>(null);
   const [initialItems, setInitialItems] = useState<QuizList[]>([]);
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
-
+  console.log('initialItems', initialItems);
   const categoryType = initialItems.map((item) => {
     const category = item.quizCategoryList.find(
       (quizCategoryItem) => quizCategoryItem.quizCategory.문항타입,
@@ -210,6 +210,8 @@ export function Step2() {
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
   //기존 문항 데이타에 배점 넣기
+  //console.log('contentNumQuotient', contentNumQuotient);
+
   useEffect(() => {
     const updatedItems = initialItems.map((item) => {
       // 각 initialItems의 item에 대해 contentNumQuotient 배열을 탐색합니다.
@@ -460,12 +462,24 @@ export function Step2() {
 
   //로컬데이터에서 데이타 가져 온 후 번호 부여와 함께 상태관리 변수에 저장
   useEffect(() => {
-    const itemWithScore = initialItems.some((item) => 'score' in item);
-    if (itemWithScore === false && getLocalData?.data.quizList) {
-      const updatedQuizList = getLocalData?.data.quizList.map((quiz, i) => ({
+    const filterQuizItem = initialItems.some((item) => 'score' in item);
+
+    if (filterQuizItem === false && getLocalData?.data.quizList) {
+      let globalQuestionNumber = 1; // 전역적으로 사용할 번호 변수
+
+      const updatedQuizList = getLocalData.data.quizList.map((quiz) => ({
         ...quiz,
-        num: quiz.num ? quiz.num : i + 1,
+        quizItemList: quiz.quizItemList.map((quizItem) => {
+          if (quizItem.type === 'QUESTION') {
+            return {
+              ...quizItem,
+              num: globalQuestionNumber++, // QUESTION 항목에만 번호 할당
+            };
+          }
+          return quizItem;
+        }),
       }));
+
       setInitialItems(updatedQuizList);
     }
   }, [getLocalData]);
@@ -1639,6 +1653,7 @@ export function Step2() {
 
   //리스트에서 문항 삭제하기(배열의 경우)
   const deleteQuizItem = (code: string, idx: number) => {
+    console.log('ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡcode', code);
     if (initialItems) {
       const selectedQuizItem = initialItems.find((item) => item.code === code);
       const isQuizNumExists = contentNumQuotient.find(
@@ -2370,9 +2385,8 @@ export function Step2() {
                                   isFavorite={item.isFavorite}
                                   data={item}
                                   index={item.idx}
-                                  title={
-                                    quizCategory?.유형?.split('^^^')[0] || 'N/A'
-                                  }
+                                  title={quizCategory?.유형 || 'N/A'}
+                                  //{quizCategory?.유형?.split('^^^')[0] || 'N/A'}
                                   category={quizCategoryType}
                                   quizNum={item.num}
                                   selectedCardIndex={selectedCardIndex}
@@ -3120,8 +3134,9 @@ export function Step2() {
                                         data={item}
                                         index={item.idx}
                                         title={
-                                          quizCategory?.유형?.split('^^^')[0] ||
-                                          'N/A'
+                                          quizCategory?.유형 || 'N/A'
+                                          // quizCategory?.유형?.split('^^^')[0] ||
+                                          // 'N/A'
                                         }
                                         category={quizCategoryType}
                                         quizNum={item.num}
@@ -3225,8 +3240,9 @@ export function Step2() {
                                         data={item}
                                         index={item.idx}
                                         title={
-                                          quizCategory?.유형?.split('^^^')[0] ||
-                                          'N/A'
+                                          quizCategory?.유형 || 'N/A'
+                                          // quizCategory?.유형?.split('^^^')[0] ||
+                                          // 'N/A'
                                         }
                                         category={quizCategoryType}
                                         quizNum={item.num}
@@ -3353,7 +3369,6 @@ export function Step2() {
                                   (quizCategoryItem: any) =>
                                     quizCategoryItem.quizCategory.유형,
                                 )?.quizCategory;
-
                               return (
                                 <li
                                   ref={ref}
@@ -3361,7 +3376,7 @@ export function Step2() {
                                 >
                                   <MathviewerAccordionStep2
                                     componentWidth="750px"
-                                    width="550px"
+                                    width="720px"
                                     onClick={() => {
                                       showSimilarContent(
                                         dragItem.code,
@@ -3379,14 +3394,48 @@ export function Step2() {
                                     selectedCardIndex={selectedCardIndex}
                                     onSelectCard={setSelectedCardIndex}
                                     reportQuizitem={() =>
-                                      openReportProcess(dragItem.idx)
+                                      dragItem.type === 'TEXT'
+                                        ? dragItem.quizItemList.forEach(
+                                            (quizItem: any) =>
+                                              openReportProcess(
+                                                quizItem.quizIdx,
+                                              ),
+                                          )
+                                        : openReportProcess(dragItem.idx)
                                     }
-                                    deleteQuizItem={() =>
-                                      deleteQuizItem(
-                                        dragItem.code,
-                                        dragItem.idx,
-                                      )
-                                    }
+                                    deleteQuizItem={() => {
+                                      if (dragItem.type === 'TEXT') {
+                                        dragItem.quizItemList.forEach(
+                                          (quizItem: any) => {
+                                            const matchedCode =
+                                              dragItem.quizItemList.find(
+                                                (item: any) =>
+                                                  item.num === quizItem.num,
+                                              )?.code;
+                                            // console.log(
+                                            //   'item.num',
+                                            //   dragItem.quizItemList.find(
+                                            //     (item: any) => item.num,
+                                            //   ),
+                                            // );
+                                            // console.log(
+                                            //   'quizItem.num',
+                                            //   quizItem.num,
+                                            // );
+
+                                            deleteQuizItem(
+                                              quizItem.code,
+                                              quizItem.quizIdx,
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        deleteQuizItem(
+                                          dragItem.code,
+                                          dragItem.idx,
+                                        );
+                                      }
+                                    }}
                                     clickSwapQuizItem={() =>
                                       clickSwapQuizItem(
                                         similarItems as SimilarQuizList,
@@ -3403,9 +3452,20 @@ export function Step2() {
                                     setTotalEqualScore={setTotalEqualScore}
                                     category={quizCategoryType}
                                     favoriteQuizItem={(e) =>
-                                      dragItem.isFavorite
-                                        ? handleFavorite(e, dragItem.idx, true)
-                                        : handleFavorite(e, dragItem.idx, false)
+                                      dragItem.type === 'TEXT'
+                                        ? dragItem.quizItemList.forEach(
+                                            (quizItem: any) =>
+                                              handleFavorite(
+                                                e,
+                                                quizItem.quizIdx,
+                                                dragItem.isFavorite,
+                                              ),
+                                          )
+                                        : handleFavorite(
+                                            e,
+                                            dragItem.idx,
+                                            dragItem.isFavorite,
+                                          )
                                     }
                                     quotientOption={quotientOption}
                                   ></MathviewerAccordionStep2>
