@@ -133,47 +133,60 @@ export function ContentPreview() {
                               {item.quizCategoryList[0]?.quizCategory
                                 ?.교육과정 && (
                                 <span>
-                                  <span className="title">교육과정:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.교육과정
-                                  }
+                                  <>
+                                    <span className="title">교육과정:</span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.교육과정
+                                    }
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory?.학년 && (
                                 <span>
-                                  <span className="title">
-                                    학&nbsp;&nbsp;&nbsp; 년:
-                                  </span>
-                                  {item.quizCategoryList[0].quizCategory.학년}
+                                  <>
+                                    <span className="title">
+                                      학&nbsp;&nbsp;&nbsp; 년:
+                                    </span>
+                                    {item.quizCategoryList[0].quizCategory.학년}
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory?.과목 && (
                                 <span>
-                                  <span className="title">
-                                    과&nbsp;&nbsp;&nbsp; 목:
-                                  </span>
-                                  {item.quizCategoryList[0]?.quizCategory?.과목}
+                                  <>
+                                    <span className="title">
+                                      과&nbsp;&nbsp;&nbsp; 목:
+                                    </span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.과목
+                                    }
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory
                                 ?.대단원 && (
                                 <span>
-                                  <span className="title">대 분 류:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.대단원
-                                  }
+                                  <>
+                                    <span className="title">대 분 류:</span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.대단원
+                                    }
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory
                                 ?.소단원 && (
                                 <span>
-                                  <span className="title">소 분 류:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.소단원
-                                  }
+                                  <>
+                                    <span className="title">소 분 류:</span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.소단원
+                                    }
+                                  </>
                                 </span>
                               )}
                             </ColumList>
@@ -181,49 +194,65 @@ export function ContentPreview() {
                               {item.quizCategoryList[0]?.quizCategory
                                 ?.학교급 && (
                                 <span>
-                                  <span className="title">학 교 급:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.학교급
-                                  }
+                                  <>
+                                    <span className="title">학 교 급:</span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.학교급
+                                    }
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory?.교과 && (
                                 <span>
-                                  <span className="title">
-                                    교&nbsp;&nbsp;&nbsp; 과:
-                                  </span>
-                                  {item.quizCategoryList[0]?.quizCategory?.교과}
+                                  <>
+                                    <span className="title">
+                                      교&nbsp;&nbsp;&nbsp; 과:
+                                    </span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.교과
+                                    }
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory?.학기 && (
                                 <span>
-                                  <span className="title">
-                                    학&nbsp;&nbsp;&nbsp; 기:
-                                  </span>
-                                  {item.quizCategoryList[0]?.quizCategory?.학기}
+                                  <>
+                                    <span className="title">
+                                      학&nbsp;&nbsp;&nbsp; 기:
+                                    </span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.학기
+                                    }
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory
                                 ?.중단원 && (
                                 <span>
-                                  <span className="title">중 분 류:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.중단원
-                                  }
+                                  <>
+                                    <span className="title">중 분 류:</span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.중단원
+                                    }
+                                  </>
                                 </span>
                               )}
                               {item.quizCategoryList[0]?.quizCategory
                                 ?.문항타입 && (
                                 <span>
-                                  <span className="title">
-                                    유&nbsp;&nbsp;&nbsp; 형:
-                                  </span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.문항타입
-                                  }
+                                  <>
+                                    <span className="title">
+                                      유&nbsp;&nbsp;&nbsp; 형:
+                                    </span>
+                                    {
+                                      item.quizCategoryList[0]?.quizCategory
+                                        ?.문항타입
+                                    }
+                                  </>
                                 </span>
                               )}
                               {/* {item.quizCategoryList[0]?.quizCategory?.기타 && (
@@ -240,28 +269,37 @@ export function ContentPreview() {
                           <ColumList>
                             {item.quizCategoryList[0]?.quizCategory?.난이도 && (
                               <span>
-                                <span className="title">난 이 도:</span>
-                                {item.quizCategoryList[0]?.quizCategory?.난이도}
+                                <>
+                                  <span className="title">난 이 도:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.난이도
+                                  }
+                                </>
                               </span>
                             )}
                             {item.quizCategoryList[0]?.quizCategory
                               ?.행동요소1 && (
                               <span>
-                                <span className="title">행동요소1:</span>
-                                {
-                                  item.quizCategoryList[0]?.quizCategory
-                                    ?.행동요소1
-                                }
+                                <>
+                                  <span className="title">행동요소1:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.행동요소1
+                                  }
+                                </>
                               </span>
                             )}
                             {item.quizCategoryList[0]?.quizCategory
                               ?.행동요소2 && (
                               <span>
-                                <span className="title">행동요소2:</span>
-                                {
-                                  item.quizCategoryList[0]?.quizCategory
-                                    ?.행동요소2
-                                }
+                                <>
+                                  <span className="title">행동요소2:</span>
+                                  {
+                                    item.quizCategoryList[0]?.quizCategory
+                                      ?.행동요소2
+                                  }
+                                </>
                               </span>
                             )}
                           </ColumList>
