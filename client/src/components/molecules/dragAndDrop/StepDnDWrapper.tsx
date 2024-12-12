@@ -54,7 +54,7 @@ export const StepDnDWrapper = ({
 }: DnDWrapperPropsType) => {
   const [currentItems, setCurrentItems] = useState(dragList); // 현재 항목의 상태 관리
   const [currentItemScore, setCurrentItemScore] = useState<number[]>([]);
-  // console.log('currentItems', currentItems);
+  //console.log('currentItems', currentItems);
   // console.log('currentItemScore', currentItemScore);
   // console.log('quotient', quotient);
 

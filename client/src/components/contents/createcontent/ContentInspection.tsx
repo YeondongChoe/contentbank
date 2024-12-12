@@ -53,10 +53,10 @@ export function ContentInspection({
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
 
-    // console.log(
-    //   '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
-    //   storedQuizList,
-    // );
+    console.log(
+      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+      storedQuizList,
+    );
 
     if (storedQuizList) {
       setParsedStoredQuizList(JSON.parse(storedQuizList));
@@ -66,33 +66,64 @@ export function ContentInspection({
       return;
     }
   }, []);
+  console.log('parsedStoredQuizList', parsedStoredQuizList);
 
-  // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
-  const getQuiz = async () => {
+  // 전역에서 가져온 체크된 리스트값을 수정용 검수 문항 상세 조회
+  const getInspectionQuiz = async () => {
     const idxArray = parsedStoredQuizList.map((list) => list.idx);
     const idxList = idxArray.join(',');
-    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    const res = await quizService.get(`/v1/process/${idxList}`);
+    console.log(res);
     return res.data.data.quizList;
   };
-  const { data: quizData, refetch: quizDataRefetch } = useQuery({
-    queryKey: ['get-idx-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-idx-quizList 에러 메세지',
-    },
-    enabled: parsedStoredQuizList.length > 0,
-  });
+  const { data: inspectionQuizData, refetch: inspectionQuizDataRefetch } =
+    useQuery({
+      queryKey: ['get-inspectionQuiz'],
+      queryFn: getInspectionQuiz,
+      meta: {
+        errorMessage: 'get-inspectionQuiz 에러 메세지',
+      },
+      enabled: parsedStoredQuizList.length > 0,
+    });
+  console.log('inspectionQuizData', inspectionQuizData);
 
   useEffect(() => {
-    if (parsedStoredQuizList.length > 0) quizDataRefetch();
+    if (parsedStoredQuizList.length > 0) inspectionQuizDataRefetch();
   }, [parsedStoredQuizList]);
 
   useEffect(() => {
-    if (quizData) {
-      setQuizList(quizData);
+    if (inspectionQuizData) {
+      setQuizList(inspectionQuizData);
       setDataFetched(true);
     }
-  }, [quizData, setQuizList]);
+  }, [inspectionQuizData, setQuizList]);
+
+  // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
+  // const getQuiz = async () => {
+  //   const idxArray = parsedStoredQuizList.map((list) => list.idx);
+  //   const idxList = idxArray.join(',');
+  //   const res = await quizService.get(`/v1/quiz/${idxList}`);
+  //   return res.data.data.quizList;
+  // };
+  // const { data: quizData, refetch: quizDataRefetch } = useQuery({
+  //   queryKey: ['get-idx-quizList'],
+  //   queryFn: getQuiz,
+  //   meta: {
+  //     errorMessage: 'get-idx-quizList 에러 메세지',
+  //   },
+  //   enabled: parsedStoredQuizList.length > 0,
+  // });
+
+  // useEffect(() => {
+  //   if (parsedStoredQuizList.length > 0) quizDataRefetch();
+  // }, [parsedStoredQuizList]);
+
+  // useEffect(() => {
+  //   if (quizData) {
+  //     setQuizList(quizData);
+  //     setDataFetched(true);
+  //   }
+  // }, [quizData, setQuizList]);
 
   // 마지막으로 클릭된 문항 뷰어에 보이게
   useEffect(() => {

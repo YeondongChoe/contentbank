@@ -39,24 +39,17 @@ import { ProcessListModal } from '../../managements/process';
 
 type InspectionListProps = {
   list: QuizListType[] | any[]; // TODO
-  deleteBtn?: boolean;
-  ondeleteClick?: () => void;
   totalCount?: number;
-  setCheckListOn?: React.Dispatch<React.SetStateAction<number[]>>;
   deleteQuizIsSuccess?: boolean;
   quizDataRefetch?: (
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<any, Error>>;
-  key?: number;
   selectedList: selectedListType[];
 };
 
 export function InspectionList({
   list,
-  deleteBtn,
-  ondeleteClick,
   totalCount,
-  setCheckListOn,
   deleteQuizIsSuccess,
   quizDataRefetch,
   selectedList,
@@ -71,7 +64,7 @@ export function InspectionList({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-
+  console.log('questionList', questionList);
   // 문항 검수/수정 윈도우 열기
   const openCreateEditWindow = () => {
     saveLocalData();
@@ -199,7 +192,6 @@ export function InspectionList({
     } else {
       setIsEnabled(false);
     }
-    if (setCheckListOn) setCheckListOn(checkList);
 
     // 체크 변경시 pdf 전달용 리스트도 변경
     sortList();
@@ -217,16 +209,8 @@ export function InspectionList({
   }, [page]);
 
   useEffect(() => {
-    // console.log('list/----------*', list);
-  }, [list]);
-  useEffect(() => {
-    // console.log('list/----------*list', list);
     setQuestionList(list);
   }, []);
-
-  useEffect(() => {
-    // console.log('questionList/----------*', questionList);
-  }, [questionList]);
 
   // 툴팁 토글
   const calculateTextWidth = (nodes: NodeList) => {
@@ -317,13 +301,6 @@ export function InspectionList({
             checked={false}
             readOnly
           />
-          <Icon
-            width={`18px`}
-            $margin={'0 0 0 10px'}
-            src={`/images/icon/favorites_off_B.svg`}
-            onClick={() => {}}
-            cursor
-          />
           <ItemLayout>
             {selectedList.map((list) => {
               if (list.view === true) {
@@ -371,33 +348,6 @@ export function InspectionList({
                 checked={checkList.includes(item.idx)}
                 readOnly
               />
-              {/* {item.isFavorite ? (
-                <Icon
-                  width={`18px`}
-                  $margin={'0 0 0 12px'}
-                  src={`/images/icon/favorites_on.svg`}
-                  onClick={(e) =>
-                    handleFavorite(e, {
-                      idx: item.idx,
-                      isFavorite: true,
-                    })
-                  }
-                  cursor
-                />
-              ) : (
-                <Icon
-                  width={`18px`}
-                  $margin={'0 0 0 12px'}
-                  src={`/images/icon/favorites${checkList.includes(item.idx) ? `_off_W` : `_off_B`}.svg`}
-                  onClick={(e) =>
-                    handleFavorite(e, {
-                      idx: item.idx,
-                      isFavorite: false,
-                    })
-                  }
-                  cursor
-                />
-              )} */}
               <ItemLayout>
                 <span
                   className="width_80px tooltip_wrapper item_wrapper"

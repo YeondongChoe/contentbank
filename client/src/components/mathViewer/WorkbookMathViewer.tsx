@@ -2,9 +2,12 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
+import { BiSolidTrashAlt } from 'react-icons/bi';
+import { LuSiren } from 'react-icons/lu';
 import styled from 'styled-components';
 
 import { QuizList } from '../../types/WorkbookType';
+import { Button, Select, Icon } from '../atom';
 import { Loader } from '../atom/Loader';
 
 type WorkbookMathViewerProps = {
@@ -15,6 +18,25 @@ type WorkbookMathViewerProps = {
   height?: string;
   isSetp3?: boolean;
   answerCommentary: string;
+  isFavorite?: boolean;
+  favoriteQuizItem?: (e: any) => void;
+  category?: any;
+  quotient?: number;
+  equalScore?: number;
+  quotientOption?: { code: string; idx: number; name: string; value: number }[];
+  getDefaultValue?: () => string | undefined;
+  setSelectedValue?: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setSelectedQuizNum?: React.Dispatch<React.SetStateAction<number | undefined>>;
+  quizNum?: number;
+  isSimilarQuiz?: boolean;
+  isNewQuiz?: boolean;
+  index?: number;
+  selectedCardIndex?: number | undefined;
+  isSimilar?: boolean;
+  onClick?: () => void;
+  reportQuizitem?: () => void;
+  onSelectCard?: (index: number) => void;
+  deleteQuizItem?: (code: string, idx: number) => void;
 };
 
 const config = {
@@ -41,6 +63,25 @@ export function WorkbookMathViewer({
   height,
   isSetp3,
   answerCommentary,
+  isFavorite,
+  favoriteQuizItem,
+  category,
+  isSimilarQuiz,
+  quotient,
+  equalScore,
+  quotientOption,
+  getDefaultValue,
+  setSelectedValue,
+  setSelectedQuizNum,
+  quizNum,
+  isNewQuiz,
+  index,
+  selectedCardIndex,
+  isSimilar,
+  onClick,
+  reportQuizitem,
+  onSelectCard,
+  deleteQuizItem,
 }: WorkbookMathViewerProps) {
   //console.log(data);
   const [display, setDisplay] = useState('none');
@@ -96,29 +137,171 @@ export function WorkbookMathViewer({
             >
               {answerCommentary === '문제만' && (
                 <>
-                  {data?.quizItemList
-                    .filter((quiz) => quiz.type === 'QUESTION')
-                    .map((quiz) => (
-                      <ContentQuestion
-                        key={quiz.idx}
-                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
-                      ></ContentQuestion>
-                    ))}
-                  {data?.quizCategoryList
-                    .filter(
-                      (quizCategory) =>
-                        quizCategory.quizCategory.문항타입 === '객관식',
-                    )
-                    .map((filteredCategory) =>
-                      data?.quizItemList
-                        .filter((quizItem) => quizItem.type === 'CHOICES')
-                        .map((quiz) => (
+                  <>
+                    {data?.quizItemList
+                      .filter((quiz) => quiz.type === 'TEXT')
+                      .map((quiz) => (
+                        <MathJaxTextWrapper key={quiz.idx}>
                           <ContentQuestion
                             key={quiz.idx}
                             dangerouslySetInnerHTML={createMarkup(quiz.content)}
                           ></ContentQuestion>
-                        )),
-                    )}
+                        </MathJaxTextWrapper>
+                      ))}
+                    {data?.quizItemList
+                      .filter((quiz) => quiz.type === 'BIG')
+                      .map((quiz) => (
+                        <MathJaxTextWrapper key={quiz.idx}>
+                          <ContentQuestion
+                            key={quiz.idx}
+                            dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                          ></ContentQuestion>
+                        </MathJaxTextWrapper>
+                      ))}
+                    {data?.quizItemList
+                      .filter((quiz) => quiz.type === 'QUESTION')
+                      .map((quiz) => (
+                        <MathJaxContentWrapper key={quiz.idx}>
+                          <div className="leftInfomation">
+                            {isFavorite ? (
+                              <Icon
+                                width={`18px`}
+                                src={`/images/icon/favorites_on.svg`}
+                                onClick={favoriteQuizItem}
+                                cursor
+                              />
+                            ) : (
+                              <Icon
+                                width={`18px`}
+                                src={`/images/icon/favorites${`_off_B`}.svg`}
+                                onClick={favoriteQuizItem}
+                                cursor
+                              />
+                            )}
+                            <div>{category?.난이도 || 'N/A'}</div>
+                            <div>{category?.문항타입 || 'N/A'}</div>
+                            {!isSimilarQuiz &&
+                              !isNewQuiz &&
+                              equalScore === 2 &&
+                              quotient !== 0 && (
+                                <Select
+                                  width={'90px'}
+                                  options={quotientOption}
+                                  isnormalizedOptions
+                                  defaultValue={
+                                    getDefaultValue && getDefaultValue()
+                                  }
+                                  setSelectedQuotientValue={setSelectedValue}
+                                  onClick={() =>
+                                    setSelectedQuizNum &&
+                                    setSelectedQuizNum(quizNum as number)
+                                  }
+                                ></Select>
+                              )}
+                          </div>
+                          <ContentQuestion
+                            key={quiz.idx}
+                            dangerouslySetInnerHTML={createMarkup(
+                              `${quiz.content}-${quiz.quizIdx}-${quiz.quizCode} `,
+                            )}
+                          ></ContentQuestion>
+                          <MathJaxIconButton>
+                            {isNewQuiz ? (
+                              <ButtonWrapper>
+                                <div className="menuIcon">
+                                  <LuSiren
+                                    fontSize={'25px'}
+                                    color="red"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={reportQuizitem}
+                                  />
+                                </div>
+                              </ButtonWrapper>
+                            ) : (
+                              <ButtonWrapper>
+                                {index === selectedCardIndex && isSimilar ? (
+                                  <div
+                                    onClick={() => {
+                                      if (onSelectCard)
+                                        onSelectCard(index as number);
+                                    }}
+                                  >
+                                    <Button
+                                      buttonType="button"
+                                      onClick={onClick}
+                                      $padding="10px"
+                                      height={'30px'}
+                                      width={'70px'}
+                                      fontSize="12px"
+                                      $filled
+                                      cursor
+                                    >
+                                      <span>유사문항</span>
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div
+                                    onClick={() => {
+                                      if (onSelectCard)
+                                        onSelectCard(index as number);
+                                    }}
+                                  >
+                                    <Button
+                                      buttonType="button"
+                                      onClick={onClick}
+                                      $padding="10px"
+                                      height={'30px'}
+                                      width={'70px'}
+                                      fontSize="12px"
+                                      $normal
+                                      cursor
+                                    >
+                                      <span>유사문항</span>
+                                    </Button>
+                                  </div>
+                                )}
+                                <div>
+                                  <LuSiren
+                                    fontSize={'25px'}
+                                    color="red"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={reportQuizitem}
+                                  />
+                                  <BiSolidTrashAlt
+                                    fontSize={'25px'}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() =>
+                                      deleteQuizItem &&
+                                      deleteQuizItem(
+                                        quiz.quizCode as string,
+                                        quiz.quizIdx as number,
+                                      )
+                                    }
+                                  />
+                                </div>
+                              </ButtonWrapper>
+                            )}
+                          </MathJaxIconButton>
+                        </MathJaxContentWrapper>
+                      ))}
+                    {data?.quizCategoryList
+                      .filter(
+                        (quizCategory) =>
+                          quizCategory.quizCategory.문항타입 === '객관식',
+                      )
+                      .map((filteredCategory) =>
+                        data?.quizItemList
+                          .filter((quizItem) => quizItem.type === 'CHOICES')
+                          .map((quiz) => (
+                            <ContentQuestion
+                              key={quiz.idx}
+                              dangerouslySetInnerHTML={createMarkup(
+                                quiz.content,
+                              )}
+                            ></ContentQuestion>
+                          )),
+                      )}
+                  </>
                 </>
               )}
               {answerCommentary === '정답만' && (
@@ -282,16 +465,56 @@ const Component = styled.div<MathViewerStyleProps>`
 `;
 const MathJaxWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 10px;
   //overflow-x: hidden;
 `;
+const MathJaxContentWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
 
+  .leftInfomation {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding-right: 20px;
+    font-size: 14px;
+  }
+`;
+const MathJaxTextWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-bottom: 20px;
+`;
+const MathJaxIconButton = styled.div``;
 const ContentQuestion = styled.div`
-  padding-bottom: 10px;
+  padding: 10px 0;
   div {
     background-color: white;
   }
   p {
     background-color: white;
+  }
+`;
+const ButtonWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+
+  .menuIcon {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  div {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
   }
 `;
