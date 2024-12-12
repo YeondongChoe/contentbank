@@ -1635,7 +1635,7 @@ export function ClassificationEdit({
                           />
                         </span>
                       </div>
-                      <span>
+                      {/* <span>
                         {quiz.quizCategoryList[0] && (
                           <span
                             className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
@@ -1644,7 +1644,7 @@ export function ClassificationEdit({
                             {quiz.quizCategoryList[0].quizCategory?.문항타입}
                           </span>
                         )}
-                      </span>
+                      </span> */}
                     </TopButtonWrapper>
                     <ScrollWrapper
                       className="items_height"
