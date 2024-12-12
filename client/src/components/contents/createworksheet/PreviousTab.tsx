@@ -1284,16 +1284,16 @@ export function PreviousTab({
                           />
                         </span>
                       </div>
-                      <span>
+                      {/* <span>
                         {quiz.quizCategoryList[0] && (
                           <span
                             className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
                                      ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
                           >
-                            {quiz.quizCategoryList[0].quizCategory?.문항타입}{' '}
+                            {quiz.quizCategoryList[0].quizCategory?.문항타입}
                           </span>
                         )}
-                      </span>
+                      </span> */}
                     </TopButtonWrapper>
                     {/* 뷰어 영역 */}
                     <div className="quiz_wrap">
@@ -1361,10 +1361,10 @@ export function PreviousTab({
                             {item.quizCategory?.교육과정}/
                             {item.quizCategory?.과목}/{item.quizCategory?.교과}/
                             {item.quizCategory?.학년}/{item.quizCategory?.학기}/
-                            {item.quizCategory?.대단원?.split('^^^')[0]}/
-                            {item.quizCategory?.중단원?.split('^^^')[0]}/
-                            {item.quizCategory?.소단원?.split('^^^')[0]}/
-                            {item.quizCategory?.유형?.split('^^^')[0]}
+                            {item.quizCategory?.대단원?.[0]}/
+                            {item.quizCategory?.중단원?.[0]}/
+                            {item.quizCategory?.소단원?.[0]}/
+                            {item.quizCategory?.유형?.[0]}
                           </span>
                         ))
                       ) : (
@@ -2265,10 +2265,10 @@ const ItemLayout = styled.span`
   }
 `;
 const PreviousSchoolListWrapper = styled.div`
-  height: 100%;
+  //height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  //justify-content: space-between;
   padding-bottom: 10px;
   overflow-y: auto;
 `;
