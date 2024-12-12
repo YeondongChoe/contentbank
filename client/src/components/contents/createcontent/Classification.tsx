@@ -2141,38 +2141,14 @@ export function Classification({
                     <ScrollWrapper className={`height_class_wrap`}>
                       <PerfectScrollbar>
                         <div className="class_wrap">
-                          {quiz.quizCategoryList.length > 0 ? (
-                            quiz.quizCategoryList.map((item, idx) => {
-                              const quizCategory = item.quizCategory || {};
-
-                              // quizCategory에서 각 항목을 문자열로 변환
-                              const details = (
-                                [
-                                  '교육과정',
-                                  '과목',
-                                  '교과',
-                                  '학년',
-                                  '학기',
-                                  '대단원',
-                                  '중단원',
-                                  '소단원',
-                                  '유형',
-                                ] as const
-                              )
-                                .map((key) => {
-                                  const categoryArray = quizCategory[key]; // quizCategory 내부의 배열
-                                  if (Array.isArray(categoryArray)) {
-                                    return categoryArray
-                                      .map((sub) => (sub.name ? sub.name : sub)) // name이 있으면 사용
-                                      .join(', '); // 배열 항목을 ', '로 결합
-                                  }
-                                  return ''; // 배열이 아니면 빈 문자열 반환
-                                })
-                                .filter(Boolean) // 빈 문자열 제거
-                                .join(' / '); // '/'로 항목 연결
-
-                              return <span key={idx}>{details || ''}</span>;
-                            })
+                          {quiz.quizCategoryList.some(
+                            (item) => item.quizCategory?.교육과정,
+                          ) ? (
+                            quiz.quizCategoryList.map((item, idx) => (
+                              <span key={idx}>
+                                {`${item.quizCategory?.교육과정}/${item.quizCategory?.과목}/${item.quizCategory?.교과}/${item.quizCategory?.학년}/${item.quizCategory?.학기}`}
+                              </span>
+                            ))
                           ) : (
                             <span>(분류없음)</span>
                           )}
