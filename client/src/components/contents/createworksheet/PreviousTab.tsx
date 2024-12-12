@@ -1284,7 +1284,7 @@ export function PreviousTab({
                           />
                         </span>
                       </div>
-                      <span>
+                      {/* <span>
                         {quiz.quizCategoryList[0]?.quizCategory?.문항타입 && (
                           <span
                             className={`tag ${
@@ -1300,7 +1300,7 @@ export function PreviousTab({
                             {quiz.quizCategoryList[0].quizCategory.문항타입}
                           </span>
                         )}
-                      </span>
+                      </span> */}
                     </TopButtonWrapper>
                     {/* 뷰어 영역 */}
                     <div className="quiz_wrap">
