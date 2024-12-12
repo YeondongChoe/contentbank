@@ -39,8 +39,11 @@ export function EditModal({
 
   const [errorMessage, setErrorMessage] = useState('');
   const [changeValue, setChangeValue] = useState<string>('');
-  const [tagMapping, setTagMapping] = useState([]);
-  const [tagCheckList, setTagCheckList] = useState([]);
+
+  const [educationCurriculumList, setEducationCurriculumList] = useState<any[]>(
+    [],
+  );
+  const [tagCheckList, setTagCheckList] = useState<string[]>([]);
   const searchEditDivRef = useRef<HTMLDivElement | null>(null);
 
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
@@ -71,7 +74,28 @@ export function EditModal({
     }
   };
 
-  useEffect(() => {}, [tagMapping]); // 태그 맵 데이터 불러와서 보여주기
+  useEffect(() => {
+    if (sortedQuizList && sortedQuizList.length > 0) {
+      const extractedData = sortedQuizList
+        .flatMap((item) => item.quizCategoryList || [])
+        .filter((quizCategoryItem) => quizCategoryItem.quizCategory?.교육과정)
+        .flatMap(
+          (quizCategoryItem) =>
+            quizCategoryItem.quizCategory.교육과정 as string,
+        )
+        .map((curriculum: any) => curriculum.name); // Extract only 'name' field
+
+      setEducationCurriculumList(extractedData);
+    }
+  }, [sortedQuizList]);
+
+  const handleCheckboxChange = (name: string) => {
+    setTagCheckList((prev) =>
+      prev.includes(name)
+        ? prev.filter((item) => item !== name)
+        : [...prev, name],
+    );
+  };
 
   useEffect(() => {
     change({
@@ -93,8 +117,15 @@ export function EditModal({
       <p className="sub_title">총 {sortedQuizList.length}문항에 대해</p>
       <p>변경할 분류</p>
       <TagMappingList>
-        {tagMapping.map((el) => (
-          <></>
+        {educationCurriculumList.map((name, index) => (
+          <span key={index}>
+            <input
+              type="checkbox"
+              checked={tagCheckList.includes(name)}
+              onChange={() => handleCheckboxChange(name)}
+            />
+            {name}
+          </span>
         ))}
       </TagMappingList>
       <p>

@@ -23,6 +23,8 @@ import { postRefreshToken } from '../../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../../utils/windowHandler';
 import { COLOR } from '../../../constants/COLOR';
 
+// import quizData from './question_list.json';
+
 export function QuizList({
   questionList: initialQuestionList,
   showTitle,
@@ -320,7 +322,7 @@ export function QuizList({
     // 그룹화 DOM 생성
     // 서버에 그룹 상태 전송
     if (!isPending) putGroupData(items);
-    const parentDiv = document.createElement('div');
+    const parentDiv = document.createElement('div') as HTMLElement;
     parentDiv.id = groupId as string; // props로 전달받은 groupId를 id로 설정
     parentDiv.className = 'groupedItemsContainer';
     // 그룹 체크박스 추가
@@ -499,6 +501,7 @@ export function QuizList({
 
   useEffect(() => {
     const result = rearrangeQuestionList(initialQuestionList);
+
     setQuestionList(result);
 
     console.log('그룹 값에 대한 결과 솔팅 --- ', result);
@@ -523,6 +526,110 @@ export function QuizList({
 
     return [...groupedArray, ...ungrouped];
   }
+
+  useEffect(() => {
+    // DOM에서 그룹코드에 따라 요소를 동적으로 그룹화
+    const groupElementsByCode = () => {
+      const listWrapper = document.querySelector('.list_wrapper');
+      if (!listWrapper) return;
+
+      // // 기존 그룹화된 부모 요소 초기화
+      // const existingGroups = document.querySelectorAll(
+      //   '.groupedItemsContainer',
+      // );
+      // existingGroups.forEach((group) => group.remove());
+
+      const groupMap: Record<string, HTMLElement> = {};
+      const itemsToSend: QuizListType[] = [];
+      // 그룹 ID로 부모 요소 생성
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          if (!groupMap[item.groupCode]) {
+            const parentDiv = document.createElement('div') as HTMLElement;
+            parentDiv.id = item.groupCode;
+            parentDiv.className = 'groupedItemsContainer';
+
+            const groupCheckbox = document.createElement('input');
+            groupCheckbox.type = 'checkbox';
+            groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
+            groupCheckbox.className = 'group-checkbox';
+
+            const groupCheckboxLabel = document.createElement('label');
+            groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
+            groupCheckboxLabel.innerText = '그룹 선택';
+
+            const ungroupButton = document.createElement('button');
+            ungroupButton.innerText = '그룹 해제';
+            ungroupButton.className = 'ungroup-button';
+            ungroupButton.onclick = (e) => {
+              if (confirm('그룹을 해제하시겠습니까?')) {
+                const button = e.currentTarget as HTMLButtonElement;
+                const parentDiv = button.parentElement as HTMLElement;
+
+                if (parentDiv) {
+                  // 원래 위치로 복원
+                  const childNodes = Array.from(parentDiv.childNodes);
+                  const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
+                  console.log('Elements to move:', elementsToMove);
+
+                  // 이동 대상 컨테이너
+                  const scrollbarContainer =
+                    document.querySelector('.list_wrapper');
+                  if (scrollbarContainer) {
+                    elementsToMove.forEach((element) => {
+                      if (element instanceof HTMLElement) {
+                        scrollbarContainer.appendChild(element); // 요소를 이동
+                      }
+                    });
+                  }
+                }
+                // 그룹 컨테이너 제거
+                setGroupId(null);
+                parentDiv.remove();
+
+                alert('그룹이 해제되었습니다.');
+              }
+            };
+
+            parentDiv.appendChild(groupCheckbox);
+            parentDiv.appendChild(groupCheckboxLabel);
+            parentDiv.appendChild(ungroupButton);
+
+            groupMap[item.groupCode] = parentDiv;
+            listWrapper.appendChild(parentDiv);
+          }
+        }
+      });
+      // 동일한 그룹 ID를 가진 리스트 요소를 이동
+      questionList.forEach((item) => {
+        if (item.groupCode) {
+          const element = document.getElementById(item.code);
+          console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
+          const target =
+            element &&
+            (element.parentNode?.parentNode?.parentNode
+              ?.parentNode as HTMLElement);
+
+          console.log('target이동될 타겟', target);
+
+          if (element) {
+            const parentDiv = groupMap[item.groupCode];
+            parentDiv.appendChild(target as HTMLElement); // 기존 요소를 새 부모로 이동
+          }
+
+          itemsToSend.push(item);
+        }
+      });
+
+      // 서버에 그룹 상태 한 번에 전송
+      console.log('최종 그룹 리스트 데이터 ---', itemsToSend);
+      if (!isPending && itemsToSend.length > 0) {
+        putGroupData(itemsToSend);
+      }
+    };
+
+    groupElementsByCode();
+  }, [questionList]);
 
   useEffect(() => {
     // setQuestionList()
@@ -715,7 +822,12 @@ export function QuizList({
                           ))}
                       </span>
                       <span className="title_tag">
-                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                        {dragItem.quizCategoryList.length > 0 &&
+                          dragItem.quizCategoryList?.[0]?.quizCategory
+                            ?.문항타입 &&
+                          typeof dragItem.quizCategoryList[0].quizCategory
+                            .문항타입 === 'string' &&
+                          dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
                       </span>
                     </button>
                   ) : (
@@ -759,7 +871,12 @@ export function QuizList({
                           ))}
                       </span>
                       <span className="title_tag">
-                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                        {dragItem.quizCategoryList.length > 0 &&
+                          dragItem.quizCategoryList?.[0]?.quizCategory
+                            ?.문항타입 &&
+                          typeof dragItem.quizCategoryList[0].quizCategory
+                            .문항타입 === 'string' &&
+                          dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
                       </span>
                     </button>
                   )}
@@ -806,37 +923,54 @@ export function QuizList({
                           `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
                       </span>
 
-                      {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
-                        dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
-                          (item: Source) => (
-                            <span key={`출처 배열 ${item.출처}`}>
-                              {item?.출처}
-                              {item?.기출명}
-                              {item?.문항번호}
-                              {item?.출제년도}
-                              {item?.교재속성}
-                              {item?.출판사}
-                              {item?.시리즈}
-                              {item?.교재명}
-                              {item?.교재페이지}
-                              {item?.교재번호}
-                              {item?.출판년도}
-                              {item?.내신형식}
-                              {item?.학교명}
-                              {item?.학사일정}
-                              {item?.내신페이지}
-                              {item?.내신배점}
-                              {item?.기출속성}
-                              {item?.주관사}
-                              {item?.기출명}
-                              {item?.시행학제}
-                              {item?.시행학년}
-                              {item?.시험지타입}
-                              {item?.기출배점}
-                              {item?.기출일시}
+                      {dragItem.quizCategoryList[0]?.quizCategory?.sources?.map(
+                        (item: Record<string, any>, idx) => {
+                          // 렌더링할 속성 이름 배열
+                          const attributes = [
+                            '출처',
+                            '기출명',
+                            '문항번호',
+                            '출제년도',
+                            '교재속성',
+                            '출판사',
+                            '시리즈',
+                            '교재명',
+                            '교재페이지',
+                            '교재번호',
+                            '출판년도',
+                            '내신형식',
+                            '학교명',
+                            '학사일정',
+                            '내신페이지',
+                            '내신배점',
+                            '기출속성',
+                            '주관사',
+                            '시행학제',
+                            '시행학년',
+                            '시험지타입',
+                            '기출배점',
+                            '기출일시',
+                          ];
+
+                          // 값이 있는 속성만 필터링하여 렌더링
+                          const renderedAttributes = attributes
+                            .map((attr) => {
+                              const value = item[attr];
+                              if (Array.isArray(value)) {
+                                return value.join(', '); // 배열 값을 문자열로 결합
+                              }
+                              return value ? String(value) : ''; // 값을 문자열로 변환
+                            })
+                            .filter(Boolean) // 빈 값 제거
+                            .join(', '); // 원하는 구분자 사용 (여기서는 ', ')
+
+                          return (
+                            <span key={`출처 배열 ${idx}`}>
+                              {renderedAttributes}
                             </span>
-                          ),
-                        )}
+                          );
+                        },
+                      )}
                     </span>
 
                     <Tooltip
@@ -886,37 +1020,54 @@ export function QuizList({
                             `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
                         </span>
 
-                        {dragItem.quizCategoryList[0]?.quizCategory?.sources &&
-                          dragItem.quizCategoryList[0]?.quizCategory?.sources.map(
-                            (item: Source) => (
-                              <span key={`출처 배열 ${item.출처}`}>
-                                {item?.출처}
-                                {item?.기출명}
-                                {item?.문항번호}
-                                {item?.출제년도}
-                                {item?.교재속성}
-                                {item?.출판사}
-                                {item?.시리즈}
-                                {item?.교재명}
-                                {item?.교재페이지}
-                                {item?.교재번호}
-                                {item?.출판년도}
-                                {item?.내신형식}
-                                {item?.학교명}
-                                {item?.학사일정}
-                                {item?.내신페이지}
-                                {item?.내신배점}
-                                {item?.기출속성}
-                                {item?.주관사}
-                                {item?.기출명}
-                                {item?.시행학제}
-                                {item?.시행학년}
-                                {item?.시험지타입}
-                                {item?.기출배점}
-                                {item?.기출일시}
+                        {dragItem.quizCategoryList[0]?.quizCategory?.sources?.map(
+                          (item: Record<string, any>, idx) => {
+                            // 렌더링할 속성 이름 배열
+                            const attributes = [
+                              '출처',
+                              '기출명',
+                              '문항번호',
+                              '출제년도',
+                              '교재속성',
+                              '출판사',
+                              '시리즈',
+                              '교재명',
+                              '교재페이지',
+                              '교재번호',
+                              '출판년도',
+                              '내신형식',
+                              '학교명',
+                              '학사일정',
+                              '내신페이지',
+                              '내신배점',
+                              '기출속성',
+                              '주관사',
+                              '시행학제',
+                              '시행학년',
+                              '시험지타입',
+                              '기출배점',
+                              '기출일시',
+                            ];
+
+                            // 값이 있는 속성만 필터링하여 렌더링
+                            const renderedAttributes = attributes
+                              .map((attr) => {
+                                const value = item[attr];
+                                if (Array.isArray(value)) {
+                                  return value.join(', '); // 배열 값을 문자열로 결합
+                                }
+                                return value ? String(value) : ''; // 값을 문자열로 변환
+                              })
+                              .filter(Boolean) // 빈 값 제거
+                              .join(', '); // 원하는 구분자 사용 (여기서는 ', ')
+
+                            return (
+                              <span key={`출처 배열 ${idx}`}>
+                                {renderedAttributes}
                               </span>
-                            ),
-                          )}
+                            );
+                          },
+                        )}
                       </>
                     </Tooltip>
                   </MetaGroup>
