@@ -643,7 +643,7 @@ export function ContentClassificationSetting() {
                                   />
                                 </span>
                               </div>
-                              <span>
+                              {/* <span>
                                 {quiz.quizCategoryList[0] && (
                                   <span
                                     className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
@@ -655,7 +655,7 @@ export function ContentClassificationSetting() {
                                     }
                                   </span>
                                 )}
-                              </span>
+                              </span> */}
                             </TopButtonWrapper>
                             {/* 뷰어 영역 */}
                             <div className="quiz_wrap">

@@ -2097,20 +2097,16 @@ export function Classification({
                           />
                         </span>
                       </div>
-                      <span>
-                        {quiz.quizCategoryList.length > 0 &&
-                          quiz.quizCategoryList?.[0]?.quizCategory?.문항타입 &&
-                          typeof quiz.quizCategoryList[0].quizCategory
-                            .문항타입 === 'string' && (
-                            <span
-                              className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
-														${quiz.quizCategoryList[0].quizCategory?.문항타입 == '서술형' && 'gray'} 
+                      {/* <span>
+                        {quiz.quizCategoryList[0] && (
+                          <span
+                            className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'} 
                   ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
-                            >
-                              {quiz.quizCategoryList[0].quizCategory.문항타입}
-                            </span>
-                          )}
-                      </span>
+                          >
+                            {quiz.quizCategoryList[0].quizCategory?.문항타입}
+                          </span>
+                        )}
+                      </span> */}
                     </TopButtonWrapper>
                     <ScrollWrapper
                       className="items_height"
