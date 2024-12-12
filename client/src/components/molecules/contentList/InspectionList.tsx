@@ -698,7 +698,7 @@ export function InspectionList({
                             key={`quizCategoryList quizCategory:대단원 ${idx}`}
                           >
                             {el.quizCategory.대단원
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원.split('^^^')[0]}`
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원?.[0]}`
                               : ''}
                           </span>
                         ))
@@ -722,7 +722,7 @@ export function InspectionList({
                             key={`quizCategoryList quizCategory:대단원 ${idx}`}
                           >
                             {el.quizCategory.대단원
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원.split('^^^')[0]}`
+                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원?.[0]}`
                               : ''}
                           </span>
                         ))
