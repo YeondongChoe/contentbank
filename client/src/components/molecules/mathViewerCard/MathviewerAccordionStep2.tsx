@@ -14,7 +14,7 @@ import { COLOR } from '../../constants';
 import { WorkbookMathViewer } from '../../mathViewer';
 
 type AccordionProps = {
-  onClick: () => void;
+  onClick: (code: string, index: number, type: string) => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
   title?: string;
@@ -133,13 +133,18 @@ function Accordion({
 }
 
 type MathviewerCardProps = {
-  onClick: () => void;
-  reportQuizitem?: () => void;
+  onClick: (code: string, index: number, type: string) => void;
+  reportQuizitem?: (idx: number) => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
-  deleteQuizItem?: () => void;
+  deleteQuizItem?: (code: string, type: string) => void;
   clickSwapQuizItem?: () => void;
-  favoriteQuizItem?: (e: any) => void;
+  favoriteQuizItem?: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    idx: number,
+    isFavorite: boolean,
+    type: string,
+  ) => void;
   isFavorite?: boolean;
   isSimilar?: boolean;
   isBorder?: boolean;
