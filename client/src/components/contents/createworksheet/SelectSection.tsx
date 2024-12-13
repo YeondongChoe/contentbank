@@ -630,33 +630,33 @@ export function SelectSection({
     ));
   };
 
-  const renderScoreButtons = () => {
-    const buttonOption = [
-      { value: 1, label: '선택안함' },
-      { value: 2, label: '균등 배점' },
-    ];
+  // const renderScoreButtons = () => {
+  //   const buttonOption = [
+  //     { value: 1, label: '선택안함' },
+  //     { value: 2, label: '균등 배점' },
+  //   ];
 
-    return buttonOption.map((button) => (
-      <Button
-        key={button.value}
-        buttonType="button"
-        onClick={() => {
-          selectEqualScore(button.value);
-          if (button.value === 2) {
-            openEqualScoreSettingModal();
-          }
-        }}
-        $padding="10px"
-        height={'34px'}
-        width={'100%'}
-        fontSize="14px"
-        $normal={equalScore !== button.value}
-        $filled={equalScore === button.value}
-      >
-        <span>{button.label}</span>
-      </Button>
-    ));
-  };
+  //   return buttonOption.map((button) => (
+  //     <Button
+  //       key={button.value}
+  //       buttonType="button"
+  //       onClick={() => {
+  //         selectEqualScore(button.value);
+  //         if (button.value === 2) {
+  //           openEqualScoreSettingModal();
+  //         }
+  //       }}
+  //       $padding="10px"
+  //       height={'34px'}
+  //       width={'100%'}
+  //       fontSize="14px"
+  //       $normal={equalScore !== button.value}
+  //       $filled={equalScore === button.value}
+  //     >
+  //       <span>{button.label}</span>
+  //     </Button>
+  //   ));
+  // };
 
   const renderAdditionOption = () => {
     const buttonOption = [
@@ -724,8 +724,8 @@ export function SelectSection({
         <SelectorGroup>{renderTypeButtons()}</SelectorGroup>
         <Label value="*모의고사 포함 여부" fontSize="16px" width="200px" />
         <SelectorGroup>{renderMockButtons()}</SelectorGroup>
-        <Label value="*배점" fontSize="16px" width="200px" />
-        <SelectorGroup>{renderScoreButtons()}</SelectorGroup>
+        {/* <Label value="*배점" fontSize="16px" width="200px" />
+        <SelectorGroup>{renderScoreButtons()}</SelectorGroup> */}
         <AdditionOptionList>
           <Label value="추가 옵션" fontSize="16px" width="200px" />
           {renderAdditionOption()}
@@ -758,130 +758,131 @@ export function SelectSection({
           />
         </Overlay>
       )}
-      {isEqualScoreModal && (
-        <Overlay>
-          <EqualScoreModalContainer>
-            <EqualScoreModalWrapper>
-              <EqualScoreModalTitleWrapper>
-                <Label
-                  value={`총 ${receivedQuizCount ? receivedQuizCount : tabVeiw === '시중교재' || tabVeiw === '기출' ? Number(questionNum) * Number(includeQuizList.length) || Number(inputValue) * Number(includeQuizList.length) : questionNum || inputValue || includeQuizList.length} 문항`}
-                  fontSize="25px"
-                  width="160px"
-                />
-                <EqualScoreModalOptionWrapper>
-                  <Label value="총 배점" fontSize="25px" width="89px" />
-                  <Input
-                    width="50px"
-                    height="34px"
-                    border="black"
-                    placeholderSize="16px"
-                    padding="10px"
-                    fontSize="16px"
-                    type="text"
-                    value={equalTotalValue}
-                    maxLength={10}
-                    minLength={2}
-                    onClick={() => {
-                      setEqualTotlaValue('');
-                      setIsSaveEqualValue(false);
-                      setRemainderContent(0);
-                      setNextRemainderContent(0);
-                    }}
-                    onChange={(e) => {
-                      changeEqualInputValue(e);
-                    }}
-                  ></Input>
-                  <Button
-                    buttonType="button"
-                    onClick={saveEqualInputValue}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'100px'}
-                    fontSize="13px"
-                    $filled
-                    cursor
-                  >
-                    <span>저장</span>
-                  </Button>
-                </EqualScoreModalOptionWrapper>
-              </EqualScoreModalTitleWrapper>
-              <EqualScoreModalScript>
-                {remainder === 0 || (remainder === null && isSaveEqualValue) ? (
-                  <>
-                    {/* 나머지가 없는경우 */}
-                    <div>
-                      01번 문항부터
-                      {receivedQuizCount
-                        ? receivedQuizCount
-                        : questionNum || inputValue || includeQuizList.length}
-                      번 문항까지
-                      {quotient || 0}점
-                    </div>
-                    {isSaveEqualValue ? (
-                      <div className="pointsPerQuestion">
-                        문항당 배점 {minQuotient}점 ~ {quotient + 1}점
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {/* 나머지가 있는경우 */}
-                    <div>
-                      01번 문항부터
-                      {remainderContent}번 문항까지 {quotient || 0}점
-                    </div>
-                    <div>
-                      {nextRemainderContent}번 문항부터
-                      {receivedQuizCount
-                        ? receivedQuizCount
-                        : questionNum || inputValue || includeQuizList.length}
-                      번 문항까지 {quotient + 1 || 0}점
-                    </div>
-                    {isSaveEqualValue ? (
-                      <div className="pointsPerQuestion">
-                        문항당 배점 {minQuotient}점 ~ {maxQuotient}점
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </>
-                )}
-              </EqualScoreModalScript>
-              <EqualScoreModalButtonWrapper>
-                <Button
-                  buttonType="button"
-                  onClick={cancelEqualScoreSettingModal}
-                  $padding="10px"
-                  height={'100%'}
-                  width={'100%'}
-                  fontSize="13px"
-                  $normal
-                  cursor
-                >
-                  <span>취소</span>
-                </Button>
-                <Button
-                  buttonType="button"
-                  onClick={saveEqualScoreSettingModal}
-                  $padding="10px"
-                  height={'100%'}
-                  width={'100%'}
-                  fontSize="13px"
-                  $filled
-                  cursor
-                >
-                  <span>확인</span>
-                </Button>
-              </EqualScoreModalButtonWrapper>
-            </EqualScoreModalWrapper>
-          </EqualScoreModalContainer>
-        </Overlay>
-      )}
     </>
   );
 }
+
+// {isEqualScoreModal && (
+//   <Overlay>
+//     <EqualScoreModalContainer>
+//       <EqualScoreModalWrapper>
+//         <EqualScoreModalTitleWrapper>
+//           <Label
+//             value={`총 ${receivedQuizCount ? receivedQuizCount : tabVeiw === '시중교재' || tabVeiw === '기출' ? Number(questionNum) * Number(includeQuizList.length) || Number(inputValue) * Number(includeQuizList.length) : questionNum || inputValue || includeQuizList.length} 문항`}
+//             fontSize="25px"
+//             width="160px"
+//           />
+//           <EqualScoreModalOptionWrapper>
+//             <Label value="총 배점" fontSize="25px" width="89px" />
+//             <Input
+//               width="50px"
+//               height="34px"
+//               border="black"
+//               placeholderSize="16px"
+//               padding="10px"
+//               fontSize="16px"
+//               type="text"
+//               value={equalTotalValue}
+//               maxLength={10}
+//               minLength={2}
+//               onClick={() => {
+//                 setEqualTotlaValue('');
+//                 setIsSaveEqualValue(false);
+//                 setRemainderContent(0);
+//                 setNextRemainderContent(0);
+//               }}
+//               onChange={(e) => {
+//                 changeEqualInputValue(e);
+//               }}
+//             ></Input>
+//             <Button
+//               buttonType="button"
+//               onClick={saveEqualInputValue}
+//               $padding="10px"
+//               height={'34px'}
+//               width={'100px'}
+//               fontSize="13px"
+//               $filled
+//               cursor
+//             >
+//               <span>저장</span>
+//             </Button>
+//           </EqualScoreModalOptionWrapper>
+//         </EqualScoreModalTitleWrapper>
+//         <EqualScoreModalScript>
+//           {remainder === 0 || (remainder === null && isSaveEqualValue) ? (
+//             <>
+//               {/* 나머지가 없는경우 */}
+//               <div>
+//                 01번 문항부터
+//                 {receivedQuizCount
+//                   ? receivedQuizCount
+//                   : questionNum || inputValue || includeQuizList.length}
+//                 번 문항까지
+//                 {quotient || 0}점
+//               </div>
+//               {isSaveEqualValue ? (
+//                 <div className="pointsPerQuestion">
+//                   문항당 배점 {minQuotient}점 ~ {quotient + 1}점
+//                 </div>
+//               ) : (
+//                 <></>
+//               )}
+//             </>
+//           ) : (
+//             <>
+//               {/* 나머지가 있는경우 */}
+//               <div>
+//                 01번 문항부터
+//                 {remainderContent}번 문항까지 {quotient || 0}점
+//               </div>
+//               <div>
+//                 {nextRemainderContent}번 문항부터
+//                 {receivedQuizCount
+//                   ? receivedQuizCount
+//                   : questionNum || inputValue || includeQuizList.length}
+//                 번 문항까지 {quotient + 1 || 0}점
+//               </div>
+//               {isSaveEqualValue ? (
+//                 <div className="pointsPerQuestion">
+//                   문항당 배점 {minQuotient}점 ~ {maxQuotient}점
+//                 </div>
+//               ) : (
+//                 <></>
+//               )}
+//             </>
+//           )}
+//         </EqualScoreModalScript>
+//         <EqualScoreModalButtonWrapper>
+//           <Button
+//             buttonType="button"
+//             onClick={cancelEqualScoreSettingModal}
+//             $padding="10px"
+//             height={'100%'}
+//             width={'100%'}
+//             fontSize="13px"
+//             $normal
+//             cursor
+//           >
+//             <span>취소</span>
+//           </Button>
+//           <Button
+//             buttonType="button"
+//             onClick={saveEqualScoreSettingModal}
+//             $padding="10px"
+//             height={'100%'}
+//             width={'100%'}
+//             fontSize="13px"
+//             $filled
+//             cursor
+//           >
+//             <span>확인</span>
+//           </Button>
+//         </EqualScoreModalButtonWrapper>
+//       </EqualScoreModalWrapper>
+//     </EqualScoreModalContainer>
+//   </Overlay>
+// )}
 
 const SchoolSelectorSection = styled.div<{
   $isSelectTextbookContent?: boolean;

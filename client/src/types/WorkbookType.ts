@@ -18,6 +18,7 @@ export interface QuizItemList {
   quizIdx?: number;
   quizFavorite?: boolean;
   num?: number;
+  groupType?: string;
 }
 
 export interface QuizCategory {
