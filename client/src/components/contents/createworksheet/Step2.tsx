@@ -2254,28 +2254,30 @@ export function Step2() {
           })),
         );
 
-        // 중복 제거: quizIdx를 기준으로 중복 제거
-        const uniqueItemsMap = new Map<
-          number,
-          (typeof updatedNonTextQuizItems)[number]
-        >();
-        updatedNonTextQuizItems.forEach((item) => {
-          uniqueItemsMap.set(item.quizIdx, item); // 동일한 quizIdx의 경우 마지막 항목으로 덮어씌움
-        });
-        updatedNonTextQuizItems = Array.from(uniqueItemsMap.values());
+        // 중복 제거: quizIdx와 quizCode를 기준으로 중복 제거
+        updatedNonTextQuizItems = updatedNonTextQuizItems.filter(
+          (item, index, self) =>
+            index ===
+            self.findIndex(
+              (t) => t.quizIdx === item.quizIdx && t.quizCode === item.quizCode,
+            ),
+        );
 
+        // textItem.quizItemList에 중복 없이 추가
         textItem.quizItemList = [
           ...(textItem.quizItemList || []),
           ...updatedNonTextQuizItems,
         ];
 
+        // 중복된 항목들까지 처리되었으므로 최종적으로 textItem만 반환
         return [textItem];
       }
 
+      // textItem이 없으면 기존 group 반환
       return group;
     });
 
-    setInitialItems(processedItems);
+    setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
   }, [similarItems, newQuizItems]);
 
   const clickAddFavoriteQuizItem = (code: string) => {
@@ -2731,7 +2733,7 @@ export function Step2() {
                               />
                               새로 불러오기
                             </AddNewContentIcon>
-                            <Button
+                            {/* <Button
                               buttonType="button"
                               onClick={clickAddAllQuizItem}
                               $padding="10px"
@@ -2742,7 +2744,7 @@ export function Step2() {
                               cursor
                             >
                               <span>+ 전체 추가</span>
-                            </Button>
+                            </Button> */}
                           </AddNewContentOption>
                           {!postNewQuizDataPending ? (
                             <>
@@ -3392,7 +3394,7 @@ export function Step2() {
                                     cursor
                                   />
                                 </BookmarkContentCheckWrapper>
-                                <Button
+                                {/* <Button
                                   buttonType="button"
                                   onClick={clickAddAllQuizItem}
                                   $padding="10px"
@@ -3403,7 +3405,7 @@ export function Step2() {
                                   cursor
                                 >
                                   <span>+ 전체 추가</span>
-                                </Button>
+                                </Button> */}
                               </BookmarkContentOption>
                               <BookmarkContensWrapper>
                                 {favoriteQuestionList.quizList &&
