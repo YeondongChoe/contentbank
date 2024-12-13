@@ -458,6 +458,7 @@ export function Step1() {
   };
 
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
+  //console.log(includeQuizList);
   // 선택된 문항 코드 넣기
   const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
     if (Array.isArray(quizCode)) {
@@ -645,20 +646,34 @@ export function Step1() {
     },
     onSuccess: (response) => {
       //성공했을 때 문항 수 카운트
-      setReceivedQuizCount(response.data.data.quizList.length);
+      // const filterQuizCount = response.data.data.quizList.filter(
+      //   (quiz: { type: string }) => quiz.type === 'QUESTION',
+      // ).length;
+      const filterQuizCount = response.data.data.quizList.reduce(
+        (count: number, quiz: { quizItemList: { type: string }[] }) =>
+          count +
+          quiz.quizItemList.filter(
+            (item: { type: string }) => item.type === 'QUESTION',
+          ).length,
+        0,
+      );
+      console.log('filterQuizCount', filterQuizCount);
+      setReceivedQuizCount(filterQuizCount);
+      console.log('response.data.data', response.data.data);
+
       saveLocalData(response.data.data);
       //받아온 문항수와 선택한 문항수가 같을경우 다음단계
       if (tabVeiw === '단원·유형별') {
-        if (response.data.data.quizList.length === 0) {
+        if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
-            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+            text: `가지고 올 수 있는 문항의 수는 ${filterQuizCount} 입니다.`,
           });
           return;
         } else {
           if (
-            response.data.data.quizList.length === Number(questionNum) ||
-            response.data.data.quizList.length === Number(inputValue)
+            filterQuizCount === Number(questionNum) ||
+            filterQuizCount === Number(inputValue)
           ) {
             navigate('/content-create/exam/step2');
             const itemCount =
@@ -676,17 +691,17 @@ export function Step1() {
           }
         }
       } else if (tabVeiw === '시중교재') {
-        if (response.data.data.quizList.length === 0) {
+        if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
-            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+            text: `가지고 올 수 있는 문항의 수는 ${filterQuizCount} 입니다.`,
           });
           return;
         } else {
           if (
-            response.data.data.quizList.length ===
+            filterQuizCount ===
               Number(questionNum) * Number(includeQuizList.length) ||
-            response.data.data.quizList.length ===
+            filterQuizCount ===
               Number(inputValue) * Number(includeQuizList.length)
           ) {
             navigate('/content-create/exam/step2');
@@ -696,22 +711,19 @@ export function Step1() {
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           } else {
             setIsAlertOpen(true);
-            const itemCount = response.data.data.quizList.length;
+            const itemCount = filterQuizCount;
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
       } else if (tabVeiw === '수능/모의고사') {
-        if (response.data.data.quizList.length === 0) {
+        if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
-            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+            text: `가지고 올 수 있는 문항의 수는 ${filterQuizCount} 입니다.`,
           });
           return;
         } else {
-          if (
-            response.data.data.quizList.length ===
-            Number(includeQuizList.length)
-          ) {
+          if (filterQuizCount === Number(includeQuizList.length)) {
             navigate('/content-create/exam/step2');
             const itemCount = Number(includeQuizList.length);
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
@@ -722,17 +734,17 @@ export function Step1() {
           }
         }
       } else if (tabVeiw === '기출') {
-        if (response.data.data.quizList.length === 0) {
+        if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
-            text: `가지고 올 수 있는 문항의 수는 ${response.data.data.quizList.length} 입니다.`,
+            text: `가지고 올 수 있는 문항의 수는 ${filterQuizCount} 입니다.`,
           });
           return;
         } else {
           if (
-            response.data.data.quizList.length ===
+            filterQuizCount ===
               Number(questionNum) * Number(includeQuizList.length) ||
-            response.data.data.quizList.length ===
+            filterQuizCount ===
               Number(inputValue) * Number(includeQuizList.length)
           ) {
             navigate('/content-create/exam/step2');
@@ -845,7 +857,65 @@ export function Step1() {
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
-    const sendData = { data: data };
+    const quizList = data.quizList;
+
+    const mergedQuizList = (() => {
+      const groupMap = quizList.reduce(
+        (acc: Record<string, any[]>, item: any) => {
+          if (item.groupCode) {
+            acc[item.groupCode] = acc[item.groupCode] || [];
+            acc[item.groupCode].push(item);
+          }
+          return acc;
+        },
+        {},
+      );
+      console.log('groupMap', groupMap);
+      console.log('quizList', quizList);
+      const result = quizList.map((item: any) => {
+        if (item.groupCode && groupMap[item.groupCode]) {
+          const group = groupMap[item.groupCode];
+          const textItem = group.find(
+            (groupItem: any) => groupItem.type === 'TEXT',
+          );
+          console.log('quizIdx', item.idx);
+
+          if (textItem) {
+            let sortCounter = 2; // Sort starts from 2 for non-TEXT items.
+            group.forEach((groupItem: any) => {
+              if (groupItem !== textItem) {
+                // Add items to textItem's quizItemList with appropriate sort value
+                groupItem.quizItemList.forEach((quizItem: any) => {
+                  textItem.quizItemList.push({
+                    ...quizItem,
+                    quizIdx: item.idx,
+                    quizCode: item.code,
+                    sort: sortCounter++,
+                  });
+                });
+                groupItem.quizItemList = []; // Clear quizItemList for merged items
+              }
+            });
+
+            // Ensure textItem's own sort is set to 1
+            textItem.quizItemList = textItem.quizItemList.map(
+              (quizItem: any, index: number) => ({
+                ...quizItem,
+                sort: index + 1,
+                quizIdx: index === 0 ? textItem.idx : item.idx,
+                quizCode: index === 0 ? textItem.code : item.code,
+              }),
+            );
+          }
+        }
+        return item;
+      });
+      console.log('result', result);
+
+      return result.filter((item: any) => item.quizItemList.length > 0);
+    })();
+
+    const sendData = { data: { ...data, quizList: mergedQuizList } };
     const categoryData = makingdata;
     localStorage.setItem('sendData', JSON.stringify(sendData));
     localStorage.setItem('sendCategoryData', JSON.stringify(categoryData));

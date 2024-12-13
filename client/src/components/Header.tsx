@@ -1,16 +1,18 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { getLogout } from '../api/auth';
+import { notificationServiceInstance } from '../api/axios';
 import { openNaviationBoolAtom, pageIndexAtom } from '../store/utilAtom';
 import { getAuthorityCookie, removeAuthorityCookie } from '../utils/cookies';
+import { postRefreshToken } from '../utils/tokenHandler';
 
-import { IndexInfo, Button } from './atom';
+import { IndexInfo, Button, openToastifyAlert, ValueNone } from './atom';
 import { COLOR } from './constants';
 
 export function Header() {
@@ -28,6 +30,107 @@ export function Header() {
   const openNavigation = () => {
     setIsOpenNavigation(!isOpenNavigation); // TODO : 아이콘 배경 변경
   };
+
+  //그룹 화면설정 정보 불러오기 api
+  const getNotification = async () => {
+    const res = await notificationServiceInstance.get(`/v1/noti`);
+    return res;
+  };
+  const {
+    data: notificationData,
+    isLoading: isNotificationLoading,
+    refetch: notificationRefetch,
+  } = useQuery({
+    queryKey: ['get-notification'],
+    queryFn: getNotification,
+    meta: {
+      errorMessage: 'get-notification 에러 메세지',
+    },
+  });
+
+  console.log(notificationData?.data.data.notiSimpleRecordList);
+
+  useEffect(() => {
+    if (isAlert) notificationRefetch();
+  }, [isAlert]);
+
+  //서버로부터 받아온 시간을 현재 시간 기준으로 변환해주는 함수
+  const formatRelativeTime = (createdAt: string) => {
+    const now = new Date(); // 현재 시간
+    const createdTime = new Date(createdAt); // `noti.createdAt`를 Date 객체로 변환
+    const diffInSeconds = Math.floor(
+      (now.getTime() - createdTime.getTime()) / 1000,
+    ); // 시간 차이를 초 단위로 계산
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds}초 전`;
+    } else if (diffInSeconds < 3600) {
+      const diffInMinutes = Math.floor(diffInSeconds / 60);
+      return `${diffInMinutes}분 전`;
+    } else if (diffInSeconds < 86400) {
+      const diffInHours = Math.floor(diffInSeconds / 3600);
+      return `${diffInHours}시간 전`;
+    } else {
+      const diffInDays = Math.floor(diffInSeconds / 86400);
+      return `${diffInDays}일 전`;
+    }
+  };
+
+  //알람 개별 확인 api
+  const updateAllNoti = async () => {
+    return await notificationServiceInstance.put(`/v1/noti`);
+  };
+  const { mutate: updateAllNotiData } = useMutation({
+    mutationFn: updateAllNoti,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //완료 알람
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      //그룹 리스트 재호출
+      notificationRefetch();
+    },
+  });
+
+  //알람 개별 확인 api
+  const updateNoti = async (idx: string) => {
+    return await notificationServiceInstance.put(`/v1/noti/read/${idx}`);
+  };
+  const { mutate: updateNotiData } = useMutation({
+    mutationFn: updateNoti,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //완료 알람
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+      //그룹 리스트 재호출
+      notificationRefetch();
+    },
+  });
 
   // 사이드메뉴 로그아웃 시
   const onLogout = () => {
@@ -103,56 +206,53 @@ export function Header() {
       {isAlert && (
         <AlertWrapper>
           <AlertHead>
-            <AlertCount>총 3건</AlertCount>
+            <AlertCount>
+              총 {notificationData?.data.data.notiSimpleRecordList.length}건
+            </AlertCount>
             <Button
               height={'20px'}
               width={'80px'}
-              //onClick={() => updateMenuInfoData()}
+              onClick={() => updateAllNotiData()}
               fontSize="12px"
               $normal
               cursor
+              disabled={
+                notificationData?.data.data.notiSimpleRecordList.length === 0
+              }
             >
               전체삭제
             </Button>
           </AlertHead>
-          {/* 데이터 들어왔을때 map 돌리기 */}
           <AlertList>
-            <AlertCard>
-              <CardTitleWrapper>
-                <CardTitle>
-                  홍길동(admin)님이 프로세스 생성을 요청하셨습니다.
-                </CardTitle>
-                <CardDeleteButton>X</CardDeleteButton>
-              </CardTitleWrapper>
-              <CardContext>
-                영어컨텐츠 제작했는데 검수가 필요합니다.
-              </CardContext>
-              <CardTime>1분 전</CardTime>
-            </AlertCard>
-            <AlertCard>
-              <CardTitleWrapper>
-                <CardTitle>
-                  홍길동(admin)님이 프로세스 생성을 요청하셨습니다.
-                </CardTitle>
-                <CardDeleteButton>X</CardDeleteButton>
-              </CardTitleWrapper>
-              <CardContext>
-                영어컨텐츠 제작했는데 검수가 필요합니다.
-              </CardContext>
-              <CardTime>1분 전</CardTime>
-            </AlertCard>
-            <AlertCard>
-              <CardTitleWrapper>
-                <CardTitle>
-                  홍길동(admin)님이 프로세스 생성을 요청하셨습니다.
-                </CardTitle>
-                <CardDeleteButton>X</CardDeleteButton>
-              </CardTitleWrapper>
-              <CardContext>
-                영어컨텐츠 제작했는데 검수가 필요합니다.
-              </CardContext>
-              <CardTime>1분 전</CardTime>
-            </AlertCard>
+            {notificationData &&
+            notificationData?.data.data.notiSimpleRecordList.length > 0 ? (
+              <>
+                {notificationData?.data.data.notiSimpleRecordList.map(
+                  (noti: {
+                    idx: number;
+                    content: string;
+                    createdAt: string;
+                  }) => (
+                    <AlertCard key={noti.idx}>
+                      <CardTitleWrapper>
+                        <CardTitle>{noti.content}</CardTitle>
+                        <CardDeleteButton
+                          onClick={() => updateNotiData(noti.idx.toString())}
+                        >
+                          X
+                        </CardDeleteButton>
+                      </CardTitleWrapper>
+                      <CardContext>{noti.content}</CardContext>
+                      <CardTime>{formatRelativeTime(noti.createdAt)}</CardTime>
+                    </AlertCard>
+                  ),
+                )}
+              </>
+            ) : (
+              <>
+                <ValueNone textOnly info="알람이 없습니다." />
+              </>
+            )}
           </AlertList>
         </AlertWrapper>
       )}
@@ -261,6 +361,7 @@ const AlertCard = styled.div`
 `;
 const CardTitleWrapper = styled.div`
   display: flex;
+  justify-content: space-between;
   gap: 10px;
 `;
 const CardTitle = styled.p`

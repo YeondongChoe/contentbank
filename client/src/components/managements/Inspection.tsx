@@ -1,26 +1,17 @@
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { GrPlan } from 'react-icons/gr';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useQuery } from '@tanstack/react-query';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import {
-  Alert,
-  Button,
-  CommonDate,
-  ContentList,
-  IconButton,
   InspectionList,
   Loader,
   Modal,
   PaginationBox,
-  Search,
   Select,
-  TabMenu,
   ValueNone,
-  openToastifyAlert,
 } from '..';
 import {
   classificationInstance,
@@ -31,184 +22,15 @@ import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuestionTableType } from '../../types';
 import { selectedListType } from '../../types/WorkbookType';
 import { postRefreshToken } from '../../utils/tokenHandler';
-import { windowOpenHandler } from '../../utils/windowHandler';
-import { COLOR } from '../constants';
-import { QuizReportList } from '../molecules/contentReport/QuizReportList';
 
 export function Inspection() {
-  const [page, setPage] = useRecoilState(pageAtom);
-  // const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
+  const page = useRecoilValue(pageAtom);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
-  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
-  const [checkListOn, setCheckListOn] = useState<number[]>([]);
-  const [content, setContent] = useState<string[]>([]);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
   // 셀렉트
-  const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
-  const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
-  const [selectedGrade, setSelectedGrade] = useState<string>(''); //학년
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
-  const [onSearch, setOnSearch] = useState<boolean>(false);
   const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
 
-  const [key, setKey] = useState(0);
-
-  // 문항리스트 불러오기 api
-  const getQuiz = async () => {
-    const res = await quizService.get(
-      !onSearch
-        ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
-        : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}`,
-    );
-    return res.data.data;
-  };
-  const {
-    data: quizData,
-    isLoading,
-    error: quizDataError,
-    refetch: quizDataRefetch,
-    isPending,
-  } = useQuery({
-    queryKey: ['get-quizList'],
-    queryFn: getQuiz,
-    meta: {
-      errorMessage: 'get-quizList 에러 메세지',
-    },
-  });
-
-  // 카테고리의 그룹 유형 조회
-  const getCategoryGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/A');
-    return response.data.data.typeList;
-  };
-  const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
-    queryKey: ['get-category-groups-A'],
-    queryFn: getCategoryGroups,
-    // enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-A 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (groupsData) {
-      fetchCategoryItems(groupsData, setCategoryList);
-    }
-  }, [groupsData]);
-
-  // 카테고리의 그룹 유형 조회 (출처)
-  const getCategoryGroupsE = async () => {
-    const response = await classificationInstance.get('/v1/category/group/E');
-    return response.data.data.typeList;
-  };
-  const { data: groupsEData, refetch: groupsDataERefetch } = useQuery({
-    queryKey: ['get-category-groups-E'],
-    queryFn: getCategoryGroupsE,
-    // enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-E 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (groupsEData) {
-      fetchCategoryItems(groupsEData, setCategoriesE);
-    }
-  }, [groupsEData]);
-
-  // 카테고리의 그룹 아이템 조회
-  const fetchCategoryItems = async (
-    typeList: string,
-    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
-  ) => {
-    const typeIds = typeList.split(',');
-    try {
-      const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
-      );
-      const responses = await Promise.all(requests);
-      const itemsList = responses.map(
-        (res) => res?.data?.data?.categoryClassList,
-      );
-      console.log('itemsList', itemsList);
-      setCategory(itemsList);
-    } catch (error: any) {
-      if (error.data?.code == 'GE-002') postRefreshToken();
-    }
-  };
-  useEffect(() => {
-    console.log('categoryList', categoryList);
-  }, [categoryList]);
-
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
-    // if (value !== '교육과정' || value !== '학교급' || value !== '학년') {
-    //   setOnSearch(true);
-    // } else {
-    //   setOnSearch(false);
-    // }
-  };
-  //셀렉트 초기화
-  const handleDefaultSelect = (defaultValue?: string) => {
-    if (defaultValue == 'all') {
-      setSelectedCurriculum('');
-      setSelectedLevel('');
-      setSelectedGrade('');
-      setSearchKeywordValue('');
-    }
-    switch (defaultValue) {
-      case '교육과정':
-        setSelectedCurriculum('');
-        break;
-      case '학교급':
-        setSelectedLevel('');
-        break;
-      case '학년':
-        setSelectedGrade('');
-        break;
-
-      default:
-        break;
-    }
-
-    setOnSearch(false);
-  };
-
-  // 검색용 셀렉트 선택시
-  useEffect(() => {
-    quizDataRefetch();
-    setOnSearch(true);
-  }, [selectedCurriculum, selectedLevel, selectedGrade, searchKeywordValue]);
-
-  useEffect(() => {
-    reloadComponent();
-  }, [questionList]);
-
-  // 랜더링 초기화
-  const reloadComponent = () => {
-    setKey((prevKey) => prevKey + 1);
-  };
-
-  useEffect(() => {
-    if (quizData) {
-      setQuestionList(quizData.quizList);
-    }
-    // console.log('questionList', questionList);
-  }, [quizData]);
-
-  // 데이터 변경시 리랜더링
-  useEffect(() => {
-    quizDataRefetch();
-  }, [page]);
-
-  // 검색 초기화
-  useEffect(() => {
-    if (!onSearch) {
-      handleDefaultSelect('all');
-      reloadComponent();
-    }
-  }, [onSearch]);
+  const [groupCode, setGroupCode] = useState<string | null>(null);
 
   //그룹 화면설정 정보 불러오기 api
   const getMenu = async () => {
@@ -238,6 +60,7 @@ export function Inspection() {
     if (menuData) {
       const filterList = menuData.data.data.menuDetailList;
       const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const categoryIdxArray = filterList[0]?.idxList?.split(',') || [];
       const typeListArray = filterList[0]?.inputList?.split(',') || [];
       const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
         (item: string) => item === 'true',
@@ -247,15 +70,150 @@ export function Inspection() {
       );
       const newArray = nameListArray.map((name: string, index: number) => ({
         name,
-        idx: index,
+        idx: categoryIdxArray[index] || '',
         type: typeListArray[index] || '',
         view: viewListArray[index] || false,
         search: searchListArray[index] || false,
       }));
       setSelectedList(newArray);
+      setGroupCode(filterList[0]?.groupCode);
     }
   }, [menuData]);
-  console.log(selectedList);
+
+  ///쿼리스트링 만드는 함수
+  const createQueryString = (params: Record<string, string>) => {
+    return Object.entries(params)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      )
+      .join('&');
+  };
+
+  // 문항리스트 불러오기 api
+  const getQuiz = async () => {
+    const depthChecks = selectedList.map((el) => el.selectedName);
+
+    //서버로 부터 받은 nameList에 맞게 서버에 요청
+    const groupsArray = selectedList.map((el) => el.name);
+    const keyValuePairs = groupsArray.reduce<Record<string, string>>(
+      (acc, item, index) => {
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item] = depthCheck; // title 속성을 사용하여 acc 객체에 추가
+        }
+        return acc;
+      },
+      {},
+    );
+
+    const queryString = createQueryString(keyValuePairs);
+
+    const res = await quizService.get(
+      `/v1/process?pageIndex=${page}&pageUnit=${8}&${queryString}`,
+    );
+
+    return res.data.data;
+  };
+  const {
+    data: quizData,
+    isLoading,
+    error: quizDataError,
+    refetch: quizDataRefetch,
+    isPending,
+  } = useQuery({
+    queryKey: ['get-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-quizList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (quizData) {
+      setQuestionList(quizData.quizList);
+    }
+  }, [quizData]);
+
+  // 카테고리의 유형 조회
+  const getCategory = async () => {
+    const response = await classificationInstance.get(
+      `/v1/category/group/${groupCode}`,
+    );
+    return response.data.data.typeList;
+  };
+  const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
+    queryKey: ['get-category'],
+    queryFn: getCategory,
+    meta: {
+      errorMessage: 'get-category 에러 메세지',
+    },
+    enabled: !!groupCode,
+  });
+  useEffect(() => {
+    if (groupsData) {
+      fetchCategoryItems(groupsData, setCategoryList);
+    }
+  }, [groupsData]);
+
+  // 카테고리의 그룹 아이템 조회
+  const fetchCategoryItems = async (
+    typeList: string,
+    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
+  ) => {
+    const typeIds = typeList.split(',').map((id) => id.trim());
+    const filteredIds = selectedList
+      .filter((item) => item.search) // `search`가 true인 항목 필터링
+      .map((item) => item.idx.toString()) // `idx`를 문자열로 변환
+      .filter((id) => typeIds.includes(id)); // `typeIds`와 일치하는 항목만 필터링
+
+    try {
+      const requests = filteredIds.map((id) =>
+        classificationInstance.get(`/v1/category/class/${id}`),
+      );
+      const responses = await Promise.all(requests);
+      const itemsList = responses.map(
+        (res) => res?.data?.data?.categoryClassList,
+      );
+      setCategory(itemsList);
+    } catch (error: any) {
+      if (error.data?.code == 'GE-002') postRefreshToken();
+    }
+  };
+
+  //선택값 업데이트 함수
+  const selectCategoryOption = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    idx: number,
+  ) => {
+    const selectedValue = event.currentTarget.value;
+
+    setSelectedList((prevList) =>
+      prevList.map((item) => {
+        if (item.idx === idx) {
+          // 선택된 값이 item.name과 같으면 `selectedName` 제거
+          if (item.name === selectedValue) {
+            const { selectedName, ...rest } = item; // `selectedName` 키 제거
+            return rest;
+          }
+
+          // 선택된 값이 다르면 `selectedName` 업데이트
+          return { ...item, selectedName: selectedValue };
+        }
+        return item; // 나머지 항목은 변경 없이 유지
+      }),
+    );
+  };
+
+  // 검색용 셀렉트 선택시
+  useEffect(() => {
+    quizDataRefetch();
+  }, [selectedList]);
+
+  // 데이터 변경시 리랜더링
+  useEffect(() => {
+    quizDataRefetch();
+  }, [page]);
 
   return (
     <Container>
@@ -273,80 +231,28 @@ export function Inspection() {
         <>
           {/* 리스트 셀렉트 */}
           <SelectWrapper>
-            {selectedList.map((list) => {
+            {selectedList.map((list, i) => {
               if (list.type === 'SELECT' && list.search) {
                 return (
                   <Select
-                    onDefaultSelect={() => handleDefaultSelect(list.name)}
                     width={'130px'}
                     defaultValue={list.name}
                     key={list.idx}
-                    options={categoryList[0]}
-                    onSelect={(event) => selectCategoryOption(event)}
-                    setSelectedValue={setSelectedCurriculum}
+                    options={categoryList[i]}
+                    onSelect={(event) => selectCategoryOption(event, list.idx)}
                     heightScroll={'300px'}
                   />
                 );
               }
             })}
-            {/* 교육과정 */}
-            {/* <Select
-              onDefaultSelect={() => handleDefaultSelect('교육과정')}
-              width={'130px'}
-              defaultValue={'교육과정'}
-              key={'교육과정'}
-              options={categoryList[0]}
-              onSelect={(event) => selectCategoryOption(event)}
-              setSelectedValue={setSelectedCurriculum}
-              heightScroll={'300px'}
-            /> */}
-            {/* 학교급 */}
-            {/* <Select
-              onDefaultSelect={() => handleDefaultSelect('학교급')}
-              width={'130px'}
-              defaultValue={'학교급'}
-              key={'학교급'}
-              options={categoryList[1]}
-              onSelect={(event) => selectCategoryOption(event)}
-              setSelectedValue={setSelectedLevel}
-              heightScroll={'300px'}
-            /> */}
-            {/* 학년 */}
-            {/* <Select
-              onDefaultSelect={() => handleDefaultSelect('학년')}
-              width={'130px'}
-              defaultValue={'학년'}
-              key={'학년'}
-              options={categoryList[2]}
-              onSelect={(event) => selectCategoryOption(event)}
-              setSelectedValue={setSelectedGrade}
-              heightScroll={'300px'}
-            /> */}
-            {/* 상태 */}
-            {/* <Select
-              onDefaultSelect={() => handleDefaultSelect('상태')}
-              width={'130px'}
-              defaultValue={'상태'}
-              key={'상태'}
-              options={categoryList[2]}
-              onSelect={(event) => selectCategoryOption(event)}
-              setSelectedValue={setSelectedGrade}
-              heightScroll={'300px'}
-            /> */}
           </SelectWrapper>
 
-          {quizData && questionList.length > 0 ? (
+          {quizData && questionList?.length > 0 ? (
             <>
               <InspectionList
-                key={key}
                 list={questionList}
                 selectedList={selectedList}
-                deleteBtn
                 quizDataRefetch={quizDataRefetch}
-                ondeleteClick={() => {
-                  setIsAlertOpen(true);
-                }}
-                setCheckListOn={setCheckListOn}
                 totalCount={quizData.pagination.totalCount}
               />
               <PaginationBox
@@ -361,16 +267,6 @@ export function Inspection() {
           )}
         </>
       )}
-
-      {/* <Alert
-        isAlertOpen={isAlertOpen}
-        description={`${checkListOn.length}개의 문항을 삭제 처리 하시겠습니까?`}
-        action="삭제"
-        isWarning={true}
-        onClose={closeAlert}
-        onClick={() => submitDelete()}
-      /> */}
-
       <Modal />
     </Container>
   );

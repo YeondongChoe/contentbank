@@ -14,6 +14,8 @@ export interface QuizItemList {
   type: string;
   content: string;
   sort: number;
+  quizCode?: string;
+  quizIdx?: number;
 }
 
 export interface QuizCategory {
@@ -50,6 +52,7 @@ export interface QuizList {
   isFavorite: boolean;
   isUse: boolean;
   isDelete: boolean;
+  isQuiz: boolean;
 }
 
 export type SimilarQuizList = {
@@ -90,6 +93,7 @@ export interface Data {
   tagClassList: TagClassList[];
   templateList: TemplateList[];
   isFavorite: boolean;
+  isQuiz: boolean;
   isUse: boolean;
   isDelete: boolean;
   isAutoGrade: boolean;
