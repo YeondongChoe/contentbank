@@ -273,7 +273,12 @@ export const TypeB = ({
             <WorksheetBodyLeft>
               {pages[0]?.leftArray?.map((quizItemList) =>
                 quizItemList.quizItemList
-                  .filter((quizItem) => quizItem.type === 'QUESTION')
+                  .filter(
+                    (quizItem) =>
+                      quizItem.type === 'QUESTION' ||
+                      quizItem.type === 'BIG' ||
+                      quizItem.type === 'TEXT',
+                  )
                   .map((quizItem, i) => {
                     const quizCategory = quizItemList.quizCategoryList.find(
                       (quizCategoryItem: any) =>
@@ -320,7 +325,12 @@ export const TypeB = ({
             <WorksheetBodyRight>
               {pages[0]?.rightArray?.map((quizItemList) =>
                 quizItemList.quizItemList
-                  .filter((quizItem) => quizItem.type === 'QUESTION')
+                  .filter(
+                    (quizItem) =>
+                      quizItem.type === 'QUESTION' ||
+                      quizItem.type === 'BIG' ||
+                      quizItem.type === 'TEXT',
+                  )
                   .map((quizItem, i) => {
                     const quizCategory = quizItemList.quizCategoryList.find(
                       (quizCategoryItem: any) =>

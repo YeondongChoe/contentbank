@@ -657,10 +657,7 @@ export function Step1() {
           ).length,
         0,
       );
-      console.log('filterQuizCount', filterQuizCount);
       setReceivedQuizCount(filterQuizCount);
-      console.log('response.data.data', response.data.data);
-
       saveLocalData(response.data.data);
       //받아온 문항수와 선택한 문항수가 같을경우 다음단계
       if (tabVeiw === '단원·유형별') {
@@ -897,16 +894,24 @@ export function Step1() {
                 groupItem.quizItemList = []; // Clear quizItemList for merged items
               }
             });
-
+            console.log('textType', textType);
             // Ensure textItem's own sort is set to 1
             textType.quizItemList = textType.quizItemList.map(
               (quizItem: any, index: number) => ({
                 ...quizItem,
                 sort: index + 1,
-                quizIdx: index === 0 ? textType.idx : quizItem.quizIdx,
-                quizCode: index === 0 ? textType.code : quizItem.quizCode,
+                quizIdx:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.idx
+                    : quizItem.quizIdx,
+                quizCode:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.code
+                    : quizItem.quizCode,
                 quizFavorite:
-                  index === 0 ? textType.isFavorite : quizItem.isFavorite,
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.isFavorite
+                    : quizItem.isFavorite,
               }),
             );
           }
@@ -948,8 +953,7 @@ export function Step1() {
           (inputValue !== '' || questionNum !== null || questionNum !== '') &&
           questionLevel !== null &&
           questionType?.length !== 0 &&
-          containMock !== null &&
-          equalScore !== null
+          containMock !== null
         ) {
           clickNextButton();
         } else {
@@ -970,8 +974,7 @@ export function Step1() {
         includeQuizList.length > 0 &&
         questionLevel !== null &&
         questionType?.length !== 0 &&
-        containMock !== null &&
-        equalScore !== null
+        containMock !== null
       ) {
         clickNextButton();
       } else {
@@ -981,7 +984,7 @@ export function Step1() {
         });
       }
     } else if (tabVeiw === '수능/모의고사') {
-      if (includeQuizList.length > 0 && equalScore !== null) {
+      if (includeQuizList.length > 0) {
         clickNextButton();
       } else {
         openToastifyAlert({
@@ -994,8 +997,7 @@ export function Step1() {
         (inputValue !== '' || questionNum !== null || questionNum !== '') &&
         includeQuizList.length > 0 &&
         questionLevel !== null &&
-        questionType?.length !== 0 &&
-        equalScore !== null
+        questionType?.length !== 0
       ) {
         clickNextButton();
       } else {
