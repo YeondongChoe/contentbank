@@ -19,7 +19,12 @@ type WorkbookMathViewerProps = {
   isSetp3?: boolean;
   answerCommentary: string;
   isFavorite?: boolean;
-  favoriteQuizItem?: (e: any) => void;
+  favoriteQuizItem?: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    idx: number,
+    isFavorite: boolean,
+    type: string,
+  ) => void;
   category?: any;
   quotient?: number;
   equalScore?: number;
@@ -33,10 +38,10 @@ type WorkbookMathViewerProps = {
   index?: number;
   selectedCardIndex?: number | undefined;
   isSimilar?: boolean;
-  onClick?: () => void;
-  reportQuizitem?: () => void;
+  onClick?: (code: string, index: number, type: string) => void;
+  reportQuizitem?: (idx: number) => void;
   onSelectCard?: (index: number) => void;
-  deleteQuizItem?: (code: string, idx: number) => void;
+  deleteQuizItem?: (code: string, type: string) => void;
 };
 
 const config = {
@@ -83,10 +88,9 @@ export function WorkbookMathViewer({
   onSelectCard,
   deleteQuizItem,
 }: WorkbookMathViewerProps) {
-  //console.log(data);
   const [display, setDisplay] = useState('none');
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
-
+  //console.log('data', data);
   const offLoader = () => {
     setDisplay('block');
   };
@@ -163,20 +167,74 @@ export function WorkbookMathViewer({
                       .map((quiz) => (
                         <MathJaxContentWrapper key={quiz.idx}>
                           <div className="leftInfomation">
-                            {isFavorite ? (
-                              <Icon
-                                width={`18px`}
-                                src={`/images/icon/favorites_on.svg`}
-                                onClick={favoriteQuizItem}
-                                cursor
-                              />
+                            {data.type === 'TEXT' ? (
+                              <>
+                                {quiz.quizFavorite ? (
+                                  <Icon
+                                    width={`18px`}
+                                    src={`/images/icon/favorites_on.svg`}
+                                    onClick={(e) =>
+                                      favoriteQuizItem &&
+                                      favoriteQuizItem(
+                                        e,
+                                        quiz.quizIdx as number,
+                                        quiz.quizFavorite as boolean,
+                                        data.type,
+                                      )
+                                    }
+                                    cursor
+                                  />
+                                ) : (
+                                  <Icon
+                                    width={`18px`}
+                                    src={`/images/icon/favorites${`_off_B`}.svg`}
+                                    onClick={(e) =>
+                                      favoriteQuizItem &&
+                                      favoriteQuizItem(
+                                        e,
+                                        quiz.quizIdx as number,
+                                        quiz.quizFavorite as boolean,
+                                        data.type,
+                                      )
+                                    }
+                                    cursor
+                                  />
+                                )}
+                              </>
                             ) : (
-                              <Icon
-                                width={`18px`}
-                                src={`/images/icon/favorites${`_off_B`}.svg`}
-                                onClick={favoriteQuizItem}
-                                cursor
-                              />
+                              <>
+                                {data.isFavorite ? (
+                                  <Icon
+                                    width={`18px`}
+                                    src={`/images/icon/favorites_on.svg`}
+                                    onClick={(e) =>
+                                      favoriteQuizItem &&
+                                      favoriteQuizItem(
+                                        e,
+                                        data.idx as number,
+                                        data.isFavorite as boolean,
+                                        data.type,
+                                      )
+                                    }
+                                    cursor
+                                  />
+                                ) : (
+                                  <Icon
+                                    width={`18px`}
+                                    src={`/images/icon/favorites${`_off_B`}.svg`}
+                                    onClick={(e) =>
+                                      favoriteQuizItem &&
+                                      favoriteQuizItem(
+                                        e,
+                                        data.idx as number,
+                                        data.isFavorite as boolean,
+                                        data.type,
+                                      )
+                                    }
+                                    cursor
+                                  />
+                                )}
+                              </>
                             )}
                             <div>{category?.난이도 || 'N/A'}</div>
                             <div>{category?.문항타입 || 'N/A'}</div>
@@ -201,9 +259,7 @@ export function WorkbookMathViewer({
                           </div>
                           <ContentQuestion
                             key={quiz.idx}
-                            dangerouslySetInnerHTML={createMarkup(
-                              `${quiz.content}-${quiz.quizIdx}-${quiz.quizCode} `,
-                            )}
+                            dangerouslySetInnerHTML={createMarkup(quiz.content)}
                           ></ContentQuestion>
                           <MathJaxIconButton>
                             {isNewQuiz ? (
@@ -213,69 +269,195 @@ export function WorkbookMathViewer({
                                     fontSize={'25px'}
                                     color="red"
                                     style={{ cursor: 'pointer' }}
-                                    onClick={reportQuizitem}
+                                    onClick={() =>
+                                      data.type === 'TEXT'
+                                        ? reportQuizitem &&
+                                          reportQuizitem(quiz.quizIdx as number)
+                                        : reportQuizitem &&
+                                          reportQuizitem(data.idx as number)
+                                    }
                                   />
                                 </div>
                               </ButtonWrapper>
                             ) : (
                               <ButtonWrapper>
-                                {index === selectedCardIndex && isSimilar ? (
-                                  <div
-                                    onClick={() => {
-                                      if (onSelectCard)
-                                        onSelectCard(index as number);
-                                    }}
-                                  >
-                                    <Button
-                                      buttonType="button"
-                                      onClick={onClick}
-                                      $padding="10px"
-                                      height={'30px'}
-                                      width={'70px'}
-                                      fontSize="12px"
-                                      $filled
-                                      cursor
-                                    >
-                                      <span>유사문항</span>
-                                    </Button>
-                                  </div>
+                                {data.type === 'TEXT' ? (
+                                  <>
+                                    {quiz.quizIdx === selectedCardIndex &&
+                                    isSimilar ? (
+                                      <div
+                                        onClick={() => {
+                                          if (onSelectCard)
+                                            onSelectCard(
+                                              quiz.quizIdx as number,
+                                            );
+                                        }}
+                                      >
+                                        <Button
+                                          buttonType="button"
+                                          onClick={() =>
+                                            data.type === 'TEXT'
+                                              ? onClick &&
+                                                onClick(
+                                                  quiz.quizCode as string,
+                                                  quiz.quizIdx as number,
+                                                  data.type,
+                                                )
+                                              : onClick &&
+                                                onClick(
+                                                  data.code,
+                                                  data.idx,
+                                                  data.type,
+                                                )
+                                          }
+                                          $padding="10px"
+                                          height={'30px'}
+                                          width={'70px'}
+                                          fontSize="12px"
+                                          $filled
+                                          cursor
+                                        >
+                                          <span>유사문항</span>
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <div
+                                        onClick={() => {
+                                          if (onSelectCard)
+                                            onSelectCard(
+                                              quiz.quizIdx as number,
+                                            );
+                                        }}
+                                      >
+                                        <Button
+                                          buttonType="button"
+                                          onClick={() =>
+                                            data.type === 'TEXT'
+                                              ? onClick &&
+                                                onClick(
+                                                  quiz.quizCode as string,
+                                                  quiz.quizIdx as number,
+                                                  data.type,
+                                                )
+                                              : onClick &&
+                                                onClick(
+                                                  data.code,
+                                                  data.idx,
+                                                  data.type,
+                                                )
+                                          }
+                                          $padding="10px"
+                                          height={'30px'}
+                                          width={'70px'}
+                                          fontSize="12px"
+                                          $normal
+                                          cursor
+                                        >
+                                          <span>유사문항</span>
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </>
                                 ) : (
-                                  <div
-                                    onClick={() => {
-                                      if (onSelectCard)
-                                        onSelectCard(index as number);
-                                    }}
-                                  >
-                                    <Button
-                                      buttonType="button"
-                                      onClick={onClick}
-                                      $padding="10px"
-                                      height={'30px'}
-                                      width={'70px'}
-                                      fontSize="12px"
-                                      $normal
-                                      cursor
-                                    >
-                                      <span>유사문항</span>
-                                    </Button>
-                                  </div>
+                                  <>
+                                    {data.idx === selectedCardIndex &&
+                                    isSimilar ? (
+                                      <div
+                                        onClick={() => {
+                                          if (onSelectCard)
+                                            onSelectCard(data.idx as number);
+                                        }}
+                                      >
+                                        <Button
+                                          buttonType="button"
+                                          onClick={() =>
+                                            data.type === 'TEXT'
+                                              ? onClick &&
+                                                onClick(
+                                                  quiz.quizCode as string,
+                                                  quiz.quizIdx as number,
+                                                  data.type,
+                                                )
+                                              : onClick &&
+                                                onClick(
+                                                  data.code,
+                                                  data.idx,
+                                                  data.type,
+                                                )
+                                          }
+                                          $padding="10px"
+                                          height={'30px'}
+                                          width={'70px'}
+                                          fontSize="12px"
+                                          $filled
+                                          cursor
+                                        >
+                                          <span>유사문항</span>
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <div
+                                        onClick={() => {
+                                          if (onSelectCard)
+                                            onSelectCard(data.idx as number);
+                                        }}
+                                      >
+                                        <Button
+                                          buttonType="button"
+                                          onClick={() =>
+                                            data.type === 'TEXT'
+                                              ? onClick &&
+                                                onClick(
+                                                  quiz.quizCode as string,
+                                                  quiz.quizIdx as number,
+                                                  data.type,
+                                                )
+                                              : onClick &&
+                                                onClick(
+                                                  data.code,
+                                                  data.idx,
+                                                  data.type,
+                                                )
+                                          }
+                                          $padding="10px"
+                                          height={'30px'}
+                                          width={'70px'}
+                                          fontSize="12px"
+                                          $normal
+                                          cursor
+                                        >
+                                          <span>유사문항</span>
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </>
                                 )}
+
                                 <div>
                                   <LuSiren
                                     fontSize={'25px'}
                                     color="red"
                                     style={{ cursor: 'pointer' }}
-                                    onClick={reportQuizitem}
+                                    onClick={() =>
+                                      data.type === 'TEXT'
+                                        ? reportQuizitem &&
+                                          reportQuizitem(quiz.quizIdx as number)
+                                        : reportQuizitem &&
+                                          reportQuizitem(data.idx as number)
+                                    }
                                   />
                                   <BiSolidTrashAlt
                                     fontSize={'25px'}
                                     style={{ cursor: 'pointer' }}
                                     onClick={() =>
-                                      deleteQuizItem &&
-                                      deleteQuizItem(
-                                        quiz.quizCode as string,
-                                        quiz.quizIdx as number,
-                                      )
+                                      data.type === 'TEXT'
+                                        ? deleteQuizItem &&
+                                          deleteQuizItem(
+                                            quiz.quizCode as string,
+                                            data.type as string,
+                                          )
+                                        : deleteQuizItem &&
+                                          deleteQuizItem(data.code, data.type)
                                     }
                                   />
                                 </div>
@@ -486,12 +668,13 @@ const MathJaxContentWrapper = styled.div`
   }
 `;
 const MathJaxTextWrapper = styled.div`
-  display: flex;
-  justify-content: center;
   padding-bottom: 20px;
 `;
 const MathJaxIconButton = styled.div``;
 const ContentQuestion = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   padding: 10px 0;
   div {
     background-color: white;
