@@ -548,6 +548,11 @@ const ColumList = styled.div`
   flex-direction: column;
   text-align: left;
   flex-wrap: wrap;
+
+  img {
+    width: 100%;
+    height: fit-content;
+  }
 `;
 const RowList = styled.div`
   text-align: left;
