@@ -16,6 +16,7 @@ export interface QuizItemList {
   sort: number;
   quizCode?: string;
   quizIdx?: number;
+  quizFavorite?: boolean;
 }
 
 export interface QuizCategory {
@@ -36,6 +37,7 @@ export interface QuizCategoryList {
 
 export interface QuizList {
   idx: number;
+  groupCode: string;
   code: string;
   num: number;
   type: string;

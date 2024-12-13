@@ -870,47 +870,49 @@ export function Step1() {
         },
         {},
       );
-      console.log('groupMap', groupMap);
-      console.log('quizList', quizList);
-      const result = quizList.map((item: any) => {
-        if (item.groupCode && groupMap[item.groupCode]) {
-          const group = groupMap[item.groupCode];
-          const textItem = group.find(
+
+      const result = quizList.map((quiz: any) => {
+        if (quiz.groupCode && groupMap[quiz.groupCode]) {
+          const group = groupMap[quiz.groupCode];
+          const textType = group.find(
             (groupItem: any) => groupItem.type === 'TEXT',
           );
-          console.log('quizIdx', item.idx);
 
-          if (textItem) {
+          if (textType) {
             let sortCounter = 2; // Sort starts from 2 for non-TEXT items.
             group.forEach((groupItem: any) => {
-              if (groupItem !== textItem) {
+              if (groupItem !== textType) {
                 // Add items to textItem's quizItemList with appropriate sort value
-                groupItem.quizItemList.forEach((quizItem: any) => {
-                  textItem.quizItemList.push({
-                    ...quizItem,
-                    quizIdx: item.idx,
-                    quizCode: item.code,
-                    sort: sortCounter++,
-                  });
-                });
+                groupItem.quizItemList.forEach(
+                  (quizItem: any, index: number) => {
+                    textType.quizItemList.push({
+                      ...quizItem,
+                      quizIdx: groupItem.idx,
+                      quizCode: groupItem.code,
+                      quizFavorite: groupItem.isFavorite,
+                      sort: sortCounter++,
+                    });
+                  },
+                );
                 groupItem.quizItemList = []; // Clear quizItemList for merged items
               }
             });
 
             // Ensure textItem's own sort is set to 1
-            textItem.quizItemList = textItem.quizItemList.map(
+            textType.quizItemList = textType.quizItemList.map(
               (quizItem: any, index: number) => ({
                 ...quizItem,
                 sort: index + 1,
-                quizIdx: index === 0 ? textItem.idx : item.idx,
-                quizCode: index === 0 ? textItem.code : item.code,
+                quizIdx: index === 0 ? textType.idx : quizItem.quizIdx,
+                quizCode: index === 0 ? textType.code : quizItem.quizCode,
+                quizFavorite:
+                  index === 0 ? textType.isFavorite : quizItem.isFavorite,
               }),
             );
           }
         }
-        return item;
+        return quiz;
       });
-      console.log('result', result);
 
       return result.filter((item: any) => item.quizItemList.length > 0);
     })();
