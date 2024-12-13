@@ -67,7 +67,7 @@ import {
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 import { ReportProcessModal } from '../../molecules/contentReport/ReportProcessModal';
-
+console.log('s');
 interface RadioStateType {
   title: string;
   checkValue: number;
