@@ -240,21 +240,24 @@ export function Process() {
 
   //프로세스 상세정보 불러오기 api
   const getProcessDetailInfo = async () => {
-    const res = await userInstance.get(`/v1/process/${processNameIdx}`);
-    //console.log(res);
-    return res;
+    if (processNameIdx === null) {
+      return;
+    } else {
+      const res = await userInstance.get(`/v1/process/${processNameIdx}`);
+      //console.log(res);
+      return res;
+    }
   };
   const {
     data: processDetailInfoData,
     isFetching: isProcessDetailInfoLoading,
     refetch: processDetailInfoRefetch,
   } = useQuery({
-    queryKey: ['get-processDetailInfo'],
+    queryKey: ['get-processDetailInfo', processNameIdx],
     queryFn: getProcessDetailInfo,
     meta: {
       errorMessage: 'get-processDetailInfo 에러 메세지',
     },
-    enabled: processNameIdx !== null,
   });
 
   useEffect(() => {
