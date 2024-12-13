@@ -672,17 +672,24 @@ export function ContentList({
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">교육과정</strong>
-
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find(
+                    (el) => el.quizCategory?.교육과정,
+                  ) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length > 0 ? (
-                        item.quizCategoryList
-                          .filter((el) => el.quizCategory?.교육과정) // 교육과정이 있는 항목만 필터링
-                          .map((el) => el.quizCategory?.교육과정) // 교육과정 값만 추출
-                          .join(', ') // ','로 연결
-                      ) : (
-                        <span></span> // 데이터가 없을 경우 처리
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.교육과정;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
@@ -695,16 +702,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:교육과정 ${idx}`}
-                          >
-                            {el.quizCategory.교육과정
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교육과정}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.교육과정,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.교육과정;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -719,25 +736,29 @@ export function ContentList({
                 >
                   <strong className="title">학교급</strong>
 
-                  {item.quizCategoryList ? (
-                    <span className=" tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:학교급 ${idx}`}
-                          >
-                            {el.quizCategory.학교급
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학교급}`
-                              : ''}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find(
+                    (el) => el.quizCategory?.학교급,
+                  ) ? (
+                    <span className="tag ellipsis" ref={textRef}>
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.학교급;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -745,16 +766,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:학교급 ${idx}`}
-                          >
-                            {el.quizCategory.학교급
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학교급}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.학교급,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.학교급;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -769,25 +800,27 @@ export function ContentList({
                 >
                   <strong className="title">학년</strong>
 
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find((el) => el.quizCategory?.학년) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:학년 ${idx}`}
-                          >
-                            {el.quizCategory.학년
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학년}`
-                              : ''}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.학년;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -795,16 +828,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:학년 ${idx}`}
-                          >
-                            {el.quizCategory.학년
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학년}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.학년,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.학년;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -819,25 +862,27 @@ export function ContentList({
                 >
                   <strong className="title">학기</strong>
 
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find((el) => el.quizCategory?.학기) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:학기 ${idx}`}
-                          >
-                            {el.quizCategory.학기
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학기}`
-                              : ''}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.학기;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -845,16 +890,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:학기 ${idx}`}
-                          >
-                            {el.quizCategory.학기
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.학기}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.학기,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.학기;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -869,25 +924,27 @@ export function ContentList({
                 >
                   <strong className="title">교과</strong>
 
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find((el) => el.quizCategory?.교과) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:교과 ${idx}`}
-                          >
-                            {el.quizCategory.교과
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교과}`
-                              : ''}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.교과;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -895,16 +952,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:교과 ${idx}`}
-                          >
-                            {el.quizCategory.교과
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.교과}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.교과,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.교과;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -919,25 +986,27 @@ export function ContentList({
                 >
                   <strong className="title">과목</strong>
 
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find((el) => el.quizCategory?.과목) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:과목 ${idx}`}
-                          >
-                            {el.quizCategory.과목
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.과목}`
-                              : ''}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.과목;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -945,16 +1014,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:과목 ${idx}`}
-                          >
-                            {el.quizCategory.과목
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.과목}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.과목,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.과목;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -969,25 +1048,29 @@ export function ContentList({
                 >
                   <strong className="title">대단원</strong>
 
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find(
+                    (el) => el.quizCategory?.대단원,
+                  ) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:대단원 ${idx}`}
-                          >
-                            {el.quizCategory.대단원
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
-                              : ''}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.대단원;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -995,16 +1078,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length !== 0 ? (
-                        item.quizCategoryList.map((el, idx) => (
-                          <span
-                            key={`quizCategoryList quizCategory:대단원 ${idx}`}
-                          >
-                            {el.quizCategory.대단원
-                              ? `${idx != 0 ? ',' : ''} ${el.quizCategory.대단원}`
-                              : ''}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.대단원,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.대단원;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -1018,24 +1111,29 @@ export function ContentList({
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">문항타입</strong>
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find(
+                    (el) => el.quizCategory?.문항타입,
+                  ) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length > 0 ? (
-                        item.quizCategoryList.map((item, idx) => (
-                          <span key={`문항타입 ${idx}`}>
-                            {item.quizCategory.문항타입 &&
-                            item.quizCategory.문항타입.length > 1
-                              ? `${item.quizCategory.문항타입}`
-                              : ``}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.문항타입;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -1043,15 +1141,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length > 0 ? (
-                        item.quizCategoryList.map((item, idx) => (
-                          <span key={`문항타입 ${idx}`}>
-                            {item.quizCategory.문항타입 &&
-                            item.quizCategory.문항타입.length > 1
-                              ? `${idx != 0 ? ',' : ''} ${item.quizCategory.문항타입}`
-                              : ``}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.문항타입,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.문항타입;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -1075,17 +1184,10 @@ export function ContentList({
                   // onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">상태(진행단계)</strong>
-                  {item.quizCategoryList ? (
+                  {item ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length > 0 ? (
-                        item.quizCategoryList.map((item, idx) => (
-                          <span key={`문항타입 ${idx}`}>
-                            {item.quizCategory.문항타입 &&
-                            item.quizCategory.문항타입.length > 1
-                              ? `${item.quizCategory.문항타입}`
-                              : ``}
-                          </span>
-                        ))
+                      {item.process ? (
+                        <span key={` ${item.process}`}>{item.process}</span>
                       ) : (
                         <span></span>
                       )}
