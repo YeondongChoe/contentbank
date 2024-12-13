@@ -134,12 +134,12 @@ export const getUserListTotal = async ({
   idxValue,
 }: {
   totalCount: number;
-  idxValue: string;
+  idxValue: string | null;
 }) => {
   const validCount = totalCount > 0 ? totalCount : 10; // 기본값 설정
   const validIdxValue = idxValue || 'default';
   const res = await userInstance.get(
-    `/v1/account?&pageIndex=${1}&pageUnit=${validCount}&searchCondition=${validIdxValue}
+    `/v1/account?&pageIndex=${1}&pageUnit=${validCount}&searchCondition=${idxValue}
 		`,
   );
   //console.log(res);

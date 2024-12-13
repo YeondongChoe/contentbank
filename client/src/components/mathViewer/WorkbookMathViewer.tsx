@@ -164,7 +164,7 @@ export function WorkbookMathViewer({
                       ))}
                     {data?.quizItemList
                       .filter((quiz) => quiz.type === 'QUESTION')
-                      .map((quiz) => (
+                      .map((quiz, i) => (
                         <MathJaxContentWrapper key={quiz.idx}>
                           <div className="leftInfomation">
                             {data.type === 'TEXT' ? (
@@ -300,15 +300,11 @@ export function WorkbookMathViewer({
                                               ? onClick &&
                                                 onClick(
                                                   quiz.quizCode as string,
-                                                  quiz.quizIdx as number,
+                                                  i as number,
                                                   data.type,
                                                 )
                                               : onClick &&
-                                                onClick(
-                                                  data.code,
-                                                  data.idx,
-                                                  data.type,
-                                                )
+                                                onClick(data.code, i, data.type)
                                           }
                                           $padding="10px"
                                           height={'30px'}
@@ -336,15 +332,11 @@ export function WorkbookMathViewer({
                                               ? onClick &&
                                                 onClick(
                                                   quiz.quizCode as string,
-                                                  quiz.quizIdx as number,
+                                                  i as number,
                                                   data.type,
                                                 )
                                               : onClick &&
-                                                onClick(
-                                                  data.code,
-                                                  data.idx,
-                                                  data.type,
-                                                )
+                                                onClick(data.code, i, data.type)
                                           }
                                           $padding="10px"
                                           height={'30px'}
@@ -375,15 +367,11 @@ export function WorkbookMathViewer({
                                               ? onClick &&
                                                 onClick(
                                                   quiz.quizCode as string,
-                                                  quiz.quizIdx as number,
+                                                  i as number,
                                                   data.type,
                                                 )
                                               : onClick &&
-                                                onClick(
-                                                  data.code,
-                                                  data.idx,
-                                                  data.type,
-                                                )
+                                                onClick(data.code, i, data.type)
                                           }
                                           $padding="10px"
                                           height={'30px'}
@@ -409,15 +397,11 @@ export function WorkbookMathViewer({
                                               ? onClick &&
                                                 onClick(
                                                   quiz.quizCode as string,
-                                                  quiz.quizIdx as number,
+                                                  i as number,
                                                   data.type,
                                                 )
                                               : onClick &&
-                                                onClick(
-                                                  data.code,
-                                                  data.idx,
-                                                  data.type,
-                                                )
+                                                onClick(data.code, i, data.type)
                                           }
                                           $padding="10px"
                                           height={'30px'}
