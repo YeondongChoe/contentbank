@@ -227,9 +227,6 @@ export function QuizList({
     setIsPostMessage(true);
   };
 
-  // 그룹으로 묶기
-  useEffect(() => {}, [groupId]);
-
   //문항 그룹 생성/해제 api
   const putGroup = async (items: QuizListType[]) => {
     console.log('groupId ----- ', groupId);
@@ -280,9 +277,8 @@ export function QuizList({
     },
   });
 
-  useEffect(() => {
-    console.log('groupId ----- ', groupId);
-  }, [groupId]);
+  // 그룹으로 묶기
+  useEffect(() => {}, [groupId]);
 
   const AddGroup = () => {
     // 하나이상의 대발문은 그룹 불가능
