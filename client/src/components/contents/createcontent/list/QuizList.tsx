@@ -872,11 +872,35 @@ export function QuizList({
                       </span>
                       <span className="title_tag">
                         {dragItem.quizCategoryList.length > 0 &&
-                          dragItem.quizCategoryList?.[0]?.quizCategory
-                            ?.문항타입 &&
-                          typeof dragItem.quizCategoryList[0].quizCategory
-                            .문항타입 === 'string' &&
-                          dragItem.quizCategoryList[0]?.quizCategory?.문항타입}
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.문항타입,
+                        ) ? (
+                          <span>
+                            {
+                              // 조건에 맞는 첫 번째 값 찾기
+                              (() => {
+                                const foundItem =
+                                  dragItem.quizCategoryList.find(
+                                    (el) => el.quizCategory?.문항타입,
+                                  );
+
+                                if (foundItem) {
+                                  const course =
+                                    foundItem.quizCategory?.문항타입;
+                                  if (Array.isArray(course)) {
+                                    return course[0]?.name || ''; // 배열인 경우 첫 번째 값 반환
+                                  } else if (typeof course === 'string') {
+                                    return course; // 문자열인 경우 그대로 반환
+                                  }
+                                }
+
+                                return ''; // 조건에 맞는 값이 없을 경우 빈 문자열 반환
+                              })()
+                            }
+                          </span>
+                        ) : (
+                          <></>
+                        )}
                       </span>
                     </button>
                   )}
@@ -885,43 +909,221 @@ export function QuizList({
                     onMouseLeave={(e) => hideTooltip(e)}
                   >
                     <span className="sub_title ellipsis" ref={textRef}>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.교과 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.교과} ,`}
-                      </span>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.과목 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.과목} ,`}
-                      </span>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.학년 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.학년} ,`}
-                      </span>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.난이도 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.난이도} ,`}
-                      </span>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.학교급 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.학교급} ,`}
-                      </span>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.문항타입 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.문항타입} ,`}
-                      </span>
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.교과,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.교과;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
 
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.대단원 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
-                      </span>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
-                      </span>
-                      <span>
-                        {dragItem.quizCategoryList[0]?.quizCategory?.소단원 &&
-                          `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
-                      </span>
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.과목,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.과목;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
+
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.학년,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.학년;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          학년,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
+
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.난이도,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.난이도;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
+
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.학교급,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.학교급;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
+
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.문항타입,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.문항타입;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
+
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.대단원,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.대단원;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
+
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.중단원,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.중단원;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
+
+                      {dragItem.quizCategoryList.length > 0 &&
+                      dragItem.quizCategoryList.find(
+                        (el) => el.quizCategory?.소단원,
+                      ) ? (
+                        <span>
+                          {dragItem.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.소단원;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                          ,
+                        </span>
+                      ) : (
+                        <></>
+                      )}
 
                       {dragItem.quizCategoryList[0]?.quizCategory?.sources?.map(
                         (item: Record<string, any>, idx) => {
@@ -980,45 +1182,221 @@ export function QuizList({
                       ref={tooltipRef}
                     >
                       <>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.교과 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.교과} ,`}
-                        </span>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.과목 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.과목} ,`}
-                        </span>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.학년 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.학년} ,`}
-                        </span>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.난이도 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.난이도} ,`}
-                        </span>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.학교급 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.학교급} ,`}
-                        </span>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory
-                            ?.문항타입 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.문항타입} ,`}
-                        </span>
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.교과,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.교과;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
 
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.대단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.대단원} ,`}
-                        </span>
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.소단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.소단원} ,`}
-                        </span>
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.과목,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.과목;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
 
-                        <span>
-                          {dragItem.quizCategoryList[0]?.quizCategory?.중단원 &&
-                            `${dragItem.quizCategoryList[0].quizCategory.중단원} ,`}
-                        </span>
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.학년,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.학년;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            학년,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.난이도,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.난이도;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.학교급,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.학교급;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.문항타입,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.문항타입;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.대단원,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.대단원;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.중단원,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.중단원;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {dragItem.quizCategoryList.length > 0 &&
+                        dragItem.quizCategoryList.find(
+                          (el) => el.quizCategory?.소단원,
+                        ) ? (
+                          <span>
+                            {dragItem.quizCategoryList
+                              .flatMap((el) => {
+                                const course = el.quizCategory?.소단원;
+                                if (Array.isArray(course)) {
+                                  return course
+                                    .map((sub) => sub.name)
+                                    .filter(Boolean); // 배열 처리
+                                } else if (typeof course === 'string') {
+                                  return [course]; // 문자열을 배열로 변환
+                                }
+                                return []; // 값이 없을 경우 빈 배열 반환
+                              })
+                              .join(', ')}
+                            ,
+                          </span>
+                        ) : (
+                          <></>
+                        )}
 
                         {dragItem.quizCategoryList[0]?.quizCategory?.sources?.map(
                           (item: Record<string, any>, idx) => {

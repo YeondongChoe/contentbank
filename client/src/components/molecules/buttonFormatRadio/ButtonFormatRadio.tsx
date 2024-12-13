@@ -56,13 +56,11 @@ export function ButtonFormatRadio({
                     }
                     value={item.idx}
                     onChange={onChange}
-                    checked={selected == item.idx}
+                    checked={selected == item.name}
                     className={item.code}
                   />
                   <span
-                    className={`label ${
-                      selected == item.idx.toString() ? 'on' : ''
-                    }`}
+                    className={`label ${selected == item.name ? 'on' : ''}`}
                   >
                     {item.name}
                   </span>

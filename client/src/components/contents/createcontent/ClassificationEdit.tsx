@@ -137,8 +137,15 @@ export function ClassificationEdit({
   //   code: '',
   //   key: '',
   // });
-  // const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
-  // const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
+  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
+  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
+
+  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
+    '',
+  ]);
+  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string[]>([
+    '',
+  ]);
   const [selected1depth, setSelected1depth] = useState<string>('');
   // const [selected2depth, setSelected2depth] = useState<string>('');
   // const [selected3depth, setSelected3depth] = useState<string>('');
@@ -450,76 +457,74 @@ export function ClassificationEdit({
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
 
-    // console.log('e.currentTarget.value', e.currentTarget?.value);
     const title = e.currentTarget.name;
     const code = e.currentTarget.className;
     const value = e.currentTarget.value;
 
-    switch (depth) {
-      // case 'etc1':
-      //   setSelectedCategoryEtc1(() => {
-      //     if (selectedCategoryEtc1.includes(value)) {
-      //       const updated = selectedCategoryEtc1.filter((v) => v !== value);
-      //       return updated;
-      //     } else {
-      //       const updated = [...selectedCategoryEtc1, value];
-      //       return updated;
-      //     }
-      //   });
+    switch (code) {
+      case idxNamePairsDD[0][0].code:
+        setSelectedCategoryEtc1(() => {
+          if (selectedCategoryEtc1.includes(value)) {
+            const updated = selectedCategoryEtc1.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc1, value];
+            return updated;
+          }
+        });
 
-      //   setRadioEtc1Check(() => {
-      //     if (radioEtc1Check.some((item) => item.checkValue == Number(value))) {
-      //       return radioEtc1Check.filter(
-      //         (item) => item.checkValue !== Number(value),
-      //       );
-      //     } else {
-      //       return [
-      //         ...radioEtc1Check,
-      //         {
-      //           title: title,
-      //           checkValue: Number(value),
-      //           code: code,
-      //           key: itemId as string,
-      //         },
-      //       ];
-      //     }
-      //   });
-      //   break;
+        setRadioEtc1Check(() => {
+          if (radioEtc1Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc1Check.filter(
+              (item) => item.checkValue !== Number(value),
+            );
+          } else {
+            return [
+              ...radioEtc1Check,
+              {
+                title: title,
+                checkValue: Number(value),
+                code: code,
+                key: itemId as string,
+              },
+            ];
+          }
+        });
+        break;
 
-      // case 'etc2':
-      //   setSelectedCategoryEtc2(() => {
-      //     if (selectedCategoryEtc2.includes(value)) {
-      //       const updated = selectedCategoryEtc2.filter((v) => v !== value);
-      //       return updated;
-      //     } else {
-      //       const updated = [...selectedCategoryEtc2, value];
-      //       return updated;
-      //     }
-      //   });
+      case idxNamePairsDD[0][1].code:
+        setSelectedCategoryEtc2(() => {
+          if (selectedCategoryEtc2.includes(value)) {
+            const updated = selectedCategoryEtc2.filter((v) => v !== value);
+            return updated;
+          } else {
+            const updated = [...selectedCategoryEtc2, value];
+            return updated;
+          }
+        });
 
-      //   setRadioEtc2Check(() => {
-      //     if (radioEtc2Check.some((item) => item.checkValue == Number(value))) {
-      //       return radioEtc2Check.filter(
-      //         (item) => item.checkValue !== Number(value),
-      //       );
-      //     } else {
-      //       return [
-      //         ...radioEtc2Check,
-      //         {
-      //           title: title,
-      //           checkValue: Number(value),
-      //           code: code,
-      //           key: itemId as string,
-      //         },
-      //       ];
-      //     }
-      //   });
-      //   break;
+        setRadioEtc2Check(() => {
+          if (radioEtc2Check.some((item) => item.checkValue == Number(value))) {
+            return radioEtc2Check.filter(
+              (item) => item.checkValue !== Number(value),
+            );
+          } else {
+            return [
+              ...radioEtc2Check,
+              {
+                title: title,
+                checkValue: Number(value),
+                code: code,
+                key: itemId as string,
+              },
+            ];
+          }
+        });
+        break;
       default:
         break;
     }
   };
-
   // 분류 바꾸기 (등록) api
   const putClassification = async (data: ClassificationStateType) => {
     const res = await classificationInstance.put(`/v1/item/quiz`, data);

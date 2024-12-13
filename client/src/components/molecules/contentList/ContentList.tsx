@@ -1111,24 +1111,29 @@ export function ContentList({
                   onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">문항타입</strong>
-                  {item.quizCategoryList ? (
+                  {item.quizCategoryList.length > 0 &&
+                  item.quizCategoryList.find(
+                    (el) => el.quizCategory?.문항타입,
+                  ) ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length > 0 ? (
-                        item.quizCategoryList.map((item, idx) => (
-                          <span key={`문항타입 ${idx}`}>
-                            {item.quizCategory.문항타입 &&
-                            item.quizCategory.문항타입.length > 1
-                              ? `${item.quizCategory.문항타입}`
-                              : ``}
-                          </span>
-                        ))
-                      ) : (
-                        <span></span>
-                      )}
+                      {item.quizCategoryList
+                        .flatMap((el) => {
+                          const course = el.quizCategory?.문항타입;
+                          if (Array.isArray(course)) {
+                            return course
+                              .map((sub) => sub.name)
+                              .filter(Boolean); // 배열 처리
+                          } else if (typeof course === 'string') {
+                            return [course]; // 문자열을 배열로 변환
+                          }
+                          return []; // 값이 없을 경우 빈 배열 반환
+                        })
+                        .join(', ')}
                     </span>
                   ) : (
                     <span className="tag"></span>
                   )}
+
                   <Tooltip
                     top={'100px'}
                     arrowPosition={`left: calc(50% - 10px)`}
@@ -1136,15 +1141,26 @@ export function ContentList({
                     ref={tooltipRef}
                   >
                     <span>
-                      {item.quizCategoryList.length > 0 ? (
-                        item.quizCategoryList.map((item, idx) => (
-                          <span key={`문항타입 ${idx}`}>
-                            {item.quizCategory.문항타입 &&
-                            item.quizCategory.문항타입.length > 1
-                              ? `${idx != 0 ? ',' : ''} ${item.quizCategory.문항타입}`
-                              : ``}
-                          </span>
-                        ))
+                      {item.quizCategoryList.length > 0 &&
+                      // 조건에 맞는 항목 찾기
+                      item.quizCategoryList.find(
+                        (el) => el.quizCategory?.문항타입,
+                      ) ? (
+                        <span>
+                          {item.quizCategoryList
+                            .flatMap((el) => {
+                              const course = el.quizCategory?.문항타입;
+                              if (Array.isArray(course)) {
+                                return course
+                                  .map((sub) => sub.name)
+                                  .filter(Boolean); // 배열 처리
+                              } else if (typeof course === 'string') {
+                                return [course]; // 문자열을 배열로 변환
+                              }
+                              return []; // 값이 없을 경우 빈 배열 반환
+                            })
+                            .join(', ')}
+                        </span>
                       ) : (
                         <span></span>
                       )}
@@ -1168,17 +1184,10 @@ export function ContentList({
                   // onMouseLeave={(e) => hideTooltip(e)}
                 >
                   <strong className="title">상태(진행단계)</strong>
-                  {item.quizCategoryList ? (
+                  {item ? (
                     <span className="tag ellipsis" ref={textRef}>
-                      {item.quizCategoryList.length > 0 ? (
-                        item.quizCategoryList.map((item, idx) => (
-                          <span key={`문항타입 ${idx}`}>
-                            {item.quizCategory.문항타입 &&
-                            item.quizCategory.문항타입.length > 1
-                              ? `${item.quizCategory.문항타입}`
-                              : ``}
-                          </span>
-                        ))
+                      {item.process ? (
+                        <span key={` ${item.process}`}>{item.process}</span>
                       ) : (
                         <span></span>
                       )}
